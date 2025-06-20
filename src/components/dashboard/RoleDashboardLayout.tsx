@@ -1,536 +1,345 @@
 
-import { PropsWithChildren } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import { 
-  Zap, 
-  Users, 
+  Sparkles, 
+  Bot, 
   TrendingUp, 
   DollarSign, 
-  MapPin, 
+  Users, 
   Shield, 
   Star, 
-  Video, 
+  Camera, 
   Package, 
   Leaf,
   Calendar,
-  BarChart3,
   MessageSquare,
-  Settings,
-  Award,
   CreditCard,
+  BarChart3,
   Clock,
+  Settings,
+  Plus,
+  Eye,
   UserPlus
-} from "lucide-react";
+} from 'lucide-react';
 
-interface RoleDashboardLayoutProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-const RoleDashboardLayout = ({ children, className = "" }: RoleDashboardLayoutProps) => {
-  const isMobile = useIsMobile();
-
-  const handleVote = (featureName: string) => {
-    toast.success(`Thank you for voting for ${featureName}! You'll be first to try this feature.`);
-  };
-
-  const handleNotifyMe = (featureName: string) => {
-    toast.success(`We'll notify you when ${featureName} is ready!`);
-  };
-
-  // Inline Coming Soon Card Component
-  const ComingSoonCard = ({ 
-    title, 
-    description, 
-    icon: Icon, 
-    showVoting = false 
-  }: { 
-    title: string; 
-    description: string; 
-    icon: any; 
-    showVoting?: boolean;
-  }) => (
-    <Card className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200 hover:shadow-lg transition-all duration-300">
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-blue-600/5" />
-      <CardHeader className="relative">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white">
-            <Icon className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-            <Badge variant="secondary" className="mt-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700">
-              Coming Soon
-            </Badge>
-          </div>
+// Inline Coming Soon Feature Component
+const ComingSoonFeatureCard = ({ feature, onVote, onNotify }: { 
+  feature: any; 
+  onVote: () => void; 
+  onNotify: () => void; 
+}) => (
+  <div className="min-w-[320px] bg-gradient-to-br from-white/80 to-purple-50/60 backdrop-blur-sm border border-purple-100 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div className="flex items-start gap-4">
+      <div className={`p-3 rounded-xl bg-gradient-to-r ${feature.gradient} shadow-lg`}>
+        <feature.icon className="h-6 w-6 text-white" />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-semibold text-gray-800 mb-2">{feature.title}</h3>
+        <p className="text-sm text-gray-600 leading-relaxed mb-4">
+          {feature.description}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            onClick={onVote}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+          >
+            Vote
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onNotify}
+            className="border-purple-200 text-purple-600 hover:bg-purple-50"
+          >
+            Notify Me
+          </Button>
         </div>
-      </CardHeader>
-      <CardContent className="relative pt-0">
-        <p className="text-gray-600 mb-4">{description}</p>
-        {showVoting && (
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => handleVote(title)}
-              className="flex-1"
-            >
-              Vote
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => handleNotifyMe(title)}
-              className="flex-1"
-            >
-              Notify Me
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-
-  // Section Header Component
-  const SectionHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => (
-    <div className="mb-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-1">{title}</h2>
-      {subtitle && <p className="text-gray-600">{subtitle}</p>}
+      </div>
     </div>
-  );
+  </div>
+);
 
+// Inline Coming Soon Section Card Component
+const ComingSoonSectionCard = ({ title, description, icon: Icon }: {
+  title: string;
+  description: string;
+  icon: any;
+}) => (
+  <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+    <CardContent className="p-6 text-center">
+      <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-fit">
+        <Icon className="h-6 w-6 text-white" />
+      </div>
+      <h3 className="font-semibold text-gray-800 mb-2">{title}</h3>
+      <p className="text-sm text-gray-600 mb-4">{description}</p>
+      <Button 
+        size="sm" 
+        variant="outline"
+        onClick={() => toast.success("Thank you! You'll be first to know when this feature launches.")}
+        className="border-purple-200 text-purple-600 hover:bg-purple-50"
+      >
+        Notify Me When Ready
+      </Button>
+    </CardContent>
+  </Card>
+);
+
+const RoleDashboardLayout = () => {
+  const [votedFeatures, setVotedFeatures] = useState<Set<string>>(new Set());
+
+  // Coming Soon Features Data
   const comingSoonFeatures = [
     {
-      icon: Zap,
+      id: "autopilot",
       title: "Autopilot Salon Management",
-      description: "Let Emvi run your schedule, payroll, and reminders—just flip the switch and relax."
+      description: "Let Emvi run your schedule, payroll, and reminders—just flip the switch and relax.",
+      icon: Bot,
+      gradient: "from-blue-500 to-purple-600"
     },
     {
-      icon: Users,
+      id: "talent-scout",
       title: "Dream Team AI Talent Scout",
-      description: "Find your next superstar before they're even looking—AI matches you with perfect stylists."
+      description: "Find your next superstar before they're even looking—AI matches you with perfect stylists.",
+      icon: Users,
+      gradient: "from-green-500 to-emerald-600"
     },
     {
-      icon: TrendingUp,
+      id: "benchmarking",
       title: "Live Industry Benchmarking",
-      description: "See how your pay rates, bookings, and reviews stack up against the city's best—live."
+      description: "See how your pay rates, bookings, and reviews stack up against the city's best—live.",
+      icon: TrendingUp,
+      gradient: "from-orange-500 to-amber-600"
     },
     {
-      icon: DollarSign,
+      id: "price-optimizer",
       title: "AI Price Optimizer",
-      description: "Get AI-powered price recommendations based on your real data, reviews, and location."
+      description: "Get AI-powered price recommendations based on your real data, reviews, and location.",
+      icon: DollarSign,
+      gradient: "from-pink-500 to-rose-600"
     },
     {
-      icon: MapPin,
+      id: "talent-map",
       title: "Salon Talent & Demand Map",
-      description: "See where stylists and clients are trending in real-time. Expansion? You'll know first."
+      description: "See where stylists and clients are trending in real-time. Expansion? You'll know first.",
+      icon: BarChart3,
+      gradient: "from-violet-500 to-indigo-600"
     },
     {
-      icon: Shield,
+      id: "financial-safety",
       title: "Smart Financial Safety Net",
-      description: "Emvi warns you before cash flow drops, and helps you plan for taxes and expenses."
+      description: "Emvi warns you before cash flow drops, and helps you plan for taxes and expenses.",
+      icon: Shield,
+      gradient: "from-cyan-500 to-blue-600"
     },
     {
-      icon: Star,
+      id: "ai-recognition",
       title: "AI Review & Employee Recognition",
-      description: "Automatic 'Employee of the Day' badges from 5-star reviews. Private negative feedback coach."
+      description: "Automatic 'Employee of the Day' badges from 5-star reviews. Private negative feedback coach.",
+      icon: Star,
+      gradient: "from-yellow-500 to-orange-600"
     },
     {
-      icon: Video,
+      id: "creator-mode",
       title: "Creator Mode: Salon TV & Story Studio",
-      description: "Record, edit, and share your salon's best moments to TikTok, Instagram, and more—no editing skills needed."
+      description: "Record, edit, and share your salon's best moments to TikTok, Instagram, and more—no editing skills needed.",
+      icon: Camera,
+      gradient: "from-purple-500 to-pink-600"
     },
     {
-      icon: Package,
+      id: "supply-replenishment",
       title: "Smart Supply Replenishment",
-      description: "Never run out of anything—Emvi tracks, predicts, and reorders for you."
+      description: "Never run out of anything—Emvi tracks, predicts, and reorders for you.",
+      icon: Package,
+      gradient: "from-emerald-500 to-green-600"
     },
     {
-      icon: Leaf,
+      id: "eco-certification",
       title: "Eco/Green Salon Certification",
-      description: "Emvi tracks and certifies your sustainability, with rewards and marketing boosts for going green."
+      description: "Emvi tracks and certifies your sustainability, with rewards and marketing boosts for going green.",
+      icon: Leaf,
+      gradient: "from-green-600 to-emerald-700"
     }
   ];
-  
+
+  const handleVote = (featureId: string) => {
+    setVotedFeatures(prev => new Set([...prev, featureId]));
+    toast.success("Thank you for voting! This feature just moved up in priority.");
+  };
+
+  const handleNotify = (featureId: string) => {
+    toast.success("Thank you! You'll be first to try this feature when it launches.");
+  };
+
   return (
-    <div className={`${isMobile ? 'px-4 py-6' : 'px-6 py-8'} max-w-7xl mx-auto ${className}`}>
-      {/* Coming Soon Feature Gallery */}
-      <section className="mb-12">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-            🚀 Coming Soon Features
-          </h1>
-          <p className="text-gray-600 text-lg">The features you vote for will be built first!</p>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Salon Dashboard</h1>
+          <p className="text-gray-600">Manage your salon with premium tools and insights</p>
         </div>
-        
-        <div className="overflow-x-auto">
-          <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
-            {comingSoonFeatures.map((feature, index) => (
-              <div key={index} className="w-80 flex-shrink-0">
-                <Card className="h-full relative overflow-hidden bg-gradient-to-br from-white to-purple-50/30 border-purple-200/50 hover:shadow-xl transition-all duration-500 hover:scale-105">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-blue-600/5" />
-                  <CardHeader className="relative">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg">
-                        <feature.icon className="h-6 w-6" />
-                      </div>
-                      <Badge variant="secondary" className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 font-medium">
-                        Coming Soon
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 leading-tight">
-                      {feature.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="relative">
-                    <p className="text-gray-600 mb-6 leading-relaxed">{feature.description}</p>
-                    <div className="flex gap-3">
-                      <Button 
-                        onClick={() => handleVote(feature.title)}
-                        className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        Vote
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => handleNotifyMe(feature.title)}
-                        className="flex-1 border-purple-200 hover:bg-purple-50 font-medium transition-all duration-300"
-                      >
-                        Notify Me
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
+
+        {/* Coming Soon Feature Gallery */}
+        <div className="mb-12">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              Coming Soon Features
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">🏆 The features you vote for will be built first!</p>
+          </div>
+          
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-6 min-w-max">
+              {comingSoonFeatures.map((feature) => (
+                <ComingSoonFeatureCard
+                  key={feature.id}
+                  feature={feature}
+                  onVote={() => handleVote(feature.id)}
+                  onNotify={() => handleNotify(feature.id)}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Quick Actions */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Quick Actions" 
-          subtitle="Essential salon management tools at your fingertips"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <UserPlus className="h-8 w-8 mx-auto mb-3 text-blue-500" />
-              <h3 className="font-semibold mb-2">Add Appointment</h3>
-              <Button size="sm" className="w-full">Book Now</Button>
-            </CardContent>
-          </Card>
-          <Card className="hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <Users className="h-8 w-8 mx-auto mb-3 text-green-500" />
-              <h3 className="font-semibold mb-2">Invite Staff</h3>
-              <Button size="sm" variant="outline" className="w-full">Invite</Button>
-            </CardContent>
-          </Card>
-          <Card className="hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <Calendar className="h-8 w-8 mx-auto mb-3 text-purple-500" />
-              <h3 className="font-semibold mb-2">View Schedule</h3>
-              <Button size="sm" variant="outline" className="w-full">Open</Button>
-            </CardContent>
-          </Card>
-          <Card className="hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <BarChart3 className="h-8 w-8 mx-auto mb-3 text-orange-500" />
-              <h3 className="font-semibold mb-2">Analytics</h3>
-              <Button size="sm" variant="outline" className="w-full">View</Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Bookings Overview */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Bookings Overview" 
-          subtitle="Track your appointments and revenue"
-        />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Recent Bookings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Sarah Johnson</p>
-                    <p className="text-sm text-gray-600">Hair Cut & Color - 2:00 PM</p>
-                  </div>
-                  <Badge variant="secondary">Today</Badge>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Mike Chen</p>
-                    <p className="text-sm text-gray-600">Beard Trim - 3:30 PM</p>
-                  </div>
-                  <Badge variant="secondary">Today</Badge>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Emily Davis</p>
-                    <p className="text-sm text-gray-600">Manicure - 10:00 AM</p>
-                  </div>
-                  <Badge variant="outline">Tomorrow</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Today's Stats</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600">Total Bookings</p>
-                  <p className="text-2xl font-bold">12</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Revenue</p>
-                  <p className="text-2xl font-bold text-green-600">$1,240</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Next Appointment</p>
-                  <p className="font-medium">2:00 PM</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* My Team */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="My Team" 
-          subtitle="Manage your staff and their performance"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold">
-                JS
-              </div>
-              <h3 className="font-semibold mb-1">Jessica Smith</h3>
-              <p className="text-sm text-gray-600 mb-2">Senior Stylist</p>
-              <div className="flex justify-center gap-2">
-                <Badge variant="secondary">Available</Badge>
-                <Badge variant="outline">5★</Badge>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold">
-                MT
-              </div>
-              <h3 className="font-semibold mb-1">Maria Torres</h3>
-              <p className="text-sm text-gray-600 mb-2">Nail Technician</p>
-              <div className="flex justify-center gap-2">
-                <Badge variant="destructive">Busy</Badge>
-                <Badge variant="outline">4.9★</Badge>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold">
-                AL
-              </div>
-              <h3 className="font-semibold mb-1">Alex Lee</h3>
-              <p className="text-sm text-gray-600 mb-2">Barber</p>
-              <div className="flex justify-center gap-2">
-                <Badge variant="secondary">Available</Badge>
-                <Badge variant="outline">4.8★</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Credit Balance & Pro Plan */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Credit Balance & Pro Plan" 
-          subtitle="Manage your subscription and credits"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-blue-500" />
-                Credit Balance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600 mb-2">250 Credits</div>
-              <p className="text-gray-600 mb-4">Use credits to boost your listings and unlock premium features</p>
-              <Button className="w-full">Purchase More Credits</Button>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-purple-500" />
-                Pro Plan Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 mb-2">
-                <Badge className="bg-gradient-to-r from-purple-500 to-pink-500">PRO</Badge>
-                <span className="font-semibold">Active</span>
-              </div>
-              <p className="text-gray-600 mb-4">Expires in 24 days</p>
-              <Button variant="outline" className="w-full">Manage Subscription</Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Quick Statistics */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Quick Statistics" 
-          subtitle="Your salon's performance at a glance"
-        />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-              <div className="text-2xl font-bold">28</div>
-              <p className="text-sm text-gray-600">This Week</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <DollarSign className="h-8 w-8 mx-auto mb-2 text-green-500" />
-              <div className="text-2xl font-bold">$8.2k</div>
-              <p className="text-sm text-gray-600">Revenue</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Users className="h-8 w-8 mx-auto mb-2 text-purple-500" />
-              <div className="text-2xl font-bold">156</div>
-              <p className="text-sm text-gray-600">Clients</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Star className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-              <div className="text-2xl font-bold">4.9</div>
-              <p className="text-sm text-gray-600">Rating</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Availability Manager */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Availability Manager" 
-          subtitle="Set your salon hours and staff schedules"
-        />
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Salon Hours
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold mb-3">Current Hours</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Monday - Friday</span>
-                    <span>9:00 AM - 7:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Saturday</span>
-                    <span>9:00 AM - 6:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sunday</span>
-                    <span className="text-red-600">Closed</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3">Quick Actions</h4>
-                <div className="space-y-2">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    Edit Hours
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    Block Time Off
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    Staff Schedules
-                  </Button>
-                </div>
-              </div>
+        {/* Dashboard Sections */}
+        <div className="space-y-12">
+          {/* Quick Actions */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-600" />
+              Quick Actions
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button className="h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
+                <Plus className="h-5 w-5 mr-2" />
+                Add Appointment
+              </Button>
+              <Button variant="outline" className="h-16 border-purple-200 text-purple-600 hover:bg-purple-50">
+                <UserPlus className="h-5 w-5 mr-2" />
+                Invite Artist
+              </Button>
+              <Button variant="outline" className="h-16 border-purple-200 text-purple-600 hover:bg-purple-50">
+                <Eye className="h-5 w-5 mr-2" />
+                View Reports
+              </Button>
+              <Button variant="outline" className="h-16 border-purple-200 text-purple-600 hover:bg-purple-50">
+                <Settings className="h-5 w-5 mr-2" />
+                Settings
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      </section>
+          </section>
 
-      {/* Messages & Internal Chat */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Messages & Internal Chat" 
-          subtitle="Stay connected with your team and clients"
-        />
-        <ComingSoonCard
-          title="Advanced Team Communication Hub"
-          description="Real-time chat with your team, client messaging system, and automated appointment reminders all in one place."
-          icon={MessageSquare}
-          showVoting={true}
-        />
-      </section>
+          {/* Bookings Overview */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-purple-600" />
+              Bookings Overview
+            </h2>
+            <ComingSoonSectionCard
+              title="Advanced Booking Management"
+              description="Complete booking overview, calendar integration, and automated reminders coming soon."
+              icon={Calendar}
+            />
+          </section>
 
-      {/* Service Management */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Service Management" 
-          subtitle="Manage your salon's services and pricing"
-        />
-        <ComingSoonCard
-          title="Smart Service Manager"
-          description="AI-powered service recommendations, dynamic pricing based on demand, and automated service package creation."
-          icon={Settings}
-          showVoting={true}
-        />
-      </section>
+          {/* My Team */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Users className="h-5 w-5 text-purple-600" />
+              My Team
+            </h2>
+            <ComingSoonSectionCard
+              title="Team Management Hub"
+              description="Manage your artists, track performance, and handle payroll all in one place."
+              icon={Users}
+            />
+          </section>
 
-      {/* Reviews/Recognition */}
-      <section className="mb-12">
-        <SectionHeader 
-          title="Reviews & Recognition" 
-          subtitle="Celebrate your team's achievements"
-        />
-        <ComingSoonCard
-          title="Employee Recognition Center"
-          description="Automatic 'Employee of the Month' selection based on client reviews, performance tracking, and team achievement badges."
-          icon={Award}
-          showVoting={true}
-        />
-      </section>
+          {/* Credit Balance & Pro Plan */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-purple-600" />
+              Credit Balance & Pro Plan
+            </h2>
+            <ComingSoonSectionCard
+              title="Premium Subscription Management"
+              description="Manage your credits, upgrade plans, and unlock premium features."
+              icon={CreditCard}
+            />
+          </section>
 
-      {/* Original Children Content */}
-      {children}
+          {/* Quick Statistics */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-purple-600" />
+              Quick Statistics
+            </h2>
+            <ComingSoonSectionCard
+              title="Business Analytics Dashboard"
+              description="Real-time insights into revenue, bookings, and performance metrics."
+              icon={BarChart3}
+            />
+          </section>
+
+          {/* Availability Manager */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Clock className="h-5 w-5 text-purple-600" />
+              Availability Manager
+            </h2>
+            <ComingSoonSectionCard
+              title="Smart Scheduling System"
+              description="Manage your salon's availability, block time slots, and optimize scheduling."
+              icon={Clock}
+            />
+          </section>
+
+          {/* Messages & Internal Chat */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-purple-600" />
+              Messages & Internal Chat
+            </h2>
+            <ComingSoonSectionCard
+              title="Integrated Communication Hub"
+              description="Chat with your team, communicate with clients, and manage all conversations."
+              icon={MessageSquare}
+            />
+          </section>
+
+          {/* Service Management */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Settings className="h-5 w-5 text-purple-600" />
+              Service Management
+            </h2>
+            <ComingSoonSectionCard
+              title="Service Catalog Manager"
+              description="Manage your services, pricing, and packages with smart recommendations."
+              icon={Settings}
+            />
+          </section>
+
+          {/* Reviews/Recognition */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Star className="h-5 w-5 text-purple-600" />
+              Reviews & Recognition
+            </h2>
+            <ComingSoonSectionCard
+              title="Employee Recognition & Reviews"
+              description="Track reviews, celebrate achievements, and boost team morale with automated recognition."
+              icon={Star}
+            />
+          </section>
+        </div>
+      </div>
     </div>
   );
 };
