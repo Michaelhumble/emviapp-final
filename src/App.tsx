@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { ToastProvider } from '@/components/ui/toast-context';
@@ -35,21 +35,19 @@ function App() {
             <ProfileProvider>
               <NotificationProvider>
                 <ToastProvider>
-                  <Router>
-                    <div className="min-h-screen bg-background font-sans antialiased">
-                      <Routes>
-                        <Route path="/jobs/*" element={<Jobs />} />
-                        <Route path="/artists" element={<Artists />} />
-                        <Route path="/community" element={<Community />} />
-                        <Route path="/dashboard/*" element={<Dashboard />} />
-                        
-                        {/* Legacy salon dashboard route - DISABLED */}
-                        {/* <Route path="/dashboard/salon" element={<Salon />} /> */}
-                        
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </div>
-                  </Router>
+                  <div className="min-h-screen bg-background font-sans antialiased">
+                    <Routes>
+                      <Route path="/jobs/*" element={<Jobs />} />
+                      <Route path="/artists" element={<Artists />} />
+                      <Route path="/community" element={<Community />} />
+                      <Route path="/dashboard/*" element={<Dashboard />} />
+                      
+                      {/* Legacy salon dashboard route - DISABLED */}
+                      {/* <Route path="/dashboard/salon" element={<Salon />} /> */}
+                      
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </div>
                   <Toaster />
                 </ToastProvider>
               </NotificationProvider>
