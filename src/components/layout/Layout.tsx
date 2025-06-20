@@ -21,6 +21,21 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
 
   return (
     <div className="min-h-screen flex flex-col">
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '50px',
+        background: '#ff0033',
+        color: '#fff',
+        fontSize: '2rem',
+        zIndex: 99999,
+        textAlign: 'center',
+        lineHeight: '50px'
+      }}>
+        🚨 THIS IS THE FILE YOU ARE EDITING: src/components/layout/Layout.tsx 🚨
+      </div>
       {!hideNavbar && <Navbar />}
       
       <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
