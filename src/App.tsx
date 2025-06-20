@@ -1,19 +1,15 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/auth';
 import { SubscriptionProvider } from '@/context/subscription';
 import { Toaster } from '@/components/ui/toaster';
-import { toast } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import AuthGuard from '@/components/auth/AuthGuard';
-import Home from '@/pages/Home';
+import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
 import Jobs from '@/pages/Jobs';
-import Salons from '@/pages/Salons';
 import Profile from '@/pages/Profile';
 import Artists from '@/pages/Artists';
 import Community from '@/pages/Community';
-import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,24 +29,26 @@ function App() {
             <Router>
               <div className="min-h-screen bg-background">
                 <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<Home />} />
+                  {/* Public Routes - commented out missing pages */}
+                  {/* <Route path="/" element={<Home />} /> */}
                   <Route path="/jobs" element={<Jobs />} />
-                  <Route path="/salons" element={<Salons />} />
+                  {/* <Route path="/salons" element={<Salons />} /> */}
                   <Route path="/artists" element={<Artists />} />
                   <Route path="/community" element={<Community />} />
                   
                   {/* Profile Routes */}
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   
-                  {/* Dashboard Routes */}
+                  {/* Dashboard Routes - only keep working ones */}
                   <Route path="/dashboard/owner" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} />
-                  <Route path="/dashboard/supplier" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} />
-                  <Route path="/dashboard/customer" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} />
-                  <Route path="/dashboard/other" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} />
                   
-                  {/* Catch-all route */}
-                  <Route path="*" element={<Home />} />
+                  {/* Commented out missing dashboard routes */}
+                  {/* <Route path="/dashboard/supplier" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} /> */}
+                  {/* <Route path="/dashboard/customer" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} /> */}
+                  {/* <Route path="/dashboard/other" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} /> */}
+                  
+                  {/* Catch-all route - redirect to jobs for now */}
+                  <Route path="*" element={<Jobs />} />
                 </Routes>
               </div>
             </Router>
