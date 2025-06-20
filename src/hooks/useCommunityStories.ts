@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -62,30 +63,39 @@ export const useCommunityStories = () => {
       // Upload image if provided
       if (imageFile) {
         console.log('Uploading image...');
-        imageUrl = await uploadImage(imageFile);
-        if (!imageUrl) {
-          console.error('Image upload failed');
-          toast.error('Failed to upload image');
+        try {
+          imageUrl = await uploadImage(imageFile);
+          if (!imageUrl) {
+            console.error('Image upload failed - no URL returned');
+            toast.error('Failed to upload image');
+            return false;
+          }
+          console.log('Image uploaded successfully:', imageUrl);
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          toast.error('Failed to upload image. Please try again.');
           return false;
         }
-        console.log('Image uploaded successfully:', imageUrl);
       }
 
       // Insert story into database
-      const { error } = await supabase
+      console.log('Inserting story into database...');
+      const { data, error } = await supabase
         .from('community_stories')
         .insert({
           user_id: user.id,
           content: content.trim(),
           image_url: imageUrl
-        });
+        })
+        .select();
 
       if (error) {
         console.error('Database insert error:', error);
-        throw error;
+        toast.error(`Failed to share your story: ${error.message}`);
+        return false;
       }
 
-      console.log('Story inserted successfully');
+      console.log('Story inserted successfully:', data);
       setNewStory('');
       toast.success('Your story has been shared!');
       
@@ -95,7 +105,7 @@ export const useCommunityStories = () => {
       return true;
     } catch (error: any) {
       console.error('Error adding story:', error);
-      toast.error('Failed to share your story. Please try again.');
+      toast.error(`Failed to share your story: ${error.message || 'Please try again.'}`);
       return false;
     } finally {
       setIsLoading(false);
