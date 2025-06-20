@@ -58,9 +58,9 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
         </div>
       )}
 
-      {/* Main Dashboard Content - Completely Empty */}
+      {/* Main Dashboard Content - Completely Empty and Blank */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+        {/* Completely blank - no children rendered */}
       </div>
     </motion.div>
   );
