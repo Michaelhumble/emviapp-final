@@ -12,7 +12,7 @@ interface CommunityStory {
   likes: number;
   created_at: string;
   user_id: string;
-  profiles?: {
+  users?: {
     full_name?: string;
     avatar_url?: string;
   };
@@ -32,7 +32,7 @@ export const useCommunityStories = () => {
         .from('community_stories')
         .select(`
           *,
-          profiles(
+          users: user_id (
             full_name,
             avatar_url
           )

@@ -47,9 +47,9 @@ const CommunityStories = () => {
               <CardContent className="p-6">
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
-                    {story.profiles?.avatar_url ? (
+                    {story.users?.avatar_url ? (
                       <img
-                        src={story.profiles.avatar_url}
+                        src={story.users.avatar_url}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover"
                       />
@@ -63,7 +63,7 @@ const CommunityStories = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="font-medium text-gray-900">
-                        {story.profiles?.full_name || 'Community Member'}
+                        {story.users?.full_name || 'Community Member'}
                       </span>
                       <span className="text-sm text-gray-500">
                         {formatDistanceToNow(new Date(story.created_at), { addSuffix: true })}
