@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -30,13 +29,7 @@ export const useCommunityStories = () => {
     try {
       const { data, error } = await supabase
         .from('community_stories')
-        .select(`
-          *,
-          profiles!community_stories_user_id_fkey (
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*, profiles(full_name, avatar_url)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
