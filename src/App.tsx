@@ -47,14 +47,14 @@ function App() {
       <ThemeProvider defaultTheme="light" storageKey="emvi-ui-theme">
         <AuthProvider>
           <SubscriptionProvider>
-            <PricingProvider>
+            {/* <PricingProvider> */}
               <ProfileProvider>
                 <NotificationProvider>
                   <ToastProvider>
                     <Router>
                       <div className="min-h-screen bg-background font-sans antialiased">
                         <Routes>
-                          <Route path="/" element={<Home />} />
+                          {/* <Route path="/" element={<Home />} /> */}
                           <Route path="/jobs/*" element={<Jobs />} />
                           <Route path="/artists" element={<Artists />} />
                           <Route path="/community" element={<Community />} />
@@ -63,18 +63,19 @@ function App() {
                           {/* Legacy salon dashboard route - DISABLED */}
                           {/* <Route path="/dashboard/salon" element={<Salon />} /> */}
                           
-                          <Route path="/messages" element={<Messages />} />
-                          <Route path="/salons" element={<Salons />} />
-                          <Route path="/explore/artists" element={<ExploreArtists />} />
-                          <Route path="/credit-purchase" element={<CreditPurchasePage />} />
-                          <Route path="/booths" element={<BoothMarketplace />} />
-                          <Route path="/opportunities" element={<Opportunities />} />
-                          <Route path="/articles/:articleId" element={<Article />} />
-                          <Route path="/articles" element={<Articles />} />
-                           <Route path="/password-reset" element={<PasswordReset />} />
-                          <Route path="/email-confirmation" element={<EmailConfirmation />} />
-                          <Route path="/terms-of-service" element={<TermsOfService />} />
-                          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                          {/* Routes for missing pages - commented out */}
+                          {/* <Route path="/messages" element={<Messages />} /> */}
+                          {/* <Route path="/salons" element={<Salons />} /> */}
+                          {/* <Route path="/explore/artists" element={<ExploreArtists />} /> */}
+                          {/* <Route path="/credit-purchase" element={<CreditPurchasePage />} /> */}
+                          {/* <Route path="/booths" element={<BoothMarketplace />} /> */}
+                          {/* <Route path="/opportunities" element={<Opportunities />} /> */}
+                          {/* <Route path="/articles/:articleId" element={<Article />} /> */}
+                          {/* <Route path="/articles" element={<Articles />} /> */}
+                          {/* <Route path="/password-reset" element={<PasswordReset />} /> */}
+                          {/* <Route path="/email-confirmation" element={<EmailConfirmation />} /> */}
+                          {/* <Route path="/terms-of-service" element={<TermsOfService />} /> */}
+                          {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </div>
@@ -83,7 +84,7 @@ function App() {
                   </ToastProvider>
                 </NotificationProvider>
               </ProfileProvider>
-            </PricingProvider>
+            {/* </PricingProvider> */}
           </SubscriptionProvider>
         </AuthProvider>
       </ThemeProvider>
