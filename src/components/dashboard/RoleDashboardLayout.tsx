@@ -1,64 +1,35 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import { 
   Calendar, 
-  DollarSign, 
   Users, 
   TrendingUp, 
-  Star, 
-  MessageSquare, 
-  Settings, 
-  Zap, 
-  Brain, 
   Eye, 
-  Clock, 
-  Award, 
-  Plus, 
-  Heart, 
-  Target, 
+  CreditCard, 
+  MessageSquare,
+  Star,
+  Heart,
   Sparkles,
-  Bot,
-  Headphones,
-  BarChart3,
-  CreditCard,
-  UserPlus,
-  Briefcase,
   Crown,
-  Rocket,
-  Trophy,
-  ChevronRight
+  Zap,
+  Bell,
+  Vote,
+  Plus,
+  ArrowRight,
+  Target,
+  Palette,
+  Shield,
+  Clock,
+  Gift
 } from "lucide-react";
-
-/*
-🚀 BILLION $$$ SALON DASHBOARD FEATURES CHECKLIST
-=================================================
-Premium features to implement for world-class salon dashboard:
-
-✅ Real-time Analytics Dashboard - Live charts and metrics
-✅ AI-Powered Insights - Business optimization recommendations  
-✅ Revenue Forecasting - Predictive analytics and projections
-✅ Customer Journey Mapping - Retention and lifecycle metrics
-✅ Smart Booking Intelligence - Demand prediction algorithms
-✅ Staff Performance Leaderboards - Gamified team management
-✅ Automated Marketing Center - Campaign management system
-✅ Financial Health Score - Profit optimization metrics
-✅ Competitive Analysis Tools - Market positioning insights
-✅ Premium Client Experience - VIP management system
-
-Status: FULLY IMPLEMENTED
-Owner: Salon Dashboard Premium Upgrade
-*/
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
 
 interface RoleDashboardLayoutProps {
-  children?: React.ReactNode;
+  children: React.ReactNode;
   role?: "salon" | "artist" | "customer" | "freelancer" | "supplier" | "manager";
   headerContent?: React.ReactNode;
 }
@@ -68,498 +39,221 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
   role = "salon",
   headerContent
 }) => {
-  const [newService, setNewService] = useState("");
+  const { toast } = useToast();
+  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
 
-  // Animation variants for smooth page transitions
-  const pageVariants = {
+  // Animation variants
+  const containerVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.6, staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
     initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 }
+    animate: { opacity: 1, y: 0 }
   };
 
-  const cardVariants = {
-    initial: { opacity: 0, scale: 0.95 },
-    animate: { opacity: 1, scale: 1 },
-    transition: { duration: 0.3 }
-  };
-
-  // Demo data
-  const salonName = "Luxury Beauty Lounge";
-  const stats = {
-    activeApplicants: 127,
-    profileViews: 2847,
-    weeklyBookings: 89,
-    growthScore: 94,
-    creditBalance: 1250,
-    teamRating: 4.9
-  };
-
-  const liveFeatures = [
-    {
-      title: "Instant Bookings",
-      description: "Accept bookings 24/7 with automated confirmation",
-      icon: Calendar,
-      status: "LIVE",
-      color: "bg-green-500"
-    },
-    {
-      title: "AI-Optimized Scheduling",
-      description: "Smart scheduling that maximizes your revenue",
-      icon: Brain,
-      status: "LIVE",
-      color: "bg-blue-500"
-    },
-    {
-      title: "Team Leaderboard",
-      description: "Gamified performance tracking for your staff",
-      icon: Trophy,
-      status: "LIVE",
-      color: "bg-purple-500"
-    },
-    {
-      title: "Pro Analytics",
-      description: "Advanced insights and business intelligence",
-      icon: BarChart3,
-      status: "LIVE",
-      color: "bg-orange-500"
-    },
-    {
-      title: "Instant Payouts",
-      description: "Get paid instantly after each service",
-      icon: CreditCard,
-      status: "LIVE",
-      color: "bg-emerald-500"
-    },
-    {
-      title: "VIP Client Profiles",
-      description: "Premium client management system",
-      icon: Crown,
-      status: "LIVE",
-      color: "bg-yellow-500"
-    },
-    {
-      title: "Live Availability Sync",
-      description: "Real-time availability across all platforms",
-      icon: Zap,
-      status: "LIVE",
-      color: "bg-red-500"
-    },
-    {
-      title: "Smart Notifications",
-      description: "Intelligent alerts and reminders",
-      icon: Sparkles,
-      status: "LIVE",
-      color: "bg-pink-500"
-    }
+  // Revolutionary features for FOMO
+  const revolutionaryFeatures = [
+    { id: 1, title: "AI Assistant", icon: Sparkles, description: "Smart booking optimization", votes: 1247 },
+    { id: 2, title: "VR Consultations", icon: Eye, description: "Virtual style previews", votes: 892 },
+    { id: 3, title: "Smart Analytics", icon: TrendingUp, description: "Predictive insights", votes: 1456 },
+    { id: 4, title: "Auto Marketing", icon: Target, description: "AI-powered campaigns", votes: 743 },
+    { id: 5, title: "Premium CRM", icon: Crown, description: "Client relationship mastery", votes: 1189 },
+    { id: 6, title: "Dynamic Pricing", icon: Zap, description: "Revenue optimization", votes: 667 },
+    { id: 7, title: "Style Generator", icon: Palette, description: "AI trend predictions", votes: 934 },
+    { id: 8, title: "Security Suite", icon: Shield, description: "Advanced protection", votes: 512 },
+    { id: 9, title: "Time Master", icon: Clock, description: "Smart scheduling", votes: 876 },
+    { id: 10, title: "Loyalty Engine", icon: Gift, description: "Customer retention", votes: 1023 }
   ];
 
-  const comingSoonFeatures = [
-    {
-      title: "AI Business Coach",
-      description: "Personal AI mentor for business growth",
-      icon: Bot,
-      votes: 234
-    },
-    {
-      title: "VR Consultations",
-      description: "Virtual reality client consultations",
-      icon: Eye,
-      votes: 189
-    },
-    {
-      title: "Smart Analytics Pro",
-      description: "Predictive analytics and forecasting",
-      icon: TrendingUp,
-      votes: 156
-    },
-    {
-      title: "Auto Marketing Hub",
-      description: "Automated marketing campaigns",
-      icon: Rocket,
-      votes: 143
-    },
-    {
-      title: "Premium CRM Suite",
-      description: "Advanced customer relationship management",
-      icon: Briefcase,
-      votes: 128
-    },
-    {
-      title: "Voice Assistant",
-      description: "Voice-controlled salon management",
-      icon: Headphones,
-      votes: 112
-    },
-    {
-      title: "Revenue Optimizer",
-      description: "AI-powered revenue optimization",
-      icon: DollarSign,
-      votes: 98
-    },
-    {
-      title: "Client Journey Mapping",
-      description: "Visualize complete customer experience",
-      icon: Target,
-      votes: 87
-    }
+  // Demo stats data
+  const salonStats = [
+    { label: "New Applicants", value: "24", change: "+12%", icon: Users, color: "from-blue-500 to-purple-600" },
+    { label: "Profile Views", value: "2,847", change: "+23%", icon: Eye, color: "from-green-500 to-emerald-600" },
+    { label: "Active Bookings", value: "156", change: "+8%", icon: Calendar, color: "from-orange-500 to-red-600" },
+    { label: "Monthly Growth", value: "34%", change: "+5%", icon: TrendingUp, color: "from-pink-500 to-rose-600" },
+    { label: "Credit Balance", value: "450", change: "+15", icon: CreditCard, color: "from-violet-500 to-purple-600" },
+    { label: "Team Rating", value: "4.9", change: "+0.2", icon: Star, color: "from-yellow-500 to-amber-600" }
   ];
 
-  const teamMembers = [
-    {
-      name: "Sarah Johnson",
-      role: "Senior Stylist",
-      badge: "Employee of the Month",
-      avatar: "/lovable-uploads/b4f117ee-b209-43be-8e30-ecbf1d025c93.png",
-      badgeColor: "bg-yellow-500"
-    },
-    {
-      name: "Mike Chen",
-      role: "Color Specialist",
-      badge: "Rising Star",
-      avatar: "/lovable-uploads/c25453c7-588e-4544-99da-5b21cf64bf20.png",
-      badgeColor: "bg-blue-500"
-    },
-    {
-      name: "Emma Davis",
-      role: "Nail Technician",
-      badge: "Client Favorite",
-      avatar: "/lovable-uploads/d1abc88d-ed4e-4e7f-91d7-04104efd6ce6.png",
-      badgeColor: "bg-pink-500"
-    },
-    {
-      name: "Alex Rivera",
-      role: "Massage Therapist",
-      badge: "Top Performer",
-      avatar: "/lovable-uploads/e14ee836-9ccb-41a0-9ad1-3b185275482f.png",
-      badgeColor: "bg-green-500"
-    }
+  // Demo bookings data
+  const demoBookings = [
+    { id: 1, client: "Sarah Chen", service: "Hair Color", time: "10:00 AM", status: "confirmed", artist: "Maria" },
+    { id: 2, client: "Jessica Park", service: "Manicure", time: "11:30 AM", status: "pending", artist: "Anna" },
+    { id: 3, client: "Emily Rodriguez", service: "Facial", time: "2:00 PM", status: "confirmed", artist: "Sophia" },
+    { id: 4, client: "Ashley Kim", service: "Massage", time: "3:30 PM", status: "completed", artist: "David" }
   ];
 
-  const todaysBookings = [
-    { name: "Jessica White", service: "Hair Cut & Color", time: "9:00 AM", status: "confirmed" },
-    { name: "David Miller", service: "Beard Trim", time: "10:30 AM", status: "pending" },
-    { name: "Lisa Brown", service: "Manicure", time: "12:00 PM", status: "confirmed" },
-    { name: "Tom Wilson", service: "Massage", time: "2:30 PM", status: "confirmed" },
-    { name: "Anna Garcia", service: "Facial", time: "4:00 PM", status: "pending" }
+  // Demo team data
+  const demoTeam = [
+    { name: "Maria Santos", role: "Senior Stylist", avatar: "MS", rating: 4.9, isEmployeeOfMonth: true },
+    { name: "Anna Chen", role: "Nail Technician", avatar: "AC", rating: 4.8, isEmployeeOfMonth: false },
+    { name: "Sophia Lee", role: "Esthetician", avatar: "SL", rating: 4.7, isEmployeeOfMonth: false },
+    { name: "David Park", role: "Massage Therapist", avatar: "DP", rating: 4.9, isEmployeeOfMonth: false }
   ];
 
-  const handleFeatureClick = (featureName: string) => {
-    toast.success(`${featureName} feature activated! Explore your new capabilities.`);
+  const handleFeatureVote = (featureId: number, featureTitle: string) => {
+    toast({
+      title: "Vote Recorded! 🗳️",
+      description: `Thank you for voting for ${featureTitle}! We'll notify you when it's ready.`,
+      variant: "success"
+    });
   };
 
-  const handleComingSoonAction = (action: string, featureName: string) => {
-    if (action === "vote") {
-      toast.success(`Thanks for voting for ${featureName}! Your vote has been counted.`);
-    } else {
-      toast.success(`You'll be notified when ${featureName} is available!`);
-    }
+  const handleNotifyMe = (featureTitle: string) => {
+    toast({
+      title: "Notification Set! 🔔",
+      description: `You'll be the first to know when ${featureTitle} launches!`,
+      variant: "success"
+    });
   };
 
-  const handleAddService = () => {
-    if (newService.trim()) {
-      toast.success(`Service "${newService}" added to your catalog!`);
-      setNewService("");
-    }
-  };
-
-  const handleAddBooking = () => {
-    toast.success("Booking modal would open here!");
-  };
-
-  const handleInviteTeam = () => {
-    toast.success("Team invitation modal would open here!");
+  const handleComingSoon = (feature: string) => {
+    toast({
+      title: "Coming Soon! ✨",
+      description: `${feature} is in development. Stay tuned for updates!`,
+      variant: "info"
+    });
   };
 
   return (
     <motion.div
       initial="initial"
       animate="animate"
-      exit="exit"
-      variants={pageVariants}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30"
+      variants={containerVariants}
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 font-inter"
     >
-      {/* Header Section */}
-      {headerContent && (
-        <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            {headerContent}
-          </div>
+      {/* Premium Animated Header */}
+      <motion.div 
+        variants={itemVariants}
+        className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 text-white overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-4">
+              Welcome back, <span className="text-yellow-300">Luxe Salon!</span>
+            </h1>
+            <p className="text-xl md:text-2xl font-light opacity-90">
+              Your future starts here. ✨ Build something extraordinary.
+            </p>
+          </motion.div>
         </div>
-      )}
+      </motion.div>
 
-      {/* Main Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        {/* 1. Animated Welcome Header */}
-        <motion.div
-          variants={cardVariants}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 p-8 text-white"
-        >
-          <div className="relative z-10">
-            <motion.h1 
-              className="text-4xl font-playfair font-bold mb-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              Welcome back, {salonName}! ✨
-            </motion.h1>
-            <motion.p 
-              className="text-xl text-purple-100"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              Your billion-dollar future starts here.
-            </motion.p>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-indigo-700/20 backdrop-blur-sm"></div>
-        </motion.div>
-
-        {/* 2. Success Metrics / Quick Stats */}
-        <motion.div variants={cardVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          {[
-            { label: "Active Applicants", value: stats.activeApplicants, icon: Users, color: "text-blue-600" },
-            { label: "Profile Views", value: stats.profileViews, icon: Eye, color: "text-green-600" },
-            { label: "Weekly Bookings", value: stats.weeklyBookings, icon: Calendar, color: "text-purple-600" },
-            { label: "Growth Score", value: `${stats.growthScore}%`, icon: TrendingUp, color: "text-orange-600" },
-            { label: "Credit Balance", value: `$${stats.creditBalance}`, icon: DollarSign, color: "text-emerald-600" },
-            { label: "Team Rating", value: stats.teamRating, icon: Star, color: "text-yellow-600" }
-          ].map((stat, index) => (
-            <Card key={index} className="bg-white/80 backdrop-blur-sm border-gray-100 hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                  </div>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </motion.div>
-
-        {/* 3. Billion-Dollar Features (LIVE) Section */}
-        <motion.div variants={cardVariants}>
-          <h2 className="text-3xl font-playfair font-bold mb-6 text-gray-900">
-            💎 Billion-Dollar Features
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {liveFeatures.map((feature, index) => (
-              <Card key={index} className="bg-white/90 backdrop-blur-sm border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <feature.icon className="h-8 w-8 text-gray-700" />
-                    <Badge className={`${feature.color} text-white text-xs`}>
-                      {feature.status}
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                  <CardDescription className="text-sm">{feature.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <Button 
-                    onClick={() => handleFeatureClick(feature.title)}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  >
-                    Try Now <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* 4. Revolutionary "Coming Soon" Features Gallery */}
-        <motion.div variants={cardVariants}>
-          <h2 className="text-3xl font-playfair font-bold mb-6 text-gray-900">
-            🚀 Revolutionary Features Coming Soon
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {comingSoonFeatures.map((feature, index) => (
-              <Card key={index} className="bg-white/90 backdrop-blur-sm border-gray-100 hover:shadow-xl transition-all duration-300">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <feature.icon className="h-8 w-8 text-gray-700" />
-                    <Badge variant="outline" className="text-xs">
-                      COMING SOON
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                  <CardDescription className="text-sm">{feature.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-2">
-                  <div className="text-sm text-gray-600 mb-3">
-                    {feature.votes} votes
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={() => handleComingSoonAction("vote", feature.title)}
-                    >
-                      Vote
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={() => handleComingSoonAction("notify", feature.title)}
-                    >
-                      Notify Me
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* 5. Dream Team & Employee Recognition */}
-        <motion.div variants={cardVariants}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-playfair font-bold text-gray-900">
-              👥 My Dream Team
+        {/* Revolutionary Features FOMO Gallery */}
+        <motion.section variants={itemVariants} className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
+              Revolutionary Features Coming Soon
             </h2>
-            <Button onClick={handleInviteTeam} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
-              <Plus className="mr-2 h-4 w-4" />
-              Invite Team
-            </Button>
+            <p className="text-gray-600">Vote for your favorites and be the first to experience the future</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamMembers.map((member, index) => (
-              <Card key={index} className="bg-white/90 backdrop-blur-sm border-gray-100 hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <Avatar className="h-16 w-16 mx-auto mb-4">
-                    <AvatarImage src={member.avatar} alt={member.name} />
-                    <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <h3 className="font-semibold text-lg mb-1">{member.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3">{member.role}</p>
-                  <Badge className={`${member.badgeColor} text-white text-xs`}>
-                    {member.badge}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* 6. Messages & Internal Chat */}
-        <motion.div variants={cardVariants}>
-          <Card className="bg-white/90 backdrop-blur-sm border-gray-100">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="h-8 w-8 text-blue-600" />
-                  <div>
-                    <CardTitle className="text-xl">Messages & Internal Chat</CardTitle>
-                    <CardDescription>Team communication hub</CardDescription>
-                  </div>
-                </div>
-                <Badge variant="outline">COMING SOON</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={() => handleComingSoonAction("vote", "Messages & Internal Chat")}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+          
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {revolutionaryFeatures.map((feature) => (
+              <motion.div
+                key={feature.id}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group"
               >
-                Vote for Priority Access
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* 7. Service Management */}
-        <motion.div variants={cardVariants}>
-          <h2 className="text-3xl font-playfair font-bold mb-6 text-gray-900">
-            🛠️ Service Management
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-white/90 backdrop-blur-sm border-gray-100">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Service Catalog
-                </CardTitle>
-                <CardDescription>Manage your service offerings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add new service..."
-                    value={newService}
-                    onChange={(e) => setNewService(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button onClick={handleAddService}>Add</Button>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Current services: Hair Cut, Color, Manicure, Massage, Facial
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white/90 backdrop-blur-sm border-gray-100">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Pricing Optimizer
-                </CardTitle>
-                <CardDescription>AI-powered pricing recommendations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Badge variant="outline" className="mb-4">COMING SOON</Badge>
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleComingSoonAction("vote", "Pricing Optimizer")}
-                  className="w-full"
-                >
-                  Vote for This Feature
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.div>
-
-        {/* 8. Bookings Overview */}
-        <motion.div variants={cardVariants}>
-          <Card className="bg-white/90 backdrop-blur-sm border-gray-100">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl">Today's Bookings</CardTitle>
-                  <CardDescription>Manage your daily schedule</CardDescription>
-                </div>
-                <Button onClick={handleAddBooking} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Booking
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {todaysBookings.map((booking, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback>{booking.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{booking.name}</p>
-                        <p className="text-sm text-gray-600">{booking.service}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">{booking.time}</p>
-                      <Badge 
-                        variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
+                <Card className="h-full bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-200 transition-all duration-300 shadow-lg hover:shadow-xl">
+                  <CardContent className="p-4 text-center">
+                    <motion.div
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center"
+                    >
+                      <feature.icon className="h-6 w-6 text-white" />
+                    </motion.div>
+                    <h3 className="font-semibold text-sm mb-1">{feature.title}</h3>
+                    <p className="text-xs text-gray-600 mb-3">{feature.description}</p>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleFeatureVote(feature.id, feature.title)}
                         className="text-xs"
                       >
+                        <Vote className="h-3 w-3 mr-1" />
+                        Vote ({feature.votes})
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleNotifyMe(feature.title)}
+                        className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                      >
+                        <Bell className="h-3 w-3 mr-1" />
+                        Notify Me
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Quick Stats Row */}
+        <motion.section variants={itemVariants}>
+          <h2 className="text-2xl font-playfair font-bold text-gray-900 mb-6">Salon Performance</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {salonStats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                  <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                  <CardContent className="p-4 relative">
+                    <div className="flex items-center justify-between mb-2">
+                      <stat.icon className={`h-5 w-5 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} />
+                      <Badge variant="secondary" className="text-xs">{stat.change}</Badge>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-sm text-gray-600">{stat.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Bookings & Calendar Preview */}
+        <motion.section variants={itemVariants} className="grid md:grid-cols-2 gap-6">
+          <Card className="shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center">
+                <Calendar className="h-5 w-5 mr-2 text-blue-600" />
+                Today's Bookings
+              </CardTitle>
+              <Button size="sm" onClick={() => handleComingSoon("Add Booking")}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Booking
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {demoBookings.map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div>
+                      <p className="font-medium">{booking.client}</p>
+                      <p className="text-sm text-gray-600">{booking.service} • {booking.artist}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{booking.time}</p>
+                      <Badge variant={booking.status === 'confirmed' ? 'default' : booking.status === 'pending' ? 'secondary' : 'outline'}>
                         {booking.status}
                       </Badge>
                     </div>
@@ -568,14 +262,185 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
 
-        {/* Render children if provided */}
-        {children && (
-          <motion.div variants={cardVariants}>
-            {children}
-          </motion.div>
-        )}
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Sparkles className="h-5 w-5 mr-2 text-purple-600" />
+                Calendar Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Calendar className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-600 mb-4">Advanced calendar features coming soon!</p>
+                <Button variant="outline" onClick={() => handleComingSoon("Calendar Overview")}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview Features
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        {/* My Team & Recognition */}
+        <motion.section variants={itemVariants}>
+          <Card className="shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center">
+                <Users className="h-5 w-5 mr-2 text-green-600" />
+                My Team & Recognition
+              </CardTitle>
+              <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
+                <Crown className="h-3 w-3 mr-1" />
+                Employee Recognition
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-3">Team Members</h3>
+                  <div className="space-y-3">
+                    {demoTeam.map((member) => (
+                      <div key={member.name} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold mr-3">
+                            {member.avatar}
+                          </div>
+                          <div>
+                            <p className="font-medium">{member.name}</p>
+                            <p className="text-sm text-gray-600">{member.role}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                          <span className="text-sm">{member.rating}</span>
+                          {member.isEmployeeOfMonth && (
+                            <Badge className="ml-2 bg-gradient-to-r from-yellow-500 to-orange-500">
+                              <Crown className="h-3 w-3 mr-1" />
+                              EOTM
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-center py-8">
+                  <Heart className="h-16 w-16 mx-auto text-pink-300 mb-4" />
+                  <h3 className="font-semibold mb-2">Team Reviews</h3>
+                  <p className="text-gray-600 mb-4">Write and manage team reviews</p>
+                  <Button variant="outline" onClick={() => handleComingSoon("Team Reviews")}>
+                    <Star className="h-4 w-4 mr-2" />
+                    Write Review (Coming Soon)
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        {/* Service Management */}
+        <motion.section variants={itemVariants}>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Palette className="h-5 w-5 mr-2 text-purple-600" />
+                Service Management
+                <Badge variant="secondary" className="ml-2">Coming Soon</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Sparkles className="h-16 w-16 mx-auto text-purple-300 mb-4" />
+                <h3 className="font-semibold mb-2">Advanced Service Management</h3>
+                <p className="text-gray-600 mb-4">Manage your services with AI-powered pricing and scheduling</p>
+                <div className="flex justify-center gap-3">
+                  <Button variant="outline" onClick={() => handleFeatureVote(11, "Service Management")}>
+                    <Vote className="h-4 w-4 mr-2" />
+                    Vote for Priority
+                  </Button>
+                  <Button onClick={() => handleNotifyMe("Service Management")}>
+                    <Bell className="h-4 w-4 mr-2" />
+                    Get Notified
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        {/* Credit Balance & Pro Plan */}
+        <motion.section variants={itemVariants} className="grid md:grid-cols-2 gap-6">
+          <Card className="shadow-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <CreditCard className="h-5 w-5 mr-2" />
+                Credit Balance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <p className="text-4xl font-bold mb-2">450 Credits</p>
+                <p className="opacity-90 mb-4">Available for premium features</p>
+                <Button variant="secondary" onClick={() => handleComingSoon("Credit Purchase")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Purchase Credits
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-orange-700">
+                <Crown className="h-5 w-5 mr-2" />
+                Upgrade to Pro
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-orange-700 mb-2">Unlock Everything</p>
+                <p className="text-gray-600 mb-4">Get access to all premium features</p>
+                <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" onClick={() => handleComingSoon("Pro Upgrade")}>
+                  <Zap className="h-4 w-4 mr-2" />
+                  Upgrade Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        {/* Messages & Internal Chat */}
+        <motion.section variants={itemVariants}>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MessageSquare className="h-5 w-5 mr-2 text-blue-600" />
+                Messages & Internal Chat
+                <Badge variant="secondary" className="ml-2">Coming Soon</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <MessageSquare className="h-16 w-16 mx-auto text-blue-300 mb-4" />
+                <h3 className="font-semibold mb-2">Advanced Communication Hub</h3>
+                <p className="text-gray-600 mb-4">Team chat, client messages, and automated notifications</p>
+                <div className="flex justify-center gap-3">
+                  <Button variant="outline" onClick={() => handleFeatureVote(12, "Communication Hub")}>
+                    <Vote className="h-4 w-4 mr-2" />
+                    Vote to Prioritize
+                  </Button>
+                  <Button onClick={() => handleNotifyMe("Communication Hub")}>
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Join Waitlist
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
       </div>
     </motion.div>
   );
