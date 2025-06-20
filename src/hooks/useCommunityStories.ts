@@ -12,7 +12,7 @@ interface CommunityStory {
   likes: number;
   created_at: string;
   user_id: string;
-  users?: {
+  profiles?: {
     full_name?: string;
     avatar_url?: string;
   };
@@ -32,7 +32,7 @@ export const useCommunityStories = () => {
         .from('community_stories')
         .select(`
           *,
-          users: user_id (
+          profiles (
             full_name,
             avatar_url
           )
@@ -100,7 +100,7 @@ export const useCommunityStories = () => {
       await fetchStories();
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding story:', error);
       toast.error('Failed to share your story. Please try again.');
       return false;
