@@ -13,7 +13,7 @@ export const SalonDashboardContent = () => {
     <div className="space-y-6">
       <header className="mb-8">
         <h1 className="font-playfair text-2xl md:text-3xl font-semibold text-gray-900">
-          Welcome back, Beautiful Nails LA! 
+          Welcome to Your Salon Dashboard (This is a test change. If you see this, edits are working in the right place!)
         </h1>
         <p className="text-gray-600 mt-1">Here's your business snapshot for today.</p>
       </header>
