@@ -24,13 +24,13 @@ Owner: Salon Dashboard Premium Upgrade
 
 interface RoleDashboardLayoutProps {
   children: React.ReactNode;
-  role: "salon" | "artist" | "customer" | "freelancer" | "supplier" | "manager";
+  role?: "salon" | "artist" | "customer" | "freelancer" | "supplier" | "manager";
   headerContent?: React.ReactNode;
 }
 
 const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
   children,
-  role,
+  role = "salon",
   headerContent
 }) => {
   // Animation variants for smooth page transitions
