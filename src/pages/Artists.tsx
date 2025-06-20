@@ -1,14 +1,24 @@
 
-import React from 'react';
+import Layout from "@/components/layout/Layout";
+import ArtistHeroSection from "@/components/artists/ArtistHeroSection";
+import LiveStatsBar from "@/components/artists/LiveStatsBar";
+import EmpathySection from "@/components/artists/EmpathySection";
+import WhyArtistsChooseSection from "@/components/artists/WhyArtistsChooseSection";
+import LeaderboardSection from "@/components/artists/LeaderboardSection";
+import FeaturedSuccessStories from "@/components/artists/FeaturedSuccessStories";
+import FinalCTASection from "@/components/artists/FinalCTASection";
 
 const Artists = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Artists</h1>
-        <p className="text-gray-600">Discover talented beauty artists in your area.</p>
-      </div>
-    </div>
+    <Layout>
+      <ArtistHeroSection />
+      <LiveStatsBar />
+      <EmpathySection />
+      <WhyArtistsChooseSection />
+      <LeaderboardSection />
+      <FeaturedSuccessStories />
+      <FinalCTASection />
+    </Layout>
   );
 };
 

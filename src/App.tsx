@@ -1,84 +1,120 @@
-
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@/components/theme-provider';
-import { NotificationProvider } from '@/context/notification/NotificationProvider';
-import { AuthProvider } from '@/context/auth/AuthProvider';
-import Layout from '@/components/layout/Layout';
-import Home from '@/pages/Home';
-import Artists from '@/pages/Artists';
-import ArtistProfile from '@/pages/ArtistProfile';
-import Jobs from '@/pages/Jobs';
-import JobListing from '@/pages/JobListing';
-import Salons from '@/pages/Salons';
-import SalonProfile from '@/pages/SalonProfile';
-import Community from '@/pages/Community';
-import Analytics from '@/pages/Analytics';
-import UserProfile from '@/components/profile/UserProfile';
-import ProfileEditor from '@/pages/ProfileEditor';
-import ProfileForm from '@/components/profile/ProfileForm';
-import SupplierProfile from '@/pages/SupplierProfile';
-import AuthGuard from '@/components/auth/AuthGuard';
-import { AuthRedirect } from '@/components/auth/AuthRedirect';
-import SignIn from '@/pages/SignIn';
-import SignUp from '@/pages/SignUp';
-import Onboarding from '@/pages/Onboarding';
-import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
-import DashboardRedirector from '@/components/dashboard/DashboardRedirector';
-import NotFound from '@/pages/NotFound';
-import ProfileNotFound from '@/components/profile/ProfileNotFound';
-import { Toaster } from '@/components/ui/sonner';
+import React, { useEffect, Suspense } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from '@/context/auth';
+import { SalonProvider } from '@/context/salon';
+import { SubscriptionProvider } from '@/context/subscription';
+import { NotificationProvider } from '@/context/notification';
+import { HelmetProvider } from 'react-helmet-async';
+import routes from './routes';
+import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
+import ArtistInbox from "@/pages/dashboard/artist/Inbox";
+import { Toaster } from "@/components/ui/toaster";
+import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
+import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
+import RouteLogger from '@/components/common/RouteLogger';
+import StableSalonPage from "@/pages/salons/StableSalonPage";
+import Layout from "@/components/layout/Layout";
+import Jobs from "@/pages/Jobs";
+import About from "@/pages/About"; 
+import Contact from "@/pages/Contact";
+import Terms from "@/pages/Terms";
+import Refund from "@/pages/Refund";
+import Privacy from "@/pages/Privacy";
+import Cookies from "@/pages/Cookies";
+import CheckoutFallback from "@/pages/CheckoutFallback";
+import PostSuccess from "@/pages/post-success";
+import PostCanceled from "@/pages/post-canceled";
+import PostJobBillion from "@/pages/PostJobBillion";
+import PostJobExperimental from "@/pages/PostJobExperimental";
+import SignIn from "@/pages/auth/SignIn";
+import NewSignUp from "@/pages/auth/NewSignUp";
+import EnhancedPostJob from "@/pages/enhanced-post-job";
+import SellSalonPage from "@/pages/sell-salon";
+import PostSalon from "@/pages/PostSalon";
+import SalonListingSuccessPage from "@/pages/salon-listing-success";
+import CustomerProfilePage from "@/pages/customer/ProfilePage";
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+    
+    // Log route for debugging
+    console.log('Current route:', location.pathname);
+  }, [location.pathname]);
+
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <div className="App">
-            <Routes>
-              {/* Auth routes */}
-              <Route path="/auth/signin" element={<AuthRedirect><SignIn /></AuthRedirect>} />
-              <Route path="/auth/signup" element={<AuthRedirect><SignUp /></AuthRedirect>} />
-              <Route path="/onboarding" element={<AuthGuard><Onboarding /></AuthGuard>} />
-
-              {/* Public routes */}
-              <Route path="/" element={<Layout><Home /></Layout>} />
-              <Route path="/artists" element={<Layout><Artists /></Layout>} />
-              <Route path="/artist/:id" element={<Layout><ArtistProfile /></Layout>} />
-              <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
-              <Route path="/job/:id" element={<Layout><JobListing /></Layout>} />
-              <Route path="/salons" element={<Layout><Salons /></Layout>} />
-              <Route path="/salon/:id" element={<Layout><SalonProfile /></Layout>} />
-              <Route path="/community" element={<Layout><Community /></Layout>} />
-              <Route path="/supplier/:id" element={<Layout><SupplierProfile /></Layout>} />
-
-              {/* Protected routes */}
-              <Route path="/analytics" element={<AuthGuard><Layout><Analytics /></Layout></AuthGuard>} />
-              <Route path="/profile" element={<AuthGuard><Layout><UserProfile /></Layout></AuthGuard>} />
-              <Route path="/profile/:id" element={<Layout><UserProfile /></Layout>} />
-              <Route path="/profile-not-found" element={<Layout><ProfileNotFound /></Layout>} />
-              <Route path="/profile/edit" element={<AuthGuard><Layout><ProfileEditor /></Layout></AuthGuard>} />
-              <Route path="/profile/form" element={<AuthGuard><Layout><ProfileForm /></Layout></AuthGuard>} />
-
-              {/* Dashboard routes */}
-              <Route path="/dashboard" element={<AuthGuard><DashboardRedirector /></AuthGuard>} />
-              <Route path="/dashboard/artist" element={<AuthGuard><RoleDashboardLayout role="artist"><div /></RoleDashboardLayout></AuthGuard>} />
-              <Route path="/dashboard/salon" element={<AuthGuard><RoleDashboardLayout role="salon"><div /></RoleDashboardLayout></AuthGuard>} />
-              <Route path="/dashboard/owner" element={<AuthGuard><RoleDashboardLayout role="salon"><div /></RoleDashboardLayout></AuthGuard>} />
-              <Route path="/dashboard/customer" element={<AuthGuard><RoleDashboardLayout role="customer"><div /></RoleDashboardLayout></AuthGuard>} />
-              <Route path="/dashboard/freelancer" element={<AuthGuard><RoleDashboardLayout role="freelancer"><div /></RoleDashboardLayout></AuthGuard>} />
-              <Route path="/dashboard/supplier" element={<AuthGuard><RoleDashboardLayout role="supplier"><div /></RoleDashboardLayout></AuthGuard>} />
-              <Route path="/dashboard/manager" element={<AuthGuard><RoleDashboardLayout role="manager"><div /></RoleDashboardLayout></AuthGuard>} />
-
-              {/* Fallback routes */}
-              <Route path="/404" element={<Layout><NotFound /></Layout>} />
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Routes>
-            <Toaster />
-          </div>
-        </NotificationProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <HelmetProvider>
+      <GeneralErrorBoundary>
+        <AuthProvider>
+          <SalonProvider>
+            <SubscriptionProvider>
+              <NotificationProvider>
+                <RouteLogger />
+                <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                  <Routes>
+                    {/* Auth routes - USE NEW SIGN UP */}
+                    <Route path="/login" element={<SignIn />} />
+                    <Route path="/sign-in" element={<SignIn />} />
+                    <Route path="/sign-up" element={<NewSignUp />} />
+                    <Route path="/register" element={<NewSignUp />} />
+                    
+                    {/* Customer Profile route */}
+                    <Route path="/profile" element={<CustomerProfilePage />} />
+                    
+                    {/* Job posting routes - USE ENHANCED VERSION */}
+                    <Route path="/post-job" element={<EnhancedPostJob />} />
+                    <Route path="/post-job-billion" element={<PostJobBillion />} />
+                    <Route path="/post-job-experimental" element={<PostJobExperimental />} />
+                    
+                    {/* Salon selling routes */}
+                    <Route path="/sell-salon" element={<SellSalonPage />} />
+                    <Route path="/posting/salon" element={<Layout><PostSalon /></Layout>} />
+                    
+                    {/* Salon listing success route */}
+                    <Route path="/salon-listing-success" element={<Layout><SalonListingSuccessPage /></Layout>} />
+                    
+                    {/* Payment routes */}
+                    <Route path="/checkout" element={<CheckoutFallback />} />
+                    <Route path="/post-success" element={<PostSuccess />} />
+                    <Route path="/post-canceled" element={<PostCanceled />} />
+                    
+                    {/* Other pages */}
+                    <Route path="/salons" element={<Layout><StableSalonPage /></Layout>} />
+                    <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                    <Route path="/about" element={<Layout><About /></Layout>} />
+                    <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                    <Route path="/terms" element={<Layout><Terms /></Layout>} />
+                    <Route path="/refund" element={<Layout><Refund /></Layout>} />
+                    <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+                    <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                    
+                    {/* ... keep existing code (other routes) the same */}
+                    {routes.map((route, index) => (
+                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
+                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
+                       route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
+                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success" && route.path !== "/profile") && (
+                        <Route 
+                          key={index}
+                          path={route.path}
+                          element={<Layout>{route.element}</Layout>}
+                        />
+                      )
+                    ))}
+                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
+                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </NotificationProvider>
+            </SubscriptionProvider>
+          </SalonProvider>
+        </AuthProvider>
+      </GeneralErrorBoundary>
+    </HelmetProvider>
   );
 }
 

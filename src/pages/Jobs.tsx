@@ -1,14 +1,44 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import JobsPage from './jobs';
+import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
+import { Routes, Route } from 'react-router-dom';
+import CreateJobPosting from './jobs/CreateJobPosting';
+import { useTranslation } from '@/hooks/useTranslation';
+import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 
 const Jobs = () => {
+  const { isVietnamese } = useTranslation();
+  
+  useEffect(() => {
+    // Log page visit
+    console.log("Jobs page accessed, rendering JobsPage component");
+    document.title = isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp";
+  }, [isVietnamese]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Jobs</h1>
-        <p className="text-gray-600">Browse available job opportunities.</p>
+    <Layout>
+      <Helmet>
+        <title>
+          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
+        </title>
+        <meta 
+          name="description" 
+          content={isVietnamese 
+            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
+            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+          }
+        />
+      </Helmet>
+      <div className="pb-20 md:pb-0">
+        <Routes>
+          <Route path="/" element={<JobsPage />} />
+          <Route path="/create" element={<CreateJobPosting />} />
+        </Routes>
       </div>
-    </div>
+      <MobileJobsNavBar />
+    </Layout>
   );
 };
 
