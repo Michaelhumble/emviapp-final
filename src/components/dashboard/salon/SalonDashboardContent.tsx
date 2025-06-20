@@ -30,7 +30,7 @@ export const SalonDashboardContent = () => {
     <div className="space-y-6">
       <header className="mb-8">
         <h1 className="font-playfair text-2xl md:text-3xl font-semibold text-gray-900">
-          Welcome back, {getSalonName()}!
+          Welcome back, Salon Owner!
         </h1>
         <p className="text-gray-600 mt-1">Here's your business snapshot for today.</p>
       </header>
