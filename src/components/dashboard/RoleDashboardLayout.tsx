@@ -58,17 +58,9 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
         </div>
       )}
 
-      {/* Main Dashboard Content */}
+      {/* Main Dashboard Content - Completely Empty */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Role-specific styling */}
-        <div className={`
-          ${role === "salon" ? "salon-dashboard-container" : ""}
-          ${role === "artist" ? "artist-dashboard-container" : ""}
-          ${role === "customer" ? "customer-dashboard-container" : ""}
-          space-y-8
-        `}>
-          {children}
-        </div>
+        {children}
       </div>
     </motion.div>
   );
