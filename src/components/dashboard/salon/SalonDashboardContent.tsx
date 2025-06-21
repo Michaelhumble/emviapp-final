@@ -1,237 +1,444 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, Star, TrendingUp, Users, Calendar, Bell, Sparkles, Brain, BarChart3, Zap, Shield, Award } from "lucide-react";
-import { useAuth } from "@/context/auth";
-import { SalonOverviewCard } from "./components/SalonOverviewCard";
-import { BookingsSummaryCard } from "./components/BookingsSummaryCard";
-import { StaffOverviewCard } from "./components/StaffOverviewCard";
-import { EarningsCard } from "./components/EarningsCard";
-import { RecentReviewsCard } from "./components/RecentReviewsCard";
-import { motion } from "framer-motion";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  MessageCircle,
+  Settings,
+  Star,
+  Users,
+  Calendar,
+  CreditCard,
+  Crown,
+  Bot,
+  Zap,
+  TrendingUp,
+  Bell,
+  Sparkles,
+  BarChart3,
+  CalendarDays,
+  Target
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const SalonDashboardContent = () => {
-  const { userProfile } = useAuth();
+  const { user, userProfile } = useAuth();
   
-  // Get salon name from user profile, fallback to business name or generic greeting
-  const getSalonName = () => {
-    if (userProfile?.salon_name) {
-      return userProfile.salon_name;
+  // Dynamic salon name with fallback order
+  const salonName = userProfile?.salon_name ?? userProfile?.company_name ?? userProfile?.full_name ?? "Salon Owner";
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
     }
-    if (userProfile?.company_name) {
-      return userProfile.company_name;
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 }
     }
-    if (userProfile?.full_name) {
-      return userProfile.full_name;
-    }
-    return "Salon Owner";
   };
 
   return (
-    <div className="space-y-8">
-      <header className="mb-10">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="font-playfair text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent"
-        >
-          Welcome back, Salon Owner!
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-gray-600 mt-2 text-lg"
-        >
-          Here's your business snapshot for today.
-        </motion.p>
-      </header>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="lg:col-span-2"
-        >
-          <SalonOverviewCard />
-        </motion.div>
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col gap-8"
-        >
-          <BookingsSummaryCard />
-          <StaffOverviewCard />
-        </motion.div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <EarningsCard />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <RecentReviewsCard />
-        </motion.div>
-      </div>
-
-      {/* Smart Review FOMO Card */}
+    <div className="space-y-8 p-6">
+      {/* Dynamic Welcome Header */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="relative"
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 p-8 text-white shadow-2xl"
       >
-        <Card className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 border-2 border-purple-200 shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-500/10 to-orange-400/10" />
-          <div className="absolute top-4 right-4">
-            <span className="inline-flex items-center gap-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
-              <Sparkles className="h-3 w-3" />
-              Coming Soon
-            </span>
-          </div>
-          <CardContent className="relative p-8">
-            <div className="flex items-start gap-6">
-              <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl">
-                <Brain className="h-8 w-8 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Smart Review AI Engine
-                </h3>
-                <p className="text-gray-600 mb-4 text-lg">
-                  Next-generation AI-powered reputation management that analyzes reviews from Google, Yelp, TikTok, Facebook, and ChatGPT to 10X your salon's online presence.
-                </p>
-                
-                {/* Sample AI Features */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-purple-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <BarChart3 className="h-4 w-4 text-purple-600" />
-                      <span className="font-semibold text-gray-800">Sentiment Analysis</span>
-                    </div>
-                    <p className="text-sm text-gray-600">"AI detected 94% positive sentiment across 247 reviews this month"</p>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-pink-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Zap className="h-4 w-4 text-pink-600" />
-                      <span className="font-semibold text-gray-800">Auto-Response</span>
-                    </div>
-                    <p className="text-sm text-gray-600">"Generated 127 personalized responses, saving 8.5 hours weekly"</p>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-orange-600" />
-                      <span className="font-semibold text-gray-800">Growth Insights</span>
-                    </div>
-                    <p className="text-sm text-gray-600">"Predicted 23% increase in bookings based on review trends"</p>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-purple-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Shield className="h-4 w-4 text-purple-600" />
-                      <span className="font-semibold text-gray-800">Crisis Prevention</span>
-                    </div>
-                    <p className="text-sm text-gray-600">"Early warning system prevented 3 potential reputation issues"</p>
-                  </div>
-                </div>
-
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Notify Me When Available
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+        <div className="relative z-10">
+          <h1 className="text-4xl font-bold mb-2">Welcome back, {salonName}!</h1>
+          <p className="text-purple-100 text-lg">Let's make today amazing for your clients</p>
+        </div>
+        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-pink-300/20 rounded-full blur-2xl"></div>
       </motion.div>
 
-      {/* Coming Soon Features Grid */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Revolutionary Features Coming Soon
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* AI Analytics */}
-          <Card className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute top-3 right-3">
-              <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                Q2 2025
-              </span>
-            </div>
-            <CardContent className="p-6">
-              <div className="p-3 bg-blue-100 rounded-lg w-fit mb-4">
-                <BarChart3 className="h-6 w-6 text-blue-600" />
+        {/* Advanced Communication Hub */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-blue-50 to-cyan-50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <MessageCircle className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Advanced Communication Hub</CardTitle>
+                  <p className="text-sm text-gray-600">AI-powered messaging</p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">AI Analytics Suite</h3>
-              <p className="text-gray-600 text-sm">
-                Predictive insights, customer behavior analysis, and revenue optimization powered by machine learning.
-              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Active Conversations</span>
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-700">12</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Response Rate</span>
+                  <span className="text-sm font-semibold text-green-600">98%</span>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
+                  Open Messages
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Advanced Service Management */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-emerald-50 to-green-50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <Settings className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Advanced Service Management</CardTitle>
+                  <p className="text-sm text-gray-600">Optimize your offerings</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Active Services</span>
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">24</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Avg. Rating</span>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm font-semibold">4.9</span>
+                  </div>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600">
+                  Manage Services
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Premium Smart Review AI Card */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-0 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-100/50 to-orange-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    Smart Review AI ✨
+                    <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">PREMIUM</Badge>
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">AI-powered review insights</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="border-red-200 text-red-700">Google</Badge>
+                  <Badge variant="outline" className="border-yellow-200 text-yellow-700">Yelp</Badge>
+                  <Badge variant="outline" className="border-blue-200 text-blue-700">Facebook</Badge>
+                  <Badge variant="outline" className="border-pink-200 text-pink-700">TikTok</Badge>
+                </div>
+                <div className="bg-white/70 rounded-lg p-3 backdrop-blur-sm">
+                  <p className="text-sm text-gray-700 italic">"Amazing service! The AI suggests the perfect treatments..." - AI Summary</p>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 group-hover:shadow-lg transition-all duration-300">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notify Me
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Credit Balance */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <CreditCard className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Credit Balance</CardTitle>
+                  <p className="text-sm text-gray-600">Available credits</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="text-center">
+                  <span className="text-3xl font-bold text-green-600">$247</span>
+                  <p className="text-sm text-gray-600">Available to spend</p>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
+                  Use Credits
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Upgrade to Pro */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-purple-50 to-pink-50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <Crown className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Upgrade to Pro</CardTitle>
+                  <p className="text-sm text-gray-600">Unlock premium features</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Features unlocked</span>
+                    <span>3/10</span>
+                  </div>
+                  <Progress value={30} className="h-2" />
+                </div>
+                <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                  Upgrade Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* AI Analytics Pro - Coming Soon */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+            <div className="absolute top-4 right-4 z-20">
+              <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">COMING SOON</Badge>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 to-indigo-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">AI Analytics Pro</CardTitle>
+                  <p className="text-sm text-gray-600">Advanced business insights</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Get deep insights into your salon's performance with AI-powered analytics.</p>
+                <Button disabled className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white opacity-70">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notify When Ready
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Smart Scheduling - Coming Soon */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-green-50 to-teal-50 relative overflow-hidden">
+            <div className="absolute top-4 right-4 z-20">
+              <Badge className="bg-gradient-to-r from-green-500 to-teal-500 text-white">COMING SOON</Badge>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-green-100/30 to-teal-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <CalendarDays className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Smart Scheduling</CardTitle>
+                  <p className="text-sm text-gray-600">AI-optimized appointments</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Let AI optimize your appointment scheduling for maximum efficiency and revenue.</p>
+                <Button disabled className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white opacity-70">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notify When Ready
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Marketing Autopilot - Coming Soon */}
+        <motion.div variants={cardVariants}>
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-purple-50 to-violet-50 relative overflow-hidden">
+            <div className="absolute top-4 right-4 z-20">
+              <Badge className="bg-gradient-to-r from-purple-500 to-violet-500 text-white">COMING SOON</Badge>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-100/30 to-violet-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-violet-500 text-white group-hover:scale-110 transition-transform duration-300">
+                  <Target className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Marketing Autopilot</CardTitle>
+                  <p className="text-sm text-gray-600">Automated marketing campaigns</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Automate your marketing campaigns with AI-driven strategies that convert.</p>
+                <Button disabled className="w-full bg-gradient-to-r from-purple-500 to-violet-500 text-white opacity-70">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notify When Ready
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+
+      {/* Team & Recognition Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="space-y-6"
+      >
+        <h2 className="text-2xl font-bold">Team & Recognition</h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Team Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { name: "Sarah Johnson", role: "Senior Stylist", rating: 4.9, avatar: "SJ" },
+                  { name: "Mike Chen", role: "Color Specialist", rating: 4.8, avatar: "MC" },
+                  { name: "Emma Davis", role: "Nail Technician", rating: 4.9, avatar: "ED" }
+                ].map((member, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="text-xs">{member.avatar}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-sm">{member.name}</p>
+                        <p className="text-xs text-gray-600">{member.role}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium">{member.rating}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
-          {/* Smart Marketing */}
-          <Card className="relative overflow-hidden bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute top-3 right-3">
-              <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                Q3 2025
-              </span>
-            </div>
-            <CardContent className="p-6">
-              <div className="p-3 bg-green-100 rounded-lg w-fit mb-4">
-                <Zap className="h-6 w-6 text-green-600" />
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Today's Schedule
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[
+                  { time: "9:00 AM", service: "Hair Cut & Style", client: "Jessica M." },
+                  { time: "11:30 AM", service: "Color Treatment", client: "David R." },
+                  { time: "2:00 PM", service: "Manicure", client: "Anna K." },
+                  { time: "4:30 PM", service: "Facial", client: "Tom L." }
+                ].map((appointment, index) => (
+                  <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                    <div>
+                      <p className="font-medium text-sm">{appointment.time}</p>
+                      <p className="text-xs text-gray-600">{appointment.service}</p>
+                    </div>
+                    <p className="text-sm text-gray-700">{appointment.client}</p>
+                  </div>
+                ))}
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Smart Marketing Hub</h3>
-              <p className="text-gray-600 text-sm">
-                Automated social media campaigns, targeted ads, and viral content generation that drives bookings.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Team Leaderboard */}
-          <Card className="relative overflow-hidden bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute top-3 right-3">
-              <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                Q4 2025
-              </span>
-            </div>
-            <CardContent className="p-6">
-              <div className="p-3 bg-yellow-100 rounded-lg w-fit mb-4">
-                <Award className="h-6 w-6 text-yellow-600" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Team Leaderboard</h3>
-              <p className="text-gray-600 text-sm">
-                Gamified performance tracking, rewards system, and team competitions to boost productivity.
-              </p>
             </CardContent>
           </Card>
         </div>
       </motion.div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
+      {/* Revolutionary Features Coming Soon */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="sticky bottom-4 md:relative md:bottom-0 z-10"
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="space-y-6"
       >
-        <Button 
-          className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold px-8 py-4 text-lg"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Add New Service
-        </Button>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2">Revolutionary Features Coming Soon</h2>
+          <p className="text-gray-600">The future of salon management is here</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: Bot, title: "AI Assistant", desc: "24/7 intelligent support" },
+            { icon: Zap, title: "VR Consultations", desc: "Virtual reality previews" },
+            { icon: TrendingUp, title: "Predictive Analytics", desc: "Forecast trends & demand" },
+            { icon: Star, title: "Smart Recommendations", desc: "Personalized client suggestions" }
+          ].map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+            >
+              <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-gray-50 to-white">
+                <CardContent className="pt-6">
+                  <div className="mb-4 mx-auto w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-sm text-gray-600">{feature.desc}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
     </div>
   );
