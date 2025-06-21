@@ -1,256 +1,282 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   MessageSquare, 
-  Calendar, 
-  Users, 
+  Settings, 
   CreditCard, 
-  Crown,
+  Users, 
+  Calendar,
   Sparkles,
-  BarChart3,
-  CalendarCheck,
+  TrendingUp,
+  Clock,
   Megaphone,
   Star,
-  TrendingUp,
   Brain,
-  Zap,
-  Rocket,
-  ChevronRight
+  BarChart3,
+  Zap
 } from "lucide-react";
 import { useAuth } from "@/context/auth";
 
 export const SalonDashboardContent = () => {
-  const { user } = useAuth();
+  const { userProfile } = useAuth();
   
-  const salonName = user?.salon_name ?? user?.company_name ?? user?.full_name ?? "Salon Owner";
+  // Dynamic salon name with proper fallback chain
+  const salonName = userProfile?.salon_name ?? userProfile?.company_name ?? userProfile?.full_name ?? "Salon Owner";
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Dynamic Welcome Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 min-h-screen">
+      {/* Welcome Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Welcome back, {salonName}!
         </h1>
-        <p className="text-gray-600">Manage your salon with advanced tools and insights</p>
+        <p className="text-gray-600">
+          Manage your salon operations and grow your business with our advanced tools
+        </p>
       </div>
 
-      {/* Premium Smart Review AI Card */}
-      <Card className="border-gradient-to-r from-blue-200 to-purple-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-purple-50">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2 text-xl">
-            <Sparkles className="h-6 w-6 text-yellow-500" />
-            Smart Review AI ✨
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-center gap-4 mb-4">
-            <div className="bg-white p-2 rounded-lg shadow-sm">
-              <span className="text-red-500 font-bold text-sm">Google</span>
-            </div>
-            <div className="bg-white p-2 rounded-lg shadow-sm">
-              <span className="text-orange-500 font-bold text-sm">Yelp</span>
-            </div>
-            <div className="bg-white p-2 rounded-lg shadow-sm">
-              <span className="text-blue-600 font-bold text-sm">Facebook</span>
-            </div>
-            <div className="bg-white p-2 rounded-lg shadow-sm">
-              <span className="text-pink-500 font-bold text-sm">TikTok</span>
-            </div>
-            <div className="bg-white p-2 rounded-lg shadow-sm">
-              <span className="text-green-600 font-bold text-sm">ChatGPT</span>
-            </div>
-          </div>
-          <div className="bg-white/70 p-4 rounded-lg">
-            <p className="text-sm text-gray-700 italic">
-              "AI-generated insights from your reviews across all platforms. Get actionable feedback and improve customer satisfaction automatically."
-            </p>
-          </div>
-          <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-            Notify Me When Available
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Coming Soon Premium Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* AI Analytics Pro */}
-        <Card className="border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-cyan-50 group">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-              <BarChart3 className="h-6 w-6 text-white" />
-            </div>
-            <CardTitle className="text-lg text-blue-700">AI Analytics Pro</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-gray-600 mb-4">Advanced business intelligence with predictive insights</p>
-            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">Coming Soon</Badge>
-          </CardContent>
-        </Card>
-
-        {/* Smart Scheduling */}
-        <Card className="border-2 border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-emerald-50 group">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-              <CalendarCheck className="h-6 w-6 text-white" />
-            </div>
-            <CardTitle className="text-lg text-green-700">Smart Scheduling</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-gray-600 mb-4">AI-powered appointment optimization and management</p>
-            <Badge className="bg-green-100 text-green-700 hover:bg-green-200">Coming Soon</Badge>
-          </CardContent>
-        </Card>
-
-        {/* Marketing Autopilot */}
-        <Card className="border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-pink-50 group">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-              <Megaphone className="h-6 w-6 text-white" />
-            </div>
-            <CardTitle className="text-lg text-purple-700">Marketing Autopilot</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-gray-600 mb-4">Automated social media and customer engagement</p>
-            <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200">Coming Soon</Badge>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Existing Dashboard Content */}
+      {/* Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        
         {/* Advanced Communication Hub */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-indigo-50 to-blue-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-indigo-700">
-              <MessageSquare className="h-6 w-6" />
+        <Card className="hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MessageSquare className="h-5 w-5 text-blue-600" />
               Advanced Communication Hub
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">Streamline client communications with AI-powered messaging</p>
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
-              Access Hub <ChevronRight className="ml-2 h-4 w-4" />
+            <p className="text-sm text-gray-600 mb-4">
+              Connect with clients, manage bookings, and streamline communication
+            </p>
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300">
+              Open Messages
             </Button>
           </CardContent>
         </Card>
 
         {/* Advanced Service Management */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-emerald-50 to-green-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-emerald-700">
-              <Calendar className="h-6 w-6" />
+        <Card className="hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Settings className="h-5 w-5 text-emerald-600" />
               Advanced Service Management
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">Optimize your service offerings and scheduling</p>
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
-              Manage Services <ChevronRight className="ml-2 h-4 w-4" />
+            <p className="text-sm text-gray-600 mb-4">
+              Manage services, pricing, and staff scheduling efficiently
+            </p>
+            <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300">
+              Manage Services
             </Button>
           </CardContent>
         </Card>
 
+        {/* Smart Review AI - Premium FOMO Feature */}
+        <Card className="hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-violet-50 to-indigo-50 border-2 border-violet-200 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-violet-400/20 to-indigo-400/20 rounded-full -translate-y-10 translate-x-10"></div>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Sparkles className="h-5 w-5 text-violet-600" />
+              Smart Review AI ✨
+              <Badge variant="secondary" className="ml-auto bg-violet-100 text-violet-700 text-xs">
+                Premium
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">
+                AI-powered review management across all platforms
+              </p>
+              
+              {/* Platform logos */}
+              <div className="flex gap-2 items-center">
+                <span className="text-xs text-gray-500">Platforms:</span>
+                <div className="flex gap-1">
+                  <Badge variant="outline" className="text-xs">Google</Badge>
+                  <Badge variant="outline" className="text-xs">Yelp</Badge>
+                  <Badge variant="outline" className="text-xs">Facebook</Badge>
+                  <Badge variant="outline" className="text-xs">TikTok</Badge>
+                </div>
+              </div>
+              
+              {/* AI highlights */}
+              <div className="bg-white/60 p-3 rounded-lg border">
+                <p className="text-xs text-gray-700 italic">
+                  "AI Summary: 92% positive sentiment • 15% increase in bookings • Top keywords: 'professional', 'relaxing', 'amazing'"
+                </p>
+              </div>
+              
+              <Button className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 transition-all duration-300 shadow-md">
+                <Brain className="h-4 w-4 mr-2" />
+                Notify Me
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Credit Balance */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-amber-50 to-orange-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-700">
-              <CreditCard className="h-6 w-6" />
+        <Card className="hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CreditCard className="h-5 w-5 text-amber-600" />
               Credit Balance
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-600 mb-2">250</div>
-            <p className="text-gray-600 mb-4">Available credits for premium features</p>
-            <Button variant="outline" className="w-full border-amber-300 text-amber-700 hover:bg-amber-50">
-              View Details
+            <div className="text-2xl font-bold text-amber-600 mb-2">
+              {userProfile?.credits || 0} Credits
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Use credits for premium features and boosts
+            </p>
+            <Button variant="outline" className="w-full hover:bg-amber-50 border-amber-200">
+              View History
             </Button>
           </CardContent>
         </Card>
 
         {/* Upgrade to Pro */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-purple-700">
-              <Crown className="h-6 w-6" />
+        <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Star className="h-5 w-5 text-orange-600" />
               Upgrade to Pro
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">Unlock premium features and advanced analytics</p>
-            <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-              Upgrade Now <Sparkles className="ml-2 h-4 w-4" />
+            <p className="text-sm text-gray-600 mb-4">
+              Unlock advanced analytics, priority support, and exclusive features
+            </p>
+            <Button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700">
+              Upgrade Now
             </Button>
           </CardContent>
         </Card>
 
         {/* Team & Recognition */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-rose-50 to-pink-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-rose-700">
-              <Users className="h-6 w-6" />
+        <Card className="hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-0 shadow-md">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="h-5 w-5 text-purple-600" />
               Team & Recognition
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">Manage your team and celebrate achievements</p>
-            <Button className="w-full bg-rose-600 hover:bg-rose-700">
-              View Team <Star className="ml-2 h-4 w-4" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Booking Calendar */}
-        <Card className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-teal-50 to-cyan-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-teal-700">
-              <Calendar className="h-6 w-6" />
-              Booking Calendar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">View and manage all appointments</p>
-            <Button className="w-full bg-teal-600 hover:bg-teal-700">
-              Open Calendar <Calendar className="ml-2 h-4 w-4" />
+            <p className="text-sm text-gray-600 mb-4">
+              Manage staff, track performance, and celebrate achievements
+            </p>
+            <Button variant="outline" className="w-full hover:bg-purple-50 border-purple-200">
+              View Team
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Revolutionary Features Coming Soon */}
-      <Card className="shadow-xl bg-gradient-to-br from-slate-50 to-gray-50 border-2 border-gray-200">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
-            Revolutionary Features Coming Soon
+      {/* Coming Soon Premium Features */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <Sparkles className="h-6 w-6 text-violet-600" />
+          Premium Features Coming Soon
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* AI Analytics Pro */}
+          <Card className="hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                AI Analytics Pro
+                <Badge variant="secondary" className="ml-auto bg-blue-100 text-blue-700 text-xs">
+                  Coming Soon
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <p className="text-sm text-gray-600 mb-4">
+                Advanced business intelligence with predictive analytics and revenue optimization
+              </p>
+              <Button variant="outline" className="w-full border-blue-200 hover:bg-blue-50" disabled>
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Get Notified
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Smart Scheduling */}
+          <Card className="hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-200 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Clock className="h-5 w-5 text-emerald-600" />
+                Smart Scheduling
+                <Badge variant="secondary" className="ml-auto bg-emerald-100 text-emerald-700 text-xs">
+                  Coming Soon
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <p className="text-sm text-gray-600 mb-4">
+                AI-powered scheduling optimization with automatic conflict resolution and capacity planning
+              </p>
+              <Button variant="outline" className="w-full border-emerald-200 hover:bg-emerald-50" disabled>
+                <Calendar className="h-4 w-4 mr-2" />
+                Get Notified
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Marketing Autopilot */}
+          <Card className="hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Megaphone className="h-5 w-5 text-purple-600" />
+                Marketing Autopilot
+                <Badge variant="secondary" className="ml-auto bg-purple-100 text-purple-700 text-xs">
+                  Coming Soon
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <p className="text-sm text-gray-600 mb-4">
+                Automated social media management, customer retention campaigns, and targeted promotions
+              </p>
+              <Button variant="outline" className="w-full border-purple-200 hover:bg-purple-50" disabled>
+                <Zap className="h-4 w-4 mr-2" />
+                Get Notified
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Booking Calendar */}
+      <Card className="mt-6 hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-0 shadow-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-indigo-600" />
+            Booking Calendar
           </CardTitle>
-          <p className="text-gray-600">The future of salon management is here</p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <Brain className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-              <h4 className="font-semibold text-gray-700">AI Assistant</h4>
-              <p className="text-xs text-gray-500 mt-1">24/7 intelligent support</p>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <Zap className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-              <h4 className="font-semibold text-gray-700">VR Consultations</h4>
-              <p className="text-xs text-gray-500 mt-1">Virtual reality previews</p>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <TrendingUp className="h-8 w-8 mx-auto mb-2 text-green-500" />
-              <h4 className="font-semibold text-gray-700">Predictive Analytics</h4>
-              <p className="text-xs text-gray-500 mt-1">Future trend insights</p>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <Rocket className="h-8 w-8 mx-auto mb-2 text-purple-500" />
-              <h4 className="font-semibold text-gray-700">Growth Accelerator</h4>
-              <p className="text-xs text-gray-500 mt-1">Business optimization</p>
-            </div>
-          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            View and manage all upcoming appointments and availability
+          </p>
+          <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
+            Open Calendar
+          </Button>
         </CardContent>
       </Card>
     </div>
   );
 };
+
+export default SalonDashboardContent;
