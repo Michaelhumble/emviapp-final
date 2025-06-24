@@ -78,70 +78,74 @@ export const EnhancedSignUpForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Create Your Account</CardTitle>
-        <CardDescription>Choose your role and create your account</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <Label htmlFor="fullName">Full Name</Label>
-            <Input
-              id="fullName"
-              {...register("fullName")}
-              placeholder="Enter your full name"
-            />
-            {errors.fullName && (
-              <p className="text-sm text-red-500 mt-1">{errors.fullName.message}</p>
-            )}
-          </div>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
+      <div className="w-full max-w-md">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Enhanced Sign Up</CardTitle>
+            <CardDescription className="text-center">Choose your role and create your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  {...register("fullName")}
+                  placeholder="Enter your full name"
+                />
+                {errors.fullName && (
+                  <p className="text-sm text-red-500 mt-1">{errors.fullName.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              {...register("email")}
-              placeholder="Enter your email"
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-            )}
-          </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="Enter your email"
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              {...register("password")}
-              placeholder="Enter your password"
-            />
-            {errors.password && (
-              <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-            )}
-          </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  {...register("password")}
+                  placeholder="Enter your password"
+                />
+                {errors.password && (
+                  <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label>Select Your Role</Label>
-            <Tabs value={selectedRole} onValueChange={handleRoleChange} className="mt-2">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="customer">Customer</TabsTrigger>
-                <TabsTrigger value="artist">Artist</TabsTrigger>
-              </TabsList>
-              <TabsList className="grid w-full grid-cols-2 mt-2">
-                <TabsTrigger value="salon">Salon Owner</TabsTrigger>
-                <TabsTrigger value="freelancer">Freelancer</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+              <div>
+                <Label>Select Your Role</Label>
+                <Tabs value={selectedRole} onValueChange={handleRoleChange} className="mt-2">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="customer">Customer</TabsTrigger>
+                    <TabsTrigger value="artist">Artist</TabsTrigger>
+                  </TabsList>
+                  <TabsList className="grid w-full grid-cols-2 mt-2">
+                    <TabsTrigger value="salon">Salon Owner</TabsTrigger>
+                    <TabsTrigger value="freelancer">Freelancer</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating Account..." : "Create Account"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Creating Account..." : "Create Account"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
