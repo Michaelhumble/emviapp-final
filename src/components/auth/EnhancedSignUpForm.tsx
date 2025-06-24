@@ -78,14 +78,14 @@ export const EnhancedSignUpForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#FFF3E0' }}>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
       <div className="w-full max-w-md">
-        <Card className="w-full max-w-md border-2 border-orange-200 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50">
-            <CardTitle className="text-2xl font-bold text-center text-orange-800">Enhanced Sign Up</CardTitle>
-            <CardDescription className="text-center text-orange-600">Choose your role and create your account</CardDescription>
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Enhanced Sign Up</CardTitle>
+            <CardDescription className="text-center">Choose your role and create your account</CardDescription>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="fullName">Full Name</Label>
@@ -139,7 +139,7 @@ export const EnhancedSignUpForm = () => {
                 </Tabs>
               </div>
 
-              <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
