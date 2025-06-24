@@ -8,7 +8,7 @@ import { AuthProvider } from "@/context/auth/AuthProvider";
 import { NotificationProvider } from "@/context/notification/NotificationProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 
-// Import pages
+// Import pages directly
 import Index from "./pages/Index";
 import SignUp from "./pages/auth/SignUp";
 
@@ -29,7 +29,6 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/sign-up" element={<SignUp />} />
-                  {/* Add other routes here */}
                 </Routes>
               </BrowserRouter>
             </NotificationProvider>
