@@ -22,6 +22,8 @@ const signUpSchema = z.object({
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const EnhancedSignUpForm = () => {
+  console.log("🔥 ENHANCED SIGNUP FORM IS RENDERING! 🔥");
+  
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>("customer");
   const { toast } = useToast();
