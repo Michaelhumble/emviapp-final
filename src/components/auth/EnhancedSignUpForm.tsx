@@ -1,216 +1,149 @@
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useRoleSignUp } from "@/hooks/useRoleSignUp";
-import { UserRole } from "@/context/auth/types";
-import { Users, Palette, Store } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+
+const signUpSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  role: z.enum(["customer", "artist", "salon", "freelancer"]),
+});
+
+type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const EnhancedSignUpForm = () => {
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    selectedRole,
-    setSelectedRole,
-    isSubmitting,
-    error,
-    referrer,
-    handleSubmit
-  } = useRoleSignUp();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string>("customer");
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const roleOptions = [
-    {
-      value: "customer" as UserRole,
-      label: "Customer",
-      description: "Book appointments and discover artists",
-      icon: Users,
-      gradient: "from-blue-500 to-cyan-500"
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      role: "customer",
     },
-    {
-      value: "artist" as UserRole,
-      label: "Artist",
-      description: "Showcase your work and find clients",
-      icon: Palette,
-      gradient: "from-purple-500 to-pink-500"
-    },
-    {
-      value: "salon" as UserRole,
-      label: "Salon Owner",
-      description: "Manage your salon and hire artists",
-      icon: Store,
-      gradient: "from-emerald-500 to-teal-500"
+  });
+
+  const onSubmit = async (data: SignUpFormData) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: data.fullName,
+            role: data.role,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Account created successfully!",
+        description: "Please check your email to verify your account.",
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error creating account",
+        description: error instanceof Error ? error.message : "Something went wrong",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
+
+  const handleRoleChange = (role: string) => {
+    setSelectedRole(role);
+    setValue("role", role as any);
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Card className="w-full max-w-md mx-auto shadow-lg border-0 bg-white/95 backdrop-blur-sm">
-        <CardHeader className="space-y-1 pb-4">
-          <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Join EmviApp
-          </CardTitle>
-          <p className="text-sm text-gray-600 text-center">
-            Choose your role and start your beauty journey
-          </p>
-          {referrer && (
-            <p className="text-xs text-green-600 text-center bg-green-50 p-2 rounded-md">
-              Referred by: {referrer}
-            </p>
-          )}
+    <div style={{ backgroundColor: '#FFEBEE' }} className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Enhanced Sign Up</CardTitle>
+          <CardDescription>Choose your role and create your account</CardDescription>
         </CardHeader>
-
-        <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Role Selection */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">I am a...</Label>
-              <RadioGroup
-                value={selectedRole}
-                onValueChange={(value) => setSelectedRole(value as UserRole)}
-                className="space-y-3"
-              >
-                {roleOptions.map((role) => (
-                  <motion.div
-                    key={role.value}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Label
-                      htmlFor={role.value}
-                      className={`relative flex items-center space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                        selectedRole === role.value
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-gray-200 hover:border-gray-300 bg-white"
-                      }`}
-                    >
-                      <RadioGroupItem value={role.value} id={role.value} className="sr-only" />
-                      <div className={`p-2 rounded-full bg-gradient-to-r ${role.gradient}`}>
-                        <role.icon className="h-5 w-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-900">{role.label}</div>
-                        <div className="text-xs text-gray-500">{role.description}</div>
-                      </div>
-                      {selectedRole === role.value && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-4 h-4 bg-indigo-500 rounded-full flex items-center justify-center"
-                        >
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        </motion.div>
-                      )}
-                    </Label>
-                  </motion.div>
-                ))}
-              </RadioGroup>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                {...register("fullName")}
+                placeholder="Enter your full name"
+              />
+              {errors.fullName && (
+                <p className="text-sm text-red-500 mt-1">{errors.fullName.message}</p>
+              )}
             </div>
 
-            {/* Email Input */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email Address
-              </Label>
+            <div>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
                 placeholder="Enter your email"
-                required
-                className="h-11 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
               />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+              )}
             </div>
 
-            {/* Password Input */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Password
-              </Label>
+            <div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Create a password"
-                required
-                className="h-11 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                {...register("password")}
+                placeholder="Enter your password"
               />
-            </div>
-
-            {/* Confirm Password Input */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                Confirm Password
-              </Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
-                required
-                className="h-11 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-              />
-            </div>
-
-            {/* Error Display */}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full h-11 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isSubmitting ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Creating Account...</span>
-                </div>
-              ) : (
-                <>
-                  Create Account
-                  {selectedRole === "salon" && " & Start Hiring"}
-                  {selectedRole === "vendor" && " & Start Selling"}
-                </>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
               )}
-            </Button>
+            </div>
 
-            {/* Terms */}
-            <p className="text-xs text-gray-500 text-center leading-relaxed">
-              By creating an account, you agree to our{" "}
-              <a href="/terms" className="text-indigo-600 hover:text-indigo-500 underline">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="/privacy" className="text-indigo-600 hover:text-indigo-500 underline">
-                Privacy Policy
-              </a>
-            </p>
+            <div>
+              <Label>Select Your Role</Label>
+              <Tabs value={selectedRole} onValueChange={handleRoleChange} className="mt-2">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="customer">Customer</TabsTrigger>
+                  <TabsTrigger value="artist">Artist</TabsTrigger>
+                </TabsList>
+                <TabsList className="grid w-full grid-cols-2 mt-2">
+                  <TabsTrigger value="salon">Salon Owner</TabsTrigger>
+                  <TabsTrigger value="freelancer">Freelancer</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating Account..." : "Create Account"}
+            </Button>
           </form>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 };

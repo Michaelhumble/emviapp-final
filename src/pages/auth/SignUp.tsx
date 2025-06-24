@@ -11,7 +11,7 @@ const SignUp = () => {
   const redirectUrl = queryParams.get('redirect');
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
+    <div style={{ backgroundColor: '#E3F2FD' }} className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
           <Logo size="large" showText={true} />
