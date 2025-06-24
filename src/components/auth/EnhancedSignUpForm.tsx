@@ -79,7 +79,12 @@ export const EnhancedSignUpForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
-      <div className="w-full max-w-md">
+      {/* VISUAL CONFIRMATION INDICATOR */}
+      <div className="fixed top-0 left-0 right-0 bg-yellow-400 text-black text-center py-2 z-50 font-bold">
+        🟡 CONFIRMED ENHANCED SIGNUP FORM RENDERING 🟡
+      </div>
+      
+      <div className="w-full max-w-md mt-12">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">Enhanced Sign Up</CardTitle>
