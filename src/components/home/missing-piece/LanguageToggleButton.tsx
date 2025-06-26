@@ -13,16 +13,25 @@ interface LanguageToggleButtonProps {
 const LanguageToggleButton = ({ isVietnamese, toggleLanguage, className = "" }: LanguageToggleButtonProps) => {
   return (
     <motion.div
-      className={`flex items-center bg-white rounded-full shadow-md ${className}`}
-      whileHover={{ scale: 1.03 }}
+      className={`flex items-center rounded-full ${className}`}
+      style={{
+        background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3)"
+      }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       <Toggle
         pressed={!isVietnamese}
         onPressedChange={() => isVietnamese && toggleLanguage()}
-        className={`px-3 py-1 h-9 rounded-l-full ${!isVietnamese ? "bg-primary/10 font-medium" : "opacity-70"}`}
+        className={`px-4 py-2 h-10 rounded-l-full transition-all duration-200 ${
+          !isVietnamese 
+            ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium shadow-sm" 
+            : "opacity-70 hover:opacity-90"
+        }`}
       >
-        <span className="text-sm flex items-center gap-1">
-          {!isVietnamese && <Globe className="h-3.5 w-3.5 text-primary" />}
+        <span className="text-sm flex items-center gap-1.5">
+          {!isVietnamese && <Globe className="h-3.5 w-3.5" />}
           English
         </span>
       </Toggle>
@@ -32,10 +41,14 @@ const LanguageToggleButton = ({ isVietnamese, toggleLanguage, className = "" }: 
       <Toggle
         pressed={isVietnamese}
         onPressedChange={() => !isVietnamese && toggleLanguage()}
-        className={`px-3 py-1 h-9 rounded-r-full ${isVietnamese ? "bg-primary/10 font-medium" : "opacity-70"}`}
+        className={`px-4 py-2 h-10 rounded-r-full transition-all duration-200 ${
+          isVietnamese 
+            ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium shadow-sm" 
+            : "opacity-70 hover:opacity-90"
+        }`}
       >
-        <span className="text-sm flex items-center gap-1">
-          {isVietnamese && <Globe className="h-3.5 w-3.5 text-primary" />}
+        <span className="text-sm flex items-center gap-1.5">
+          {isVietnamese && <Globe className="h-3.5 w-3.5" />}
           Tiếng Việt
         </span>
       </Toggle>
