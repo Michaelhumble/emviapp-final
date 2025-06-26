@@ -21,6 +21,7 @@ import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
+import EmviQASection from "@/components/home/EmviQASection";
 
 // Listing section components
 import BarberListingsSection from "@/components/home/BarberListingsSection";
@@ -78,6 +79,9 @@ const Index = () => {
       
       {/* 9. Final CTA */}
       <FinalFounderCTA />
+      
+      {/* 10. EmviApp Community Q&A - NEW SECTION */}
+      <EmviQASection />
       
       {user && userId && (
         <RoleSelectionModal 
