@@ -11,6 +11,8 @@ export const useJobPosting = () => {
   const handleJobPost = async (jobData: any) => {
     if (!user?.id) return false;
     
+    console.log('🔄 Paid posting flow - User:', user.id, 'Data:', jobData);
+    
     // Ensure requirements and specialties are arrays
     const safeJobData = {
       ...jobData,
@@ -40,7 +42,7 @@ export const useJobPosting = () => {
     }
   };
 
-  // New function specifically for free job postings
+  // Function specifically for free job postings
   const handleFreeJobPost = async (jobData: any) => {
     if (!user?.id) {
       toast.error('Please log in to post a job');
@@ -51,7 +53,7 @@ export const useJobPosting = () => {
     
     const freeJobData = {
       ...jobData,
-      user_id: user.id,
+      user_id: user.id, // Always set the authenticated user's ID
       pricing_tier: 'free',
       status: 'active',
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements : [],
