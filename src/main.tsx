@@ -82,6 +82,24 @@ if (!rootElement) {
 } else {
   try {
     ReactDOM.createRoot(rootElement).render(
+      /*
+      ⚠️ IMPORTANT DEVELOPER NOTE: React StrictMode Double Rendering ⚠️
+      
+      React.StrictMode intentionally DOUBLE-RENDERS components in DEVELOPMENT ONLY.
+      This means you may see duplicate footers, headers, or other components in dev mode.
+      
+      This is NORMAL and EXPECTED behavior that helps detect side effects.
+      
+      ✅ In PRODUCTION, components render only ONCE - no duplicates will appear.
+      ✅ The footer duplication you see in development will NOT exist in production.
+      
+      If you need to temporarily disable StrictMode to verify this:
+      1. Comment out <React.StrictMode> wrapper below
+      2. You'll see only one footer in development
+      3. Uncomment it back (StrictMode is beneficial for development)
+      
+      DO NOT remove StrictMode permanently - it helps catch bugs early!
+      */
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
           <Router>

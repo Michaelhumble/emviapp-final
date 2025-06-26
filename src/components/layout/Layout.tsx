@@ -19,9 +19,6 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
   // Always show mobile bottom navbar on all pages 
   const showMobileNav = isMobile;
 
-  // Add console log to debug footer rendering
-  console.log("Layout rendering - hideFooter:", hideFooter, "location:", location.pathname);
-
   return (
     <div className="min-h-screen flex flex-col">
       {!hideNavbar && <Navbar />}
@@ -31,18 +28,26 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       </main>
       
       {/* 
-      ⚠️  PERMANENT FOOTER LOCKDOWN WARNING ⚠️ 
-      CRITICAL: Footer must ONLY be rendered here in Layout.tsx. 
-      DO NOT import or render <Footer /> in any other file, page, or component.
-      This is the ONLY place Footer should appear to prevent duplicates.
-      Only Layout.tsx controls the global footer for the entire EmviApp.
+      ⚠️  GLOBAL FOOTER CONTROL - CRITICAL LOCKDOWN ⚠️ 
+      
+      This is the ONLY location where <Footer /> should be rendered in the entire app.
+      
+      STRICT RULES:
+      ✅ Only Layout.tsx imports and renders <Footer />
+      ❌ NO other page, component, or layout should render <Footer />
+      ❌ NO duplicate Layout wrappers should exist
+      
+      If you see duplicate footers in DEVELOPMENT:
+      - This is React StrictMode double-rendering (normal behavior)
+      - Check main.tsx for the detailed explanation
+      - Production will have exactly ONE footer
+      
+      If you see duplicate footers in PRODUCTION:
+      - Search codebase for unauthorized <Footer /> imports
+      - Check for multiple <Layout> wrappers
+      - Verify no CSS is visually duplicating the footer
       */}
-      {!hideFooter && (
-        <>
-          {console.log("Rendering Footer component")}
-          <Footer />
-        </>
-      )}
+      {!hideFooter && <Footer />}
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}

@@ -4,19 +4,22 @@ import { Link } from 'react-router-dom';
 import EmviLogo from '@/components/branding/EmviLogo';
 
 /* 
-WARNING: This Footer component must ONLY be rendered by Layout.tsx. 
+⚠️ FOOTER SINGLETON WARNING ⚠️
+This Footer component must ONLY be rendered by Layout.tsx. 
 Do not import Footer in any other file to prevent duplicates.
 Only Layout.tsx should control the global footer for the entire app.
+
+If you see duplicate footers in development, this is React StrictMode 
+double-rendering components (see main.tsx for detailed explanation).
+Production will have exactly ONE footer.
 */
 
 const Footer = () => {
-  // Add console log to track footer rendering
-  console.log("Footer component rendering - timestamp:", Date.now());
-  
   return (
     <footer 
       className="relative bg-gradient-to-br from-white via-purple-50/20 to-indigo-50/10 border-t border-gray-100"
       data-footer-id="emvi-global-footer"
+      data-testid="global-footer"
     >
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-12">
