@@ -21,7 +21,6 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { initiatePayment } = usePostPayment();
   const { handleFreeJobPost } = useJobPosting();
-  const { priceData } = usePricing();
 
   const handlePricingSelect = async (tier: string, finalPrice: number, durationMonths: number) => {
     if (isSubmitting) return;
