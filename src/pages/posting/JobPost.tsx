@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
 import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
 import EnhancedPricingSection from '@/components/posting/pricing/EnhancedPricingSection';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const JobPost = () => {
   const [selectedTier, setSelectedTier] = useState<JobPricingTier>('gold');
@@ -35,15 +36,17 @@ const JobPost = () => {
         <meta name="description" content="Post your job listing and find the perfect talent for your salon" />
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
-        <EnhancedPricingSection
-          selectedTier={selectedTier}
-          onTierSelect={handleTierSelect}
-          options={options}
-          onOptionsChange={handleOptionsChange}
-          onProceed={handleProceed}
-        />
-      </div>
+      <PricingProvider>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
+          <EnhancedPricingSection
+            selectedTier={selectedTier}
+            onTierSelect={handleTierSelect}
+            options={options}
+            onOptionsChange={handleOptionsChange}
+            onProceed={handleProceed}
+          />
+        </div>
+      </PricingProvider>
     </Layout>
   );
 };

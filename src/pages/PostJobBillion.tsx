@@ -6,6 +6,7 @@ import Layout from '@/components/layout/Layout';
 import BillionDollarJobForm from '@/components/job-posting-new/BillionDollarJobForm';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const PostJobBillion = () => {
   const navigate = useNavigate();
@@ -67,11 +68,13 @@ const PostJobBillion = () => {
         <meta name="description" content="Create your premium job posting with our advanced billion dollar form" />
       </Helmet>
       
-      <BillionDollarJobForm 
-        onSubmit={handleFormSubmit}
-        onBack={handleBack}
-        isSubmitting={isSubmitting}
-      />
+      <PricingProvider>
+        <BillionDollarJobForm 
+          onSubmit={handleFormSubmit}
+          onBack={handleBack}
+          isSubmitting={isSubmitting}
+        />
+      </PricingProvider>
     </Layout>
   );
 };
