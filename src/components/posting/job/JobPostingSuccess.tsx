@@ -52,7 +52,7 @@ const JobPostingSuccess: React.FC<JobPostingSuccessProps> = ({
           
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Job Posted Successfully!
+              🎉 Job Posted Successfully!
             </h1>
             <p className="text-gray-600 text-lg">
               Your job posting is now live and ready to attract qualified candidates.

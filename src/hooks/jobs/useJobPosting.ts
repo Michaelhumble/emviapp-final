@@ -8,51 +8,32 @@ export const useJobPosting = () => {
   const { tagUser } = useUserTags();
 
   const handleJobPost = async (jobData: any) => {
-    if (!user?.id) {
-      console.error('❌ No authenticated user for job posting');
-      return false;
-    }
+    if (!user?.id) return false;
     
-    // Ensure user_id is always set and log it
+    // Ensure requirements and specialties are arrays
     const safeJobData = {
       ...jobData,
-      user_id: user.id, // CRITICAL: Always set user_id for ownership
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements : [],
-      specialties: Array.isArray(jobData.specialties) ? jobData.specialties : [],
-      created_at: new Date().toISOString()
+      specialties: Array.isArray(jobData.specialties) ? jobData.specialties : []
     };
-
-    console.log('🔍 Job Data Before Insert:', {
-      userId: safeJobData.user_id,
-      jobTitle: safeJobData.title,
-      pricingTier: safeJobData.pricing_tier
-    });
     
     try {
-      // Create the job post with proper user_id
-      const { data, error } = await supabase
+      // First create the job post
+      const { error } = await supabase
         .from('jobs')
-        .insert(safeJobData)
-        .select()
-        .single();
+        .insert(safeJobData);
 
-      if (!error && data) {
-        console.log('✅ Job created successfully:', {
-          jobId: data.id,
-          userId: data.user_id,
-          title: data.title
-        });
-        
+      if (!error) {
         // Tag the user as a job poster
         await tagUser(user.id, 'job-poster');
         return true;
       }
       
-      console.error("❌ Error creating job post:", error);
+      console.error("Error creating job post:", error);
       return false;
       
     } catch (err) {
-      console.error("❌ Unexpected error in job posting:", err);
+      console.error("Unexpected error in job posting:", err);
       return false;
     }
   };
