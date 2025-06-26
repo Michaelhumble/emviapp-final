@@ -38,30 +38,44 @@ const FounderMessage: React.FC = () => {
           <div className="md:w-2/3">
             <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6">
               {getText(
-                "We're Building a Better Beauty Industry Together",
-                "Chúng tôi đang xây dựng một ngành công nghiệp làm đẹp tốt hơn cùng nhau"
+                "We Understand What You're Going Through",
+                "Chúng Tôi Thật Sự Thấu Hiểu Bạn"
               )}
             </h2>
             
             <div className="text-lg text-gray-700 space-y-4">
               <p>
                 {getText(
-                  "EmviApp was born from a simple belief: nail artists, technicians, and salon owners deserve better tools to connect, grow, and thrive.",
-                  "EmviApp ra đời từ một niềm tin đơn giản: các nghệ sĩ làm móng, kỹ thuật viên và chủ salon xứng đáng có những công cụ tốt hơn để kết nối, phát triển và thịnh vượng."
+                  "We see the long hours, the sacrifice, and the quiet strength it takes to keep a salon or beauty business thriving. We know every owner, artist, and technician faces struggles most people never see—from the pressure to provide for loved ones, to the challenge of keeping customers happy, to the worry of staying ahead in a changing industry.",
+                  "Chúng tôi nhìn thấy những giờ làm việc dài, những hy sinh lặng lẽ, và nghị lực kiên cường của các chủ tiệm, nghệ sĩ, và kỹ thuật viên trong ngành làm đẹp. Chúng tôi hiểu mỗi người phải đối mặt với bao thử thách mà người ngoài không bao giờ cảm nhận hết—từ áp lực lo cho gia đình, giữ khách hàng hài lòng, đến nỗi lo phải luôn đổi mới để tồn tại."
                 )}
               </p>
               
               <p>
                 {getText(
-                  "As someone who grew up in a family of nail salon entrepreneurs, I've witnessed firsthand the challenges that dedicated beauty professionals face every day. That's why we're creating a platform that truly understands and serves this community.",
-                  "Là người lớn lên trong một gia đình kinh doanh tiệm làm móng, tôi đã chứng kiến trực tiếp những thách thức mà các chuyên gia làm đẹp tận tâm phải đối mặt hàng ngày. Đó là lý do tại sao chúng tôi đang tạo ra một nền tảng thực sự hiểu và phục vụ cộng đồng này."
+                  "We also understand the customers—those who have trusted, hoped, and sometimes felt disappointed when things didn't go as planned. Every person in this community deserves to be seen, respected, and supported, whether you're behind the chair or searching for the right service.",
+                  "Chúng tôi cũng rất hiểu cảm giác của khách hàng—những người luôn mong đợi, tin tưởng, nhưng đôi khi lại thất vọng vì không tìm được nơi phù hợp. Mỗi thành viên trong cộng đồng này đều xứng đáng được lắng nghe, tôn trọng, và hỗ trợ—dù bạn là người phục vụ hay đang tìm kiếm dịch vụ tốt nhất."
+                )}
+              </p>
+
+              <p>
+                {getText(
+                  "EmviApp was built out of true empathy for the entire beauty industry. We honor the real stories, the hard work, and the big dreams that drive us all forward. This is more than just a platform—it's a place where you belong, where your efforts are valued, and where opportunity is created for everyone.",
+                  "EmviApp được tạo ra bằng sự đồng cảm sâu sắc với toàn bộ ngành làm đẹp. Chúng tôi trân trọng những câu chuyện thật, sự chăm chỉ và những ước mơ lớn của tất cả mọi người. Đây không chỉ là một nền tảng—mà là nơi bạn thực sự thuộc về, nơi mọi nỗ lực đều được ghi nhận và cơ hội được trao cho tất cả."
+                )}
+              </p>
+
+              <p>
+                {getText(
+                  "Thank you for being part of this community. Together, we are changing the beauty industry for the better.",
+                  "Cảm ơn bạn đã trở thành một phần của cộng đồng này. Cùng nhau, chúng ta sẽ làm ngành làm đẹp tốt đẹp hơn mỗi ngày."
                 )}
               </p>
               
-              <p className="font-medium text-primary">
+              <p className="font-medium text-primary pt-2">
                 {getText(
-                  "— Founder, EmviApp",
-                  "— Người sáng lập, EmviApp"
+                  "— The EmviApp Team",
+                  "— Đội ngũ EmviApp"
                 )}
               </p>
             </div>
