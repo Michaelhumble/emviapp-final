@@ -70,8 +70,8 @@ export const SignUpForm = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="text-center mb-4">
-            <h1 className="text-2xl font-bold text-black bg-yellow-300 p-3 rounded border-2 border-black">
-              🟡 BASIC SIGNUP FORM TEST — src/components/auth/SignUpForm.tsx
+            <h1 className="text-2xl font-bold text-black bg-orange-500 p-3 rounded border-4 border-orange-600">
+              🟧 THIS IS THE ACTIVE SIGN-UP FORM COMPONENT - SignUpForm.tsx
             </h1>
           </div>
           <CardTitle>Basic Sign Up</CardTitle>
