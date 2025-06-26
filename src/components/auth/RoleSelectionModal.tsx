@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RoleSelectionCards } from "./RoleSelectionCards";
+import RoleSelectionCards from "./RoleSelectionCards";
 import { UserRole } from "@/context/auth/types";
 
 interface RoleSelectionModalProps {
@@ -53,3 +53,5 @@ export const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
     </>
   );
 };
+
+export default RoleSelectionModal;
