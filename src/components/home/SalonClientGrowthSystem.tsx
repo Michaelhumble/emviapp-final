@@ -12,16 +12,16 @@ const SalonClientGrowthSystem = () => {
   // Questions for the interactive section
   const questions = [
     {
-      question: "Do you struggle with clients not returning after their first visit?",
-      answer: "Clients often don't return because they don't feel appreciated or remembered. EmviApp's client system creates personalized follow-ups that make them feel valued.",
+      question: "Are empty chairs and slow days eating away at your profits—while you struggle to attract or keep top artists?",
+      answer: "You're not alone. 73% of salon owners report this exact struggle. EmviApp's AI instantly connects you with skilled, reliable artists who want steady work—ending the cycle of empty chairs and constant turnover that's draining your business.",
     },
     {
-      question: "Is your booking system causing you to lose potential clients?",
-      answer: "Complex booking processes lose 35% of potential clients. EmviApp's streamlined booking reduces this friction, allowing clients to book in under 30 seconds.",
+      question: "Do you feel invisible as an artist—working long hours but never getting the recognition, pay, or bookings you deserve?",
+      answer: "This stops now. EmviApp's intelligent matching puts your skills in front of salon owners and clients who value excellence. Our artists report 40% higher earnings and 3x more bookings within their first month—because you deserve to be seen.",
     },
     {
-      question: "Do you spend too much time on administrative tasks instead of clients?",
-      answer: "Most salon owners spend 15+ hours weekly on admin tasks. EmviApp automates these processes, giving you back that time to focus on clients and growth.",
+      question: "Are you sick of disappointing salon visits, unreliable artists, or never finding someone who truly understands your style?",
+      answer: "We get it—trust is everything in beauty. EmviApp's AI learns your preferences and matches you only with verified artists and salons who deliver consistently. No more gambling with your look or your money.",
     }
   ];
 
