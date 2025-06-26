@@ -2,21 +2,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import SalonDetailContent from '@/components/salons/SalonDetailContent';
-import SalonListingCta from '@/components/salons/SalonListingCta';
-import SalonNotFound from '@/components/salon/SalonNotFound';
-import { fetchJob } from '@/utils/jobs';
-import { getSalonByIdAsJob } from '@/utils/featuredContent';
+import JobDetailContent from '@/components/jobs/JobDetailContent';
 import { Job } from '@/types/job';
+import { fetchJob } from '@/utils/jobs';
 
-const SalonDetail = () => {
+const JobDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [salon, setSalon] = useState<Job | null>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const loadSalon = async () => {
+    const loadJob = async () => {
       if (!id) {
         setError(true);
         return;
@@ -24,25 +21,17 @@ const SalonDetail = () => {
 
       setLoading(true);
       try {
-        // Try to get from the featured salons first (converted to Job type)
-        const salonData = getSalonByIdAsJob(id);
-        
-        if (salonData) {
-          setSalon(salonData);
-        } else {
-          // Fall back to fetching from jobs
-          const jobData = await fetchJob(id);
-          setSalon(jobData);
-        }
+        const jobData = await fetchJob(id);
+        setJob(jobData);
       } catch (err) {
-        console.error('Error loading salon:', err);
+        console.error('Error loading job:', err);
         setError(true);
       } finally {
         setLoading(false);
       }
     };
 
-    loadSalon();
+    loadJob();
   }, [id]);
 
   if (loading) {
@@ -52,7 +41,7 @@ const SalonDetail = () => {
           <div className="container mx-auto py-12">
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <span className="ml-2">Loading salon details...</span>
+              <span className="ml-2">Loading job details...</span>
             </div>
           </div>
         </div>
@@ -60,16 +49,28 @@ const SalonDetail = () => {
     );
   }
 
-  if (error) return <SalonNotFound />;
+  if (error) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto py-12">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
+              <p className="text-gray-600">The job you're looking for could not be found.</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <div className="min-h-screen bg-background">
-        <SalonDetailContent salon={salon} />
-        <SalonListingCta />
+        <JobDetailContent job={job} />
       </div>
     </Layout>
   );
 };
 
-export default SalonDetail;
+export default JobDetail;
