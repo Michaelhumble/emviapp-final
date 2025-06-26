@@ -2,24 +2,42 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Share2, Eye, Edit } from 'lucide-react';
+import { Check, Share2, Eye, Edit, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface JobPostingSuccessProps {
   jobId?: string;
   jobTitle?: string;
   planType?: string;
+  isLive?: boolean;
+  onViewJob?: () => void;
+  onViewAllJobs?: () => void;
 }
 
 const JobPostingSuccess: React.FC<JobPostingSuccessProps> = ({
   jobId = 'sample-job-id',
   jobTitle = 'Your Job Post',
-  planType = 'Standard'
+  planType = 'Free',
+  isLive = true,
+  onViewJob,
+  onViewAllJobs
 }) => {
   const navigate = useNavigate();
 
   const handleViewPost = () => {
-    navigate(`/jobs/${jobId}`);
+    if (onViewJob) {
+      onViewJob();
+    } else {
+      navigate(`/jobs/${jobId}`);
+    }
+  };
+
+  const handleViewAllJobs = () => {
+    if (onViewAllJobs) {
+      onViewAllJobs();
+    } else {
+      navigate('/jobs');
+    }
   };
 
   const handleCreateAnother = () => {
@@ -36,7 +54,7 @@ const JobPostingSuccess: React.FC<JobPostingSuccessProps> = ({
       });
     } else {
       navigator.clipboard.writeText(url);
-      // You could show a toast here
+      // Could show a toast here if needed
     }
   };
 
@@ -55,7 +73,10 @@ const JobPostingSuccess: React.FC<JobPostingSuccessProps> = ({
               Job Posted Successfully!
             </h1>
             <p className="text-gray-600 text-lg">
-              Your job posting is now live and ready to attract qualified candidates.
+              {isLive 
+                ? 'Your job posting is now live and ready to attract qualified candidates.'
+                : 'Your job posting has been submitted and will be reviewed shortly.'
+              }
             </p>
           </div>
 
@@ -72,13 +93,17 @@ const JobPostingSuccess: React.FC<JobPostingSuccessProps> = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Status:</span>
-                  <span className="font-medium text-green-600 flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    Live
+                  <span className={`font-medium flex items-center ${
+                    isLive ? 'text-green-600' : 'text-yellow-600'
+                  }`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${
+                      isLive ? 'bg-green-500' : 'bg-yellow-500'
+                    }`}></div>
+                    {isLive ? 'Live' : 'Under Review'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Job ID:</span>
+                  <span className="text-gray-600">Post ID:</span>
                   <span className="font-mono text-sm bg-white px-2 py-1 rounded border">
                     {jobId}
                   </span>
@@ -90,20 +115,31 @@ const JobPostingSuccess: React.FC<JobPostingSuccessProps> = ({
           <div className="bg-blue-50 rounded-lg p-4 text-left">
             <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Your job will appear in search results within 5 minutes</li>
-              <li>• You'll receive email notifications when candidates apply</li>
-              <li>• Track applications in your dashboard</li>
-              <li>• Your posting will remain active for the selected duration</li>
+              {isLive ? (
+                <>
+                  <li>• Your job is now visible in the Jobs section</li>
+                  <li>• Candidates can contact you directly using your provided information</li>
+                  <li>• Your posting will remain active for the selected duration</li>
+                  <li>• You can manage your posting anytime from your dashboard</li>
+                </>
+              ) : (
+                <>
+                  <li>• Your job will be reviewed and approved within 24 hours</li>
+                  <li>• You'll receive an email notification once it's live</li>
+                  <li>• Track applications in your dashboard</li>
+                  <li>• Your posting will remain active for the selected duration</li>
+                </>
+              )}
             </ul>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button
-              onClick={handleViewPost}
+              onClick={handleViewAllJobs}
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
-              <Eye className="h-4 w-4 mr-2" />
-              View Post
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View All Jobs
             </Button>
             
             <Button
