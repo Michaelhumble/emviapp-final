@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {children}
       </main>
       
-      {/* Global Footer - renders on all pages unless explicitly hidden */}
+      {/* GLOBAL FOOTER: Never import or render <Footer /> in any other file. Only Layout controls the footer. */}
       {!hideFooter && <Footer />}
       
       {/* Show the bottom navbar on all pages */}
