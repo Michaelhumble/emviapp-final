@@ -18,7 +18,7 @@ const JobManagementActions: React.FC<JobManagementActionsProps> = ({
 }) => {
   const { user } = useAuth();
   
-  // Check if current user can manage this job
+  // Check if current user can manage this job - ONLY owner or admin
   const canManage = user && (
     user.id === job.user_id || 
     user.role === 'admin' ||

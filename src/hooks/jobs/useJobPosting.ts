@@ -13,7 +13,7 @@ export const useJobPosting = () => {
     
     console.log('🔄 Paid posting flow - User:', user.id, 'Data:', jobData);
     
-    // Ensure requirements and specialties are arrays
+    // Ensure requirements and specialties are arrays and user_id is always set
     const safeJobData = {
       ...jobData,
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements : [],
@@ -53,7 +53,7 @@ export const useJobPosting = () => {
     
     const freeJobData = {
       ...jobData,
-      user_id: user.id, // Always set the authenticated user's ID
+      user_id: user.id, // Always set the authenticated user's ID for ownership
       pricing_tier: 'free',
       status: 'active',
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements : [],

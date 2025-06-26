@@ -91,20 +91,20 @@ serve(async (req) => {
 
     // Create the job post in Supabase immediately after payment verification
     const jobData = {
-      user_id: user.id,
+      user_id: user.id, // Always ensure user_id is set
       title: metadata.jobTitle || 'Job Posting',
       pricing_tier: metadata.tier || 'standard',
-      status: 'active',
+      status: 'active', // Make sure job is active and visible
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + (parseInt(metadata.durationMonths || '1') * 30 * 24 * 60 * 60 * 1000)).toISOString(),
-      // Add any other job fields from metadata if available
+      // Add job fields from metadata if available
       description: metadata.description || '',
       location: metadata.location || '',
       compensation_details: metadata.compensation_details || '',
       contact_info: metadata.contact_info ? JSON.parse(metadata.contact_info) : {}
     };
 
-    console.log('Creating paid job post:', jobData);
+    console.log('💳 Creating paid job post after payment verification:', jobData);
 
     const { data: newJob, error: jobError } = await supabaseAdmin
       .from('jobs')
@@ -113,7 +113,7 @@ serve(async (req) => {
       .single();
 
     if (jobError) {
-      console.error("Error creating job post:", jobError);
+      console.error("❌ Error creating job post:", jobError);
       return new Response(JSON.stringify({ error: "Failed to create job post" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -122,18 +122,13 @@ serve(async (req) => {
 
     console.log('✅ Paid job created successfully:', newJob.id);
     
-    // Find the related payment log and update it
-    const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+    // Update payment log if it exists
+    const { data: paymentLog } = await supabaseAdmin
       .from('payment_logs')
       .select('*')
       .eq('stripe_payment_id', session.id)
       .single();
 
-    if (paymentLogError) {
-      console.error("Error fetching payment log:", paymentLogError);
-    }
-    
-    // Update payment log status if found
     if (paymentLog?.id) {
       const { error: updateLogError } = await supabaseAdmin
         .from('payment_logs')
@@ -144,7 +139,7 @@ serve(async (req) => {
         .eq('id', paymentLog.id);
         
       if (updateLogError) {
-        console.error("Error updating payment log:", updateLogError);
+        console.error("⚠️ Error updating payment log:", updateLogError);
       }
     }
 
@@ -162,7 +157,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error verifying checkout session:", error);
+    console.error("❌ Error verifying checkout session:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

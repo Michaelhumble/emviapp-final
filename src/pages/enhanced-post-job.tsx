@@ -25,32 +25,12 @@ const EnhancedPostJob = () => {
     // Get prefill data based on template selection
     const prefillData = getJobPrefillByIndustry(templateId);
     console.log('📋 Prefill data retrieved:', prefillData);
-    console.log('📋 Prefill data keys:', Object.keys(prefillData));
-    console.log('🏷️ Title field:', prefillData.title);
-    console.log('🏢 Company field:', prefillData.company);
-    console.log('📝 Description field preview:', prefillData.description.substring(0, 100) + '...');
-    console.log('📋 Requirements array length:', prefillData.requirements?.length || 0);
-    console.log('🎁 Benefits array length:', prefillData.benefits?.length || 0);
-    console.log('💰 Salary field:', prefillData.salary);
-    console.log('📍 Location field:', prefillData.location);
     
     // Store the selected template and prefill data
     setSelectedTemplate(template);
     setFormInitialValues(prefillData);
     
-    // Additional verification logs
-    console.log('✅ formInitialValues will be set to:', prefillData);
     console.log('✅ Moving to form step with prefill data');
-    console.log('🚀 About to render EnhancedJobForm with initialValues:', {
-      hasTitle: !!prefillData.title,
-      hasCompany: !!prefillData.company,
-      hasDescription: !!prefillData.description,
-      requirementsCount: prefillData.requirements?.length || 0,
-      benefitsCount: prefillData.benefits?.length || 0,
-      hasSalary: !!prefillData.salary,
-      hasLocation: !!prefillData.location
-    });
-    
     setCurrentStep('form');
   };
 
