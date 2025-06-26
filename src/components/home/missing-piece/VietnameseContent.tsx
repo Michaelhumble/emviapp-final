@@ -6,7 +6,7 @@ const VietnameseContent = () => {
   const contentBlocks = [
     {
       icon: "🎯",
-      title: "Dành Cho Salon & Spa",
+      title: "Dành Cho Chủ Tiệm & Spa",
       content: "Tìm kiếm nghệ sĩ tài năng, quản lý lịch hẹn, và phát triển doanh nghiệp với công nghệ AI thông minh và hệ thống đặt lịch tiện lợi."
     },
     {
@@ -38,9 +38,9 @@ const VietnameseContent = () => {
           }}
         >
           {/* Premium Glassmorphism Card */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/15 via-white/10 to-white/5 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-3xl transition-all duration-500 p-10 md:p-12 min-h-[320px] md:min-h-[380px] flex flex-col justify-center">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/20 via-white/15 to-white/10 backdrop-blur-xl border border-white/25 shadow-2xl hover:shadow-3xl transition-all duration-500 p-12 md:p-14 min-h-[380px] md:min-h-[420px] flex flex-col justify-center">
             
-            {/* Floating Sparkle Corner */}
+            {/* Floating Corner Sparkle */}
             <motion.div
               className="absolute top-6 right-6 w-4 h-4 bg-gradient-to-r from-yellow-300 to-pink-300 rounded-full"
               animate={{
@@ -55,26 +55,26 @@ const VietnameseContent = () => {
               }}
             />
             
-            {/* Multi-layer Glow Effects */}
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/8 via-pink-400/8 to-purple-400/8 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent rounded-3xl" />
+            {/* Premium Multi-layer Glow Effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 via-pink-400/10 to-purple-400/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/8 to-transparent rounded-3xl" />
             
-            {/* Premium Border Shimmer */}
-            <div className="absolute inset-0 rounded-3xl border border-gradient-to-r from-yellow-300/30 via-pink-300/30 to-purple-300/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            {/* Elegant Border Shimmer */}
+            <div className="absolute inset-0 rounded-3xl border border-gradient-to-r from-yellow-300/40 via-pink-300/40 to-purple-300/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
             {/* Content */}
-            <div className="relative z-10 text-center space-y-6">
-              <div className="text-4xl mb-4">{block.icon}</div>
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-6 leading-tight font-playfair">
+            <div className="relative z-10 text-center space-y-8">
+              <div className="text-5xl mb-6">{block.icon}</div>
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-8 leading-tight font-playfair">
                 {block.title}
               </h3>
-              <p className="text-lg md:text-xl text-white/90 leading-relaxed font-medium">
+              <p className="text-lg md:text-xl text-white/95 leading-relaxed font-medium">
                 {block.content}
               </p>
             </div>
 
             {/* Subtle Inner Glow */}
-            <div className="absolute inset-2 rounded-2xl bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+            <div className="absolute inset-3 rounded-2xl bg-gradient-to-br from-white/8 to-transparent pointer-events-none" />
           </div>
         </motion.div>
       ))}

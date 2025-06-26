@@ -20,56 +20,60 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
       whileInView="visible"
       viewport={{ once: true }}
     >
-      {/* Floating Sparkles Background */}
+      {/* Elegant Background with Floating Sparkles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+        {/* Soft gradient mist */}
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/30 via-pink-50/20 to-purple-50/30" />
+        
+        {/* Floating sparkles */}
+        {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-gradient-to-r from-yellow-300 to-pink-300 rounded-full opacity-40"
+            className="absolute w-1 h-1 bg-gradient-to-r from-yellow-300/60 to-pink-300/60 rounded-full"
             style={{
-              left: `${10 + (i * 12)}%`,
-              top: `${15 + (i % 3) * 25}%`,
+              left: `${15 + (i * 8)}%`,
+              top: `${10 + (i % 4) * 20}%`,
             }}
             animate={{
-              scale: [0.8, 1.4, 0.8],
-              opacity: [0.3, 0.8, 0.3],
+              scale: [0.8, 1.2, 0.8],
+              opacity: [0.3, 0.7, 0.3],
             }}
             transition={{
-              duration: 3 + (i * 0.3),
+              duration: 4 + (i * 0.2),
               repeat: Infinity,
               ease: "easeInOut",
-              delay: i * 0.4,
+              delay: i * 0.3,
             }}
           />
         ))}
       </div>
 
-      {/* Main Headline */}
+      {/* Single Main Headline - Language Switched */}
       <motion.div
-        className="text-center mb-12"
+        className="text-center mb-16"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
-        <h2 className="text-5xl md:text-7xl lg:text-8xl font-playfair font-bold text-white mb-6 leading-tight tracking-wide">
+        <h2 className="text-6xl md:text-7xl lg:text-8xl font-playfair font-bold text-white mb-8 leading-tight tracking-wide">
           {language === "en" 
             ? "Let's Experience EmviApp Together"
             : "Hãy Cùng Nhau Trải Nghiệm EmviApp"}
-          <span className="inline-block ml-2 text-yellow-300">✨</span>
+          <span className="inline-block ml-3 text-yellow-300">✨</span>
         </h2>
         
-        {/* Animated Underline */}
-        <div className="relative flex justify-center mb-8">
+        {/* Premium Animated Underline */}
+        <div className="relative flex justify-center mb-10">
           <motion.div
-            className="h-1 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-400 rounded-full"
+            className="h-1.5 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-400 rounded-full"
             initial={{ width: 0 }}
-            whileInView={{ width: "300px" }}
+            whileInView={{ width: "320px" }}
             viewport={{ once: true }}
             transition={{ duration: 1.2, delay: 0.5 }}
           />
           <motion.div
-            className="absolute -right-4 -top-2 text-yellow-300"
+            className="absolute -right-6 -top-3 text-yellow-300 text-lg"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -79,9 +83,9 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
           </motion.div>
         </div>
 
-        {/* Hero Subheadline */}
+        {/* Premium Subheadline */}
         <motion.p
-          className="text-2xl md:text-3xl lg:text-4xl font-playfair font-medium bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 bg-clip-text text-transparent leading-relaxed"
+          className="text-3xl md:text-4xl lg:text-5xl font-playfair font-medium bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 bg-clip-text text-transparent leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -94,11 +98,11 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
       </motion.div>
 
       {/* Content Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 mb-20">
         {language === "en" ? <EnglishContent /> : <VietnameseContent />}
       </div>
 
-      {/* Premium CTA Button */}
+      {/* Ultra-Premium CTA Button */}
       <motion.div
         className="flex justify-center"
         initial={{ opacity: 0, y: 30 }}
@@ -109,20 +113,20 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
         <Link to="/auth/signup">
           <Button
             size="lg"
-            className="relative overflow-hidden group px-12 py-6 text-xl font-bold rounded-3xl bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 hover:from-yellow-300 hover:via-pink-300 hover:to-purple-400 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 min-w-[280px] md:min-w-[400px]"
+            className="relative overflow-hidden group px-16 py-8 text-xl md:text-2xl font-bold rounded-3xl bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 hover:from-yellow-300 hover:via-pink-300 hover:to-purple-400 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 min-w-[320px] md:min-w-[480px]"
           >
-            {/* Glowing Background Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-400/20 to-purple-500/20 blur-xl group-hover:blur-2xl transition-all duration-500" />
+            {/* Ultra-Premium Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/30 via-pink-400/30 to-purple-500/30 blur-2xl group-hover:blur-3xl transition-all duration-500" />
             
-            {/* Shimmer Effect */}
+            {/* Premium Shimmer Animation */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12"
               initial={{ x: "-100%" }}
               animate={{ x: "200%" }}
               transition={{
-                duration: 2,
+                duration: 2.5,
                 repeat: Infinity,
-                repeatDelay: 3,
+                repeatDelay: 4,
                 ease: "easeInOut",
               }}
             />
@@ -136,8 +140,8 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
         </Link>
       </motion.div>
 
-      {/* Floating Mist Effect */}
-      <div className="absolute inset-0 bg-gradient-to-t from-pink-500/5 via-transparent to-yellow-400/5 pointer-events-none" />
+      {/* Elegant Background Mist */}
+      <div className="absolute inset-0 bg-gradient-to-t from-pink-500/3 via-transparent to-yellow-400/3 pointer-events-none" />
     </motion.div>
   );
 };
