@@ -1,7 +1,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -10,41 +9,38 @@ interface VietnameseContentProps {
 }
 
 const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
-  const benefits = [
-    "Tìm tiệm đang tuyển dụng ngay bây giờ",
-    "Kết nối với cơ hội thuê booth",
-    "Khám phá các tiệm đang bán",
-    "Được trả lương xứng đáng với giá trị của bạn"
-  ];
-
   return (
     <div className="space-y-8">
       <motion.h3 
         className="text-3xl md:text-4xl font-playfair font-bold text-gray-800"
         variants={itemVariants}
       >
-        Mảnh Ghép Còn Thiếu Của Bạn Trong Ngành Làm Đẹp
+        ✨ Hãy Cùng Nhau Trải Nghiệm EmviApp
       </motion.h3>
       
-      <motion.p 
-        className="text-lg text-gray-600"
+      <motion.div 
+        className="space-y-6"
         variants={itemVariants}
       >
-        Kết nối các chuyên gia làm đẹp tài năng với cơ hội hoàn hảo của họ chưa bao giờ dễ dàng hơn thế. Cho dù bạn đang tìm kiếm để tham gia vào một đội ngũ hoặc tìm kiếm nhân viên ngôi sao tiếp theo của mình, chúng tôi đã tạo ra nền tảng mà ngành làm đẹp đang chờ đợi.
-      </motion.p>
-      
-      <div className="space-y-3">
-        {benefits.map((benefit, index) => (
-          <motion.div 
-            key={index}
-            className="flex items-start"
-            variants={itemVariants}
-          >
-            <Check className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-            <span className="text-gray-700">{benefit}</span>
-          </motion.div>
-        ))}
-      </div>
+        <div className="bg-purple-50 rounded-2xl p-6 border-l-4 border-purple-400">
+          <h4 className="text-xl font-bold text-purple-800 mb-3">Kinh Doanh Của Bạn, Được Nâng Cấp</h4>
+          <p className="text-gray-700 leading-relaxed">
+            Chúng tôi giúp bạn mang khách hàng đến tận tiệm. Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
+          </p>
+        </div>
+
+        <div className="bg-blue-50 rounded-2xl p-6 border-l-4 border-blue-400">
+          <p className="text-gray-700">
+            <span className="font-semibold text-blue-800">Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn</span> — bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
+          </p>
+        </div>
+
+        <div className="bg-orange-50 rounded-2xl p-6 border-l-4 border-orange-400">
+          <p className="text-gray-700">
+            Nếu bạn không dùng thử EmviApp... Chắc chắn bạn đang bỏ lỡ một công nghệ có thể giải quyết rất nhiều việc cùng một lúc. 😔
+          </p>
+        </div>
+      </motion.div>
       
       <motion.div 
         className="pt-4"
@@ -52,8 +48,7 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
       >
         <Link to="/auth/signup">
           <Button size="lg" className="group">
-            Tham Gia EmviApp Ngay Hôm Nay
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            Hãy cùng nhau trải nghiệm những điều thú vị mà EmviApp mang đến cho bạn — ngay bây giờ →
           </Button>
         </Link>
       </motion.div>

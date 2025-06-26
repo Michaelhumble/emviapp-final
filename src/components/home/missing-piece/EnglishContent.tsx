@@ -1,7 +1,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -10,41 +9,38 @@ interface EnglishContentProps {
 }
 
 const EnglishContent = ({ itemVariants }: EnglishContentProps) => {
-  const benefits = [
-    "Find salons ready to hire you right now",
-    "Connect with booth rental opportunities",
-    "Discover established salons for sale",
-    "Get paid what you're worth"
-  ];
-
   return (
     <div className="space-y-8">
       <motion.h3 
         className="text-3xl md:text-4xl font-playfair font-bold text-gray-800"
         variants={itemVariants}
       >
-        Your Missing Piece in the Beauty Industry
+        ✨ Let's Experience EmviApp Together
       </motion.h3>
       
-      <motion.p 
-        className="text-lg text-gray-600"
+      <motion.div 
+        className="space-y-6"
         variants={itemVariants}
       >
-        Connecting talented beauty professionals with their perfect opportunities has never been easier. Whether you're looking to join a team or find your next star employee, we've created the platform the beauty industry has been waiting for.
-      </motion.p>
-      
-      <div className="space-y-3">
-        {benefits.map((benefit, index) => (
-          <motion.div 
-            key={index}
-            className="flex items-start"
-            variants={itemVariants}
-          >
-            <Check className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-            <span className="text-gray-700">{benefit}</span>
-          </motion.div>
-        ))}
-      </div>
+        <div className="bg-purple-50 rounded-2xl p-6 border-l-4 border-purple-400">
+          <h4 className="text-xl font-bold text-purple-800 mb-3">Your Business, Supercharged</h4>
+          <p className="text-gray-700 leading-relaxed">
+            We help bring customers straight to your salon. Our platform connects you with skilled technicians, delivers irresistible offers, and streamlines shop management — all in one elegant solution.
+          </p>
+        </div>
+
+        <div className="bg-blue-50 rounded-2xl p-6 border-l-4 border-blue-400">
+          <p className="text-gray-700">
+            <span className="font-semibold text-blue-800">EmviApp's intelligent AI handles the complex work</span> — so you can focus on your passion and growing your business.
+          </p>
+        </div>
+
+        <div className="bg-orange-50 rounded-2xl p-6 border-l-4 border-orange-400">
+          <p className="text-gray-700">
+            Without EmviApp, you might be missing out on opportunities that your competitors are already embracing. 😔
+          </p>
+        </div>
+      </motion.div>
       
       <motion.div 
         className="pt-4"
@@ -52,8 +48,7 @@ const EnglishContent = ({ itemVariants }: EnglishContentProps) => {
       >
         <Link to="/auth/signup">
           <Button size="lg" className="group">
-            Join EmviApp Today
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            Try it now and experience the difference →
           </Button>
         </Link>
       </motion.div>
