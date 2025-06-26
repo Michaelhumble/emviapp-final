@@ -10,34 +10,39 @@ interface VietnameseContentProps {
 
 const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <motion.div 
         className="text-center"
         variants={itemVariants}
       >
-        <h3 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-800 via-purple-700 to-gray-800 mb-4 flex items-center justify-center gap-3 group">
-          <span className="text-5xl md:text-6xl animate-pulse group-hover:scale-110 transition-transform duration-300">✨</span>
+        <h3 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-purple-800 to-gray-900 mb-6 flex items-center justify-center gap-4 group leading-tight">
+          <span className="text-5xl md:text-6xl lg:text-7xl animate-pulse group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">✨</span>
           <span className="relative">
             Hãy Cùng Nhau Trải Nghiệm EmviApp
-            <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
+            <div className="absolute -bottom-3 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-center shadow-lg"></div>
           </span>
         </h3>
       </motion.div>
       
       <motion.div 
-        className="space-y-6"
+        className="space-y-8"
         variants={itemVariants}
       >
         <motion.div 
-          className="bg-gradient-to-br from-purple-50/80 to-purple-100/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+          className="bg-gradient-to-br from-purple-50/90 to-purple-100/70 backdrop-blur-sm rounded-3xl p-8 border border-purple-200/60 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
           whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            background: 'linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(243,232,255,0.8) 50%, rgba(254,249,195,0.7) 100%)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 20px 40px -12px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(139, 92, 246, 0.1)'
+          }}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-1 h-16 bg-gradient-to-b from-purple-400 to-purple-600 rounded-full flex-shrink-0"></div>
+          <div className="flex items-start gap-4">
+            <div className="w-1.5 h-20 bg-gradient-to-b from-purple-400 to-purple-600 rounded-full flex-shrink-0 shadow-lg"></div>
             <div>
-              <h4 className="text-xl font-bold text-purple-800 mb-3 font-playfair">Kinh Doanh Của Bạn, Được Nâng Cấp</h4>
-              <p className="text-gray-700 leading-relaxed">
+              <h4 className="text-2xl font-bold text-purple-900 mb-4 font-playfair">Kinh Doanh Của Bạn, Được Nâng Cấp</h4>
+              <p className="text-gray-800 leading-relaxed text-lg">
                 Chúng tôi giúp bạn mang khách hàng đến tận tiệm. Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
               </p>
             </div>
@@ -45,29 +50,39 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
         </motion.div>
 
         <motion.div 
-          className="bg-gradient-to-br from-blue-50/80 to-indigo-100/60 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+          className="bg-gradient-to-br from-blue-50/90 to-indigo-100/70 backdrop-blur-sm rounded-3xl p-8 border border-blue-200/60 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
           whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            background: 'linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(224,242,254,0.8) 50%, rgba(219,234,254,0.7) 100%)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 20px 40px -12px rgba(59, 130, 246, 0.15), 0 0 0 1px rgba(59, 130, 246, 0.1)'
+          }}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-1 h-12 bg-gradient-to-b from-blue-400 to-indigo-600 rounded-full flex-shrink-0"></div>
+          <div className="flex items-start gap-4">
+            <div className="w-1.5 h-16 bg-gradient-to-b from-blue-400 to-indigo-600 rounded-full flex-shrink-0 shadow-lg"></div>
             <div>
-              <p className="text-gray-700 leading-relaxed">
-                <span className="font-semibold text-blue-800 font-playfair">Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn</span> — bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
+              <p className="text-gray-800 leading-relaxed text-lg">
+                <span className="font-semibold text-blue-900 font-playfair text-xl">Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn</span> — bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
               </p>
             </div>
           </div>
         </motion.div>
 
         <motion.div 
-          className="bg-gradient-to-br from-orange-50/80 to-amber-100/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+          className="bg-gradient-to-br from-orange-50/90 to-amber-100/70 backdrop-blur-sm rounded-3xl p-8 border border-orange-200/60 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
           whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            background: 'linear-gradient(135deg, rgba(254,252,232,0.95) 0%, rgba(254,243,199,0.8) 50%, rgba(253,230,138,0.7) 100%)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 20px 40px -12px rgba(245, 158, 11, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.1)'
+          }}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-1 h-12 bg-gradient-to-b from-orange-400 to-amber-600 rounded-full flex-shrink-0"></div>
+          <div className="flex items-start gap-4">
+            <div className="w-1.5 h-16 bg-gradient-to-b from-orange-400 to-amber-600 rounded-full flex-shrink-0 shadow-lg"></div>
             <div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-800 leading-relaxed text-lg">
                 Nếu bạn không dùng thử EmviApp... Chắc chắn bạn đang bỏ lỡ một công nghệ có thể giải quyết rất nhiều việc cùng một lúc. 😔
               </p>
             </div>
@@ -76,23 +91,27 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
       </motion.div>
       
       <motion.div 
-        className="pt-4 text-center"
+        className="pt-8 text-center"
         variants={itemVariants}
       >
         <Link to="/auth/signup">
           <Button 
             size="lg" 
-            className="group relative bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-2xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:-translate-y-1 hover:scale-105 backdrop-blur-sm border border-white/20"
+            className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 text-white font-bold px-12 py-6 text-lg rounded-3xl shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 hover:-translate-y-2 hover:scale-105 backdrop-blur-lg border border-white/30"
             style={{
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #8b5cf6 100%)',
-              backdropFilter: 'blur(10px)',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 30%, #8b5cf6 60%, #a855f7 100%)',
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 25px 50px -12px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}
           >
-            <span className="relative z-10 flex items-center gap-2">
+            <span className="relative z-10 flex items-center gap-3">
               Hãy cùng nhau trải nghiệm những điều thú vị mà EmviApp mang đến cho bạn — ngay bây giờ 
-              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+              <span className="group-hover:translate-x-2 transition-transform duration-300 text-xl">→</span>
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Ultra-premium glass overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* Shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
           </Button>
         </Link>
       </motion.div>
