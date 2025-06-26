@@ -81,48 +81,11 @@ module.exports = {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
         },
-        'float-slow': {
-          '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
-          '33%': { transform: 'translate(30px, -30px) rotate(120deg)' },
-          '66%': { transform: 'translate(-20px, 20px) rotate(240deg)' }
-        },
-        'float-reverse': {
-          '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
-          '33%': { transform: 'translate(-30px, 30px) rotate(-120deg)' },
-          '66%': { transform: 'translate(20px, -20px) rotate(-240deg)' }
-        },
-        'pulse-gentle': {
-          '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
-          '50%': { opacity: 0.5, transform: 'scale(1.05)' }
-        },
-        'sparkle-1': {
-          '0%, 100%': { opacity: 0.3, transform: 'scale(1) rotate(0deg)' },
-          '50%': { opacity: 0.8, transform: 'scale(1.2) rotate(180deg)' }
-        },
-        'sparkle-2': {
-          '0%, 100%': { opacity: 0.4, transform: 'scale(1) rotate(0deg)' },
-          '50%': { opacity: 0.9, transform: 'scale(1.3) rotate(-180deg)' }
-        },
-        'sparkle-3': {
-          '0%, 100%': { opacity: 0.2, transform: 'scale(1) rotate(0deg)' },
-          '50%': { opacity: 0.7, transform: 'scale(1.1) rotate(180deg)' }
-        },
-        'sparkle-4': {
-          '0%, 100%': { opacity: 0.5, transform: 'scale(1) rotate(0deg)' },
-          '50%': { opacity: 1, transform: 'scale(1.4) rotate(-180deg)' }
-        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.3s ease-in-out',
-        'float-slow': 'float-slow 8s ease-in-out infinite',
-        'float-reverse': 'float-reverse 10s ease-in-out infinite',
-        'pulse-gentle': 'pulse-gentle 4s ease-in-out infinite',
-        'sparkle-1': 'sparkle-1 3s ease-in-out infinite',
-        'sparkle-2': 'sparkle-2 4s ease-in-out infinite 0.5s',
-        'sparkle-3': 'sparkle-3 3.5s ease-in-out infinite 1s',
-        'sparkle-4': 'sparkle-4 4.5s ease-in-out infinite 1.5s'
       },
     },
   },
