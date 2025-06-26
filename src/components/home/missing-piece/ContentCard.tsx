@@ -1,6 +1,8 @@
 
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import EnglishContent from "./EnglishContent";
 import VietnameseContent from "./VietnameseContent";
 
@@ -11,96 +13,191 @@ interface ContentCardProps {
 
 const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
   return (
-    <motion.div 
-      className="relative overflow-hidden group mb-8 sm:mb-16"
+    <motion.div
+      className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 py-16 md:py-20"
       variants={itemVariants}
-      initial="visible" 
-      layoutId="content-card"
-      layout
-      whileHover={{ 
-        scale: 1.005,
-        transition: { duration: 0.4, ease: "easeOut" }
-      }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
     >
-      {/* Multi-layered glassmorphism container */}
-      <div className="relative rounded-[3.5rem] p-[3px] bg-gradient-to-br from-white/60 via-purple-200/40 to-amber-200/50 shadow-2xl">
-        <div className="relative rounded-[3.4rem] p-[2px] bg-gradient-to-br from-purple-100/50 via-white/30 to-gold-100/40">
-          <div 
-            className="relative rounded-[3.3rem] p-8 sm:p-12 md:p-20 lg:p-24 overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(248,250,252,0.75) 15%, rgba(243,232,255,0.6) 35%, rgba(254,249,195,0.5) 65%, rgba(255,255,255,0.8) 85%, rgba(240,245,255,0.9) 100%)',
-              backdropFilter: 'blur(40px) saturate(150%)',
-              WebkitBackdropFilter: 'blur(40px) saturate(150%)',
-              boxShadow: '0 40px 80px -20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.05)'
-            }}
+      {/* Animated Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Floating Sparkles */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-2 h-2 bg-gradient-to-r from-yellow-400 to-yellow-200 rounded-full opacity-70"
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+            opacity: [0.7, 1, 0.7],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-gradient-to-r from-pink-300 to-purple-300 rounded-full opacity-60"
+          animate={{
+            y: [0, 15, 0],
+            x: [0, -8, 0],
+            opacity: [0.6, 0.9, 0.6],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-gradient-to-r from-blue-300 to-cyan-300 rounded-full opacity-50"
+          animate={{
+            y: [0, -10, 0],
+            x: [0, 12, 0],
+            opacity: [0.5, 0.8, 0.5],
+            scale: [1, 1.4, 1],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
+        
+        {/* Gold/Pink Mist Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/10 via-pink-200/10 to-purple-200/10 animate-pulse" />
+      </div>
+
+      {/* Main Content Container */}
+      <div className="relative z-10 max-w-5xl mx-auto text-center">
+        {/* Premium Headline */}
+        <motion.div
+          className="mb-8 md:mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-playfair font-bold text-white mb-4 md:mb-6 leading-tight">
+            {language === "en" 
+              ? "Let's Experience EmviApp Together"
+              : "Hãy Cùng Nhau Trải Nghiệm EmviApp"}
+          </h2>
+          
+          {/* Animated Underline with Sparkle */}
+          <motion.div
+            className="relative inline-block"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.5 }}
           >
-            {/* Advanced floating elements */}
-            <div className="absolute top-8 left-8 text-3xl animate-pulse opacity-80">
-              <span className="text-yellow-400 drop-shadow-2xl filter">✨</span>
-            </div>
-            <div className="absolute top-16 right-12 text-2xl animate-pulse opacity-60" style={{ animationDelay: '1.2s' }}>
-              <span className="text-purple-400 drop-shadow-lg">✨</span>
-            </div>
-            <div className="absolute bottom-20 left-12 text-xl animate-pulse opacity-70" style={{ animationDelay: '2.4s' }}>
-              <span className="text-pink-400 drop-shadow-lg">✨</span>
-            </div>
-            <div className="absolute top-1/3 right-8 text-lg animate-pulse opacity-50" style={{ animationDelay: '3s' }}>
-              <span className="text-indigo-400 drop-shadow-lg">✨</span>
-            </div>
-            
-            {/* Premium animated light beams */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-0 left-1/5 w-[2px] h-full bg-gradient-to-b from-transparent via-white/30 to-transparent animate-pulse opacity-40"></div>
-              <div className="absolute top-0 right-1/4 w-[1px] h-full bg-gradient-to-b from-transparent via-purple-200/40 to-transparent animate-pulse opacity-30" style={{ animationDelay: '1.8s' }}></div>
-              <div className="absolute top-0 left-1/2 w-[1px] h-full bg-gradient-to-b from-transparent via-amber-200/30 to-transparent animate-pulse opacity-25" style={{ animationDelay: '3.2s' }}></div>
-            </div>
-            
-            {/* Sophisticated gradient orbs */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-200/40 via-pink-200/30 to-transparent rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3 animate-pulse opacity-60"></div>
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-indigo-200/35 via-blue-200/25 to-transparent rounded-full blur-3xl -z-10 transform -translate-x-1/3 translate-y-1/3 animate-pulse opacity-50" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-r from-amber-200/20 via-yellow-200/15 to-transparent rounded-full blur-3xl -z-10 transform -translate-x-1/2 -translate-y-1/2 animate-pulse opacity-30" style={{ animationDelay: '4s' }}></div>
-            
-            {/* Luxury floating particles */}
-            <div className="absolute top-12 right-20 w-6 h-6 bg-gradient-to-br from-yellow-300/80 to-amber-300/60 rounded-full blur-sm opacity-70 animate-pulse" style={{ animationDelay: '0.8s' }}></div>
-            <div className="absolute bottom-24 right-24 w-4 h-4 bg-gradient-to-br from-purple-300/70 to-pink-300/50 rounded-full blur-sm opacity-60 animate-pulse" style={{ animationDelay: '2.8s' }}></div>
-            <div className="absolute top-1/4 left-16 w-5 h-5 bg-gradient-to-br from-indigo-300/60 to-blue-300/40 rounded-full blur-sm opacity-50 animate-pulse" style={{ animationDelay: '4.2s' }}></div>
-            <div className="absolute bottom-1/3 left-1/4 w-3 h-3 bg-gradient-to-br from-rose-300/70 to-pink-300/50 rounded-full blur-sm opacity-55 animate-pulse" style={{ animationDelay: '5.5s' }}></div>
-            
-            {/* Ultra-premium mesh pattern overlay */}
-            <div className="absolute inset-0 opacity-[0.04]" style={{
-              backgroundImage: `radial-gradient(circle at 3px 3px, rgba(139, 92, 246, 0.6) 1px, transparent 0)`,
-              backgroundSize: '48px 48px'
-            }}></div>
-            
-            {/* Secondary premium overlay pattern */}
-            <div className="absolute inset-0 opacity-[0.02]" style={{
-              backgroundImage: `linear-gradient(45deg, rgba(236, 72, 153, 0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(59, 130, 246, 0.1) 25%, transparent 25%)`,
-              backgroundSize: '64px 64px'
-            }}></div>
-            
-            {/* Premium shimmer effect overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-1000 pointer-events-none"></div>
-            
-            <div className="relative z-10">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={language}
-                  initial={{ opacity: 0, y: 30, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -30, scale: 0.98 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="w-full"
+            <div className="h-1 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 rounded-full mx-auto w-32 md:w-48 lg:w-64" />
+            <motion.span
+              className="absolute -right-6 md:-right-8 -top-2 text-2xl md:text-3xl"
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              ✨
+            </motion.span>
+          </motion.div>
+        </motion.div>
+
+        {/* Hero Subheadline */}
+        <motion.p
+          className="text-2xl md:text-3xl lg:text-4xl font-playfair font-medium bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent mb-12 md:mb-16 leading-relaxed"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          {language === "en"
+            ? "Built With Love for the Beauty Community"
+            : "Được Xây Dựng Với Tình Yêu Cho Ngành Làm Đẹp"}
+        </motion.p>
+
+        {/* Premium Content Cards */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 mb-12 md:mb-16"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          {language === "en" ? <EnglishContent /> : <VietnameseContent />}
+        </motion.div>
+
+        {/* Ultra-Premium CTA Button */}
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
+          <Link to="/auth/signup">
+            <Button 
+              size="lg" 
+              className="relative group overflow-hidden bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-500 text-white font-bold text-lg md:text-xl px-8 md:px-12 py-4 md:py-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border-2 border-white/20 backdrop-blur-sm min-h-[60px] md:min-h-[70px]"
+            >
+              {/* Glowing Background Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-500/20 to-purple-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
+              
+              {/* Shimmer Effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                animate={{
+                  x: ["-100%", "100%"],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 3,
+                }}
+              />
+              
+              {/* Button Text */}
+              <span className="relative z-10 flex items-center gap-2">
+                {language === "en"
+                  ? "Try it now and experience the difference"
+                  : "Hãy cùng nhau trải nghiệm những điều thú vị mà EmviApp mang đến cho bạn — ngay bây giờ"}
+                <motion.span
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  {language === "en" ? (
-                    <EnglishContent itemVariants={itemVariants} />
-                  ) : (
-                    <VietnameseContent itemVariants={itemVariants} />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
+                  →
+                </motion.span>
+              </span>
+            </Button>
+          </Link>
+        </motion.div>
+      </div>
+
+      {/* Mobile Sticky CTA (visible only on mobile) */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
+        <Link to="/auth/signup">
+          <Button 
+            size="lg" 
+            className="w-full relative group overflow-hidden bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-500 text-white font-bold text-lg px-6 py-4 rounded-2xl shadow-2xl border-2 border-white/20 backdrop-blur-sm min-h-[60px]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-500/20 to-purple-600/20 rounded-2xl blur-xl transition-all duration-500" />
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {language === "en" ? "Experience EmviApp Now" : "Trải Nghiệm EmviApp Ngay"}
+              <span>→</span>
+            </span>
+          </Button>
+        </Link>
       </div>
     </motion.div>
   );
