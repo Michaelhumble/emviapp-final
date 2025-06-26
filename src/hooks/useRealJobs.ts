@@ -24,28 +24,42 @@ export const useRealJobs = () => {
           setError(error);
         } else {
           // Transform database jobs to match our Job type
-          const transformedJobs: Job[] = (data || []).map(job => ({
-            id: job.id,
-            title: job.title || '',
-            company: job.company || '',
-            location: job.location || '',
-            description: job.description || '',
-            created_at: job.created_at,
-            salary_range: job.salary_range || job.compensation_details,
-            employment_type: job.employment_type,
-            contact_info: job.contact_info || {
-              phone: job.phone,
-              email: job.email,
-              owner_name: job.owner_name
-            },
-            requirements: job.requirements || [],
-            benefits: job.benefits || [],
-            specialties: job.specialties || [],
-            pricing_tier: job.pricing_tier,
-            is_featured: job.is_featured || false,
-            status: job.status,
-            expires_at: job.expires_at
-          }));
+          const transformedJobs: Job[] = (data || []).map(job => {
+            // Safely parse contact_info if it's a JSON object
+            let contactInfo = {
+              phone: '',
+              email: '',
+              owner_name: ''
+            };
+            
+            if (job.contact_info && typeof job.contact_info === 'object') {
+              const contact = job.contact_info as any;
+              contactInfo = {
+                phone: contact.phone || '',
+                email: contact.email || '',
+                owner_name: contact.owner_name || ''
+              };
+            }
+
+            return {
+              id: job.id,
+              title: job.title || '',
+              company: job.title || '', // Use title as company if no separate company field
+              location: job.location || '',
+              description: job.description || '',
+              created_at: job.created_at,
+              salary_range: job.compensation_details || '',
+              employment_type: job.compensation_type || '',
+              contact_info: contactInfo,
+              requirements: job.requirements ? [job.requirements] : [],
+              benefits: [], // Default empty array since not in DB schema
+              specialties: [], // Default empty array since not in DB schema
+              pricing_tier: job.pricing_tier,
+              is_featured: false, // Default false since not in DB schema
+              status: job.status,
+              expires_at: job.expires_at
+            };
+          });
           
           setRealJobs(transformedJobs);
           console.log(`Fetched ${transformedJobs.length} real jobs from database`);
