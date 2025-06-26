@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,13 +20,6 @@ const signUpSchema = z.object({
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const SignUpForm = () => {
-  // TEMPORARY TEST MESSAGE - DO NOT REMOVE THIS COMMENT
-  return (
-    <div style={{fontSize: "2rem", color: "crimson", padding: "2rem", textAlign: "center"}}>
-      THIS IS THE SIGN-UP ROUTE PROOF TEST – SUNSHINE
-    </div>
-  );
-
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
