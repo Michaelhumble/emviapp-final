@@ -19,6 +19,9 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
   // Always show mobile bottom navbar on all pages 
   const showMobileNav = isMobile;
 
+  // Add console log to debug footer rendering
+  console.log("Layout rendering - hideFooter:", hideFooter, "location:", location.pathname);
+
   return (
     <div className="min-h-screen flex flex-col">
       {!hideNavbar && <Navbar />}
@@ -34,7 +37,12 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       This is the ONLY place Footer should appear to prevent duplicates.
       Only Layout.tsx controls the global footer for the entire EmviApp.
       */}
-      {!hideFooter && <Footer />}
+      {!hideFooter && (
+        <>
+          {console.log("Rendering Footer component")}
+          <Footer />
+        </>
+      )}
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}

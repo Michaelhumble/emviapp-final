@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EmviLogo from '@/components/branding/EmviLogo';
@@ -9,8 +10,14 @@ Only Layout.tsx should control the global footer for the entire app.
 */
 
 const Footer = () => {
+  // Add console log to track footer rendering
+  console.log("Footer component rendering - timestamp:", Date.now());
+  
   return (
-    <footer className="relative bg-gradient-to-br from-white via-purple-50/20 to-indigo-50/10 border-t border-gray-100">
+    <footer 
+      className="relative bg-gradient-to-br from-white via-purple-50/20 to-indigo-50/10 border-t border-gray-100"
+      data-footer-id="emvi-global-footer"
+    >
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
