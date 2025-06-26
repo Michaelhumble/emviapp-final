@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import JobPricingTable from './JobPricingTable';
 import PricingConfirmationModal from './PricingConfirmationModal';
 
@@ -26,6 +27,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { handleFreeJobPost } = useJobPosting();
 
   const handlePricingSelect = (tier: string, finalPrice: number, durationMonths: number) => {
     console.log('Pricing selected:', { tier, finalPrice, durationMonths });
@@ -37,11 +39,32 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
       setSelectedPricing({ tier, finalPrice, durationMonths });
     }
     
-    // For free tier, skip confirmation
-    if (tier === 'free') {
-      proceedToPayment(tier, finalPrice, durationMonths);
+    // For free tier, handle immediately with separate flow
+    if (tier === 'free' && finalPrice === 0) {
+      handleFreePosting();
     } else {
       setShowConfirmation(true);
+    }
+  };
+
+  // NEW: Separate free posting handler
+  const handleFreePosting = async () => {
+    console.log('🆓 Starting free posting flow');
+    setIsProcessing(true);
+
+    try {
+      const jobId = await handleFreeJobPost(jobFormData);
+      
+      if (jobId) {
+        console.log('✅ Free posting successful, redirecting...');
+        navigate(`/post-success?free=true&jobId=${jobId}`);
+      } else {
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error('Free posting error:', error);
+      toast.error('Failed to create free job posting');
+      setIsProcessing(false);
     }
   };
 
@@ -62,13 +85,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         durationMonths = 12;
       }
 
-      // For free tier, create job directly without payment
-      if (finalPrice === 0) {
-        // TODO: Create job posting directly in database
-        toast.success('Free job posting created successfully!');
-        navigate('/post-success');
-        return;
-      }
+      console.log('💳 Processing paid posting - Tier:', tier, 'Price:', finalPrice);
 
       // Create Stripe checkout session for paid plans
       const { data, error } = await supabase.functions.invoke('create-job-checkout', {
@@ -88,6 +105,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
       }
 
       if (data?.url) {
+        console.log('✅ Redirecting to Stripe checkout');
         // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
@@ -116,7 +134,9 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
         <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Redirecting to secure payment...</p>
+          <p className="text-gray-600 font-medium">
+            {selectedPricing?.tier === 'free' ? 'Creating your free job posting...' : 'Redirecting to secure payment...'}
+          </p>
           <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
         </div>
       </div>
@@ -140,7 +160,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
           jobData={jobFormData}
         />
 
-        {/* Pricing Confirmation Modal */}
+        {/* Pricing Confirmation Modal - Only for paid plans */}
         <PricingConfirmationModal
           open={showConfirmation}
           onClose={() => setShowConfirmation(false)}
