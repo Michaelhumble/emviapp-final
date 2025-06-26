@@ -57,8 +57,7 @@ export const useRealJobs = () => {
               pricing_tier: job.pricing_tier,
               is_featured: false, // Default false since not in DB schema
               status: job.status,
-              expires_at: job.expires_at,
-              user_id: job.user_id
+              expires_at: job.expires_at
             };
           });
           

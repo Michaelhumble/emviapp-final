@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import JobCardContact from "./JobCardContact";
-import JobManagementActions from "./JobManagementActions";
-import { supabase } from "@/integrations/supabase/client";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
@@ -15,21 +13,6 @@ interface FreeListingsSectionProps {
 }
 
 const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) => {
-  const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id || null);
-    };
-    getCurrentUser();
-  }, []);
-
-  const handleJobDeleted = () => {
-    // The real-time subscription in useRealJobs will handle the refresh
-    // No need to manually refresh here
-  };
-
   if (!jobs.length) return null;
 
   return (
@@ -50,19 +33,9 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
             className="border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden"
           >
             <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1">
-                  <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
-                  <p className="text-gray-600">{job.company}</p>
-                </div>
-                
-                {currentUserId && (
-                  <JobManagementActions
-                    job={job}
-                    currentUserId={currentUserId}
-                    onJobDeleted={handleJobDeleted}
-                  />
-                )}
+              <div className="mb-3">
+                <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
+                <p className="text-gray-600">{job.company}</p>
               </div>
 
               <div className="flex items-center text-base text-gray-600 mb-2">
