@@ -66,9 +66,14 @@ export const SignUpForm = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#E8F5E9' }} className="min-h-screen flex items-center justify-center p-4">
+    <div style={{ backgroundColor: '#FFF700' }} className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold text-black bg-yellow-300 p-3 rounded border-2 border-black">
+              🟡 BASIC SIGNUP FORM TEST — src/components/auth/SignUpForm.tsx
+            </h1>
+          </div>
           <CardTitle>Basic Sign Up</CardTitle>
           <CardDescription>Create your account</CardDescription>
         </CardHeader>
