@@ -1,7 +1,12 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EmviLogo from '@/components/branding/EmviLogo';
+
+/* 
+WARNING: This Footer component must ONLY be rendered by Layout.tsx. 
+Do not import Footer in any other file to prevent duplicates.
+Only Layout.tsx should control the global footer for the entire app.
+*/
 
 const Footer = () => {
   return (

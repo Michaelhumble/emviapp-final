@@ -27,7 +27,13 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {children}
       </main>
       
-      {/* GLOBAL FOOTER: Never import or render <Footer /> in any other file. Only Layout controls the footer. */}
+      {/* 
+      ⚠️  PERMANENT FOOTER LOCKDOWN WARNING ⚠️ 
+      CRITICAL: Footer must ONLY be rendered here in Layout.tsx. 
+      DO NOT import or render <Footer /> in any other file, page, or component.
+      This is the ONLY place Footer should appear to prevent duplicates.
+      Only Layout.tsx controls the global footer for the entire EmviApp.
+      */}
       {!hideFooter && <Footer />}
       
       {/* Show the bottom navbar on all pages */}
