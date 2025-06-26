@@ -14,7 +14,7 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
-import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
+import AIMatchmakerSection from "@/components/home/ai-matchmaker";
 import FounderMessage from "@/components/home/FounderMessage";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
@@ -61,8 +61,8 @@ const Index = () => {
       {/* 3. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* 4. Let AI Do the Hard Work */}
-      <EnhancedAIFeatures />
+      {/* 4. Meet Your AI Matchmaker - NEW PREMIUM SECTION */}
+      <AIMatchmakerSection />
       
       {/* 5. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
