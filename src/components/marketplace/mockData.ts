@@ -1,4 +1,8 @@
 
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 export interface Salon {
   id: number;
   name: string;

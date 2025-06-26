@@ -1,6 +1,10 @@
 
 import { Job } from "@/types/job";
 
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 // Single diamond job - Magic Nails (protected listing)
 export const diamondJobs: Job[] = [
   {

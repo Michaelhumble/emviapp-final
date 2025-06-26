@@ -1,6 +1,10 @@
 
 import { Job } from "@/types/job";
 
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 // Define the Supabase URL for the images
 const SUPABASE_URL = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails";
 

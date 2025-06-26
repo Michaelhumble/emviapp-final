@@ -1,6 +1,10 @@
 
 import { NAIL_SALON_IMAGES } from '@/utils/nailSalonImages';
 
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 /**
  * Featured nail salon ads from verified sources
  * Only using uploaded high-quality images - no stock photos

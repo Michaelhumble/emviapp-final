@@ -2,6 +2,10 @@
 // Import necessary types
 import { Job } from '@/types/job';
 
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 // Create a compatible mock function that doesn't use problematic properties
 export const createMockPremiumJobs = (): Job[] => {
   return [

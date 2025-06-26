@@ -1,4 +1,9 @@
+
 import sampleJobs from "@/data/sampleJobs";
+
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
 
 // Filter salons for sale from the sample jobs data
 export const salonsForSaleJobs = sampleJobs.filter(job => job.for_sale === true);

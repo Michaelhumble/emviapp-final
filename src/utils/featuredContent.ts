@@ -1,6 +1,11 @@
+
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { sampleSalons } from '@/data/sampleSalons';
+
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
 
 // Mock featured salons data
 const featuredSalons: Salon[] = sampleSalons.filter(salon => salon.featured);
