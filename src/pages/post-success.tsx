@@ -5,18 +5,29 @@ import Layout from '@/components/layout/Layout';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import JobPostingSuccess from '@/components/posting/job/JobPostingSuccess';
-import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
 import { toast } from 'sonner';
 
 const PostSuccess = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const isFree = searchParams.get('free') === 'true';
   const [jobDetails, setJobDetails] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const verifyPayment = async () => {
+      // Handle free posts
+      if (isFree) {
+        setJobDetails({
+          jobId: 'free-' + Math.random().toString(36).substr(2, 9),
+          jobTitle: 'Free Job Posting',
+          planType: 'Free'
+        });
+        setIsLoading(false);
+        return;
+      }
+
       if (!sessionId) {
         // No session ID, show generic success
         setIsLoading(false);
@@ -55,7 +66,7 @@ const PostSuccess = () => {
     };
 
     verifyPayment();
-  }, [sessionId]);
+  }, [sessionId, isFree]);
 
   if (isLoading) {
     return (
@@ -63,7 +74,7 @@ const PostSuccess = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Verifying payment...</p>
+            <p className="text-gray-600">Verifying post...</p>
           </div>
         </div>
       </Layout>
@@ -75,8 +86,6 @@ const PostSuccess = () => {
       <Helmet>
         <title>Post Created Successfully | EmviApp</title>
       </Helmet>
-      
-      <ConfettiExplosion />
       
       <JobPostingSuccess
         jobId={jobDetails?.jobId}

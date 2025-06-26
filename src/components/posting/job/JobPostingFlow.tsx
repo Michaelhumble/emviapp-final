@@ -62,11 +62,37 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         durationMonths = 12;
       }
 
-      // For free tier, create job directly without payment
+      // For free tier, create job posting directly without payment
       if (finalPrice === 0) {
-        // TODO: Create job posting directly in database
+        console.log('Creating free job post with data:', jobFormData);
+        
+        const { data, error } = await supabase.functions.invoke('create-free-post', {
+          body: {
+            postType: 'job',
+            postDetails: {
+              ...jobFormData,
+              pricing_tier: tier,
+              status: 'active',
+              expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
+            },
+            pricingOptions: {
+              selectedPricingTier: tier,
+              isFirstPost: true
+            },
+            idempotencyKey: `free-job-${user.id}-${Date.now()}`
+          }
+        });
+
+        if (error) {
+          console.error('Free job creation error:', error);
+          toast.error('Failed to create free job posting');
+          setIsProcessing(false);
+          return;
+        }
+
+        console.log('Free job created successfully:', data);
         toast.success('Free job posting created successfully!');
-        navigate('/post-success');
+        navigate('/post-success?free=true');
         return;
       }
 
@@ -116,7 +142,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
         <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Redirecting to secure payment...</p>
+          <p className="text-gray-600 font-medium">Processing your request...</p>
           <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
         </div>
       </div>

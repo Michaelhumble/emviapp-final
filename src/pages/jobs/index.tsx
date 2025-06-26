@@ -8,6 +8,7 @@ import JobsGrid from "@/components/jobs/JobsGrid";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
 import { JobDetailModal } from "@/components/jobs/JobDetailModal";
 import useJobsData from "@/hooks/useJobsData";
+import { useRealJobs } from "@/hooks/useRealJobs";
 import { Job } from "@/types/job";
 import { diamondJobs } from "@/data/jobs/diamondJobs";
 import { premiumJobs } from "@/data/jobs/premiumJobs";
@@ -36,6 +37,8 @@ const JobsPage: React.FC = () => {
     setActiveRenewalJobId
   } = useJobsData();
   
+  const { realJobs, loading: realJobsLoading, error: realJobsError } = useRealJobs();
+  
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const viewJobDetails = (job: Job) => {
@@ -49,6 +52,9 @@ const JobsPage: React.FC = () => {
   const handleSearchChange = (value: string) => {
     updateSearchTerm(value);
   };
+
+  // Combine real jobs with free jobs section
+  const combinedFreeJobs = [...realJobs, ...freeJobs];
 
   return (
     <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
@@ -97,9 +103,9 @@ const JobsPage: React.FC = () => {
         onViewDetails={viewJobDetails}
       />
 
-      {/* Free Listings Section - 5 cards per row */}
+      {/* Free Listings Section - 5 cards per row - NOW INCLUDES REAL JOBS */}
       <FreeListingsSection
-        jobs={freeJobs}
+        jobs={combinedFreeJobs}
         onViewDetails={viewJobDetails}
       />
 
@@ -108,14 +114,21 @@ const JobsPage: React.FC = () => {
         onViewDetails={viewJobDetails}
       />
 
-      {error && (
+      {(error || realJobsError) && (
         <Alert className="mb-8 bg-red-50 border-red-200">
-          <AlertDescription>{error.message}</AlertDescription>
+          <AlertDescription>
+            {error?.message || realJobsError?.message}
+          </AlertDescription>
         </Alert>
       )}
 
-      {/* Remove the outdated jobs grid that's showing expired jobs */}
-      {/* This was likely the source of the duplicate expired listings */}
+      {/* Loading indicator for real jobs */}
+      {realJobsLoading && (
+        <div className="text-center py-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="text-sm text-gray-500 mt-2">Loading latest job postings...</p>
+        </div>
+      )}
       
       {selectedJob && (
         <JobDetailModal
