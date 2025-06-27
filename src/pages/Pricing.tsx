@@ -2,12 +2,12 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 
-const About = () => {
+const Pricing = () => {
   return (
     <Layout>
-      <div>About</div>
+      <div>Pricing</div>
     </Layout>
   );
 };
 
-export default About;
+export default Pricing;

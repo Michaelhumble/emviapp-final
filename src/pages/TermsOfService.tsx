@@ -2,12 +2,12 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 
-const About = () => {
+const TermsOfService = () => {
   return (
     <Layout>
-      <div>About</div>
+      <div>Terms of Service</div>
     </Layout>
   );
 };
 
-export default About;
+export default TermsOfService;
