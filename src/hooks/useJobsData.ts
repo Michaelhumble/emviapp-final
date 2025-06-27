@@ -75,6 +75,112 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     }
   };
 
+  const createJob = async (jobData: any) => {
+    try {
+      // Ensure all required fields are properly formatted
+      const jobPayload = {
+        title: jobData.title,
+        description: jobData.description || '',
+        location: jobData.location || '',
+        compensation_type: jobData.compensation_type || jobData.employment_type || '',
+        compensation_details: jobData.compensation_details || '',
+        requirements: jobData.requirements || '',
+        contact_info: jobData.contact_info || {},
+        pricing_tier: jobData.pricing_tier || 'free',
+        user_id: jobData.user_id,
+        status: 'active'
+      };
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert([jobPayload])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating job:', error);
+        throw error;
+      }
+
+      // Refresh jobs list to show the new job
+      await fetchJobs();
+      
+      return { data, error: null };
+    } catch (err) {
+      console.error('Error in createJob:', err);
+      return { data: null, error: err as Error };
+    }
+  };
+
+  const updateJob = async (jobId: string, jobData: any) => {
+    try {
+      const jobPayload = {
+        title: jobData.title,
+        description: jobData.description || '',
+        location: jobData.location || '',
+        compensation_type: jobData.compensation_type || jobData.employment_type || '',
+        compensation_details: jobData.compensation_details || '',
+        requirements: jobData.requirements || '',
+        contact_info: jobData.contact_info || {},
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .update(jobPayload)
+        .eq('id', jobId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating job:', error);
+        throw error;
+      }
+
+      // Refresh jobs list to show the updated job
+      await fetchJobs();
+      
+      return { data, error: null };
+    } catch (err) {
+      console.error('Error in updateJob:', err);
+      return { data: null, error: err as Error };
+    }
+  };
+
+  const getJobById = async (jobId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('id', jobId)
+        .single();
+
+      if (error) throw error;
+
+      return {
+        id: data.id,
+        title: data.title,
+        company: data.title,
+        location: data.location || '',
+        created_at: data.created_at,
+        description: data.description || '',
+        employment_type: data.compensation_type || '',
+        compensation_details: data.compensation_details || '',
+        contact_info: typeof data.contact_info === 'object' && data.contact_info !== null 
+          ? data.contact_info as { owner_name?: string; phone?: string; email?: string; notes?: string; zalo?: string; }
+          : {},
+        pricing_tier: data.pricing_tier || 'free',
+        user_id: data.user_id,
+        status: data.status,
+        expires_at: data.expires_at,
+        requirements: data.requirements || ''
+      } as Job;
+    } catch (err) {
+      console.error('Error fetching job by ID:', err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
   }, [filters, sortOption]);
@@ -110,7 +216,10 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     setSortOption,
     renewalJobId,
     setActiveRenewalJobId,
-    refetch: fetchJobs
+    refetch: fetchJobs,
+    createJob,
+    updateJob,
+    getJobById
   };
 };
 

@@ -4,6 +4,8 @@ import { Job } from '@/types/job';
 import { JobSummary } from './card-sections/JobSummary';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 
 interface JobListingCardProps {
   job: Job;
@@ -25,9 +27,17 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
   isRenewing,
   showOwnerActions = false
 }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isOwner = user?.id === job.user_id;
+  
   const jobCreatedAt = job.created_at ? String(job.created_at) : '';
   const jobCompensation = 'salary' in job ? job.salary as string : 
                    job.compensation_details || job.compensation_type || '';
+
+  const handleEditJob = () => {
+    navigate(`/jobs/edit/${job.id}`);
+  };
 
   const getPricingTierBadge = (tier?: string) => {
     switch (tier) {
@@ -71,29 +81,28 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
             View Details
           </button>
           
-          {showOwnerActions && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                className="px-3"
-                title="Edit Job"
-              >
-                <Edit size={16} />
-              </Button>
-              
-              {onDelete && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-3 text-red-600 hover:text-red-700 hover:border-red-300"
-                  onClick={onDelete}
-                  title="Delete Job"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              )}
-            </>
+          {isOwner && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="px-3"
+              onClick={handleEditJob}
+              title="Edit Job"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          
+          {(showOwnerActions || isOwner) && onDelete && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="px-3 text-red-600 hover:text-red-700 hover:border-red-300"
+              onClick={onDelete}
+              title="Delete Job"
+            >
+              <Trash2 size={16} />
+            </Button>
           )}
           
           {isExpired && onRenew && (
