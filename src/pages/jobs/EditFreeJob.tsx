@@ -1,147 +1,108 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container } from '@/components/ui/container';
+import { Helmet } from 'react-helmet-async';
+import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useJobMutations } from '@/hooks/jobs/useJobMutations';
+import { useJobQueries } from '@/hooks/jobs/useJobQueries';
+import { useJobValidation } from '@/hooks/jobs/useJobValidation';
+import JobFormFields from '@/components/jobs/JobFormFields';
+import { JobFormData } from '@/types/job';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
 
-interface ContactInfo {
-  owner_name?: string;
-  phone?: string;
-  email?: string;
-  notes?: string;
-  zalo?: string;
-}
-
-interface JobFormData {
-  title: string;
-  location: string;
-  description: string;
-  compensation_details: string;
-  compensation_type: string;
-  contact_info: ContactInfo;
-}
-
 const EditFreeJob = () => {
-  const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [job, setJob] = useState<JobFormData>({
+  const { jobId } = useParams<{ jobId: string }>();
+  const { user, userRole } = useAuth();
+  const { updateJob, deleteJob, loading } = useJobMutations();
+  const { fetchJobById } = useJobQueries();
+  const { validateJobForm } = useJobValidation();
+  
+  const [formData, setFormData] = useState<JobFormData>({
     title: '',
     location: '',
     description: '',
-    compensation_details: '',
     compensation_type: 'hourly',
-    contact_info: {}
+    compensation_details: '',
+    employment_type: 'full-time',
+    contact_info: {
+      owner_name: '',
+      phone: '',
+      email: '',
+      notes: '',
+      zalo: '',
+    }
   });
+  
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [canEdit, setCanEdit] = useState(false);
 
   useEffect(() => {
-    if (jobId) {
-      fetchJob();
-    }
-  }, [jobId]);
-
-  const fetchJob = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('id', jobId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching job:', error);
-        toast.error('Failed to fetch job details');
+    const loadJob = async () => {
+      if (!jobId) {
+        navigate('/jobs');
         return;
       }
 
-      if (data) {
-        // Safely handle contact_info as it might be stored as JSON
-        let contactInfo: ContactInfo = {};
-        if (data.contact_info) {
-          if (typeof data.contact_info === 'string') {
-            try {
-              contactInfo = JSON.parse(data.contact_info);
-            } catch {
-              contactInfo = {};
-            }
-          } else if (typeof data.contact_info === 'object') {
-            contactInfo = data.contact_info as ContactInfo;
-          }
+      try {
+        const job = await fetchJobById(jobId);
+        if (!job) {
+          toast.error('Job not found');
+          navigate('/jobs');
+          return;
         }
 
-        setJob({
-          title: data.title || '',
-          location: data.location || '',
-          description: data.description || '',
-          compensation_details: data.compensation_details || '',
-          compensation_type: data.compensation_type || 'hourly',
-          contact_info: contactInfo
+        // Check permissions
+        const hasPermission = user?.id === job.user_id || userRole === 'admin';
+        if (!hasPermission) {
+          toast.error('You do not have permission to edit this job');
+          navigate('/jobs');
+          return;
+        }
+
+        setCanEdit(true);
+        
+        // Populate form with job data
+        setFormData({
+          title: job.title || '',
+          location: job.location || '',
+          description: job.description || '',
+          compensation_type: job.compensation_type || 'hourly',
+          compensation_details: job.compensation_details || '',
+          employment_type: job.employment_type || 'full-time',
+          contact_info: {
+            owner_name: job.contact_info?.owner_name || '',
+            phone: job.contact_info?.phone || '',
+            email: job.contact_info?.email || '',
+            notes: job.contact_info?.notes || '',
+            zalo: job.contact_info?.zalo || '',
+          }
         });
+      } catch (error) {
+        console.error('Error loading job:', error);
+        toast.error('Failed to load job details');
+        navigate('/jobs');
+      } finally {
+        setInitialLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching job:', error);
-      toast.error('Failed to fetch job details');
-    }
-  };
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!user?.id) {
-      toast.error('You must be logged in to edit a job');
-      return;
-    }
+    loadJob();
+  }, [jobId, user?.id, userRole, navigate, fetchJobById]);
 
-    setLoading(true);
-
-    try {
-      const { error } = await supabase
-        .from('jobs')
-        .update({
-          title: job.title,
-          location: job.location,
-          description: job.description,
-          compensation_details: job.compensation_details,
-          compensation_type: job.compensation_type,
-          contact_info: job.contact_info,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', jobId);
-
-      if (error) {
-        console.error('Error updating job:', error);
-        toast.error('Failed to update job');
-        return;
-      }
-
-      toast.success('Job updated successfully');
-      navigate('/jobs');
-    } catch (error) {
-      console.error('Error updating job:', error);
-      toast.error('Failed to update job');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleInputChange = (field: keyof JobFormData, value: string) => {
-    setJob(prev => ({
+  const handleFieldChange = (field: keyof JobFormData, value: any) => {
+    setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleContactInfoChange = (field: keyof ContactInfo, value: string) => {
-    setJob(prev => ({
+  const handleContactInfoChange = (field: string, value: string) => {
+    setFormData(prev => ({
       ...prev,
       contact_info: {
         ...prev.contact_info,
@@ -150,149 +111,133 @@ const EditFreeJob = () => {
     }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!jobId || !canEdit) return;
+    
+    try {
+      // Validate form data
+      validateJobForm(formData);
+      
+      // Update job
+      const success = await updateJob(jobId, formData);
+      
+      if (success) {
+        navigate('/jobs', { 
+          state: { message: 'Job updated successfully!' }
+        });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Please check all required fields');
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!jobId || !canEdit) return;
+    
+    const confirmed = window.confirm('Are you sure you want to delete this job? This action cannot be undone.');
+    if (!confirmed) return;
+    
+    const success = await deleteJob(jobId);
+    if (success) {
+      navigate('/jobs', { 
+        state: { message: 'Job deleted successfully!' }
+      });
+    }
+  };
+
+  if (initialLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading job details...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!canEdit) {
+    return null; // Will redirect in useEffect
+  }
+
   return (
-    <Container className="py-8 max-w-2xl">
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/jobs')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft size={16} /> Back to Jobs
-        </Button>
+    <Layout>
+      <Helmet>
+        <title>Edit Job | EmviApp</title>
+        <meta name="description" content="Edit your job listing" />
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30 py-8">
+        <div className="max-w-3xl mx-auto px-4">
+          {/* Header */}
+          <div className="mb-6 flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/jobs')}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft size={16} /> Back to Jobs
+            </Button>
+          </div>
+
+          {/* Edit Job Form */}
+          <Card className="shadow-xl border-0">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+              <CardTitle className="text-2xl font-bold">Edit Job</CardTitle>
+              <p className="text-blue-50">
+                Update your job posting details
+              </p>
+            </CardHeader>
+            
+            <CardContent className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <JobFormFields
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  onContactInfoChange={handleContactInfoChange}
+                />
+
+                {/* Action Buttons */}
+                <div className="pt-6 border-t flex gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate('/jobs')}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleDelete}
+                    disabled={loading}
+                    className="flex-1"
+                  >
+                    {loading ? 'Deleting...' : 'Delete Job'}
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading || !formData.title || !formData.location}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    {loading ? 'Updating...' : 'Update Job'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Edit Free Job Posting</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="title">Job Title *</Label>
-              <Input
-                id="title"
-                value={job.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="e.g., Nail Technician Needed"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="location">Location *</Label>
-              <Input
-                id="location"
-                value={job.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="e.g., Houston, TX"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="compensation_details">Salary/Pay</Label>
-              <Input
-                id="compensation_details"
-                value={job.compensation_details}
-                onChange={(e) => handleInputChange('compensation_details', e.target.value)}
-                placeholder="e.g., $15-20/hour or $30,000-40,000/year"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="compensation_type">Pay Type</Label>
-              <select
-                id="compensation_type"
-                value={job.compensation_type}
-                onChange={(e) => handleInputChange('compensation_type', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="hourly">Hourly</option>
-                <option value="salary">Salary</option>
-                <option value="commission">Commission</option>
-                <option value="contract">Contract</option>
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Job Description *</Label>
-              <Textarea
-                id="description"
-                value={job.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Describe the position, requirements, and what you're looking for..."
-                rows={6}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="contact_phone">Phone</Label>
-                <Input
-                  id="contact_phone"
-                  value={job.contact_info.phone || ''}
-                  onChange={(e) => handleContactInfoChange('phone', e.target.value)}
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="contact_email">Email</Label>
-                <Input
-                  id="contact_email"
-                  type="email"
-                  value={job.contact_info.email || ''}
-                  onChange={(e) => handleContactInfoChange('email', e.target.value)}
-                  placeholder="contact@salon.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="contact_name">Contact Name</Label>
-              <Input
-                id="contact_name"
-                value={job.contact_info.owner_name || ''}
-                onChange={(e) => handleContactInfoChange('owner_name', e.target.value)}
-                placeholder="Manager or Owner name"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="contact_notes">Additional Notes</Label>
-              <Textarea
-                id="contact_notes"
-                value={job.contact_info.notes || ''}
-                onChange={(e) => handleContactInfoChange('notes', e.target.value)}
-                placeholder="Any additional contact information or notes..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <Button
-                type="submit"
-                disabled={loading}
-                className="flex items-center gap-2"
-              >
-                <Save size={16} />
-                {loading ? 'Updating...' : 'Update Job'}
-              </Button>
-              
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate('/jobs')}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </Container>
+    </Layout>
   );
 };
 

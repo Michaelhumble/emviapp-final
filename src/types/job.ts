@@ -16,6 +16,7 @@ export interface Job {
     email?: string;
     notes?: string;
     zalo?: string;
+    [key: string]: any;
   };
   for_sale?: boolean;
   asking_price?: string;
@@ -78,6 +79,24 @@ export interface Job {
   badge?: string;
   color?: string;
   hidden?: boolean;
+}
+
+// Create a specific interface for job form data
+export interface JobFormData {
+  title: string;
+  location: string;
+  description?: string;
+  compensation_type?: string;
+  compensation_details?: string;
+  employment_type?: string;
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+    notes?: string;
+    zalo?: string;
+    [key: string]: any;
+  };
 }
 
 // Add missing exported interfaces
