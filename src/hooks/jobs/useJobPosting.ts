@@ -23,6 +23,7 @@ export const useJobPosting = () => {
         : (jobData.requirements || ''),
       contact_info: jobData.contact_info || {},
       pricing_tier: jobData.pricing_tier || 'free',
+      category: jobData.category || 'Other', // Required category field
       user_id: user.id
     };
     

@@ -5,15 +5,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+
+// Job categories - locked choices
+const JOB_CATEGORIES = [
+  'Nail Tech',
+  'Hair Stylist', 
+  'Lash Tech',
+  'Barber',
+  'Spa',
+  'Tattoo',
+  'Esthetician',
+  'Makeup',
+  'Other'
+] as const;
 
 const FreeJobPostingForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    category: '',
+    otherCategoryDescription: '',
     title: '',
     description: '',
     location: '',
@@ -30,6 +46,11 @@ const FreeJobPostingForm = () => {
       return;
     }
 
+    if (!formData.category) {
+      toast.error('Please select a job category');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -42,6 +63,7 @@ const FreeJobPostingForm = () => {
           compensation_type: formData.compensation_type,
           compensation_details: formData.compensation_details,
           requirements: formData.requirements,
+          category: formData.category,
           user_id: user.id,
           status: 'active',
           pricing_tier: 'free',
@@ -71,6 +93,34 @@ const FreeJobPostingForm = () => {
       <h2 className="text-2xl font-bold mb-6">Post a Free Job</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <Label htmlFor="category">Job Category *</Label>
+          <Select onValueChange={(value) => handleInputChange('category', value)} value={formData.category}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a beauty industry category" />
+            </SelectTrigger>
+            <SelectContent>
+              {JOB_CATEGORIES.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {formData.category === 'Other' && (
+          <div>
+            <Label htmlFor="otherCategoryDescription">Please specify the job category</Label>
+            <Input
+              id="otherCategoryDescription"
+              value={formData.otherCategoryDescription}
+              onChange={(e) => handleInputChange('otherCategoryDescription', e.target.value)}
+              placeholder="e.g., Massage Therapist, Receptionist, etc."
+            />
+          </div>
+        )}
+
         <div>
           <Label htmlFor="title">Job Title *</Label>
           <Input

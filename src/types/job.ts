@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   role?: string;
@@ -10,6 +11,7 @@ export interface Job {
   employment_type?: string;
   compensation_details?: string;
   compensation_type?: string;
+  category: string; // Required category field
   contact_info?: {
     owner_name?: string;
     phone?: string;
@@ -88,11 +90,12 @@ export type JobDetailsSubmission = {
   compensation_type?: string;
   compensation_details?: string;
   employment_type?: string;
+  category: string; // Required category field
   requirements?: string[] | string;
   contact_info?: {
     owner_name?: string;
     phone?: string;
-    email?: string;
+    email?: string;  
     notes?: string;
     zalo?: string;
   };

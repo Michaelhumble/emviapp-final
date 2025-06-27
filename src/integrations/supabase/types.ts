@@ -991,6 +991,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          category: string
           compensation_details: string | null
           compensation_type: string | null
           contact_info: Json | null
@@ -1008,6 +1009,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          category: string
           compensation_details?: string | null
           compensation_type?: string | null
           contact_info?: Json | null
@@ -1025,6 +1027,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          category?: string
           compensation_details?: string | null
           compensation_type?: string | null
           contact_info?: Json | null

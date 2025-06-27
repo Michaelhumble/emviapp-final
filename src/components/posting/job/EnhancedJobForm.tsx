@@ -1,17 +1,34 @@
-
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import RequirementsSection from '@/components/posting/sections/RequirementsSection';
 import CompensationSection from '@/components/posting/sections/CompensationSection';
 import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
 import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
 
+// Job categories - locked choices
+const JOB_CATEGORIES = [
+  'Nail Tech',
+  'Hair Stylist', 
+  'Lash Tech',
+  'Barber',
+  'Spa',
+  'Tattoo',
+  'Esthetician',
+  'Makeup',
+  'Other'
+] as const;
+
 const enhancedJobFormSchema = z.object({
+  category: z.enum(JOB_CATEGORIES, { 
+    required_error: "Please select a beauty industry category" 
+  }),
+  otherCategoryDescription: z.string().optional(),
   title: z.string().min(1, "Job title is required"),
   company: z.string().optional(),
   salonName: z.string().min(1, "Salon name is required"),
@@ -45,6 +62,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   const form = useForm<EnhancedJobFormValues>({
     resolver: zodResolver(enhancedJobFormSchema),
     defaultValues: {
+      category: 'Nail Tech', // Default to first option
+      otherCategoryDescription: '',
       title: '',
       company: '',
       salonName: '',
@@ -65,6 +84,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     }
   });
 
+  const selectedCategory = form.watch('category');
+
   // Update form values when initialValues change
   useEffect(() => {
     if (initialValues) {
@@ -72,6 +93,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       
       // Reset form with new values
       form.reset({
+        category: initialValues.category || 'Nail Tech',
+        otherCategoryDescription: initialValues.otherCategoryDescription || '',
         title: initialValues.title || '',
         company: initialValues.company || '',
         salonName: initialValues.company || initialValues.salonName || '',
@@ -105,6 +128,67 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       <div className="max-w-4xl mx-auto p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-12">
+            
+            {/* Category Selection - Required First Step */}
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">Beauty Industry Category</h2>
+                <p className="text-slate-600">Select the primary category for this job posting</p>
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold text-slate-700">
+                      Job Category *
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full h-12 text-base">
+                          <SelectValue placeholder="Select a beauty industry category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {JOB_CATEGORIES.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Other Category Description Field */}
+              {selectedCategory === 'Other' && (
+                <div className="mt-4">
+                  <FormField
+                    control={form.control}
+                    name="otherCategoryDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base font-semibold text-slate-700">
+                          Please specify the job category
+                        </FormLabel>
+                        <FormControl>
+                          <input
+                            {...field}
+                            className="w-full h-12 px-4 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            placeholder="e.g., Massage Therapist, Receptionist, etc."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
+            </div>
+
             <JobDetailsSection control={form.control} />
             <RequirementsSection form={form} />
             <CompensationSection control={form.control} />
