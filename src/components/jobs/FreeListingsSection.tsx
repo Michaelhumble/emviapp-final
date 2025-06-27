@@ -6,15 +6,13 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import JobCardContact from "./JobCardContact";
-import FreeJobActions from "@/components/free-posting/FreeJobActions";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
   onViewDetails: (job: Job) => void;
-  onJobDeleted?: () => void;
 }
 
-const FreeListingsSection = ({ jobs, onViewDetails, onJobDeleted }: FreeListingsSectionProps) => {
+const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) => {
   if (!jobs.length) return null;
 
   return (
@@ -68,9 +66,6 @@ const FreeListingsSection = ({ jobs, onViewDetails, onJobDeleted }: FreeListings
                   Xem Chi Tiết
                 </Button>
               </div>
-
-              {/* Edit/Delete Actions */}
-              <FreeJobActions job={job} onJobDeleted={onJobDeleted} />
             </CardContent>
           </Card>
         ))}

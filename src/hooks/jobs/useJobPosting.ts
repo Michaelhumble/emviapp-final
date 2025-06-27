@@ -14,8 +14,7 @@ export const useJobPosting = () => {
     const safeJobData = {
       ...jobData,
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements : [],
-      specialties: Array.isArray(jobData.specialties) ? jobData.specialties : [],
-      user_id: user.id
+      specialties: Array.isArray(jobData.specialties) ? jobData.specialties : []
     };
     
     try {

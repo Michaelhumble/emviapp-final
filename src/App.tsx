@@ -33,8 +33,6 @@ import SellSalonPage from "@/pages/sell-salon";
 import PostSalon from "@/pages/PostSalon";
 import SalonListingSuccessPage from "@/pages/salon-listing-success";
 import CustomerProfilePage from "@/pages/customer/ProfilePage";
-import PostJobFree from '@/pages/PostJobFree';
-import EditFreeJob from '@/pages/EditFreeJob';
 
 function App() {
   const location = useLocation();
@@ -92,10 +90,6 @@ function App() {
                     <Route path="/refund" element={<Layout><Refund /></Layout>} />
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
-                    
-                    {/* Add new free posting routes */}
-                    <Route path="/post-job-free" element={<PostJobFree />} />
-                    <Route path="/edit-free-job/:jobId" element={<EditFreeJob />} />
                     
                     {/* ... keep existing code (other routes) the same */}
                     {routes.map((route, index) => (
