@@ -3,206 +3,192 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 const FreeJobForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     location: '',
     description: '',
-    compensation_details: '',
     requirements: '',
+    salary_range: '',
     contact_phone: '',
-    contact_email: ''
+    contact_email: user?.email || ''
   });
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!user) {
-      toast.error('Please log in to post a job');
-      navigate('/auth');
+      toast.error('You must be logged in to post a job');
       return;
     }
 
-    if (!formData.title || !formData.location || !formData.description) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setIsSubmitting(true);
-
+    setSubmitting(true);
     try {
-      const jobData = {
-        title: formData.title,
-        location: formData.location,
-        description: formData.description,
-        compensation_details: formData.compensation_details || null,
-        requirements: formData.requirements || null,
-        contact_info: {
-          phone: formData.contact_phone || null,
-          email: formData.contact_email || user.email
-        },
-        pricing_tier: 'free',
-        status: 'active',
-        user_id: user.id,
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
-      };
-
       const { error } = await supabase
         .from('jobs')
-        .insert([jobData]);
+        .insert({
+          title: formData.title,
+          location: formData.location,
+          description: formData.description,
+          requirements: formData.requirements,
+          salary_range: formData.salary_range,
+          contact_info: {
+            phone: formData.contact_phone,
+            email: formData.contact_email
+          },
+          pricing_tier: 'free',
+          status: 'active',
+          user_id: user.id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+        });
 
-      if (error) {
-        console.error('Error creating free job:', error);
-        toast.error('Failed to post job. Please try again.');
-        return;
-      }
+      if (error) throw error;
 
-      toast.success('Free job posted successfully!');
+      toast.success('Job posted successfully!');
       navigate('/jobs');
     } catch (error) {
-      console.error('Unexpected error:', error);
-      toast.error('An error occurred. Please try again.');
+      console.error('Error posting job:', error);
+      toast.error('Failed to post job');
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">
-              Post a Free Job
-            </CardTitle>
-            <p className="text-gray-600 text-center">
-              Post your job listing for free and reach talented professionals
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Job Title *
-                </label>
-                <Input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="e.g., Nail Technician, Hair Stylist"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Location *
-                </label>
-                <Input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="e.g., San Francisco, CA"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Job Description *
-                </label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
-                  rows={6}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Compensation Details
-                </label>
-                <Input
-                  type="text"
-                  value={formData.compensation_details}
-                  onChange={(e) => handleInputChange('compensation_details', e.target.value)}
-                  placeholder="e.g., $20-25/hour, Commission-based, $40,000-50,000/year"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Requirements
-                </label>
-                <Textarea
-                  value={formData.requirements}
-                  onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  placeholder="List any specific requirements, certifications, or experience needed..."
-                  rows={4}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Contact Phone
-                </label>
-                <Input
-                  type="tel"
-                  value={formData.contact_phone}
-                  onChange={(e) => handleInputChange('contact_phone', e.target.value)}
-                  placeholder="Your phone number"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Contact Email
-                </label>
-                <Input
-                  type="email"
-                  value={formData.contact_email}
-                  onChange={(e) => handleInputChange('contact_email', e.target.value)}
-                  placeholder="Your email address"
-                  defaultValue={user?.email || ''}
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate('/jobs')}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1"
-                >
-                  {isSubmitting ? 'Posting...' : 'Post Free Job'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="container mx-auto py-8 max-w-2xl">
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/jobs')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={16} />
+          Back to Jobs
+        </Button>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Post a Free Job</CardTitle>
+          <p className="text-gray-600">Create your job posting - it's completely free!</p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="title">Job Title *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder="e.g., Nail Technician, Hair Stylist"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="location">Location *</Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                required
+                placeholder="City, State"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="salary_range">Salary Range</Label>
+              <Input
+                id="salary_range"
+                value={formData.salary_range}
+                onChange={(e) => setFormData(prev => ({ ...prev, salary_range: e.target.value }))}
+                placeholder="e.g., $15-20/hour, $40,000-50,000/year"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Job Description *</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                required
+                rows={4}
+                placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="requirements">Requirements</Label>
+              <Textarea
+                id="requirements"
+                value={formData.requirements}
+                onChange={(e) => setFormData(prev => ({ ...prev, requirements: e.target.value }))}
+                rows={3}
+                placeholder="List any specific requirements, certifications, or experience needed..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="contact_phone">Contact Phone</Label>
+              <Input
+                id="contact_phone"
+                value={formData.contact_phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, contact_phone: e.target.value }))}
+                placeholder="Your phone number"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="contact_email">Contact Email</Label>
+              <Input
+                id="contact_email"
+                type="email"
+                value={formData.contact_email}
+                onChange={(e) => setFormData(prev => ({ ...prev, contact_email: e.target.value }))}
+                placeholder="Your email address"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Posting...
+                  </>
+                ) : (
+                  'Post Job for Free'
+                )}
+              </Button>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/jobs')}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

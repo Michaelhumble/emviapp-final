@@ -1,293 +1,241 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 const EditFreeJobForm = () => {
-  const navigate = useNavigate();
   const { jobId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [jobData, setJobData] = useState({
     title: '',
     location: '',
     description: '',
-    compensation_details: '',
     requirements: '',
+    salary_range: '',
     contact_phone: '',
     contact_email: ''
   });
 
   useEffect(() => {
-    if (!user || !jobId) return;
-
     const fetchJob = async () => {
+      if (!jobId || !user) return;
+
       try {
         const { data, error } = await supabase
           .from('jobs')
           .select('*')
           .eq('id', jobId)
-          .eq('user_id', user.id)
+          .eq('pricing_tier', 'free')
           .single();
 
-        if (error || !data) {
-          toast.error('Job not found or you do not have permission to edit it');
+        if (error) throw error;
+
+        // Check if user owns this job
+        if (data.user_id !== user.id && user.role !== 'admin') {
+          toast.error('You do not have permission to edit this job.');
           navigate('/jobs');
           return;
         }
 
-        setFormData({
+        // Safely extract contact info
+        const contactInfo = data.contact_info as any;
+        setJobData({
           title: data.title || '',
           location: data.location || '',
           description: data.description || '',
-          compensation_details: data.compensation_details || '',
           requirements: data.requirements || '',
-          contact_phone: data.contact_info?.phone || '',
-          contact_email: data.contact_info?.email || ''
+          salary_range: data.salary_range || '',
+          contact_phone: (contactInfo && typeof contactInfo === 'object' && contactInfo.phone) || '',
+          contact_email: (contactInfo && typeof contactInfo === 'object' && contactInfo.email) || ''
         });
       } catch (error) {
         console.error('Error fetching job:', error);
         toast.error('Failed to load job details');
         navigate('/jobs');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     fetchJob();
-  }, [user, jobId, navigate]);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  }, [jobId, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user || !jobId) return;
+    if (!jobId || !user) return;
 
-    if (!formData.title || !formData.location || !formData.description) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setIsSubmitting(true);
-
+    setSubmitting(true);
     try {
-      const updateData = {
-        title: formData.title,
-        location: formData.location,
-        description: formData.description,
-        compensation_details: formData.compensation_details || null,
-        requirements: formData.requirements || null,
-        contact_info: {
-          phone: formData.contact_phone || null,
-          email: formData.contact_email || user.email
-        },
-        updated_at: new Date().toISOString()
-      };
-
       const { error } = await supabase
         .from('jobs')
-        .update(updateData)
+        .update({
+          title: jobData.title,
+          location: jobData.location,
+          description: jobData.description,
+          requirements: jobData.requirements,
+          salary_range: jobData.salary_range,
+          contact_info: {
+            phone: jobData.contact_phone,
+            email: jobData.contact_email
+          },
+          updated_at: new Date().toISOString()
+        })
         .eq('id', jobId)
         .eq('user_id', user.id);
 
-      if (error) {
-        console.error('Error updating job:', error);
-        toast.error('Failed to update job. Please try again.');
-        return;
-      }
+      if (error) throw error;
 
       toast.success('Job updated successfully!');
       navigate('/jobs');
     } catch (error) {
-      console.error('Unexpected error:', error);
-      toast.error('An error occurred. Please try again.');
+      console.error('Error updating job:', error);
+      toast.error('Failed to update job');
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
-  const handleDelete = async () => {
-    if (!user || !jobId) return;
-
-    if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('jobs')
-        .delete()
-        .eq('id', jobId)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error deleting job:', error);
-        toast.error('Failed to delete job. Please try again.');
-        return;
-      }
-
-      toast.success('Job deleted successfully!');
-      navigate('/jobs');
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      toast.error('An error occurred. Please try again.');
-    }
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto max-w-2xl">
-          <Card>
-            <CardContent className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                <p>Loading job details...</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">
-              Edit Job Posting
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Job Title *
-                </label>
-                <Input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="e.g., Nail Technician, Hair Stylist"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Location *
-                </label>
-                <Input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="e.g., San Francisco, CA"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Job Description *
-                </label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
-                  rows={6}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Compensation Details
-                </label>
-                <Input
-                  type="text"
-                  value={formData.compensation_details}
-                  onChange={(e) => handleInputChange('compensation_details', e.target.value)}
-                  placeholder="e.g., $20-25/hour, Commission-based, $40,000-50,000/year"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Requirements
-                </label>
-                <Textarea
-                  value={formData.requirements}
-                  onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  placeholder="List any specific requirements, certifications, or experience needed..."
-                  rows={4}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Contact Phone
-                </label>
-                <Input
-                  type="tel"
-                  value={formData.contact_phone}
-                  onChange={(e) => handleInputChange('contact_phone', e.target.value)}
-                  placeholder="Your phone number"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Contact Email
-                </label>
-                <Input
-                  type="email"
-                  value={formData.contact_email}
-                  onChange={(e) => handleInputChange('contact_email', e.target.value)}
-                  placeholder="Your email address"
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate('/jobs')}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={handleDelete}
-                  className="flex-1"
-                >
-                  Delete Job
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1"
-                >
-                  {isSubmitting ? 'Updating...' : 'Update Job'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="container mx-auto py-8 max-w-2xl">
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/jobs')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={16} />
+          Back to Jobs
+        </Button>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Edit Job Posting</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="title">Job Title *</Label>
+              <Input
+                id="title"
+                value={jobData.title}
+                onChange={(e) => setJobData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder="e.g., Nail Technician, Hair Stylist"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="location">Location *</Label>
+              <Input
+                id="location"
+                value={jobData.location}
+                onChange={(e) => setJobData(prev => ({ ...prev, location: e.target.value }))}
+                required
+                placeholder="City, State"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="salary_range">Salary Range</Label>
+              <Input
+                id="salary_range"
+                value={jobData.salary_range}
+                onChange={(e) => setJobData(prev => ({ ...prev, salary_range: e.target.value }))}
+                placeholder="e.g., $15-20/hour, $40,000-50,000/year"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Job Description *</Label>
+              <Textarea
+                id="description"
+                value={jobData.description}
+                onChange={(e) => setJobData(prev => ({ ...prev, description: e.target.value }))}
+                required
+                rows={4}
+                placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="requirements">Requirements</Label>
+              <Textarea
+                id="requirements"
+                value={jobData.requirements}
+                onChange={(e) => setJobData(prev => ({ ...prev, requirements: e.target.value }))}
+                rows={3}
+                placeholder="List any specific requirements, certifications, or experience needed..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="contact_phone">Contact Phone</Label>
+              <Input
+                id="contact_phone"
+                value={jobData.contact_phone}
+                onChange={(e) => setJobData(prev => ({ ...prev, contact_phone: e.target.value }))}
+                placeholder="Your phone number"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="contact_email">Contact Email</Label>
+              <Input
+                id="contact_email"
+                type="email"
+                value={jobData.contact_email}
+                onChange={(e) => setJobData(prev => ({ ...prev, contact_email: e.target.value }))}
+                placeholder="Your email address"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Job'
+                )}
+              </Button>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/jobs')}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import FreeJobActions from "@/components/free-posting/FreeJobActions";
 
 const JobsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -34,7 +33,8 @@ const JobsPage: React.FC = () => {
     searchTerm, 
     updateSearchTerm,
     renewalJobId,
-    setActiveRenewalJobId
+    setActiveRenewalJobId,
+    refetch
   } = useJobsData();
   
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -49,6 +49,13 @@ const JobsPage: React.FC = () => {
 
   const handleSearchChange = (value: string) => {
     updateSearchTerm(value);
+  };
+
+  const handleJobDeleted = () => {
+    // Refresh the jobs list when a job is deleted
+    refetch();
+    // Close modal if it's open
+    setSelectedJob(null);
   };
 
   return (
@@ -110,6 +117,7 @@ const JobsPage: React.FC = () => {
       <FreeListingsSection
         jobs={freeJobs}
         onViewDetails={viewJobDetails}
+        onJobDeleted={handleJobDeleted}
       />
 
       {/* Expired Listings Section - our new unified section with 5 cards per row */}
@@ -128,11 +136,6 @@ const JobsPage: React.FC = () => {
           job={selectedJob}
           isOpen={!!selectedJob}
           onClose={closeJobDetails}
-          additionalActions={
-            selectedJob.pricing_tier === 'free' ? (
-              <FreeJobActions job={selectedJob} />
-            ) : null
-          }
         />
       )}
     </Container>
