@@ -1,39 +1,46 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { Container } from '@/components/ui/container';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/auth';
+
+interface ContactInfo {
+  owner_name?: string;
+  phone?: string;
+  email?: string;
+  notes?: string;
+  zalo?: string;
+}
+
+interface JobFormData {
+  title: string;
+  location: string;
+  description: string;
+  compensation_details: string;
+  compensation_type: string;
+  contact_info: ContactInfo;
+}
 
 const PostFreeJob = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState(false);
+  const [job, setJob] = useState<JobFormData>({
     title: '',
     location: '',
     description: '',
     compensation_details: '',
     compensation_type: 'hourly',
-    requirements: '',
-    contact_phone: '',
-    contact_email: '',
-    contact_name: ''
+    contact_info: {}
   });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,207 +50,202 @@ const PostFreeJob = () => {
       return;
     }
 
-    if (!formData.title || !formData.location || !formData.description) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      const jobData = {
-        title: formData.title,
-        location: formData.location,
-        description: formData.description,
-        compensation_details: formData.compensation_details,
-        compensation_type: formData.compensation_type,
-        requirements: formData.requirements,
-        contact_info: {
-          phone: formData.contact_phone,
-          email: formData.contact_email || user.email,
-          owner_name: formData.contact_name
-        },
-        user_id: user.id,
-        pricing_tier: 'free',
-        status: 'active'
-      };
-
       const { error } = await supabase
         .from('jobs')
-        .insert([jobData]);
+        .insert({
+          title: job.title,
+          location: job.location,
+          description: job.description,
+          compensation_details: job.compensation_details,
+          compensation_type: job.compensation_type,
+          contact_info: job.contact_info,
+          user_id: user.id,
+          pricing_tier: 'free',
+          status: 'active',
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+        });
 
       if (error) {
         console.error('Error creating job:', error);
-        toast.error('Failed to create job posting');
+        toast.error('Failed to post job');
         return;
       }
 
       toast.success('Job posted successfully!');
       navigate('/jobs');
-      
     } catch (error) {
-      console.error('Error submitting job:', error);
-      toast.error('Failed to create job posting');
+      console.error('Error creating job:', error);
+      toast.error('Failed to post job');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
+  const handleInputChange = (field: keyof JobFormData, value: string) => {
+    setJob(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleContactInfoChange = (field: keyof ContactInfo, value: string) => {
+    setJob(prev => ({
+      ...prev,
+      contact_info: {
+        ...prev.contact_info,
+        [field]: value
+      }
+    }));
+  };
+
   return (
-    <Container className="py-8 max-w-4xl">
-      {/* Back button */}
+    <Container className="py-8 max-w-2xl">
       <div className="mb-6">
         <Button
           variant="ghost"
-          onClick={() => navigate("/jobs")}
+          onClick={() => navigate('/jobs')}
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} /> Back to Jobs
         </Button>
       </div>
 
-      <h1 className="text-3xl font-playfair font-bold mb-6">
-        Post a Free Job
-      </h1>
+      <Card>
+        <CardHeader>
+          <CardTitle>Post a Free Job</CardTitle>
+          <p className="text-gray-600">
+            Create a job posting at no cost. Your listing will be active for 30 days.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="title">Job Title *</Label>
+              <Input
+                id="title"
+                value={job.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="e.g., Nail Technician Needed"
+                required
+              />
+            </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Label htmlFor="title">Job Title *</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="e.g., Nail Technician Needed"
-              required
-            />
-          </div>
+            <div>
+              <Label htmlFor="location">Location *</Label>
+              <Input
+                id="location"
+                value={job.location}
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                placeholder="e.g., Houston, TX"
+                required
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="location">Location *</Label>
-            <Input
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleInputChange}
-              placeholder="e.g., Houston, TX"
-              required
-            />
-          </div>
-        </div>
+            <div>
+              <Label htmlFor="compensation_details">Salary/Pay</Label>
+              <Input
+                id="compensation_details"
+                value={job.compensation_details}
+                onChange={(e) => handleInputChange('compensation_details', e.target.value)}
+                placeholder="e.g., $15-20/hour or $30,000-40,000/year"
+              />
+            </div>
 
-        <div>
-          <Label htmlFor="description">Job Description *</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Describe the job, responsibilities, and requirements..."
-            className="min-h-[120px]"
-            required
-          />
-        </div>
+            <div>
+              <Label htmlFor="compensation_type">Pay Type</Label>
+              <select
+                id="compensation_type"
+                value={job.compensation_type}
+                onChange={(e) => handleInputChange('compensation_type', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="hourly">Hourly</option>
+                <option value="salary">Salary</option>
+                <option value="commission">Commission</option>
+                <option value="contract">Contract</option>
+              </select>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Label htmlFor="compensation_type">Compensation Type</Label>
-            <select
-              id="compensation_type"
-              name="compensation_type"
-              value={formData.compensation_type}
-              onChange={handleInputChange}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-            >
-              <option value="hourly">Hourly</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="commission">Commission</option>
-              <option value="salary">Salary</option>
-            </select>
-          </div>
+            <div>
+              <Label htmlFor="description">Job Description *</Label>
+              <Textarea
+                id="description"
+                value={job.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Describe the position, requirements, and what you're looking for..."
+                rows={6}
+                required
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="compensation_details">Compensation Details</Label>
-            <Input
-              id="compensation_details"
-              name="compensation_details"
-              value={formData.compensation_details}
-              onChange={handleInputChange}
-              placeholder="e.g., $15-20/hour + tips"
-            />
-          </div>
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="contact_phone">Phone</Label>
+                <Input
+                  id="contact_phone"
+                  value={job.contact_info.phone || ''}
+                  onChange={(e) => handleContactInfoChange('phone', e.target.value)}
+                  placeholder="(555) 123-4567"
+                />
+              </div>
 
-        <div>
-          <Label htmlFor="requirements">Requirements</Label>
-          <Textarea
-            id="requirements"
-            name="requirements"
-            value={formData.requirements}
-            onChange={handleInputChange}
-            placeholder="List any specific requirements, skills, or experience needed..."
-            className="min-h-[80px]"
-          />
-        </div>
+              <div>
+                <Label htmlFor="contact_email">Email</Label>
+                <Input
+                  id="contact_email"
+                  type="email"
+                  value={job.contact_info.email || ''}
+                  onChange={(e) => handleContactInfoChange('email', e.target.value)}
+                  placeholder="contact@salon.com"
+                />
+              </div>
+            </div>
 
-        <div className="border-t pt-6">
-          <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="contact_name">Contact Name</Label>
               <Input
                 id="contact_name"
-                name="contact_name"
-                value={formData.contact_name}
-                onChange={handleInputChange}
-                placeholder="Your name"
+                value={job.contact_info.owner_name || ''}
+                onChange={(e) => handleContactInfoChange('owner_name', e.target.value)}
+                placeholder="Manager or Owner name"
               />
             </div>
 
             <div>
-              <Label htmlFor="contact_phone">Phone Number</Label>
-              <Input
-                id="contact_phone"
-                name="contact_phone"
-                value={formData.contact_phone}
-                onChange={handleInputChange}
-                placeholder="(555) 123-4567"
+              <Label htmlFor="contact_notes">Additional Notes</Label>
+              <Textarea
+                id="contact_notes"
+                value={job.contact_info.notes || ''}
+                onChange={(e) => handleContactInfoChange('notes', e.target.value)}
+                placeholder="Any additional contact information or notes..."
+                rows={3}
               />
             </div>
-          </div>
 
-          <div className="mt-4">
-            <Label htmlFor="contact_email">Email</Label>
-            <Input
-              id="contact_email"
-              name="contact_email"
-              value={formData.contact_email}
-              onChange={handleInputChange}
-              placeholder={user?.email || "your@email.com"}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4 pt-6">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/jobs')}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            {isSubmitting ? 'Posting...' : 'Post Free Job'}
-          </Button>
-        </div>
-      </form>
+            <div className="flex gap-4">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="flex items-center gap-2"
+              >
+                <Plus size={16} />
+                {loading ? 'Posting...' : 'Post Job'}
+              </Button>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/jobs')}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </Container>
   );
 };

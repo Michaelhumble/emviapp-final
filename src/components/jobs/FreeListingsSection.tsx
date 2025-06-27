@@ -53,6 +53,26 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
     }
   };
 
+  const getContactInfo = (job: Job) => {
+    // Safely handle contact_info which might be stored as JSON string or object
+    if (!job.contact_info) return { phone: null };
+    
+    if (typeof job.contact_info === 'string') {
+      try {
+        const parsed = JSON.parse(job.contact_info);
+        return parsed;
+      } catch {
+        return { phone: null };
+      }
+    }
+    
+    if (typeof job.contact_info === 'object') {
+      return job.contact_info;
+    }
+    
+    return { phone: null };
+  };
+
   return (
     <motion.section
       className="mt-8 mb-12"
@@ -65,76 +85,80 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {jobs.map((job) => (
-          <Card
-            key={job.id}
-            className="border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden"
-          >
-            <CardContent className="p-4">
-              <div className="mb-3">
-                <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
-                <p className="text-gray-600">{job.company}</p>
-              </div>
+        {jobs.map((job) => {
+          const contactInfo = getContactInfo(job);
+          
+          return (
+            <Card
+              key={job.id}
+              className="border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden"
+            >
+              <CardContent className="p-4">
+                <div className="mb-3">
+                  <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
+                  <p className="text-gray-600">{job.company}</p>
+                </div>
 
-              <div className="flex items-center text-base text-gray-600 mb-2">
-                <MapPin className="h-4 w-4 mr-1" /> {job.location}
-              </div>
-
-              {job.salary_range && (
                 <div className="flex items-center text-base text-gray-600 mb-2">
-                  <span className="text-lg mr-1">💰</span> {job.salary_range}
+                  <MapPin className="h-4 w-4 mr-1" /> {job.location}
                 </div>
-              )}
 
-              <div className="flex items-center text-base text-gray-600 mb-3">
-                <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
-              </div>
+                {job.compensation_details && (
+                  <div className="flex items-center text-base text-gray-600 mb-2">
+                    <span className="text-lg mr-1">💰</span> {job.compensation_details}
+                  </div>
+                )}
 
-              <div className="flex justify-between items-center mt-3">
-                <div>
-                  {job.contact_info?.phone && (
-                    <JobCardContact phoneNumber={job.contact_info.phone} />
-                  )}
+                <div className="flex items-center text-base text-gray-600 mb-3">
+                  <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
                 </div>
-                
-                <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
-                  onClick={() => onViewDetails(job)}
-                >
-                  Xem Chi Tiết
-                </Button>
-              </div>
 
-              {/* Edit/Delete buttons for authorized users */}
-              {(canEditJob(job) || canDeleteJob(job)) && (
-                <div className="flex gap-2 mt-3 pt-3 border-t">
-                  {canEditJob(job) && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEditJob(job)}
-                      className="flex items-center gap-1"
-                    >
-                      <Edit className="h-3 w-3" />
-                      Edit
-                    </Button>
-                  )}
-                  {canDeleteJob(job) && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDeleteJob(job)}
-                      className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      Delete
-                    </Button>
-                  )}
+                <div className="flex justify-between items-center mt-3">
+                  <div>
+                    {contactInfo.phone && (
+                      <JobCardContact phoneNumber={contactInfo.phone} />
+                    )}
+                  </div>
+                  
+                  <Button
+                    className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                    onClick={() => onViewDetails(job)}
+                  >
+                    Xem Chi Tiết
+                  </Button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+
+                {/* Edit/Delete buttons for authorized users */}
+                {(canEditJob(job) || canDeleteJob(job)) && (
+                  <div className="flex gap-2 mt-3 pt-3 border-t">
+                    {canEditJob(job) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditJob(job)}
+                        className="flex items-center gap-1"
+                      >
+                        <Edit className="h-3 w-3" />
+                        Edit
+                      </Button>
+                    )}
+                    {canDeleteJob(job) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteJob(job)}
+                        className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Delete
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </motion.section>
   );
