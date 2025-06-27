@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { mapSampleJobData } from "@/utils/jobs/sampleJobMapper";
 
@@ -426,3 +425,64 @@ const generateNonVietnameseSalon = (id: string): Job => {
 
 export default generateMixedSalons;
 
+export const generateVietnameseSalonJobs = (): Job[] => {
+  return [
+    {
+      id: "magic-nails-featured",
+      title: "Nail Technician - Magic Nails (Premium Featured)",
+      role: "Nail Technician",
+      company: "Magic Nails",
+      location: "Westminster, CA",
+      posted_at: "2 days ago",
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "Join Magic Nails, Westminster's premier nail salon! We're looking for skilled nail technicians to join our growing team.",
+      vietnamese_description: "Tham gia Magic Nails, tiệm nail hàng đầu Westminster! Chúng tôi đang tìm thợ nail có tay nghề để gia nhập đội ngũ đang phát triển.",
+      for_sale: true,
+      asking_price: "$25,000",
+      number_of_stations: "8",
+      square_feet: "1,200",
+      lease_remaining: "3 years",
+      monthly_rent: "$3,200",
+      current_revenue: "$18,000/month",
+      reason_for_sale: "Retiring owner",
+      equipment_included: true,
+      training_provided: true,
+      financing_available: false,
+      contact_info: {
+        name: "Lisa Nguyen",
+        phone: "(714) 555-0123",
+        email: "lisa@magicnails.com",
+        preferred_contact: "phone"
+      },
+      specialties: ["Gel manicures", "Nail art", "Pedicures"]
+    },
+    {
+      id: "luxury-spa-for-sale",
+      title: "Luxury Nail Spa Business For Sale",
+      role: "Business Owner",
+      company: "Garden Grove Luxury Spa",
+      location: "Garden Grove, CA",
+      posted_at: "1 week ago",
+      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      description: "Established luxury nail spa for sale in prime Garden Grove location. Turn-key operation with loyal customer base.",
+      for_sale: true,
+      asking_price: "$85,000",
+      number_of_stations: "12",
+      square_feet: "2,000",
+      lease_remaining: "5 years",
+      monthly_rent: "$4,800",
+      current_revenue: "$35,000/month",
+      reason_for_sale: "Owner relocating",
+      equipment_included: true,
+      training_provided: true,
+      financing_available: true,
+      contact_info: {
+        name: "Tony Pham",
+        phone: "(714) 555-0456",
+        email: "tony@ggspanails.com",
+        preferred_contact: "email"
+      },
+      specialties: ["Luxury treatments", "Spa services", "Nail extensions"]
+    }
+  ];
+};
