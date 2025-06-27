@@ -5,9 +5,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { premiumJobs } from '@/data/jobs/premiumJobs';
 import { diamondJobs } from '@/data/jobs/diamondJobs';
-import vietnameseJobs from '@/data/protected/vietnameseJobs';
-import expiredListings from '@/data/expiredListings';
-import vietnameseExpiredJobs from '@/data/vietnameseExpiredJobs';
+import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
+import { expiredListings } from '@/data/expiredListings';
+import { vietnameseExpiredJobs } from '@/data/vietnameseExpiredJobs';
 
 export const useJobsData = () => {
   const { user } = useAuth();
@@ -33,9 +33,20 @@ export const useJobsData = () => {
 
       // Transform Supabase jobs to match Job interface
       const transformedSupabaseJobs: Job[] = (supabaseJobs || []).map(job => ({
-        ...job,
-        category: job.category || "Other", // Default category
+        id: job.id,
+        title: job.title || 'Job Title',
+        category: job.category || "Other",
         created_at: job.created_at || new Date().toISOString(),
+        company: job.title || 'Company',
+        location: job.location || '',
+        description: job.description || '',
+        compensation_type: job.compensation_type || '',
+        compensation_details: job.compensation_details || '',
+        contact_info: typeof job.contact_info === 'object' && job.contact_info ? job.contact_info as any : {},
+        user_id: job.user_id || '',
+        status: job.status || 'active',
+        expires_at: job.expires_at || '',
+        requirements: job.requirements || ''
       }));
 
       // Combine all job sources with default categories
@@ -61,7 +72,7 @@ export const useJobsData = () => {
     try {
       const jobToInsert = {
         ...jobData,
-        category: jobData.category || "Other", // Default category
+        category: jobData.category || "Other",
         status: 'active'
       };
 
@@ -73,7 +84,6 @@ export const useJobsData = () => {
 
       if (error) throw error;
 
-      // Refresh jobs list
       await fetchJobs();
       
       return { data, error: null };

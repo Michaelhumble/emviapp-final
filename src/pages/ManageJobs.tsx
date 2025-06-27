@@ -31,21 +31,21 @@ const ManageJobs = () => {
 
         const transformedJobs: JobWithApplications[] = (data || []).map(job => ({
           id: job.id,
+          title: job.title || 'Job Title',
           role: job.title,
-          company: job.company,
-          location: job.location,
-          title: job.title,
-          compensation_type: job.compensation_type,
-          compensation_details: job.compensation_details,
+          company: job.title || 'Company',
+          location: job.location || '',
+          compensation_type: job.compensation_type || '',
+          compensation_details: job.compensation_details || '',
           posted_at: job.created_at,
-          created_at: job.created_at,
-          expires_at: job.expires_at,
-          status: job.status,
-          requirements: job.requirements,
-          description: job.description,
-          category: job.category || "Other", // Default category
+          created_at: job.created_at || new Date().toISOString(),
+          expires_at: job.expires_at || '',
+          status: job.status || 'active',
+          requirements: job.requirements || '',
+          description: job.description || '',
+          category: job.category || "Other",
           _count: {
-            applications: 0 // Mock count for now
+            applications: 0
           }
         }));
 

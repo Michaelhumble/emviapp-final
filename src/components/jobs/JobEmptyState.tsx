@@ -2,15 +2,13 @@
 import { SearchX, RefreshCw, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { JobFilters } from "@/hooks/useJobsData";
 
 interface JobEmptyStateProps {
   searchTerm?: string;
   onClearFilters: () => void;
-  filters?: JobFilters;
 }
 
-const JobEmptyState = ({ searchTerm, onClearFilters, filters }: JobEmptyStateProps) => {
+const JobEmptyState = ({ searchTerm, onClearFilters }: JobEmptyStateProps) => {
   return (
     <div className="py-16 flex flex-col items-center justify-center text-center">
       <div className="bg-gray-100 p-4 rounded-full mb-4">

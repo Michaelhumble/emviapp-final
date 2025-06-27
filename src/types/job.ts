@@ -1,17 +1,19 @@
 
 export interface Job {
   id: string;
+  title: string;
+  
+  // Everything else is optional
   role?: string;
-  title?: string;
   company?: string;
   location?: string;
   posted_at?: string;
-  created_at: string;
+  created_at?: string;
   description?: string;
   employment_type?: string;
   compensation_details?: string;
   compensation_type?: string;
-  category?: string; // Made optional
+  category?: string;
   contact_info?: {
     owner_name?: string;
     phone?: string;
@@ -64,33 +66,28 @@ export interface Job {
   is_vietnamese_listing?: boolean;
   industry?: string;
   post_type?: string; 
-  
-  // Adding missing properties that are referenced elsewhere
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
-  pricing_tier?: string; // Keeping both naming conventions for compatibility
-  salonName?: string; // Add the missing salonName property
+  pricing_tier?: string;
+  salonName?: string;
   salon_id?: string;
   monthly_revenue?: string;
   station_count?: string;
   chair_count?: string;
   sale_price?: string;
   is_salon_for_sale?: boolean;
-  
-  // Additional properties mentioned in the error report
   badge?: string;
   color?: string;
   hidden?: boolean;
 }
 
-// Add missing exported interfaces
 export type JobDetailsSubmission = {
   title: string;
   description?: string;
-  location: string;
+  location?: string;
   compensation_type?: string;
   compensation_details?: string;
   employment_type?: string;
-  category?: string; // Made optional
+  category?: string;
   requirements?: string[] | string;
   contact_info?: {
     owner_name?: string;
@@ -116,9 +113,8 @@ export type JobDetailsSubmission = {
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  salonName?: string; // Ensure salonName property is here
+  salonName?: string;
 }
 
-// Import the PricingOptions from the canonical source
 import { PricingOptions } from '@/utils/posting/types';
 export type { PricingOptions };
