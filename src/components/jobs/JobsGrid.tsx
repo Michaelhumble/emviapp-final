@@ -1,5 +1,5 @@
 
-import BeautyIndustrySections from "./BeautyIndustrySections";
+import UnifiedJobFeed from "./UnifiedJobFeed";
 import { Job } from "@/types/job";
 
 export interface JobsGridProps {
@@ -24,15 +24,11 @@ const JobsGrid = ({
   checkExpiration
 }: JobsGridProps) => {
   return (
-    <BeautyIndustrySections
+    <UnifiedJobFeed
       jobs={jobs}
-      expirations={expirations}
-      currentUserId={currentUserId}
       onRenew={onRenew}
       isRenewing={isRenewing}
       renewalJobId={renewalJobId}
-      onDelete={onDelete}
-      checkExpiration={checkExpiration}
     />
   );
 };

@@ -1,608 +1,452 @@
 
-import { Job } from '@/types/job';
+import { Job } from "@/types/job";
 
-// Current active Vietnamese job listings 
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 export const vietnameseNailJobs: Job[] = [
   {
-    id: 'vn-job-1',
-    title: 'Magic Nails – Great Falls, MT',
-    company: 'Magic Nails Salon',
-    location: 'Great Falls, Montana',
-    description: 'Cần thợ nail gấp. Tiệm ở Great Falls, MT 59405. Cách Missoula, MT 3 tiếng lái xe. Tiệm trong mall lớn, làm việc 6 ngày/tuần từ 10am-9pm. Bao lương hoặc ăn chia tùy thợ. Có chỗ ở. Bao làm đủ giờ, chỗ này rất tốt cho thợ muốn tích góp tiền. Tiệm rộng rãi, mới, ghế làm chân mới, đủ 8 bàn. Có thể nhận cả gia đình.',
-    salary_range: '$1,200–$2,000/tuần + chỗ ở',
+    id: "vn-nail-1",
+    title: "Tuyển Thợ Nail Gấp - Houston, TX",
+    company: "Houston Nail Studio",
+    location: "Houston, TX",
+    description: "Cần gấp thợ nail biết làm bột và chân tay nước. Tiệm đông khách, lương cao.",
+    salary_range: "$1,800–$2,200/tuần",
     is_featured: true,
     isPinned: true,
     contact_info: {
-      phone: '(406) 781-7589'
+      phone: "(713) 555-0123"
     },
-    specialties: ['full-time', 'chỗ ở', 'bao lương'],
-    image: '/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png',
-    created_at: new Date().toISOString()
+    specialties: ["Acrylic", "Gel", "Pedicure"],
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-2',
-    title: 'Tuyển Thợ Nail – Las Vegas, NV',
-    company: 'Diamond Nails',
-    location: 'Las Vegas, Nevada',
-    description: 'Cần tuyển thợ nail làm việc tại Las Vegas. Yêu cầu: biết làm bột, dip, và tay chân nước. Thu nhập tốt, tiệm đông khách, tip cao. Làm việc 6 ngày/tuần. Có thể bao ăn ở nếu ở xa. Liên hệ ngay để được tư vấn chi tiết.',
-    salary_range: '$1,300–$1,800/tuần',
+    id: "vn-nail-2",
+    title: "Nail Technician - Dallas, TX",
+    company: "Elite Nails Dallas",
+    location: "Dallas, TX",
+    description: "Looking for experienced nail technician. Great pay and benefits package.",
+    salary_range: "$2,000–$2,500/tuần",
     is_featured: false,
     is_urgent: true,
     contact_info: {
-      phone: '(702) 123-4567'
+      phone: "(214) 555-0456"
     },
-    specialties: ['bột', 'dip', 'tay chân nước'],
-    image: '/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png',
-    created_at: new Date().toISOString()
+    specialties: ["Nail Art", "French Manicure", "Extensions"],
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-3',
-    title: 'Cần Thợ Nail – Orlando, FL',
-    company: 'Luxury Nails & Spa',
-    location: 'Orlando, Florida',
-    description: 'Cần gấp thợ nail kinh nghiệm tại Orlando. Tiệm ở khu Mỹ trắng, giá cao, tip hậu. Có bao lương tùy theo kinh nghiệm và tay nghề. Môi trường làm việc thân thiện, sang trọng. Liên hệ để biết thêm chi tiết.',
-    salary_range: '$1,400–$2,200/tuần',
+    id: "vn-nail-3",
+    title: "Cần Thợ Làm Móng - Phoenix, AZ",
+    company: "Desert Nails Spa",
+    location: "Phoenix, AZ",
+    description: "Tiệm ở khu cao cấp, cần thợ có kinh nghiệm làm gel và nail art.",
+    salary_range: "$1,600–$2,000/tuần",
     contact_info: {
-      phone: '(407) 987-6543'
+      phone: "(602) 555-0789"
     },
-    specialties: ['dip', 'gel-x', 'pedicure'],
-    image: '/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png',
-    created_at: new Date().toISOString()
-  },
-  
-  // Adding the 9 new job listings with images
-  {
-    id: 'vn-job-4',
-    title: 'Tuyển Thợ Nail – Clawson, MI',
-    company: 'Clawson Nails',
-    location: 'Clawson, MI',
-    description: 'Tiệm nhỏ khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x.',
-    salary_range: '$1,200–$1,800/tuần',
-    contact_info: {
-      phone: '(248) 403-6472 | (248) 525-9911'
-    },
-    specialties: ['Bột', 'Dip', 'Gel-X'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/858af941-13ac-412a-9747-38bc7a6f0e19.png'
+    specialties: ["Gel Polish", "Nail Art", "Manicure"],
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-5',
-    title: 'Thợ Nail Design – Milano Nail Spa, Humble, TX',
-    company: 'Milano Nail Spa',
-    location: '6947 FM 1960 Rd E, Humble, TX',
-    description: 'Receptionist $150/ngày. 60 người đang làm chung.',
-    salary_range: '>$2,000/tuần',
+    id: "vn-nail-4",
+    title: "Thợ Nail - San Antonio, TX",
+    company: "Royal Nails",
+    location: "San Antonio, TX",
+    description: "Cần thợ nail có kinh nghiệm, lương tốt, môi trường làm việc thân thiện.",
+    salary_range: "$1,500–$1,900/tuần",
     contact_info: {
-      phone: '(346) 398-6868 (gặp Nhi)'
+      phone: "(210) 555-0321"
     },
-    specialties: ['Nail Design', 'Receptionist'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/bd877b0a-2f98-45fb-8e1a-37ad868ae786.png'
+    specialties: ["Acrylic", "Dip Powder", "Pedicure"],
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-6',
-    title: 'Tuyển Thợ Nail – South Lake Tahoe, CA',
-    company: 'South Lake Tahoe Nails',
-    location: 'South Lake Tahoe, CA',
-    description: 'Tiệm dễ thương, khách du lịch chịu chi.',
-    salary_range: '$1,600–$2,500+/tuần',
+    id: "vn-nail-5",
+    title: "Tuyển Thợ Bột - Austin, TX",
+    company: "Austin Nail Bar",
+    location: "Austin, TX",
+    description: "Chuyên về acrylic và dip powder. Cần thợ có tay nghề cao.",
+    salary_range: "$1,700–$2,100/tuần",
     contact_info: {
-      phone: '(916) 802-1922'
+      phone: "(512) 555-0654"
     },
-    specialties: ['Nail Technician'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/abbd160d-295b-46cd-9777-d590aab8ddb0.png'
+    specialties: ["Acrylic", "Dip Powder", "Nail Extensions"],
+    created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-7',
-    title: 'Cần Thợ Nail – Killeen, TX',
-    company: 'Killeen Nails',
-    location: 'Killeen, TX',
-    description: 'Tiệm lớn, giá cao, tip tốt.',
-    salary_range: '$1,500+/tuần',
+    id: "vn-nail-6",
+    title: "Nail Artist - Miami, FL",
+    company: "South Beach Nails",
+    location: "Miami, FL",
+    description: "High-end salon looking for creative nail artist with Instagram following.",
+    salary_range: "$2,200–$2,800/tuần",
     contact_info: {
-      phone: '(512) 540-6173 | (806) 777-0526'
+      phone: "(305) 555-0987"
     },
-    specialties: ['Nail Technician'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/59818517-3985-420d-9aa9-3d1af667c11f.png'
+    specialties: ["Nail Art", "3D Designs", "Luxury Services"],
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-8',
-    title: 'Tìm Người Làm Nail – New Jersey',
-    company: 'New Jersey Nails',
-    location: 'New Jersey',
-    description: 'Khách ổn định, ưu tiên biết bột và design đơn giản.',
-    salary_range: '$1,600/tuần + tip',
+    id: "vn-nail-7",
+    title: "Thợ Chân Tay Nước - Orlando, FL",
+    company: "Disney Nails",
+    location: "Orlando, FL",
+    description: "Cần thợ làm chân tay nước, gần khu Disney, khách du lịch nhiều.",
+    salary_range: "$1,400–$1,800/tuần",
     contact_info: {
-      phone: '(551) 333-5678'
+      phone: "(407) 555-0246"
     },
-    specialties: ['Bột', 'Design'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/b939e509-7f6f-4322-a0f5-b269fa617531.png'
+    specialties: ["Manicure", "Pedicure", "Gel Polish"],
+    created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-9',
-    title: 'Cần Gấp Thợ Làm Chân Tay Nước – Houston, TX',
-    company: 'Houston Nails',
-    location: 'Houston, TX',
-    description: 'Ưu tiên tay nghề cứng, làm nhẹ nhàng.',
-    salary_range: 'Part/Full-time – lương tốt',
+    id: "vn-nail-8",
+    title: "Senior Nail Tech - Las Vegas, NV",
+    company: "Vegas Luxury Nails",
+    location: "Las Vegas, NV",
+    description: "Casino area salon needs experienced nail technician for VIP clients.",
+    salary_range: "$2,500–$3,200/tuần",
     contact_info: {
-      phone: '(832) 444-2299'
+      phone: "(702) 555-0135"
     },
-    specialties: ['Chân Tay Nước'],
-    created_at: new Date().toISOString(),
+    specialties: ["Luxury Services", "VIP Treatment", "All Techniques"],
+    created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-nail-9",
+    title: "Cần Thợ Nail Gấp - Denver, CO",
+    company: "Mountain View Nails",
+    location: "Denver, CO",
+    description: "Tiệm mới mở, cần thợ có kinh nghiệm để xây dựng clientele.",
+    salary_range: "$1,600–$2,000/tuần",
+    contact_info: {
+      phone: "(303) 555-0579"
+    },
+    specialties: ["All Services", "Customer Building", "Team Work"],
+    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
     is_urgent: true,
-    image: '/lovable-uploads/858af941-13ac-412a-9747-38bc7a6f0e19.png'
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-10',
-    title: 'Tuyển Thợ Nail – Seattle, WA',
-    company: 'Seattle Nails',
-    location: 'Seattle, WA',
-    description: 'Tiệm sang, chủ dễ chịu, cần thợ có kinh nghiệm.',
-    salary_range: '$1,800–$2,400/tuần',
+    id: "vn-nail-10",
+    title: "Nail Specialist - Seattle, WA",
+    company: "Pacific Northwest Nails",
+    location: "Seattle, WA",
+    description: "Eco-friendly salon specializing in non-toxic nail products.",
+    salary_range: "$1,800–$2,300/tuần",
     contact_info: {
-      phone: '(206) 888-1234'
+      phone: "(206) 555-0864"
     },
-    specialties: ['Nail Technician'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/bd877b0a-2f98-45fb-8e1a-37ad868ae786.png'
+    specialties: ["Eco-Friendly Products", "Non-Toxic", "Natural Nails"],
+    created_at: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-11',
-    title: 'Tuyển Thợ Làm Dip Powder – Orlando, FL',
-    company: 'Orlando Nails',
-    location: 'Orlando, FL',
-    description: 'Khách trẻ, chủ yếu là Mỹ trắng.',
-    salary_range: '$1,400–$1,900/tuần',
+    id: "vn-nail-11",
+    title: "Thợ Nail - Portland, OR",
+    company: "Rose City Nails",
+    location: "Portland, OR",
+    description: "Boutique salon in trendy Pearl District needs skilled nail artist.",
+    salary_range: "$1,700–$2,200/tuần",
     contact_info: {
-      phone: '(407) 777-9898'
+      phone: "(503) 555-0741"
     },
-    specialties: ['Dip Powder'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/abbd160d-295b-46cd-9777-d590aab8ddb0.png'
+    specialties: ["Artistic Designs", "Trendy Styles", "Custom Work"],
+    created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-job-12',
-    title: 'Cần Thợ Full Set – Los Angeles, CA',
-    company: 'Los Angeles Nails',
-    location: 'Los Angeles, CA',
-    description: 'Làm việc trong môi trường chuyên nghiệp.',
-    salary_range: '$1,800–$2,200/tuần',
+    id: "vn-nail-12",
+    title: "Nail Technician - Atlanta, GA",
+    company: "Peachtree Nails",
+    location: "Atlanta, GA",
+    description: "Busy Buckhead location needs reliable nail technician.",
+    salary_range: "$1,500–$2,000/tuần",
     contact_info: {
-      phone: '(323) 555-9012'
+      phone: "(404) 555-0852"
     },
-    specialties: ['Full Set'],
-    created_at: new Date().toISOString(),
-    image: '/lovable-uploads/59818517-3985-420d-9aa9-3d1af667c11f.png'
-  }
-];
-
-// Expired job listings - restored with 26 total expired jobs
-export const vietnameseExpiredJobs: Job[] = [
-  {
-    id: 'vn-expired-1',
-    title: 'Cần Thợ Nail - Atlanta, GA',
-    company: 'Atlanta Nail Spa',
-    location: 'Atlanta, Georgia',
-    description: 'Cần thợ nail có kinh nghiệm làm việc tại Atlanta. Lương cao, môi trường làm việc thoải mái. Tiệm đông khách quanh năm.',
-    salary_range: '$1,000-$1,500/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(404) 555-7890'
-    },
-    specialties: ['bột', 'gel', 'tay chân nước'],
-    image: '/lovable-uploads/f138d312-24eb-4eba-9109-6ead42e2191b.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString()
+    specialties: ["High Volume", "Efficiency", "Quality Service"],
+    created_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-2',
-    title: 'Tuyển Thợ Bột & Chân Tay Nước - Boston',
-    company: 'Luxury Boston Nails',
-    location: 'Boston, Massachusetts',
-    description: 'Tiệm ở khu Mỹ trắng. Cần thợ biết làm bột và chân tay nước, môi trường làm việc thân thiện.',
-    salary_range: '$1,200-$1,600/tuần',
-    status: 'expired',
+    id: "vn-nail-13",
+    title: "Tuyển Thợ Nail - Charlotte, NC",
+    company: "Queen City Nails",
+    location: "Charlotte, NC",
+    description: "Growing salon chain seeks experienced nail technicians for expansion.",
+    salary_range: "$1,600–$2,100/tuần",
+    status: "active",
     contact_info: {
-      phone: '(617) 555-4321'
+      phone: "(704) 555-0963"
     },
-    specialties: ['bột', 'chân tay nước'],
-    image: '/lovable-uploads/ac277b59-f6e7-44b5-892c-17748fe76233.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 32)).toISOString()
+    specialties: ["Chain Experience", "Consistency", "Team Player"],
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-3',
-    title: 'Tuyển Thợ Nail Gấp - Philadelphia',
-    company: 'Diamond Nails Philly',
-    location: 'Philadelphia, Pennsylvania',
-    description: 'Cần thợ nail gấp, bao lương $6,000-$7,000/tháng tùy theo kinh nghiệm. Tiệm đông khách, tips hậu.',
-    salary_range: '$6,000-$7,000/tháng',
-    status: 'expired',
-    is_urgent: true,
+    id: "vn-nail-14",
+    title: "Nail Artist - Nashville, TN",
+    company: "Music City Nails",
+    location: "Nashville, TN",
+    description: "Celebrity clientele salon needs top-tier nail artist.",
+    salary_range: "$2,000–$2,700/tuần",
+    status: "active",
     contact_info: {
-      phone: '(215) 555-8765'
+      phone: "(615) 555-0174"
     },
-    specialties: ['nail tech', 'full-time'],
-    image: '/lovable-uploads/fd1aa5a5-543c-4bb3-901b-12abeddb24a6.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 40)).toISOString()
+    specialties: ["Celebrity Work", "Red Carpet", "Media Ready"],
+    image: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
+    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-4',
-    title: 'Cần Người Làm Dip & Design - Miami',
-    company: 'South Beach Nails',
-    location: 'Miami Beach, Florida',
-    description: 'Cần thợ nail biết làm dip và design. Tiệm khu du lịch, khách sang, tip cao.',
-    salary_range: '$1,300-$2,000/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(305) 555-1234'
-    },
-    specialties: ['dip', 'design', 'nail art'],
-    image: '/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 33)).toISOString()
-  },
-  {
-    id: 'vn-expired-5',
-    title: 'Cần Thợ Nail - Chicago, IL',
-    company: 'Windy City Nails',
-    location: 'Chicago, Illinois',
-    description: 'Tiệm ở trung tâm Chicago, cần thợ có kinh nghiệm làm đủ loại nail. Income cao, môi trường chuyên nghiệp.',
-    salary_range: '$1,400-$1,800/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(312) 555-9876'
-    },
-    specialties: ['full set', 'pedicure', 'gel-x'],
-    image: '/lovable-uploads/7c3758f3-e99d-4ce5-8da6-dc0ab8ab0b72.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString()
-  },
-  {
-    id: 'vn-expired-6',
-    title: 'Tìm Thợ Bột - San Diego',
-    company: 'Ocean View Nails',
-    location: 'San Diego, California',
-    description: 'Cần thợ bột có kinh nghiệm. Tiệm view biển, khu khách sạn 5 sao, khách hàng tip hậu.',
-    salary_range: '$1,500-$1,900/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(619) 555-2468'
-    },
-    specialties: ['bột', 'acrylic'],
-    image: '/lovable-uploads/dad16970-8483-4bbd-876d-2889c121fd7a.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 37)).toISOString()
-  },
-  {
-    id: 'vn-expired-7',
-    title: 'Thợ Nail Có Kinh Nghiệm - Denver',
-    company: 'Mile High Nails',
-    location: 'Denver, Colorado',
-    description: 'Cần thợ nail có kinh nghiệm làm việc tại Denver. Bao lương $1,100-$1,600/tuần. Có chỗ ở.',
-    salary_range: '$1,100-$1,600/tuần + chỗ ở',
-    status: 'expired',
-    contact_info: {
-      phone: '(720) 555-1357'
-    },
-    specialties: ['kinh nghiệm', 'chỗ ở', 'bao lương'],
-    image: '/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 42)).toISOString()
-  },
-  {
-    id: 'vn-expired-8',
-    title: 'Cần Thợ Nail - Seattle, WA',
-    company: 'Emerald City Nails',
-    location: 'Seattle, Washington',
-    description: 'Cần thợ nail làm chân tay nước và wax. Income $5,000-$6,000/tháng, tiệm đóng cửa ngày thứ 2.',
-    salary_range: '$5,000-$6,000/tháng',
-    status: 'expired',
-    contact_info: {
-      phone: '(206) 555-3690'
-    },
-    specialties: ['chân tay nước', 'wax'],
-    image: '/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 36)).toISOString()
-  },
-  {
-    id: 'vn-expired-9',
-    title: 'Tuyển Thợ Full-time - Houston',
-    company: 'Texas Luxury Nails',
-    location: 'Houston, Texas',
-    description: 'Cần thợ nail full-time, biết làm đủ thứ. Lương $4,800-$6,000/tháng tùy theo khả năng.',
-    salary_range: '$4,800-$6,000/tháng',
-    status: 'expired',
-    contact_info: {
-      phone: '(832) 555-2580'
-    },
-    specialties: ['full-time', 'làm đủ thứ'],
-    image: '/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 31)).toISOString()
-  },
-  {
-    id: 'vn-expired-10',
-    title: 'Cần Thợ Gel-X - Portland',
-    company: 'Rose City Nails',
-    location: 'Portland, Oregon',
-    description: 'Tìm thợ nail chuyên làm Gel-X, khách hàng cao cấp, tiệm khu downtown.',
-    salary_range: '$1,200-$1,700/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(503) 555-9753'
-    },
-    specialties: ['gel-x', 'khu downtown'],
-    image: '/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 34)).toISOString()
-  },
-  {
-    id: 'vn-expired-11',
-    title: 'Tuyển Thợ Nail Gel - Phoenix',
-    company: 'Desert Bloom Nails',
-    location: 'Phoenix, Arizona',
-    description: 'Cần thợ nail biết làm gel, dip, pedicure. Tiệm mới, thiết bị hiện đại, lương cao.',
-    salary_range: '$1,300-$1,800/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(602) 555-8642'
-    },
-    specialties: ['gel', 'dip', 'pedicure'],
-    image: '/lovable-uploads/f138d312-24eb-4eba-9109-6ead42e2191b.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 39)).toISOString()
-  },
-  {
-    id: 'vn-expired-12',
-    title: 'Cần Thợ Pedicure - Minneapolis',
-    company: 'North Star Nails',
-    location: 'Minneapolis, Minnesota',
-    description: 'Tuyển thợ chuyên làm pedicure, lương $1,100-$1,500/tuần tùy theo kinh nghiệm.',
-    salary_range: '$1,100-$1,500/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(612) 555-7531'
-    },
-    specialties: ['pedicure'],
-    image: '/lovable-uploads/ac277b59-f6e7-44b5-892c-17748fe76233.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 41)).toISOString()
-  },
-  {
-    id: 'vn-expired-13',
-    title: 'Thợ Nail Lương Cao - New Orleans',
-    company: 'Bayou Nails & Spa',
-    location: 'New Orleans, Louisiana',
-    description: 'Cần thợ nail full-time hoặc part-time, thu nhập $1,200-$1,600/tuần, khu du lịch.',
-    salary_range: '$1,200-$1,600/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(504) 555-1598'
-    },
-    specialties: ['full-time', 'part-time', 'khu du lịch'],
-    image: '/lovable-uploads/fd1aa5a5-543c-4bb3-901b-12abeddb24a6.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 43)).toISOString()
-  },
-  {
-    id: 'vn-expired-14',
-    title: 'Cần Thợ Nail Full-time - Columbus',
-    company: 'Buckeye Nails',
-    location: 'Columbus, Ohio',
-    description: 'Tuyển thợ nail làm việc full-time, bao lương $4,500-$5,800/tháng. Có chỗ ở thoải mái.',
-    salary_range: '$4,500-$5,800/tháng + chỗ ở',
-    status: 'expired',
-    contact_info: {
-      phone: '(614) 555-3579'
-    },
-    specialties: ['full-time', 'bao lương', 'chỗ ở'],
-    image: '/lovable-uploads/7c3758f3-e99d-4ce5-8da6-dc0ab8ab0b72.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 38)).toISOString()
-  },
-  {
-    id: 'vn-expired-15',
-    title: 'Tuyển Thợ Nail Gấp - Nashville',
-    company: 'Music City Nails',
-    location: 'Nashville, Tennessee',
-    description: 'Cần gấp thợ nail biết làm đủ thứ. Thu nhập $5,000-$7,000/tháng, tiệm đông khách quanh năm.',
-    salary_range: '$5,000-$7,000/tháng',
-    status: 'expired',
+    id: "vn-nail-15",
+    title: "Cần Thợ Bột Gấp - Memphis, TN",
+    company: "Blues City Nails",
+    location: "Memphis, TN",
+    description: "Acrylic specialist needed immediately for busy downtown location.",
+    salary_range: "$1,400–$1,900/tuần",
+    status: "urgent",
     is_urgent: true,
     contact_info: {
-      phone: '(615) 555-2468'
+      phone: "(901) 555-0285"
     },
-    specialties: ['làm đủ thứ', 'thu nhập cao'],
-    image: '/lovable-uploads/dad16970-8483-4bbd-876d-2889c121fd7a.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 37)).toISOString()
+    specialties: ["Acrylic Expert", "Speed", "Volume Work"],
+    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-16',
-    title: 'Cần Thợ Nail - Charlotte',
-    company: 'Queen City Nails',
-    location: 'Charlotte, North Carolina',
-    description: 'Tìm thợ nail có kinh nghiệm, tiệm khu shopping mall, lương $1,000-$1,500/tuần.',
-    salary_range: '$1,000-$1,500/tuần',
-    status: 'expired',
+    id: "vn-nail-16",
+    title: "Nail Tech - Louisville, KY",
+    company: "Derby Nails",
+    location: "Louisville, KY",
+    description: "Horse racing season brings high-end clientele, need skilled tech.",
+    salary_range: "$1,500–$2,000/tuần",
+    status: "active",
     contact_info: {
-      phone: '(704) 555-8024'
+      phone: "(502) 555-0396"
     },
-    specialties: ['kinh nghiệm', 'shopping mall'],
-    image: '/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 44)).toISOString()
+    specialties: ["Seasonal Work", "High-End", "Special Events"],
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    created_at: new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-17',
-    title: 'Thợ Bột & Wax - Kansas City',
-    company: 'Midwest Nails',
-    location: 'Kansas City, Missouri',
-    description: 'Cần thợ bột và wax, thu nhập $1,100-$1,400/tuần, môi trường làm việc vui vẻ.',
-    salary_range: '$1,100-$1,400/tuần',
-    status: 'expired',
+    id: "vn-nail-17",
+    title: "Thợ Nail - Cincinnati, OH",
+    company: "Ohio River Nails",
+    location: "Cincinnati, OH",
+    description: "Family-owned salon seeks long-term nail technician to join our team.",
+    salary_range: "$1,300–$1,700/tuần",
+    status: "active",
     contact_info: {
-      phone: '(816) 555-9632'
+      phone: "(513) 555-0407"
     },
-    specialties: ['bột', 'wax'],
-    image: '/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 32)).toISOString()
+    specialties: ["Family Environment", "Stability", "Growth"],
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-18',
-    title: 'Tuyển Thợ Nails - Salt Lake City',
-    company: 'Mountain View Nails',
-    location: 'Salt Lake City, Utah',
-    description: 'Cần thợ nail biết làm đủ thứ, thu nhập $1,200-$1,600/tuần, tiệm đóng cửa ngày chủ nhật.',
-    salary_range: '$1,200-$1,600/tuần',
-    status: 'expired',
+    id: "vn-nail-18",
+    title: "Nail Specialist - Columbus, OH",
+    company: "Buckeye Nails",
+    location: "Columbus, OH",
+    description: "University area salon needs nail tech familiar with young clientele.",
+    salary_range: "$1,400–$1,800/tuần",
+    status: "active",
     contact_info: {
-      phone: '(801) 555-7412'
+      phone: "(614) 555-0518"
     },
-    specialties: ['làm đủ thứ', 'nghỉ chủ nhật'],
-    image: '/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 33)).toISOString()
+    specialties: ["Young Clientele", "Trendy Styles", "Social Media"],
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    created_at: new Date(Date.now() - 19 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-19',
-    title: 'Cần Thợ Chân Tay Nước - Providence',
-    company: 'Ocean State Nails',
-    location: 'Providence, Rhode Island',
-    description: 'Tuyển thợ làm chân tay nước, part-time hoặc full-time, thu nhập $900-$1,300/tuần.',
-    salary_range: '$900-$1,300/tuần',
-    status: 'expired',
+    id: "vn-nail-19",
+    title: "Tuyển Thợ Nail - Indianapolis, IN",
+    company: "Speedway Nails",
+    location: "Indianapolis, IN",
+    description: "Race season brings celebrities and VIPs, need experienced tech.",
+    salary_range: "$1,600–$2,200/tuần",
+    status: "active",
     contact_info: {
-      phone: '(401) 555-3698'
+      phone: "(317) 555-0629"
     },
-    specialties: ['chân tay nước', 'part-time', 'full-time'],
-    image: '/lovable-uploads/f138d312-24eb-4eba-9109-6ead42e2191b.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 40)).toISOString()
+    specialties: ["VIP Service", "Race Season", "Celebrity Work"],
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-20',
-    title: 'Tuyển Thợ Bột và Gel - Detroit',
-    company: 'Motor City Nails',
-    location: 'Detroit, Michigan',
-    description: 'Cần thợ bột và gel, lương $1,000-$1,400/tuần tùy theo kinh nghiệm, tiệm đông khách.',
-    salary_range: '$1,000-$1,400/tuần',
-    status: 'expired',
+    id: "vn-nail-20",
+    title: "Nail Artist - Detroit, MI",
+    company: "Motor City Nails",
+    location: "Detroit, MI",
+    description: "Downtown revival area salon seeks creative nail artist.",
+    salary_range: "$1,500–$2,000/tuần",
+    status: "active",
     contact_info: {
-      phone: '(313) 555-7896'
+      phone: "(313) 555-0730"
     },
-    specialties: ['bột', 'gel'],
-    image: '/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 41)).toISOString()
+    specialties: ["Urban Style", "Creative Designs", "Community Focus"],
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    created_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-21',
-    title: 'Cần Thợ Nail Biết Design - Richmond',
-    company: 'Capital Nails',
-    location: 'Richmond, Virginia',
-    description: 'Tìm thợ nail biết làm design, lương $1,200-$1,600/tuần, tiệm khu trung tâm.',
-    salary_range: '$1,200-$1,600/tuần',
-    status: 'expired',
+    id: "vn-nail-21",
+    title: "Thợ Chân Tay - Milwaukee, WI",
+    company: "Brew City Nails",
+    location: "Milwaukee, WI",
+    description: "Friendly neighborhood salon needs reliable mani-pedi specialist.",
+    salary_range: "$1,200–$1,600/tuần",
+    status: "active",
     contact_info: {
-      phone: '(804) 555-2583'
+      phone: "(414) 555-0841"
     },
-    specialties: ['design', 'khu trung tâm'],
-    image: '/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 36)).toISOString()
+    specialties: ["Manicure", "Pedicure", "Neighborhood Feel"],
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    created_at: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-22',
-    title: 'Thợ Nail Full-time - San Antonio',
-    company: 'Alamo City Nails',
-    location: 'San Antonio, Texas',
-    description: 'Cần thợ nail làm việc full-time, ưu tiên người có kinh nghiệm, thu nhập $1,100-$1,500/tuần.',
-    salary_range: '$1,100-$1,500/tuần',
-    status: 'expired',
+    id: "vn-nail-22",
+    title: "Nail Technician - Minneapolis, MN",
+    company: "Twin Cities Nails",
+    location: "Minneapolis, MN",
+    description: "Upscale salon in Uptown seeks skilled nail technician.",
+    salary_range: "$1,600–$2,100/tuần",
+    status: "active",
     contact_info: {
-      phone: '(210) 555-9147'
+      phone: "(612) 555-0952"
     },
-    specialties: ['full-time', 'kinh nghiệm'],
-    image: '/lovable-uploads/ac277b59-f6e7-44b5-892c-17748fe76233.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 39)).toISOString()
+    specialties: ["Upscale Service", "Modern Techniques", "Client Relations"],
+    image: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
+    created_at: new Date(Date.now() - 23 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-23',
-    title: 'Cần Thợ Nail - Pittsburgh',
-    company: 'Steel City Nails',
-    location: 'Pittsburgh, Pennsylvania',
-    description: 'Tuyển thợ nail biết làm đủ thứ, thu nhập $1,000-$1,400/tuần, tiệm khu Mỹ trắng.',
-    salary_range: '$1,000-$1,400/tuần',
-    status: 'expired',
+    id: "vn-nail-23",
+    title: "Cần Thợ Nail - Des Moines, IA",
+    company: "Prairie Nails",
+    location: "Des Moines, IA",
+    description: "Established salon seeks nail tech to serve loyal customer base.",
+    salary_range: "$1,300–$1,700/tuần",
+    status: "active",
     contact_info: {
-      phone: '(412) 555-7532'
+      phone: "(515) 555-0163"
     },
-    specialties: ['làm đủ thứ', 'khu Mỹ trắng'],
-    image: '/lovable-uploads/fd1aa5a5-543c-4bb3-901b-12abeddb24a6.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 42)).toISOString()
+    specialties: ["Established Clientele", "Loyalty Focus", "Consistency"],
+    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    created_at: new Date(Date.now() - 24 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-24',
-    title: 'Tìm Thợ Gel-X - Milwaukee',
-    company: 'Lakefront Nails',
-    location: 'Milwaukee, Wisconsin',
-    description: 'Cần thợ nail có kinh nghiệm làm Gel-X, thu nhập $1,100-$1,500/tuần, tiệm đông khách.',
-    salary_range: '$1,100-$1,500/tuần',
-    status: 'expired',
+    id: "vn-nail-24",
+    title: "Nail Artist - Kansas City, MO",
+    company: "BBQ City Nails",
+    location: "Kansas City, MO",
+    description: "Jazz district salon needs nail artist with creative flair.",
+    salary_range: "$1,400–$1,900/tuần",
+    status: "active",
     contact_info: {
-      phone: '(414) 555-3698'
+      phone: "(816) 555-0274"
     },
-    specialties: ['gel-x', 'kinh nghiệm'],
-    image: '/lovable-uploads/7c3758f3-e99d-4ce5-8da6-dc0ab8ab0b72.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 38)).toISOString()
+    specialties: ["Creative Flair", "Jazz Culture", "Artistic Expression"],
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-25',
-    title: 'Thợ Nail Lương Cao - Indianapolis',
-    company: 'Circle City Nails',
-    location: 'Indianapolis, Indiana',
-    description: 'Cần thợ nail lương cao, biết làm đủ thứ, thu nhập $1,300-$1,700/tuần.',
-    salary_range: '$1,300-$1,700/tuần',
-    status: 'expired',
+    id: "vn-nail-25",
+    title: "Thợ Nail - St. Louis, MO",
+    company: "Gateway Nails",
+    location: "St. Louis, MO",
+    description: "Historic neighborhood salon seeks experienced nail technician.",
+    salary_range: "$1,300–$1,800/tuần",
+    status: "active",
     contact_info: {
-      phone: '(317) 555-8024'
+      phone: "(314) 555-0385"
     },
-    specialties: ['làm đủ thứ', 'lương cao'],
-    image: '/lovable-uploads/dad16970-8483-4bbd-876d-2889c121fd7a.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString()
+    specialties: ["Historic Area", "Community Based", "Traditional Service"],
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    created_at: new Date(Date.now() - 26 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-26',
-    title: 'Cần Thợ Tay Chân Nước - Cincinnati',
-    company: 'Queen City Nails',
-    location: 'Cincinnati, Ohio',
-    description: 'Tuyển thợ tay chân nước, thu nhập $900-$1,200/tuần, làm việc 6 ngày/tuần.',
-    salary_range: '$900-$1,200/tuần',
-    status: 'expired',
-    contact_info: {
-      phone: '(513) 555-9632'
-    },
-    specialties: ['tay chân nước', '6 ngày/tuần'],
-    image: '/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 45)).toISOString()
-  },
-  {
-    id: 'vn-expired-27',
-    title: 'Tuyển Thợ Nail Gấp - Sacramento',
-    company: 'Capital Nails & Spa',
-    location: 'Sacramento, California',
-    description: 'Cần gấp thợ nail, ưu tiên người biết làm bột và chân tay nước, lương $1,200-$1,600/tuần.',
-    salary_range: '$1,200-$1,600/tuần',
-    status: 'expired',
+    id: "vn-nail-26",
+    title: "Nail Tech - Omaha, NE",
+    company: "Big Red Nails",
+    location: "Omaha, NE",
+    description: "Growing city salon chain seeks nail tech for new location.",
+    salary_range: "$1,400–$1,900/tuần",
+    status: "active",
     is_urgent: true,
     contact_info: {
-      phone: '(916) 555-7412'
+      phone: "(402) 555-0496"
     },
-    specialties: ['bột', 'chân tay nước'],
-    image: '/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 31)).toISOString()
+    specialties: ["Chain Growth", "New Location", "Expansion Team"],
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    created_at: new Date(Date.now() - 27 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   },
   {
-    id: 'vn-expired-28',
-    title: 'Cần Thợ Dip & Gel - Tampa',
-    company: 'Bay Side Nails',
-    location: 'Tampa, Florida',
-    description: 'Tuyển thợ nail biết làm dip và gel, thu nhập $1,300-$1,700/tuần, tiệm khu du lịch.',
-    salary_range: '$1,300-$1,700/tuần',
-    status: 'expired',
+    id: "vn-nail-27",
+    title: "Nail Specialist - Wichita, KS",
+    company: "Wheat State Nails",
+    location: "Wichita, KS",
+    description: "Aircraft industry town salon needs dependable nail specialist.",
+    salary_range: "$1,200–$1,600/tuần",
+    status: "active",
     contact_info: {
-      phone: '(813) 555-3698'
+      phone: "(316) 555-0507"
     },
-    specialties: ['dip', 'gel', 'khu du lịch'],
-    image: '/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png',
-    created_at: new Date(new Date().setDate(new Date().getDate() - 34)).toISOString()
+    specialties: ["Dependable Service", "Working Professionals", "Reliability"],
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    created_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-nail-28",
+    title: "Tuyển Thợ Nail - Tulsa, OK",
+    company: "Oil City Nails",
+    location: "Tulsa, OK",
+    description: "Energy sector clientele brings good tips, need skilled nail tech.",
+    salary_range: "$1,500–$2,000/tuần",
+    status: "active",
+    contact_info: {
+      phone: "(918) 555-0618"
+    },
+    specialties: ["Energy Sector", "Good Tips", "Professional Clientele"],
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    created_at: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString(),
+    category: "Nail Tech"
   }
 ];
