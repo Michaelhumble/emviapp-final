@@ -55,13 +55,20 @@ const PostFreeJob = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('🚀 Free job form submitted with data:', formData);
+    console.log('🚀 Free job form submitted with data:', JSON.stringify(formData, null, 2));
     
     try {
       // Validate form data
+      console.log('🔍 Validating form data...');
       validateJobForm(formData);
-      
       console.log('✅ Form validation passed');
+      
+      // Log the exact data being sent
+      console.log('📤 Sending job data to createJob:', {
+        formData,
+        pricingTier: 'free',
+        timestamp: new Date().toISOString()
+      });
       
       // Create job with free pricing tier
       const success = await createJob(formData, 'free');
@@ -73,17 +80,30 @@ const PostFreeJob = () => {
           state: { message: 'Your free job has been posted successfully!' }
         });
       } else {
-        console.error('❌ Failed to create free job');
+        console.error('❌ Failed to create free job - createJob returned false');
+        toast.error('Failed to post job. Please check the console for details.');
       }
     } catch (error) {
       console.error('❌ Form submission error:', error);
+      console.error('❌ Full error details:', JSON.stringify(error, null, 2));
       if (error instanceof Error) {
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
         toast.error(error.message);
       } else {
+        console.error('❌ Unknown error type:', typeof error);
         toast.error('Please check all required fields');
       }
     }
   };
+
+  console.log('🎨 PostFreeJob: Rendering with current form data:', {
+    title: formData.title,
+    location: formData.location,
+    hasDescription: !!formData.description,
+    hasContactInfo: !!formData.contact_info?.owner_name,
+    loading
+  });
 
   return (
     <Layout>

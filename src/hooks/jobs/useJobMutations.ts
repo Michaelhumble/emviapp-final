@@ -34,23 +34,31 @@ export const useJobMutations = () => {
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       };
 
-      console.log('📤 Attempting to insert job with payload:', jobPayload);
+      console.log('📤 Attempting to insert job with payload:', JSON.stringify(jobPayload, null, 2));
 
       const { data, error } = await supabase
         .from('jobs')
         .insert(jobPayload)
-        .select(); // Add select to return the created job
+        .select();
 
       if (error) {
         console.error('❌ Supabase insert error:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw error;
       }
 
       console.log('✅ Job created successfully:', data);
+      console.log('✅ Inserted job data:', JSON.stringify(data, null, 2));
       toast.success('Job posted successfully!');
       return true;
     } catch (error) {
       console.error('❌ Error creating job:', error);
+      console.error('❌ Full error object:', JSON.stringify(error, null, 2));
       toast.error('Failed to post job. Please try again.');
       return false;
     } finally {
@@ -59,7 +67,10 @@ export const useJobMutations = () => {
   };
 
   const updateJob = async (jobId: string, jobData: Partial<JobFormData>) => {
+    console.log('🔄 updateJob called with:', { jobId, jobData, userId: user?.id });
+    
     if (!user?.id) {
+      console.error('❌ No user ID found for update');
       toast.error('You must be logged in to update a job');
       return false;
     }
@@ -77,18 +88,24 @@ export const useJobMutations = () => {
         updated_at: new Date().toISOString(),
       };
 
+      console.log('📤 Attempting to update job with payload:', JSON.stringify(updatePayload, null, 2));
+
       const { error } = await supabase
         .from('jobs')
         .update(updatePayload)
         .eq('id', jobId)
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase update error:', error);
+        throw error;
+      }
 
+      console.log('✅ Job updated successfully');
       toast.success('Job updated successfully!');
       return true;
     } catch (error) {
-      console.error('Error updating job:', error);
+      console.error('❌ Error updating job:', error);
       toast.error('Failed to update job. Please try again.');
       return false;
     } finally {
@@ -97,7 +114,10 @@ export const useJobMutations = () => {
   };
 
   const deleteJob = async (jobId: string) => {
+    console.log('🗑️ deleteJob called with:', { jobId, userId: user?.id });
+    
     if (!user?.id) {
+      console.error('❌ No user ID found for delete');
       toast.error('You must be logged in to delete a job');
       return false;
     }
@@ -110,12 +130,16 @@ export const useJobMutations = () => {
         .eq('id', jobId)
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase delete error:', error);
+        throw error;
+      }
 
+      console.log('✅ Job deleted successfully');
       toast.success('Job deleted successfully!');
       return true;
     } catch (error) {
-      console.error('Error deleting job:', error);
+      console.error('❌ Error deleting job:', error);
       toast.error('Failed to delete job. Please try again.');
       return false;
     } finally {
