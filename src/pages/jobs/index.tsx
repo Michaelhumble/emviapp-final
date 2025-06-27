@@ -33,11 +33,11 @@ const JobsPage: React.FC = () => {
     searchTerm, 
     updateSearchTerm,
     renewalJobId,
-    setActiveRenewalJobId,
-    refetch
+    setActiveRenewalJobId
   } = useJobsData();
   
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -52,8 +52,8 @@ const JobsPage: React.FC = () => {
   };
 
   const handleJobDeleted = () => {
-    // Refresh the jobs list when a job is deleted
-    refetch();
+    // Trigger a refresh by updating the refresh key
+    setRefreshKey(prev => prev + 1);
     // Close modal if it's open
     setSelectedJob(null);
   };
@@ -115,6 +115,7 @@ const JobsPage: React.FC = () => {
 
       {/* Free Listings Section - 5 cards per row */}
       <FreeListingsSection
+        key={refreshKey} // Force re-render when jobs are deleted
         jobs={freeJobs}
         onViewDetails={viewJobDetails}
         onJobDeleted={handleJobDeleted}

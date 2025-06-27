@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { Container } from '@/components/ui/container';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const EditFreeJobForm = () => {
   const { jobId } = useParams();
@@ -17,82 +18,93 @@ const EditFreeJobForm = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [jobData, setJobData] = useState({
+  const [jobData, setJobData] = useState<any>(null);
+  const [formData, setFormData] = useState({
     title: '',
+    company: '',
     location: '',
     description: '',
-    requirements: '',
     salary_range: '',
-    contact_phone: '',
-    contact_email: ''
+    compensation_type: 'hourly',
+    requirements: '',
+    contact_info: {
+      phone: '',
+      email: ''
+    }
   });
 
   useEffect(() => {
-    const fetchJob = async () => {
-      if (!jobId || !user) return;
+    fetchJobData();
+  }, [jobId]);
 
-      try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*')
-          .eq('id', jobId)
-          .eq('pricing_tier', 'free')
-          .single();
+  const fetchJobData = async () => {
+    if (!jobId) return;
 
-        if (error) throw error;
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('id', jobId)
+        .single();
 
-        // Check if user owns this job
-        if (data.user_id !== user.id && user.role !== 'admin') {
-          toast.error('You do not have permission to edit this job.');
-          navigate('/jobs');
-          return;
-        }
+      if (error) throw error;
 
-        // Safely extract contact info
-        const contactInfo = data.contact_info as any;
-        setJobData({
-          title: data.title || '',
-          location: data.location || '',
-          description: data.description || '',
-          requirements: data.requirements || '',
-          salary_range: data.salary_range || '',
-          contact_phone: (contactInfo && typeof contactInfo === 'object' && contactInfo.phone) || '',
-          contact_email: (contactInfo && typeof contactInfo === 'object' && contactInfo.email) || ''
-        });
-      } catch (error) {
-        console.error('Error fetching job:', error);
-        toast.error('Failed to load job details');
+      if (!data) {
+        toast.error('Job not found');
         navigate('/jobs');
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
 
-    fetchJob();
-  }, [jobId, user, navigate]);
+      // Check if user can edit this job
+      if (data.user_id !== user?.id && user?.role !== 'admin') {
+        toast.error('You do not have permission to edit this job');
+        navigate('/jobs');
+        return;
+      }
+
+      setJobData(data);
+      setFormData({
+        title: data.title || '',
+        company: data.company || '',
+        location: data.location || '',
+        description: data.description || '',
+        salary_range: data.compensation_details || '', // Use compensation_details instead of salary_range
+        compensation_type: data.compensation_type || 'hourly',
+        requirements: data.requirements || '',
+        contact_info: {
+          phone: data.contact_info?.phone || '',
+          email: data.contact_info?.email || ''
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching job:', error);
+      toast.error('Failed to load job data');
+      navigate('/jobs');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!jobId || !user) return;
+    if (!jobId) return;
 
     setSubmitting(true);
     try {
       const { error } = await supabase
         .from('jobs')
         .update({
-          title: jobData.title,
-          location: jobData.location,
-          description: jobData.description,
-          requirements: jobData.requirements,
-          salary_range: jobData.salary_range,
-          contact_info: {
-            phone: jobData.contact_phone,
-            email: jobData.contact_email
-          },
+          title: formData.title,
+          location: formData.location,
+          description: formData.description,
+          compensation_details: formData.salary_range, // Map to compensation_details
+          compensation_type: formData.compensation_type,
+          requirements: formData.requirements,
+          contact_info: formData.contact_info,
           updated_at: new Date().toISOString()
         })
         .eq('id', jobId)
-        .eq('user_id', user.id);
+        .eq('user_id', user!.id);
 
       if (error) throw error;
 
@@ -108,22 +120,23 @@ const EditFreeJobForm = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
+      <Container className="py-8">
+        <div className="flex items-center justify-center min-h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </Container>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-2xl">
+    <Container className="py-8 max-w-2xl">
       <div className="mb-6">
         <Button
           variant="ghost"
           onClick={() => navigate('/jobs')}
           className="flex items-center gap-2"
         >
-          <ArrowLeft size={16} />
-          Back to Jobs
+          <ArrowLeft size={16} /> Back to Jobs
         </Button>
       </div>
 
@@ -137,10 +150,9 @@ const EditFreeJobForm = () => {
               <Label htmlFor="title">Job Title *</Label>
               <Input
                 id="title"
-                value={jobData.title}
-                onChange={(e) => setJobData(prev => ({ ...prev, title: e.target.value }))}
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
-                placeholder="e.g., Nail Technician, Hair Stylist"
               />
             </div>
 
@@ -148,20 +160,10 @@ const EditFreeJobForm = () => {
               <Label htmlFor="location">Location *</Label>
               <Input
                 id="location"
-                value={jobData.location}
-                onChange={(e) => setJobData(prev => ({ ...prev, location: e.target.value }))}
-                required
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 placeholder="City, State"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="salary_range">Salary Range</Label>
-              <Input
-                id="salary_range"
-                value={jobData.salary_range}
-                onChange={(e) => setJobData(prev => ({ ...prev, salary_range: e.target.value }))}
-                placeholder="e.g., $15-20/hour, $40,000-50,000/year"
+                required
               />
             </div>
 
@@ -169,11 +171,20 @@ const EditFreeJobForm = () => {
               <Label htmlFor="description">Job Description *</Label>
               <Textarea
                 id="description"
-                value={jobData.description}
-                onChange={(e) => setJobData(prev => ({ ...prev, description: e.target.value }))}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={6}
                 required
-                rows={4}
-                placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="salary">Salary/Compensation</Label>
+              <Input
+                id="salary"
+                value={formData.salary_range}
+                onChange={(e) => setFormData({ ...formData, salary_range: e.target.value })}
+                placeholder="e.g., $15-20/hour, $40,000-50,000/year"
               />
             </div>
 
@@ -181,40 +192,43 @@ const EditFreeJobForm = () => {
               <Label htmlFor="requirements">Requirements</Label>
               <Textarea
                 id="requirements"
-                value={jobData.requirements}
-                onChange={(e) => setJobData(prev => ({ ...prev, requirements: e.target.value }))}
-                rows={3}
-                placeholder="List any specific requirements, certifications, or experience needed..."
+                value={formData.requirements}
+                onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                rows={4}
+                placeholder="List any specific requirements or qualifications"
               />
             </div>
 
-            <div>
-              <Label htmlFor="contact_phone">Contact Phone</Label>
-              <Input
-                id="contact_phone"
-                value={jobData.contact_phone}
-                onChange={(e) => setJobData(prev => ({ ...prev, contact_phone: e.target.value }))}
-                placeholder="Your phone number"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="contact_email">Contact Email</Label>
-              <Input
-                id="contact_email"
-                type="email"
-                value={jobData.contact_email}
-                onChange={(e) => setJobData(prev => ({ ...prev, contact_email: e.target.value }))}
-                placeholder="Your email address"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Contact Phone</Label>
+                <Input
+                  id="phone"
+                  value={formData.contact_info.phone}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    contact_info: { ...formData.contact_info, phone: e.target.value }
+                  })}
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Contact Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.contact_info.email}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    contact_info: { ...formData.contact_info, email: e.target.value }
+                  })}
+                  placeholder="contact@example.com"
+                />
+              </div>
             </div>
 
             <div className="flex gap-4">
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="bg-green-600 hover:bg-green-700"
-              >
+              <Button type="submit" disabled={submitting}>
                 {submitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -224,7 +238,6 @@ const EditFreeJobForm = () => {
                   'Update Job'
                 )}
               </Button>
-              
               <Button
                 type="button"
                 variant="outline"
@@ -236,7 +249,7 @@ const EditFreeJobForm = () => {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 };
 
