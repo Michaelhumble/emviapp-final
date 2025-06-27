@@ -19,7 +19,7 @@ import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -37,6 +37,7 @@ const JobsPage: React.FC = () => {
   } = useJobsData();
   
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -50,16 +51,27 @@ const JobsPage: React.FC = () => {
     updateSearchTerm(value);
   };
 
+  const refreshFreeJobs = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
   return (
     <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
-      {/* Back to Home button */}
-      <div className="mb-6">
+      {/* Header with Back and Post Free Job buttons */}
+      <div className="mb-6 flex justify-between items-center">
         <Button
           variant="ghost"
           onClick={() => navigate("/")}
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} /> Back to Home
+        </Button>
+        
+        <Button
+          onClick={() => navigate("/jobs/post-free")}
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+        >
+          <Plus size={16} /> Post a Free Job
         </Button>
       </div>
       
@@ -101,6 +113,7 @@ const JobsPage: React.FC = () => {
       <FreeListingsSection
         jobs={freeJobs}
         onViewDetails={viewJobDetails}
+        key={refreshKey}
       />
 
       {/* Expired Listings Section - our new unified section with 5 cards per row */}
@@ -113,9 +126,6 @@ const JobsPage: React.FC = () => {
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
-
-      {/* Remove the outdated jobs grid that's showing expired jobs */}
-      {/* This was likely the source of the duplicate expired listings */}
       
       {selectedJob && (
         <JobDetailModal

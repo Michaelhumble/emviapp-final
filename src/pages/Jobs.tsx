@@ -5,6 +5,8 @@ import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Routes, Route } from 'react-router-dom';
 import CreateJobPosting from './jobs/CreateJobPosting';
+import PostFreeJob from './jobs/PostFreeJob';
+import EditFreeJob from './jobs/EditFreeJob';
 import { useTranslation } from '@/hooks/useTranslation';
 import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 
@@ -35,6 +37,8 @@ const Jobs = () => {
         <Routes>
           <Route path="/" element={<JobsPage />} />
           <Route path="/create" element={<CreateJobPosting />} />
+          <Route path="/post-free" element={<PostFreeJob />} />
+          <Route path="/edit-free/:jobId" element={<EditFreeJob />} />
         </Routes>
       </div>
       <MobileJobsNavBar />

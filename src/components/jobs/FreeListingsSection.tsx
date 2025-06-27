@@ -3,9 +3,13 @@ import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Edit, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import JobCardContact from "./JobCardContact";
+import { useJobPermissions } from "@/hooks/useJobPermissions";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface FreeListingsSectionProps {
   jobs: Job[];
@@ -13,7 +17,41 @@ interface FreeListingsSectionProps {
 }
 
 const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) => {
+  const { canEditJob, canDeleteJob } = useJobPermissions();
+  const navigate = useNavigate();
+
   if (!jobs.length) return null;
+
+  const handleEditJob = (job: Job) => {
+    // Navigate to edit form with job ID
+    navigate(`/jobs/edit-free/${job.id}`);
+  };
+
+  const handleDeleteJob = async (job: Job) => {
+    if (!window.confirm('Are you sure you want to delete this job posting?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', job.id);
+
+      if (error) {
+        console.error('Error deleting job:', error);
+        toast.error('Failed to delete job');
+        return;
+      }
+
+      toast.success('Job deleted successfully');
+      // Trigger a page refresh or update the jobs list
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      toast.error('Failed to delete job');
+    }
+  };
 
   return (
     <motion.section
@@ -66,6 +104,34 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
                   Xem Chi Tiết
                 </Button>
               </div>
+
+              {/* Edit/Delete buttons for authorized users */}
+              {(canEditJob(job) || canDeleteJob(job)) && (
+                <div className="flex gap-2 mt-3 pt-3 border-t">
+                  {canEditJob(job) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditJob(job)}
+                      className="flex items-center gap-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      Edit
+                    </Button>
+                  )}
+                  {canDeleteJob(job) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteJob(job)}
+                      className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Delete
+                    </Button>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
