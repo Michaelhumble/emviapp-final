@@ -11,6 +11,8 @@ interface AuthActionProps {
   authenticatedContent?: React.ReactNode;
   fallbackContent?: React.ReactNode;
   authMode?: 'signin' | 'signup';
+  customTitle?: string;
+  creditMessage?: string;
 }
 
 const AuthAction: React.FC<AuthActionProps> = ({ 
@@ -19,7 +21,9 @@ const AuthAction: React.FC<AuthActionProps> = ({
   redirectPath,
   authenticatedContent,
   fallbackContent,
-  authMode = 'signup'
+  authMode = 'signup',
+  customTitle,
+  creditMessage
 }) => {
   const { isSignedIn } = useAuth();
   const { openModal } = useAuthModal();
