@@ -1,166 +1,53 @@
 
 import { Job } from "@/types/job";
 
-// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
-// These demo/sample listings must remain visible in production until at least June 26, 2026.
-// Only the project owner (Michael) can approve any removal or update of these mockups.
-
-// Define the Supabase URL for the images
-const SUPABASE_URL = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails";
-
-// Sort jobs by highest salary to lowest (creating FOMO effect)
-// Helper function to extract numeric value from salary for sorting
-const getSalaryValue = (salary: string): number => {
-  if (salary.includes('>')) {
-    // For ">$2,000/tuần" format, extract 2000
-    return parseFloat(salary.replace(/[^0-9.]/g, ''));
-  }
-  if (salary.includes('–')) {
-    // For range "$1,600–$2,500+/tuần", extract the higher value (2500)
-    const parts = salary.split('–');
-    const higherPart = parts[1] || parts[0];
-    return parseFloat(higherPart.replace(/[^0-9.]/g, ''));
-  }
-  // Default case: just extract the number
-  return parseFloat(salary.replace(/[^0-9.]/g, ''));
-};
-
-// List of verified working images from the Supabase bucket
-const verifiedImages = [
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-10.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-11.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-12.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-13.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-14.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-15.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-16.png`,
-  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-17.png`,
-];
-
 export const premiumJobs: Job[] = [
   {
     id: "premium-1",
-    title: "Thợ Nail Design – Milano Nail Spa, Humble, TX",
-    company: "Milano Nail Spa",
-    location: "6947 FM 1960 Rd E, Humble, TX",
-    created_at: new Date("2025-05-03").toISOString(),
-    description: "Receptionist $150/ngày. 60 người đang làm chung.",
-    image: verifiedImages[0],
+    title: "Tuyển Thợ Nail Gấp – Austin, TX",
+    company: "Austin Nail Studio",
+    location: "Austin, TX",
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Cần gấp thợ nail biết làm bột và chân tay nước. Tiệm đông khách, lương cao.",
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
     contact_info: {
-      phone: "(346) 398-6868 (gặp Nhi)"
+      phone: "(512) 555-0123"
     },
-    salary_range: ">$2,000/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
+    salary_range: "$1,800–$2,200/tuần",
+    pricingTier: "premium",
+    is_vietnamese_listing: true,
+    category: "Nail Tech"
   },
   {
     id: "premium-2",
-    title: "Tuyển Thợ Nail – South Lake Tahoe, CA",
-    company: "Tahoe Nail Salon",
-    location: "South Lake Tahoe, CA",
-    created_at: new Date("2025-05-01").toISOString(),
-    description: "Tiệm dễ thương, khách du lịch chịu chi.",
-    image: verifiedImages[1],
+    title: "Nail Technician Wanted – Dallas, TX",
+    company: "Elite Nails Dallas",
+    location: "Dallas, TX",
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Looking for experienced nail technician. Great pay and benefits package.",
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
     contact_info: {
-      phone: "(916) 802-1922"
+      phone: "(214) 555-0456"
     },
-    salary_range: "$1,600–$2,500+/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
+    salary_range: "$2,000–$2,500/tuần",
+    pricingTier: "premium",
+    is_vietnamese_listing: false,
+    category: "Nail Tech"
   },
   {
     id: "premium-3",
-    title: "Cần Thợ Nail – Killeen, TX",
-    company: "Killeen Nail Salon",
-    location: "Killeen, TX",
-    created_at: new Date("2025-04-29").toISOString(),
-    description: "Tiệm lớn, giá cao, tip tốt.",
-    image: verifiedImages[2],
+    title: "Cần Thợ Làm Móng – Phoenix, AZ",
+    company: "Desert Nails Spa",
+    location: "Phoenix, AZ",
+    created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tiệm ở khu cao cấp, cần thợ có kinh nghiệm làm gel và nail art.",
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
     contact_info: {
-      phone: "(512) 540-6173 | (806) 777-0526"
+      phone: "(602) 555-0789"
     },
-    salary_range: "$1,500+/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
-  },
-  {
-    id: "premium-4",
-    title: "Tuyển Thợ Nail – Clawson, MI",
-    company: "Clawson Nail Salon",
-    location: "Clawson, MI",
-    created_at: new Date("2025-05-05").toISOString(),
-    description: "Tiệm nhỏ khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x.",
-    image: verifiedImages[3],
-    contact_info: {
-      phone: "(248) 403-6472 | (248) 525-9911"
-    },
-    salary_range: "$1,200–$1,800/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
-  },
-  {
-    id: "premium-5",
-    title: "Cần thợ làm bột ombré, dip, chân tay nước",
-    company: "Clinton Nail Spa",
-    location: "Clinton, MD",
-    created_at: new Date("2025-05-04").toISOString(),
-    description: "Khách dễ chịu, tip cao.",
-    image: verifiedImages[4],
-    contact_info: {
-      phone: "703-980-6551"
-    },
-    salary_range: "$1,200/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
-  },
-  {
-    id: "premium-6",
-    title: "Tiệm Fort Worth TX cần thợ làm đủ thứ",
-    company: "Nails Fort Worth",
-    location: "Fort Worth, TX",
-    created_at: new Date("2025-05-02").toISOString(),
-    description: "Làm đủ thứ. Môi trường vui vẻ.",
-    image: verifiedImages[5],
-    contact_info: {
-      phone: "817-841-5157"
-    },
-    salary_range: "$1,400/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
-  },
-  {
-    id: "premium-7",
-    title: "Cần thợ dipping tại Chicago",
-    company: "Chicago Nails",
-    location: "Chicago, IL",
-    created_at: new Date("2025-05-02").toISOString(),
-    description: "Cần thợ bột, dipping tại Chicago.",
-    image: verifiedImages[6],
-    contact_info: {
-      phone: "779-475-0679"
-    },
-    salary_range: "$1,400/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
-  },
-  {
-    id: "premium-8",
-    title: "Tiệm ở Iowa cần thợ nữ",
-    company: "Iowa Nail Lounge",
-    location: "Iowa",
-    created_at: new Date("2025-05-02").toISOString(),
-    description: "Full set, chân tay nước.",
-    image: verifiedImages[7],
-    contact_info: {
-      phone: "402-617-8806"
-    },
-    salary_range: "$1,300/tuần",
-    pricingTier: "premium" as const,
-    is_vietnamese_listing: true
+    salary_range: "$1,600–$2,000/tuần",
+    pricingTier: "premium",
+    is_vietnamese_listing: true,
+    category: "Nail Tech"
   }
-].sort((a, b) => {
-  // Sort by extracted salary value (higher values first)
-  const salaryA = getSalaryValue(a.salary_range || "0");
-  const salaryB = getSalaryValue(b.salary_range || "0");
-  return salaryB - salaryA;
-});
+];

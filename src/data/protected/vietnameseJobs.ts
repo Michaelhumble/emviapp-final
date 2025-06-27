@@ -1,256 +1,248 @@
 
 import { Job } from "@/types/job";
 
-// Vietnamese job listings - PROTECTED REAL CONTENT - DO NOT MODIFY
+// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
+// These demo/sample listings must remain visible in production until at least June 26, 2026.
+// Only the project owner (Michael) can approve any removal or update of these mockups.
+
 export const vietnameseJobs: Job[] = [
   {
-    id: "viet-job-1",
-    title: "Cần Thợ Nails Gấp - $1,500-2,500/tuần",
-    company: "Beauty Nails & Spa",
-    location: "Philadelphia, PA",
+    id: "vn-1",
+    title: "Tuyển Thợ Nail Gấp – Garden Grove, CA",
+    company: "Rose Nails & Spa",
+    location: "Garden Grove, CA",
     created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Cần gấp thợ nail làm bột hoặc chân tay nước, bao lương $1,500-2,500/tuần tùy theo kinh nghiệm. Tiệm khu Mỹ trắng, tip cao, chủ dễ tính, không làm chủ nhật.",
-    vietnamese_description: "Cần gấp thợ nail làm bột hoặc chân tay nước, bao lương $1,500-2,500/tuần tùy theo kinh nghiệm. Tiệm khu Mỹ trắng, tip cao, chủ dễ tính, không làm chủ nhật.",
+    description: "Cần gấp thợ nail biết làm bột và chân tay nước. Lương $1,500-$1,800/tuần.",
+    vietnamese_description: "Tiệm đông khách, môi trường làm việc thân thiện. Cần thợ có kinh nghiệm 2+ năm.",
     contact_info: {
-      phone: "(215) 123-4567",
-      owner_name: "Bác Kim"
+      phone: "(714) 555-1234",
+      owner_name: "Chị Lan"
     },
-    salary_range: "$1,500-$2,500/tuần",
-    weekly_pay: true,
-    has_housing: true,
-    owner_will_train: false,
-    pricingTier: "featured",
+    salary_range: "$1,500–$1,800/tuần",
+    pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-10.png"
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    category: "Nail Tech"
   },
   {
-    id: "viet-job-2",
-    title: "Tiệm Vùng Boston Cần Thợ Nails",
-    company: "Boston Luxury Nails",
-    location: "Boston, MA",
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Tiệm vùng Boston cần thợ nails biết làm đủ thứ, lương cao, đường xa chủ đón, nhà rent ở gần tiệm giá rẻ $400/tháng, tiệm đông khách quanh năm.",
-    vietnamese_description: "Tiệm vùng Boston cần thợ nails biết làm đủ thứ, lương cao, đường xa chủ đón, nhà rent ở gần tiệm giá rẻ $400/tháng, tiệm đông khách quanh năm.",
+    id: "vn-2",
+    title: "Tìm Thợ Làm Chân Tay – San Jose, CA",
+    company: "Golden Nails",
+    location: "San Jose, CA",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tiệm cần thợ làm chân tay nước và dip powder. Bao lương thợ giỏi.",
+    vietnamese_description: "Khu khách tốt, tip cao. Làm việc 6 ngày/tuần.",
     contact_info: {
-      phone: "(617) 456-7890",
-      owner_name: "Chị Hương"
+      phone: "(408) 555-5678",
+      owner_name: "Anh Tuấn"
     },
-    salary_range: "$1,400-$2,000/tuần",
-    weekly_pay: true,
-    has_housing: true,
-    owner_will_train: true,
-    pricingTier: "featured",
+    salary_range: "$1,400–$1,700/tuần",
+    pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-11.png"
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    category: "Nail Tech"
   },
   {
-    id: "viet-job-3",
-    title: "Tìm Thợ Biết Làm Bột - Los Angeles",
-    company: "LA Beautiful Nails",
-    location: "Los Angeles, CA",
-    created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Tiệm ở Los Angeles gần khu người Việt cần thợ biết làm bột, KHÔNG CẦN KINH NGHIỆM, chủ sẽ training. Lương $1,200-$1,500/tuần tuỳ theo tay nghề.",
-    vietnamese_description: "Tiệm ở Los Angeles gần khu người Việt cần thợ biết làm bột, KHÔNG CẦN KINH NGHIỆM, chủ sẽ training. Lương $1,200-$1,500/tuần tuỳ theo tay nghề.",
+    id: "vn-3",
+    title: "Cần Thợ Nail – Westminster, CA",
+    company: "Little Saigon Nails",
+    location: "Westminster, CA",
+    created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tuyển thợ nail full-time, biết làm gel và acrylic.",
+    vietnamese_description: "Tiệm ở trung tâm Little Saigon, khách đông, lương ổn định.",
     contact_info: {
-      phone: "(323) 789-0123",
-      owner_name: "Anh Tâm"
+      phone: "(714) 555-9012",
+      owner_name: "Chị Mai"
     },
-    salary_range: "$1,200-$1,500/tuần",
-    weekly_pay: true,
-    has_housing: false,
-    owner_will_train: true,
-    pricingTier: "featured",
+    salary_range: "$1,200–$1,500/tuần",
+    pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-12.png"
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    category: "Nail Tech"
   },
   {
-    id: "viet-job-4",
-    title: "Cần Thợ Nail Toàn Thời Gian/Part Time",
-    company: "Chicago Nails & Spa",
-    location: "Chicago, IL",
-    created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Tiệm vùng Chicago, cần thợ nails gấp làm full-time hoặc part-time, sẵn sàng cho tập sự, lương hậu, làm ở khu Mỹ 100%.",
-    vietnamese_description: "Tiệm vùng Chicago, cần thợ nails gấp làm full-time hoặc part-time, sẵn sàng cho tập sự, lương hậu, làm ở khu Mỹ 100%.",
-    contact_info: {
-      phone: "(312) 345-6789",
-      owner_name: "Cô Linh"
-    },
-    salary_range: "$1,000-$1,800/tuần",
-    weekly_pay: false,
-    has_housing: false,
-    owner_will_train: true,
-    pricingTier: "featured",
-    is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-13.png"
-  },
-  {
-    id: "viet-job-5",
-    title: "Thợ Chân Tay Nước - Dallas, TX",
-    company: "Texas Star Nails",
-    location: "Dallas, TX",
-    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Cần thợ chân tay nước ở Dallas, bao lương tuần $1,300 trở lên tùy theo tay nghề. Tiệm đông khách, tips hậu, có thể share phòng với thợ khác.",
-    vietnamese_description: "Cần thợ chân tay nước ở Dallas, bao lương tuần $1,300 trở lên tùy theo tay nghề. Tiệm đông khách, tips hậu, có thể share phòng với thợ khác.",
-    contact_info: {
-      phone: "(214) 456-7890",
-      owner_name: "Anh Quân"
-    },
-    salary_range: "$1,300+/tuần",
-    weekly_pay: true,
-    has_housing: true,
-    owner_will_train: false,
-    pricingTier: "featured",
-    is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-14.png"
-  },
-  {
-    id: "viet-job-6",
-    title: "Cần Người Biết Làm Eyebrow Threading",
-    company: "Seattle Beauty & Brows",
-    location: "Seattle, WA",
-    created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Tiệm đẹp ở Seattle cần thợ làm eyebrow threading và wax. Có thể đào tạo nếu biết làm nail muốn học thêm. Lương $1,200-$2,000/tuần.",
-    vietnamese_description: "Tiệm đẹp ở Seattle cần thợ làm eyebrow threading và wax. Có thể đào tạo nếu biết làm nail muốn học thêm. Lương $1,200-$2,000/tuần.",
-    contact_info: {
-      phone: "(206) 890-1234",
-      owner_name: "Chị Nga"
-    },
-    salary_range: "$1,200-$2,000/tuần",
-    weekly_pay: true,
-    has_housing: false,
-    owner_will_train: true,
-    pricingTier: "featured",
-    is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-15.png"
-  }
-];
-
-// Gold jobs - Vietnamese Jobs
-export const goldJobs: Job[] = [
-  {
-    id: "gold-1",
-    title: "Cần Thợ Nail Ở Columbus, GA",
-    company: "Luxury Nails and Spa",
-    location: "Columbus, GA",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần thợ biết bột, tay chân nước, design. Có chỗ ở cho thợ ở xa – môi trường làm việc vui vẻ, không tranh giành. Tiệm chuyên design – khách lịch sự, dễ thương. Gần Columbus Airport, trong shopping center.",
-    contact_info: {
-      phone: "(206) 355-5249 | (706) 221-3953"
-    },
-    salary_range: "$1,500 – $2,200/tuần",
-    has_housing: true,
-    pricingTier: "gold",
-    is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated%20(01).png"
-  },
-  {
-    id: "gold-2",
-    title: "Cần Thợ Nails Gấp – Houston, TX",
-    company: "Nails & Spa",
-    location: "Houston, TX",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần thợ nail biết làm bột, tay chân nước. Thợ nam nữ đều ok. Full/Part-time. Tiệm nhỏ, không cạnh tranh. Không khí làm việc vui vẻ, hòa đồng. Chủ nhật nghỉ.",
-    contact_info: {
-      phone: "(832) 489-6956"
-    },
-    salary_range: "$800–$1,000/tuần",
-    pricingTier: "gold",
-    is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated%20(04).png"
-  },
-  {
-    id: "gold-3",
-    title: "Cần Gấp Thợ – Placerville, CA",
-    company: "V Star Nails Spa",
-    location: "Placerville, CA",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần thợ biết bột, dip, tay chân nước. Bao lương hoặc ăn chia tùy tay nghề. Khu đông khách, giá cao, típ hậu. Làm vui vẻ, hoà đồng, ổn định quanh năm.",
-    contact_info: {
-      phone: "(209) 715-9244 | (530) 622-8918"
-    },
-    salary_range: "$1,200–$1,600/tuần",
-    pricingTier: "gold",
-    is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated02.png"
-  },
-  {
-    id: "gold-4",
+    id: "vn-4",
     title: "Tuyển Thợ Bột – Houston, TX",
-    company: "HK3 Nails",
+    company: "Houston Beauty Nails",
     location: "Houston, TX",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần thợ bột (có thể design càng tốt). Gần chợ Thắng Hưng, khu khách mix, tip cao. Không trừ supply và clean-up.",
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Cần thợ bột có kinh nghiệm, full-time hoặc part-time.",
+    vietnamese_description: "Tiệm mới mở, cần thợ giỏi để build clientele.",
     contact_info: {
-      phone: "(832) 513-0833"
+      phone: "(713) 555-3456",
+      owner_name: "Anh Minh"
     },
-    salary_range: "$900–$1,200/tuần",
-    pricingTier: "gold",
+    salary_range: "$1,300–$1,600/tuần",
+    pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated%20(003).png"
+    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    category: "Nail Tech"
   },
   {
-    id: "gold-5",
-    title: "Tuyển Gấp Thợ Bột – Gần Bolsa",
-    company: "OC Nails",
-    location: "Orange County, CA",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần thợ bột, design, Gel X, Builder Gel, Dipping, Waxing. Khu khách dễ thương, có supply design. Bao lương. Không drama, chia công bằng.",
+    id: "vn-5",
+    title: "Tìm Thợ Nails – Dallas, TX",
+    company: "Diamond Nails Dallas",
+    location: "Dallas, TX",
+    created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tuyển thợ nail biết làm đủ thứ, môi trường làm việc tốt.",
+    vietnamese_description: "Tiệm ở khu shopping center, parking free, khách mixed.",
     contact_info: {
-      phone: "(714) 330-5950"
+      phone: "(214) 555-7890",
+      owner_name: "Chị Hoa"
     },
-    salary_range: "$1,500+ (tuỳ tay nghề)",
-    pricingTier: "gold",
+    salary_range: "$1,400–$1,800/tuần",
+    pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated-26.png"
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    category: "Nail Tech"
   },
   {
-    id: "gold-6",
-    title: "Cần Thợ Nail – Champaign, IL",
-    company: "Nail Empire",
-    location: "Champaign, IL",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần thợ biết làm bột, tay chân nước, wax. 3 tiệm lớn, có manager, chia công bằng. Không trừ supply. Có chỗ ở. Không drama, môi trường thoải mái.",
+    id: "vn-6",
+    title: "Cần Thợ Nail Gấp – Phoenix, AZ",
+    company: "Arizona Nails Spa",
+    location: "Phoenix, AZ",
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tiệm busy, cần thợ nail có experience làm acrylic và gel.",
+    vietnamese_description: "Lương theo tuần, có benefit, environment tốt.",
     contact_info: {
-      phone: "(817) 501-6750"
+      phone: "(602) 555-2468"
     },
-    salary_range: "$1,000–$1,400/tuần",
+    salary_range: "$1,200–$1,500/tuần",
+    pricingTier: "free",
+    is_vietnamese_listing: true,
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    category: "Nail Tech"
+  },
+  // Gold tier listings
+  {
+    id: "vn-gold-1",
+    title: "Tuyển Thợ Nail – Orange County, CA",
+    company: "OC Premium Nails",
+    location: "Irvine, CA",
+    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "High-end salon tuyển thợ nail có kinh nghiệm với clientele cao cấp.",
+    contact_info: {
+      phone: "(949) 555-1111"
+    },
+    salary_range: "$2,000–$2,500/tuần",
     has_housing: true,
     pricingTier: "gold",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated%20(5).png"
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    category: "Nail Tech"
   },
   {
-    id: "gold-7",
-    title: "Tuyển Thợ Nail – Massachusetts",
-    company: "M.A. Nails",
-    location: "Massachusetts",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Tiệm Mỹ trắng, không drama. Bao lương nếu biết vẽ, shape chuẩn. Có phòng riêng gần tiệm. Làm lâu dài, ổn định.",
+    id: "vn-gold-2",
+    title: "Cần Thợ Nails – Beverly Hills, CA",
+    company: "Beverly Hills Nail Lounge",
+    location: "Beverly Hills, CA",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Luxury nail salon cần thợ giỏi, khách celebrity, lương cao.",
     contact_info: {
-      phone: "617-540-2096"
+      phone: "(310) 555-9999"
     },
-    salary_range: "$1,500–$2,200/tuần",
+    salary_range: "$2,500–$3,000/tuần",
+    pricingTier: "gold",
+    is_vietnamese_listing: true,
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-gold-3",
+    title: "Tuyển Master Nail Artist – San Francisco, CA",
+    company: "SF Elite Nails",
+    location: "San Francisco, CA",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tìm master nail artist, chuyên nail art và design cao cấp.",
+    contact_info: {
+      phone: "(415) 555-7777"
+    },
+    salary_range: "$2,200–$2,800/tuần",
+    pricingTier: "gold",
+    is_vietnamese_listing: true,
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-gold-4",
+    title: "Cần Thợ Nails – Las Vegas, NV",
+    company: "Vegas Luxury Nails",
+    location: "Las Vegas, NV",
+    created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Casino area salon, tip cao, cần thợ nail experienced.",
+    contact_info: {
+      phone: "(702) 555-8888"
+    },
+    salary_range: "$1,800–$2,300/tuần",
+    pricingTier: "gold",
+    is_vietnamese_listing: true,
+    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-gold-5",
+    title: "Tuyển Thợ Nail – Seattle, WA",
+    company: "Seattle Premium Spa",
+    location: "Seattle, WA",
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Full service spa cần nail technician, benefits tốt.",
+    contact_info: {
+      phone: "(206) 555-6666"
+    },
+    salary_range: "$1,900–$2,400/tuần",
+    pricingTier: "gold",
+    is_vietnamese_listing: true,
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-gold-6",
+    title: "Cần Thợ Nail – Atlanta, GA",
+    company: "Atlanta Nail Studio",
+    location: "Atlanta, GA",
+    created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Upscale salon tuyển thợ nail, relocation assistance available.",
+    contact_info: {
+      phone: "(404) 555-5555"
+    },
+    salary_range: "$1,700–$2,200/tuần",
     has_housing: true,
     pricingTier: "gold",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated%20(2).png"
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    category: "Nail Tech"
   },
   {
-    id: "gold-8",
-    title: "Tuyển Thợ – Woodbridge",
-    company: "Woodbridge Nail Bar",
-    location: "Woodbridge, VA",
-    created_at: new Date("2025-05-08").toISOString(),
-    description: "Cần nữ thợ biết everything. Bao lương hoặc ăn chia 6/4. Khu da trắng, tip hậu. Có đưa đón North York. Yêu cầu có số SIN.",
+    id: "vn-gold-7",
+    title: "Tuyển Thợ Nails – Miami, FL",
+    company: "Miami Beach Nails",
+    location: "Miami Beach, FL",
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Beach location salon, tourist clientele, seasonal bonuses.",
     contact_info: {
-      phone: "647-998-1488"
+      phone: "(305) 555-4444"
     },
-    salary_range: "$1,400–$1,600/tuần",
+    salary_range: "$1,800–$2,300/tuần",
+    has_housing: true,
     pricingTier: "gold",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated%20(1)0.png"
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    category: "Nail Tech"
+  },
+  {
+    id: "vn-gold-8",
+    title: "Cần Master Thợ Nail – Chicago, IL",
+    company: "Chicago Elite Nails",
+    location: "Chicago, IL",
+    created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Downtown location, high-end clientele, competitive salary.",
+    contact_info: {
+      phone: "(312) 555-3333"
+    },
+    salary_range: "$1,900–$2,500/tuần",
+    pricingTier: "gold",
+    is_vietnamese_listing: true,
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    category: "Nail Tech"
   }
 ];
-
-// Export combined listing for convenience
-export const allVietnameseListings = [...vietnameseJobs];
