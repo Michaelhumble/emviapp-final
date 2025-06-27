@@ -1,8 +1,11 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useAuthModal } from "@/context/auth/AuthModalProvider";
 
 const PostJobSection = () => {
+  const { openModal } = useAuthModal();
+
   return (
     <section className="bg-white py-16">
       <div className="container mx-auto px-4">
@@ -41,7 +44,13 @@ const PostJobSection = () => {
                 </li>
               ))}
             </ul>
-            <Button size="lg" className="hover:scale-105 transition-transform">Post a Job — It's Free</Button>
+            <Button 
+              size="lg" 
+              className="hover:scale-105 transition-transform"
+              onClick={() => openModal('signup')}
+            >
+              Post a Job — It's Free
+            </Button>
           </div>
         </motion.div>
       </div>

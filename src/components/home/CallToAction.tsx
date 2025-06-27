@@ -1,13 +1,15 @@
 
-import { Link } from "react-router-dom";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useSubscription } from "@/context/subscription";
-import PremiumFeatureGate from "@/components/upgrade/PremiumFeatureGate";
+import { useAuthModal } from "@/context/auth/AuthModalProvider";
+import { Link } from "react-router-dom";
 
 const CallToAction = () => {
   const { user } = useAuth();
   const { hasActiveSubscription } = useSubscription();
+  const { openModal } = useAuthModal();
 
   return (
     <div className="bg-primary/5 py-16">
@@ -21,9 +23,12 @@ const CallToAction = () => {
         <div className="flex flex-wrap gap-4 justify-center">
           {!user ? (
             <>
-              <Link to="/auth/signup">
-                <Button size="lg">Get Started</Button>
-              </Link>
+              <Button 
+                size="lg" 
+                onClick={() => openModal('signup')}
+              >
+                Get Started
+              </Button>
               <Link to="/salons">
                 <Button size="lg" variant="outline">Browse Services</Button>
               </Link>

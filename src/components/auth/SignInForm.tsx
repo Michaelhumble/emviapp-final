@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
+import { useAuthModal } from "@/context/auth/AuthModalProvider";
 
 interface SignInFormProps {
   redirectUrl?: string | null;
@@ -18,6 +18,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
+  const { openModal } = useAuthModal();
   const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,9 +97,13 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
 
           <div className="text-sm text-center text-gray-500">
             Don't have an account?{" "}
-            <Link to={`/sign-up${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <button
+              type="button"
+              onClick={() => openModal('signup')}
+              className="text-indigo-600 hover:text-indigo-800 font-medium"
+            >
               Sign up
-            </Link>
+            </button>
           </div>
         </CardFooter>
       </form>

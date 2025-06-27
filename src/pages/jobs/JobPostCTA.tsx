@@ -1,13 +1,15 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlusCircle, DollarSign, UsersRound } from "lucide-react";
 import { useAuth } from "@/context/auth";
+import { useAuthModal } from "@/context/auth/AuthModalProvider";
+import { Link } from "react-router-dom";
 
 const JobPostCTA = () => {
   const { isSignedIn, userProfile } = useAuth();
+  const { openModal } = useAuthModal();
   const referralCount = userProfile?.referral_count || 0;
   const totalJobPosts = 0; // In a real app, this would come from the user's profile
   
@@ -73,11 +75,12 @@ const JobPostCTA = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth/signin?redirect=/post-job">
-                  <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
-                    Sign In to Post
-                  </Button>
-                </Link>
+                <Button 
+                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3"
+                  onClick={() => openModal('signup')}
+                >
+                  Sign Up to Post
+                </Button>
               )}
             </div>
           </div>
