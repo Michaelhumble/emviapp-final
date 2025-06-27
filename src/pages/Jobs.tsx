@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Routes, Route } from 'react-router-dom';
 import CreateJobPosting from './jobs/CreateJobPosting';
+import JobDetail from './jobs/JobDetail';
 import { useTranslation } from '@/hooks/useTranslation';
 import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 
@@ -12,7 +13,6 @@ const Jobs = () => {
   const { isVietnamese } = useTranslation();
   
   useEffect(() => {
-    // Log page visit
     console.log("Jobs page accessed, rendering JobsPage component");
     document.title = isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp";
   }, [isVietnamese]);
@@ -34,7 +34,8 @@ const Jobs = () => {
       <div className="pb-20 md:pb-0">
         <Routes>
           <Route path="/" element={<JobsPage />} />
-          <Route path="/create" element={<CreateJobPosting />} />
+          <Route path="/post" element={<CreateJobPosting />} />
+          <Route path="/:id" element={<JobDetail />} />
         </Routes>
       </div>
       <MobileJobsNavBar />
