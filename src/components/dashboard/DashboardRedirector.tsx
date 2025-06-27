@@ -89,11 +89,8 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
   }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
 
   useEffect(() => {
-    // Only run redirect logic if user is authenticated
-    if (isSignedIn && user) {
-      checkUserRoleAndRedirect();
-    }
-  }, [checkUserRoleAndRedirect, isSignedIn, user]);
+    checkUserRoleAndRedirect();
+  }, [checkUserRoleAndRedirect]);
 
   return (
     <>

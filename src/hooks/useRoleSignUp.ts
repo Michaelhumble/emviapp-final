@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/context/auth/types";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
@@ -23,26 +24,6 @@ export const useRoleSignUp = () => {
       console.log("Referral code detected:", ref);
     }
   }, []);
-
-  const getDashboardPath = (role: UserRole): string => {
-    switch (role) {
-      case 'customer':
-        return '/dashboard/customer';
-      case 'artist':
-      case 'nail technician/artist':
-        return '/dashboard/artist';
-      case 'salon':
-      case 'owner':
-        return '/dashboard/salon';
-      case 'freelancer':
-        return '/dashboard/freelancer';
-      case 'supplier':
-      case 'beauty supplier':
-        return '/dashboard/supplier';
-      default:
-        return '/dashboard/customer';
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,11 +103,8 @@ export const useRoleSignUp = () => {
       
       toast.success("Account created successfully! Redirecting to dashboard...");
       
-      // Get the correct dashboard path for the user's role
-      const dashboardPath = getDashboardPath(selectedRole);
-      
       setTimeout(() => {
-        navigate(dashboardPath);
+        navigateToRoleDashboard(navigate, selectedRole);
       }, 1500);
       
     } catch (err: any) {

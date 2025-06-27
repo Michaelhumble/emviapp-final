@@ -1,47 +1,57 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/context/auth";
-import { useAuthModal } from "@/context/auth/AuthModalProvider";
-import { useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface AuthActionProps {
-  children?: React.ReactNode;
-  onAction?: () => Promise<boolean> | boolean;
-  redirectPath?: string;
-  authenticatedContent?: React.ReactNode;
-  fallbackContent?: React.ReactNode;
-  authMode?: 'signin' | 'signup';
-  customTitle?: string;
+  children?: React.ReactNode;  // Make children optional
+  onAction: () => Promise<boolean> | boolean;
   creditMessage?: string;
+  redirectPath?: string;
+  customTitle?: string;
+  fallbackContent?: React.ReactNode;
+  authenticatedContent?: React.ReactNode;
 }
 
 const AuthAction: React.FC<AuthActionProps> = ({ 
   children, 
   onAction,
+  creditMessage,
   redirectPath,
-  authenticatedContent,
+  customTitle = "Sign in to continue",
   fallbackContent,
-  authMode = 'signup',
-  customTitle,
-  creditMessage
+  authenticatedContent
 }) => {
   const { isSignedIn } = useAuth();
-  const { openModal } = useAuthModal();
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAction = async () => {
     if (isSignedIn) {
-      if (onAction) {
-        const result = await onAction();
-        if (redirectPath && result) {
-          navigate(redirectPath);
-        }
-      } else if (redirectPath) {
+      const result = await onAction();
+      if (redirectPath && result) {
         navigate(redirectPath);
       }
     } else {
-      openModal(authMode);
+      setShowAuthDialog(true);
     }
+  };
+
+  const handleNavigation = (path: string) => {
+    // Store the current path or redirectPath as the return destination
+    const returnPath = redirectPath || location.pathname + location.search;
+    const encodedRedirect = encodeURIComponent(returnPath);
+    navigate(`${path}?redirect=${encodedRedirect}`);
+    setShowAuthDialog(false);
   };
 
   // If authenticated content is provided and user is signed in, render that instead
@@ -49,19 +59,85 @@ const AuthAction: React.FC<AuthActionProps> = ({
     return <>{authenticatedContent}</>;
   }
 
-  // If fallback content is provided and user is not signed in, render that with click handler
+  // If fallback content is provided and user is not signed in, render that without click handler
   if (!isSignedIn && fallbackContent) {
     return (
-      <div onClick={handleAction} className="cursor-pointer">
-        {fallbackContent}
-      </div>
+      <>
+        <div onClick={handleAction} className="cursor-pointer">
+          {fallbackContent}
+        </div>
+
+        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{customTitle}</DialogTitle>
+              <DialogDescription>
+                Create a free Emvi account to connect with top salons near you.
+                {creditMessage && (
+                  <span className="block mt-2 text-pink-600 font-medium">
+                    {creditMessage}
+                  </span>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <Button 
+                className="w-full" 
+                onClick={() => handleNavigation('/sign-in')}
+              >
+                Sign In
+              </Button>
+              <Button 
+                variant="secondary" 
+                className="w-full" 
+                onClick={() => handleNavigation('/sign-up')}
+              >
+                Create Account
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
   return (
-    <div onClick={handleAction} className="cursor-pointer">
-      {children || null}
-    </div>
+    <>
+      <div onClick={handleAction} className="cursor-pointer">
+        {children || null}
+      </div>
+
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{customTitle}</DialogTitle>
+            <DialogDescription>
+              Create a free Emvi account to connect with top salons near you.
+              {creditMessage && (
+                <span className="block mt-2 text-pink-600 font-medium">
+                  {creditMessage}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Button 
+              className="w-full" 
+              onClick={() => handleNavigation('/sign-in')}
+            >
+              Sign In
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="w-full" 
+              onClick={() => handleNavigation('/sign-up')}
+            >
+              Create Account
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

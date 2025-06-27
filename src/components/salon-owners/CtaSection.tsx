@@ -1,11 +1,9 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useAuthModal } from "@/context/auth/AuthModalProvider";
+import PostYourSalonButton from "@/components/buttons/PostYourSalonButton";
 
 const CtaSection = () => {
-  const { openModal } = useAuthModal();
-
   return (
     <section className="bg-primary/5 py-16">
       <div className="container mx-auto px-4">
@@ -20,13 +18,10 @@ const CtaSection = () => {
           <p className="text-lg text-gray-600 mb-8">
             Join thousands of salon owners who trust EmviApp to find, vet, and hire the best beauty professionals in the industry.
           </p>
-          <Button 
+          <PostYourSalonButton 
             size="lg" 
             className="font-medium px-8 py-6 text-base hover:scale-105 transition-transform"
-            onClick={() => openModal('signup')}
-          >
-            Get Started Free
-          </Button>
+          />
         </motion.div>
       </div>
     </section>

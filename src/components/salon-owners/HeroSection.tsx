@@ -1,11 +1,9 @@
 
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAuthModal } from "@/context/auth/AuthModalProvider";
 
 const HeroSection = () => {
-  const { openModal } = useAuthModal();
-
   return (
     <section className="bg-[#FDFDFD] py-20 md:py-28">
       <motion.div 
@@ -19,13 +17,11 @@ const HeroSection = () => {
           <p className="text-lg text-gray-600 mb-10 font-sans leading-relaxed">
             Post jobs, view top-rated artists, and fill empty chairs fast — powered by AI.
           </p>
-          <Button 
-            size="lg" 
-            className="font-medium px-8 py-6 text-base"
-            onClick={() => openModal('signup')}
-          >
-            Start Hiring
-          </Button>
+          <Link to="/auth/signup">
+            <Button size="lg" className="font-medium px-8 py-6 text-base">
+              Start Hiring
+            </Button>
+          </Link>
         </div>
       </motion.div>
     </section>

@@ -1,24 +1,19 @@
 
-import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAuthModal } from "@/context/auth/AuthModalProvider";
 
 const AuthButtons = () => {
-  const { openModal } = useAuthModal();
+  const location = useLocation();
+  const currentPath = encodeURIComponent(location.pathname + location.search);
   
   return (
     <>
-      <Button 
-        variant="ghost" 
-        onClick={() => openModal('signin')}
-      >
-        Sign In
-      </Button>
-      <Button 
-        onClick={() => openModal('signup')}
-      >
-        Sign Up
-      </Button>
+      <Link to={`/sign-in?redirect=${currentPath}`}>
+        <Button variant="ghost">Sign In</Button>
+      </Link>
+      <Link to={`/sign-up?redirect=${currentPath}`}>
+        <Button>Sign Up</Button>
+      </Link>
     </>
   );
 };
