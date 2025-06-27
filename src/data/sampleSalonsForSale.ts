@@ -15,6 +15,7 @@ export const sampleSalonsForSale: Job[] = [
     price: "$120,000",
     created_at: "2024-01-15T10:30:00Z",
     type: "salon",
+    category: "Nail Tech"
   },
   {
     id: "salon-2", 
@@ -25,6 +26,7 @@ export const sampleSalonsForSale: Job[] = [
     price: "$250,000",
     created_at: "2024-01-14T14:20:00Z",
     type: "salon",
+    category: "Spa"
   },
   {
     id: "salon-3",
@@ -35,5 +37,6 @@ export const sampleSalonsForSale: Job[] = [
     price: "$85,000",
     created_at: "2024-01-13T09:15:00Z",
     type: "salon",
+    category: "Nail Tech"
   }
 ];

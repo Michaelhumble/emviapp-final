@@ -30,7 +30,8 @@ export const ensureSalonsForSale = (count: number = 20) => {
       location: template.location.includes('Denver') ? 
         template.location.replace('Denver', ['Boulder', 'Colorado Springs', 'Fort Collins'][i % 3]) : 
         template.location,
-      created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+      created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+      category: template.category || "Other" // Ensure category is always present
     });
   }
   
