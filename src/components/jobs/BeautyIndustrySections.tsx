@@ -17,155 +17,160 @@ interface BeautyIndustrySectionsProps {
   checkExpiration?: (job: Job) => boolean;
 }
 
-// Professional SVG Icons for each industry
-const NailTechIcon = () => (
+// Minimal SVG icon components - can be replaced with premium SVGs later
+const NailIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C13.1 2 14 2.9 14 4V8H10V4C10 2.9 10.9 2 12 2Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M10 8H14V16C14 17.1 13.1 18 12 18C10.9 18 10 17.1 10 16V8Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M8 12H16" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M8 14H16" stroke="#8B5CF6" strokeWidth="2"/>
+    <ellipse cx="12" cy="12" rx="8" ry="6" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 12c0-2 1.5-3 4-3s4 1 4 3" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const HairIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C8 2 5 5 5 9C5 11 6 13 8 14V20H16V14C18 13 19 11 19 9C19 5 16 2 12 2Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M9 10C9 9.5 9.5 9 10 9C10.5 9 11 9.5 11 10" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M13 10C13 9.5 13.5 9 14 9C14.5 9 15 9.5 15 10" stroke="#8B5CF6" strokeWidth="2"/>
+    <path d="M12 3c-3 0-5 2-5 5v8c0 2 2 4 5 4s5-2 5-4V8c0-3-2-5-5-5z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 8c-1-1-3-1-4 0M16 8c1-1 3-1 4 0" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const BarberIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 18L8 16L16 8L18 6L16 4L14 6L6 14L4 16L6 18Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M14.5 9.5L16.5 7.5" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M8.5 15.5L6.5 17.5" stroke="#8B5CF6" strokeWidth="2"/>
-    <circle cx="18" cy="6" r="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <rect x="6" y="4" width="12" height="16" rx="6" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M10 8h4M10 12h4M10 16h4" stroke="#8B5CF6" strokeWidth="2"/>
   </svg>
 );
 
 const LashIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 12C4 8 8 4 12 4C16 4 20 8 20 12" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M6 12C6 14 8 16 10 18" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M12 12V18" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M18 12C18 14 16 16 14 18" stroke="#8B5CF6" strokeWidth="2"/>
-    <circle cx="12" cy="10" r="1" stroke="#8B5CF6" strokeWidth="2" fill="#8B5CF6"/>
+    <ellipse cx="12" cy="12" rx="8" ry="4" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 10c0-1 1-2 2-2M12 8c0-1 0-2 0-2M16 10c0-1-1-2-2-2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const SpaIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2L13.5 6.5H18L14.5 9.5L16 14L12 11L8 14L9.5 9.5L6 6.5H10.5L12 2Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <circle cx="12" cy="18" r="3" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M9 18H15" stroke="#8B5CF6" strokeWidth="2"/>
+    <circle cx="12" cy="12" r="8" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 12c2-2 4-2 6 0s4 2 6 0" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const EstheticianIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="8" r="4" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M8 14C8 16 10 18 12 18C14 18 16 16 16 14" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M10 9C10 8.5 10.5 8 11 8C11.5 8 12 8.5 12 9" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M12 9C12 8.5 12.5 8 13 8C13.5 8 14 8.5 14 9" stroke="#8B5CF6" strokeWidth="2"/>
+    <path d="M8 16c0-2 2-4 4-4s4 2 4 4v4H8v-4z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const TattooIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18 2L16 4L20 8L22 6L18 2Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M16 4L4 16L8 20L20 8" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M6 18L2 22" stroke="#8B5CF6" strokeWidth="2"/>
-    <circle cx="14" cy="10" r="1" stroke="#8B5CF6" strokeWidth="2" fill="#8B5CF6"/>
+    <path d="M8 4l8 16M16 4L8 20" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <circle cx="12" cy="12" r="2" fill="#8B5CF6"/>
   </svg>
 );
 
 const MakeupIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M2 12L6 8L12 14L18 8L22 12L12 22L2 12Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <circle cx="12" cy="6" r="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M8 10L16 10" stroke="#8B5CF6" strokeWidth="2"/>
+    <rect x="6" y="8" width="12" height="8" rx="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M10 6v2M14 6v2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const PermanentMakeupIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 21L12 12L21 3L18 6L12 12L6 18L3 21Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <circle cx="18" cy="6" r="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M9 15L15 9" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M7 17L17 7" stroke="#8B5CF6" strokeWidth="2"/>
+    <path d="M6 18L18 6M8 6h8M6 8v8" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <circle cx="15" cy="9" r="1" fill="#8B5CF6"/>
   </svg>
 );
 
 const ReceptionistIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 4H20V16H4V4Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M8 8H16" stroke="#8B5CF6" strokeWidth="2"/>
-    <path d="M8 12H12" stroke="#8B5CF6" strokeWidth="2"/>
-    <circle cx="16" cy="12" r="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M4 20H20" stroke="#8B5CF6" strokeWidth="2"/>
+    <rect x="4" y="8" width="16" height="10" rx="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 12h8M8 15h6" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const BoothRentalIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 21H21V9L12 3L3 9V21Z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M9 21V12H15V21" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M9 9H15" stroke="#8B5CF6" strokeWidth="2"/>
-    <circle cx="12" cy="15" r="1" stroke="#8B5CF6" strokeWidth="2" fill="#8B5CF6"/>
+    <rect x="4" y="6" width="16" height="12" rx="2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const ManagerIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="7" r="4" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M5.5 21V19C5.5 15.7 8.2 13 11.5 13H12.5C15.8 13 18.5 15.7 18.5 19V21" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M16 3L20 7L16 11" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <circle cx="12" cy="8" r="3" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M8 16c0-2 2-3 4-3s4 1 4 3v4H8v-4z" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M16 12l2-2M18 14l2-2" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
 const OtherBeautyIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="10" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <path d="M8 12L12 16L16 8" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
-    <circle cx="12" cy="6" r="1" stroke="#8B5CF6" strokeWidth="2" fill="#8B5CF6"/>
+    <circle cx="12" cy="12" r="8" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
+    <path d="M12 8v8M8 12h8" stroke="#8B5CF6" strokeWidth="2" fill="none"/>
   </svg>
 );
 
-const beautyIndustries = [
-  { key: 'nails', title: 'Nail Tech Jobs', icon: NailTechIcon, category: 'Nail Technician' },
-  { key: 'hair', title: 'Hair Stylist Jobs', icon: HairIcon, category: 'Hair Stylist' },
-  { key: 'barber', title: 'Barber Jobs', icon: BarberIcon, category: 'Barber' },
-  { key: 'lash', title: 'Lash Tech Jobs', icon: LashIcon, category: 'Lash Technician' },
-  { key: 'spa', title: 'Spa Jobs', icon: SpaIcon, category: 'Spa Therapist' },
-  { key: 'esthetician', title: 'Esthetician Jobs', icon: EstheticianIcon, category: 'Esthetician' },
-  { key: 'tattoo', title: 'Tattoo Artist Jobs', icon: TattooIcon, category: 'Tattoo Artist' },
-  { key: 'makeup', title: 'Makeup Artist Jobs', icon: MakeupIcon, category: 'Makeup Artist' },
-  { key: 'permanent-makeup', title: 'Permanent Makeup Jobs', icon: PermanentMakeupIcon, category: 'Permanent Makeup Artist' },
-  { key: 'receptionist', title: 'Receptionist Jobs', icon: ReceptionistIcon, category: 'Receptionist' },
-  { key: 'booth-rental', title: 'Booth Rental', icon: BoothRentalIcon, category: 'Booth Rental' },
-  { key: 'manager', title: 'Salon Manager Jobs', icon: ManagerIcon, category: 'Salon Manager' },
-  { key: 'other', title: 'Other Beauty Jobs', icon: OtherBeautyIcon, category: 'Other Beauty' }
-];
-
-const BeautyIndustrySections = ({ 
-  jobs, 
-  expirations, 
-  currentUserId, 
-  onRenew, 
+const BeautyIndustrySections = ({
+  jobs,
+  expirations,
+  currentUserId,
+  onRenew,
   isRenewing,
   renewalJobId,
   onDelete,
   checkExpiration
 }: BeautyIndustrySectionsProps) => {
+  
+  const beautyIndustries = [
+    { key: 'nail', title: 'Nail Tech Jobs', icon: NailIcon, buttonText: 'Post a Nail Tech Job' },
+    { key: 'hair', title: 'Hair Stylist Jobs', icon: HairIcon, buttonText: 'Post a Hair Stylist Job' },
+    { key: 'barber', title: 'Barber Jobs', icon: BarberIcon, buttonText: 'Post a Barber Job' },
+    { key: 'lash', title: 'Lash Technician Jobs', icon: LashIcon, buttonText: 'Post a Lash Tech Job' },
+    { key: 'spa', title: 'Spa Jobs', icon: SpaIcon, buttonText: 'Post a Spa Job' },
+    { key: 'esthetician', title: 'Esthetician Jobs', icon: EstheticianIcon, buttonText: 'Post an Esthetician Job' },
+    { key: 'tattoo', title: 'Tattoo Artist Jobs', icon: TattooIcon, buttonText: 'Post a Tattoo Artist Job' },
+    { key: 'makeup', title: 'Makeup Artist Jobs', icon: MakeupIcon, buttonText: 'Post a Makeup Artist Job' },
+    { key: 'permanent-makeup', title: 'Permanent Makeup Jobs', icon: PermanentMakeupIcon, buttonText: 'Post a Permanent Makeup Job' },
+    { key: 'receptionist', title: 'Receptionist Jobs', icon: ReceptionistIcon, buttonText: 'Post a Receptionist Job' },
+    { key: 'booth-rental', title: 'Booth Rental', icon: BoothRentalIcon, buttonText: 'Post a Booth Rental' },
+    { key: 'manager', title: 'Salon Manager Jobs', icon: ManagerIcon, buttonText: 'Post a Manager Job' },
+    { key: 'other', title: 'Other Beauty Jobs', icon: OtherBeautyIcon, buttonText: 'Post a Beauty Job' }
+  ];
 
-  const getJobsByCategory = (category: string) => {
-    return jobs.filter(job => {
-      const jobCategory = job.employment_type || job.category || '';
-      return jobCategory.toLowerCase().includes(category.toLowerCase()) ||
-             category.toLowerCase().includes(jobCategory.toLowerCase());
+  // Group jobs by employment_type or assign to 'other' category
+  const groupJobsByIndustry = (jobs: Job[]) => {
+    const grouped: Record<string, Job[]> = {};
+    
+    // Initialize all categories
+    beautyIndustries.forEach(industry => {
+      grouped[industry.key] = [];
     });
+    
+    jobs.forEach(job => {
+      const employmentType = job.employment_type?.toLowerCase() || 'other';
+      let category = 'other';
+      
+      // Map employment types to our categories
+      if (employmentType.includes('nail')) category = 'nail';
+      else if (employmentType.includes('hair')) category = 'hair';
+      else if (employmentType.includes('barber')) category = 'barber';
+      else if (employmentType.includes('lash') || employmentType.includes('eyelash')) category = 'lash';
+      else if (employmentType.includes('spa') || employmentType.includes('massage')) category = 'spa';
+      else if (employmentType.includes('esthetic') || employmentType.includes('facial')) category = 'esthetician';
+      else if (employmentType.includes('tattoo')) category = 'tattoo';
+      else if (employmentType.includes('makeup') && !employmentType.includes('permanent')) category = 'makeup';
+      else if (employmentType.includes('permanent') && employmentType.includes('makeup')) category = 'permanent-makeup';
+      else if (employmentType.includes('reception') || employmentType.includes('front desk')) category = 'receptionist';
+      else if (employmentType.includes('booth') || employmentType.includes('rental')) category = 'booth-rental';
+      else if (employmentType.includes('manager') || employmentType.includes('supervisor')) category = 'manager';
+      
+      grouped[category].push(job);
+    });
+    
+    return grouped;
   };
+
+  const groupedJobs = groupJobsByIndustry(jobs);
 
   const EmptyStateCard = ({ industry }: { industry: typeof beautyIndustries[0] }) => (
     <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
@@ -173,15 +178,15 @@ const BeautyIndustrySections = ({
         <industry.icon />
       </div>
       <h3 className="font-playfair text-xl font-semibold text-gray-900 mb-2">
-        No {industry.category} Jobs Yet
+        No {industry.title.replace(' Jobs', '')} Jobs Yet
       </h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto font-inter">
-        Be the first to post a {industry.category.toLowerCase()} job opportunity. Connect with qualified professionals in your area.
+      <p className="text-gray-600 mb-6 max-w-md mx-auto">
+        Be the first to post a {industry.title.replace(' Jobs', '').toLowerCase()} job opportunity. Connect with qualified professionals in your area.
       </p>
       <Link to="/post-job">
         <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
           <Plus className="mr-2 h-4 w-4" />
-          Post a {industry.category} Job
+          {industry.buttonText}
         </Button>
       </Link>
     </div>
@@ -190,35 +195,33 @@ const BeautyIndustrySections = ({
   return (
     <div className="space-y-8">
       {beautyIndustries.map((industry) => {
-        const categoryJobs = getJobsByCategory(industry.category);
+        const industryJobs = groupedJobs[industry.key] || [];
         
         return (
           <div key={industry.key} className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
-                <div className="bg-purple-50 rounded-full w-12 h-12 flex items-center justify-center">
-                  <industry.icon />
-                </div>
+                <industry.icon />
                 <div>
                   <h2 className="font-playfair text-2xl font-bold text-gray-900">
                     {industry.title}
                   </h2>
-                  <p className="text-gray-600 mt-1 font-inter">
-                    {categoryJobs.length} {categoryJobs.length === 1 ? 'position' : 'positions'} available
+                  <p className="text-gray-600 mt-1">
+                    {industryJobs.length} {industryJobs.length === 1 ? 'position' : 'positions'} available
                   </p>
                 </div>
               </div>
               <Link to="/post-job">
                 <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
                   <Plus className="mr-2 h-4 w-4" />
-                  Post a {industry.category} Job
+                  {industry.buttonText}
                 </Button>
               </Link>
             </div>
             
-            {categoryJobs.length > 0 ? (
+            {industryJobs.length > 0 ? (
               <JobGrid
-                jobs={categoryJobs}
+                jobs={industryJobs}
                 expirations={expirations}
                 onRenew={onRenew}
                 isRenewing={isRenewing}
