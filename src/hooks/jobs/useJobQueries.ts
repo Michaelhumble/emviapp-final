@@ -26,8 +26,16 @@ export const useJobQueries = () => {
 
       if (error) throw error;
 
-      setJobs(data || []);
-      return data || [];
+      // Transform the data to match our Job interface
+      const transformedJobs = (data || []).map(job => ({
+        ...job,
+        contact_info: typeof job.contact_info === 'object' && job.contact_info !== null 
+          ? job.contact_info as { [key: string]: any; owner_name?: string; phone?: string; email?: string; notes?: string; zalo?: string; }
+          : {}
+      })) as Job[];
+
+      setJobs(transformedJobs);
+      return transformedJobs;
     } catch (error) {
       console.error('Error fetching jobs:', error);
       return [];
@@ -45,7 +53,16 @@ export const useJobQueries = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      
+      // Transform the data to match our Job interface
+      const transformedJob = {
+        ...data,
+        contact_info: typeof data.contact_info === 'object' && data.contact_info !== null 
+          ? data.contact_info as { [key: string]: any; owner_name?: string; phone?: string; email?: string; notes?: string; zalo?: string; }
+          : {}
+      } as Job;
+
+      return transformedJob;
     } catch (error) {
       console.error('Error fetching job by ID:', error);
       return null;

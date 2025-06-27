@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   role?: string;
@@ -114,6 +115,7 @@ export type JobDetailsSubmission = {
     email?: string;
     notes?: string;
     zalo?: string;
+    [key: string]: any;
   };
   image?: string;
   vietnamese_description?: string;
