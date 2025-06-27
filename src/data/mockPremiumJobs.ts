@@ -26,7 +26,8 @@ export const createMockPremiumJobs = (): Job[] => {
       requirements: ["3+ years experience", "nail art skills", "customer service excellence"],
       benefits: ["Healthcare", "paid time off", "flexible scheduling", "product discounts"],
       is_featured: true,
-      featured: true // Using the proper field in the Job type
+      featured: true, // Using the proper field in the Job type
+      category: "Nail Tech"
     },
     {
       id: "prem-job-2",
@@ -45,7 +46,8 @@ export const createMockPremiumJobs = (): Job[] => {
       requirements: ["5+ years nail industry experience", "2+ years management", "bilingual preferred"],
       benefits: ["Competitive salary", "health insurance", "paid vacation", "commission structure"],
       is_featured: true,
-      featured: true // Using the proper field in the Job type
+      featured: true, // Using the proper field in the Job type
+      category: "Nail Tech"
     },
     {
       id: "prem-job-3",
@@ -64,7 +66,8 @@ export const createMockPremiumJobs = (): Job[] => {
       requirements: ["2+ years experience", "exceptional customer service", "specialized in luxury services"],
       benefits: ["Flexible schedule", "product discounts", "growth opportunities", "training provided"],
       is_featured: true,
-      featured: true // Using the proper field in the Job type
+      featured: true, // Using the proper field in the Job type
+      category: "Nail Tech"
     }
   ];
 };

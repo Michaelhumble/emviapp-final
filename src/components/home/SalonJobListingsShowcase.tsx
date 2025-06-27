@@ -1,264 +1,314 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
-import { Building } from 'lucide-react';
-import OpportunityCard from './opportunities/OpportunityCard';
+import { Container } from '@/components/ui/container';
+import { MapPin, Users, Phone } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
-import AuthAction from '@/components/common/AuthAction';
 
-export const salonListings: Job[] = [
+const featuredJobs: Job[] = [
   {
-    id: "1",
-    title: "CẦN GẤP THỢ NAIL",
-    company: "Grand Prairie Nails & Spa",
-    location: "Grand Prairie, TX",
-    description: "Tiệm đông khách, cần thợ everything, full-time. Lương $1,500/tuần + tip cao.",
-    vietnamese_description: "Tiệm đông khách, cần thợ everything, full-time. Lương $1,500/tuần + tip cao. Có chỗ ở cho thợ.",
+    id: "featured-1",
+    title: "Nail Technician - Vietnamese Speaking",
+    company: "Golden Nails Spa",
+    location: "Houston, TX",
+    description: "Seeking experienced nail technician fluent in Vietnamese and English. Full-time position with benefits.",
+    vietnamese_description: "Cần thợ nails biết làm bột và chân tay nước, full-time có benefits.",
     contact_info: {
-      phone: "469-875-2554"
+      phone: "(713) 555-0123"
     },
     weekly_pay: true,
     has_housing: true,
-    created_at: new Date().toISOString()
+    created_at: "2024-01-15T10:00:00Z",
+    category: "Nail Tech"
   },
   {
-    id: "2",
-    title: "TIỆM NAIL CẦN SANG GẤP",
-    company: "Beauty Salon Mannheim",
-    location: "Mannheim, Germany",
-    description: "5 bàn tay, 2 ghế chân, 1 phòng nối mi. Tiệm 6 năm, khách ổn định. Giá thuê rẻ, khu trung tâm.",
-    vietnamese_description: "5 bàn tay, 2 ghế chân, 1 phòng nối mi. Tiệm 6 năm, khách ổn định. Giá thuê rẻ, khu trung tâm. Vì sức khỏe cần sang lại gấp.",
+    id: "featured-2",
+    title: "Nail Salon For Sale - Established Business",
+    company: "Luxury Nail Studio",
+    location: "Los Angeles, CA",
+    description: "Profitable nail salon in prime location. 8 stations, established clientele, modern equipment included.",
+    vietnamese_description: "Sang tiệm nail có 8 ghế, khách quen, thiết bị mới.",
     for_sale: true,
     contact_info: {
-      phone: "0176 4727 2513"
+      phone: "(213) 555-0456"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-14T14:30:00Z",
+    category: "Nail Tech"
   },
   {
-    id: "3",
-    title: "NEED 2 POWDER TECHS",
-    company: "Luxury Nails NC",
-    location: "Charlotte, NC",
-    description: "$1,800 / 6 days. Free housing provided. Busy salon.",
+    id: "featured-3",
+    title: "Hair Stylist Position Available",
+    company: "Trendy Hair Salon",
+    location: "Miami, FL",
+    description: "Creative hair stylist wanted for busy salon. Color and cut experience required. Great tips!",
     weekly_pay: true,
     has_housing: true,
     contact_info: {
-      phone: "657-456-4975"
+      phone: "(305) 555-0789"
     },
-    specialties: ["Powder", "Acrylic"],
-    created_at: new Date().toISOString()
+    specialties: ["Hair coloring", "Cutting", "Styling"],
+    created_at: "2024-01-13T09:15:00Z",
+    category: "Hair Stylist"
   },
   {
-    id: "4",
-    title: "CẦN THỢ NAIL",
-    company: "Jacksonville Nails & Spa",
-    location: "Jacksonville, FL",
-    description: "Full-time + part-time. Bao lương, ăn chia.",
+    id: "featured-4",
+    title: "Lash Technician Needed",
+    company: "Bella Lashes Studio",
+    location: "New York, NY",
+    description: "Experienced lash extension specialist needed. Volume and classic lash certification required.",
     contact_info: {
-      owner_name: "Sương",
-      phone: "904-338-8648"
+      owner_name: "Maria",
+      phone: "(212) 555-0234"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-12T16:45:00Z",
+    category: "Lash Tech"
   },
   {
-    id: "5",
-    title: "HIRING NAIL TECH",
-    company: "Highlands Ranch Nail Spa",
-    location: "Highlands Ranch, CO",
-    description: "Part-time, ưu tiên thợ bột & dip.",
-    vietnamese_description: "Part-time, ưu tiên thợ bột & dip.",
+    id: "featured-5",
+    title: "Barber Position - Traditional Shop",
+    company: "Classic Cuts Barbershop",
+    location: "Chicago, IL",
+    description: "Traditional barber shop seeking skilled barber. Straight razor experience preferred. Great atmosphere!",
+    vietnamese_description: "Cần thợ cắt tóc nam có kinh nghiệm, tiệm truyền thống.",
     contact_info: {
-      owner_name: "Mary",
-      phone: "(303) 683-5083"
+      owner_name: "Tony",
+      phone: "(312) 555-0567"
     },
-    specialties: ["Powder", "Dip"],
-    created_at: new Date().toISOString()
+    specialties: ["Traditional cuts", "Straight razor", "Beard trim"],
+    created_at: "2024-01-11T11:20:00Z",
+    category: "Barber"
   },
   {
-    id: "6",
-    title: "TIỆM NAIL CẦN BÁN",
-    company: "Fresno Beauty Salon",
-    location: "Fresno, CA",
-    description: "20 bàn, 20 ghế, khu đông đúc. Income ổn định $70K/tháng.",
-    vietnamese_description: "20 bàn, 20 ghế, khu đông đúc. Income ổn định $70K/tháng.",
+    id: "featured-6",
+    title: "Spa Business For Sale",
+    company: "Serenity Day Spa",
+    location: "San Francisco, CA",
+    description: "Full-service day spa for sale. Includes massage rooms, established clientele, prime location.",
+    vietnamese_description: "Sang tiệm spa đầy đủ dịch vụ, có khách quen, vị trí đẹp.",
     for_sale: true,
-    asking_price: "$450,000",
+    asking_price: "$180,000",
     contact_info: {
-      owner_name: "Jen",
-      phone: "(408) 614-9332"
+      owner_name: "Susan",
+      phone: "(415) 555-0890"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-10T13:00:00Z",
+    category: "Spa"
   },
   {
-    id: "7",
-    title: "CẦN THỢ NAIL GẤP",
-    company: "Silver Spring Nails",
-    location: "Silver Spring, MD",
-    description: "Khách Mỹ, tip cao. Cần thợ bột, dip, tay chân nước.",
-    specialties: ["Powder", "Dip", "Manicure", "Pedicure"],
+    id: "featured-7",
+    title: "Esthetician Wanted",
+    company: "Glow Skincare Studio",
+    location: "Seattle, WA",
+    description: "Licensed esthetician needed for upscale skincare studio. Facial and acne treatment experience preferred.",
+    specialties: ["Facials", "Acne treatment", "Chemical peels"],
     contact_info: {
-      phone: "980-267-5013"
+      phone: "(206) 555-1234"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-09T10:30:00Z",
+    category: "Esthetician"
   },
   {
-    id: "8",
-    title: "TIỆM NAIL BAO LƯƠNG",
-    company: "Wheeling Nail Spa",
-    location: "Wheeling, WV",
-    description: "Lương $7,000 - $12,000/tháng tùy tay nghề. Có chỗ ở miễn phí.",
+    id: "featured-8",
+    title: "Makeup Artist Position",
+    company: "Glamour Beauty Bar",
+    location: "Las Vegas, NV",
+    description: "Professional makeup artist for bridal and special events. Portfolio required. High-end clientele.",
     has_housing: true,
     contact_info: {
-      owner_name: "Hương",
-      phone: "(916) 402-0100"
+      owner_name: "Jessica",
+      phone: "(702) 555-5678"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-08T15:45:00Z",
+    category: "Makeup"
   },
   {
-    id: "9",
-    title: "CẦN THỢ NAIL",
-    company: "Fontana Nails",
-    location: "Fontana, CA",
-    description: "Tiệm plaza lớn, cần thợ everything. Chia 6/4 hoặc bao lương $1,200-$1,500/tuần.",
+    id: "featured-9",
+    title: "Tattoo Artist Booth Rental",
+    company: "Ink Masters Studio",
+    location: "Austin, TX",
+    description: "Professional tattoo booth available for rent. Established studio with great reputation and foot traffic.",
     weekly_pay: true,
     contact_info: {
-      owner_name: "Henry",
-      phone: "(909) 997-9953"
+      owner_name: "Mike",
+      phone: "(512) 555-9012"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-07T12:15:00Z",
+    category: "Tattoo"
   },
   {
-    id: "10",
-    title: "NAIL SALON FOR SALE",
-    company: "Daniel Island Nails",
-    location: "Daniel Island, SC",
-    description: "10 bàn, 10 ghế, khu Mỹ trắng 100%.",
+    id: "featured-10",
+    title: "Nail Salon Partnership",
+    company: "Diamond Nail Lounge",
+    location: "Phoenix, AZ",
+    description: "Seeking business partner for expanding nail salon. Established location with growth potential.",
     for_sale: true,
     contact_info: {
-      owner_name: "John",
-      phone: "(803) 447-9999"
+      owner_name: "Lisa",
+      phone: "(602) 555-3456"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-06T09:00:00Z",
+    category: "Nail Tech"
   },
   {
-    id: "11",
-    title: "CẦN THỢ Ở TAMPA",
-    company: "Tampa Nails & Spa",
-    location: "Tampa, FL",
-    description: "Cần thợ giỏi + người dọn dẹp cả ngày.",
+    id: "featured-11",
+    title: "Hair Salon Manager Position",
+    company: "Elite Hair Studios",
+    location: "Denver, CO",
+    description: "Experienced salon manager needed for busy hair salon. Leadership and customer service skills required.",
     contact_info: {
-      owner_name: "Định",
-      phone: "(408) 590-7500"
+      owner_name: "Robert",
+      phone: "(303) 555-7890"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-05T14:20:00Z",
+    category: "Hair Stylist"
   },
   {
-    id: "12",
-    title: "CẦN THỢ NAIL",
-    company: "Ontario Nail Bar",
-    location: "Ontario, CA",
-    description: "Khu shopping lớn. Giá nail cao, tip hậu. Chia 6/4 hoặc bao lương $1,400/tuần.",
+    id: "featured-12",
+    title: "Lash Extension Training Available",
+    company: "Pro Lash Academy",
+    location: "Orlando, FL",
+    description: "Professional lash extension training and certification. Small class sizes, hands-on experience.",
     weekly_pay: true,
     contact_info: {
-      phone: "(909) 997-9953"
+      phone: "(407) 555-2468"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-04T11:00:00Z",
+    category: "Lash Tech"
   },
   {
-    id: "13",
-    title: "CẦN THỢ BỘT + DIP",
-    company: "Charlotte Nails",
-    location: "Charlotte, NC",
-    description: "Thu nhập ổn định. Môi trường vui vẻ, sạch sẽ.",
-    specialties: ["Powder", "Dip"],
+    id: "featured-13",
+    title: "Barber Shop For Sale",
+    company: "Old School Barber Shop",
+    location: "Portland, OR",
+    description: "Traditional barber shop for sale. Loyal customer base, vintage equipment, prime downtown location.",
+    specialties: ["Traditional barbering", "Established clientele"],
     contact_info: {
-      phone: "980-267-5013"
+      phone: "(503) 555-1357"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-03T16:30:00Z",
+    category: "Barber"
   },
   {
-    id: "14",
-    title: "CẦN SANG TIỆM NAIL",
-    company: "Kennesaw Nail Spa",
-    location: "Kennesaw, GA",
-    description: "10 ghế, 10 bàn. Income $28K/tháng.",
+    id: "featured-14",
+    title: "Spa Receptionist Needed",
+    company: "Tranquil Waters Spa",
+    location: "Nashville, TN",
+    description: "Front desk receptionist for luxury spa. Customer service experience required. Relaxing work environment.",
     for_sale: true,
     contact_info: {},
-    created_at: new Date().toISOString()
+    created_at: "2024-01-02T08:45:00Z",
+    category: "Spa"
   },
   {
-    id: "15",
-    title: "LUXE NAIL BAR HIRING",
-    company: "Luxe Nail Bar",
-    location: "San Antonio, TX",
-    description: "Cần thợ everything hoặc tay chân nước. Giá cao, tip nhiều.",
+    id: "featured-15",
+    title: "Mobile Makeup Artist",
+    company: "Beauty On-The-Go",
+    location: "Atlanta, GA",
+    description: "Mobile makeup artist for weddings and special events. Must have own transportation and kit.",
     contact_info: {
-      owner_name: "Phillip",
-      phone: "(412) 251-1778"
+      owner_name: "Ashley",
+      phone: "(404) 555-9876"
     },
-    created_at: new Date().toISOString()
+    created_at: "2024-01-01T13:15:00Z",
+    category: "Makeup"
   }
 ];
 
-const SalonJobListingsShowcase = () => {
-  const navigate = useNavigate();
-
-  const handleViewDetails = async (job: Job): Promise<boolean> => {
-    // Always navigate to the specific opportunity detail page using the job's ID
-    navigate(`/opportunities/${job.id}`);
-    return true;
-  };
-
+export default function SalonJobListingsShowcase() {
   return (
-    <section className="py-24 bg-white">
-      <div className="container mx-auto px-4">
-        <motion.div 
-          className="text-center max-w-3xl mx-auto mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Nail & Beauty Salons Hiring Now</h2>
-          <p className="text-lg text-gray-600">
-            Connect with top salons looking for talented beauty professionals like you
+    <section className="py-16 bg-white">
+      <Container>
+        <div className="text-center mb-12">
+          <h2 className="font-playfair text-3xl font-bold mb-4">Featured Beauty Industry Jobs</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Explore the latest job opportunities from nail salons, hair studios, spas, and beauty businesses across the country.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          {salonListings.slice(0, 6).map((listing, index) => (
-            <AuthAction
-              key={listing.id}
-              onAction={() => handleViewDetails(listing)}
-              redirectPath={`/opportunities/${listing.id}`}
-            >
-              <OpportunityCard 
-                listing={listing}
-                index={index}
-              />
-            </AuthAction>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {featuredJobs.slice(0, 9).map((job) => (
+            <Card key={job.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <Badge variant="secondary" className="text-xs">
+                    {job.category}
+                  </Badge>
+                  {job.for_sale && (
+                    <Badge variant="outline" className="text-green-600 border-green-200">
+                      For Sale
+                    </Badge>
+                  )}
+                  {job.weekly_pay && (
+                    <Badge variant="outline" className="text-blue-600 border-blue-200">
+                      Weekly Pay
+                    </Badge>
+                  )}
+                </div>
+                
+                <h3 className="font-semibold text-lg mb-2 line-clamp-2">{job.title}</h3>
+                
+                <div className="flex items-center text-gray-600 mb-2">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <span className="text-sm">{job.location}</span>
+                </div>
+                
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {job.description}
+                </p>
+                
+                {job.vietnamese_description && (
+                  <p className="text-gray-500 text-xs mb-4 italic line-clamp-2">
+                    {job.vietnamese_description}
+                  </p>
+                )}
+                
+                {job.specialties && (
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {job.specialties.slice(0, 2).map((specialty, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                
+                {job.asking_price && (
+                  <div className="text-lg font-bold text-green-600 mb-4">
+                    {job.asking_price}
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  {job.contact_info?.phone && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Phone className="h-3 w-3 mr-1" />
+                      <span>{job.contact_info.phone}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-1">
+                    {job.has_housing && (
+                      <Badge variant="outline" className="text-xs">Housing</Badge>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
-        </motion.div>
+        </div>
 
         <div className="text-center">
           <Link to="/jobs">
-            <Button variant="outline" size="lg" className="font-medium">
-              <Building className="mr-2 h-4 w-4" />
-              Browse All Opportunities
+            <Button size="lg" className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
+              <Users className="mr-2 h-4 w-4" />
+              View All Job Listings
             </Button>
           </Link>
         </div>
-      </div>
+      </Container>
     </section>
   );
-};
-
-export default SalonJobListingsShowcase;
+}

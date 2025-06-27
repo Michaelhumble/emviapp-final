@@ -26,7 +26,8 @@ export const createMockPremiumBooths = (): Job[] => {
       requirements: ["Licensed nail technician", "professional attitude", "reliable"],
       benefits: ["Free parking", "flexible hours", "walk-in clients"],
       is_featured: true,
-      featured: true // Using the proper field in the Job type
+      featured: true, // Using the proper field in the Job type
+      category: "Nail Tech"
     },
     {
       id: "booth-2",
@@ -45,7 +46,8 @@ export const createMockPremiumBooths = (): Job[] => {
       requirements: ["Valid license", "2+ years experience"],
       benefits: ["Product discount", "walk-in clients", "flexible schedule"],
       is_featured: true,
-      featured: true // Using the proper field in the Job type
+      featured: true, // Using the proper field in the Job type
+      category: "Nail Tech"
     }
   ];
 };

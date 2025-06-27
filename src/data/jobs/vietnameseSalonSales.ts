@@ -27,7 +27,8 @@ export const vietnameseSalonSales: Job[] = [
     station_count: "7",
     square_feet: "1,200",
     image: getSupabaseImageUrl("_A long, luxurious nail salon-10.png"),
-    pricingTier: "premium"
+    pricingTier: "premium",
+    category: "Nail Tech"
   },
   {
     id: "salon-sale-maumelle-ar",
@@ -48,7 +49,8 @@ export const vietnameseSalonSales: Job[] = [
     station_count: "9",
     square_feet: "2,500",
     image: getSupabaseImageUrl("_A long, luxurious nail salon-11.png"),
-    pricingTier: "premium"
+    pricingTier: "premium",
+    category: "Nail Tech"
   },
   {
     id: "salon-sale-jacksonville-fl",
@@ -69,7 +71,8 @@ export const vietnameseSalonSales: Job[] = [
     station_count: "8",
     square_feet: "1,400",
     image: getSupabaseImageUrl("_A long, luxurious nail salon-12.png"),
-    pricingTier: "premium"
+    pricingTier: "premium",
+    category: "Nail Tech"
   },
   {
     id: "salon-sale-austin-tx",
@@ -91,6 +94,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: "8",
     station_count: "8",
     image: getSupabaseImageUrl("_A long, luxurious nail salon-13.png"),
-    pricingTier: "premium"
+    pricingTier: "premium",
+    category: "Nail Tech"
   }
 ];

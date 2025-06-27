@@ -24,6 +24,7 @@ export const diamondJobs: Job[] = [
     is_vietnamese_listing: true,
     isPinned: true,
     is_featured: true,
-    featured_text: "⭐ Featured by EmviApp"
+    featured_text: "⭐ Featured by EmviApp",
+    category: "Nail Tech"
   }
 ];

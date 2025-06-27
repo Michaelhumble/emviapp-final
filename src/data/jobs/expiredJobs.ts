@@ -15,7 +15,8 @@ export const expiredJobs: Job[] = [
       phone: "(602) 555-5678"
     },
     status: "expired",
-    pricingTier: "expired"
+    pricingTier: "expired",
+    category: "Barber"
   },
   {
     id: "expired-2",
@@ -29,7 +30,8 @@ export const expiredJobs: Job[] = [
       phone: "(206) 555-2345"
     },
     status: "expired",
-    pricingTier: "expired"
+    pricingTier: "expired",
+    category: "Spa"
   },
   {
     id: "expired-3",
@@ -44,7 +46,8 @@ export const expiredJobs: Job[] = [
       phone: "(720) 555-8765"
     },
     status: "expired",
-    pricingTier: "expired"
+    pricingTier: "expired",
+    category: "Lash Tech"
   },
   {
     id: "expired-4",
@@ -60,7 +63,8 @@ export const expiredJobs: Job[] = [
     },
     status: "expired",
     pricingTier: "expired",
-    is_vietnamese_listing: true
+    is_vietnamese_listing: true,
+    category: "Nail Tech"
   },
   {
     id: "expired-5",
@@ -76,6 +80,7 @@ export const expiredJobs: Job[] = [
     },
     status: "expired",
     pricingTier: "expired",
-    is_vietnamese_listing: true
+    is_vietnamese_listing: true,
+    category: "Nail Tech"
   }
 ];

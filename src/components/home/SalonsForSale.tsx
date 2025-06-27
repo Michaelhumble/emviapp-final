@@ -38,6 +38,7 @@ const transformSalonData = (job: any): Job => {
     salon_features: job.features || [],
     type: 'salon',
     for_sale: true,
+    category: 'Other', // Default category for salon listings
     // Vietnamese fields if available
     vietnamese_description: job.vietnamese_description || '',
     is_vietnamese_listing: job.is_vietnamese_listing || false,

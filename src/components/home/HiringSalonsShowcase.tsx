@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ const transformJobData = (job: any): Job => {
     image: job.image || '',
     price: job.price || '',
     status: 'active',
+    category: 'Other', // Default category for transformed jobs
     // Add other required fields with safe defaults
     type: 'job',
     role: job.role || job.title || '',

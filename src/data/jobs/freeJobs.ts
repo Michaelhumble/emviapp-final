@@ -16,7 +16,8 @@ export const freeJobs: Job[] = [
     salary_range: "Part/Full-time",
     pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png"
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    category: "Nail Tech"
   },
   {
     id: "free-2",
@@ -32,7 +33,8 @@ export const freeJobs: Job[] = [
     salary_range: "$1,800–$2,400/tuần",
     pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png"
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    category: "Nail Tech"
   },
   {
     id: "free-3",
@@ -48,7 +50,8 @@ export const freeJobs: Job[] = [
     salary_range: "$1,400–$1,900/tuần",
     pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png"
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    category: "Nail Tech"
   },
   {
     id: "free-4",
@@ -64,6 +67,7 @@ export const freeJobs: Job[] = [
     salary_range: "$1,800–$2,200/tuần",
     pricingTier: "free",
     is_vietnamese_listing: true,
-    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png"
+    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    category: "Nail Tech"
   }
 ];
