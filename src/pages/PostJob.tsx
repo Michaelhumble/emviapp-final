@@ -1,13 +1,10 @@
 
 import React from 'react';
-import Layout from '@/components/layout/Layout';
+import { Navigate } from 'react-router-dom';
 
+// This is a redirect component to ensure our single job posting page is used
 const PostJob = () => {
-  return (
-    <Layout>
-      <div>Post Job</div>
-    </Layout>
-  );
+  return <Navigate to="/post-job" replace />;
 };
 
 export default PostJob;

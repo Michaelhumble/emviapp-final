@@ -1,13 +1,4 @@
 
-import React from 'react';
-import Layout from '@/components/layout/Layout';
-
-const SignUp = () => {
-  return (
-    <Layout>
-      <div>Sign Up</div>
-    </Layout>
-  );
-};
-
-export default SignUp;
+export default function SignUpTest() {
+  return <div style={{fontSize: "2rem", color: "#FF1744"}}>SIGN-UP ROUTE BREAK TEST – SUNSHINE</div>;
+}

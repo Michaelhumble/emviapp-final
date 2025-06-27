@@ -50,7 +50,10 @@ const SalonDetail = () => {
       <Layout>
         <div className="min-h-screen bg-background">
           <div className="container mx-auto py-12">
-            <p>Loading salon details...</p>
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-2">Loading salon details...</span>
+            </div>
           </div>
         </div>
       </Layout>
