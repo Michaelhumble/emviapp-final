@@ -40,6 +40,7 @@ export const formatJobListing = (dbJob: any): Job => {
     status: status || "active",
     expires_at: expires_at || new Date(Date.now() + 30 * 86400000).toISOString(),
     requirements: requirements || [],
+    category: dbJob.category || "Other" // Default category
   };
 
   // If it's a Vietnamese job, enhance with additional data

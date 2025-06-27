@@ -1,74 +1,56 @@
 
-import { useState, useEffect } from "react";
-import { Job } from "@/types/job";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from 'react';
+import { Job } from '@/types/job';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
+import { premiumJobs } from '@/data/jobs/premiumJobs';
+import { diamondJobs } from '@/data/jobs/diamondJobs';
+import vietnameseJobs from '@/data/protected/vietnameseJobs';
+import expiredListings from '@/data/expiredListings';
+import vietnameseExpiredJobs from '@/data/vietnameseExpiredJobs';
 
-export interface JobFilters {
-  location?: string;
-  employmentType?: string;
-  salaryRange?: [number, number];
-}
-
-export const useJobsData = (initialFilters: JobFilters = {}) => {
+export const useJobsData = () => {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  const [filters, setFilters] = useState<JobFilters>(initialFilters);
-  const [sortOption, setSortOption] = useState("recent");
+  const [renewalJobId, setActiveRenewalJobId] = useState<string | null>(null);
 
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      let query = supabase
+      
+      // Fetch jobs from Supabase
+      const { data: supabaseJobs, error: supabaseError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
 
-      // Apply filters
-      if (filters.location) {
-        query = query.ilike('location', `%${filters.location}%`);
-      }
-      
-      if (filters.employmentType) {
-        query = query.eq('compensation_type', filters.employmentType);
+      if (supabaseError) {
+        console.error('Error fetching jobs from Supabase:', supabaseError);
       }
 
-      // Sort
-      if (sortOption === 'recent') {
-        query = query.order('created_at', { ascending: false });
-      } else if (sortOption === 'location') {
-        query = query.order('location', { ascending: true });
-      }
+      // Transform Supabase jobs to match Job interface
+      const transformedSupabaseJobs: Job[] = (supabaseJobs || []).map(job => ({
+        ...job,
+        category: job.category || "Other", // Default category
+        created_at: job.created_at || new Date().toISOString(),
+      }));
 
-      const { data, error } = await query;
+      // Combine all job sources with default categories
+      const allJobs: Job[] = [
+        ...transformedSupabaseJobs,
+        ...premiumJobs.map(job => ({ ...job, category: job.category || "Other" })),
+        ...diamondJobs.map(job => ({ ...job, category: job.category || "Other" })),
+        ...vietnameseJobs.map(job => ({ ...job, category: job.category || "Other" })),
+        ...expiredListings.map(job => ({ ...job, category: job.category || "Other" })),
+        ...vietnameseExpiredJobs.map(job => ({ ...job, category: job.category || "Other" }))
+      ];
 
-      if (error) throw error;
-
-      // Transform Supabase data to Job type with proper contact_info handling
-      const transformedJobs: Job[] = data?.map(job => ({
-        id: job.id,
-        title: job.title,
-        company: job.title,
-        location: job.location || '',
-        created_at: job.created_at,
-        description: job.description || '',
-        employment_type: job.compensation_type || '',
-        compensation_details: job.compensation_details || '',
-        contact_info: typeof job.contact_info === 'object' && job.contact_info !== null 
-          ? job.contact_info as { owner_name?: string; phone?: string; email?: string; notes?: string; zalo?: string; }
-          : {},
-        pricing_tier: job.pricing_tier || 'free',
-        user_id: job.user_id,
-        status: job.status,
-        expires_at: job.expires_at
-      })) || [];
-
-      setJobs(transformedJobs);
-      setError(null);
+      setJobs(allJobs);
     } catch (err) {
-      console.error('Error fetching jobs:', err);
+      console.error('Error in fetchJobs:', err);
       setError(err as Error);
     } finally {
       setLoading(false);
@@ -77,150 +59,43 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
 
   const createJob = async (jobData: any) => {
     try {
-      // Ensure all required fields are properly formatted
-      const jobPayload = {
-        title: jobData.title,
-        description: jobData.description || '',
-        location: jobData.location || '',
-        compensation_type: jobData.compensation_type || jobData.employment_type || '',
-        compensation_details: jobData.compensation_details || '',
-        requirements: jobData.requirements || '',
-        contact_info: jobData.contact_info || {},
-        pricing_tier: jobData.pricing_tier || 'free',
-        user_id: jobData.user_id,
+      const jobToInsert = {
+        ...jobData,
+        category: jobData.category || "Other", // Default category
         status: 'active'
       };
 
       const { data, error } = await supabase
         .from('jobs')
-        .insert([jobPayload])
+        .insert([jobToInsert])
         .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating job:', error);
-        throw error;
-      }
-
-      // Refresh jobs list to show the new job
-      await fetchJobs();
-      
-      return { data, error: null };
-    } catch (err) {
-      console.error('Error in createJob:', err);
-      return { data: null, error: err as Error };
-    }
-  };
-
-  const updateJob = async (jobId: string, jobData: any) => {
-    try {
-      const jobPayload = {
-        title: jobData.title,
-        description: jobData.description || '',
-        location: jobData.location || '',
-        compensation_type: jobData.compensation_type || jobData.employment_type || '',
-        compensation_details: jobData.compensation_details || '',
-        requirements: jobData.requirements || '',
-        contact_info: jobData.contact_info || {},
-        updated_at: new Date().toISOString()
-      };
-
-      const { data, error } = await supabase
-        .from('jobs')
-        .update(jobPayload)
-        .eq('id', jobId)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error updating job:', error);
-        throw error;
-      }
-
-      // Refresh jobs list to show the updated job
-      await fetchJobs();
-      
-      return { data, error: null };
-    } catch (err) {
-      console.error('Error in updateJob:', err);
-      return { data: null, error: err as Error };
-    }
-  };
-
-  const getJobById = async (jobId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('id', jobId)
         .single();
 
       if (error) throw error;
 
-      return {
-        id: data.id,
-        title: data.title,
-        company: data.title,
-        location: data.location || '',
-        created_at: data.created_at,
-        description: data.description || '',
-        employment_type: data.compensation_type || '',
-        compensation_details: data.compensation_details || '',
-        contact_info: typeof data.contact_info === 'object' && data.contact_info !== null 
-          ? data.contact_info as { owner_name?: string; phone?: string; email?: string; notes?: string; zalo?: string; }
-          : {},
-        pricing_tier: data.pricing_tier || 'free',
-        user_id: data.user_id,
-        status: data.status,
-        expires_at: data.expires_at,
-        requirements: data.requirements || ''
-      } as Job;
-    } catch (err) {
-      console.error('Error fetching job by ID:', err);
-      throw err;
+      // Refresh jobs list
+      await fetchJobs();
+      
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error creating job:', error);
+      return { data: null, error };
     }
   };
 
+  const refetch = fetchJobs;
+
   useEffect(() => {
     fetchJobs();
-  }, [filters, sortOption]);
-
-  const updateSearchTerm = (term: string) => {
-    setSearchTerm(term);
-  };
-
-  const updateFilters = (newFilters: Partial<JobFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  };
-
-  const setActiveRenewalJobId = (jobId: string | null) => {
-    setRenewalJobId(jobId);
-  };
-
-  // Filter jobs by search term
-  const filteredJobs = jobs.filter(job => 
-    job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  }, []);
 
   return {
-    jobs: filteredJobs,
+    jobs,
     loading,
     error,
-    searchTerm,
-    updateSearchTerm,
-    filters,
-    updateFilters,
-    sortOption,
-    setSortOption,
     renewalJobId,
     setActiveRenewalJobId,
-    refetch: fetchJobs,
-    createJob,
-    updateJob,
-    getJobById
+    refetch,
+    createJob
   };
 };
-
-export default useJobsData;

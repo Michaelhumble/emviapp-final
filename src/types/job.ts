@@ -11,7 +11,7 @@ export interface Job {
   employment_type?: string;
   compensation_details?: string;
   compensation_type?: string;
-  category: string; // Required category field
+  category?: string; // Made optional
   contact_info?: {
     owner_name?: string;
     phone?: string;
@@ -90,7 +90,7 @@ export type JobDetailsSubmission = {
   compensation_type?: string;
   compensation_details?: string;
   employment_type?: string;
-  category: string; // Required category field
+  category?: string; // Made optional
   requirements?: string[] | string;
   contact_info?: {
     owner_name?: string;

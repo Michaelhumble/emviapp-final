@@ -29,6 +29,7 @@ export const fetchJob = async (id: string): Promise<Job> => {
       phone: "(555) 123-4567",
       email: "contact@emviapp.com"
     },
+    category: "Salon" // Added category
   };
 };
 
@@ -42,7 +43,7 @@ export const fetchJobs = async (page: number = 1, limit: number = 9): Promise<{
   // In a real app, this would be an API call with pagination params
   const start = (page - 1) * limit;
   const end = start + limit;
-  const jobs = salonListings.map(listing => ({
+  const jobs: Job[] = salonListings.map(listing => ({
     id: listing.id,
     title: listing.name,
     company: listing.name,
@@ -51,6 +52,7 @@ export const fetchJobs = async (page: number = 1, limit: number = 9): Promise<{
     description: listing.description,
     price: listing.price.toString(),
     image: listing.imageUrl,
+    category: "Salon" // Added category
   })).slice(start, end);
   
   const totalPages = Math.ceil(salonListings.length / limit);

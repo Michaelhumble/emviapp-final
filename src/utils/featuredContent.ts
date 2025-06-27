@@ -1,4 +1,3 @@
-
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { sampleSalons } from '@/data/sampleSalons';
@@ -16,31 +15,34 @@ const salonsForSale: Salon[] = sampleSalons.slice(0, 6);
 // Mock featured jobs
 const featuredJobs: Job[] = [
   {
-    id: "job-1",
+    id: "featured-1",
     title: "Senior Nail Technician",
-    company: "Luxury Nail Spa",
-    location: "Los Angeles, CA",
-    created_at: new Date().toISOString(),
+    company: "Luxury Nails & Spa",
+    location: "Beverly Hills, CA",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     is_featured: true,
-    image: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    category: "Nail Tech" // Added category
   },
   {
-    id: "job-2",
-    title: "Hair Stylist",
-    company: "Elegant Hair Studio",
-    location: "New York, NY",
-    created_at: new Date().toISOString(),
+    id: "featured-2", 
+    title: "Hair Stylist Wanted",
+    company: "Elite Hair Studio",
+    location: "Manhattan, NY",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     is_featured: true,
-    image: "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    category: "Hair Stylist" // Added category
   },
   {
-    id: "job-3",
-    title: "Salon Manager",
-    company: "Bliss Beauty Lounge",
-    location: "Miami, FL",
-    created_at: new Date().toISOString(),
+    id: "featured-3",
+    title: "Lash Technician",
+    company: "Beauty Bar",
+    location: "Miami, FL", 
+    created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
     is_featured: true,
-    image: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
+    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    category: "Lash Tech" // Added category
   }
 ];
 
@@ -138,4 +140,77 @@ export const getFeaturedJobs = (count?: number): Job[] => {
  */
 export const getAllBooths = (): Job[] => {
   return boothlListings;
+};
+
+// Mock function to get trending salons data
+export const getTrendingSalons = (): Job[] => {
+  return [
+    // ... keep existing code for trending salons ...
+  ];
+};
+
+// Featured salon for sale
+export const featuredSalonForSale: Job = {
+  id: "featured-salon-1",
+  title: "Premium Nail Salon for Sale",
+  company: "Golden Touch Nails",
+  location: "Orange County, CA",
+  created_at: new Date().toISOString(),
+  description: "Established nail salon with loyal clientele in prime location. Fully equipped with modern amenities.",
+  price: "$180,000",
+  image: "/salon-banner.png",
+  salon_features: [
+    "20 Nail Stations",
+    "4 Pedicure Chairs", 
+    "VIP Room",
+    "Modern Equipment"
+  ],
+  contact_info: {
+    owner_name: "Maria Johnson",
+    phone: "(714) 555-0123",
+    email: "maria@goldentouchnails.com"
+  },
+  type: "salon",
+  category: "Salon" // Added category
+};
+
+// Get featured opportunities
+export const getFeaturedOpportunities = (): Job[] => {
+  const opportunities: Job[] = [
+    {
+      id: "opp-1",
+      title: "Chair Rental Available",
+      company: "Upscale Salon",
+      location: "Dallas, TX",
+      created_at: new Date().toISOString(),
+      price: "$150/week",
+      description: "Prime chair rental in busy upscale salon.",
+      image: "/salon-banner.png",
+      category: "Other" // Added category
+    },
+    {
+      id: "opp-2", 
+      title: "Booth Rental - Hair Stylist",
+      company: "Modern Studio",
+      location: "Austin, TX",
+      created_at: new Date().toISOString(),
+      price: "$200/week",
+      description: "Modern booth rental for experienced hair stylist.",
+      image: "/salon-banner.png",
+      category: "Hair Stylist" // Added category
+    },
+    {
+      id: "opp-3",
+      title: "Spa Room Rental",
+      company: "Wellness Center", 
+      location: "Phoenix, AZ",
+      created_at: new Date().toISOString(),
+      price: "$300/week",
+      description: "Private spa room for esthetician or massage therapist.",
+      image: "/salon-banner.png",
+      category: "Spa" // Added category
+    }
+  ];
+
+  return opportunities;
 };
