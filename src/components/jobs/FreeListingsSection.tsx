@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
-import { JobListingCard } from './JobListingCard';
+import JobListingCard from './JobListingCard';
 import { useJobQueries } from '@/hooks/jobs/useJobQueries';
 
 interface FreeListingsSectionProps {
@@ -19,27 +19,37 @@ const FreeListingsSection: React.FC<FreeListingsSectionProps> = ({
 
   useEffect(() => {
     const loadFreeJobs = async () => {
-      console.log('🔄 FreeListingsSection: Loading free jobs...');
+      console.log('🔄 FreeListingsSection: Starting to load free jobs...');
       setFetchError(null);
       
       try {
+        console.log('🔍 FreeListingsSection: Calling fetchJobs with filters:', { 
+          pricingTier: 'free', 
+          status: 'active' 
+        });
+        
         const jobs = await fetchJobs({ 
           pricingTier: 'free', 
           status: 'active' 
         });
         
-        console.log('📊 FreeListingsSection: Fetched free jobs:', jobs);
-        console.log('📊 FreeListingsSection: Job count:', jobs?.length || 0);
+        console.log('✅ FreeListingsSection: Fetched free jobs successfully:', {
+          jobCount: jobs?.length || 0,
+          jobs: jobs
+        });
         
         if (jobs && jobs.length > 0) {
           console.log('📋 FreeListingsSection: First job details:', jobs[0]);
+          console.log('📋 FreeListingsSection: All job IDs:', jobs.map(job => job.id));
+          console.log('📋 FreeListingsSection: All job titles:', jobs.map(job => job.title));
         } else {
-          console.warn('⚠️ FreeListingsSection: No free jobs found');
+          console.warn('⚠️ FreeListingsSection: No free jobs found in database');
         }
         
         setDynamicJobs(jobs || []);
       } catch (error) {
         console.error('❌ FreeListingsSection: Error loading free jobs:', error);
+        console.error('❌ FreeListingsSection: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
         setFetchError(error instanceof Error ? error.message : 'Unknown error occurred');
       }
     };
@@ -49,12 +59,16 @@ const FreeListingsSection: React.FC<FreeListingsSectionProps> = ({
 
   // Combine static jobs from props with dynamic jobs from database
   const allFreeJobs = [...staticJobs, ...dynamicJobs];
-  console.log('📊 FreeListingsSection: Combined jobs count:', allFreeJobs.length);
-  console.log('📊 FreeListingsSection: Static jobs:', staticJobs.length);
-  console.log('📊 FreeListingsSection: Dynamic jobs:', dynamicJobs.length);
+  console.log('📊 FreeListingsSection: Rendering with combined jobs:', {
+    staticJobsCount: staticJobs.length,
+    dynamicJobsCount: dynamicJobs.length,
+    totalJobs: allFreeJobs.length,
+    loading,
+    fetchError
+  });
 
   if (loading) {
-    console.log('⏳ FreeListingsSection: Loading state active');
+    console.log('⏳ FreeListingsSection: Showing loading state');
     return (
       <div className="mb-12">
         <h2 className="text-2xl font-bold mb-6 text-gray-900">Free Job Listings</h2>
@@ -71,10 +85,10 @@ const FreeListingsSection: React.FC<FreeListingsSectionProps> = ({
       <div className="mb-12">
         <h2 className="text-2xl font-bold mb-6 text-gray-900">Free Job Listings</h2>
         <div className="text-center py-8">
-          <div className="text-red-500">Error loading free jobs: {fetchError}</div>
+          <div className="text-red-500 mb-2">Error loading free jobs: {fetchError}</div>
           <button 
             onClick={() => window.location.reload()} 
-            className="mt-2 text-blue-500 hover:underline"
+            className="text-blue-500 hover:underline"
           >
             Retry
           </button>
@@ -111,12 +125,18 @@ const FreeListingsSection: React.FC<FreeListingsSectionProps> = ({
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
         {allFreeJobs.map((job, index) => {
-          console.log('🎯 FreeListingsSection: Rendering job', index + 1, ':', job.title, job.id);
+          console.log('🎯 FreeListingsSection: Rendering job', index + 1, ':', {
+            id: job.id,
+            title: job.title,
+            location: job.location,
+            created_at: job.created_at
+          });
+          
           return (
             <JobListingCard
               key={job.id}
               job={job}
-              onViewDetails={onViewDetails}
+              onViewDetails={() => onViewDetails(job)}
             />
           );
         })}
