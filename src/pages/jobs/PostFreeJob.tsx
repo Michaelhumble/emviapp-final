@@ -34,6 +34,7 @@ const PostFreeJob = () => {
   });
 
   const handleFieldChange = (field: keyof JobFormData, value: any) => {
+    console.log('📝 Form field changed:', field, value);
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -41,6 +42,7 @@ const PostFreeJob = () => {
   };
 
   const handleContactInfoChange = (field: string, value: string) => {
+    console.log('📞 Contact info changed:', field, value);
     setFormData(prev => ({
       ...prev,
       contact_info: {
@@ -53,20 +55,28 @@ const PostFreeJob = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🚀 Free job form submitted with data:', formData);
+    
     try {
       // Validate form data
       validateJobForm(formData);
+      
+      console.log('✅ Form validation passed');
       
       // Create job with free pricing tier
       const success = await createJob(formData, 'free');
       
       if (success) {
+        console.log('✅ Free job created successfully, redirecting...');
         // Simple redirect to jobs page - no confetti or effects
         navigate('/jobs', { 
           state: { message: 'Your free job has been posted successfully!' }
         });
+      } else {
+        console.error('❌ Failed to create free job');
       }
     } catch (error) {
+      console.error('❌ Form submission error:', error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

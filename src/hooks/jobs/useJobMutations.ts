@@ -10,7 +10,10 @@ export const useJobMutations = () => {
   const { user } = useAuth();
 
   const createJob = async (jobData: JobFormData, pricingTier: string = 'free') => {
+    console.log('🔥 createJob called with:', { jobData, pricingTier, userId: user?.id });
+    
     if (!user?.id) {
+      console.error('❌ No user ID found');
       toast.error('You must be logged in to post a job');
       return false;
     }
@@ -31,16 +34,23 @@ export const useJobMutations = () => {
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       };
 
-      const { error } = await supabase
+      console.log('📤 Attempting to insert job with payload:', jobPayload);
+
+      const { data, error } = await supabase
         .from('jobs')
-        .insert(jobPayload);
+        .insert(jobPayload)
+        .select(); // Add select to return the created job
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase insert error:', error);
+        throw error;
+      }
 
+      console.log('✅ Job created successfully:', data);
       toast.success('Job posted successfully!');
       return true;
     } catch (error) {
-      console.error('Error creating job:', error);
+      console.error('❌ Error creating job:', error);
       toast.error('Failed to post job. Please try again.');
       return false;
     } finally {

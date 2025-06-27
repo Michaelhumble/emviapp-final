@@ -1,188 +1,193 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Job } from "@/types/job";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Clock, DollarSign, Building2, Edit, Trash2 } from "lucide-react";
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Calendar, Edit, Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useJobQueries } from "@/hooks/jobs/useJobQueries";
+import { useJobMutations } from "@/hooks/jobs/useJobMutations";
 import { useJobPermissions } from "@/hooks/useJobPermissions";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
   onViewDetails: (job: Job) => void;
 }
 
-const FreeListingsSection: React.FC<FreeListingsSectionProps> = ({ 
-  jobs, 
-  onViewDetails 
-}) => {
-  const { user, userRole } = useAuth();
+const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) => {
   const navigate = useNavigate();
+  const { fetchJobs } = useJobQueries();
+  const { deleteJob } = useJobMutations();
   const { canEditJob, canDeleteJob } = useJobPermissions();
+  const [freeJobs, setFreeJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleEdit = (job: Job, e: React.MouseEvent) => {
-    e.stopPropagation();
+  // Fetch free jobs from database
+  useEffect(() => {
+    const loadFreeJobs = async () => {
+      console.log('🔄 FreeListingsSection: Loading free jobs...');
+      setLoading(true);
+      
+      try {
+        const fetchedJobs = await fetchJobs({ 
+          pricingTier: 'free', 
+          status: 'active' 
+        });
+        console.log('📊 FreeListingsSection: Fetched free jobs:', fetchedJobs);
+        setFreeJobs(fetchedJobs);
+      } catch (error) {
+        console.error('❌ FreeListingsSection: Error loading free jobs:', error);
+        toast.error('Failed to load free job listings');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFreeJobs();
+  }, [fetchJobs]);
+
+  const handleEdit = (job: Job) => {
     navigate(`/jobs/edit-free/${job.id}`);
   };
 
-  const handleDelete = (job: Job, e: React.MouseEvent) => {
-    e.stopPropagation();
-    // This will be handled by the EditFreeJob component
-    navigate(`/jobs/edit-free/${job.id}`);
+  const handleDelete = async (job: Job) => {
+    if (confirm('Are you sure you want to delete this job posting?')) {
+      const success = await deleteJob(job.id);
+      if (success) {
+        // Refresh the list
+        const fetchedJobs = await fetchJobs({ 
+          pricingTier: 'free', 
+          status: 'active' 
+        });
+        setFreeJobs(fetchedJobs);
+      }
+    }
   };
 
-  if (!jobs || jobs.length === 0) {
+  if (loading) {
     return (
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Free Job Listings</h2>
-          <Button 
-            onClick={() => navigate('/jobs/post-free')}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            Post a Free Job
-          </Button>
+      <motion.section className="mt-8 mb-12">
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold mb-6">
+          💚 Free Job Listings
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          {[...Array(5)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <div className="aspect-video bg-gray-200"></div>
+              <CardContent className="p-6">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-        
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-4">No free job listings available at the moment.</p>
-          <Button 
-            onClick={() => navigate('/jobs/post-free')}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            Be the first to post a free job
-          </Button>
-        </div>
-      </section>
+      </motion.section>
     );
   }
 
   return (
-    <section className="mb-12">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Free Job Listings
-          <span className="ml-2 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
-            {jobs.length} jobs
-          </span>
+    <motion.section
+      className="mt-8 mb-12"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+    >
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
+          💚 Free Job Listings ({freeJobs.length})
         </h2>
         <Button 
           onClick={() => navigate('/jobs/post-free')}
           className="bg-green-600 hover:bg-green-700 text-white"
         >
-          Post a Free Job
+          Post Free Job
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-        {jobs.map((job) => (
-          <Card 
-            key={job.id} 
-            className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-l-4 border-l-green-500 relative"
-            onClick={() => onViewDetails(job)}
+      {freeJobs.length === 0 ? (
+        <Card className="p-8 text-center">
+          <p className="text-gray-500 mb-4">No free job listings available yet.</p>
+          <Button 
+            onClick={() => navigate('/jobs/post-free')}
+            className="bg-green-600 hover:bg-green-700 text-white"
           >
-            <CardContent className="p-4">
-              {/* Action buttons for owners/admin */}
-              {(canEditJob(job) || canDeleteJob(job)) && (
-                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            Post the First Free Job
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          {freeJobs.map((job, index) => (
+            <Card
+              key={job.id}
+              className="overflow-hidden border border-green-200 shadow-md hover:shadow-lg transition-all duration-300 group"
+            >
+              <div className="aspect-video relative bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
+                <div className="text-center p-4">
+                  <div className="text-green-600 text-4xl mb-2">💼</div>
+                  <Badge className="bg-green-500 text-white border-0">
+                    Free
+                  </Badge>
+                </div>
+              </div>
+
+              <CardContent className="p-6">
+                <div className="mb-3">
+                  <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
+                  <p className="text-gray-600 font-medium">{job.company || 'Company'}</p>
+                </div>
+
+                <div className="flex items-center text-base text-gray-600 mb-2">
+                  <MapPin className="h-4 w-4 mr-1" /> {job.location}
+                </div>
+
+                {job.compensation_details && (
+                  <div className="flex items-center text-base text-gray-600 mb-2">
+                    <span className="text-lg mr-1">💰</span> {job.compensation_details}
+                  </div>
+                )}
+
+                <div className="flex items-center text-base text-gray-600 mb-4">
+                  <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1 font-bold bg-green-500 hover:bg-green-600 text-white"
+                    onClick={() => onViewDetails(job)}
+                  >
+                    View Details
+                  </Button>
+                  
                   {canEditJob(job) && (
                     <Button
                       size="sm"
-                      variant="ghost"
-                      onClick={(e) => handleEdit(job, e)}
-                      className="h-8 w-8 p-0 hover:bg-blue-100"
+                      variant="outline"
+                      onClick={() => handleEdit(job)}
                     >
-                      <Edit size={14} className="text-blue-600" />
+                      <Edit className="h-4 w-4" />
                     </Button>
                   )}
+                  
                   {canDeleteJob(job) && (
                     <Button
                       size="sm"
-                      variant="ghost"
-                      onClick={(e) => handleDelete(job, e)}
-                      className="h-8 w-8 p-0 hover:bg-red-100"
+                      variant="outline"
+                      onClick={() => handleDelete(job)}
+                      className="text-red-600 hover:text-red-700"
                     >
-                      <Trash2 size={14} className="text-red-600" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
-              )}
-
-              {/* Job Image */}
-              {job.image && (
-                <div className="w-full h-32 mb-3 rounded-lg overflow-hidden bg-gray-100">
-                  <img 
-                    src={job.image} 
-                    alt={job.title || 'Job listing'} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-
-              {/* Job Title */}
-              <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
-                {job.title || 'Job Title'}
-              </h3>
-
-              {/* Company/Salon */}
-              {job.company && (
-                <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
-                  <Building2 size={12} />
-                  <span className="truncate">{job.company}</span>
-                </div>
-              )}
-
-              {/* Location */}
-              <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
-                <MapPin size={12} />
-                <span className="truncate">{job.location || 'Location'}</span>
-              </div>
-
-              {/* Salary Range */}
-              {job.salary_range && (
-                <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
-                  <DollarSign size={12} />
-                  <span className="truncate">{job.salary_range}</span>
-                </div>
-              )}
-
-              {/* Posted Date */}
-              <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                <Clock size={12} />
-                <span>
-                  {job.created_at 
-                    ? new Date(job.created_at).toLocaleDateString()
-                    : 'Recently posted'
-                  }
-                </span>
-              </div>
-
-              {/* Description Preview */}
-              {job.description && (
-                <p className="text-xs text-gray-600 line-clamp-2 mb-3">
-                  {job.description}
-                </p>
-              )}
-
-              {/* Free Badge */}
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Free Listing
-                </span>
-                
-                {/* Contact Info Indicator */}
-                {job.contact_info?.phone && (
-                  <span className="text-xs text-gray-500">
-                    📞 Contact available
-                  </span>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </motion.section>
   );
 };
 
