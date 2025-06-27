@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Job } from '@/types/job';
 import JobListingCard from './JobListingCard';
-import { JobDetailModal } from './JobDetailModal';
+import JobEmptyState from './JobEmptyState';
+import { Button } from '@/components/ui/button';
 import { 
   Scissors, 
   Sparkles, 
   Eye, 
-  Heart, 
-  Flower2, 
   Palette, 
-  PaintBucket, 
-  User 
+  Heart, 
+  HandMetal,
+  Brush,
+  Plus
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 
 interface JobsByIndustrySectionProps {
   jobs: Job[];
@@ -26,201 +27,165 @@ interface JobsByIndustrySectionProps {
   checkExpiration?: (job: Job) => boolean;
 }
 
-const JobsByIndustrySection: React.FC<JobsByIndustrySectionProps> = ({
-  jobs,
-  expirations,
-  currentUserId,
-  onRenew,
+const JobsByIndustrySection = ({ 
+  jobs, 
+  expirations, 
+  currentUserId, 
+  onRenew, 
   isRenewing,
   renewalJobId,
   onDelete,
   checkExpiration
-}) => {
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+}: JobsByIndustrySectionProps) => {
   const navigate = useNavigate();
 
-  const viewJobDetails = (job: Job) => {
-    setSelectedJob(job);
-  };
-
-  const closeJobDetails = () => {
-    setSelectedJob(null);
-  };
-
-  const handlePostJobClick = (industry: string) => {
-    navigate('/post-job-free');
-    // Note: In a full implementation, you might want to pass the industry as a URL parameter
-    // or store it in context/localStorage to pre-select the category in the form
-  };
-
-  const industryCategories = [
-    {
-      name: 'Nail Technician',
-      icon: Sparkles,
-      keywords: ['nail', 'manicure', 'pedicure', 'nail tech', 'nail technician', 'nail artist'],
-      displayName: 'Nail Tech'
-    },
-    {
-      name: 'Hair Stylist',
-      icon: Scissors,
-      keywords: ['hair', 'stylist', 'hairdresser', 'colorist', 'hair color', 'hair cut', 'salon'],
-      displayName: 'Hair Stylist'
-    },
-    {
-      name: 'Barber',
-      icon: Scissors,
-      keywords: ['barber', 'barbershop', 'men hair', 'beard', 'mustache', 'fade'],
-      displayName: 'Barber'
-    },
-    {
-      name: 'Lash Technician',
-      icon: Eye,
-      keywords: ['lash', 'eyelash', 'lash extension', 'lash tech', 'eyelash extension'],
-      displayName: 'Lash Tech'
-    },
-    {
-      name: 'Esthetician',
-      icon: Heart,
-      keywords: ['esthetician', 'facial', 'skincare', 'skin care', 'aesthetician'],
-      displayName: 'Esthetician'
-    },
-    {
-      name: 'Spa Technician',
-      icon: Flower2,
-      keywords: ['spa', 'massage', 'wellness', 'relaxation', 'spa tech'],
-      displayName: 'Spa Tech'
-    },
-    {
-      name: 'Makeup Artist',
-      icon: Palette,
-      keywords: ['makeup', 'cosmetics', 'beauty', 'makeup artist', 'mua'],
-      displayName: 'Makeup Artist'
-    },
-    {
-      name: 'Permanent Makeup',
-      icon: PaintBucket,
-      keywords: ['permanent makeup', 'microblading', 'pmua', 'cosmetic tattoo', 'eyebrow tattoo'],
-      displayName: 'Permanent Makeup'
+  const getIndustryIcon = (industry: string) => {
+    const iconProps = { size: 20, className: "text-blue-600" };
+    
+    switch (industry.toLowerCase()) {
+      case 'nails':
+        return <Sparkles {...iconProps} />;
+      case 'hair stylist':
+        return <Scissors {...iconProps} />;
+      case 'barber':
+        return <Scissors {...iconProps} />;
+      case 'lash':
+        return <Eye {...iconProps} />;
+      case 'esthetician':
+        return <Heart {...iconProps} />;
+      case 'spa':
+        return <HandMetal {...iconProps} />;
+      case 'makeup':
+        return <Palette {...iconProps} />;
+      case 'permanent makeup':
+        return <Brush {...iconProps} />;
+      default:
+        return <Plus {...iconProps} />;
     }
-  ];
+  };
 
   const categorizeJobs = (jobs: Job[]) => {
-    const categorized: Record<string, Job[]> = {};
-    const uncategorized: Job[] = [];
-
-    industryCategories.forEach(category => {
-      categorized[category.name] = [];
-    });
+    const categories = {
+      'Nails': [] as Job[],
+      'Hair Stylist': [] as Job[],
+      'Barber': [] as Job[],
+      'Lash': [] as Job[],
+      'Esthetician': [] as Job[],
+      'Spa': [] as Job[],
+      'Makeup': [] as Job[],
+      'Permanent Makeup': [] as Job[],
+      'Other': [] as Job[]
+    };
 
     jobs.forEach(job => {
-      let categorized_job = false;
-      const jobText = `${job.title} ${job.description}`.toLowerCase();
-
-      for (const category of industryCategories) {
-        if (category.keywords.some(keyword => jobText.includes(keyword.toLowerCase()))) {
-          categorized[category.name].push(job);
-          categorized_job = true;
-          break;
-        }
-      }
-
-      if (!categorized_job) {
-        uncategorized.push(job);
+      const title = job.title?.toLowerCase() || '';
+      const description = job.description?.toLowerCase() || '';
+      const company = job.company?.toLowerCase() || '';
+      
+      if (title.includes('nail') || description.includes('nail') || company.includes('nail')) {
+        categories['Nails'].push(job);
+      } else if (title.includes('hair') && !title.includes('barber') || description.includes('hair stylist') || description.includes('hairstylist')) {
+        categories['Hair Stylist'].push(job);
+      } else if (title.includes('barber') || description.includes('barber') || company.includes('barber')) {
+        categories['Barber'].push(job);
+      } else if (title.includes('lash') || title.includes('eyelash') || description.includes('lash') || description.includes('eyelash')) {
+        categories['Lash'].push(job);
+      } else if (title.includes('esthetician') || title.includes('facial') || description.includes('esthetician') || description.includes('facial')) {
+        categories['Esthetician'].push(job);
+      } else if (title.includes('spa') || title.includes('massage') || description.includes('spa') || description.includes('massage')) {
+        categories['Spa'].push(job);
+      } else if (title.includes('makeup') && !title.includes('permanent') || description.includes('makeup') && !description.includes('permanent')) {
+        categories['Makeup'].push(job);
+      } else if (title.includes('permanent makeup') || title.includes('pmu') || description.includes('permanent makeup') || description.includes('pmu')) {
+        categories['Permanent Makeup'].push(job);
+      } else {
+        categories['Other'].push(job);
       }
     });
 
     // Sort jobs within each category by newest first
-    Object.keys(categorized).forEach(category => {
-      categorized[category].sort((a, b) => 
-        new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
-      );
+    Object.keys(categories).forEach(category => {
+      categories[category as keyof typeof categories].sort((a, b) => {
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+        return dateB - dateA;
+      });
     });
 
-    return { categorized, uncategorized };
+    return categories;
   };
 
-  const { categorized, uncategorized } = categorizeJobs(jobs);
+  const handleViewDetails = (job: Job) => {
+    console.log('Viewing job details:', job);
+  };
 
-  const renderJobSection = (categoryName: string, categoryJobs: Job[], icon: React.ElementType, displayName: string) => {
-    const IconComponent = icon;
-    const hasJobs = categoryJobs.length > 0;
+  const categorizedJobs = categorizeJobs(jobs);
 
-    return (
-      <div key={categoryName} className="mb-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <IconComponent className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{displayName} Jobs</h2>
-              <p className="text-gray-600">{categoryJobs.length} position{categoryJobs.length !== 1 ? 's' : ''} available</p>
-            </div>
-          </div>
-          <Button
-            onClick={() => handlePostJobClick(categoryName)}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium"
-          >
-            Post a {displayName} Job
-          </Button>
-        </div>
-
-        {hasJobs ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {categoryJobs.map((job) => (
-              <JobListingCard
-                key={job.id}
-                job={job}
-                isExpired={checkExpiration ? checkExpiration(job) : expirations[job.id]}
-                onViewDetails={() => viewJobDetails(job)}
-                onRenew={() => onRenew(job)}
-                onDelete={onDelete ? () => onDelete(job.id) : undefined}
-                isRenewing={isRenewing && renewalJobId === job.id}
-                currentUserId={currentUserId}
-                showOwnerActions={job.user_id === currentUserId}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <IconComponent className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No {displayName} Jobs Yet</h3>
-            <p className="text-gray-600 mb-4">Be the first to post a {displayName.toLowerCase()} position!</p>
-          </div>
-        )}
-      </div>
-    );
+  const handlePostJobClick = () => {
+    navigate('/post-job');
   };
 
   return (
-    <>
-      <div className="space-y-8">
-        {industryCategories.map(category => 
-          renderJobSection(
-            category.name, 
-            categorized[category.name], 
-            category.icon, 
-            category.displayName
-          )
-        )}
+    <div className="space-y-12">
+      {Object.entries(categorizedJobs).map(([industry, industryJobs]) => (
+        <div key={industry} className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {getIndustryIcon(industry)}
+              <h2 className="text-2xl font-bold text-gray-900">
+                {industry} Jobs
+                {industryJobs.length > 0 && (
+                  <span className="ml-2 text-sm font-normal text-gray-500">
+                    ({industryJobs.length})
+                  </span>
+                )}
+              </h2>
+            </div>
+            <Button
+              onClick={handlePostJobClick}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
+            >
+              Post a {industry} Job
+            </Button>
+          </div>
 
-        {/* Other/Uncategorized Jobs */}
-        {uncategorized.length > 0 && renderJobSection(
-          'Other', 
-          uncategorized, 
-          User, 
-          'Other Beauty'
-        )}
-      </div>
-
-      {selectedJob && (
-        <JobDetailModal
-          job={selectedJob}
-          isOpen={!!selectedJob}
-          onClose={closeJobDetails}
-        />
-      )}
-    </>
+          {industryJobs.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {industryJobs.map((job) => (
+                <JobListingCard
+                  key={job.id}
+                  job={job}
+                  isExpired={checkExpiration ? checkExpiration(job) : expirations[job.id]}
+                  onViewDetails={() => handleViewDetails(job)}
+                  onRenew={() => onRenew(job)}
+                  onDelete={onDelete ? () => onDelete(job.id) : undefined}
+                  isRenewing={isRenewing && renewalJobId === job.id}
+                  showOwnerActions={currentUserId === job.user_id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <div className="flex justify-center mb-4">
+                {getIndustryIcon(industry)}
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No {industry} Jobs Available
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Be the first to post a {industry.toLowerCase()} job opportunity!
+              </p>
+              <Button
+                onClick={handlePostJobClick}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium"
+              >
+                Post a {industry} Job
+              </Button>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   );
 };
 
