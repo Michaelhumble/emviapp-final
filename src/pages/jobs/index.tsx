@@ -19,9 +19,10 @@ import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import FreeJobActions from "@/components/free-posting/FreeJobActions";
 
 const JobsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -53,13 +54,21 @@ const JobsPage: React.FC = () => {
   return (
     <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
       {/* Back to Home button */}
-      <div className="mb-6">
+      <div className="mb-6 flex justify-between items-center">
         <Button
           variant="ghost"
           onClick={() => navigate("/")}
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} /> Back to Home
+        </Button>
+        
+        {/* Post Free Job Button */}
+        <Button
+          onClick={() => navigate("/post-job-free")}
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+        >
+          <Plus size={16} /> Post Free Job
         </Button>
       </div>
       
@@ -113,15 +122,17 @@ const JobsPage: React.FC = () => {
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
-
-      {/* Remove the outdated jobs grid that's showing expired jobs */}
-      {/* This was likely the source of the duplicate expired listings */}
       
       {selectedJob && (
         <JobDetailModal
           job={selectedJob}
           isOpen={!!selectedJob}
           onClose={closeJobDetails}
+          additionalActions={
+            selectedJob.pricing_tier === 'free' ? (
+              <FreeJobActions job={selectedJob} />
+            ) : null
+          }
         />
       )}
     </Container>
