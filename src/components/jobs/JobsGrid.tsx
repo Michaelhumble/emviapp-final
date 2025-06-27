@@ -12,7 +12,8 @@ export interface JobsGridProps {
   onRenew: (job: Job) => void;
   isRenewing: boolean;
   renewalJobId: string | null;
-  checkExpiration?: (job: Job) => boolean; // Optional custom expiration checker
+  onDelete?: (jobId: string) => void;
+  checkExpiration?: (job: Job) => boolean;
 }
 
 const JobsGrid = ({ 
@@ -22,30 +23,31 @@ const JobsGrid = ({
   onRenew, 
   isRenewing,
   renewalJobId,
+  onDelete,
   checkExpiration
 }: JobsGridProps) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const isExpired = (job: Job): boolean => {
-    // Use custom checker if provided
     if (checkExpiration) {
       return checkExpiration(job);
     }
     
-    // If the job is already marked as expired in the database
     if (job.status === 'expired') {
       return true;
     }
     
-    // Check if it's in our expirations record
     if (expirations && expirations[job.id] !== undefined) {
       return expirations[job.id];
     }
     
-    // Default 30-day expiration logic
     const createdDate = new Date(job.created_at);
     const now = new Date();
     return differenceInDays(now, createdDate) >= 30;
+  };
+
+  const isOwner = (job: Job): boolean => {
+    return currentUserId === job.user_id;
   };
 
   const viewJobDetails = (job: Job) => {
@@ -67,7 +69,9 @@ const JobsGrid = ({
             currentUserId={currentUserId}
             onViewDetails={() => viewJobDetails(job)} 
             onRenew={() => onRenew(job)}
+            onDelete={onDelete && isOwner(job) ? () => onDelete(job.id) : undefined}
             isRenewing={isRenewing && renewalJobId === job.id}
+            showOwnerActions={isOwner(job)}
           />
         ))}
       </div>

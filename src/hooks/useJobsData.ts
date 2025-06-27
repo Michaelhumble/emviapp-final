@@ -1,54 +1,114 @@
 
-import { useState, useEffect, useCallback } from "react";
-import useSampleJobsData, { JobFilters } from "./useSampleJobsData";
+import { useState, useEffect } from "react";
+import { Job } from "@/types/job";
+import { supabase } from "@/integrations/supabase/client";
 
-// This is a wrapper hook that will eventually use real data from an API
-// For now, it uses our sample data
+export interface JobFilters {
+  location?: string;
+  employmentType?: string;
+  salaryRange?: [number, number];
+}
+
 export const useJobsData = (initialFilters: JobFilters = {}) => {
-  const sampleData = useSampleJobsData(initialFilters);
-  
-  // Here we can add any additional logic or transformations
-  // that would normally interact with a real API
-  
-  // Add advanced filtering, sorting, etc.
-  const [sortOption, setSortOption] = useState("recent");
-  const [filteredResults, setFilteredResults] = useState(sampleData.jobs);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  
-  // Apply additional sorting when sort option changes
-  useEffect(() => {
-    let sortedResults = [...sampleData.jobs];
-    
-    if (sortOption === "recent") {
-      // Sort by most recent first (would use date in real app)
-      sortedResults = sortedResults;
-    } else if (sortOption === "rating") {
-      // Sort by rating if available
-      sortedResults = sortedResults.sort((a, b) => {
-        const ratingA = a.experience_level === 'Senior' ? 3 : a.experience_level === 'Mid-Level' ? 2 : 1;
-        const ratingB = b.experience_level === 'Senior' ? 3 : b.experience_level === 'Mid-Level' ? 2 : 1;
-        return ratingB - ratingA;
-      });
+  const [filters, setFilters] = useState<JobFilters>(initialFilters);
+  const [sortOption, setSortOption] = useState("recent");
+
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('jobs')
+        .select('*')
+        .eq('status', 'active');
+
+      // Apply filters
+      if (filters.location) {
+        query = query.ilike('location', `%${filters.location}%`);
+      }
+      
+      if (filters.employmentType) {
+        query = query.eq('compensation_type', filters.employmentType);
+      }
+
+      // Sort
+      if (sortOption === 'recent') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sortOption === 'location') {
+        query = query.order('location', { ascending: true });
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      // Transform Supabase data to Job type
+      const transformedJobs: Job[] = data?.map(job => ({
+        id: job.id,
+        title: job.title,
+        company: job.title,
+        location: job.location || '',
+        created_at: job.created_at,
+        description: job.description || '',
+        employment_type: job.compensation_type || '',
+        compensation_details: job.compensation_details || '',
+        contact_info: job.contact_info || {},
+        pricing_tier: job.pricing_tier || 'free',
+        user_id: job.user_id,
+        status: job.status,
+        expires_at: job.expires_at
+      })) || [];
+
+      setJobs(transformedJobs);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setError(err as Error);
+    } finally {
+      setLoading(false);
     }
-    
-    // Filter out expired jobs from the main jobs grid to prevent duplication 
-    // since we're showing them in the ExpiredListingsSection component
-    sortedResults = sortedResults.filter(job => job.status !== 'expired');
-    
-    setFilteredResults(sortedResults);
-  }, [sortOption, sampleData.jobs]);
-  
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [filters, sortOption]);
+
+  const updateSearchTerm = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  const updateFilters = (newFilters: Partial<JobFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
   const setActiveRenewalJobId = (jobId: string | null) => {
     setRenewalJobId(jobId);
   };
-  
+
+  // Filter jobs by search term
+  const filteredJobs = jobs.filter(job => 
+    job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return {
-    ...sampleData,
-    jobs: filteredResults,
+    jobs: filteredJobs,
+    loading,
+    error,
+    searchTerm,
+    updateSearchTerm,
+    filters,
+    updateFilters,
     sortOption,
     setSortOption,
     renewalJobId,
-    setActiveRenewalJobId
+    setActiveRenewalJobId,
+    refetch: fetchJobs
   };
 };
 

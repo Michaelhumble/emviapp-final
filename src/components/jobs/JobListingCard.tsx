@@ -1,16 +1,19 @@
 
-// Update JobListingCard component to handle both created_at and createdAt
 import React from 'react';
 import { Job } from '@/types/job';
 import { JobSummary } from './card-sections/JobSummary';
+import { Button } from '@/components/ui/button';
+import { Edit, Trash2 } from 'lucide-react';
 
 interface JobListingCardProps {
   job: Job;
   isExpired?: boolean;
   onViewDetails: () => void;
   onRenew?: () => void;
+  onDelete?: () => void;
   isRenewing?: boolean;
-  currentUserId?: string; // Added to match props being passed
+  currentUserId?: string;
+  showOwnerActions?: boolean;
 }
 
 const JobListingCard: React.FC<JobListingCardProps> = ({
@@ -18,21 +21,37 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
   isExpired,
   onViewDetails,
   onRenew,
+  onDelete,
   isRenewing,
-  currentUserId, // Added to match props being passed
+  showOwnerActions = false
 }) => {
-  // Create a compatibility layer for the date property - explicitly cast to string
   const jobCreatedAt = job.created_at ? String(job.created_at) : '';
-  // Create a compatibility layer for salary/compensation
   const jobCompensation = 'salary' in job ? job.salary as string : 
                    job.compensation_details || job.compensation_type || '';
+
+  const getPricingTierBadge = (tier?: string) => {
+    switch (tier) {
+      case 'diamond':
+        return <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-medium">💎 Diamond</span>;
+      case 'premium':
+        return <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">⭐ Premium</span>;
+      case 'gold':
+        return <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">🏆 Gold</span>;
+      default:
+        return <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Free</span>;
+    }
+  };
   
   return (
-    // Component implementation...
-    <div className="border rounded-lg overflow-hidden bg-white">
+    <div className={`border rounded-lg overflow-hidden bg-white ${isExpired ? 'opacity-60' : ''}`}>
       <div className="p-4">
-        <h3 className="text-lg font-semibold">{job.title}</h3>
-        <p className="text-gray-600">{job.company}</p>
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-lg font-semibold">{job.title}</h3>
+          {getPricingTierBadge(job.pricing_tier)}
+        </div>
+        
+        {job.company && <p className="text-gray-600 mb-2">{job.company}</p>}
+        {job.location && <p className="text-gray-500 text-sm mb-2">{job.location}</p>}
         
         <JobSummary 
           employmentType={job.employment_type} 
@@ -40,21 +59,50 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
           createdAt={jobCreatedAt} 
         />
         
-        <div className="mt-4">
+        {job.description && (
+          <p className="text-gray-600 text-sm mt-2 line-clamp-2">{job.description}</p>
+        )}
+        
+        <div className="mt-4 flex gap-2">
           <button 
             onClick={onViewDetails}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             View Details
           </button>
+          
+          {showOwnerActions && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="px-3"
+                title="Edit Job"
+              >
+                <Edit size={16} />
+              </Button>
+              
+              {onDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-3 text-red-600 hover:text-red-700 hover:border-red-300"
+                  onClick={onDelete}
+                  title="Delete Job"
+                >
+                  <Trash2 size={16} />
+                </Button>
+              )}
+            </>
+          )}
           
           {isExpired && onRenew && (
             <button
               onClick={onRenew}
               disabled={isRenewing}
-              className="w-full mt-2 bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:bg-gray-400"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:bg-gray-400"
             >
-              {isRenewing ? 'Processing...' : 'Renew Listing'}
+              {isRenewing ? 'Processing...' : 'Renew'}
             </button>
           )}
         </div>

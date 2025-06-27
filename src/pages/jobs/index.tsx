@@ -1,42 +1,77 @@
 
 import React, { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
-import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
-import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
-import FeaturedGoldListings from "@/components/jobs/FeaturedGoldListings";
 import JobsGrid from "@/components/jobs/JobsGrid";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
 import { JobDetailModal } from "@/components/jobs/JobDetailModal";
-import useJobsData from "@/hooks/useJobsData";
 import { Job } from "@/types/job";
-import { diamondJobs } from "@/data/jobs/diamondJobs";
-import { premiumJobs } from "@/data/jobs/premiumJobs";
-import { goldJobs } from "@/data/protected/vietnameseJobs";
-import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
-import { freeJobs } from "@/data/jobs/freeJobs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import SalonSalesSection from "@/components/jobs/SalonSalesSection";
-import FreeListingsSection from "@/components/jobs/FreeListingsSection";
-import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 
 const JobsPage: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { 
-    jobs, 
-    loading, 
-    error, 
-    searchTerm, 
-    updateSearchTerm,
-    renewalJobId,
-    setActiveRenewalJobId
-  } = useJobsData();
-  
+  const { user } = useAuth();
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+
+  // Fetch real jobs from Supabase
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform Supabase data to Job type
+      const transformedJobs: Job[] = data?.map(job => ({
+        id: job.id,
+        title: job.title,
+        company: job.title, // Use title as company if no separate company field
+        location: job.location || '',
+        created_at: job.created_at,
+        description: job.description || '',
+        employment_type: job.compensation_type || '',
+        compensation_details: job.compensation_details || '',
+        contact_info: job.contact_info || {},
+        pricing_tier: job.pricing_tier || 'free',
+        user_id: job.user_id,
+        status: job.status,
+        expires_at: job.expires_at
+      })) || [];
+
+      setJobs(transformedJobs);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setError('Failed to load jobs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // Filter jobs based on search term
+  const filteredJobs = jobs.filter(job => 
+    job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -47,8 +82,45 @@ const JobsPage: React.FC = () => {
   };
 
   const handleSearchChange = (value: string) => {
-    updateSearchTerm(value);
+    setSearchTerm(value);
   };
+
+  const handleRenew = async (job: Job) => {
+    setRenewalJobId(job.id);
+    // Add renewal logic here if needed
+    console.log('Renewing job:', job.id);
+    setTimeout(() => setRenewalJobId(null), 2000);
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId)
+        .eq('user_id', user.id); // Ensure user can only delete their own jobs
+
+      if (error) throw error;
+      
+      // Refresh jobs list
+      fetchJobs();
+    } catch (err) {
+      console.error('Error deleting job:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-2">Loading jobs...</span>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
@@ -70,52 +142,35 @@ const JobsPage: React.FC = () => {
       <JobSearchBar 
         value={searchTerm} 
         onSearchChange={handleSearchChange}
-        placeholder="Tìm kiếm việc làm theo thành phố, bang, hoặc từ khóa..."
-      />
-      
-      {/* Diamond jobs at the top - 2 cards per row, 6 total */}
-      <TopDiamondFeaturedSection 
-        featuredJobs={diamondJobs} 
-        onViewDetails={viewJobDetails} 
-      />
-      
-      {/* Premium Jobs Section - 3 cards per row, 9 total */}
-      <PremiumListingsSection 
-        jobs={premiumJobs}
-        onViewDetails={viewJobDetails}
-      />
-
-      {/* Gold Jobs Section - 4 cards per row, 16 total */}
-      <FeaturedGoldListings
-        jobs={goldJobs}
-        onViewDetails={viewJobDetails}
-      />
-
-      {/* Salon Sales Section - 4 cards in total */}
-      <SalonSalesSection
-        listings={vietnameseSalonSales}
-        onViewDetails={viewJobDetails}
-      />
-
-      {/* Free Listings Section - 5 cards per row */}
-      <FreeListingsSection
-        jobs={freeJobs}
-        onViewDetails={viewJobDetails}
-      />
-
-      {/* Expired Listings Section - our new unified section with 5 cards per row */}
-      <ExpiredListingsSection
-        onViewDetails={viewJobDetails}
+        placeholder="Search jobs by title, location, or description..."
       />
 
       {error && (
         <Alert className="mb-8 bg-red-50 border-red-200">
-          <AlertDescription>{error.message}</AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {/* Remove the outdated jobs grid that's showing expired jobs */}
-      {/* This was likely the source of the duplicate expired listings */}
+      {filteredJobs.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600 mb-4">
+            {searchTerm ? 'No jobs found matching your search.' : 'No jobs available at the moment.'}
+          </p>
+          <Button onClick={() => navigate('/post-job')} className="bg-purple-600 hover:bg-purple-700">
+            Post the First Job
+          </Button>
+        </div>
+      ) : (
+        <JobsGrid
+          jobs={filteredJobs}
+          expirations={{}}
+          currentUserId={user?.id}
+          onRenew={handleRenew}
+          isRenewing={false}
+          renewalJobId={renewalJobId}
+          onDelete={handleDeleteJob}
+        />
+      )}
       
       {selectedJob && (
         <JobDetailModal
