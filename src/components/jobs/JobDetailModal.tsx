@@ -2,13 +2,11 @@
 import React from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Phone, Mail, LockIcon } from 'lucide-react';
+import { X } from 'lucide-react';
 import { JobSummary } from './card-sections/JobSummary';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
 import { JobPricingTier } from '@/utils/posting/types';
-import { useAuth } from '@/context/auth';
-import AuthAction from '@/components/common/AuthAction';
 
 interface JobDetailModalProps {
   job: any; // Replace with actual Job type
@@ -17,8 +15,6 @@ interface JobDetailModalProps {
 }
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onClose }) => {
-  const { isSignedIn } = useAuth();
-
   // Ensure we have valid job data before rendering
   if (!job) return null;
 
@@ -82,56 +78,30 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                 </div>
               )}
               
-              {/* Contact Information - Gated */}
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-semibold mb-2">Contact Information</h3>
-                {isSignedIn ? (
+              {job.contact_info && (
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-2">Contact Information</h3>
                   <div className="space-y-1">
-                    {job.contact_info?.owner_name && (
+                    {job.contact_info.owner_name && (
                       <p><span className="font-medium">Contact:</span> {job.contact_info.owner_name}</p>
                     )}
-                    {job.contact_info?.phone && (
-                      <div className="flex items-center">
-                        <Phone className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>{job.contact_info.phone}</span>
-                      </div>
+                    {job.contact_info.phone && (
+                      <p><span className="font-medium">Phone:</span> {job.contact_info.phone}</p>
                     )}
-                    {job.contact_info?.email && (
-                      <div className="flex items-center">
-                        <Mail className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>{job.contact_info.email}</span>
-                      </div>
-                    )}
-                    {!job.contact_info?.phone && !job.contact_info?.email && !job.contact_info?.owner_name && (
-                      <p className="text-gray-500 italic">Contact information not available</p>
+                    {job.contact_info.email && (
+                      <p><span className="font-medium">Email:</span> {job.contact_info.email}</p>
                     )}
                   </div>
-                ) : (
-                  <AuthAction
-                    customTitle="Sign in to see contact details"
-                    onAction={() => true}
-                    fallbackContent={
-                      <div className="text-center py-4 bg-gray-50 rounded-lg">
-                        <LockIcon className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                        <p className="text-gray-500 mb-2">Sign in to view contact information</p>
-                        <div className="text-sm text-gray-400">
-                          Phone and email details are available to registered users
-                        </div>
-                      </div>
-                    }
-                  />
-                )}
-              </div>
+                </div>
+              )}
               
               <div className="border-t pt-4 flex justify-end">
                 <Button onClick={onClose} variant="outline" className="mr-2">
                   Close
                 </Button>
-                {isSignedIn && (
-                  <Button>
-                    Apply Now
-                  </Button>
-                )}
+                <Button>
+                  Apply Now
+                </Button>
               </div>
             </div>
           </PricingProvider>

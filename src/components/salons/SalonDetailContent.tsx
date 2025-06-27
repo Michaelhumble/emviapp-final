@@ -1,208 +1,180 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, Building, Calendar, DollarSign, Phone, Mail, LockIcon, Star } from 'lucide-react';
+import React, { useState } from 'react';
 import { Job } from '@/types/job';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { MapPin, DollarSign, Calendar, SquareDot, Mail, Phone } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import AuthAction from '@/components/common/AuthAction';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 interface SalonDetailContentProps {
   salon: Job | null;
 }
 
 const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
-  const { isSignedIn } = useAuth();
+  const { user } = useAuth();
+  const [showContact, setShowContact] = useState(false);
 
-  if (!salon) {
-    return (
-      <div className="container mx-auto py-12">
-        <p className="text-center text-gray-500">Salon not found</p>
-      </div>
-    );
-  }
+  if (!salon) return null;
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  const handleContactReveal = () => {
+    if (user) {
+      setShowContact(true);
+      toast.success("Contact information revealed");
+    } else {
+      toast.error("Please sign in to view contact information", {
+        description: "Create an account or sign in to connect with this salon owner",
+        action: {
+          label: "Sign In",
+          onClick: () => window.location.href = "/auth/signin?redirect=" + encodeURIComponent(window.location.pathname)
+        }
+      });
+    }
   };
 
+  // Format price display with commas and dollar sign
   const formatPrice = (price: string | undefined) => {
-    if (!price) return 'Contact for Price';
-    if (price.includes('$')) return price;
-    return `$${price}`;
+    if (!price) return "Price not available";
+    
+    const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ""));
+    
+    if (isNaN(numericPrice)) {
+      return "Price not available";
+    }
+    
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(numericPrice);
   };
+
+  const displayedPrice = formatPrice(salon.price);
+  
+  // Get the creation date if available
+  const creationDate = salon.created_at 
+    ? new Date(salon.created_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
+    : "Recently added";
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-2 mb-4">
-            {salon.is_featured && (
-              <Badge className="bg-green-500 hover:bg-green-600">
-                Featured Salon
-              </Badge>
-            )}
-            {salon.type === 'salon' && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">
-                For Sale
-              </Badge>
-            )}
+    <div className="container mx-auto py-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Main content */}
+        <div className="col-span-1 md:col-span-2">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">{salon.title || salon.company || "Salon for Sale"}</h1>
+          
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            <span className="flex items-center text-muted-foreground">
+              <MapPin className="h-4 w-4 mr-1" />
+              {salon.location || "Location not specified"}
+            </span>
+            
+            <span className="flex items-center text-muted-foreground">
+              <Calendar className="h-4 w-4 mr-1" />
+              {creationDate}
+            </span>
+            
+            <Badge variant="outline" className="ml-2 bg-orange-50 text-orange-700 hover:bg-orange-100">
+              For Sale
+            </Badge>
           </div>
           
-          <h1 className="text-3xl font-bold mb-4">{salon.title || salon.company}</h1>
-          
-          <div className="flex flex-wrap gap-4 text-gray-600 mb-4">
-            <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2" />
-              <span>{salon.location}</span>
-            </div>
-            <div className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2" />
-              <span>Listed {formatDate(salon.created_at)}</span>
-            </div>
+          <div className="mb-8 w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+            {salon.image ? (
+              <img 
+                src={salon.image} 
+                alt={salon.title || "Salon"} 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                No image available
+              </div>
+            )}
           </div>
 
-          {salon.price && (
-            <div className="flex items-center text-green-600 font-semibold text-xl">
-              <DollarSign className="h-6 w-6 mr-2" />
-              <span>{formatPrice(salon.price)}</span>
+          <div className="mb-8">
+            <h2 className="text-2xl font-serif font-semibold mb-4">About This Salon</h2>
+            {salon.description ? (
+              <div className="prose max-w-none">
+                <p className="text-gray-700">{salon.description}</p>
+              </div>
+            ) : (
+              <p className="text-muted-foreground italic">No description available yet.</p>
+            )}
+          </div>
+          
+          {salon.salon_features && salon.salon_features.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-serif font-semibold mb-4">Salon Features</h2>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {salon.salon_features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    <SquareDot className="h-4 w-4 mr-2 text-orange-500" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
 
-        {/* Salon Image */}
-        {salon.image && (
-          <div className="mb-8">
-            <img 
-              src={salon.image} 
-              alt={salon.title || salon.company}
-              className="w-full h-64 object-cover rounded-lg shadow-md"
-            />
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Salon Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>About This Salon</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none">
-                  {salon.description ? (
-                    <div dangerouslySetInnerHTML={{ __html: salon.description }} />
-                  ) : (
-                    <p className="text-gray-600">No description available.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Salon Features */}
-            {salon.salon_features && salon.salon_features.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Salon Features</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-3">
-                    {salon.salon_features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <Star className="h-4 w-4 mr-2 text-green-500" />
-                        <span className="text-gray-600">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Contact Information - Gated */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isSignedIn ? (
+        {/* Sidebar */}
+        <div className="col-span-1">
+          <Card className="sticky top-24">
+            <CardContent className="p-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-serif font-bold text-orange-600">{displayedPrice}</h2>
+                <p className="text-sm text-muted-foreground">Asking Price</p>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="mb-6">
+                <h3 className="text-lg font-medium mb-2">Contact Information</h3>
+                {showContact && salon.contact_info ? (
                   <div className="space-y-3">
-                    {salon.contact_info?.owner_name && (
-                      <div>
-                        <p className="font-medium text-gray-900">Owner</p>
-                        <p className="text-gray-600">{salon.contact_info.owner_name}</p>
-                      </div>
-                    )}
-                    
-                    {salon.contact_info?.phone && (
-                      <div className="flex items-center">
-                        <Phone className="h-4 w-4 mr-2 text-gray-500" />
-                        <span className="text-gray-600">{salon.contact_info.phone}</span>
-                      </div>
-                    )}
-                    
-                    {salon.contact_info?.email && (
-                      <div className="flex items-center">
-                        <Mail className="h-4 w-4 mr-2 text-gray-500" />
-                        <span className="text-gray-600">{salon.contact_info.email}</span>
-                      </div>
-                    )}
-                    
-                    {!salon.contact_info?.phone && !salon.contact_info?.email && !salon.contact_info?.owner_name && (
-                      <p className="text-gray-500 italic">Contact information not available</p>
-                    )}
+                    <p className="font-medium">{salon.contact_info.owner_name || "Salon Owner"}</p>
+                    <p className="flex items-center">
+                      <Phone className="h-4 w-4 mr-2" />
+                      {salon.contact_info.phone || "Phone not available"}
+                    </p>
+                    <p className="flex items-center">
+                      <Mail className="h-4 w-4 mr-2" />
+                      {salon.contact_info.email || "Email not available"}
+                    </p>
                   </div>
                 ) : (
-                  <AuthAction
-                    customTitle="Sign in to see contact details"
-                    onAction={() => true}
-                    fallbackContent={
-                      <div className="text-center py-4">
-                        <LockIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-gray-500 mb-3">Sign in to view contact information</p>
-                        <div className="text-sm text-gray-400">
-                          Phone, email, and owner details are available to registered users
-                        </div>
-                      </div>
-                    }
-                  />
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Salon Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Salon Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {salon.price && (
-                  <div>
-                    <p className="font-medium text-gray-900">Asking Price</p>
-                    <p className="text-gray-600">{formatPrice(salon.price)}</p>
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={handleContactReveal}
+                      className="w-full bg-orange-500 hover:bg-orange-600"
+                    >
+                      Reveal Contact Info
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground">
+                      {user ? "Click to show seller details" : "Sign in required to view contact details"}
+                    </p>
                   </div>
                 )}
-                
-                <div>
-                  <p className="font-medium text-gray-900">Listed</p>
-                  <p className="text-gray-600">{formatDate(salon.created_at)}</p>
-                </div>
-                
-                <div>
-                  <p className="font-medium text-gray-900">Location</p>
-                  <p className="text-gray-600">{salon.location}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+              
+              <div className="space-y-3 pt-4">
+                <Link to="/salons/post">
+                  <Button variant="outline" className="w-full">
+                    List Your Salon
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
