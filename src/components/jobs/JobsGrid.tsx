@@ -1,5 +1,5 @@
 
-import JobsByIndustrySection from "./JobsByIndustrySection";
+import BeautyIndustrySections from "./BeautyIndustrySections";
 import { Job } from "@/types/job";
 
 export interface JobsGridProps {
@@ -24,7 +24,7 @@ const JobsGrid = ({
   checkExpiration
 }: JobsGridProps) => {
   return (
-    <JobsByIndustrySection
+    <BeautyIndustrySections
       jobs={jobs}
       expirations={expirations}
       currentUserId={currentUserId}
