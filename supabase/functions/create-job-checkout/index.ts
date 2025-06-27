@@ -74,7 +74,6 @@ serve(async (req) => {
         durationMonths: durationMonths.toString(),
         jobTitle: jobData?.title || '',
         userId: user.id,
-        jobData: JSON.stringify(jobData || {})
       },
     });
 

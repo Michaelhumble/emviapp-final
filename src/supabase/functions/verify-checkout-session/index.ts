@@ -89,7 +89,7 @@ serve(async (req) => {
       });
     }
     
-    // Find the related payment log and get the job ID
+    // Find the related payment log
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
       .select('*')
@@ -100,45 +100,40 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
-    // Get the actual job ID from the jobs table based on the payment
-    let jobId = null;
-    if (paymentLog?.listing_id) {
-      const { data: job } = await supabaseAdmin
+    // If we have a post_id in metadata, update the job status
+    if (metadata.post_id) {
+      const { error: updateJobError } = await supabaseAdmin
         .from('jobs')
-        .select('id')
-        .eq('id', paymentLog.listing_id)
-        .single();
-      
-      if (job) {
-        jobId = job.id;
+        .update({ 
+          status: 'active',
+          expires_at: metadata.expires_at
+        })
+        .eq('id', metadata.post_id);
+        
+      if (updateJobError) {
+        console.error("Error updating job status:", updateJobError);
       }
     }
-
-    // If no job found in payment log, try to find by user and recent creation
-    if (!jobId && metadata.userId) {
-      const { data: recentJob } = await supabaseAdmin
-        .from('jobs')
-        .select('id')
-        .eq('user_id', metadata.userId)
-        .eq('pricing_tier', metadata.tier)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-      
-      if (recentJob) {
-        jobId = recentJob.id;
+    
+    // Update payment log status
+    if (paymentLog?.id) {
+      const { error: updateLogError } = await supabaseAdmin
+        .from('payment_logs')
+        .update({ payment_status: 'success' })
+        .eq('id', paymentLog.id);
+        
+      if (updateLogError) {
+        console.error("Error updating payment log:", updateLogError);
       }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        post_id: jobId,
-        jobId: jobId, // Also include as jobId for easier access
+        post_id: metadata.post_id || paymentLog?.listing_id,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
-        post_type: 'job',
-        pricing_tier: metadata.tier,
-        jobTitle: metadata.jobTitle,
+        post_type: metadata.post_type || paymentLog?.plan_type,
+        pricing_tier: metadata.pricing_tier,
         payment_log_id: paymentLog?.id
       }),
       {
