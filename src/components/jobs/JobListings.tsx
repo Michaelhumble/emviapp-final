@@ -35,7 +35,22 @@ const JobListings = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setJobs(data || []);
+      
+      // Transform the data to match our Job interface
+      const transformedJobs = (data || []).map(job => ({
+        id: job.id,
+        title: job.title,
+        company: job.company || 'Company',
+        location: job.location || 'Location not specified',
+        description: job.description || '',
+        compensation_details: job.compensation_details || '',
+        employment_type: job.employment_type || 'Full-time',
+        contact_info: job.contact_info,
+        created_at: job.created_at,
+        expires_at: job.expires_at
+      }));
+      
+      setJobs(transformedJobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);
     } finally {

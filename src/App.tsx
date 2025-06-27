@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { QueryClient } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/auth';
 import { PricingProvider } from '@/context/pricing/PricingContext';
 import { Toaster } from 'sonner';
@@ -24,9 +25,11 @@ import NotFound from './pages/NotFound';
 import EnhancedSellSalon from './pages/enhanced-sell-salon';
 import FreeJobs from './pages/FreeJobs';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <PricingProvider>
           <Toaster />
@@ -55,7 +58,7 @@ function App() {
           </Router>
         </PricingProvider>
       </AuthProvider>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 
