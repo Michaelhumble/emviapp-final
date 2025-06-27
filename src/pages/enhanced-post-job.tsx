@@ -6,7 +6,6 @@ import ConsolidatedJobTemplateSelector from '@/components/job-posting-new/Consol
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import JobPostingFlow from '@/components/posting/job/JobPostingFlow';
 import { getJobPrefillByIndustry } from '@/utils/beautyIndustryPrefills';
-import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 type PostingStep = 'template' | 'form' | 'pricing';
 
@@ -26,12 +25,32 @@ const EnhancedPostJob = () => {
     // Get prefill data based on template selection
     const prefillData = getJobPrefillByIndustry(templateId);
     console.log('📋 Prefill data retrieved:', prefillData);
+    console.log('📋 Prefill data keys:', Object.keys(prefillData));
+    console.log('🏷️ Title field:', prefillData.title);
+    console.log('🏢 Company field:', prefillData.company);
+    console.log('📝 Description field preview:', prefillData.description.substring(0, 100) + '...');
+    console.log('📋 Requirements array length:', prefillData.requirements?.length || 0);
+    console.log('🎁 Benefits array length:', prefillData.benefits?.length || 0);
+    console.log('💰 Salary field:', prefillData.salary);
+    console.log('📍 Location field:', prefillData.location);
     
     // Store the selected template and prefill data
     setSelectedTemplate(template);
     setFormInitialValues(prefillData);
     
+    // Additional verification logs
+    console.log('✅ formInitialValues will be set to:', prefillData);
     console.log('✅ Moving to form step with prefill data');
+    console.log('🚀 About to render EnhancedJobForm with initialValues:', {
+      hasTitle: !!prefillData.title,
+      hasCompany: !!prefillData.company,
+      hasDescription: !!prefillData.description,
+      requirementsCount: prefillData.requirements?.length || 0,
+      benefitsCount: prefillData.benefits?.length || 0,
+      hasSalary: !!prefillData.salary,
+      hasLocation: !!prefillData.location
+    });
+    
     setCurrentStep('form');
   };
 
@@ -65,40 +84,38 @@ const EnhancedPostJob = () => {
         <title>Post a Job | EmviApp</title>
       </Helmet>
       
-      <PricingProvider>
-        <div className="min-h-screen bg-gray-50">
-          {currentStep === 'template' && (
-            <div className="container mx-auto py-8">
-              <ConsolidatedJobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+      <div className="min-h-screen bg-gray-50">
+        {currentStep === 'template' && (
+          <div className="container mx-auto py-8">
+            <ConsolidatedJobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+          </div>
+        )}
+        
+        {currentStep === 'form' && selectedTemplate && (
+          <div className="container mx-auto py-8">
+            <div className="mb-6">
+              <button
+                onClick={handleBackToTemplate}
+                className="text-purple-600 hover:text-purple-700 font-medium"
+              >
+                ← Back to Templates
+              </button>
             </div>
-          )}
-          
-          {currentStep === 'form' && selectedTemplate && (
-            <div className="container mx-auto py-8">
-              <div className="mb-6">
-                <button
-                  onClick={handleBackToTemplate}
-                  className="text-purple-600 hover:text-purple-700 font-medium"
-                >
-                  ← Back to Templates
-                </button>
-              </div>
-              
-              <EnhancedJobForm 
-                initialValues={formInitialValues}
-                onSubmit={handleFormSubmit}
-              />
-            </div>
-          )}
-          
-          {currentStep === 'pricing' && jobFormData && (
-            <JobPostingFlow 
-              jobFormData={jobFormData}
-              onBack={handleBackToForm}
+            
+            <EnhancedJobForm 
+              initialValues={formInitialValues}
+              onSubmit={handleFormSubmit}
             />
-          )}
-        </div>
-      </PricingProvider>
+          </div>
+        )}
+        
+        {currentStep === 'pricing' && jobFormData && (
+          <JobPostingFlow 
+            jobFormData={jobFormData}
+            onBack={handleBackToForm}
+          />
+        )}
+      </div>
     </Layout>
   );
 };

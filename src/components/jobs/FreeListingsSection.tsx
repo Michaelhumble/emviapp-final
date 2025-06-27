@@ -6,9 +6,6 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import JobCardContact from "./JobCardContact";
-import JobManagementActions from "./JobManagementActions";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
@@ -17,38 +14,6 @@ interface FreeListingsSectionProps {
 
 const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) => {
   if (!jobs.length) return null;
-
-  const handleEdit = (job: Job) => {
-    console.log('🔧 Edit job:', job.id);
-    toast.info('Edit functionality will be implemented soon');
-  };
-
-  const handleDelete = async (job: Job) => {
-    console.log('🗑️ Delete job:', job.id);
-    
-    if (!window.confirm('Are you sure you want to delete this job posting?')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('jobs')
-        .delete()
-        .eq('id', job.id);
-
-      if (error) {
-        console.error('Delete error:', error);
-        toast.error('Failed to delete job posting');
-      } else {
-        toast.success('Job posting deleted successfully');
-        // Refresh the page to update the listings
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error('Delete error:', err);
-      toast.error('Failed to delete job posting');
-    }
-  };
 
   return (
     <motion.section
@@ -101,13 +66,6 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
                   Xem Chi Tiết
                 </Button>
               </div>
-
-              {/* Add management actions for owners/admin */}
-              <JobManagementActions
-                job={job}
-                onEdit={() => handleEdit(job)}
-                onDelete={() => handleDelete(job)}
-              />
             </CardContent>
           </Card>
         ))}

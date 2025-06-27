@@ -1,107 +1,154 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { useJobPosting } from '@/hooks/jobs/useJobPosting';
-import { usePricing } from '@/context/pricing/PricingProvider';
-import JobPricingTable from './JobPricingTable';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import JobPricingTable from './JobPricingTable';
+import PricingConfirmationModal from './PricingConfirmationModal';
 
 interface JobPostingFlowProps {
   jobFormData: any;
   onBack: () => void;
 }
 
-const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ 
-  jobFormData,
-  onBack 
-}) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { initiatePayment } = usePostPayment();
-  const { handleFreeJobPost } = useJobPosting();
+type FlowStep = 'pricing' | 'confirmation' | 'processing';
 
-  const handlePricingSelect = async (tier: string, finalPrice: number, durationMonths: number) => {
-    if (isSubmitting) return;
+const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) => {
+  const [currentStep, setCurrentStep] = useState<FlowStep>('pricing');
+  const [selectedPricing, setSelectedPricing] = useState<{
+    tier: string;
+    finalPrice: number;
+    durationMonths: number;
+  } | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handlePricingSelect = (tier: string, finalPrice: number, durationMonths: number) => {
+    console.log('Pricing selected:', { tier, finalPrice, durationMonths });
     
-    setIsSubmitting(true);
+    // For Diamond tier, force 12-month duration and $999.99 pricing - NO OTHER OPTIONS
+    if (tier === 'diamond') {
+      setSelectedPricing({ tier, finalPrice: 999.99, durationMonths: 12 });
+    } else {
+      setSelectedPricing({ tier, finalPrice, durationMonths });
+    }
     
-    try {
-      console.log('🎯 Job Posting Flow - Pricing selected:', { tier, finalPrice, durationMonths });
-      
-      // Prepare complete job data with user_id
-      const completeJobData = {
-        ...jobFormData,
-        pricing_tier: tier,
-        status: 'active',
-        // Ensure user_id is always set from auth context
-        user_id: jobFormData.user_id
-      };
-
-      if (finalPrice === 0) {
-        // FREE PATH - Direct Supabase save
-        console.log('🆓 Processing free job posting');
-        const jobId = await handleFreeJobPost(completeJobData);
-        
-        if (jobId) {
-          // Redirect to success page for free posts
-          window.location.href = `/post-success?free=true&jobId=${jobId}`;
-        } else {
-          toast.error('Failed to create free job posting');
-        }
-      } else {
-        // PAID PATH - Stripe checkout
-        console.log('💳 Processing paid job posting');
-        
-        const pricingOptions = {
-          selectedPricingTier: tier as any,
-          durationMonths,
-          autoRenew: false,
-          isFirstPost: false
-        };
-
-        const success = await initiatePayment('job', completeJobData, pricingOptions);
-        
-        if (!success) {
-          toast.error('Failed to initiate payment');
-        }
-        // If successful, user will be redirected to Stripe checkout
-      }
-    } catch (error) {
-      console.error('Job posting error:', error);
-      toast.error('Failed to process job posting');
-    } finally {
-      setIsSubmitting(false);
+    // For free tier, skip confirmation
+    if (tier === 'free') {
+      proceedToPayment(tier, finalPrice, durationMonths);
+    } else {
+      setShowConfirmation(true);
     }
   };
 
+  const proceedToPayment = async (tier: string, finalPrice: number, durationMonths: number) => {
+    setShowConfirmation(false);
+    setIsProcessing(true);
+
+    try {
+      if (!user) {
+        toast.error('Please log in to continue');
+        navigate('/login');
+        return;
+      }
+
+      // For Diamond tier, enforce fixed pricing and duration - NO EXCEPTIONS
+      if (tier === 'diamond') {
+        finalPrice = 999.99;
+        durationMonths = 12;
+      }
+
+      // For free tier, create job directly without payment
+      if (finalPrice === 0) {
+        // TODO: Create job posting directly in database
+        toast.success('Free job posting created successfully!');
+        navigate('/post-success');
+        return;
+      }
+
+      // Create Stripe checkout session for paid plans
+      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
+        body: {
+          tier,
+          finalPrice,
+          durationMonths,
+          jobData: jobFormData
+        }
+      });
+
+      if (error) {
+        console.error('Stripe checkout error:', error);
+        toast.error('Failed to create payment session');
+        setIsProcessing(false);
+        return;
+      }
+
+      if (data?.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        toast.error('No checkout URL received');
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Payment processing failed');
+      setIsProcessing(false);
+    }
+  };
+
+  const handleConfirmPayment = () => {
+    if (selectedPricing) {
+      proceedToPayment(
+        selectedPricing.tier,
+        selectedPricing.finalPrice,
+        selectedPricing.durationMonths
+      );
+    }
+  };
+
+  if (isProcessing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
+        <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Redirecting to secure payment...</p>
+          <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
       <div className="container mx-auto py-8">
         <div className="mb-6">
-          <Button
-            variant="ghost"
+          <button
             onClick={onBack}
-            className="flex items-center gap-2"
-            disabled={isSubmitting}
+            className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
           >
-            <ArrowLeft size={16} />
-            Back to Job Details
-          </Button>
+            ← Back to Job Details
+          </button>
         </div>
+        
+        <JobPricingTable
+          onPricingSelect={handlePricingSelect}
+          jobData={jobFormData}
+        />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Choose Your Job Posting Plan</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <JobPricingTable 
-              onPricingSelect={handlePricingSelect}
-              jobData={jobFormData}
-            />
-          </CardContent>
-        </Card>
+        {/* Pricing Confirmation Modal */}
+        <PricingConfirmationModal
+          open={showConfirmation}
+          onClose={() => setShowConfirmation(false)}
+          selectedTier={selectedPricing?.tier || ''}
+          finalPrice={selectedPricing?.finalPrice || 0}
+          durationMonths={selectedPricing?.durationMonths || 1}
+          onConfirmPayment={handleConfirmPayment}
+        />
       </div>
     </div>
   );

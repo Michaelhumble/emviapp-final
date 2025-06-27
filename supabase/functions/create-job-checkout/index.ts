@@ -16,13 +16,6 @@ serve(async (req) => {
   try {
     const { tier, finalPrice, durationMonths, jobData } = await req.json();
 
-    console.log('💳 Creating Stripe checkout for paid job posting:', {
-      tier,
-      finalPrice,
-      jobTitle: jobData?.title,
-      userId: jobData?.user_id
-    });
-
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -56,7 +49,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create checkout session with job data in metadata
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -81,14 +74,8 @@ serve(async (req) => {
         durationMonths: durationMonths.toString(),
         jobTitle: jobData?.title || '',
         userId: user.id,
-        description: jobData?.description || '',
-        location: jobData?.location || '',
-        compensation_details: jobData?.compensation_details || '',
-        contact_info: JSON.stringify(jobData?.contact_info || {})
       },
     });
-
-    console.log('✅ Stripe checkout session created:', session.id);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
