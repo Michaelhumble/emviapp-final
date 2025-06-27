@@ -8,11 +8,11 @@ import { format } from 'date-fns';
 interface Job {
   id: string;
   title: string;
-  company: string;
+  company?: string;
   location: string;
   description: string;
   compensation_details: string;
-  employment_type: string;
+  employment_type?: string;
   contact_info: any;
   created_at: string;
   expires_at: string;
@@ -40,11 +40,11 @@ const JobListings = () => {
       const transformedJobs = (data || []).map(job => ({
         id: job.id,
         title: job.title,
-        company: job.company || 'Company',
+        company: job.title, // Use title as company name since company field doesn't exist
         location: job.location || 'Location not specified',
         description: job.description || '',
         compensation_details: job.compensation_details || '',
-        employment_type: job.employment_type || 'Full-time',
+        employment_type: job.compensation_type || 'Full-time',
         contact_info: job.contact_info,
         created_at: job.created_at,
         expires_at: job.expires_at
