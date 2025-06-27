@@ -1,321 +1,242 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
 import { useJobsData } from '@/hooks/useJobsData';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-import { Job } from '@/types/job';
+import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
+import { ArrowLeft, Save } from 'lucide-react';
 
 const EditJobPage = () => {
-  const { jobId } = useParams<{ jobId: string }>();
+  const params = useParams();
+  const jobId = Array.isArray(params.jobId) ? params.jobId[0] : params.jobId;
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { getJobById, updateJob } = useJobsData();
+  const { jobs } = useJobsData();
+  const { handleJobPost } = useJobPosting();
   
-  const [job, setJob] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location: '',
-    compensation_type: '',
+    employment_type: '',
     compensation_details: '',
     requirements: '',
-    contact_info: {
-      owner_name: '',
-      phone: '',
-      email: '',
-      notes: '',
-      zalo: ''
-    }
+    contact_info: { email: '', phone: '' },
+    pricing_tier: 'free'
   });
 
+  const job = jobs.find(j => j.id === jobId);
+
   useEffect(() => {
-    const loadJob = async () => {
-      if (!jobId) {
-        toast.error('Job ID not found');
-        navigate('/jobs');
-        return;
-      }
+    if (!job) return;
+    
+    setFormData({
+      title: job.title || '',
+      description: job.description || '',
+      location: job.location || '',
+      employment_type: job.employment_type || '',
+      compensation_details: job.compensation_details || '',
+      requirements: typeof job.requirements === 'string' ? job.requirements : job.requirements?.join('\n') || '',
+      contact_info: job.contact_info || { email: '', phone: '' },
+      pricing_tier: job.pricing_tier || 'free'
+    });
+  }, [job]);
 
-      try {
-        const jobData = await getJobById(jobId);
-        
-        // Check if user is the owner
-        if (!user || jobData.user_id !== user.id) {
-          toast.error('You can only edit your own jobs');
-          navigate('/jobs');
-          return;
-        }
-
-        setJob(jobData);
-        setFormData({
-          title: jobData.title || '',
-          description: jobData.description || '',
-          location: jobData.location || '',
-          compensation_type: jobData.employment_type || '',
-          compensation_details: jobData.compensation_details || '',
-          requirements: jobData.requirements || '',
-          contact_info: {
-            owner_name: jobData.contact_info?.owner_name || '',
-            phone: jobData.contact_info?.phone || '',
-            email: jobData.contact_info?.email || '',
-            notes: jobData.contact_info?.notes || '',
-            zalo: jobData.contact_info?.zalo || ''
-          }
-        });
-      } catch (error) {
-        console.error('Error loading job:', error);
-        toast.error('Failed to load job');
-        navigate('/jobs');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadJob();
-  }, [jobId, user, getJobById, navigate]);
+  if (!job) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <h2 className="font-playfair text-2xl font-semibold text-gray-900 mb-4">Job Not Found</h2>
+            <p className="text-gray-600 mb-6">The job you're trying to edit could not be found.</p>
+            <Button 
+              onClick={() => navigate('/jobs')}
+              className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-medium rounded-xl px-6 py-3"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Jobs
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!jobId) return;
     
-    if (!job || !user) return;
-    
-    setSubmitting(true);
+    setIsSubmitting(true);
     
     try {
-      const { error } = await updateJob(job.id, {
-        ...formData,
-        user_id: user.id
-      });
-
-      if (error) {
-        throw error;
+      const result = await handleJobPost({ ...formData, jobId });
+      
+      if (result.success) {
+        toast.success('Job updated successfully!');
+        navigate('/jobs');
+      } else {
+        toast.error(result.error || 'Failed to update job');
       }
-
-      toast.success('Job updated successfully!');
-      navigate('/jobs');
     } catch (error) {
       console.error('Error updating job:', error);
       toast.error('Failed to update job');
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    
-    if (name.startsWith('contact_')) {
-      const contactField = name.replace('contact_', '');
-      setFormData(prev => ({
-        ...prev,
-        contact_info: {
-          ...prev.contact_info,
-          [contactField]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="container mx-auto py-8 px-4">
-          <div className="text-center">Loading job...</div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!job) {
-    return (
-      <Layout>
-        <div className="container mx-auto py-8 px-4">
-          <div className="text-center">Job not found</div>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
-    <Layout>
-      <div className="container mx-auto py-8 px-4 max-w-2xl">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-8 px-4 max-w-4xl">
+        <div className="mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/jobs')}
+            className="mb-4 text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Jobs
+          </Button>
+          
+          <h1 className="font-playfair text-3xl font-bold text-gray-900 mb-2">Edit Job Posting</h1>
+          <p className="text-gray-600">Update your job posting details</p>
+        </div>
+
         <Card>
           <CardHeader>
-            <CardTitle>Edit Job Post</CardTitle>
+            <CardTitle className="font-playfair text-2xl font-semibold text-gray-900">Job Details</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium mb-2">
-                  Job Title *
-                </label>
-                <input
-                  type="text"
+                <Label htmlFor="title" className="font-inter font-medium text-gray-700">Job Title *</Label>
+                <Input
                   id="title"
-                  name="title"
                   value={formData.title}
-                  onChange={handleInputChange}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="mt-1"
+                  placeholder="e.g. Nail Technician, Hair Stylist"
                 />
               </div>
 
               <div>
-                <label htmlFor="location" className="block text-sm font-medium mb-2">
-                  Location *
-                </label>
-                <input
-                  type="text"
+                <Label htmlFor="location" className="font-inter font-medium text-gray-700">Location</Label>
+                <Input
                   id="location"
-                  name="location"
                   value={formData.location}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  className="mt-1"
+                  placeholder="City, State"
                 />
               </div>
 
               <div>
-                <label htmlFor="compensation_type" className="block text-sm font-medium mb-2">
-                  Employment Type
-                </label>
-                <select
-                  id="compensation_type"
-                  name="compensation_type"
-                  value={formData.compensation_type}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                <Label htmlFor="employment_type" className="font-inter font-medium text-gray-700">Job Type</Label>
+                <Select 
+                  value={formData.employment_type} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, employment_type: value }))}
                 >
-                  <option value="">Select type</option>
-                  <option value="full-time">Full Time</option>
-                  <option value="part-time">Part Time</option>
-                  <option value="contract">Contract</option>
-                  <option value="commission">Commission</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select job type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Full-Time">Full-Time</SelectItem>
+                    <SelectItem value="Part-Time">Part-Time</SelectItem>
+                    <SelectItem value="Contract">Contract</SelectItem>
+                    <SelectItem value="Commission">Commission</SelectItem>
+                    <SelectItem value="Booth Rental">Booth Rental</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label htmlFor="compensation_details" className="block text-sm font-medium mb-2">
-                  Compensation Details
-                </label>
-                <input
-                  type="text"
+                <Label htmlFor="compensation_details" className="font-inter font-medium text-gray-700">Compensation</Label>
+                <Input
                   id="compensation_details"
-                  name="compensation_details"
                   value={formData.compensation_details}
-                  onChange={handleInputChange}
-                  placeholder="e.g., $20/hour, 60% commission"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => setFormData(prev => ({ ...prev, compensation_details: e.target.value }))}
+                  className="mt-1"
+                  placeholder="e.g. $20-25/hour, 60% commission"
                 />
               </div>
 
               <div>
-                <label htmlFor="description" className="block text-sm font-medium mb-2">
-                  Job Description
-                </label>
-                <textarea
+                <Label htmlFor="description" className="font-inter font-medium text-gray-700">Job Description *</Label>
+                <Textarea
                   id="description"
-                  name="description"
                   value={formData.description}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  required
+                  className="mt-1 min-h-[120px]"
+                  placeholder="Describe the position, responsibilities, and what you're looking for..."
                 />
               </div>
 
               <div>
-                <label htmlFor="requirements" className="block text-sm font-medium mb-2">
-                  Requirements
-                </label>
-                <textarea
+                <Label htmlFor="requirements" className="font-inter font-medium text-gray-700">Requirements</Label>
+                <Textarea
                   id="requirements"
-                  name="requirements"
                   value={formData.requirements}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => setFormData(prev => ({ ...prev, requirements: e.target.value }))}
+                  className="mt-1"
+                  placeholder="List any required qualifications, experience, or certifications..."
                 />
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Contact Information</h3>
-                
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="contact_owner_name" className="block text-sm font-medium mb-2">
-                    Contact Name
-                  </label>
-                  <input
-                    type="text"
-                    id="contact_owner_name"
-                    name="contact_owner_name"
-                    value={formData.contact_info.owner_name}
-                    onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="contact_phone" className="block text-sm font-medium mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="contact_phone"
-                    name="contact_phone"
-                    value={formData.contact_info.phone}
-                    onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="contact_email" className="block text-sm font-medium mb-2">
-                    Email
-                  </label>
-                  <input
+                  <Label htmlFor="email" className="font-inter font-medium text-gray-700">Contact Email *</Label>
+                  <Input
+                    id="email"
                     type="email"
-                    id="contact_email"
-                    name="contact_email"
                     value={formData.contact_info.email}
-                    onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      contact_info: { ...prev.contact_info, email: e.target.value }
+                    }))}
+                    required
+                    className="mt-1"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone" className="font-inter font-medium text-gray-700">Contact Phone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.contact_info.phone}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      contact_info: { ...prev.contact_info, phone: e.target.value }
+                    }))}
+                    className="mt-1"
+                    placeholder="(555) 123-4567"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate('/jobs')}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
+              <div className="flex justify-end pt-6">
                 <Button
                   type="submit"
-                  disabled={submitting}
-                  className="flex-1"
+                  disabled={isSubmitting}
+                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-8 py-3 text-lg"
                 >
-                  {submitting ? 'Updating...' : 'Update Job'}
+                  <Save className="mr-2 h-5 w-5" />
+                  {isSubmitting ? 'Updating...' : 'Update Job'}
                 </Button>
               </div>
             </form>
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </div>
   );
 };
 

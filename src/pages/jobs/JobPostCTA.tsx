@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -38,21 +39,21 @@ const JobPostCTA = () => {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-xl font-semibold mb-2 flex items-center">
-                <PlusCircle className="mr-2 h-5 w-5 text-purple-600" /> 
+              <h3 className="font-playfair text-xl font-bold mb-2 flex items-center text-gray-900">
+                <PlusCircle className="mr-2 h-5 w-5 text-[#8B5CF6]" /> 
                 Post a Job Opening
               </h3>
-              <p className="text-gray-600 max-w-md">
+              <p className="text-gray-600 max-w-md font-inter">
                 Share your job opportunity with thousands of qualified beauty professionals. 
                 First-time posts start at just $5!
               </p>
               
               <div className="flex items-center gap-4 mt-3">
-                <div className="flex items-center text-sm text-purple-700">
+                <div className="flex items-center text-sm text-[#8B5CF6] font-inter font-medium">
                   <UsersRound className="h-4 w-4 mr-1" />
                   <span>Reach 15,000+ professionals</span>
                 </div>
-                <div className="flex items-center text-sm text-green-700">
+                <div className="flex items-center text-sm text-green-700 font-inter font-medium">
                   <DollarSign className="h-4 w-4 mr-1" />
                   <span>From ${priceInfo.price}/post</span>
                 </div>
@@ -61,19 +62,19 @@ const JobPostCTA = () => {
             
             <div className="flex flex-col items-center">
               <div className="text-center mb-3">
-                <div className="text-sm text-gray-500">{priceInfo.label}</div>
-                <div className="text-2xl font-bold text-purple-700">${priceInfo.price}</div>
+                <div className="text-sm text-gray-500 font-inter">{priceInfo.label}</div>
+                <div className="text-2xl font-bold text-[#8B5CF6] font-playfair">${priceInfo.price}</div>
               </div>
               
               {isSignedIn ? (
                 <Link to="/post-job">
-                  <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
                     Post a Job
                   </Button>
                 </Link>
               ) : (
                 <Link to="/auth/signin?redirect=/post-job">
-                  <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
                     Sign In to Post
                   </Button>
                 </Link>
