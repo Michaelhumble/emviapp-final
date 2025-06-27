@@ -46,7 +46,7 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
 
       if (error) throw error;
 
-      // Transform Supabase data to Job type
+      // Transform Supabase data to Job type with proper contact_info handling
       const transformedJobs: Job[] = data?.map(job => ({
         id: job.id,
         title: job.title,
@@ -56,7 +56,9 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         description: job.description || '',
         employment_type: job.compensation_type || '',
         compensation_details: job.compensation_details || '',
-        contact_info: job.contact_info || {},
+        contact_info: typeof job.contact_info === 'object' && job.contact_info !== null 
+          ? job.contact_info as { owner_name?: string; phone?: string; email?: string; notes?: string; zalo?: string; }
+          : {},
         pricing_tier: job.pricing_tier || 'free',
         user_id: job.user_id,
         status: job.status,
@@ -113,4 +115,3 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
 };
 
 export default useJobsData;
-export type { JobFilters };
