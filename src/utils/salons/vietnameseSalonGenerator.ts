@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 
 // Sample Vietnamese salon sale for testing
@@ -16,7 +17,6 @@ export const sampleVietnameseSalonSale: Job = {
   number_of_stations: "8 stations",
   square_feet: "1,200 sq ft",
   monthly_rent: "$4,500",
-  lease_terms: "5 years remaining",
   equipment_included: true,
   customer_base_included: true,
   training_provided: true,
@@ -66,7 +66,7 @@ export const generateVietnameseSalonSales = (): Job[] => {
   return [
     {
       id: "vn-salon-sale-1",
-      title: "Tiệm Nail Cần Bán - Westminster", // Added missing title
+      title: "Tiệm Nail Cần Bán - Westminster",
       role: "Salon For Sale",
       company: "Golden Nails & Spa",
       location: "Westminster, CA",
@@ -79,7 +79,6 @@ export const generateVietnameseSalonSales = (): Job[] => {
       number_of_stations: "8 stations", 
       square_feet: "1,200 sq ft",
       monthly_rent: "$4,500",
-      lease_terms: "5 years remaining",
       equipment_included: true,
       customer_base_included: true,
       training_provided: true,
@@ -100,7 +99,7 @@ export const generateVietnameseSalonSales = (): Job[] => {
     },
     {
       id: "vn-salon-sale-2", 
-      title: "Tiệm Nail Sang Nhượng - Garden Grove", // Added missing title
+      title: "Tiệm Nail Sang Nhượng - Garden Grove",
       role: "Salon For Sale",
       company: "Lucky Nails",
       location: "Garden Grove, CA",
@@ -112,7 +111,6 @@ export const generateVietnameseSalonSales = (): Job[] => {
       number_of_stations: "10 stations",
       square_feet: "1,500 sq ft", 
       monthly_rent: "$5,200",
-      lease_terms: "7 years remaining",
       equipment_included: true,
       customer_base_included: true,
       training_provided: true,
@@ -140,8 +138,7 @@ export const generateRandomVietnameseSalonSales = (count = 5) => {
   for (let i = 0; i < count; i++) {
     jobs.push({
       asking_price: getRandomAskingPrice(),
-      lease_terms: getRandomLeaseTerms(),
-      title: "Tiệm Nail Sang Nhượng" // Added category
+      title: "Tiệm Nail Sang Nhượng"
     });
   }
   
