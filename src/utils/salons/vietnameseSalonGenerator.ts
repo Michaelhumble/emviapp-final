@@ -1,4 +1,5 @@
 
+
 import { Job } from '@/types/job';
 
 // Sample Vietnamese salon sale for testing
@@ -17,14 +18,6 @@ export const sampleVietnameseSalonSale: Job = {
   number_of_stations: "8 stations",
   square_feet: "1,200 sq ft",
   monthly_rent: "$4,500",
-  equipment_included: true,
-  customer_base_included: true,
-  training_provided: true,
-  financing_available: false,
-  reason_for_sale: "Owner retiring",
-  gross_monthly_revenue: "$18,000-22,000",
-  net_monthly_profit: "$8,000-12,000",
-  established_year: "2018",
   image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
   contact_info: {
     phone: "(714) 555-9876",
@@ -79,14 +72,6 @@ export const generateVietnameseSalonSales = (): Job[] => {
       number_of_stations: "8 stations", 
       square_feet: "1,200 sq ft",
       monthly_rent: "$4,500",
-      equipment_included: true,
-      customer_base_included: true,
-      training_provided: true,
-      financing_available: false,
-      reason_for_sale: "Owner retiring",
-      gross_monthly_revenue: "$18,000-22,000",
-      net_monthly_profit: "$8,000-12,000",
-      established_year: "2018",
       image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
       contact_info: {
         phone: "(714) 555-9876",
@@ -111,14 +96,6 @@ export const generateVietnameseSalonSales = (): Job[] => {
       number_of_stations: "10 stations",
       square_feet: "1,500 sq ft", 
       monthly_rent: "$5,200",
-      equipment_included: true,
-      customer_base_included: true,
-      training_provided: true,
-      financing_available: true,
-      reason_for_sale: "Family relocation",
-      gross_monthly_revenue: "$25,000-30,000",
-      net_monthly_profit: "$12,000-15,000",
-      established_year: "2016",
       image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
       contact_info: {
         phone: "(714) 555-4321", 
@@ -144,3 +121,4 @@ export const generateRandomVietnameseSalonSales = (count = 5) => {
   
   return jobs;
 };
+
