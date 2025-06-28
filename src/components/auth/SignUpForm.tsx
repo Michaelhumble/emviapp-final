@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 const signUpSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -35,13 +35,15 @@ export const SignUpForm = () => {
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
     try {
+      const userRole = "customer"; // Default role for basic signup
+      
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
             full_name: data.fullName,
-            role: "customer",
+            role: userRole,
           },
         },
       });
@@ -53,7 +55,7 @@ export const SignUpForm = () => {
         description: "Please check your email to verify your account.",
       });
 
-      navigate("/dashboard");
+      navigateToRoleDashboard(navigate, userRole);
     } catch (error) {
       toast({
         title: "Error creating account",
