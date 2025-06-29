@@ -1,12 +1,11 @@
-
 import { useUserTags } from '@/hooks/useUserTags';
 import { useAuth } from '@/context/auth';
-import { useJobsData } from '@/hooks/useJobsData';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const useJobPosting = () => {
   const { user } = useAuth();
   const { tagUser } = useUserTags();
-  const { createJob } = useJobsData();
 
   const handleJobPost = async (jobData: any) => {
     if (!user?.id) return { success: false, error: 'User not authenticated' };
@@ -28,20 +27,44 @@ export const useJobPosting = () => {
     };
     
     try {
-      const { data, error } = await createJob(formattedJobData);
+      console.log('🚀 Submitting job post:', formattedJobData);
 
-      if (error) {
-        console.error("Error creating job post:", error);
-        return { success: false, error: error.message };
+      // Check if this is a free post
+      if (formattedJobData.pricing_tier === 'free') {
+        console.log('🆓 Creating free job post');
+        
+        const { data, error } = await supabase.functions.invoke('create-free-post', {
+          body: { jobData: formattedJobData }
+        });
+
+        if (error) {
+          console.error("❌ Error creating free job post:", error);
+          toast.error('Failed to create job posting');
+          return { success: false, error: error.message };
+        }
+
+        if (!data?.success) {
+          console.error("❌ Free job post failed:", data);
+          toast.error('Failed to create job posting');
+          return { success: false, error: data?.error || 'Unknown error' };
+        }
+
+        console.log('✅ Free job posted successfully:', data.jobId);
+        toast.success('Job posted successfully!');
+        
+        // Tag the user as a job poster
+        await tagUser(user.id, 'job-poster');
+        
+        return { success: true, data: data.job };
+      } else {
+        // This should not happen in the current flow, but keeping for completeness
+        console.log('💰 This should go through the paid job flow');
+        return { success: false, error: 'Paid jobs should use the checkout flow' };
       }
       
-      // Tag the user as a job poster
-      await tagUser(user.id, 'job-poster');
-      
-      return { success: true, data };
-      
     } catch (err) {
-      console.error("Unexpected error in job posting:", err);
+      console.error("💥 Unexpected error in job posting:", err);
+      toast.error('An unexpected error occurred');
       return { success: false, error: 'An unexpected error occurred' };
     }
   };

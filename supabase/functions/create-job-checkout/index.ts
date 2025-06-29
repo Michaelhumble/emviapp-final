@@ -15,6 +15,7 @@ serve(async (req) => {
 
   try {
     const { tier, finalPrice, durationMonths, jobData } = await req.json();
+    console.log('💰 Creating paid job checkout:', { tier, finalPrice, jobData: jobData?.title });
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -29,18 +30,51 @@ serve(async (req) => {
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       {
-        global: {
-          headers: { Authorization: authHeader },
-        },
+        auth: { persistSession: false }
       }
     );
 
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user?.email) {
-      throw new Error("User not authenticated");
+      throw new Error("User not authenticated or email not available");
     }
+
+    console.log('✅ User authenticated:', user.id);
+
+    // First, create the job record in draft status
+    const jobRecord = {
+      title: jobData.title || 'Job Title',
+      description: jobData.description || '',
+      category: jobData.category || 'Other',
+      location: jobData.location || '',
+      compensation_type: jobData.compensation_type || jobData.employment_type || '',
+      compensation_details: jobData.compensation_details || '',
+      requirements: Array.isArray(jobData.requirements) 
+        ? jobData.requirements.join('\n') 
+        : (jobData.requirements || ''),
+      contact_info: jobData.contact_info || {},
+      pricing_tier: tier,
+      status: 'draft', // Will be activated after payment
+      user_id: user.id,
+      expires_at: new Date(Date.now() + (durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString()
+    };
+
+    console.log('📝 Creating draft job record');
+
+    const { data: insertedJob, error: insertError } = await supabaseClient
+      .from('jobs')
+      .insert([jobRecord])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error('❌ Database insert error:', insertError);
+      throw new Error(`Failed to create job: ${insertError.message}`);
+    }
+
+    console.log('✅ Draft job created:', insertedJob.id);
 
     // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -74,15 +108,34 @@ serve(async (req) => {
         durationMonths: durationMonths.toString(),
         jobTitle: jobData?.title || '',
         userId: user.id,
+        post_id: insertedJob.id, // Link to the job record
+        post_type: 'job',
+        pricing_tier: tier,
+        expires_at: jobRecord.expires_at
       },
     });
+
+    // Log the payment attempt
+    await supabaseClient
+      .from('payment_logs')
+      .insert({
+        user_id: user.id,
+        listing_id: insertedJob.id,
+        plan_type: 'job',
+        pricing_tier: tier,
+        payment_status: 'pending',
+        stripe_payment_id: session.id,
+        expires_at: jobRecord.expires_at
+      });
+
+    console.log('✅ Stripe session created:', session.id);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("Error creating checkout session:", error);
+    console.error("❌ Error creating checkout session:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

@@ -21,12 +21,11 @@ max_client_conn = 100
 [realtime]
 enabled = true
 port = 54323
-max_header_length = 4096
+tenant_id = "realtime-dev"
 
 [studio]
 enabled = true
 port = 54324
-api_url = "http://localhost"
 
 [inbucket]
 enabled = true
@@ -36,52 +35,55 @@ pop3_port = 54327
 
 [storage]
 enabled = true
-port = 54326
+port = 54328
 file_size_limit = "50MiB"
 
 [auth]
 enabled = true
-port = 54327
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["https://lovable.dev"]
+port = 54329
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
 jwt_expiry = 3600
-enable_signup = true
-enable_anonymous_sign_ins = false
-
-[auth.email]
-enable_signup = true
-double_confirm_changes = true
-enable_confirmations = false
-
-[functions.webhook-credit-purchase]
-verify_jwt = false
-
-[functions.webhook-job-posting]
-verify_jwt = false
-
-[functions.webhook-salon-posting]
-verify_jwt = false
+refresh_token_rotation_enabled = true
+refresh_token_reuse_interval = 10
+enable_manual_linking = false
 
 [functions.create-job-checkout]
 verify_jwt = true
 
-[functions.create-salon-checkout]
+[functions.create-free-post]
 verify_jwt = true
 
 [functions.verify-checkout-session]
 verify_jwt = true
 
+[functions.webhook-credit-purchase]
+verify_jwt = false
+
+[functions.create-salon-checkout]
+verify_jwt = true
+
 [functions.diamond-tier-request]
 verify_jwt = true
 
-[functions.handle-credit-purchase]
+[functions.create-credit-checkout]
 verify_jwt = true
+
+[functions.webhook-job-posting]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
 
 [functions.stripe-webhook-handler]
 verify_jwt = false
 
-[functions.toggle-auto-renew]
-verify_jwt = true
+[edge-runtime]
+enabled = true
+port = 54330
 
-[functions.create-free-post]
-verify_jwt = true
+[analytics]
+enabled = false
+port = 54327
+vector_port = 54328
+backend = "postgres"

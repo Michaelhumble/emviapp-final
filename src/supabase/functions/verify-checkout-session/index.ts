@@ -1,8 +1,4 @@
 
-// @ts-nocheck
-// ^ This comment disables TypeScript checking for this file since it uses Deno types
-// that aren't available in the browser/Node.js environment
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
@@ -21,6 +17,7 @@ serve(async (req) => {
   try {
     // Parse request body
     const { sessionId } = await req.json();
+    console.log('🔍 Verifying checkout session:', sessionId);
 
     // Authentication check
     const authHeader = req.headers.get("Authorization");
@@ -61,6 +58,8 @@ serve(async (req) => {
       });
     }
 
+    console.log('✅ User authenticated:', user.id);
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -74,6 +73,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    console.log('💳 Stripe session retrieved:', session.payment_status);
 
     // Get metadata from the session
     const metadata = session.metadata || {};
@@ -97,22 +98,33 @@ serve(async (req) => {
       .single();
 
     if (paymentLogError) {
-      console.error("Error fetching payment log:", paymentLogError);
+      console.error("⚠️ Payment log not found:", paymentLogError);
     }
 
-    // If we have a post_id in metadata, update the job status
+    // CRITICAL: If we have a post_id in metadata, activate the job
     if (metadata.post_id) {
+      console.log('🔄 Activating job:', metadata.post_id);
+      
       const { error: updateJobError } = await supabaseAdmin
         .from('jobs')
         .update({ 
           status: 'active',
           expires_at: metadata.expires_at
         })
-        .eq('id', metadata.post_id);
+        .eq('id', metadata.post_id)
+        .eq('user_id', user.id); // Security check
         
       if (updateJobError) {
-        console.error("Error updating job status:", updateJobError);
+        console.error("❌ Error activating job:", updateJobError);
+        return new Response(JSON.stringify({ 
+          error: "Failed to activate job posting" 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
+
+      console.log('✅ Job activated successfully');
     }
     
     // Update payment log status
@@ -123,7 +135,7 @@ serve(async (req) => {
         .eq('id', paymentLog.id);
         
       if (updateLogError) {
-        console.error("Error updating payment log:", updateLogError);
+        console.error("⚠️ Error updating payment log:", updateLogError);
       }
     }
 
@@ -141,7 +153,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error verifying checkout session:", error);
+    console.error("❌ Error verifying checkout session:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
