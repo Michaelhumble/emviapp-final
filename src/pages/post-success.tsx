@@ -5,7 +5,6 @@ import Layout from '@/components/layout/Layout';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import JobPostingSuccess from '@/components/posting/job/JobPostingSuccess';
-import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
 import { toast } from 'sonner';
 
 const PostSuccess = () => {
@@ -75,8 +74,6 @@ const PostSuccess = () => {
       <Helmet>
         <title>Post Created Successfully | EmviApp</title>
       </Helmet>
-      
-      <ConfettiExplosion />
       
       <JobPostingSuccess
         jobId={jobDetails?.jobId}

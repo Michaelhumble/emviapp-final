@@ -1,3 +1,4 @@
+
 import { useUserTags } from '@/hooks/useUserTags';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,21 +32,26 @@ export const useJobPosting = () => {
 
       // Check if this is a free post
       if (formattedJobData.pricing_tier === 'free') {
-        console.log('🆓 Creating free job post');
+        console.log('🆓 Creating free job post via edge function');
         
         const { data, error } = await supabase.functions.invoke('create-free-post', {
-          body: { jobData: formattedJobData }
+          body: { jobData: formattedJobData },
+          headers: {
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          }
         });
+
+        console.log('🔍 Edge function response:', { data, error });
 
         if (error) {
           console.error("❌ Error creating free job post:", error);
-          toast.error('Failed to create job posting');
+          toast.error('Failed to create job posting: ' + error.message);
           return { success: false, error: error.message };
         }
 
         if (!data?.success) {
           console.error("❌ Free job post failed:", data);
-          toast.error('Failed to create job posting');
+          toast.error('Failed to create job posting: ' + (data?.error || 'Unknown error'));
           return { success: false, error: data?.error || 'Unknown error' };
         }
 
