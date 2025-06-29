@@ -3,11 +3,6 @@ import { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
-import { premiumJobs } from '@/data/jobs/premiumJobs';
-import { diamondJobs } from '@/data/jobs/diamondJobs';
-import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
-import { expiredListings } from '@/data/expiredListings';
-import { vietnameseExpiredJobs } from '@/data/vietnameseExpiredJobs';
 
 export const useJobsData = () => {
   const { user } = useAuth();
@@ -19,8 +14,9 @@ export const useJobsData = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
+      console.log('🔍 Fetching jobs from Supabase database only...');
       
-      // Fetch jobs from Supabase
+      // Fetch ONLY jobs from Supabase database
       const { data: supabaseJobs, error: supabaseError } = await supabase
         .from('jobs')
         .select('*')
@@ -28,9 +24,12 @@ export const useJobsData = () => {
         .order('created_at', { ascending: false });
 
       if (supabaseError) {
-        console.error('Error fetching jobs from Supabase:', supabaseError);
+        console.error('❌ Error fetching jobs from Supabase:', supabaseError);
+        throw supabaseError;
       }
 
+      console.log('✅ Fetched jobs from database:', supabaseJobs?.length || 0, 'jobs');
+      
       // Transform Supabase jobs to match Job interface
       const transformedSupabaseJobs: Job[] = (supabaseJobs || []).map(job => ({
         id: job.id,
@@ -46,22 +45,17 @@ export const useJobsData = () => {
         user_id: job.user_id || '',
         status: job.status || 'active',
         expires_at: job.expires_at || '',
-        requirements: job.requirements || ''
+        requirements: job.requirements || '',
+        pricing_tier: job.pricing_tier || 'free'
       }));
 
-      // Combine all job sources with default categories
-      const allJobs: Job[] = [
-        ...transformedSupabaseJobs,
-        ...premiumJobs.map(job => ({ ...job, category: job.category || "Other" })),
-        ...diamondJobs.map(job => ({ ...job, category: job.category || "Other" })),
-        ...vietnameseJobs.map(job => ({ ...job, category: job.category || "Other" })),
-        ...expiredListings.map(job => ({ ...job, category: job.category || "Other" })),
-        ...vietnameseExpiredJobs.map(job => ({ ...job, category: job.category || "Other" }))
-      ];
+      console.log('🎯 Transformed jobs with pricing tiers:', 
+        transformedSupabaseJobs.map(j => ({ title: j.title, pricing_tier: j.pricing_tier }))
+      );
 
-      setJobs(allJobs);
+      setJobs(transformedSupabaseJobs);
     } catch (err) {
-      console.error('Error in fetchJobs:', err);
+      console.error('💥 Error in fetchJobs:', err);
       setError(err as Error);
     } finally {
       setLoading(false);

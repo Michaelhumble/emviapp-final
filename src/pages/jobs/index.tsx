@@ -60,8 +60,42 @@ const JobsPage = () => {
     }
   };
 
-  if (loading) return <Layout><div className="p-8">Loading jobs...</div></Layout>;
-  if (error) return <Layout><div className="p-8">Error loading jobs: {error.message}</div></Layout>;
+  // Debug logging
+  console.log('📊 Jobs Page Debug:', {
+    jobsCount: jobs.length,
+    loading,
+    error: error?.message,
+    jobs: jobs.map(j => ({ id: j.id, title: j.title, pricing_tier: j.pricing_tier }))
+  });
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto py-8 px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading jobs from database...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto py-8 px-4">
+          <div className="text-center bg-red-50 border border-red-200 rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-red-800 mb-2">Error Loading Jobs</h2>
+            <p className="text-red-600 mb-4">{error.message}</p>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Retry
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -69,7 +103,12 @@ const JobsPage = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">Beauty Industry Jobs</h1>
-            <p className="text-gray-600">Find your next opportunity in the beauty industry</p>
+            <p className="text-gray-600">
+              Find your next opportunity in the beauty industry 
+              <span className="text-sm text-blue-600 ml-2">
+                ({jobs.length} jobs from database)
+              </span>
+            </p>
           </div>
           
           <Link to="/jobs/create">
@@ -80,12 +119,22 @@ const JobsPage = () => {
           </Link>
         </div>
 
-        <UnifiedJobFeed
-          jobs={jobs}
-          onRenew={handleRenewJob}
-          isRenewing={isRenewing}
-          renewalJobId={renewalJobId}
-        />
+        {jobs.length === 0 ? (
+          <div className="text-center bg-gray-50 border border-gray-200 rounded-lg p-8">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Jobs Found</h3>
+            <p className="text-gray-600 mb-4">There are currently no active job postings in the database.</p>
+            <Link to="/jobs/create">
+              <Button>Post the First Job</Button>
+            </Link>
+          </div>
+        ) : (
+          <UnifiedJobFeed
+            jobs={jobs}
+            onRenew={handleRenewJob}
+            isRenewing={isRenewing}
+            renewalJobId={renewalJobId}
+          />
+        )}
       </div>
     </Layout>
   );
