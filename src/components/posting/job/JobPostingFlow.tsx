@@ -1,190 +1,149 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import PremiumJobPricingCards from './PremiumJobPricingCards';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { usePostPayment } from '@/hooks/usePostPayment';
+import JobPricingTable from './JobPricingTable';
+import PremiumJobPricingCards from './PremiumJobPricingCards';
 import PricingConfirmationModal from './PricingConfirmationModal';
 import { toast } from 'sonner';
 
 interface JobPostingFlowProps {
-  jobFormData: any;
-  onBack: () => void;
+  jobData: any;
+  isEditMode?: boolean;
+  onEditModeChange?: (enabled: boolean) => void;
 }
 
-const JobPostingFlow = ({ jobFormData, onBack }: JobPostingFlowProps) => {
+const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ 
+  jobData, 
+  isEditMode = false, 
+  onEditModeChange 
+}) => {
   const navigate = useNavigate();
-  const [selectedTier, setSelectedTier] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const { user } = useAuth();
+  const { handleJobPost } = useJobPosting();
   const { initiatePayment } = usePostPayment();
+  
+  const [selectedTier, setSelectedTier] = useState<string>('');
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log('🚀 JobPostingFlow: Initialized with job data:', {
-    hasJobData: !!jobFormData,
-    jobDataKeys: jobFormData ? Object.keys(jobFormData) : [],
-    jobTitle: jobFormData?.title || 'No title',
-    jobCategory: jobFormData?.category || 'No category'
-  });
+  console.log('🔍 JobPostingFlow - Component rendered with jobData:', jobData);
+  console.log('🔍 JobPostingFlow - User authenticated:', !!user);
 
-  const handleTierSelect = (tier: string) => {
-    console.log('🎯 Tier selected:', tier);
+  const handlePricingSelect = async (tier: string, finalPrice: number, durationMonths: number) => {
+    console.log('🔍 JobPostingFlow - handlePricingSelect called with:', { tier, finalPrice, durationMonths });
+    
+    if (!user) {
+      console.error('❌ JobPostingFlow - User not authenticated');
+      toast.error('Please sign in to post a job');
+      navigate('/sign-in');
+      return;
+    }
+
     setSelectedTier(tier);
     
-    // Force Diamond tier to be $999.99 for 12 months
-    if (tier === 'diamond') {
-      console.log('💎 Diamond tier selected - forcing 12 month duration');
-      setSelectedTier('diamond');
-    }
-
-    // Handle free tier immediately
     if (tier === 'free') {
-      console.log('🆓 Free tier selected - bypassing confirmation modal');
-      handleFreePost();
-    } else {
-      console.log('💰 Paid tier selected - showing confirmation modal');
-      setShowConfirmation(true);
-    }
-  };
-
-  const handleFreePost = async () => {
-    console.log('🆓 Starting free post creation...');
-    setIsLoading(true);
-    
-    try {
-      const pricingOptions = {
-        selectedPricingTier: 'free' as const,
-        durationMonths: 1,
-        autoRenew: false,
-        isFirstPost: false
-      };
-
-      console.log('📋 Free post data being sent:', {
-        jobFormData: jobFormData,
-        pricingOptions: pricingOptions
-      });
-
-      const result = await initiatePayment('job', jobFormData, pricingOptions);
+      console.log('🔍 JobPostingFlow - Processing free job post');
+      setIsLoading(true);
       
-      console.log('✅ Free post result:', result);
-      
-      if (result.success) {
-        console.log('🎉 Free post successful, navigating to success page');
-        toast.success('Free job posted successfully!');
-        navigate('/post-success?type=free');
-      } else {
-        console.error('❌ Free post failed:', result.error);
-        toast.error(result.error || 'Failed to create free job post. Please try again or contact support.');
-      }
-    } catch (error) {
-      console.error('💥 Free post error caught:', error);
-      toast.error('An unexpected error occurred. Please try again or contact support.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleConfirmPayment = async () => {
-    console.log('💳 Starting paid post creation...');
-    setIsLoading(true);
-    setShowConfirmation(false);
-
-    try {
-      // Force Diamond tier to 12 months and $999.99
-      const durationMonths = selectedTier === 'diamond' ? 12 : 1;
-      
-      const pricingOptions = {
-        selectedPricingTier: selectedTier as any,
-        durationMonths,
-        autoRenew: false,
-        isFirstPost: false
-      };
-
-      console.log('📋 Paid post data being sent:', {
-        tier: selectedTier,
-        jobFormData: jobFormData,
-        pricingOptions: pricingOptions
-      });
-
-      const result = await initiatePayment('job', jobFormData, pricingOptions);
-      
-      console.log('✅ Paid post result:', result);
-      
-      if (result.success && result.checkoutUrl) {
-        console.log('🔄 Redirecting to Stripe checkout:', result.checkoutUrl);
-        window.location.href = result.checkoutUrl;
-      } else if (result.waitlisted) {
-        console.log('📋 Added to waitlist');
-        toast.info('Added to Diamond tier waitlist', {
-          description: 'Our team will contact you soon.'
+      try {
+        console.log('🔍 JobPostingFlow - Calling handleJobPost for free tier');
+        const result = await handleJobPost({
+          ...jobData,
+          pricing_tier: 'free'
         });
-        navigate('/dashboard');
-      } else {
-        console.error('❌ Paid post failed:', result.error);
-        toast.error(result.error || 'Failed to create job posting. Please try again or contact support.');
+        
+        console.log('🔍 JobPostingFlow - Free job post result:', result);
+        
+        if (result.success) {
+          console.log('✅ JobPostingFlow - Free job posted successfully');
+          toast.success('Job posted successfully!');
+          navigate('/post-success?type=free');
+        } else {
+          console.error('❌ JobPostingFlow - Free job post failed:', result.error);
+          toast.error(result.error || 'Failed to post job');
+        }
+      } catch (error) {
+        console.error('❌ JobPostingFlow - Exception in free job posting:', error);
+        toast.error('An unexpected error occurred');
+      } finally {
+        setIsLoading(false);
       }
+    } else {
+      console.log('🔍 JobPostingFlow - Opening pricing confirmation modal for paid tier');
+      setShowPricingModal(true);
+    }
+  };
+
+  const handleConfirmPaidPosting = async () => {
+    console.log('🔍 JobPostingFlow - handleConfirmPaidPosting called for tier:', selectedTier);
+    
+    if (!user) {
+      console.error('❌ JobPostingFlow - User not authenticated for paid posting');
+      return;
+    }
+
+    setIsLoading(true);
+    setShowPricingModal(false);
+
+    try {
+      console.log('🔍 JobPostingFlow - Calling initiatePayment for paid job');
+      const paymentResult = await initiatePayment('job', jobData, {
+        selectedPricingTier: selectedTier as any,
+        durationMonths: 1,
+        isNationwide: false,
+        fastSalePackage: false,
+        bundleWithJobPost: false,
+        autoRenew: false
+      });
+      
+      console.log('🔍 JobPostingFlow - Payment initiation result:', paymentResult);
     } catch (error) {
-      console.error('💥 Paid post error caught:', error);
-      toast.error('An unexpected error occurred. Please try again or contact support.');
+      console.error('❌ JobPostingFlow - Exception in paid job posting:', error);
+      toast.error('Failed to process payment');
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isEditMode) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Edit Job Post</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Edit mode is enabled. Complete your job details first.</p>
+          <Button 
+            onClick={() => onEditModeChange?.(false)} 
+            className="mt-4"
+          >
+            Continue to Pricing
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            className="mb-4"
-            disabled={isLoading}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Job Details
-          </Button>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-center">
-                Choose Your Job Posting Plan
-              </CardTitle>
-              <p className="text-center text-muted-foreground">
-                Select the best plan for your job posting needs
-              </p>
-            </CardHeader>
-          </Card>
-        </div>
+    <div className="space-y-6">
+      <PremiumJobPricingCards 
+        onPricingSelect={handlePricingSelect}
+        jobData={jobData}
+        disabled={isLoading}
+      />
 
-        <Card>
-          <CardContent className="p-8">
-            {isLoading ? (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p className="text-muted-foreground">
-                  {selectedTier === 'free' ? 'Creating your free job post...' : 'Setting up your payment...'}
-                </p>
-              </div>
-            ) : (
-              <PremiumJobPricingCards
-                onSelectTier={handleTierSelect}
-                selectedTier={selectedTier}
-                disabled={isLoading}
-              />
-            )}
-          </CardContent>
-        </Card>
-
-        <PricingConfirmationModal
-          isOpen={showConfirmation}
-          onClose={() => setShowConfirmation(false)}
-          onConfirm={handleConfirmPayment}
-          tier={selectedTier}
-          isLoading={isLoading}
-        />
-      </div>
+      <PricingConfirmationModal
+        open={showPricingModal}
+        onOpenChange={setShowPricingModal}
+        onConfirm={handleConfirmPaidPosting}
+        tier={selectedTier}
+        isLoading={isLoading}
+      />
     </div>
   );
 };
