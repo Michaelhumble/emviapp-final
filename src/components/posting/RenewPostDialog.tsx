@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { JobPricingTier } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 interface RenewPostDialogProps {
   open?: boolean;
@@ -56,15 +57,15 @@ const RenewPostDialog = ({
   };
 
   const handleRenew = async () => {
-    // Setup renewal pricing options with required fields matching PricingOptions interface
-    const pricingOptions = {
+    // Setup renewal pricing options
+    const pricingOptions: PricingOptions = {
       selectedPricingTier: selectedPlan,
-      durationMonths: selectedDuration,
       isRenewal: true,
+      durationMonths: selectedDuration,
+      isNationwide,
       fastSalePackage,
       bundleWithJobPost,
-      autoRenew: false,
-      isFirstPost: false // Required field for PricingOptions
+      autoRenew: false
     };
 
     try {

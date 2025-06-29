@@ -111,7 +111,8 @@ const EnhancedPostJob = () => {
         
         {currentStep === 'pricing' && jobFormData && (
           <JobPostingFlow 
-            jobData={jobFormData}
+            jobFormData={jobFormData}
+            onBack={handleBackToForm}
           />
         )}
       </div>
