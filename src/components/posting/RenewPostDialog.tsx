@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePostPayment } from '@/hooks/usePostPayment';
@@ -57,15 +56,15 @@ const RenewPostDialog = ({
   };
 
   const handleRenew = async () => {
-    // Setup renewal pricing options with required durationMonths field
+    // Setup renewal pricing options with required fields matching PricingOptions interface
     const pricingOptions = {
       selectedPricingTier: selectedPlan,
-      durationMonths: selectedDuration, // Now required field is included
+      durationMonths: selectedDuration,
       isRenewal: true,
-      isNationwide,
       fastSalePackage,
       bundleWithJobPost,
-      autoRenew: false
+      autoRenew: false,
+      isFirstPost: false // Required field for PricingOptions
     };
 
     try {

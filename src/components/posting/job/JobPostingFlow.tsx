@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import JobPricingTable from './JobPricingTable';
 import PremiumJobPricingCards from './PremiumJobPricingCards';
 import PricingConfirmationModal from './PricingConfirmationModal';
 import { toast } from 'sonner';
@@ -95,10 +93,10 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({
       const paymentResult = await initiatePayment('job', jobData, {
         selectedPricingTier: selectedTier as any,
         durationMonths: 1,
-        isNationwide: false,
         fastSalePackage: false,
         bundleWithJobPost: false,
-        autoRenew: false
+        autoRenew: false,
+        isFirstPost: true
       });
       
       console.log('🔍 JobPostingFlow - Payment initiation result:', paymentResult);
