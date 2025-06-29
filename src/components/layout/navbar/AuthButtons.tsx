@@ -11,7 +11,7 @@ const AuthButtons = () => {
       <Link to={`/sign-in?redirect=${currentPath}`}>
         <Button variant="ghost">Sign In</Button>
       </Link>
-      <Link to={`/sign-up?redirect=${currentPath}`}>
+      <Link to={`/auth/signup?redirect=${currentPath}`}>
         <Button>Sign Up</Button>
       </Link>
     </>
