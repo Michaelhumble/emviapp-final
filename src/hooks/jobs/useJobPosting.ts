@@ -2,6 +2,7 @@
 import { useUserTags } from '@/hooks/useUserTags';
 import { useAuth } from '@/context/auth';
 import { useJobsData } from '@/hooks/useJobsData';
+import { toast } from 'sonner';
 
 export const useJobPosting = () => {
   const { user } = useAuth();
@@ -9,7 +10,10 @@ export const useJobPosting = () => {
   const { createJob } = useJobsData();
 
   const handleJobPost = async (jobData: any) => {
-    if (!user?.id) return { success: false, error: 'User not authenticated' };
+    if (!user?.id) {
+      console.error('Job posting attempted without authenticated user');
+      return { success: false, error: 'User not authenticated' };
+    }
     
     // Ensure all required fields are properly formatted
     const formattedJobData = {
@@ -28,21 +32,46 @@ export const useJobPosting = () => {
     };
     
     try {
+      console.log('Creating job with data:', formattedJobData);
+      
       const { data, error } = await createJob(formattedJobData);
 
       if (error) {
-        console.error("Error creating job post:", error);
+        console.error("Database error creating job post:", error);
+        toast.error('Unable to save your job posting. Please try again or contact support.');
         return { success: false, error: error.message };
       }
       
-      // Tag the user as a job poster
-      await tagUser(user.id, 'job-poster');
+      if (!data) {
+        console.error("No data returned from job creation");
+        toast.error('Job posting creation failed. Please try again.');
+        return { success: false, error: 'No data returned from database' };
+      }
       
+      // Tag the user as a job poster
+      try {
+        await tagUser(user.id, 'job-poster');
+      } catch (tagError) {
+        console.warn('Failed to tag user as job poster:', tagError);
+        // This is not critical, so we don't fail the entire operation
+      }
+      
+      console.log('Job posting created successfully:', data);
       return { success: true, data };
       
     } catch (err) {
-      console.error("Unexpected error in job posting:", err);
-      return { success: false, error: 'An unexpected error occurred' };
+      console.error("Network or unexpected error in job posting:", err);
+      
+      // Provide user-friendly error messages based on error type
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        toast.error('Network connection issue. Please check your internet and try again.');
+      } else if (err instanceof Error && err.message.includes('timeout')) {
+        toast.error('Request timed out. Please try again.');
+      } else {
+        toast.error('An unexpected error occurred. Please try again or contact support.');
+      }
+      
+      return { success: false, error: err instanceof Error ? err.message : 'An unexpected error occurred' };
     }
   };
 

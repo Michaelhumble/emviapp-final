@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -22,6 +23,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [processingMessage, setProcessingMessage] = useState('Processing your request...');
   
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -47,6 +49,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   const proceedToPayment = async (tier: string, finalPrice: number, durationMonths: number) => {
     setShowConfirmation(false);
     setIsProcessing(true);
+    setProcessingMessage('Processing your request...');
 
     try {
       if (!user) {
@@ -63,39 +66,83 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
 
       // For free tier, create job directly without payment
       if (finalPrice === 0) {
-        // TODO: Create job posting directly in database
-        toast.success('Free job posting created successfully!');
-        navigate('/post-success');
+        setProcessingMessage('Creating your free job posting...');
+        
+        try {
+          const { data, error } = await supabase.functions.invoke('create-free-post', {
+            body: {
+              postType: 'job',
+              postDetails: jobFormData,
+              pricingOptions: {
+                selectedPricingTier: tier,
+                isFirstPost: false
+              },
+              idempotencyKey: `free-job-${user.id}-${Date.now()}`
+            }
+          });
+
+          if (error) {
+            console.error('Free post creation error:', error);
+            toast.error('Unable to create your free job posting. Please try again or contact support if the issue persists.');
+            setIsProcessing(false);
+            return;
+          }
+
+          if (data?.success) {
+            toast.success('Free job posting created successfully!');
+            navigate('/post-success');
+          } else {
+            console.error('Free post creation failed:', data);
+            toast.error('Something went wrong while creating your job posting. Please try again or contact support.');
+            setIsProcessing(false);
+          }
+        } catch (freePostError) {
+          console.error('Free post creation network error:', freePostError);
+          toast.error('Network error occurred. Please check your connection and try again.');
+          setIsProcessing(false);
+        }
         return;
       }
 
       // Create Stripe checkout session for paid plans
-      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
-        body: {
-          tier,
-          finalPrice,
-          durationMonths,
-          jobData: jobFormData
+      setProcessingMessage('Setting up secure payment...');
+      
+      try {
+        const { data, error } = await supabase.functions.invoke('create-job-checkout', {
+          body: {
+            tier,
+            finalPrice,
+            durationMonths,
+            jobData: jobFormData
+          }
+        });
+
+        if (error) {
+          console.error('Stripe checkout error:', error);
+          toast.error('Unable to set up payment. Please try again or contact support if the issue persists.');
+          setIsProcessing(false);
+          return;
         }
-      });
 
-      if (error) {
-        console.error('Stripe checkout error:', error);
-        toast.error('Failed to create payment session');
-        setIsProcessing(false);
-        return;
-      }
-
-      if (data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        toast.error('No checkout URL received');
+        if (data?.url) {
+          setProcessingMessage('Redirecting to secure payment...');
+          // Small delay to show the message before redirect
+          setTimeout(() => {
+            window.location.href = data.url;
+          }, 1000);
+        } else {
+          console.error('No checkout URL received:', data);
+          toast.error('Payment setup failed. Please try again or contact support.');
+          setIsProcessing(false);
+        }
+      } catch (paymentError) {
+        console.error('Payment setup network error:', paymentError);
+        toast.error('Network error occurred. Please check your connection and try again.');
         setIsProcessing(false);
       }
     } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Payment processing failed');
+      console.error('Unexpected error in payment processing:', error);
+      toast.error('An unexpected error occurred. Please try again or contact support.');
       setIsProcessing(false);
     }
   };
@@ -113,10 +160,10 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   if (isProcessing) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
-        <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
+        <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl max-w-md mx-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Redirecting to secure payment...</p>
-          <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
+          <p className="text-gray-600 font-medium mb-2">{processingMessage}</p>
+          <p className="text-sm text-gray-500">This will only take a moment</p>
         </div>
       </div>
     );
