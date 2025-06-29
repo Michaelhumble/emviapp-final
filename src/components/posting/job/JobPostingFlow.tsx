@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -51,8 +50,8 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
 
     try {
       if (!user) {
-        toast.error('Please log in to continue');
-        navigate('/login');
+        toast.error('Please sign in to continue posting your job');
+        navigate('/sign-in?redirect=/post-job');
         return;
       }
 
