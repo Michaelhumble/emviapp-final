@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -93,8 +94,6 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({
       const paymentResult = await initiatePayment('job', jobData, {
         selectedPricingTier: selectedTier as any,
         durationMonths: 1,
-        fastSalePackage: false,
-        bundleWithJobPost: false,
         autoRenew: false,
         isFirstPost: true
       });
