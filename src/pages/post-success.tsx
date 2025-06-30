@@ -15,34 +15,15 @@ const PostSuccess = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const processSuccess = async () => {
-      // Check if this is a free job (has jobId in URL params)
-      const jobId = searchParams.get('jobId');
-      const jobTitle = searchParams.get('jobTitle');
-      const planType = searchParams.get('planType');
-
-      if (jobId && !sessionId) {
-        // This is a free job success
-        console.log('✅ [DEBUG] Processing free job success:', { jobId, jobTitle, planType });
-        setJobDetails({
-          jobId: jobId,
-          jobTitle: decodeURIComponent(jobTitle || 'Job Posting'),
-          planType: planType || 'Free'
-        });
-        setIsLoading(false);
-        return;
-      }
-
+    const verifyPayment = async () => {
       if (!sessionId) {
-        // No session ID and no free job params, show generic success
-        console.log('✅ [DEBUG] No session ID or job params, showing generic success');
+        // No session ID, show generic success
         setIsLoading(false);
         return;
       }
 
-      // This is a paid job, verify payment session
       try {
-        console.log('💰 [DEBUG] Verifying payment session:', sessionId);
+        // Verify the Stripe session and get job details
         const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
           body: { sessionId }
         });
@@ -72,8 +53,8 @@ const PostSuccess = () => {
       }
     };
 
-    processSuccess();
-  }, [sessionId, searchParams]);
+    verifyPayment();
+  }, [sessionId]);
 
   if (isLoading) {
     return (
@@ -81,7 +62,7 @@ const PostSuccess = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Processing...</p>
+            <p className="text-gray-600">Verifying payment...</p>
           </div>
         </div>
       </Layout>
