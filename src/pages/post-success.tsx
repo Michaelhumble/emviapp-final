@@ -15,15 +15,34 @@ const PostSuccess = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const verifyPayment = async () => {
-      if (!sessionId) {
-        // No session ID, show generic success
+    const processSuccess = async () => {
+      // Check if this is a free job (has jobId in URL params)
+      const jobId = searchParams.get('jobId');
+      const jobTitle = searchParams.get('jobTitle');
+      const planType = searchParams.get('planType');
+
+      if (jobId && !sessionId) {
+        // This is a free job success
+        console.log('✅ [DEBUG] Processing free job success:', { jobId, jobTitle, planType });
+        setJobDetails({
+          jobId: jobId,
+          jobTitle: decodeURIComponent(jobTitle || 'Job Posting'),
+          planType: planType || 'Free'
+        });
         setIsLoading(false);
         return;
       }
 
+      if (!sessionId) {
+        // No session ID and no free job params, show generic success
+        console.log('✅ [DEBUG] No session ID or job params, showing generic success');
+        setIsLoading(false);
+        return;
+      }
+
+      // This is a paid job, verify payment session
       try {
-        // Verify the Stripe session and get job details
+        console.log('💰 [DEBUG] Verifying payment session:', sessionId);
         const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
           body: { sessionId }
         });
@@ -53,8 +72,8 @@ const PostSuccess = () => {
       }
     };
 
-    verifyPayment();
-  }, [sessionId]);
+    processSuccess();
+  }, [sessionId, searchParams]);
 
   if (isLoading) {
     return (
@@ -62,7 +81,7 @@ const PostSuccess = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Verifying payment...</p>
+            <p className="text-gray-600">Processing...</p>
           </div>
         </div>
       </Layout>
