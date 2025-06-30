@@ -14,8 +14,8 @@ serve(async (req) => {
   }
 
   try {
-    const { tier, finalPrice, durationMonths, jobData } = await req.json();
-    console.log('💰 Creating paid job checkout:', { tier, finalPrice, jobData: jobData?.title });
+    const { tier, finalPrice, durationMonths, jobData, jobId } = await req.json();
+    console.log('💰 Creating paid job checkout:', { tier, finalPrice, jobId });
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -43,39 +43,6 @@ serve(async (req) => {
 
     console.log('✅ User authenticated:', user.id);
 
-    // First, create the job record in draft status
-    const jobRecord = {
-      title: jobData.title || 'Job Title',
-      description: jobData.description || '',
-      category: jobData.category || 'Other',
-      location: jobData.location || '',
-      compensation_type: jobData.compensation_type || jobData.employment_type || '',
-      compensation_details: jobData.compensation_details || '',
-      requirements: Array.isArray(jobData.requirements) 
-        ? jobData.requirements.join('\n') 
-        : (jobData.requirements || ''),
-      contact_info: jobData.contact_info || {},
-      pricing_tier: tier,
-      status: 'draft', // Will be activated after payment
-      user_id: user.id,
-      expires_at: new Date(Date.now() + (durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString()
-    };
-
-    console.log('📝 Creating draft job record');
-
-    const { data: insertedJob, error: insertError } = await supabaseClient
-      .from('jobs')
-      .insert([jobRecord])
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error('❌ Database insert error:', insertError);
-      throw new Error(`Failed to create job: ${insertError.message}`);
-    }
-
-    console.log('✅ Draft job created:', insertedJob.id);
-
     // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
@@ -83,7 +50,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create checkout session
+    // Create checkout session with job ID in metadata for webhook activation
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -108,24 +75,24 @@ serve(async (req) => {
         durationMonths: durationMonths.toString(),
         jobTitle: jobData?.title || '',
         userId: user.id,
-        post_id: insertedJob.id, // Link to the job record
+        post_id: jobId, // This is the key - the draft job ID to activate
         post_type: 'job',
         pricing_tier: tier,
-        expires_at: jobRecord.expires_at
+        job_id: jobId // Also store as job_id for webhook compatibility
       },
     });
 
-    // Log the payment attempt
+    // Log the payment attempt with the draft job ID
     await supabaseClient
       .from('payment_logs')
       .insert({
         user_id: user.id,
-        listing_id: insertedJob.id,
+        listing_id: jobId, // Reference the draft job
         plan_type: 'job',
         pricing_tier: tier,
         payment_status: 'pending',
         stripe_payment_id: session.id,
-        expires_at: jobRecord.expires_at
+        expires_at: new Date(Date.now() + (durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString()
       });
 
     console.log('✅ Stripe session created:', session.id);

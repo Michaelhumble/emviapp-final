@@ -36,6 +36,27 @@ const PostSuccess = () => {
         }
 
         if (data?.success) {
+          // For job postings, activate the draft job if not already active
+          if (data.post_type === 'job' && data.post_id) {
+            console.log('🔄 Ensuring job is activated after payment:', data.post_id);
+            
+            // Double-check that the job is activated (backup to webhook)
+            const { error: activateError } = await supabase
+              .from('jobs')
+              .update({ 
+                status: 'active',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', data.post_id)
+              .eq('status', 'draft'); // Only update if still in draft
+            
+            if (activateError) {
+              console.error('Error activating job on success page:', activateError);
+            } else {
+              console.log('✅ Job activation confirmed on success page');
+            }
+          }
+          
           setJobDetails({
             jobId: data.post_id || 'job-' + Math.random().toString(36).substr(2, 9),
             jobTitle: data.jobTitle || 'Job Posting',
