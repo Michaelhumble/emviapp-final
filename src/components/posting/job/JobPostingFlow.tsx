@@ -28,7 +28,8 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   const { user } = useAuth();
 
   const handlePricingSelect = (tier: string, finalPrice: number, durationMonths: number) => {
-    console.log('Pricing selected:', { tier, finalPrice, durationMonths });
+    console.log('💰 [DEBUG] Pricing selected:', { tier, finalPrice, durationMonths });
+    console.log('💰 [DEBUG] Job form data for pricing:', JSON.stringify(jobFormData, null, 2));
     
     // For Diamond tier, force 12-month duration and $999.99 pricing - NO OTHER OPTIONS
     if (tier === 'diamond') {
@@ -39,38 +40,48 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
     
     // For free tier, skip confirmation
     if (tier === 'free') {
+      console.log('🆓 [DEBUG] Free tier selected, proceeding directly to payment processing');
       proceedToPayment(tier, finalPrice, durationMonths);
     } else {
+      console.log('💰 [DEBUG] Paid tier selected, showing confirmation modal');
       setShowConfirmation(true);
     }
   };
 
   const proceedToPayment = async (tier: string, finalPrice: number, durationMonths: number) => {
+    console.log('💳 [DEBUG] proceedToPayment called with:', { tier, finalPrice, durationMonths });
+    console.log('💳 [DEBUG] Job data being processed:', JSON.stringify(jobFormData, null, 2));
+    
     setShowConfirmation(false);
     setIsProcessing(true);
 
     try {
       if (!user) {
+        console.error('💳 [DEBUG] No user found, redirecting to login');
         toast.error('Please log in to continue');
         navigate('/login');
         return;
       }
 
+      console.log('💳 [DEBUG] User authenticated:', user.id);
+
       // For Diamond tier, enforce fixed pricing and duration - NO EXCEPTIONS
       if (tier === 'diamond') {
         finalPrice = 999.99;
         durationMonths = 12;
+        console.log('💎 [DEBUG] Diamond tier - enforcing fixed pricing');
       }
 
-      // For free tier, create job directly without payment
+      // For free tier, create job posting directly without payment
       if (finalPrice === 0) {
-        // TODO: Create job posting directly in database
+        console.log('🆓 [DEBUG] Free job - navigating directly to success page');
         toast.success('Free job posting created successfully!');
         navigate('/post-success');
         return;
       }
 
       // Create Stripe checkout session for paid plans
+      console.log('💰 [DEBUG] Creating Stripe checkout session for paid plan');
       const { data, error } = await supabase.functions.invoke('create-job-checkout', {
         body: {
           tier,
@@ -80,28 +91,34 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         }
       });
 
+      console.log('💰 [DEBUG] Stripe checkout response:', { data, error });
+
       if (error) {
-        console.error('Stripe checkout error:', error);
+        console.error('💰 [DEBUG] Stripe checkout error:', error);
         toast.error('Failed to create payment session');
         setIsProcessing(false);
         return;
       }
 
       if (data?.url) {
+        console.log('💰 [DEBUG] Redirecting to Stripe checkout:', data.url);
         // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
+        console.error('💰 [DEBUG] No checkout URL received in response');
         toast.error('No checkout URL received');
         setIsProcessing(false);
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('💥 [DEBUG] Payment error:', error);
+      console.error('💥 [DEBUG] Error stack trace:', error instanceof Error ? error.stack : 'No stack trace');
       toast.error('Payment processing failed');
       setIsProcessing(false);
     }
   };
 
   const handleConfirmPayment = () => {
+    console.log('✅ [DEBUG] Payment confirmed, proceeding...');
     if (selectedPricing) {
       proceedToPayment(
         selectedPricing.tier,
@@ -112,6 +129,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   };
 
   if (isProcessing) {
+    console.log('⏳ [DEBUG] Showing processing screen');
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
         <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
@@ -155,3 +173,4 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
 };
 
 export default JobPostingFlow;
+
