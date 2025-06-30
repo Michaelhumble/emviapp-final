@@ -1,3 +1,4 @@
+
 import { useUserTags } from '@/hooks/useUserTags';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,9 +77,63 @@ export const useJobPosting = () => {
         
         return { success: true, data: insertedJob };
       } else {
-        // This should not happen in the current flow, but keeping for completeness
-        console.log('💰 [DEBUG] This should go through the paid job flow');
-        return { success: false, error: 'Paid jobs should use the checkout flow' };
+        // RESTORED PAID JOB POSTING LOGIC
+        console.log('💰 [DEBUG] Creating paid job post via Stripe checkout');
+        
+        // Determine pricing details based on tier
+        let finalPrice = 0;
+        let durationMonths = 1;
+        
+        switch (formattedJobData.pricing_tier) {
+          case 'gold':
+            finalPrice = 53.97;
+            break;
+          case 'premium':
+            finalPrice = 107.97;
+            break;
+          case 'diamond':
+            finalPrice = 999.99;
+            break;
+          default:
+            console.error('❌ [DEBUG] Unknown pricing tier:', formattedJobData.pricing_tier);
+            toast.error('Invalid pricing tier selected');
+            return { success: false, error: 'Invalid pricing tier' };
+        }
+        
+        console.log('💰 [DEBUG] Creating Stripe checkout for:', {
+          tier: formattedJobData.pricing_tier,
+          price: finalPrice,
+          duration: durationMonths
+        });
+        
+        // Create Stripe checkout session via edge function
+        const { data, error } = await supabase.functions.invoke('create-job-checkout', {
+          body: {
+            tier: formattedJobData.pricing_tier,
+            finalPrice: finalPrice,
+            durationMonths: durationMonths,
+            jobData: formattedJobData
+          }
+        });
+
+        if (error) {
+          console.error('❌ [DEBUG] Error creating Stripe checkout:', error);
+          toast.error('Failed to create checkout session: ' + error.message);
+          return { success: false, error: error.message };
+        }
+
+        if (!data?.url) {
+          console.error('❌ [DEBUG] No checkout URL received:', data);
+          toast.error('Failed to get checkout URL');
+          return { success: false, error: 'No checkout URL received' };
+        }
+
+        console.log('✅ [DEBUG] Stripe checkout session created, redirecting to:', data.url);
+        
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+        
+        return { success: true, redirected: true };
       }
       
     } catch (err) {
