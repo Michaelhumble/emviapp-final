@@ -37,59 +37,44 @@ export const useJobPosting = () => {
     try {
       console.log('🚀 [DEBUG] Starting job submission process...');
 
-      // Check if this is a free post
+      // Check if this is a free post - NEW FREE POST LOGIC
       if (formattedJobData.pricing_tier === 'free') {
-        console.log('🆓 [DEBUG] Creating free job post via edge function');
-        console.log('🔐 [DEBUG] Getting auth session...');
+        console.log('🆓 [DEBUG] Creating free job post via direct Supabase insert');
         
-        const { data: session, error: sessionError } = await supabase.auth.getSession();
-        console.log('🔐 [DEBUG] Auth session result:', { 
-          hasSession: !!session?.session, 
-          hasAccessToken: !!session?.session?.access_token,
-          sessionError: sessionError?.message 
-        });
-        
-        if (sessionError || !session?.session?.access_token) {
-          console.error('❌ [DEBUG] Failed to get auth session:', sessionError);
-          toast.error('Authentication error');
-          return { success: false, error: 'Authentication failed' };
-        }
-        
-        console.log('📡 [DEBUG] About to invoke create-free-post edge function...');
-        
-        const { data, error } = await supabase.functions.invoke('create-free-post', {
-          body: { jobData: formattedJobData },
-          headers: {
-            Authorization: `Bearer ${session.session.access_token}`
-          }
-        });
+        // Insert job directly into Supabase jobs table
+        const { data: insertedJob, error: insertError } = await supabase
+          .from('jobs')
+          .insert([{
+            title: formattedJobData.title,
+            description: formattedJobData.description,
+            category: formattedJobData.category,
+            location: formattedJobData.location,
+            compensation_type: formattedJobData.compensation_type,
+            compensation_details: formattedJobData.compensation_details,
+            requirements: formattedJobData.requirements,
+            contact_info: formattedJobData.contact_info,
+            pricing_tier: 'free',
+            status: 'active',
+            user_id: user.id,
+            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+          }])
+          .select()
+          .single();
 
-        console.log('🔍 [DEBUG] Edge function response data:', JSON.stringify(data, null, 2));
-        console.log('🔍 [DEBUG] Edge function response error:', error);
-
-        if (error) {
-          console.error("❌ [DEBUG] Error creating free job post:", error);
-          console.error("❌ [DEBUG] Error details:", JSON.stringify(error, null, 2));
-          toast.error('Failed to create job posting: ' + error.message);
-          return { success: false, error: error.message };
+        if (insertError) {
+          console.error('❌ [DEBUG] Direct insert error:', insertError);
+          toast.error('Failed to create job posting: ' + insertError.message);
+          return { success: false, error: insertError.message };
         }
 
-        if (!data?.success) {
-          console.error("❌ [DEBUG] Free job post failed:", data);
-          console.error("❌ [DEBUG] Response indicates failure, full data:", JSON.stringify(data, null, 2));
-          toast.error('Failed to create job posting: ' + (data?.error || 'Unknown error'));
-          return { success: false, error: data?.error || 'Unknown error' };
-        }
-
-        console.log('✅ [DEBUG] Free job posted successfully:', data.jobId);
-        console.log('✅ [DEBUG] Job record created:', JSON.stringify(data.job, null, 2));
+        console.log('✅ [DEBUG] Free job posted successfully:', insertedJob.id);
         toast.success('Job posted successfully!');
         
         // Tag the user as a job poster
         console.log('🏷️  [DEBUG] Tagging user as job-poster...');
         await tagUser(user.id, 'job-poster');
         
-        return { success: true, data: data.job };
+        return { success: true, data: insertedJob };
       } else {
         // This should not happen in the current flow, but keeping for completeness
         console.log('💰 [DEBUG] This should go through the paid job flow');
