@@ -1,158 +1,226 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogIn, Home, Scissors, Building2, Briefcase, Users, Info, Phone, Globe } from 'lucide-react';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
-import { UserMenu } from './navbar/UserMenu';
-import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 import { useTranslation } from '@/hooks/useTranslation';
-import LanguageToggle from '@/components/layout/LanguageToggle';
-import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
+import EmviLogo from '@/components/branding/EmviLogo';
+import { 
+  Home, 
+  Users, 
+  Building2, 
+  Briefcase, 
+  MessageSquare, 
+  Info, 
+  Mail,
+  LayoutDashboard,
+  LogOut,
+  X
+} from 'lucide-react';
 
-const MobileMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
-  const location = useLocation();
-  const { t } = useTranslation();
-  const currentPath = encodeURIComponent(location.pathname + location.search);
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const closeMenu = () => setIsOpen(false);
+export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { t, toggleLanguage, currentLanguage } = useTranslation();
 
-  const menuItems = [
-    { path: '/dashboard', title: 'Dashboard', icon: User },
-    { path: '/', title: 'Home', icon: Home },
-    { path: '/artists', title: 'Artists', icon: Scissors },
-    { path: '/salons', title: 'Salons', icon: Building2 },
-    { path: '/jobs', title: 'Jobs', icon: Briefcase },
-    { path: '/community', title: 'Community', icon: Users },
-    { path: '/about', title: 'About', icon: Info },
-    { path: '/contact', title: 'Contact', icon: Phone },
-  ];
+  const handleSignOut = async () => {
+    await signOut();
+    onClose();
+    navigate('/');
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <>
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DrawerTrigger>
-        
-        <DrawerContent className="h-[90vh]">
-          <DrawerHeader className="flex items-center justify-between border-b pb-4">
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold">
-                <span className="text-orange-500">M</span>
-                <span className="ml-1">Emvi.</span>
-                <span className="text-orange-500">App</span>
-              </div>
+    <div className="fixed inset-0 z-50 lg:hidden">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl">
+        <div className="flex flex-col h-full">
+          {/* Header with Logo */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex-1 flex justify-center">
+              <EmviLogo size="medium" showText={true} />
             </div>
-            <Button variant="ghost" size="icon" onClick={closeMenu}>
-              <X className="h-5 w-5" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="ml-2"
+            >
+              <X className="h-6 w-6" />
             </Button>
-          </DrawerHeader>
-          
-          <div className="flex-1 overflow-y-auto px-6 py-4">
+          </div>
+
+          {/* Menu Content */}
+          <div className="flex-1 overflow-y-auto p-4">
             {/* Auth Section */}
             {!user && (
-              <div className="space-y-3 mb-6">
-                <Link to={`/auth/signup?redirect=${currentPath}`} onClick={closeMenu}>
-                  <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
-                    <User className="h-5 w-5" />
-                    Sign Up
-                  </Button>
-                </Link>
-                <Link to={`/sign-in?redirect=${currentPath}`} onClick={closeMenu}>
-                  <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
-                    <LogIn className="h-5 w-5" />
-                    Sign In
-                  </Button>
-                </Link>
+              <div className="space-y-2 mb-6">
+                <Button
+                  onClick={() => handleNavigation('/auth/signup')}
+                  className="w-full bg-primary text-white hover:bg-primary/90"
+                >
+                  Sign Up
+                </Button>
+                <Button
+                  onClick={() => handleNavigation('/auth/signin')}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Sign In
+                </Button>
               </div>
             )}
 
             {/* Navigation Links */}
-            <nav className="space-y-1 mb-6">
-              {menuItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={closeMenu}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                      location.pathname === item.path
-                        ? "text-purple-700 bg-purple-50"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    <IconComponent className="h-5 w-5" />
-                    {t({
-                      english: item.title,
-                      vietnamese: item.title
-                    })}
-                  </Link>
-                );
-              })}
+            <nav className="space-y-1">
+              <Link
+                to="/"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Home className="h-5 w-5" />
+                <span>Home</span>
+              </Link>
+              
+              <Link
+                to="/artists"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Users className="h-5 w-5" />
+                <span>Artists</span>
+              </Link>
+              
+              <Link
+                to="/salons"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Building2 className="h-5 w-5" />
+                <span>Salons</span>
+              </Link>
+              
+              <Link
+                to="/jobs"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Briefcase className="h-5 w-5" />
+                <span>Jobs</span>
+              </Link>
+              
+              <Link
+                to="/community"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <MessageSquare className="h-5 w-5" />
+                <span>Community</span>
+              </Link>
+              
+              <Link
+                to="/about"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Info className="h-5 w-5" />
+                <span>About</span>
+              </Link>
+              
+              <Link
+                to="/contact"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+                <span>Contact</span>
+              </Link>
             </nav>
 
-            {/* User Menu for authenticated users */}
+            {/* CTA Buttons */}
+            <div className="space-y-2 mt-6">
+              <Button
+                onClick={() => handleNavigation('/post-job')}
+                className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+              >
+                Post a Job
+              </Button>
+              <Button
+                onClick={() => handleNavigation('/post-salon')}
+                variant="outline"
+                className="w-full border-purple-500 text-purple-600 hover:bg-purple-50"
+              >
+                Post Your Salon
+              </Button>
+            </div>
+
+            {/* User Menu */}
             {user && (
-              <div className="mb-6">
-                <UserMenu />
+              <div className="mt-6 pt-6 border-t space-y-1">
+                <Link
+                  to="/dashboard"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <LayoutDashboard className="h-5 w-5" />
+                  <span>Dashboard</span>
+                </Link>
+                
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors w-full text-left"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span>Sign Out</span>
+                </button>
               </div>
             )}
+          </div>
 
-            {/* Post Job Button */}
-            <div className="mb-6">
-              <Button 
-                onClick={closeMenu}
-                className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg mb-3"
-                asChild
+          {/* Language Switcher */}
+          <div className="p-4 border-t">
+            <div className="flex gap-2">
+              <button
+                onClick={toggleLanguage}
+                className={`px-3 py-2 rounded-md text-sm transition-colors ${
+                  currentLanguage === 'en'
+                    ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
               >
-                <Link to={user ? "/post-job" : "/sign-in"}>
-                  {t("Post a Job for Free")}
-                </Link>
-              </Button>
-
-              {/* Post Your Salon Button */}
-              <PostYourSalonButton 
-                variant="outline" 
-                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-                onClose={closeMenu}
-              />
-            </div>
-
-            {/* Language Section */}
-            <div className="border-t pt-4 mb-6">
-              <div className="mb-3">
-                <span className="text-sm font-medium text-gray-700">Language</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
-                <Globe className="h-4 w-4 text-gray-600" />
-                <span className="text-gray-700">English</span>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="text-center py-4">
-              <span className="text-sm text-orange-500 font-medium">
-                Inspired by Sunshine ☀️
-              </span>
+                English
+              </button>
+              <button
+                onClick={toggleLanguage}
+                className={`px-3 py-2 rounded-md text-sm transition-colors ${
+                  currentLanguage === 'vi'
+                    ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Tiếng Việt
+              </button>
             </div>
           </div>
-        </DrawerContent>
-      </Drawer>
-    </>
+
+          {/* Footer */}
+          <div className="p-4 text-center text-xs text-gray-500 border-t">
+            Inspired by Sunshine ☀️
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
