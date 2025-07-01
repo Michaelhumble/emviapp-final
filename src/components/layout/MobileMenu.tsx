@@ -18,7 +18,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-sm max-h-[85vh] overflow-y-auto rounded-t-2xl shadow-xl">
+    <div className="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-sm max-h-[80vh] overflow-y-auto rounded-t-2xl shadow-xl">
       <div className="p-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Menu</h2>
@@ -93,8 +93,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
           {user && signOut && (
             <button
-              onClick={signOut}
-              className="text-sm text-muted-foreground hover:text-red-500 mt-2"
+              onClick={() => {
+                signOut();
+                onClose();
+              }}
+              className="w-full text-sm text-muted-foreground hover:text-red-500 py-2 px-4 rounded-md hover:bg-red-50 transition-colors"
             >
               Sign Out
             </button>
