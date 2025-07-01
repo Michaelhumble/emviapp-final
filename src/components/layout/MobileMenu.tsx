@@ -9,7 +9,6 @@ import { mainNavigationItems } from '@/components/layout/navbar/config/navigatio
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
-import { SignUpForm } from '@/components/auth/SignUpForm';
 import {
   Drawer,
   DrawerContent,
@@ -17,29 +16,15 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
   const { t } = useTranslation();
   const currentPath = encodeURIComponent(location.pathname + location.search);
 
   const closeMenu = () => setIsOpen(false);
-
-  const handleSignUpClick = () => {
-    setShowSignUpModal(true);
-  };
-
-  const closeSignUpModal = () => {
-    setShowSignUpModal(false);
-  };
 
   return (
     <>
@@ -114,12 +99,11 @@ const MobileMenu = () => {
                       Sign In
                     </Button>
                   </Link>
-                  <Button 
-                    className="w-full" 
-                    onClick={handleSignUpClick}
-                  >
-                    Sign Up
-                  </Button>
+                  <Link to={`/auth/signup?redirect=${currentPath}`} onClick={closeMenu}>
+                    <Button className="w-full">
+                      Sign Up
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -131,13 +115,6 @@ const MobileMenu = () => {
           </div>
         </DrawerContent>
       </Drawer>
-
-      {/* Sign Up Modal */}
-      <Dialog open={showSignUpModal} onOpenChange={setShowSignUpModal}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-          <SignUpForm />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
