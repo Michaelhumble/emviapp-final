@@ -1,158 +1,144 @@
-
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogIn, Home, Scissors, Building2, Briefcase, Users, Info, Phone, Globe } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { UserMenu } from './navbar/UserMenu';
-import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
-import { useTranslation } from '@/hooks/useTranslation';
-import LanguageToggle from '@/components/layout/LanguageToggle';
 import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
+import { useTranslation } from '@/hooks/useTranslation';
+import EmviLogo from '@/components/branding/EmviLogo';
+import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
-  const currentPath = encodeURIComponent(location.pathname + location.search);
+  const { t, toggleLanguage, currentLanguage } = useTranslation();
 
-  const closeMenu = () => setIsOpen(false);
+  const handleClose = () => setIsOpen(false);
 
-  const menuItems = [
-    { path: '/dashboard', title: 'Dashboard', icon: User },
-    { path: '/', title: 'Home', icon: Home },
-    { path: '/artists', title: 'Artists', icon: Scissors },
-    { path: '/salons', title: 'Salons', icon: Building2 },
-    { path: '/jobs', title: 'Jobs', icon: Briefcase },
-    { path: '/community', title: 'Community', icon: Users },
-    { path: '/about', title: 'About', icon: Info },
-    { path: '/contact', title: 'Contact', icon: Phone },
-  ];
+  const onPostJobClick = () => {
+    if (user) {
+      navigate("/post-job");
+    } else {
+      navigate("/sign-in");
+    }
+    handleClose();
+  };
 
   return (
-    <>
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DrawerTrigger>
-        
-        <DrawerContent className="h-[90vh]">
-          <DrawerHeader className="flex items-center justify-between border-b pb-4">
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold">
-                <span className="text-orange-500">M</span>
-                <span className="ml-1">Emvi.</span>
-                <span className="text-orange-500">App</span>
-              </div>
-            </div>
-            <Button variant="ghost" size="icon" onClick={closeMenu}>
-              <X className="h-5 w-5" />
-            </Button>
-          </DrawerHeader>
-          
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            {/* Auth Section */}
-            {!user && (
-              <div className="space-y-3 mb-6">
-                <Link to={`/auth/signup?redirect=${currentPath}`} onClick={closeMenu}>
-                  <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
-                    <User className="h-5 w-5" />
-                    Sign Up
-                  </Button>
-                </Link>
-                <Link to={`/sign-in?redirect=${currentPath}`} onClick={closeMenu}>
-                  <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
-                    <LogIn className="h-5 w-5" />
-                    Sign In
-                  </Button>
-                </Link>
-              </div>
-            )}
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-5 w-5" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:w-80 p-0">
+        <div className="flex flex-col h-full">
+          {/* Logo at the top */}
+          <div className="flex justify-center py-6 border-b border-gray-200">
+            <Link to="/" onClick={handleClose}>
+              <EmviLogo size="medium" showText={true} />
+            </Link>
+          </div>
 
-            {/* Navigation Links */}
-            <nav className="space-y-1 mb-6">
-              {menuItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
+          {/* Auth buttons when logged out */}
+          {!user && (
+            <div className="px-6 py-4 space-y-3 border-b border-gray-200">
+              <Link to={`/sign-in?redirect=${encodeURIComponent(location.pathname + location.search)}`} onClick={handleClose}>
+                <Button variant="ghost" className="w-full justify-start">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to={`/auth/signup?redirect=${encodeURIComponent(location.pathname + location.search)}`} onClick={handleClose}>
+                <Button className="w-full">
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          <div className="flex-1 overflow-y-auto">
+            <div className="px-6 py-4">
+              {/* Main Navigation */}
+              <nav className="space-y-2 mb-6">
+                {mainNavigationItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    onClick={closeMenu}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    onClick={handleClose}
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                       location.pathname === item.path
                         ? "text-purple-700 bg-purple-50"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    <IconComponent className="h-5 w-5" />
                     {t({
                       english: item.title,
-                      vietnamese: item.title
+                      vietnamese: item.vietnameseTitle || item.title
                     })}
                   </Link>
-                );
-              })}
-            </nav>
+                ))}
+              </nav>
 
-            {/* User Menu for authenticated users */}
-            {user && (
-              <div className="mb-6">
-                <UserMenu />
-              </div>
-            )}
-
-            {/* Post Job Button */}
-            <div className="mb-6">
-              <Button 
-                onClick={closeMenu}
-                className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg mb-3"
-                asChild
-              >
-                <Link to={user ? "/post-job" : "/sign-in"}>
+              {/* Action Buttons */}
+              <div className="space-y-3 mb-6">
+                <Button 
+                  onClick={onPostJobClick}
+                  className="w-full bg-purple-600 text-white hover:bg-purple-700"
+                >
                   {t("Post a Job for Free")}
-                </Link>
-              </Button>
+                </Button>
+                
+                <PostYourSalonButton 
+                  variant="outline" 
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                  onClose={handleClose}
+                />
+              </div>
 
-              {/* Post Your Salon Button */}
-              <PostYourSalonButton 
-                variant="outline" 
-                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-                onClose={closeMenu}
-              />
+              {/* User Menu for logged in users */}
+              {user && (
+                <div className="mb-6">
+                  <UserMenu />
+                </div>
+              )}
             </div>
+          </div>
 
-            {/* Language Section */}
-            <div className="border-t pt-4 mb-6">
-              <div className="mb-3">
-                <span className="text-sm font-medium text-gray-700">Language</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
-                <Globe className="h-4 w-4 text-gray-600" />
-                <span className="text-gray-700">English</span>
-              </div>
+          {/* Language switcher and footer at bottom */}
+          <div className="mt-auto p-6 border-t border-gray-200 space-y-4">
+            {/* Text-only language switcher */}
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  toggleLanguage();
+                  handleClose();
+                }}
+                className="text-sm font-medium"
+              >
+                <span className={currentLanguage === 'en' ? 'text-purple-600' : 'text-gray-600'}>
+                  English
+                </span>
+                <span className="mx-2 text-gray-400">/</span>
+                <span className={currentLanguage === 'vi' ? 'text-purple-600' : 'text-gray-600'}>
+                  Tiếng Việt
+                </span>
+              </button>
             </div>
 
             {/* Footer */}
-            <div className="text-center py-4">
-              <span className="text-sm text-orange-500 font-medium">
+            <div className="text-center">
+              <p className="text-amber-600 text-sm font-medium">
                 Inspired by Sunshine ☀️
-              </span>
+              </p>
             </div>
           </div>
-        </DrawerContent>
-      </Drawer>
-    </>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
