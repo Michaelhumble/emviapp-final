@@ -1,162 +1,189 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X, Home, Users, Building2, Briefcase, MessageSquare, Info, Phone, Calendar, Store } from 'lucide-react';
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
-import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
-import EmviLogo from '@/components/branding/EmviLogo';
+import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
+import Logo from '@/components/ui/Logo';
+import LanguageToggle from '@/components/layout/LanguageToggle';
+import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
 
-interface MobileMenuProps {
-  isOpen?: boolean;
-  onClose?: () => void;
-}
+const MobileMenu = () => {
+  const { user, signOut } = useAuth();
+  const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
-  const { t, isVietnamese } = useTranslation();
-  const [language, setLanguage] = React.useState(getLanguagePreference());
+  // Close menu when route changes
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
 
-  const handleLanguageToggle = () => {
-    const newLanguage = language === 'en' ? 'vi' : 'en';
-    setLanguage(newLanguage);
-    setLanguagePreference(newLanguage);
-    window.location.reload();
+  const handleNavigation = (path: string) => {
+    setIsOpen(false);
+    navigate(path);
   };
 
-  const menuItems = [
-    { 
-      name: t({ english: "Dashboard", vietnamese: "Bảng điều khiển" }), 
-      href: "/dashboard", 
-      icon: Home,
-      showWhen: !!user 
-    },
-    { 
-      name: t({ english: "Home", vietnamese: "Trang chủ" }), 
-      href: "/", 
-      icon: Home 
-    },
-    { 
-      name: t({ english: "Artists", vietnamese: "Nghệ sĩ" }), 
-      href: "/artists", 
-      icon: Users 
-    },
-    { 
-      name: t({ english: "Salons", vietnamese: "Salon" }), 
-      href: "/salons", 
-      icon: Building2 
-    },
-    { 
-      name: t({ english: "Jobs", vietnamese: "Việc làm" }), 
-      href: "/jobs", 
-      icon: Briefcase 
-    },
-    { 
-      name: t({ english: "Community", vietnamese: "Cộng đồng" }), 
-      href: "/community", 
-      icon: MessageSquare 
-    },
-    { 
-      name: t({ english: "About", vietnamese: "Giới thiệu" }), 
-      href: "/about", 
-      icon: Info 
-    },
-    { 
-      name: t({ english: "Contact", vietnamese: "Liên hệ" }), 
-      href: "/contact", 
-      icon: Phone 
-    },
-  ];
+  const handleSignOut = async () => {
+    setIsOpen(false);
+    await signOut();
+    navigate('/');
+  };
+
+  const handlePostJob = () => {
+    setIsOpen(false);
+    if (user) {
+      navigate('/post-job');
+    } else {
+      navigate('/auth/signin');
+    }
+  };
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden hover:bg-gray-100"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5 text-gray-700" />
         </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-80 p-0 overflow-y-auto">
-        <div className="flex flex-col min-h-full">
-          {/* Header with Logo */}
-          <div className="flex items-center justify-center py-6 px-4 border-b">
-            <EmviLogo size="medium" showText={true} />
+      </DrawerTrigger>
+      
+      <DrawerContent className="h-[85vh] bg-white border-t-2 border-gray-100">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <Logo size="medium" showText={true} />
+            <DrawerClose asChild>
+              <Button
+                ref={closeButtonRef}
+                variant="ghost"
+                size="icon"
+                className="hover:bg-gray-100 rounded-full"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </Button>
+            </DrawerClose>
           </div>
 
-          {/* Auth Buttons */}
-          {!user && (
-            <div className="px-4 py-4 space-y-2 border-b">
-              <Button asChild className="w-full" size="lg">
-                <Link to="/auth/signup" onClick={onClose}>
-                  {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full" size="lg">
-                <Link to="/auth/signin" onClick={onClose}>
-                  {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
-                </Link>
-              </Button>
-            </div>
-          )}
-
-          {/* Navigation Items */}
-          <nav className="flex-1 py-4">
-            <div className="space-y-1 px-4">
-              {menuItems.map((item) => {
-                if (item.showWhen !== undefined && !item.showWhen) return null;
-                
-                const IconComponent = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={onClose}
-                    className="flex items-center space-x-3 px-3 py-3 text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors"
+          {/* Auth Section */}
+          <div className="px-6 py-4 border-b border-gray-100">
+            {user ? (
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-medium text-sm">
+                      {user.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{user.email}</p>
+                    <p className="text-sm text-gray-500">Welcome back!</p>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => handleNavigation('/dashboard')}
+                    size="sm"
+                    className="flex-1 bg-purple-600 hover:bg-purple-700"
                   >
-                    <IconComponent className="h-5 w-5" />
-                    <span className="text-base font-medium">{item.name}</span>
-                  </Link>
+                    Dashboard
+                  </Button>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Button
+                  onClick={() => handleNavigation('/auth/signup')}
+                  className="w-full bg-purple-600 hover:bg-purple-700 py-3"
+                >
+                  Sign Up
+                </Button>
+                <Button
+                  onClick={() => handleNavigation('/auth/signin')}
+                  variant="outline"
+                  className="w-full py-3"
+                >
+                  Sign In
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-6 py-4">
+            <div className="space-y-1">
+              {mainNavigationItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                const Icon = item.icon;
+                
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => handleNavigation(item.path)}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                      isActive
+                        ? 'bg-purple-50 text-purple-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {Icon && <Icon className="h-5 w-5" />}
+                    <span>
+                      {t({
+                        english: item.title,
+                        vietnamese: item.vietnameseTitle || item.title
+                      })}
+                    </span>
+                  </button>
                 );
               })}
             </div>
-
-            {/* CTA Buttons */}
-            <div className="px-4 py-6 space-y-3 border-t mt-6">
-              <Button asChild className="w-full bg-purple-600 hover:bg-purple-700" size="lg">
-                <Link to="/post-job" onClick={onClose}>
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  {t({ english: "Post a Job for Free", vietnamese: "Đăng tin tuyển dụng miễn phí" })}
-                </Link>
-              </Button>
-              
-              <Button asChild variant="outline" className="w-full border-purple-200 text-purple-600 hover:bg-purple-50" size="lg">
-                <Link to="/post-salon" onClick={onClose}>
-                  <Store className="h-4 w-4 mr-2" />
-                  {t({ english: "Post Your Salon", vietnamese: "Đăng tin Salon" })}
-                </Link>
-              </Button>
-            </div>
           </nav>
 
-          {/* Language Switcher */}
-          <div className="px-4 py-4 border-t">
-            <button
-              onClick={handleLanguageToggle}
-              className="w-full text-center py-2 px-4 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+          {/* Action Buttons */}
+          <div className="px-6 py-4 border-t border-gray-100 space-y-3">
+            <Button
+              onClick={handlePostJob}
+              className="w-full bg-purple-600 hover:bg-purple-700 py-3"
             >
-              {language === 'en' ? 'Tiếng Việt' : 'English'}
-            </button>
+              {t("Post a Job for Free")}
+            </Button>
+            
+            <div className="w-full">
+              <PostYourSalonButton 
+                variant="outline" 
+                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 py-3"
+                onClick={() => setIsOpen(false)}
+              />
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="px-4 py-3 text-center text-xs text-gray-500 border-t">
-            Inspired by Sunshine ☀️
+          {/* Language Toggle */}
+          <div className="px-6 py-3 border-t border-gray-100">
+            <div className="flex justify-center">
+              <LanguageToggle minimal={false} />
+            </div>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
