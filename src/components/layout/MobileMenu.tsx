@@ -1,282 +1,201 @@
 
-import React from 'react';
-import { X, User, Home, Users, Store, Briefcase, Search, Settings, Bell, Heart, MessageCircle, Calendar, HelpCircle, Phone, Globe, LogOut } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, User, Settings, LogOut, Plus, Building2, Briefcase, Search, MessageCircle, Heart, Users, Calendar, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useTranslation } from '@/hooks/useTranslation';
-import LanguageToggle from '@/components/ui/LanguageToggle';
+import LanguageToggle from './LanguageToggle';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, userProfile, userRole, signOut, isSignedIn } = useAuth();
-  const { t } = useTranslation();
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, userProfile } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      toast.success(t("Signed out successfully"));
-      onClose();
+      await supabase.auth.signOut();
+      toast.success('Signed out successfully');
+      setIsOpen(false);
+      navigate('/');
     } catch (error) {
-      toast.error(t("Failed to sign out"));
+      console.error('Error signing out:', error);
+      toast.error('Error signing out');
     }
   };
 
-  const handleNavClick = () => {
-    onClose();
+  const handleNavigation = (path: string) => {
+    setIsOpen(false);
+    navigate(path);
   };
 
-  if (!isOpen) return null;
+  const mainNavItems = [
+    { label: 'Find Jobs', href: '/jobs', icon: Briefcase },
+    { label: 'Find Artists', href: '/artists', icon: Users },
+    { label: 'Find Salons', href: '/salons', icon: Building2 },
+    { label: 'Browse', href: '/explore', icon: Search },
+  ];
+
+  const quickActions = [
+    { label: 'Post a Job for Free', href: '/post-job', icon: Plus, primary: true },
+    { label: 'Post Your Salon', href: '/post-salon', icon: Building2, primary: true },
+  ];
+
+  const userNavItems = user ? [
+    { label: 'Dashboard', href: '/dashboard', icon: Calendar },
+    { label: 'Messages', href: '/messages', icon: MessageCircle },
+    { label: 'Profile', href: '/profile', icon: User },
+    { label: 'Settings', href: '/settings', icon: Settings },
+  ] : [];
 
   return (
-    <div className="fixed inset-0 z-50 bg-white">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">{t("Menu")}</h2>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="h-5 w-5" />
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+          aria-label="Open mobile menu"
+        >
+          <Menu className="h-5 w-5" />
         </Button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        {/* User Section */}
-        {isSignedIn && (
-          <div className="p-4 border-b bg-gray-50">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 font-medium">
-                  {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                </span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-800">
-                  {userProfile?.full_name || 'User'}
-                </p>
-                <p className="text-sm text-gray-600">{user?.email}</p>
-                <p className="text-xs text-purple-600 capitalize">{userRole}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Navigation Section */}
-        <div className="p-4">
-          <h3 className="text-sm font-medium text-gray-500 mb-3">{t("NAVIGATION")}</h3>
-          <nav className="space-y-1">
-            <Link
-              to="/"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Home className="h-5 w-5 text-gray-600" />
-              <span>{t("Home")}</span>
-            </Link>
-            <Link
-              to="/artists"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Users className="h-5 w-5 text-gray-600" />
-              <span>{t("Artists")}</span>
-            </Link>
-            <Link
-              to="/salons"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Store className="h-5 w-5 text-gray-600" />
-              <span>{t("Salons")}</span>
-            </Link>
-            <Link
-              to="/jobs"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Briefcase className="h-5 w-5 text-gray-600" />
-              <span>{t("Jobs")}</span>
-            </Link>
-            <Link
-              to="/community"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Users className="h-5 w-5 text-purple-600" />
-              <span className="text-purple-600">{t("Community")}</span>
-            </Link>
-          </nav>
-        </div>
-
-        <Separator />
-
-        {/* Quick Actions */}
-        <div className="p-4">
-          <h3 className="text-sm font-medium text-gray-500 mb-3">{t("QUICK ACTIONS")}</h3>
-          <div className="space-y-2">
+      </SheetTrigger>
+      
+      <SheetContent 
+        side="right" 
+        className="w-full max-w-sm p-0 bg-white border-l border-gray-200 overflow-y-auto"
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
             <Button
-              asChild
-              className="w-full justify-start bg-purple-600 hover:bg-purple-700"
-            >
-              <Link to="/posting/job" onClick={handleNavClick}>
-                <span>{t("Post a Job")}</span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full justify-start"
-            >
-              <Link to="/posting/salon" onClick={handleNavClick}>
-                <span>{t("Post Your Salon")}</span>
-              </Link>
-            </Button>
-            <Button
-              asChild
               variant="ghost"
-              className="w-full justify-start"
+              size="sm"
+              onClick={() => setIsOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              <Link to="/search" onClick={handleNavClick}>
-                <Search className="h-4 w-4 mr-2" />
-                <span>{t("Search")}</span>
-              </Link>
+              <X className="h-5 w-5" />
             </Button>
           </div>
-        </div>
 
-        {/* Account Section (if signed in) */}
-        {isSignedIn && (
-          <>
-            <Separator />
-            <div className="p-4">
-              <h3 className="text-sm font-medium text-gray-500 mb-3">{t("MY ACCOUNT")}</h3>
-              <nav className="space-y-1">
-                <Link
-                  to="/dashboard"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          <div className="flex-1 overflow-y-auto">
+            {/* Quick Actions */}
+            <div className="p-4 space-y-3">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Quick Actions</h3>
+              {quickActions.map((item) => (
+                <Button
+                  key={item.href}
+                  onClick={() => handleNavigation(item.href)}
+                  className="w-full justify-start bg-primary text-white hover:bg-primary/90 h-12 font-medium"
                 >
-                  <User className="h-5 w-5 text-gray-600" />
-                  <span>{t("Dashboard")}</span>
-                </Link>
-                <Link
-                  to="/profile"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <User className="h-5 w-5 text-gray-600" />
-                  <span>{t("My Profile")}</span>
-                </Link>
-                <Link
-                  to="/messages"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5 text-gray-600" />
-                  <span>{t("Messages")}</span>
-                </Link>
-                <Link
-                  to="/bookings"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Calendar className="h-5 w-5 text-gray-600" />
-                  <span>{t("Bookings")}</span>
-                </Link>
-                <Link
-                  to="/favorites"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Heart className="h-5 w-5 text-gray-600" />
-                  <span>{t("Favorites")}</span>
-                </Link>
-                <Link
-                  to="/notifications"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Bell className="h-5 w-5 text-gray-600" />
-                  <span>{t("Notifications")}</span>
-                </Link>
-                <Link
-                  to="/settings"
-                  onClick={handleNavClick}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Settings className="h-5 w-5 text-gray-600" />
-                  <span>{t("Settings")}</span>
-                </Link>
-              </nav>
+                  <item.icon className="h-5 w-5 mr-3" />
+                  {item.label}
+                </Button>
+              ))}
             </div>
-          </>
-        )}
 
-        {/* Support Section */}
-        <Separator />
-        <div className="p-4">
-          <h3 className="text-sm font-medium text-gray-500 mb-3">{t("SUPPORT")}</h3>
-          <nav className="space-y-1">
-            <Link
-              to="/about"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <HelpCircle className="h-5 w-5 text-gray-600" />
-              <span>{t("About")}</span>
-            </Link>
-            <Link
-              to="/contact"
-              onClick={handleNavClick}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Phone className="h-5 w-5 text-gray-600" />
-              <span>{t("Contact")}</span>
-            </Link>
-          </nav>
-        </div>
+            <Separator className="mx-4" />
 
-        {/* Language & Sign Out */}
-        <Separator />
-        <div className="p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Globe className="h-5 w-5 text-gray-600" />
-              <span className="text-sm">{t("Language")}</span>
+            {/* Main Navigation */}
+            <div className="p-4 space-y-2">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Explore</h3>
+              {mainNavItems.map((item) => (
+                <Button
+                  key={item.href}
+                  variant="ghost"
+                  onClick={() => handleNavigation(item.href)}
+                  className="w-full justify-start h-12 text-left hover:bg-gray-50 rounded-lg"
+                >
+                  <item.icon className="h-5 w-5 mr-3 text-gray-500" />
+                  <span className="text-gray-700">{item.label}</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-gray-400" />
+                </Button>
+              ))}
             </div>
-            <LanguageToggle minimal />
+
+            {/* User Navigation (if logged in) */}
+            {user && userNavItems.length > 0 && (
+              <>
+                <Separator className="mx-4" />
+                <div className="p-4 space-y-2">
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Your Account</h3>
+                  {userNavItems.map((item) => (
+                    <Button
+                      key={item.href}
+                      variant="ghost"
+                      onClick={() => handleNavigation(item.href)}
+                      className="w-full justify-start h-12 text-left hover:bg-gray-50 rounded-lg"
+                    >
+                      <item.icon className="h-5 w-5 mr-3 text-gray-500" />
+                      <span className="text-gray-700">{item.label}</span>
+                      <ChevronRight className="h-4 w-4 ml-auto text-gray-400" />
+                    </Button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
-          {isSignedIn ? (
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <LogOut className="h-5 w-5 mr-2" />
-              <span>{t("Sign Out")}</span>
-            </Button>
-          ) : (
-            <div className="space-y-2">
-              <Button asChild className="w-full">
-                <Link to="/auth?mode=signin" onClick={handleNavClick}>
-                  {t("Sign In")}
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full">
-                <Link to="/auth?mode=signup" onClick={handleNavClick}>
-                  {t("Sign Up")}
-                </Link>
-              </Button>
+          {/* Bottom Section */}
+          <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50">
+            {/* Language Toggle */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Language</span>
+              <LanguageToggle minimal />
             </div>
-          )}
+
+            {/* User Info & Auth */}
+            {user ? (
+              <div className="space-y-3">
+                {userProfile && (
+                  <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {userProfile.full_name || 'User'}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {userProfile.role || 'Member'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <Button
+                  variant="ghost"
+                  onClick={handleSignOut}
+                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 h-10"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Button
+                  onClick={() => handleNavigation('/auth/signin')}
+                  className="w-full bg-primary text-white hover:bg-primary/90 h-10"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleNavigation('/auth/signup')}
+                  className="w-full h-10"
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
