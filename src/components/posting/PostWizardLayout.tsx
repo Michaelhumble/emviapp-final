@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -28,7 +28,6 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const progress = (currentStep / totalSteps) * 100;
   
@@ -63,7 +62,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
             
             <div className="flex items-center gap-2">
               {/* Use the global mobile menu hamburger */}
-              <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+              <MobileMenu />
             </div>
           </div>
           

@@ -1,4 +1,5 @@
 
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -18,7 +19,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
-import { useState } from "react";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -26,7 +26,6 @@ const Navbar = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const handleSignOut = async () => {
     await signOut();
@@ -124,7 +123,7 @@ const Navbar = () => {
           
           {/* Mobile menu hamburger button - always visible on mobile */}
           <div className="md:hidden">
-            <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+            <MobileMenu />
           </div>
         </div>
       </div>
@@ -133,3 +132,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
