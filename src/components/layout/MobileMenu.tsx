@@ -27,7 +27,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     { name: t('nav.contact'), href: '/contact', icon: Phone },
   ];
 
-  if (!isOpen) return null;
+  // Early return if not open
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
@@ -39,17 +42,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
       {/* Menu Content */}
       <div className="p-4 flex flex-col gap-4">
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/artists">Artists</Link>
-        <Link to="/salons">Salons</Link>
-        <Link to="/jobs">Jobs</Link>
-        <Link to="/community">Community</Link>
-        <Link to="/about">About</Link>
-        <Link to="/contact">Contact</Link>
+        <Link to="/dashboard" onClick={onClose}>Dashboard</Link>
+        <Link to="/artists" onClick={onClose}>Artists</Link>
+        <Link to="/salons" onClick={onClose}>Salons</Link>
+        <Link to="/jobs" onClick={onClose}>Jobs</Link>
+        <Link to="/community" onClick={onClose}>Community</Link>
+        <Link to="/about" onClick={onClose}>About</Link>
+        <Link to="/contact" onClick={onClose}>Contact</Link>
 
         {/* CTA */}
-        <button className="bg-purple-600 text-white p-2 rounded">Post a Job for Free</button>
-        <button className="border border-purple-600 text-purple-600 p-2 rounded">Post Your Salon</button>
+        <Link to="/post-job" onClick={onClose}>
+          <button className="bg-purple-600 text-white p-2 rounded w-full">Post a Job for Free</button>
+        </Link>
+        <Link to="/post-salon" onClick={onClose}>
+          <button className="border border-purple-600 text-purple-600 p-2 rounded w-full">Post Your Salon</button>
+        </Link>
 
         {/* Footer */}
         <div className="pt-6 text-sm text-center text-gray-400">
