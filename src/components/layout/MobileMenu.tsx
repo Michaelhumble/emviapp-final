@@ -1,132 +1,158 @@
 
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import EmviLogo from "@/components/branding/EmviLogo";
-import LanguageToggle from "@/components/layout/LanguageToggle";
-import { useTranslation } from "@/hooks/useTranslation";
-import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, User, LogIn, Home, Scissors, Building2, Briefcase, Users, Info, Phone, Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth';
+import { UserMenu } from './navbar/UserMenu';
+import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
+import { useTranslation } from '@/hooks/useTranslation';
+import LanguageToggle from '@/components/layout/LanguageToggle';
+import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+  const location = useLocation();
   const { t } = useTranslation();
+  const currentPath = encodeURIComponent(location.pathname + location.search);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-    toast.success("You've been signed out successfully");
-    onClose();
-  };
+  const closeMenu = () => setIsOpen(false);
 
-  const onPostJobClick = () => {
-    if (user) {
-      navigate("/post-job");
-    } else {
-      navigate("/sign-in");
-    }
-    onClose();
-  };
-
-  if (!isOpen) return null;
+  const menuItems = [
+    { path: '/dashboard', title: 'Dashboard', icon: User },
+    { path: '/', title: 'Home', icon: Home },
+    { path: '/artists', title: 'Artists', icon: Scissors },
+    { path: '/salons', title: 'Salons', icon: Building2 },
+    { path: '/jobs', title: 'Jobs', icon: Briefcase },
+    { path: '/community', title: 'Community', icon: Users },
+    { path: '/about', title: 'About', icon: Info },
+    { path: '/contact', title: 'Contact', icon: Phone },
+  ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
-      {/* Mobile Menu Header */}
-      <div className="flex items-center justify-between p-3 border-b">
-        <EmviLogo className="h-6" />
-        <button onClick={onClose} className="text-xl font-bold">×</button>
-      </div>
-
-      {/* Menu Content */}
-      <div className="p-3 flex flex-col space-y-3">
-        {/* Auth Section */}
-        {user ? (
-          <div className="flex flex-col space-y-2">
-            <Link 
-              to="/dashboard" 
-              onClick={onClose}
-              className="text-lg font-medium text-purple-700"
-            >
-              {t("Dashboard")}
-            </Link>
-            <Button 
-              onClick={handleSignOut}
-              variant="outline"
-              className="w-full"
-            >
-              {t("Sign Out")}
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col space-y-2">
-            <Link to="/sign-in" onClick={onClose}>
-              <Button variant="outline" className="w-full">
-                {t("Sign In")}
-              </Button>
-            </Link>
-            <Link to="/sign-up" onClick={onClose}>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                {t("Sign Up")}
-              </Button>
-            </Link>
-          </div>
-        )}
-
-        {/* Navigation Links */}
-        <div className="flex flex-col space-y-2 pt-3">
-          {mainNavigationItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={onClose}
-              className="text-lg text-gray-700 hover:text-purple-700 py-1"
-            >
-              {t({
-                english: item.title,
-                vietnamese: item.vietnameseTitle || item.title
-              })}
-            </Link>
-          ))}
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col space-y-2 mt-4">
-          <Button 
-            onClick={onPostJobClick}
-            className="w-full bg-purple-600 text-white hover:bg-purple-700"
-          >
-            {t("Post a Job for Free")}
+    <>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerTrigger asChild>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
           </Button>
-          
-          <Link to="/post-salon" onClick={onClose}>
-            <Button 
-              variant="outline" 
-              className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-            >
-              {t("Post Your Salon")}
+        </DrawerTrigger>
+        
+        <DrawerContent className="h-[90vh]">
+          <DrawerHeader className="flex items-center justify-between border-b pb-4">
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold">
+                <span className="text-orange-500">M</span>
+                <span className="ml-1">Emvi.</span>
+                <span className="text-orange-500">App</span>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={closeMenu}>
+              <X className="h-5 w-5" />
             </Button>
-          </Link>
-        </div>
+          </DrawerHeader>
+          
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            {/* Auth Section */}
+            {!user && (
+              <div className="space-y-3 mb-6">
+                <Link to={`/auth/signup?redirect=${currentPath}`} onClick={closeMenu}>
+                  <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
+                    <User className="h-5 w-5" />
+                    Sign Up
+                  </Button>
+                </Link>
+                <Link to={`/sign-in?redirect=${currentPath}`} onClick={closeMenu}>
+                  <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
+                    <LogIn className="h-5 w-5" />
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            )}
 
-        {/* Language Toggle */}
-        <div className="pt-3">
-          <LanguageToggle minimal={true} />
-        </div>
+            {/* Navigation Links */}
+            <nav className="space-y-1 mb-6">
+              {menuItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={closeMenu}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                      location.pathname === item.path
+                        ? "text-purple-700 bg-purple-50"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    <IconComponent className="h-5 w-5" />
+                    {t({
+                      english: item.title,
+                      vietnamese: item.title
+                    })}
+                  </Link>
+                );
+              })}
+            </nav>
 
-        {/* Footer */}
-        <div className="pt-4 text-sm text-center text-gray-400">
-          Inspired by Sunshine ☀️
-        </div>
-      </div>
-    </div>
+            {/* User Menu for authenticated users */}
+            {user && (
+              <div className="mb-6">
+                <UserMenu />
+              </div>
+            )}
+
+            {/* Post Job Button */}
+            <div className="mb-6">
+              <Button 
+                onClick={closeMenu}
+                className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg mb-3"
+                asChild
+              >
+                <Link to={user ? "/post-job" : "/sign-in"}>
+                  {t("Post a Job for Free")}
+                </Link>
+              </Button>
+
+              {/* Post Your Salon Button */}
+              <PostYourSalonButton 
+                variant="outline" 
+                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                onClose={closeMenu}
+              />
+            </div>
+
+            {/* Language Section */}
+            <div className="border-t pt-4 mb-6">
+              <div className="mb-3">
+                <span className="text-sm font-medium text-gray-700">Language</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
+                <Globe className="h-4 w-4 text-gray-600" />
+                <span className="text-gray-700">English</span>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center py-4">
+              <span className="text-sm text-orange-500 font-medium">
+                Inspired by Sunshine ☀️
+              </span>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
 
