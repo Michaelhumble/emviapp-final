@@ -1,61 +1,47 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut, Settings, Home, Briefcase, Users, Store, MessageCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { X, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 
-const MobileMenu = () => {
+const MobileMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, userProfile, userRole } = useAuth();
-  const location = useLocation();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
-  // Close menu when route changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
-      toast.success('Signed out successfully');
+      await signOut();
       setIsOpen(false);
+      navigate('/');
     } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Failed to sign out');
+      console.error('Sign out error:', error);
     }
   };
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
-
-  const menuItems = [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Users, label: 'Artists', href: '/artists' },
-    { icon: Store, label: 'Salons', href: '/salons' },
-    { icon: MessageCircle, label: 'Community', href: '/community' },
+  const navigationItems = [
+    { href: '/', label: 'Home' },
+    { href: '/jobs', label: 'Jobs' },
+    { href: '/salons', label: 'Salons' },
+    { href: '/explore/artists', label: 'Artists' },
+    { href: '/community', label: 'Community' },
   ];
 
   return (
     <>
       {/* Menu Toggle Button */}
-      <Button
-        variant="ghost"
-        size="icon"
+      <button
         onClick={toggleMenu}
-        className="md:hidden relative z-50"
+        className="md:hidden p-2 hover:bg-gray-100 rounded-md transition-colors"
         aria-label="Toggle menu"
       >
-        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
+        <Menu className="h-6 w-6" />
+      </button>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
@@ -63,158 +49,112 @@ const MobileMenu = () => {
           {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={closeMenu}
+            onClick={toggleMenu}
           />
           
           {/* Menu Panel */}
-          <div className="fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white z-50 md:hidden flex flex-col shadow-2xl">
+          <div className="fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white shadow-xl z-50 md:hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeMenu}
+              <button
+                onClick={toggleMenu}
+                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
-              </Button>
+              </button>
             </div>
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto">
-              {/* User Profile Section */}
-              {user && (
-                <div className="p-4 border-b border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      {userProfile?.avatar_url ? (
-                        <img
-                          src={userProfile.avatar_url}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-5 h-5 text-primary" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {userProfile?.full_name || 'User'}
-                      </p>
-                      <p className="text-xs text-gray-500 capitalize">
-                        {userRole || 'Member'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Action Buttons */}
+              <div className="p-4 space-y-3 border-b border-gray-200">
+                <Link
+                  to="/posting/job"
+                  onClick={toggleMenu}
+                  className="block w-full"
+                >
+                  <Button className="w-full bg-primary text-white hover:bg-primary/90">
+                    Post a Job for Free
+                  </Button>
+                </Link>
+                
+                <PostYourSalonButton 
+                  variant="outline" 
+                  className="w-full"
+                  onClose={toggleMenu}
+                />
+              </div>
 
-              {/* Navigation Items */}
-              <nav className="p-2">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.href;
-                  
-                  return (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      onClick={closeMenu}
-                      className={`flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
+              {/* Navigation Links */}
+              <nav className="p-4">
+                <ul className="space-y-1">
+                  {navigationItems.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        to={item.href}
+                        onClick={toggleMenu}
+                        className="block px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </nav>
 
-              {/* Auth-specific Items */}
-              {user && (
-                <div className="p-2 border-t border-gray-100 mt-4">
-                  <Link
-                    to="/dashboard"
-                    onClick={closeMenu}
-                    className="flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    <User className="w-5 h-5" />
-                    <span>Dashboard</span>
-                  </Link>
-                  
-                  <Link
-                    to="/profile/edit"
-                    onClick={closeMenu}
-                    className="flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    <Settings className="w-5 h-5" />
-                    <span>Settings</span>
-                  </Link>
+              {/* User Section */}
+              {user ? (
+                <div className="p-4 border-t border-gray-200">
+                  <div className="space-y-3">
+                    <Link
+                      to="/dashboard"
+                      onClick={toggleMenu}
+                      className="block px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/profile"
+                      onClick={toggleMenu}
+                      className="block px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md transition-colors"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-md transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 border-t border-gray-200">
+                  <div className="space-y-3">
+                    <Link
+                      to="/auth/signin"
+                      onClick={toggleMenu}
+                      className="block px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/auth/signup"
+                      onClick={toggleMenu}
+                      className="block px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md transition-colors"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Footer Actions */}
-            <div className="p-4 border-t border-gray-200 space-y-3">
-              {/* Action Buttons */}
-              <div className="space-y-2">
-                <Button 
-                  asChild 
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  onClick={closeMenu}
-                >
-                  <Link to="/post-job-free">
-                    Post a Job for Free
-                  </Link>
-                </Button>
-                
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  className="w-full border-primary text-primary hover:bg-primary/5"
-                  onClick={closeMenu}
-                >
-                  <Link to="/posting/salon">
-                    Post Your Salon
-                  </Link>
-                </Button>
-              </div>
-
-              {/* Sign Out */}
-              {user && (
-                <Button
-                  onClick={handleSignOut}
-                  variant="ghost"
-                  className="w-full text-red-600 hover:bg-red-50 hover:text-red-700"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
-                </Button>
-              )}
-
-              {/* Sign In/Up for non-authenticated users */}
-              {!user && (
-                <div className="space-y-2">
-                  <Button 
-                    asChild 
-                    className="w-full"
-                    onClick={closeMenu}
-                  >
-                    <Link to="/auth/signin">Sign In</Link>
-                  </Button>
-                  <Button 
-                    asChild 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={closeMenu}
-                  >
-                    <Link to="/signup">Sign Up</Link>
-                  </Button>
-                </div>
-              )}
+            {/* Footer */}
+            <div className="p-4 border-t border-gray-200">
+              <LanguageToggle minimal />
             </div>
           </div>
         </>
