@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotificationProvider } from "@/context/notification";
 import { AuthProvider } from "@/context/auth";
 import { ProfileProvider } from "@/context/profile";
@@ -46,28 +46,26 @@ const App = () => {
                   <Sonner />
                   <BrowserRouter>
                     <Routes>
-                      <Route path="/" element={<Layout><Outlet /></Layout>}>
-                        <Route index element={<Index />} />
-                        <Route path="artists" element={<Artists />} />
-                        <Route path="jobs" element={<Jobs />} />
-                        <Route path="community" element={<Community />} />
-                        <Route path="post-job" element={<PostJob />} />
-                        <Route path="post-job-billion" element={<PostJobBillion />} />
-                        <Route path="post-job-experimental" element={<PostJobExperimental />} />
-                        <Route path="post-salon" element={<PostSalon />} />
-                        <Route path="signup" element={<SignUp />} />
-                        <Route path="about" element={<About />} />
-                        <Route path="contact" element={<Contact />} />
-                        <Route path="terms" element={<Terms />} />
-                        <Route path="privacy" element={<Privacy />} />
-                        <Route path="cookies" element={<Cookies />} />
-                        <Route path="refund" element={<Refund />} />
-                        <Route path="salon-owners" element={<SalonOwners />} />
-                        <Route path="dashboard/*" element={<Dashboard />} />
-                        <Route path="settings" element={<Settings />} />
-                        <Route path="welcome" element={<Welcome />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Route>
+                      <Route path="/" element={<Layout><Index /></Layout>} />
+                      <Route path="/artists" element={<Layout><Artists /></Layout>} />
+                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                      <Route path="/community" element={<Layout><Community /></Layout>} />
+                      <Route path="/post-job" element={<Layout><PostJob /></Layout>} />
+                      <Route path="/post-job-billion" element={<Layout><PostJobBillion /></Layout>} />
+                      <Route path="/post-job-experimental" element={<Layout><PostJobExperimental /></Layout>} />
+                      <Route path="/post-salon" element={<Layout><PostSalon /></Layout>} />
+                      <Route path="/signup" element={<Layout><SignUp /></Layout>} />
+                      <Route path="/about" element={<Layout><About /></Layout>} />
+                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                      <Route path="/terms" element={<Layout><Terms /></Layout>} />
+                      <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+                      <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                      <Route path="/refund" element={<Layout><Refund /></Layout>} />
+                      <Route path="/salon-owners" element={<Layout><SalonOwners /></Layout>} />
+                      <Route path="/dashboard/*" element={<Layout><Dashboard /></Layout>} />
+                      <Route path="/settings" element={<Layout><Settings /></Layout>} />
+                      <Route path="/welcome" element={<Layout><Welcome /></Layout>} />
+                      <Route path="*" element={<Layout><NotFound /></Layout>} />
                     </Routes>
                   </BrowserRouter>
                 </TooltipProvider>
