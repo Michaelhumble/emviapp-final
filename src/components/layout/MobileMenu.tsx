@@ -1,162 +1,132 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X, Home, Users, Building2, Briefcase, MessageSquare, Info, Phone, Calendar, Store } from 'lucide-react';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
-import EmviLogo from '@/components/branding/EmviLogo';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import EmviLogo from "@/components/branding/EmviLogo";
+import LanguageToggle from "@/components/layout/LanguageToggle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 
 interface MobileMenuProps {
-  isOpen?: boolean;
-  onClose?: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
-  const { t, isVietnamese } = useTranslation();
-  const [language, setLanguage] = React.useState(getLanguagePreference());
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const handleLanguageToggle = () => {
-    const newLanguage = language === 'en' ? 'vi' : 'en';
-    setLanguage(newLanguage);
-    setLanguagePreference(newLanguage);
-    window.location.reload();
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+    toast.success("You've been signed out successfully");
+    onClose();
   };
 
-  const menuItems = [
-    { 
-      name: t({ english: "Dashboard", vietnamese: "Bảng điều khiển" }), 
-      href: "/dashboard", 
-      icon: Home,
-      showWhen: !!user 
-    },
-    { 
-      name: t({ english: "Home", vietnamese: "Trang chủ" }), 
-      href: "/", 
-      icon: Home 
-    },
-    { 
-      name: t({ english: "Artists", vietnamese: "Nghệ sĩ" }), 
-      href: "/artists", 
-      icon: Users 
-    },
-    { 
-      name: t({ english: "Salons", vietnamese: "Salon" }), 
-      href: "/salons", 
-      icon: Building2 
-    },
-    { 
-      name: t({ english: "Jobs", vietnamese: "Việc làm" }), 
-      href: "/jobs", 
-      icon: Briefcase 
-    },
-    { 
-      name: t({ english: "Community", vietnamese: "Cộng đồng" }), 
-      href: "/community", 
-      icon: MessageSquare 
-    },
-    { 
-      name: t({ english: "About", vietnamese: "Giới thiệu" }), 
-      href: "/about", 
-      icon: Info 
-    },
-    { 
-      name: t({ english: "Contact", vietnamese: "Liên hệ" }), 
-      href: "/contact", 
-      icon: Phone 
-    },
-  ];
+  const onPostJobClick = () => {
+    if (user) {
+      navigate("/post-job");
+    } else {
+      navigate("/sign-in");
+    }
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-80 p-0 overflow-y-auto">
-        <div className="flex flex-col min-h-full">
-          {/* Header with Logo */}
-          <div className="flex items-center justify-center py-6 px-4 border-b">
-            <EmviLogo size="medium" showText={true} />
-          </div>
+    <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+      {/* Mobile Menu Header */}
+      <div className="flex items-center justify-between p-3 border-b">
+        <EmviLogo className="h-6" />
+        <button onClick={onClose} className="text-xl font-bold">×</button>
+      </div>
 
-          {/* Auth Buttons */}
-          {!user && (
-            <div className="px-4 py-4 space-y-2 border-b">
-              <Button asChild className="w-full" size="lg">
-                <Link to="/auth/signup" onClick={onClose}>
-                  {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full" size="lg">
-                <Link to="/auth/signin" onClick={onClose}>
-                  {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
-                </Link>
-              </Button>
-            </div>
-          )}
-
-          {/* Navigation Items */}
-          <nav className="flex-1 py-4">
-            <div className="space-y-1 px-4">
-              {menuItems.map((item) => {
-                if (item.showWhen !== undefined && !item.showWhen) return null;
-                
-                const IconComponent = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={onClose}
-                    className="flex items-center space-x-3 px-3 py-3 text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors"
-                  >
-                    <IconComponent className="h-5 w-5" />
-                    <span className="text-base font-medium">{item.name}</span>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="px-4 py-6 space-y-3 border-t mt-6">
-              <Button asChild className="w-full bg-purple-600 hover:bg-purple-700" size="lg">
-                <Link to="/post-job" onClick={onClose}>
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  {t({ english: "Post a Job for Free", vietnamese: "Đăng tin tuyển dụng miễn phí" })}
-                </Link>
-              </Button>
-              
-              <Button asChild variant="outline" className="w-full border-purple-200 text-purple-600 hover:bg-purple-50" size="lg">
-                <Link to="/post-salon" onClick={onClose}>
-                  <Store className="h-4 w-4 mr-2" />
-                  {t({ english: "Post Your Salon", vietnamese: "Đăng tin Salon" })}
-                </Link>
-              </Button>
-            </div>
-          </nav>
-
-          {/* Language Switcher */}
-          <div className="px-4 py-4 border-t">
-            <button
-              onClick={handleLanguageToggle}
-              className="w-full text-center py-2 px-4 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+      {/* Menu Content */}
+      <div className="p-3 flex flex-col space-y-3">
+        {/* Auth Section */}
+        {user ? (
+          <div className="flex flex-col space-y-2">
+            <Link 
+              to="/dashboard" 
+              onClick={onClose}
+              className="text-lg font-medium text-purple-700"
             >
-              {language === 'en' ? 'Tiếng Việt' : 'English'}
-            </button>
+              {t("Dashboard")}
+            </Link>
+            <Button 
+              onClick={handleSignOut}
+              variant="outline"
+              className="w-full"
+            >
+              {t("Sign Out")}
+            </Button>
           </div>
+        ) : (
+          <div className="flex flex-col space-y-2">
+            <Link to="/sign-in" onClick={onClose}>
+              <Button variant="outline" className="w-full">
+                {t("Sign In")}
+              </Button>
+            </Link>
+            <Link to="/sign-up" onClick={onClose}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                {t("Sign Up")}
+              </Button>
+            </Link>
+          </div>
+        )}
 
-          {/* Footer */}
-          <div className="px-4 py-3 text-center text-xs text-gray-500 border-t">
-            Inspired by Sunshine ☀️
-          </div>
+        {/* Navigation Links */}
+        <div className="flex flex-col space-y-2 pt-3">
+          {mainNavigationItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={onClose}
+              className="text-lg text-gray-700 hover:text-purple-700 py-1"
+            >
+              {t({
+                english: item.title,
+                vietnamese: item.vietnameseTitle || item.title
+              })}
+            </Link>
+          ))}
         </div>
-      </SheetContent>
-    </Sheet>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col space-y-2 pt-3">
+          <Button 
+            onClick={onPostJobClick}
+            className="w-full bg-purple-600 text-white hover:bg-purple-700"
+          >
+            {t("Post a Job for Free")}
+          </Button>
+          
+          <Link to="/post-salon" onClick={onClose}>
+            <Button 
+              variant="outline" 
+              className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+            >
+              {t("Post Your Salon")}
+            </Button>
+          </Link>
+        </div>
+
+        {/* Language Toggle */}
+        <div className="pt-3">
+          <LanguageToggle minimal={true} />
+        </div>
+
+        {/* Footer */}
+        <div className="pt-4 text-sm text-center text-gray-400">
+          Inspired by Sunshine ☀️
+        </div>
+      </div>
+    </div>
   );
 };
 
