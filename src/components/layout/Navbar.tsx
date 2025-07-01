@@ -1,181 +1,135 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
-import LanguageToggle from '@/components/ui/LanguageToggle';
-import EmviLogo from '@/components/branding/EmviLogo';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
+import Logo from "@/components/ui/Logo";
+import { UserMenu } from "./navbar/UserMenu";
+import AuthButtons from "./navbar/AuthButtons";
+import LanguageToggle from "@/components/layout/LanguageToggle";
+import { Button } from "@/components/ui/button";
+import PostYourSalonButton from "@/components/buttons/PostYourSalonButton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import MobileMenu from "@/components/layout/MobileMenu";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+    toast.success("You've been signed out successfully");
+  };
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const onPostJobClick = () => {
+    navigate("/post-job");
+  };
 
-  const navLinks = [
-    { href: '/jobs', label: 'Jobs' },
-    { href: '/salons', label: 'Salons' },
-    { href: '/artists', label: 'Artists' },
-  ];
+  const tooltipText = t("Was $29.99 – Free for a limited time!");
 
   return (
-    <>
-      <nav className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center">
-              <EmviLogo className="h-8 w-auto" />
-            </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <div className="container flex items-center justify-between mx-auto h-16 px-4">
+        {/* Logo - using large size to match the footer */}
+        <Link to="/" className="flex items-center">
+          <Logo size="large" showText={true} />
+        </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+        {/* Main navigation - centered (hidden on mobile) */}
+        <div className="hidden md:flex justify-center flex-grow">
+          <nav className="flex items-center space-x-1">
+            {mainNavigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? "text-purple-700 bg-purple-50"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {t({
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-            {/* Desktop Right Side */}
-            <div className="hidden lg:flex items-center space-x-4">
-              <LanguageToggle />
-              {user ? (
-                <div className="flex items-center space-x-3">
-                  <Link to="/dashboard">
-                    <Button variant="outline" size="sm">
-                      Dashboard
+        {/* Auth buttons or user menu with language toggle and Post Job button */}
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Post Job Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <TooltipProvider>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  {user ? (
+                    <Button 
+                      onClick={onPostJobClick} 
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
                     </Button>
-                  </Link>
-                  <Button onClick={signOut} variant="ghost" size="sm">
-                    Sign Out
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <Link to="/auth/signin">
-                    <Button variant="ghost" size="sm">
-                      Sign In
+                  ) : (
+                    <Button 
+                      onClick={() => navigate("/sign-in")}
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
                     </Button>
-                  </Link>
-                  <Link to="/auth/signup">
-                    <Button size="sm">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                  <p>{tooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={toggleMenu}
-              className="lg:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+          {/* Post Your Salon Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <PostYourSalonButton 
+              variant="outline" 
+              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            />
+          </div>
+          
+          {/* Language toggle always visible on desktop */}
+          <div className="hidden md:block">
+            <LanguageToggle minimal={true} className="mr-1" />
+          </div>
+          
+          {/* Auth buttons or user menu (hidden on mobile) */}
+          <div className="hidden md:block">
+            {user ? (
+              <UserMenu />
+            ) : (
+              <AuthButtons />
+            )}
+          </div>
+          
+          {/* Mobile menu hamburger button - always visible on mobile */}
+          <div className="md:hidden">
+            <MobileMenu />
           </div>
         </div>
-      </nav>
-
-      {/* Mobile Menu Overlay - Only show on mobile */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
-              onClick={() => setIsMenuOpen(false)}
-            />
-            
-            {/* Menu Panel */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 h-full w-80 max-w-[80vw] bg-white shadow-xl z-50 lg:hidden"
-            >
-              <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b">
-                  <EmviLogo size="small" showText={true} />
-                  <button
-                    onClick={() => setIsMenuOpen(false)}
-                    className="p-2 rounded-md text-gray-700 hover:bg-gray-100"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-
-                {/* Navigation Links */}
-                <div className="flex-1 px-4 py-6 space-y-4">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="block px-3 py-3 text-lg font-medium text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-md transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-
-                {/* Bottom Section */}
-                <div className="p-4 border-t space-y-4">
-                  <LanguageToggle />
-                  
-                  {user ? (
-                    <div className="space-y-2">
-                      <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                        <Button variant="outline" className="w-full">
-                          Dashboard
-                        </Button>
-                      </Link>
-                      <Button 
-                        onClick={() => {
-                          signOut();
-                          setIsMenuOpen(false);
-                        }} 
-                        variant="ghost" 
-                        className="w-full"
-                      >
-                        Sign Out
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Link to="/auth/signin" onClick={() => setIsMenuOpen(false)}>
-                        <Button variant="outline" className="w-full">
-                          Sign In
-                        </Button>
-                      </Link>
-                      <Link to="/auth/signup" onClick={() => setIsMenuOpen(false)}>
-                        <Button className="w-full">
-                          Sign Up
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+      </div>
+    </header>
   );
 };
 
 export default Navbar;
+
