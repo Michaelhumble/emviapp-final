@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 const MobileBottomNav = () => {
   const location = useLocation();
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
 
   const navItems = [
     { 
@@ -29,12 +29,6 @@ const MobileBottomNav = () => {
       show: true 
     },
     { 
-      icon: MessageCircle, 
-      label: 'Messages', 
-      path: '/messages',
-      show: !!user 
-    },
-    { 
       icon: User, 
       label: 'Profile', 
       path: user ? '/profile' : '/auth/signin',
@@ -45,7 +39,7 @@ const MobileBottomNav = () => {
   const visibleItems = navItems.filter(item => item.show);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 safe-area-pb lg:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 lg:hidden">
       <nav className="flex justify-around items-center h-16 px-2">
         {visibleItems.map((item) => {
           const isActive = location.pathname === item.path;
