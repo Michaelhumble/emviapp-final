@@ -8,20 +8,9 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-interface QAItem {
-  question: string;
-  answer: string;
-}
-
-interface QACategory {
-  title: string;
-  items: QAItem[];
-}
-
-const qaData: QACategory[] = [
-  {
-    title: "Product & Vision",
-    items: [
+const InvestorQASection = () => {
+  const qaData = {
+    "Product & Vision": [
       {
         question: "What is EmviApp?",
         answer: "EmviApp is an AI-powered hiring and discovery platform built specifically for the beauty industry. It connects salon owners, artists, and freelancers through stunning profiles, smart matchmaking, and emotionally resonant design."
@@ -42,11 +31,8 @@ const qaData: QACategory[] = [
         question: "How does EmviApp stand out from competitors?",
         answer: "Most platforms feel cold, generic, or untrustworthy. EmviApp feels personal, premium, and emotionally real—designed specifically for the beauty world with AI at its core."
       }
-    ]
-  },
-  {
-    title: "Market & Audience",
-    items: [
+    ],
+    "Market & Audience": [
       {
         question: "Who is your target audience?",
         answer: "Primarily nail salons and Vietnamese-owned beauty shops in the U.S., expanding into broader beauty sectors like hair, lashes, and tattoo. Artists and freelancers are our secondary core."
@@ -59,11 +45,8 @@ const qaData: QACategory[] = [
         question: "Why start with the Vietnamese nail community?",
         answer: "They represent a huge, underserved segment with strong word-of-mouth growth. If we win their trust, we win the market."
       }
-    ]
-  },
-  {
-    title: "Traction & Status",
-    items: [
+    ],
+    "Traction & Status": [
       {
         question: "What stage is EmviApp in?",
         answer: "We've built 85% of Phase 1 and Phase 2: the homepage, listings system, artist dashboard, Stripe payment flow, and contact gating are all live. We're now polishing the job form and expanding salon features."
@@ -76,11 +59,8 @@ const qaData: QACategory[] = [
         question: "Have you spent on marketing yet?",
         answer: "Not yet. Growth has come from organic FOMO, real-life listings, and design quality. We're holding off paid ads until we stabilize all features."
       }
-    ]
-  },
-  {
-    title: "Financials & Funding",
-    items: [
+    ],
+    "Financials & Funding": [
       {
         question: "What's your current valuation?",
         answer: "We're offering 20% equity for $200,000, placing the pre-money valuation at $800,000 and post-money at $1 million."
@@ -97,11 +77,8 @@ const qaData: QACategory[] = [
         question: "Do you plan to raise again?",
         answer: "Not unless strategically needed. Our goal is to be self-sustaining and profitable, not stuck in endless fundraising."
       }
-    ]
-  },
-  {
-    title: "Business Model & Revenue",
-    items: [
+    ],
+    "Business Model & Revenue": [
       {
         question: "How does EmviApp make money?",
         answer: "Through job and salon post tiers (free to premium), ad placements, smart upsells, and future SaaS tools for business management."
@@ -114,14 +91,11 @@ const qaData: QACategory[] = [
         question: "How do you plan to scale revenue?",
         answer: "By offering AI-enhanced listings, featured placements, salon CRM tools, and bilingual ad creation services."
       }
-    ]
-  },
-  {
-    title: "Product Features & Growth",
-    items: [
+    ],
+    "Product Features & Growth": [
       {
         question: "What are your most exciting features?",
-        answer: "\"Polish with AI\" job post enhancer, secret pricing menus, gated contact info, emotional testimonials, and bilingual job templates."
+        answer: "'Polish with AI' job post enhancer, secret pricing menus, gated contact info, emotional testimonials, and bilingual job templates."
       },
       {
         question: "How do you plan to acquire users?",
@@ -135,11 +109,8 @@ const qaData: QACategory[] = [
         question: "How does AI help EmviApp?",
         answer: "AI enhances listings, routes users, polishes job descriptions, and eventually will run marketing and onboarding flows autonomously."
       }
-    ]
-  },
-  {
-    title: "Risks & Defensibility",
-    items: [
+    ],
+    "Risks & Defensibility": [
       {
         question: "What are the biggest risks?",
         answer: "Rushing too fast, or failing to maintain authenticity. We're focused on growing at the right pace while protecting the brand."
@@ -152,11 +123,8 @@ const qaData: QACategory[] = [
         question: "What stops others from copying this?",
         answer: "The emotional design, execution quality, and community connections we've built are hard to replicate."
       }
-    ]
-  },
-  {
-    title: "Team & Execution",
-    items: [
+    ],
+    "Team & Execution": [
       {
         question: "Who's building this?",
         answer: "I'm leading strategy, design, and product. We're using Lovable AI for rapid development and collaborating with contractors as needed."
@@ -169,11 +137,8 @@ const qaData: QACategory[] = [
         question: "Why now?",
         answer: "The beauty industry is still offline. AI + emotional branding + community = the perfect storm to win now."
       }
-    ]
-  },
-  {
-    title: "Investor Questions",
-    items: [
+    ],
+    "Investor Questions": [
       {
         question: "What are you looking for from investors?",
         answer: "Not just capital—wisdom, belief, and calm guidance. We want aligned partners who see the long game."
@@ -183,12 +148,10 @@ const qaData: QACategory[] = [
         answer: "Through smart monetization, lean growth, and potential acquisition. Our model is built to scale profitably and organically."
       }
     ]
-  }
-];
+  };
 
-const InvestorQASection = () => {
   return (
-    <section className="py-16 px-4 bg-white">
+    <section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -197,45 +160,35 @@ const InvestorQASection = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-gray-900">
-            Investor Vision & Transparency
+            Investor Vision & Q&A
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Everything you need to know about EmviApp's mission, market, and future. 
-            Complete transparency for our community and potential partners.
+            Everything you need to know about EmviApp's vision, market opportunity, and growth strategy.
           </p>
         </motion.div>
 
         <div className="space-y-8">
-          {qaData.map((category, categoryIndex) => (
+          {Object.entries(qaData).map(([category, questions], categoryIndex) => (
             <motion.div
-              key={category.title}
+              key={category}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: categoryIndex * 0.1 }}
-              className="bg-gray-50 rounded-xl p-6"
+              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
             >
-              <h3 className="text-xl font-semibold mb-4 text-gray-900 flex items-center">
-                <span className="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
-                {category.title}
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                {category}
               </h3>
               
-              <Accordion type="single" collapsible className="space-y-2">
-                {category.items.map((item, itemIndex) => (
-                  <AccordionItem
-                    key={`${categoryIndex}-${itemIndex}`}
-                    value={`${categoryIndex}-${itemIndex}`}
-                    className="bg-white rounded-lg border-0 shadow-sm"
-                  >
-                    <AccordionTrigger className="px-4 py-3 text-left hover:no-underline">
-                      <span className="font-medium text-gray-900">
-                        {item.question}
-                      </span>
+              <Accordion type="single" collapsible className="w-full">
+                {questions.map((qa, index) => (
+                  <AccordionItem key={index} value={`${category}-${index}`} className="border-gray-100">
+                    <AccordionTrigger className="text-left text-gray-800 hover:text-purple-600 py-3">
+                      {qa.question}
                     </AccordionTrigger>
-                    <AccordionContent className="px-4 pb-4">
-                      <p className="text-gray-700 leading-relaxed">
-                        {item.answer}
-                      </p>
+                    <AccordionContent className="text-gray-600 pb-4 leading-relaxed">
+                      {qa.answer}
                     </AccordionContent>
                   </AccordionItem>
                 ))}
