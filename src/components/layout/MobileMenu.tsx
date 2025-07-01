@@ -11,7 +11,9 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut } = useAuth();
+  const auth = useAuth?.();
+  const user = auth?.user;
+  const signOut = auth?.signOut;
 
   if (!isOpen) return null;
 
