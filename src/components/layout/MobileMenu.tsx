@@ -1,176 +1,252 @@
 
-import React from 'react';
-import { X, Home, Palette, Building2, Briefcase, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Menu, 
+  X, 
+  Home, 
+  Search, 
+  Briefcase, 
+  Store, 
+  Users, 
+  MessageCircle, 
+  User,
+  LogOut,
+  Settings,
+  HelpCircle,
+  Globe
+} from 'lucide-react';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
+import LanguageToggle from '@/components/layout/LanguageToggle';
+import { toast } from 'sonner';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { isSignedIn, signOut } = useAuth();
+const MobileMenu = () => {
+  const { user, signOut, isSignedIn } = useAuth();
   const { t } = useTranslation();
-
-  if (!isOpen) return null;
-
-  const handleLinkClick = () => {
-    onClose();
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
-    onClose();
+    navigate('/');
+    setIsOpen(false);
+    toast.success("You've been signed out successfully");
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
+  const getUserInitials = () => {
+    if (!user?.full_name) return 'U';
+    return user.full_name
+      .split(' ')
+      .map(name => name[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-orange-500">M</span>
-          <span className="text-xl font-bold text-gray-900">Emvi.App</span>
-        </div>
-        <button
-          onClick={onClose}
-          className="p-2 hover:bg-gray-100 rounded-full"
-          aria-label="Close menu"
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="md:hidden"
+          aria-label="Open menu"
         >
-          <X className="h-6 w-6" />
-        </button>
-      </div>
-
-      {/* User Info */}
-      {isSignedIn && (
-        <div className="p-4 border-b bg-gray-50">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium">S</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">salon1@yahoo.com</p>
-              <p className="text-sm text-gray-500">Welcome back!</p>
-            </div>
+          <Menu className="h-5 w-5" />
+        </Button>
+      </DrawerTrigger>
+      
+      <DrawerContent className="h-[90vh] flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-4 border-b bg-white">
+          <div className="flex items-center gap-3">
+            {isSignedIn && user && (
+              <>
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user.avatar_url || ''} alt={user.full_name || ''} />
+                  <AvatarFallback className="bg-purple-100 text-purple-700 font-medium">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="font-medium text-sm">{user.full_name || user.email}</span>
+                  {user.role && (
+                    <Badge variant="secondary" className="text-xs w-fit">
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </Badge>
+                  )}
+                </div>
+              </>
+            )}
           </div>
-          <div className="mt-3 flex space-x-2">
-            <Link to="/dashboard" onClick={handleLinkClick}>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white px-6">
-                Dashboard
+          
+          <DrawerClose asChild>
+            <Button variant="ghost" size="icon">
+              <X className="h-5 w-5" />
+            </Button>
+          </DrawerClose>
+        </div>
+
+        {/* Scrollable Navigation Menu */}
+        <nav className="flex-1 overflow-y-auto px-4 py-2">
+          <div className="space-y-1">
+            {/* Main Navigation Items */}
+            {mainNavigationItems.map((item) => (
+              <Button
+                key={item.path}
+                variant="ghost"
+                className={`w-full justify-start text-left ${
+                  location.pathname === item.path 
+                    ? 'bg-purple-50 text-purple-700' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => handleNavigation(item.path)}
+              >
+                {item.icon && <item.icon className="mr-3 h-4 w-4" />}
+                {t({
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
               </Button>
-            </Link>
+            ))}
+
+            {/* Authenticated User Links */}
+            {isSignedIn && (
+              <>
+                <div className="border-t my-4"></div>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/dashboard')}
+                >
+                  <Home className="mr-3 h-4 w-4" />
+                  {t('Dashboard')}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/messages')}
+                >
+                  <MessageCircle className="mr-3 h-4 w-4" />
+                  {t('Messages')}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/profile')}
+                >
+                  <User className="mr-3 h-4 w-4" />
+                  {t('Profile')}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/post-job')}
+                >
+                  <Briefcase className="mr-3 h-4 w-4" />
+                  {t('Post a Job for Free')}
+                </Button>
+
+                <div className="border-t my-4"></div>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/settings')}
+                >
+                  <Settings className="mr-3 h-4 w-4" />
+                  {t('Settings')}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/help')}
+                >
+                  <HelpCircle className="mr-3 h-4 w-4" />
+                  {t('Help & Support')}
+                </Button>
+              </>
+            )}
+
+            {/* Guest User Links */}
+            {!isSignedIn && (
+              <>
+                <div className="border-t my-4"></div>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/sign-in')}
+                >
+                  <User className="mr-3 h-4 w-4" />
+                  {t('Sign In')}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/sign-up')}
+                >
+                  <User className="mr-3 h-4 w-4" />
+                  {t('Sign Up')}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => handleNavigation('/post-job')}
+                >
+                  <Briefcase className="mr-3 h-4 w-4" />
+                  {t('Post a Job for Free')}
+                </Button>
+              </>
+            )}
+          </div>
+        </nav>
+
+        {/* Fixed Footer */}
+        <div className="border-t p-4 bg-white space-y-3">
+          {/* Language Toggle */}
+          <div className="flex justify-center">
+            <LanguageToggle minimal={true} />
+          </div>
+
+          {/* Sign Out Button for authenticated users */}
+          {isSignedIn && (
             <Button
               variant="outline"
+              className="w-full text-red-600 border-red-200 hover:bg-red-50"
               onClick={handleSignOut}
-              className="px-6"
             >
-              Sign Out
+              <LogOut className="mr-2 h-4 w-4" />
+              {t('Sign Out')}
             </Button>
-          </div>
+          )}
         </div>
-      )}
-
-      {/* Navigation Menu - Made scrollable */}
-      <nav className="flex-1 overflow-y-auto">
-        <div className="p-4 space-y-4">
-          <Link
-            to="/"
-            className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-            onClick={handleLinkClick}
-          >
-            <Home className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-900 font-medium">
-              {t({ english: "Home", vietnamese: "Trang Chủ" })}
-            </span>
-          </Link>
-
-          <Link
-            to="/artists"
-            className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-            onClick={handleLinkClick}
-          >
-            <Palette className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-900 font-medium">
-              {t({ english: "Artists", vietnamese: "Nghệ Sĩ" })}
-            </span>
-          </Link>
-
-          <Link
-            to="/salons"
-            className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-            onClick={handleLinkClick}
-          >
-            <Building2 className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-900 font-medium">
-              {t({ english: "Salons", vietnamese: "Tiệm" })}
-            </span>
-          </Link>
-
-          <Link
-            to="/jobs"
-            className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-            onClick={handleLinkClick}
-          >
-            <Briefcase className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-900 font-medium">
-              {t({ english: "Jobs", vietnamese: "Việc Làm" })}
-            </span>
-          </Link>
-
-          <Link
-            to="/community"
-            className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-            onClick={handleLinkClick}
-          >
-            <Users className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-900 font-medium">
-              {t({ english: "Community", vietnamese: "Cộng Đồng" })}
-            </span>
-          </Link>
-
-          <div className="border-t pt-4 space-y-4">
-            <PostYourSalonButton
-              variant="outline"
-              className="w-full justify-start"
-              onClose={handleLinkClick}
-            />
-            
-            <Link
-              to="/posting/job"
-              className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-              onClick={handleLinkClick}
-            >
-              <span className="text-gray-900 font-medium">
-                {t({ english: "Post a Job", vietnamese: "Đăng Tuyển Dụng" })}
-              </span>
-            </Link>
-
-            <Link
-              to="/about"
-              className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-              onClick={handleLinkClick}
-            >
-              <span className="text-gray-900 font-medium">
-                {t({ english: "About", vietnamese: "Giới Thiệu" })}
-              </span>
-            </Link>
-
-            <Link
-              to="/contact"
-              className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg"
-              onClick={handleLinkClick}
-            >
-              <span className="text-gray-900 font-medium">
-                {t({ english: "Contact", vietnamese: "Liên Hệ" })}
-              </span>
-            </Link>
-          </div>
-        </div>
-      </nav>
-    </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
