@@ -1,20 +1,23 @@
 
-import React from 'react';
-import Layout from '@/components/layout/Layout';
+import Layout from "@/components/layout/Layout";
+import ArtistHeroSection from "@/components/artists/ArtistHeroSection";
+import LiveStatsBar from "@/components/artists/LiveStatsBar";
+import EmpathySection from "@/components/artists/EmpathySection";
+import WhyArtistsChooseSection from "@/components/artists/WhyArtistsChooseSection";
+import LeaderboardSection from "@/components/artists/LeaderboardSection";
+import FeaturedSuccessStories from "@/components/artists/FeaturedSuccessStories";
+import FinalCTASection from "@/components/artists/FinalCTASection";
 
 const Artists = () => {
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Artists</h1>
-            <p className="text-gray-600">
-              Discover talented nail artists
-            </p>
-          </div>
-        </div>
-      </div>
+      <ArtistHeroSection />
+      <LiveStatsBar />
+      <EmpathySection />
+      <WhyArtistsChooseSection />
+      <LeaderboardSection />
+      <FeaturedSuccessStories />
+      <FinalCTASection />
     </Layout>
   );
 };
