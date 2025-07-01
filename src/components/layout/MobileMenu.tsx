@@ -1,236 +1,179 @@
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { X, Home, Users, Building, Briefcase, MessageSquare, User, Settings, HelpCircle, LogOut, Mail, Heart, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
-import { useProfile } from '@/context/profile';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import LanguageToggle from "@/components/layout/LanguageToggle";
+import {
+  Home,
+  Users,
+  Store,
+  Briefcase,
+  Users2,
+  Info,
+  Mail,
+  LayoutDashboard,
+  MessageSquare,
+  User,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Menu
+} from "lucide-react";
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut } = useAuth();
-  const profile = useProfile();
-  const { t, toggleLanguage, currentLanguage } = useTranslation();
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, userProfile, signOut } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
-    onClose();
-    navigate('/');
+    setIsOpen(false);
+    navigate("/");
   };
 
-  const handleLinkClick = () => {
-    onClose();
+  const closeMenu = () => setIsOpen(false);
+
+  const menuItems = [
+    // Top Section
+    { to: "/", icon: Home, label: t("Home") },
+    { to: "/artists", icon: Users, label: t("Artists") },
+    { to: "/salons", icon: Store, label: t("Salons") },
+    { to: "/jobs", icon: Briefcase, label: t("Jobs") },
+    { to: "/community", icon: Users2, label: t("Community") },
+    
+    // Middle Section  
+    { to: "/about", icon: Info, label: t("About") },
+    { to: "/contact", icon: Mail, label: t("Contact") },
+    { to: "/dashboard", icon: LayoutDashboard, label: t("Dashboard") },
+    { to: "/messages", icon: MessageSquare, label: t("Messages") },
+    { to: "/profile", icon: User, label: t("Profile") },
+    
+    // Bottom Section
+    { to: "/settings", icon: Settings, label: t("Settings") },
+    { to: "/help", icon: HelpCircle, label: t("Help & Support") },
+  ];
+
+  const getUserDisplayName = () => {
+    if (userProfile?.full_name) return userProfile.full_name;
+    if (user?.email) return user.email.split('@')[0];
+    return 'User';
   };
 
-  if (!isOpen) return null;
+  const getUserAvatar = () => {
+    return userProfile?.avatar_url || null;
+  };
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
+      </SheetTrigger>
       
-      {/* Menu Panel */}
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-xl">
-        <div className="flex flex-col h-full">
-          {/* Header with user info */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              {user && (
-                <>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={profile?.avatar_url || ''} />
-                    <AvatarFallback>
-                      {profile?.full_name ? profile.full_name.charAt(0) : user.email?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-medium text-gray-900 truncate">
-                      {profile?.full_name || user.email}
-                    </span>
-                    {profile?.full_name && (
-                      <span className="text-xs text-gray-500 truncate">
-                        {user.email}
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
+      <SheetContent 
+        side="right" 
+        className="w-80 p-0 bg-white z-50 flex flex-col h-full"
+      >
+        {/* Fixed Header - User Info */}
+        {user && (
+          <div className="p-6 border-b bg-gray-50">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={getUserAvatar() || undefined} />
+                <AvatarFallback className="bg-purple-100 text-purple-600">
+                  {getUserDisplayName().charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {getUserDisplayName()}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {user.email}
+                </p>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="flex-shrink-0"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
+        )}
 
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto py-4">
-            <nav className="px-4 space-y-1">
-              {/* Top Section */}
-              <div className="space-y-1 mb-6">
+        {/* Scrollable Menu Content */}
+        <div className="flex-1 overflow-y-auto">
+          <nav className="px-4 py-4">
+            <div className="space-y-1">
+              {menuItems.slice(0, 5).map((item) => (
                 <Link
-                  to="/"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
+                  key={item.to}
+                  to={item.to}
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <Home className="mr-3 h-5 w-5" />
-                  {t('Home')}
+                  <item.icon className="h-5 w-5" />
+                  {item.label}
                 </Link>
-                
-                <Link
-                  to="/artists"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
-                >
-                  <Users className="mr-3 h-5 w-5" />
-                  {t('Artists')}
-                </Link>
-                
-                <Link
-                  to="/salons"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
-                >
-                  <Building className="mr-3 h-5 w-5" />
-                  {t('Salons')}
-                </Link>
-                
-                <Link
-                  to="/jobs"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
-                >
-                  <Briefcase className="mr-3 h-5 w-5" />
-                  {t('Jobs')}
-                </Link>
-                
-                <Link
-                  to="/community"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
-                >
-                  <Heart className="mr-3 h-5 w-5" />
-                  {t('Community')}
-                </Link>
-              </div>
+              ))}
+            </div>
 
-              {/* Middle Section */}
-              <div className="space-y-1 mb-6 pt-4 border-t border-gray-200">
+            <Separator className="my-4" />
+
+            <div className="space-y-1">
+              {menuItems.slice(5, 10).map((item) => (
                 <Link
-                  to="/about"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
+                  key={item.to}
+                  to={item.to}
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <Info className="mr-3 h-5 w-5" />
-                  {t('About')}
+                  <item.icon className="h-5 w-5" />
+                  {item.label}
                 </Link>
-                
+              ))}
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="space-y-1">
+              {menuItems.slice(10).map((item) => (
                 <Link
-                  to="/contact"
-                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={handleLinkClick}
+                  key={item.to}
+                  to={item.to}
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <Mail className="mr-3 h-5 w-5" />
-                  {t('Contact')}
+                  <item.icon className="h-5 w-5" />
+                  {item.label}
                 </Link>
-
-                {user && (
-                  <>
-                    <Link
-                      to="/dashboard"
-                      className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      <Building className="mr-3 h-5 w-5" />
-                      {t('Dashboard')}
-                    </Link>
-                    
-                    <Link
-                      to="/messages"
-                      className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      <MessageSquare className="mr-3 h-5 w-5" />
-                      {t('Messages')}
-                    </Link>
-                    
-                    <Link
-                      to="/profile"
-                      className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      <User className="mr-3 h-5 w-5" />
-                      {t('Profile')}
-                    </Link>
-                  </>
-                )}
-              </div>
-
-              {/* Bottom Section */}
-              <div className="space-y-1 pt-4 border-t border-gray-200">
-                {user && (
-                  <Link
-                    to="/settings"
-                    className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                    onClick={handleLinkClick}
-                  >
-                    <Settings className="mr-3 h-5 w-5" />
-                    {t('Settings')}
-                  </Link>
-                )}
-                
-                <button
-                  className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    // Help & Support functionality can be added here
-                    handleLinkClick();
-                  }}
-                >
-                  <HelpCircle className="mr-3 h-5 w-5" />
-                  {t('Help & Support')}
-                </button>
-              </div>
-            </nav>
-          </div>
-
-          {/* Footer */}
-          <div className="border-t border-gray-200 p-4 space-y-3">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
-            >
-              <span>{t('Language')}</span>
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                {currentLanguage === 'vi' ? 'VI' : 'EN'}
-              </span>
-            </button>
-
-            {/* Sign Out */}
-            {user && (
-              <Button
-                onClick={handleSignOut}
-                variant="outline"
-                className="w-full justify-start"
-              >
-                <LogOut className="mr-3 h-4 w-4" />
-                {t('Sign Out')}
-              </Button>
-            )}
-          </div>
+              ))}
+            </div>
+          </nav>
         </div>
-      </div>
-    </div>
+
+        {/* Fixed Footer */}
+        <div className="p-4 border-t bg-gray-50 space-y-3">
+          <div className="flex items-center justify-center">
+            <LanguageToggle minimal={true} />
+          </div>
+          
+          {user && (
+            <Button
+              onClick={handleSignOut}
+              variant="outline"
+              className="w-full flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              {t("Sign Out")}
+            </Button>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
