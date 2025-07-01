@@ -81,7 +81,7 @@ const MobileMenu = () => {
             <PostYourSalonButton 
               variant="outline" 
               className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-              onClick={closeMenu}
+              onClose={closeMenu}
             />
           </div>
 
