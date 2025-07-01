@@ -1,121 +1,91 @@
-import React, { useEffect, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from '@/context/auth';
-import { SalonProvider } from '@/context/salon';
-import { SubscriptionProvider } from '@/context/subscription';
-import { NotificationProvider } from '@/context/notification';
-import { HelmetProvider } from 'react-helmet-async';
-import routes from './routes';
-import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
-import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
-import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
-import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
-import RouteLogger from '@/components/common/RouteLogger';
-import StableSalonPage from "@/pages/salons/StableSalonPage";
-import Layout from "@/components/layout/Layout";
-import Jobs from "@/pages/Jobs";
-import About from "@/pages/About"; 
-import Contact from "@/pages/Contact";
-import Terms from "@/pages/Terms";
-import Refund from "@/pages/Refund";
-import Privacy from "@/pages/Privacy";
-import Cookies from "@/pages/Cookies";
-import CheckoutFallback from "@/pages/CheckoutFallback";
-import PostSuccess from "@/pages/post-success";
-import PostCanceled from "@/pages/post-canceled";
-import PostJobBillion from "@/pages/PostJobBillion";
-import PostJobExperimental from "@/pages/PostJobExperimental";
-import SignIn from "@/pages/auth/SignIn";
-import NewSignUp from "@/pages/auth/NewSignUp";
-import EnhancedPostJob from "@/pages/enhanced-post-job";
-import SellSalonPage from "@/pages/sell-salon";
-import PostSalon from "@/pages/PostSalon";
-import SalonListingSuccessPage from "@/pages/salon-listing-success";
-import CustomerProfilePage from "@/pages/customer/ProfilePage";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NotificationProvider } from "@/context/notification";
+import { AuthProvider } from "@/context/auth";
+import { ProfileProvider } from "@/context/profile";
+import { SubscriptionProvider } from "@/context/subscription";
+import { PricingProvider } from "@/context/pricing";
+import { GoogleMapsProvider } from "@/context/maps/GoogleMapsContext";
+import Layout from "./components/layout/Layout";
+import Index from "./pages/Index";
+import Artists from "./pages/Artists";
+import Jobs from "./pages/Jobs";
+import PostJob from "./pages/PostJob";
+import PostJobBillion from "./pages/PostJobBillion";
+import PostJobExperimental from "./pages/PostJobExperimental";
+import PostSalon from "./pages/PostSalon";
+import SignUp from "./pages/SignUp";
+import About from "./pages/About.routes";
+import Contact from "./pages/Contact";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Cookies from "./pages/Cookies";
+import Refund from "./pages/Refund";
+import SalonOwners from "./pages/SalonOwners";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Settings from "./pages/Settings";
+import Welcome from "./pages/Welcome";
+import NotFound from "./pages/NotFound";
+import Community from "./pages/Community";
+import ArtistProfile from "./pages/ArtistProfile";
+import SalonProfile from "./pages/SalonProfile";
+import JobDetail from "./pages/JobDetail";
 
-function App() {
-  const location = useLocation();
+const queryClient = new QueryClient();
 
-  useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo(0, 0);
-    
-    // Log route for debugging
-    console.log('Current route:', location.pathname);
-  }, [location.pathname]);
-
+const App = () => {
   return (
-    <HelmetProvider>
-      <GeneralErrorBoundary>
-        <AuthProvider>
-          <SalonProvider>
-            <SubscriptionProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <SubscriptionProvider>
+          <PricingProvider>
+            <ProfileProvider>
               <NotificationProvider>
-                <RouteLogger />
-                <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
-                  <Routes>
-                    {/* Auth routes - USE NEW SIGN UP */}
-                    <Route path="/login" element={<SignIn />} />
-                    <Route path="/sign-in" element={<SignIn />} />
-                    <Route path="/sign-up" element={<NewSignUp />} />
-                    <Route path="/register" element={<NewSignUp />} />
-                    
-                    {/* Customer Profile route */}
-                    <Route path="/profile" element={<CustomerProfilePage />} />
-                    
-                    {/* Job posting routes - USE ENHANCED VERSION */}
-                    <Route path="/post-job" element={<EnhancedPostJob />} />
-                    <Route path="/post-job-billion" element={<PostJobBillion />} />
-                    <Route path="/post-job-experimental" element={<PostJobExperimental />} />
-                    
-                    {/* Salon selling routes */}
-                    <Route path="/sell-salon" element={<SellSalonPage />} />
-                    <Route path="/posting/salon" element={<Layout><PostSalon /></Layout>} />
-                    
-                    {/* Salon listing success route */}
-                    <Route path="/salon-listing-success" element={<Layout><SalonListingSuccessPage /></Layout>} />
-                    
-                    {/* Payment routes */}
-                    <Route path="/checkout" element={<CheckoutFallback />} />
-                    <Route path="/post-success" element={<PostSuccess />} />
-                    <Route path="/post-canceled" element={<PostCanceled />} />
-                    
-                    {/* Other pages */}
-                    <Route path="/salons" element={<Layout><StableSalonPage /></Layout>} />
-                    <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
-                    <Route path="/about" element={<Layout><About /></Layout>} />
-                    <Route path="/contact" element={<Layout><Contact /></Layout>} />
-                    <Route path="/terms" element={<Layout><Terms /></Layout>} />
-                    <Route path="/refund" element={<Layout><Refund /></Layout>} />
-                    <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-                    <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
-                    
-                    {/* ... keep existing code (other routes) the same */}
-                    {routes.map((route, index) => (
-                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
-                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                       route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
-                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success" && route.path !== "/profile") && (
-                        <Route 
-                          key={index}
-                          path={route.path}
-                          element={<Layout>{route.element}</Layout>}
-                        />
-                      )
-                    ))}
-                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
-                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
-                  </Routes>
-                </Suspense>
-                <Toaster />
+                <GoogleMapsProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/" element={<Layout />}>
+                          <Route index element={<Index />} />
+                          <Route path="artists" element={<Artists />} />
+                          <Route path="jobs" element={<Jobs />} />
+                          <Route path="community" element={<Community />} />
+                          <Route path="post-job" element={<PostJob />} />
+                          <Route path="post-job-billion" element={<PostJobBillion />} />
+                          <Route path="post-job-experimental" element={<PostJobExperimental />} />
+                          <Route path="post-salon" element={<PostSalon />} />
+                          <Route path="signup" element={<SignUp />} />
+                          <Route path="about" element={<About />} />
+                          <Route path="contact" element={<Contact />} />
+                          <Route path="terms" element={<Terms />} />
+                          <Route path="privacy" element={<Privacy />} />
+                          <Route path="cookies" element={<Cookies />} />
+                          <Route path="refund" element={<Refund />} />
+                          <Route path="salon-owners" element={<SalonOwners />} />
+                          <Route path="dashboard/*" element={<Dashboard />} />
+                          <Route path="settings" element={<Settings />} />
+                          <Route path="welcome" element={<Welcome />} />
+                          <Route path="artist/:artistId" element={<ArtistProfile />} />
+                          <Route path="salon/:salonId" element={<SalonProfile />} />
+                          <Route path="job/:jobId" element={<JobDetail />} />
+                          <Route path="*" element={<NotFound />} />
+                        </Route>
+                      </Routes>
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </GoogleMapsProvider>
               </NotificationProvider>
-            </SubscriptionProvider>
-          </SalonProvider>
-        </AuthProvider>
-      </GeneralErrorBoundary>
-    </HelmetProvider>
+            </ProfileProvider>
+          </PricingProvider>
+        </SubscriptionProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
-}
+};
 
 export default App;
