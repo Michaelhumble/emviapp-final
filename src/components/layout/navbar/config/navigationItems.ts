@@ -1,3 +1,4 @@
+
 import { LucideIcon, Users, Briefcase, Store, Scissors, Home, Info, Phone } from "lucide-react";
 
 export interface NavigationItem {
@@ -8,7 +9,7 @@ export interface NavigationItem {
   vietnameseTitle?: string;
 }
 
-export const mainNavigationItems = [
+export const mainNavigationItems: NavigationItem[] = [
   {
     title: "Home",
     path: "/",
@@ -50,10 +51,5 @@ export const mainNavigationItems = [
     path: "/contact",
     icon: Phone,
     vietnameseTitle: "Liên hệ"
-  },
-  {
-    title: 'Community',
-    vietnameseTitle: 'Cộng đồng',
-    path: '/community'
   }
 ];
