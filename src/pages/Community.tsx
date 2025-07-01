@@ -1,17 +1,22 @@
 
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import CommunityHero from '@/components/community/CommunityHero';
-import FeatureVotingBoard from '@/components/community/FeatureVotingBoard';
-import InvestorQASection from '@/components/community/InvestorQASection';
+import CommunityStories from '@/components/community/CommunityStories';
 
 const Community = () => {
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <CommunityHero />
-        <FeatureVotingBoard />
-        <InvestorQASection />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Community Stories</h1>
+            <p className="text-gray-600">
+              Share your beauty journey and connect with our community
+            </p>
+          </div>
+          
+          <CommunityStories />
+        </div>
       </div>
     </Layout>
   );
