@@ -37,7 +37,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
       >
         <div className="flex flex-col h-full overflow-y-auto">
           {/* Header with logo and close button */}
-          <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center justify-between p-3 border-b">
             <EmviLogo />
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-5 w-5" />
@@ -46,7 +46,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
           {/* Auth buttons - only show if not authenticated */}
           {!user && (
-            <div className="px-4 py-3 border-b space-y-2">
+            <div className="px-3 py-2 border-b space-y-2">
               <Link to="/auth/signup" onClick={onClose}>
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium">
                   {t('auth.signUp')}
@@ -61,7 +61,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           )}
 
           {/* Navigation items */}
-          <nav className="flex-1 py-3">
+          <nav className="flex-1 py-2">
             <ul className="space-y-1 px-2">
               {navigationItems
                 .filter(item => !item.showWhenAuth || user)
@@ -83,7 +83,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             </ul>
 
             {/* CTA Buttons */}
-            <div className="px-2 mt-4 space-y-2">
+            <div className="px-2 mt-3 space-y-2">
               <Link to="/post-job" onClick={onClose}>
                 <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm py-2">
                   {t('cta.postJobFree')}
@@ -98,7 +98,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           </nav>
 
           {/* Footer */}
-          <div className="px-4 py-3 border-t mt-auto">
+          <div className="px-3 py-2 border-t mt-auto">
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
