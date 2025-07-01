@@ -1,194 +1,119 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, PlusSquare, User, LogIn, UserPlus, LogOut } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/context/auth';
-import LanguageToggle from '@/components/layout/LanguageToggle';
-import { cn } from '@/lib/utils';
+import { UserMenu } from './navbar/UserMenu';
 import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
-import Logo from '@/components/ui/Logo';
+import { useTranslation } from '@/hooks/useTranslation';
+import LanguageToggle from '@/components/layout/LanguageToggle';
+import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 
-const MobileMenu: React.FC = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
   const location = useLocation();
-  const { isSignedIn, signOut } = useAuth();
-  const [open, setOpen] = React.useState(false);
-  
-  // Close menu when navigating to a new route
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    setOpen(false);
-  };
+  const { t } = useTranslation();
+  const currentPath = encodeURIComponent(location.pathname + location.search);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      setOpen(false);
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  };
-  
-  // Additional navigation items not in the main nav
-  const additionalNavItems = [
-    { 
-      title: 'Dashboard', 
-      path: '/dashboard',
-      icon: User,
-      vietnameseTitle: 'Bảng điều khiển'
-    },
-  ];
-  
-  // Combine all nav items, filtering out duplicates
-  const allNavItems = [...additionalNavItems, ...mainNavigationItems]
-    .filter((item, index, self) => 
-      index === self.findIndex((t) => t.path === item.path)
-    );
-    
-  // Check current route for active state
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
-  
+  const closeMenu = () => setIsOpen(false);
+
   return (
-    <div className="relative z-50">
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="flex md:hidden rounded-full p-2 h-10 w-10"
-            aria-label="Open menu"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Open menu</span>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
+      </DrawerTrigger>
+      
+      <DrawerContent>
+        <DrawerHeader className="flex items-center justify-between">
+          <DrawerTitle>Menu</DrawerTitle>
+          <Button variant="ghost" size="icon" onClick={closeMenu}>
+            <X className="h-5 w-5" />
           </Button>
-        </SheetTrigger>
+        </DrawerHeader>
         
-        <SheetContent side="right" className="w-[280px] sm:w-[350px] p-0 border-l shadow-lg">
-          <div className="flex flex-col h-full">
-            {/* Header with Logo */}
-            <div className="flex items-center justify-between border-b p-4">
-              <div onClick={() => handleNavigation('/')} className="cursor-pointer">
-                <Logo size="small" showText={true} />
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full h-8 w-8"
-                onClick={() => setOpen(false)}
+        <div className="p-4 space-y-4">
+          {/* Navigation Links */}
+          <nav className="space-y-2">
+            {mainNavigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={closeMenu}
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? "text-purple-700 bg-purple-50"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
               >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            {/* Nav Links */}
-            <div className="flex-1 overflow-y-auto py-4">
-              <nav className="space-y-1 px-2">
-                {/* Authentication buttons - only show if not signed in */}
-                {!isSignedIn && (
-                  <div className="px-2 mb-6 space-y-3">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
-                      onClick={() => handleNavigation('/sign-up')}
-                    >
-                      <UserPlus size={18} />
-                      {t({
-                        english: 'Sign Up',
-                        vietnamese: 'Đăng ký'
-                      })}
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      className="w-full flex gap-2"
-                      onClick={() => handleNavigation('/login')}
-                    >
-                      <LogIn size={18} />
-                      {t({
-                        english: 'Sign In',
-                        vietnamese: 'Đăng nhập'
-                      })}
-                    </Button>
-                  </div>
-                )}
+                {t({
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
+              </Link>
+            ))}
+          </nav>
 
-                {/* Post Job button (highlighted) - only for signed in users */}
-                {isSignedIn && (
-                  <div className="px-2 mb-6">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
-                      onClick={() => handleNavigation('/post-job')}
-                    >
-                      <PlusSquare size={18} />
-                      {t({
-                        english: 'Post a Job',
-                        vietnamese: 'Đăng việc làm'
-                      })}
-                    </Button>
-                  </div>
-                )}
-                
-                {/* Navigation Items */}
-                {allNavItems.map((item) => (
-                  <button
-                    key={item.path}
-                    onClick={() => handleNavigation(item.path)}
-                    className={cn(
-                      "flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors",
-                      isActive(item.path) 
-                        ? "bg-purple-100 text-purple-700 font-medium" 
-                        : "text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
-                    {item.icon && <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />}
-                    {t({
-                      english: item.title,
-                      vietnamese: item.vietnameseTitle || item.title
-                    })}
-                  </button>
-                ))}
-              </nav>
-            </div>
-            
-            {/* Footer section */}
-            <div className="border-t p-4 space-y-4">
-              {/* Sign Out button - only show if signed in */}
-              {isSignedIn && (
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors text-red-600 hover:bg-red-50"
-                >
-                  <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
-                  {t({
-                    english: 'Sign Out',
-                    vietnamese: 'Đăng xuất'
-                  })}
-                </button>
-              )}
+          {/* Post Job Button */}
+          <div className="pt-4 border-t">
+            <Button 
+              onClick={closeMenu}
+              className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg mb-3"
+              asChild
+            >
+              <Link to={user ? "/post-job" : "/sign-in"}>
+                {t("Post a Job for Free")}
+              </Link>
+            </Button>
 
-              {/* Language Toggle */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-500">
-                  {t({
-                    english: 'Language',
-                    vietnamese: 'Ngôn ngữ'
-                  })}
-                </h4>
-                <LanguageToggle minimal={true} />
-              </div>
-              
-              {/* Sunshine credit */}
-              <div className="text-center pt-2">
-                <p className="text-sm bg-gradient-to-r from-yellow-500 to-pink-400 bg-clip-text text-transparent font-medium">
-                  Inspired by Sunshine ☀️
-                </p>
-              </div>
-            </div>
+            {/* Post Your Salon Button */}
+            <PostYourSalonButton 
+              variant="outline" 
+              className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+              onClick={closeMenu}
+            />
           </div>
-        </SheetContent>
-      </Sheet>
-    </div>
+
+          {/* Auth Section */}
+          <div className="pt-4 border-t">
+            {user ? (
+              <div className="space-y-3">
+                <UserMenu />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Link to={`/sign-in?redirect=${currentPath}`} onClick={closeMenu}>
+                  <Button variant="ghost" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to={`/auth/signup?redirect=${currentPath}`} onClick={closeMenu}>
+                  <Button className="w-full">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Language Toggle */}
+          <div className="pt-4 border-t">
+            <LanguageToggle minimal={false} className="w-full" />
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
