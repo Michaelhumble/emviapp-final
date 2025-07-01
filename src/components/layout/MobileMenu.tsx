@@ -1,179 +1,262 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { useTranslation } from "@/hooks/useTranslation";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
-import LanguageToggle from "@/components/layout/LanguageToggle";
-import {
-  Home,
-  Users,
-  Store,
-  Briefcase,
-  Users2,
-  Info,
-  Mail,
-  LayoutDashboard,
-  MessageSquare,
-  User,
-  Settings,
-  HelpCircle,
-  LogOut,
-  Menu
-} from "lucide-react";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { X, Home, Users, Building2, Briefcase, MessageSquare, Info, Mail, LayoutDashboard, User, Settings, HelpCircle, Globe, LogOut, Plus, Store } from 'lucide-react';
+import { useAuth } from '@/context/auth';
+import { useProfile } from '@/context/profile';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
-const MobileMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user, userProfile, signOut } = useAuth();
-  const { t } = useTranslation();
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { user, signOut, isSignedIn } = useAuth();
+  const { userProfile } = useProfile();
+  const { t, language, setLanguage } = useTranslation();
   const navigate = useNavigate();
 
+  if (!isOpen) return null;
+
   const handleSignOut = async () => {
-    await signOut();
-    setIsOpen(false);
-    navigate("/");
+    try {
+      await signOut();
+      onClose();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
-  const closeMenu = () => setIsOpen(false);
-
-  const menuItems = [
-    // Top Section
-    { to: "/", icon: Home, label: t("Home") },
-    { to: "/artists", icon: Users, label: t("Artists") },
-    { to: "/salons", icon: Store, label: t("Salons") },
-    { to: "/jobs", icon: Briefcase, label: t("Jobs") },
-    { to: "/community", icon: Users2, label: t("Community") },
-    
-    // Middle Section  
-    { to: "/about", icon: Info, label: t("About") },
-    { to: "/contact", icon: Mail, label: t("Contact") },
-    { to: "/dashboard", icon: LayoutDashboard, label: t("Dashboard") },
-    { to: "/messages", icon: MessageSquare, label: t("Messages") },
-    { to: "/profile", icon: User, label: t("Profile") },
-    
-    // Bottom Section
-    { to: "/settings", icon: Settings, label: t("Settings") },
-    { to: "/help", icon: HelpCircle, label: t("Help & Support") },
-  ];
-
-  const getUserDisplayName = () => {
-    if (userProfile?.full_name) return userProfile.full_name;
-    if (user?.email) return user.email.split('@')[0];
-    return 'User';
+  const handleLanguageToggle = () => {
+    if (setLanguage) {
+      setLanguage(language === 'en' ? 'vi' : 'en');
+    }
   };
 
-  const getUserAvatar = () => {
-    return userProfile?.avatar_url || null;
+  const handleNavigation = (path: string) => {
+    onClose();
+    navigate(path);
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-      </SheetTrigger>
-      
-      <SheetContent 
-        side="right" 
-        className="w-80 p-0 bg-white z-50 flex flex-col h-full"
-      >
-        {/* Fixed Header - User Info */}
-        {user && (
-          <div className="p-6 border-b bg-gray-50">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={getUserAvatar() || undefined} />
-                <AvatarFallback className="bg-purple-100 text-purple-600">
-                  {getUserDisplayName().charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {getUserDisplayName()}
+    <div className="fixed inset-0 z-50 bg-black/50">
+      <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
+        {/* Fixed Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+          {isSignedIn && (
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <span className="text-purple-600 font-semibold text-lg">
+                  {userProfile?.display_name?.charAt(0).toUpperCase() || 
+                   user?.email?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">
+                  {userProfile?.display_name || 'User'}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {user.email}
-                </p>
+                <p className="text-sm text-gray-500">{user?.email}</p>
               </div>
             </div>
-          </div>
-        )}
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close menu"
+          >
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
 
-        {/* Scrollable Menu Content */}
-        <div className="flex-1 overflow-y-auto">
-          <nav className="px-4 py-4">
-            <div className="space-y-1">
-              {menuItems.slice(0, 5).map((item) => (
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          <nav className="space-y-2">
+            {/* Main Navigation */}
+            <Link
+              to="/"
+              onClick={() => handleNavigation('/')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Home className="h-5 w-5" />
+              <span>{t?.home || 'Home'}</span>
+            </Link>
+
+            <Link
+              to="/artists"
+              onClick={() => handleNavigation('/artists')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Users className="h-5 w-5" />
+              <span>{t?.artists || 'Artists'}</span>
+            </Link>
+
+            <Link
+              to="/salons"
+              onClick={() => handleNavigation('/salons')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Building2 className="h-5 w-5" />
+              <span>{t?.salons || 'Salons'}</span>
+            </Link>
+
+            <Link
+              to="/jobs"
+              onClick={() => handleNavigation('/jobs')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Briefcase className="h-5 w-5" />
+              <span>{t?.jobs || 'Jobs'}</span>
+            </Link>
+
+            <Link
+              to="/community"
+              onClick={() => handleNavigation('/community')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <MessageSquare className="h-5 w-5" />
+              <span>{t?.community || 'Community'}</span>
+            </Link>
+
+            <Separator />
+
+            {/* Secondary Navigation */}
+            <Link
+              to="/about"
+              onClick={() => handleNavigation('/about')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Info className="h-5 w-5" />
+              <span>{t?.about || 'About'}</span>
+            </Link>
+
+            <Link
+              to="/contact"
+              onClick={() => handleNavigation('/contact')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Mail className="h-5 w-5" />
+              <span>{t?.contact || 'Contact'}</span>
+            </Link>
+
+            {isSignedIn && (
+              <>
+                <Separator />
+                
                 <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  to="/dashboard"
+                  onClick={() => handleNavigation('/dashboard')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
+                  <LayoutDashboard className="h-5 w-5" />
+                  <span>{t?.dashboard || 'Dashboard'}</span>
                 </Link>
-              ))}
-            </div>
 
-            <Separator className="my-4" />
-
-            <div className="space-y-1">
-              {menuItems.slice(5, 10).map((item) => (
                 <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  to="/messages"
+                  onClick={() => handleNavigation('/messages')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
+                  <MessageSquare className="h-5 w-5" />
+                  <span>{t?.messages || 'Messages'}</span>
                 </Link>
-              ))}
-            </div>
 
-            <Separator className="my-4" />
-
-            <div className="space-y-1">
-              {menuItems.slice(10).map((item) => (
                 <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  to="/profile/edit"
+                  onClick={() => handleNavigation('/profile/edit')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
+                  <User className="h-5 w-5" />
+                  <span>{t?.profile || 'Profile'}</span>
                 </Link>
-              ))}
-            </div>
+
+                <Separator />
+
+                {/* Action Buttons */}
+                <Link
+                  to="/post-job"
+                  onClick={() => handleNavigation('/post-job')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-purple-700 hover:bg-purple-50 transition-colors border border-purple-200 font-medium"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span>Post a Job for Free</span>
+                </Link>
+
+                <Link
+                  to="/post-salon"
+                  onClick={() => handleNavigation('/post-salon')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-amber-700 hover:bg-amber-50 transition-colors border border-amber-200 font-medium"
+                >
+                  <Store className="h-5 w-5" />
+                  <span>Post Your Salon</span>
+                </Link>
+
+                <Separator />
+
+                <Link
+                  to="/settings"
+                  onClick={() => handleNavigation('/settings')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <Settings className="h-5 w-5" />
+                  <span>{t?.settings || 'Settings'}</span>
+                </Link>
+              </>
+            )}
+
+            <Link
+              to="/help"
+              onClick={() => handleNavigation('/help')}
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <HelpCircle className="h-5 w-5" />
+              <span>{t?.help || 'Help & Support'}</span>
+            </Link>
           </nav>
         </div>
 
         {/* Fixed Footer */}
-        <div className="p-4 border-t bg-gray-50 space-y-3">
-          <div className="flex items-center justify-center">
-            <LanguageToggle minimal={true} />
-          </div>
-          
-          {user && (
-            <Button
+        <div className="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 space-y-3">
+          <button
+            onClick={handleLanguageToggle}
+            className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors w-full"
+          >
+            <Globe className="h-5 w-5" />
+            <span>{language === 'en' ? 'English' : 'Tiếng Việt'}</span>
+          </button>
+
+          {isSignedIn ? (
+            <button
               onClick={handleSignOut}
-              variant="outline"
-              className="w-full flex items-center gap-2"
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors w-full"
             >
-              <LogOut className="h-4 w-4" />
-              {t("Sign Out")}
-            </Button>
+              <LogOut className="h-5 w-5" />
+              <span>{t?.signOut || 'Sign Out'}</span>
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <Button
+                onClick={() => handleNavigation('/auth/sign-in')}
+                className="w-full"
+              >
+                Sign In
+              </Button>
+              <Button
+                onClick={() => handleNavigation('/auth/sign-up')}
+                variant="outline"
+                className="w-full"
+              >
+                Sign Up
+              </Button>
+            </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
+    </div>
   );
 };
 
