@@ -1,184 +1,158 @@
 
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, User, LogIn, Home, Scissors, Building2, Briefcase, Users, Info, Phone, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
-import { 
-  Menu, 
-  X, 
-  UserPlus, 
-  LogIn, 
-  Home, 
-  Users, 
-  Building2, 
-  Briefcase, 
-  MessageSquare, 
-  User,
-  Settings,
-  HelpCircle,
-  LayoutDashboard
-} from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import Logo from '@/components/ui/Logo';
-import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
+import { UserMenu } from './navbar/UserMenu';
+import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
+import { useTranslation } from '@/hooks/useTranslation';
+import LanguageToggle from '@/components/layout/LanguageToggle';
+import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'vi'>(getLanguagePreference());
-  const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation();
+  const currentPath = encodeURIComponent(location.pathname + location.search);
 
-  const handleLanguageChange = (language: 'en' | 'vi') => {
-    setLanguagePreference(language);
-    setCurrentLanguage(language);
-  };
+  const closeMenu = () => setIsOpen(false);
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    setIsOpen(false);
-  };
-
-  const navigationItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, showWhenSignedIn: true },
-    { name: 'Home', path: '/', icon: Home },
-    { name: 'Artists', path: '/artists', icon: Users },
-    { name: 'Salons', path: '/salons', icon: Building2 },
-    { name: 'Jobs', path: '/jobs', icon: Briefcase },
-    { name: 'Community', path: '/community', icon: MessageSquare },
-    { name: 'About', path: '/about', icon: HelpCircle },
-    { name: 'Contact', path: '/contact', icon: User },
+  const menuItems = [
+    { path: '/dashboard', title: 'Dashboard', icon: User },
+    { path: '/', title: 'Home', icon: Home },
+    { path: '/artists', title: 'Artists', icon: Scissors },
+    { path: '/salons', title: 'Salons', icon: Building2 },
+    { path: '/jobs', title: 'Jobs', icon: Briefcase },
+    { path: '/community', title: 'Community', icon: Users },
+    { path: '/about', title: 'About', icon: Info },
+    { path: '/contact', title: 'Contact', icon: Phone },
   ];
 
-  const filteredNavigationItems = navigationItems.filter(item => 
-    !item.showWhenSignedIn || (item.showWhenSignedIn && isSignedIn)
-  );
-
   return (
-    <div className="md:hidden">
+    <>
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
         <DrawerTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-9 w-9"
-            aria-label="Open menu"
-          >
+          <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
           </Button>
         </DrawerTrigger>
         
-        <DrawerContent className="h-[90vh] px-4 pb-4">
-          <div className="flex flex-col h-full">
-            {/* Header with close button */}
-            <div className="flex justify-between items-center py-3 border-b">
-              <div className="flex-1" />
-              <DrawerClose asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <X className="h-4 w-4" />
-                </Button>
-              </DrawerClose>
+        <DrawerContent className="h-[90vh]">
+          <DrawerHeader className="flex items-center justify-between border-b pb-4">
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold">
+                <span className="text-orange-500">M</span>
+                <span className="ml-1">Emvi.</span>
+                <span className="text-orange-500">App</span>
+              </div>
             </div>
-
-            {/* Centered Logo */}
-            <div className="flex justify-center py-4">
-              <Logo size="medium" showText={true} />
-            </div>
-
-            {/* Auth buttons when logged out */}
-            {!isSignedIn && (
-              <div className="space-y-2 mb-4 px-2">
-                <Button
-                  onClick={() => handleNavigation(`/auth/signup?redirect=${location.pathname}`)}
-                  className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </Button>
-                <Button
-                  onClick={() => handleNavigation(`/auth/login?redirect=${location.pathname}`)}
-                  variant="outline"
-                  className="w-full h-11 font-medium"
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Sign In
-                </Button>
+            <Button variant="ghost" size="icon" onClick={closeMenu}>
+              <X className="h-5 w-5" />
+            </Button>
+          </DrawerHeader>
+          
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            {/* Auth Section */}
+            {!user && (
+              <div className="space-y-3 mb-6">
+                <Link to={`/auth/signup?redirect=${currentPath}`} onClick={closeMenu}>
+                  <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
+                    <User className="h-5 w-5" />
+                    Sign Up
+                  </Button>
+                </Link>
+                <Link to={`/sign-in?redirect=${currentPath}`} onClick={closeMenu}>
+                  <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg h-12 text-base font-medium flex items-center justify-center gap-2">
+                    <LogIn className="h-5 w-5" />
+                    Sign In
+                  </Button>
+                </Link>
               </div>
             )}
 
-            {/* CTA Buttons */}
-            <div className="space-y-2 mb-4 px-2">
-              <Button
-                onClick={() => handleNavigation('/post-job')}
-                className="w-full h-10 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-medium text-sm"
-              >
-                Post a Job for Free
-              </Button>
-              <Button
-                onClick={() => handleNavigation('/post-salon')}
-                variant="outline"
-                className="w-full h-10 font-medium text-sm"
-              >
-                Post Your Salon
-              </Button>
-            </div>
-
-            {/* Navigation Items */}
-            <div className="flex-1 space-y-1 px-2">
-              {filteredNavigationItems.map((item) => {
+            {/* Navigation Links */}
+            <nav className="space-y-1 mb-6">
+              {menuItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
-                  <Button
-                    key={item.name}
-                    onClick={() => handleNavigation(item.path)}
-                    variant="ghost"
-                    className="w-full justify-start h-10 text-sm font-medium"
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={closeMenu}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                      location.pathname === item.path
+                        ? "text-purple-700 bg-purple-50"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
                   >
-                    <IconComponent className="w-4 h-4 mr-3" />
-                    {item.name}
-                  </Button>
+                    <IconComponent className="h-5 w-5" />
+                    {t({
+                      english: item.title,
+                      vietnamese: item.title
+                    })}
+                  </Link>
                 );
               })}
+            </nav>
+
+            {/* User Menu for authenticated users */}
+            {user && (
+              <div className="mb-6">
+                <UserMenu />
+              </div>
+            )}
+
+            {/* Post Job Button */}
+            <div className="mb-6">
+              <Button 
+                onClick={closeMenu}
+                className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg mb-3"
+                asChild
+              >
+                <Link to={user ? "/post-job" : "/sign-in"}>
+                  {t("Post a Job for Free")}
+                </Link>
+              </Button>
+
+              {/* Post Your Salon Button */}
+              <PostYourSalonButton 
+                variant="outline" 
+                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                onClose={closeMenu}
+              />
             </div>
 
-            {/* Language Switcher */}
-            <div className="px-2 py-4 border-t">
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleLanguageChange('en')}
-                  variant={currentLanguage === 'en' ? 'default' : 'outline'}
-                  className={`flex-1 h-9 text-sm font-medium ${
-                    currentLanguage === 'en' 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                      : ''
-                  }`}
-                >
-                  English
-                </Button>
-                <Button
-                  onClick={() => handleLanguageChange('vi')}
-                  variant={currentLanguage === 'vi' ? 'default' : 'outline'}
-                  className={`flex-1 h-9 text-sm font-medium ${
-                    currentLanguage === 'vi' 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                      : ''
-                  }`}
-                >
-                  Tiếng Việt
-                </Button>
+            {/* Language Section */}
+            <div className="border-t pt-4 mb-6">
+              <div className="mb-3">
+                <span className="text-sm font-medium text-gray-700">Language</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
+                <Globe className="h-4 w-4 text-gray-600" />
+                <span className="text-gray-700">English</span>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="text-center py-2">
-              <p className="text-xs bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+            <div className="text-center py-4">
+              <span className="text-sm text-orange-500 font-medium">
                 Inspired by Sunshine ☀️
-              </p>
+              </span>
             </div>
           </div>
         </DrawerContent>
       </Drawer>
-    </div>
+    </>
   );
 };
 
