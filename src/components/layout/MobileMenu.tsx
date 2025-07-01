@@ -11,7 +11,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
 
   if (!isOpen) return null;
 
@@ -89,10 +89,10 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             <Link to="/post-salon">Post Your Salon</Link>
           </Button>
 
-          {user && (
+          {user && signOut && (
             <button
-              onClick={logout}
-              className="text-sm text-muted-foreground hover:text-red-500"
+              onClick={signOut}
+              className="text-sm text-muted-foreground hover:text-red-500 mt-2"
             >
               Sign Out
             </button>
