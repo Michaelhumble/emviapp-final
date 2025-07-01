@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import EmviLogo from '@/components/branding/EmviLogo';
 import { Progress } from '@/components/ui/progress';
-import MobileMenu from '@/components/layout/MobileMenu';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface PostWizardLayoutProps {
@@ -51,11 +50,6 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
               </Button>
               
               <EmviLogo size="small" showText={true} />
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {/* Add hamburger menu to PostWizardLayout */}
-              <MobileMenu />
             </div>
           </div>
           
