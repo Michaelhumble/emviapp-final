@@ -1,45 +1,20 @@
 
-import React, { useEffect } from 'react';
-import JobsPage from './jobs';
-import { Helmet } from 'react-helmet';
+import React from 'react';
 import Layout from '@/components/layout/Layout';
-import { Routes, Route } from 'react-router-dom';
-import CreateJobPosting from './jobs/CreateJobPosting';
-import EditJobPage from './jobs/EditJobPage';
-import { useTranslation } from '@/hooks/useTranslation';
-import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 
 const Jobs = () => {
-  const { isVietnamese } = useTranslation();
-  
-  useEffect(() => {
-    // Log page visit
-    console.log("Jobs page accessed, rendering JobsPage component");
-    document.title = isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp";
-  }, [isVietnamese]);
-
   return (
     <Layout>
-      <Helmet>
-        <title>
-          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
-        </title>
-        <meta 
-          name="description" 
-          content={isVietnamese 
-            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
-            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
-          }
-        />
-      </Helmet>
-      <div className="pb-20 md:pb-0">
-        <Routes>
-          <Route path="/" element={<JobsPage />} />
-          <Route path="/create" element={<CreateJobPosting />} />
-          <Route path="/edit/:jobId" element={<EditJobPage />} />
-        </Routes>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Jobs</h1>
+            <p className="text-gray-600">
+              Find your next opportunity
+            </p>
+          </div>
+        </div>
       </div>
-      <MobileJobsNavBar />
     </Layout>
   );
 };
