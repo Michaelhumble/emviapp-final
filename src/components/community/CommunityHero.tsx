@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Heart, Sparkles } from 'lucide-react';
+import { Users, MessageCircle, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const CommunityHero = () => {
@@ -24,8 +24,8 @@ const CommunityHero = () => {
         >
           <div className="flex justify-center items-center gap-2 mb-4">
             <Users className="h-8 w-8" />
-            <Sparkles className="h-6 w-6 text-yellow-300" />
-            <Heart className="h-6 w-6 text-pink-300" />
+            <MessageCircle className="h-6 w-6 text-yellow-300" />
+            <Eye className="h-6 w-6 text-pink-300" />
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
@@ -36,8 +36,8 @@ const CommunityHero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-purple-100 max-w-3xl mx-auto leading-relaxed">
-            Join thousands of nail artists, hair stylists, and salon owners building 
-            the future of beauty together. Share your journey, get inspired, and grow your business.
+            Join thousands of beauty professionals sharing their journey, celebrating wins, 
+            and building the future of beauty together.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
@@ -45,14 +45,14 @@ const CommunityHero = () => {
               size="lg" 
               className="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-8 py-3 text-lg"
             >
-              Join the Community
+              Ask a Question
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
               className="border-white text-white hover:bg-white/10 font-semibold px-8 py-3 text-lg"
             >
-              Share Your Story
+              Browse All Q&As
             </Button>
           </div>
         </motion.div>
