@@ -16,8 +16,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { t, toggleLanguage, currentLanguage } = useTranslation();
 
-  if (!isOpen) return null;
-
   const navigationItems = [
     { name: t('nav.dashboard'), href: '/dashboard', icon: LayoutDashboard, showWhenAuth: true },
     { name: t('nav.home'), href: '/', icon: Home },
@@ -28,6 +26,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     { name: t('nav.about'), href: '/about', icon: Info },
     { name: t('nav.contact'), href: '/contact', icon: Phone },
   ];
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={onClose}>
