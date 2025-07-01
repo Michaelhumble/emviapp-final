@@ -1,9 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
+import { X, User, LogOut, Globe } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface MobileMenuProps {
@@ -12,13 +11,25 @@ interface MobileMenuProps {
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ 
-  isOpen = false, 
-  onClose = () => {} 
+  isOpen: propIsOpen, 
+  onClose: propOnClose 
 }) => {
-  const auth = useAuth?.();
-  const user = auth?.user;
-  const signOut = auth?.signOut;
-  const { t, isVietnamese, toggleLanguage, currentLanguage } = useTranslation();
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { t, toggleLanguage, currentLanguage } = useTranslation();
+
+  // Use props if provided, otherwise use internal state
+  const isOpen = propIsOpen !== undefined ? propIsOpen : internalIsOpen;
+  const onClose = propOnClose || (() => setInternalIsOpen(false));
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      onClose();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   const handleLanguageToggle = () => {
     toggleLanguage();
@@ -28,151 +39,112 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl shadow-2xl">
-        <div className="flex h-full flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">💅</span>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Emvi.App
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="rounded-full w-8 h-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Menu Panel */}
+      <div className="absolute top-4 left-4 right-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 max-h-[80vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200/50">
+          <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="h-5 w-5 text-gray-600" />
+          </button>
+        </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4 max-h-[80vh]">
-            <nav className="space-y-1">
-              <Link
-                to="/dashboard"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+        {/* Menu Items */}
+        <div className="p-4 space-y-3">
+          <Link 
+            to="/" 
+            onClick={onClose}
+            className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            <span className="text-gray-900 font-medium">Home</span>
+          </Link>
+
+          <Link 
+            to="/jobs" 
+            onClick={onClose}
+            className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            <span className="text-gray-900 font-medium">Jobs</span>
+          </Link>
+
+          <Link 
+            to="/salons" 
+            onClick={onClose}
+            className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            <span className="text-gray-900 font-medium">Salons</span>
+          </Link>
+
+          <Link 
+            to="/artists" 
+            onClick={onClose}
+            className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            <span className="text-gray-900 font-medium">Artists</span>
+          </Link>
+
+          {/* Language Toggle */}
+          <button
+            onClick={handleLanguageToggle}
+            className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
+          >
+            <Globe className="h-5 w-5 text-gray-600" />
+            <span className="text-gray-900 font-medium">
+              {currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Switch to English'}
+            </span>
+          </button>
+
+          {/* Divider */}
+          {user && <div className="border-t border-gray-200/50 my-3" />}
+
+          {/* User Actions */}
+          {user ? (
+            <>
+              <Link 
+                to="/dashboard" 
                 onClick={onClose}
+                className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
               >
-                <Home className="h-5 w-5" />
-                <span>{t({ english: "Dashboard", vietnamese: "Trang chủ" })}</span>
+                <User className="h-5 w-5 text-gray-600" />
+                <span className="text-gray-900 font-medium">Dashboard</span>
               </Link>
 
-              <Link
-                to="/"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <Home className="h-5 w-5" />
-                <span>{t({ english: "Home", vietnamese: "Trang chủ" })}</span>
-              </Link>
-
-              <Link
-                to="/artists"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <Users className="h-5 w-5" />
-                <span>{t({ english: "Artists", vietnamese: "Nghệ sĩ" })}</span>
-              </Link>
-
-              <Link
-                to="/salons"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <Building2 className="h-5 w-5" />
-                <span>{t({ english: "Salons", vietnamese: "Salon" })}</span>
-              </Link>
-
-              <Link
-                to="/jobs"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <Briefcase className="h-5 w-5" />
-                <span>{t({ english: "Jobs", vietnamese: "Việc làm" })}</span>
-              </Link>
-
-              <Link
-                to="/community"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <MessageSquare className="h-5 w-5" />
-                <span>{t({ english: "Community", vietnamese: "Cộng đồng" })}</span>
-              </Link>
-
-              <Link
-                to="/about"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <span className="text-gray-500">ℹ️</span>
-                <span>{t({ english: "About", vietnamese: "Giới thiệu" })}</span>
-              </Link>
-
-              <Link
-                to="/contact"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={onClose}
-              >
-                <span className="text-gray-500">📞</span>
-                <span>{t({ english: "Contact", vietnamese: "Liên hệ" })}</span>
-              </Link>
-            </nav>
-
-            {/* Action Buttons */}
-            <div className="mt-6 space-y-3">
-              <Link
-                to="/post-job"
-                className="block w-full"
-                onClick={onClose}
-              >
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-                  {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
-                </Button>
-              </Link>
-
-              <Link
-                to="/post-salon"
-                className="block w-full"
-                onClick={onClose}
-              >
-                <Button variant="outline" className="w-full border-purple-200 text-purple-600 hover:bg-purple-50">
-                  {t({ english: "Post Your Salon", vietnamese: "Đăng salon của bạn" })}
-                </Button>
-              </Link>
-
-              {user && signOut && (
-                <button
-                  onClick={() => {
-                    signOut();
-                    onClose();
-                  }}
-                  className="w-full text-sm text-muted-foreground hover:text-red-500 py-2 px-3 text-left rounded-lg hover:bg-red-50 transition-colors"
-                >
-                  {t({ english: "Sign Out", vietnamese: "Đăng xuất" })}
-                </button>
-              )}
-            </div>
-
-            {/* Language Toggle */}
-            <div className="mt-6 pt-4 border-t border-gray-100">
               <button
-                onClick={handleLanguageToggle}
-                className="w-full text-center py-2 px-4 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+                onClick={handleSignOut}
+                className="flex items-center space-x-3 p-3 hover:bg-red-50 rounded-lg transition-colors w-full text-left"
               >
-                {currentLanguage === 'en' ? 'English' : 'Tiếng Việt'}
+                <LogOut className="h-5 w-5 text-red-600" />
+                <span className="text-red-600 font-medium">Sign Out</span>
               </button>
-              <p className="text-xs text-gray-400 text-center mt-1">
-                {t({ english: "Inspired by Sunshine ☀️", vietnamese: "Lấy cảm hứng từ Sunshine ☀️" })}
-              </p>
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              <Link 
+                to="/auth/sign-in" 
+                onClick={onClose}
+                className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <span className="text-gray-900 font-medium">Sign In</span>
+              </Link>
+
+              <Link 
+                to="/auth/sign-up" 
+                onClick={onClose}
+                className="block w-full bg-purple-600 text-white text-center py-3 px-4 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>
