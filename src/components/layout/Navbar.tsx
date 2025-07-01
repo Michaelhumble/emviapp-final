@@ -1,6 +1,6 @@
 
-
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import Logo from "@/components/ui/Logo";
@@ -19,6 +19,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
+import { Menu } from "lucide-react";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -26,6 +27,7 @@ const Navbar = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const handleSignOut = async () => {
     await signOut();
@@ -123,13 +125,25 @@ const Navbar = () => {
           
           {/* Mobile menu hamburger button - always visible on mobile */}
           <div className="md:hidden">
-            <MobileMenu />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <MobileMenu 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
+      />
     </header>
   );
 };
 
 export default Navbar;
-
