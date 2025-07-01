@@ -2,6 +2,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import CommunityStories from '@/components/community/CommunityStories';
+import InvestorQASection from '@/components/community/InvestorQASection';
 
 const Community = () => {
   return (
@@ -16,6 +17,9 @@ const Community = () => {
           </div>
           
           <CommunityStories />
+          
+          {/* Add the Investor Q&A Section */}
+          <InvestorQASection />
         </div>
       </div>
     </Layout>
