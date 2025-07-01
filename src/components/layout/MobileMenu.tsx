@@ -98,7 +98,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col space-y-2 pt-3">
+        <div className="flex flex-col space-y-2 mt-4">
           <Button 
             onClick={onPostJobClick}
             className="w-full bg-purple-600 text-white hover:bg-purple-700"
