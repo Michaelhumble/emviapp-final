@@ -1,251 +1,174 @@
 
-import React from 'react';
-import { X, Home, Users, Briefcase, MessageSquare, User, Settings, HelpCircle, Mail, FileText, Shield, Cookie } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, User, Settings, LogOut, Briefcase, Building2 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, userProfile, signOut } = useAuth();
+  const navigate = useNavigate();
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, userProfile } = useAuth();
-
-  if (!isOpen) return null;
-
-  const handleLinkClick = () => {
-    onClose();
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setIsOpen(false);
+      toast.success('Signed out successfully');
+      navigate('/');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast.error('Failed to sign out');
+    }
   };
 
+  const closeMenu = () => setIsOpen(false);
+
+  const menuItems = [
+    { label: 'Home', path: '/' },
+    { label: 'Jobs', path: '/jobs' },
+    { label: 'Artists', path: '/artists' },
+    { label: 'Salons', path: '/salons' },
+    { label: 'Community', path: '/community' },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
-      {/* Menu Panel */}
-      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl border-l border-gray-200">
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <X className="h-5 w-5 text-gray-600" />
-            </button>
-          </div>
+    <>
+      {/* Hamburger Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsOpen(!isOpen)}
+        className="md:hidden p-2"
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </Button>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto bg-white">
-            <div className="p-4 space-y-1">
-              {/* Tagline */}
-              <p className="text-xs text-gray-500 mb-4 px-2">
-                The first platform purpose-built for the beauty industry with embedded AI intelligence.
-              </p>
+      {/* Mobile Menu Overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={closeMenu}
+          />
+          
+          {/* Menu Panel */}
+          <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl border-l border-gray-200 flex flex-col">
+            {/* Fixed Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
+              <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeMenu}
+                className="p-2"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
 
-              {/* Explore Section */}
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium text-gray-900 px-2 mb-2">Explore</h3>
-                
-                <Link
-                  to="/"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Home className="h-5 w-5" />
-                  <span>Home</span>
-                </Link>
-
-                <Link
-                  to="/artists"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Users className="h-5 w-5" />
-                  <span>Artists</span>
-                </Link>
-
-                <Link
-                  to="/salons"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Briefcase className="h-5 w-5" />
-                  <span>Salons</span>
-                </Link>
-
-                <Link
-                  to="/jobs"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Briefcase className="h-5 w-5" />
-                  <span>Jobs</span>
-                </Link>
-
-                <Link
-                  to="/community"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <MessageSquare className="h-5 w-5" />
-                  <span>Community</span>
-                </Link>
-              </div>
-
-              <Separator className="my-4" />
-
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Link
-                  to="/post-job"
-                  onClick={handleLinkClick}
-                  className="block w-full"
-                >
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300"
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto bg-white">
+              <div className="p-4 space-y-1">
+                {/* Main Navigation */}
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={closeMenu}
+                    className="block px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                   >
-                    <Briefcase className="h-4 w-4 mr-2" />
+                    {item.label}
+                  </Link>
+                ))}
+
+                {/* Divider */}
+                <div className="border-t border-gray-200 my-4" />
+
+                {/* Action Buttons */}
+                <div className="space-y-2">
+                  <Link
+                    to="/post-job"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-3 py-3 text-base font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition-all"
+                  >
+                    <Briefcase className="h-5 w-5" />
                     Post a Job for Free
-                  </Button>
-                </Link>
+                  </Link>
 
-                <Link
-                  to="/post-salon"
-                  onClick={handleLinkClick}
-                  className="block w-full"
-                >
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-300"
+                  <Link
+                    to="/post-salon"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-3 py-3 text-base font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200 transition-all"
                   >
-                    <Briefcase className="h-4 w-4 mr-2" />
+                    <Building2 className="h-5 w-5" />
                     Post Your Salon
-                  </Button>
-                </Link>
-              </div>
-
-              <Separator className="my-4" />
-
-              {/* Company Section */}
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium text-gray-900 px-2 mb-2">Company</h3>
-                
-                <Link
-                  to="/about"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <HelpCircle className="h-5 w-5" />
-                  <span>About</span>
-                </Link>
-
-                <Link
-                  to="/contact"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Mail className="h-5 w-5" />
-                  <span>Contact</span>
-                </Link>
-              </div>
-
-              <Separator className="my-4" />
-
-              {/* Legal Links */}
-              <div className="space-y-1 text-xs">
-                <div className="flex flex-wrap gap-4 px-2 text-gray-500">
-                  <Link to="/terms" onClick={handleLinkClick} className="hover:text-gray-700">
-                    Terms of Service
-                  </Link>
-                  <Link to="/privacy" onClick={handleLinkClick} className="hover:text-gray-700">
-                    Privacy Policy
-                  </Link>
-                  <Link to="/cookies" onClick={handleLinkClick} className="hover:text-gray-700">
-                    Cookie Policy
                   </Link>
                 </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-200 my-4" />
+
+                {/* User Section */}
+                {user ? (
+                  <div className="space-y-1">
+                    <div className="px-3 py-2 text-sm text-gray-500">
+                      {userProfile?.full_name || 'User'}
+                    </div>
+                    
+                    <Link
+                      to="/profile/edit"
+                      onClick={closeMenu}
+                      className="flex items-center gap-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <User className="h-5 w-5" />
+                      Profile
+                    </Link>
+
+                    <Link
+                      to="/settings"
+                      onClick={closeMenu}
+                      className="flex items-center gap-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Settings className="h-5 w-5" />
+                      Settings
+                    </Link>
+
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-3 w-full px-3 py-3 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="h-5 w-5" />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link
+                      to="/auth/signin"
+                      onClick={closeMenu}
+                      className="block px-3 py-3 text-base font-medium text-center text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg border border-gray-300 transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/auth/signup"
+                      onClick={closeMenu}
+                      className="block px-3 py-3 text-base font-medium text-center text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-
-          {/* Footer */}
-          <div className="border-t border-gray-200 bg-white p-4">
-            {user ? (
-              <div className="space-y-2">
-                <Link
-                  to="/dashboard"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Home className="h-5 w-5" />
-                  <span>Dashboard</span>
-                </Link>
-
-                <Link
-                  to="/messages"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <MessageSquare className="h-5 w-5" />
-                  <span>Messages</span>
-                  <span className="ml-auto bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full">
-                    ✨ New
-                  </span>
-                </Link>
-
-                <Link
-                  to="/profile/edit"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <User className="h-5 w-5" />
-                  <span>Profile</span>
-                </Link>
-
-                <Link
-                  to="/settings"
-                  onClick={handleLinkClick}
-                  className="flex items-center space-x-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-                >
-                  <Settings className="h-5 w-5" />
-                  <span>Settings</span>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Link
-                  to="/auth/signin"
-                  onClick={handleLinkClick}
-                  className="block w-full"
-                >
-                  <Button variant="default" className="w-full">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link
-                  to="/auth/signup"
-                  onClick={handleLinkClick}
-                  className="block w-full"
-                >
-                  <Button variant="outline" className="w-full">
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
