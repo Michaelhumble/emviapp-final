@@ -1,361 +1,282 @@
 
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { X, User, Home, Users, Store, Briefcase, Search, Settings, Bell, Heart, MessageCircle, Calendar, HelpCircle, Phone, Globe, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
-import { 
-  Menu, 
-  X, 
-  Home, 
-  Scissors, 
-  Store, 
-  Briefcase, 
-  Users, 
-  Info, 
-  Phone,
-  User,
-  Settings,
-  LogOut,
-  Crown,
-  MessageCircle,
-  Bell,
-  Calendar,
-  Heart,
-  Search,
-  Plus,
-  Globe
-} from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
-import LanguageToggle from '@/components/layout/LanguageToggle';
-import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 
-const MobileMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user, userProfile, signOut } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { user, userProfile, userRole, signOut, isSignedIn } = useAuth();
   const { t } = useTranslation();
 
   const handleSignOut = async () => {
-    await signOut();
-    setIsOpen(false);
-    navigate('/');
-    toast.success('Signed out successfully');
+    try {
+      await signOut();
+      toast.success(t("Signed out successfully"));
+      onClose();
+    } catch (error) {
+      toast.error(t("Failed to sign out"));
+    }
   };
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    setIsOpen(false);
+  const handleNavClick = () => {
+    onClose();
   };
 
-  const mainNavItems = [
-    {
-      title: t({ english: "Home", vietnamese: "Trang chủ" }),
-      path: "/",
-      icon: Home,
-    },
-    {
-      title: t({ english: "Artists", vietnamese: "Nghệ sĩ" }),
-      path: "/artists",
-      icon: Scissors,
-    },
-    {
-      title: t({ english: "Salons", vietnamese: "Tiệm Nail" }),
-      path: "/salons",
-      icon: Store,
-    },
-    {
-      title: t({ english: "Jobs", vietnamese: "Công việc" }),
-      path: "/jobs",
-      icon: Briefcase,
-    },
-    {
-      title: t({ english: "Community", vietnamese: "Cộng đồng" }),
-      path: "/freelancers",
-      icon: Users,
-    },
-  ];
-
-  const secondaryNavItems = [
-    {
-      title: t({ english: "About", vietnamese: "Giới thiệu" }),
-      path: "/about",
-      icon: Info,
-    },
-    {
-      title: t({ english: "Contact", vietnamese: "Liên hệ" }),
-      path: "/contact",
-      icon: Phone,
-    },
-  ];
-
-  const userMenuItems = user ? [
-    {
-      title: t({ english: "Dashboard", vietnamese: "Bảng điều khiển" }),
-      path: "/dashboard",
-      icon: User,
-    },
-    {
-      title: t({ english: "My Profile", vietnamese: "Hồ sơ của tôi" }),
-      path: "/profile",
-      icon: User,
-    },
-    {
-      title: t({ english: "Messages", vietnamese: "Tin nhắn" }),
-      path: "/messages",
-      icon: MessageCircle,
-    },
-    {
-      title: t({ english: "Bookings", vietnamese: "Đặt lịch" }),
-      path: "/bookings",
-      icon: Calendar,
-    },
-    {
-      title: t({ english: "Favorites", vietnamese: "Yêu thích" }),
-      path: "/favorites",
-      icon: Heart,
-    },
-    {
-      title: t({ english: "Notifications", vietnamese: "Thông báo" }),
-      path: "/notifications",
-      icon: Bell,
-    },
-    {
-      title: t({ english: "Settings", vietnamese: "Cài đặt" }),
-      path: "/settings",
-      icon: Settings,
-    },
-  ] : [];
+  if (!isOpen) return null;
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
+    <div className="fixed inset-0 z-50 bg-white">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <h2 className="text-lg font-semibold">{t("Menu")}</h2>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <X className="h-5 w-5" />
         </Button>
-      </SheetTrigger>
-      
-      <SheetContent side="right" className="w-80 px-0 overflow-y-auto">
-        <SheetHeader className="px-6 pb-4">
-          <SheetTitle className="text-left">
-            {t({ english: "Menu", vietnamese: "Thực đơn" })}
-          </SheetTitle>
-        </SheetHeader>
+      </div>
 
-        <div className="flex flex-col h-full">
-          {/* User Profile Section */}
-          {user && userProfile ? (
-            <div className="px-6 pb-4">
-              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={userProfile.avatar_url || ''} />
-                  <AvatarFallback>
-                    {userProfile.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {userProfile.full_name || 'User'}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {user.email}
-                  </p>
-                  {userProfile.role && (
-                    <Badge variant="secondary" className="mt-1 text-xs">
-                      {userProfile.role}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="px-6 pb-4">
-              <div className="flex flex-col space-y-2">
-                <Button 
-                  onClick={() => handleNavigation('/sign-in')}
-                  className="w-full"
-                >
-                  {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => handleNavigation('/sign-up')}
-                  className="w-full"
-                >
-                  {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <Separator />
-
-          {/* Main Navigation */}
-          <div className="px-6 py-4">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              {t({ english: "Navigation", vietnamese: "Điều hướng" })}
-            </h3>
-            <nav className="space-y-1">
-              {mainNavItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.title}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <Separator />
-
-          {/* Quick Actions */}
-          <div className="px-6 py-4">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              {t({ english: "Quick Actions", vietnamese: "Hành động nhanh" })}
-            </h3>
-            <div className="space-y-2">
-              <Button
-                onClick={() => handleNavigation('/post-job')}
-                className="w-full justify-start bg-purple-600 hover:bg-purple-700"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t({ english: "Post a Job", vietnamese: "Đăng công việc" })}
-              </Button>
-              
-              <PostYourSalonButton 
-                variant="outline" 
-                className="w-full justify-start border-purple-600 text-purple-600 hover:bg-purple-50"
-                onClose={() => setIsOpen(false)}
-              />
-              
-              <Button
-                variant="outline"
-                onClick={() => handleNavigation('/search')}
-                className="w-full justify-start"
-              >
-                <Search className="mr-2 h-4 w-4" />
-                {t({ english: "Search", vietnamese: "Tìm kiếm" })}
-              </Button>
-            </div>
-          </div>
-
-          {/* User Menu Items (if logged in) */}
-          {user && userMenuItems.length > 0 && (
-            <>
-              <Separator />
-              <div className="px-6 py-4">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  {t({ english: "My Account", vietnamese: "Tài khoản của tôi" })}
-                </h3>
-                <nav className="space-y-1">
-                  {userMenuItems.map((item) => {
-                    const isActive = location.pathname === item.path;
-                    return (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        onClick={() => setIsOpen(false)}
-                        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                          isActive
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <item.icon className="mr-3 h-4 w-4" />
-                        {item.title}
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
-            </>
-          )}
-
-          <Separator />
-
-          {/* Secondary Navigation */}
-          <div className="px-6 py-4">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              {t({ english: "Support", vietnamese: "Hỗ trợ" })}
-            </h3>
-            <nav className="space-y-1">
-              {secondaryNavItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.title}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <Separator />
-
-          {/* Language Toggle */}
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Globe className="mr-2 h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">
-                  {t({ english: "Language", vietnamese: "Ngôn ngữ" })}
+      <div className="flex-1 overflow-y-auto">
+        {/* User Section */}
+        {isSignedIn && (
+          <div className="p-4 border-b bg-gray-50">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-purple-600 font-medium">
+                  {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                 </span>
               </div>
-              <LanguageToggle minimal={true} />
+              <div>
+                <p className="font-medium text-gray-800">
+                  {userProfile?.full_name || 'User'}
+                </p>
+                <p className="text-sm text-gray-600">{user?.email}</p>
+                <p className="text-xs text-purple-600 capitalize">{userRole}</p>
+              </div>
             </div>
           </div>
+        )}
 
-          {/* Sign Out (if logged in) */}
-          {user && (
-            <>
-              <Separator />
-              <div className="px-6 py-4 mt-auto">
-                <Button
-                  variant="ghost"
-                  onClick={handleSignOut}
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+        {/* Navigation Section */}
+        <div className="p-4">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">{t("NAVIGATION")}</h3>
+          <nav className="space-y-1">
+            <Link
+              to="/"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Home className="h-5 w-5 text-gray-600" />
+              <span>{t("Home")}</span>
+            </Link>
+            <Link
+              to="/artists"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Users className="h-5 w-5 text-gray-600" />
+              <span>{t("Artists")}</span>
+            </Link>
+            <Link
+              to="/salons"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Store className="h-5 w-5 text-gray-600" />
+              <span>{t("Salons")}</span>
+            </Link>
+            <Link
+              to="/jobs"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Briefcase className="h-5 w-5 text-gray-600" />
+              <span>{t("Jobs")}</span>
+            </Link>
+            <Link
+              to="/community"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Users className="h-5 w-5 text-purple-600" />
+              <span className="text-purple-600">{t("Community")}</span>
+            </Link>
+          </nav>
+        </div>
+
+        <Separator />
+
+        {/* Quick Actions */}
+        <div className="p-4">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">{t("QUICK ACTIONS")}</h3>
+          <div className="space-y-2">
+            <Button
+              asChild
+              className="w-full justify-start bg-purple-600 hover:bg-purple-700"
+            >
+              <Link to="/posting/job" onClick={handleNavClick}>
+                <span>{t("Post a Job")}</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="w-full justify-start"
+            >
+              <Link to="/posting/salon" onClick={handleNavClick}>
+                <span>{t("Post Your Salon")}</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              <Link to="/search" onClick={handleNavClick}>
+                <Search className="h-4 w-4 mr-2" />
+                <span>{t("Search")}</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        {/* Account Section (if signed in) */}
+        {isSignedIn && (
+          <>
+            <Separator />
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-500 mb-3">{t("MY ACCOUNT")}</h3>
+              <nav className="space-y-1">
+                <Link
+                  to="/dashboard"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  {t({ english: "Sign Out", vietnamese: "Đăng xuất" })}
-                </Button>
-              </div>
-            </>
+                  <User className="h-5 w-5 text-gray-600" />
+                  <span>{t("Dashboard")}</span>
+                </Link>
+                <Link
+                  to="/profile"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <User className="h-5 w-5 text-gray-600" />
+                  <span>{t("My Profile")}</span>
+                </Link>
+                <Link
+                  to="/messages"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5 text-gray-600" />
+                  <span>{t("Messages")}</span>
+                </Link>
+                <Link
+                  to="/bookings"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Calendar className="h-5 w-5 text-gray-600" />
+                  <span>{t("Bookings")}</span>
+                </Link>
+                <Link
+                  to="/favorites"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Heart className="h-5 w-5 text-gray-600" />
+                  <span>{t("Favorites")}</span>
+                </Link>
+                <Link
+                  to="/notifications"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Bell className="h-5 w-5 text-gray-600" />
+                  <span>{t("Notifications")}</span>
+                </Link>
+                <Link
+                  to="/settings"
+                  onClick={handleNavClick}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Settings className="h-5 w-5 text-gray-600" />
+                  <span>{t("Settings")}</span>
+                </Link>
+              </nav>
+            </div>
+          </>
+        )}
+
+        {/* Support Section */}
+        <Separator />
+        <div className="p-4">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">{t("SUPPORT")}</h3>
+          <nav className="space-y-1">
+            <Link
+              to="/about"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <HelpCircle className="h-5 w-5 text-gray-600" />
+              <span>{t("About")}</span>
+            </Link>
+            <Link
+              to="/contact"
+              onClick={handleNavClick}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Phone className="h-5 w-5 text-gray-600" />
+              <span>{t("Contact")}</span>
+            </Link>
+          </nav>
+        </div>
+
+        {/* Language & Sign Out */}
+        <Separator />
+        <div className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Globe className="h-5 w-5 text-gray-600" />
+              <span className="text-sm">{t("Language")}</span>
+            </div>
+            <LanguageToggle minimal />
+          </div>
+
+          {isSignedIn ? (
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              <span>{t("Sign Out")}</span>
+            </Button>
+          ) : (
+            <div className="space-y-2">
+              <Button asChild className="w-full">
+                <Link to="/auth?mode=signin" onClick={handleNavClick}>
+                  {t("Sign In")}
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link to="/auth?mode=signup" onClick={handleNavClick}>
+                  {t("Sign Up")}
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
+    </div>
   );
 };
 
