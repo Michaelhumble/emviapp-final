@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import EmviLogo from '@/components/branding/EmviLogo';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,9 +27,9 @@ const MobileMenu = () => {
         className="w-full max-w-sm bg-white p-0 overflow-y-auto"
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <span className="text-lg font-semibold">Menu</span>
+          {/* Header with Logo */}
+          <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-purple-50 to-pink-50">
+            <EmviLogo size="medium" showText={true} />
             <Button 
               variant="ghost" 
               size="icon" 
@@ -40,7 +41,7 @@ const MobileMenu = () => {
           </div>
 
           {/* Action Buttons - ALWAYS AT TOP */}
-          <div className="p-4 space-y-3 border-b">
+          <div className="p-4 space-y-3 border-b bg-gray-50/50">
             <Button 
               asChild
               className="w-full bg-purple-600 hover:bg-purple-700 text-white"
@@ -71,7 +72,7 @@ const MobileMenu = () => {
             <Button 
               asChild
               variant="outline"
-              className="w-full"
+              className="w-full border-purple-200 hover:bg-purple-50"
               size="lg"
             >
               <Link to="/auth/signin" onClick={closeMenu}>
@@ -85,56 +86,56 @@ const MobileMenu = () => {
             <Link 
               to="/dashboard" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Dashboard
             </Link>
             <Link 
               to="/" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Home
             </Link>
             <Link 
               to="/artists" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Artists
             </Link>
             <Link 
               to="/salons" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Salons
             </Link>
             <Link 
               to="/jobs" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Jobs
             </Link>
             <Link 
               to="/community" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Community
             </Link>
             <Link 
               to="/about" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               About
             </Link>
             <Link 
               to="/contact" 
               onClick={closeMenu}
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+              className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
             >
               Contact
             </Link>
