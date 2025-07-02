@@ -10,7 +10,6 @@ import { SalonProvider } from "@/context/salon";
 import { NotificationProvider } from "@/context/notification";
 import { SubscriptionProvider } from "@/context/subscription";
 import { PostingProvider } from "@/context/posting";
-import Layout from "@/components/layout/Layout";
 import Index from "@/pages/Index";
 import Artists from "@/pages/Artists";
 import Salons from "@/pages/Salons";
@@ -50,38 +49,36 @@ const App = () => (
                   <Toaster />
                   <Sonner />
                   <BrowserRouter>
-                    <Layout>
-                      <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/artists" element={<Artists />} />
-                        <Route path="/salons" element={<Salons />} />
-                        <Route path="/jobs" element={<Jobs />} />
-                        <Route path="/community" element={<Community />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/sign-in" element={<SignIn />} />
-                        <Route path="/auth/signup" element={<SignUp />} />
-                        <Route path="/auth/signup-new" element={<SignUpNew />} />
-                        <Route path="/test-enhanced-signup" element={<TestEnhancedSignUp />} />
-                        
-                        {/* Redirect old sign-up route to new unified route */}
-                        <Route path="/sign-up" element={<Navigate to="/auth/signup" replace />} />
-                        
-                        <Route path="/artist/:id" element={<ArtistProfile />} />
-                        <Route path="/salon/:id" element={<SalonProfile />} />
-                        <Route path="/post-job" element={<PostJob />} />
-                        <Route path="/posting/salon" element={<PostSalon />} />
-                        <Route path="/posting/artist" element={<PostArtist />} />
-                        <Route path="/posting/booth" element={<PostBooth />} />
-                        <Route path="/posting/supply" element={<PostSupply />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/contact" element={<Contact />} />
-                        <Route path="/terms" element={<Terms />} />
-                        <Route path="/privacy" element={<Privacy />} />
-                        <Route path="/cookies" element={<Cookies />} />
-                        <Route path="/pricing" element={<Pricing />} />
-                        <Route path="/search" element={<Search />} />
-                      </Routes>
-                    </Layout>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/artists" element={<Artists />} />
+                      <Route path="/salons" element={<Salons />} />
+                      <Route path="/jobs" element={<Jobs />} />
+                      <Route path="/community" element={<Community />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/sign-in" element={<SignIn />} />
+                      <Route path="/auth/signup" element={<SignUp />} />
+                      <Route path="/auth/signup-new" element={<SignUpNew />} />
+                      <Route path="/test-enhanced-signup" element={<TestEnhancedSignUp />} />
+                      
+                      {/* Redirect old sign-up route to new unified route */}
+                      <Route path="/sign-up" element={<Navigate to="/auth/signup" replace />} />
+                      
+                      <Route path="/artist/:id" element={<ArtistProfile />} />
+                      <Route path="/salon/:id" element={<SalonProfile />} />
+                      <Route path="/post-job" element={<PostJob />} />
+                      <Route path="/posting/salon" element={<PostSalon />} />
+                      <Route path="/posting/artist" element={<PostArtist />} />
+                      <Route path="/posting/booth" element={<PostBooth />} />
+                      <Route path="/posting/supply" element={<PostSupply />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/cookies" element={<Cookies />} />
+                      <Route path="/pricing" element={<Pricing />} />
+                      <Route path="/search" element={<Search />} />
+                    </Routes>
                   </BrowserRouter>
                 </TooltipProvider>
               </PostingProvider>
