@@ -90,7 +90,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
               <Button 
                 variant="secondary" 
                 className="w-full" 
-                onClick={() => handleNavigation('/auth/signup')}
+                onClick={() => handleNavigation('/sign-up')}
               >
                 Create Account
               </Button>
@@ -130,7 +130,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
             <Button 
               variant="secondary" 
               className="w-full" 
-              onClick={() => handleNavigation('/auth/signup')}
+              onClick={() => handleNavigation('/sign-up')}
             >
               Create Account
             </Button>
