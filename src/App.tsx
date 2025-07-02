@@ -40,17 +40,14 @@ function App() {
                       <Routes>
                         <Route path="/" element={<Index />} />
                         <Route path="/about" element={<About />} />
-                        <Route path="/jobs" element={<Jobs />} />
+                        <Route path="/jobs/*" element={<Jobs />} />
                         <Route path="/artists" element={<Artists />} />
                         <Route path="/community" element={<Community />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/privacy" element={<Privacy />} />
                         <Route path="/terms" element={<Terms />} />
-
-                        {/* Dashboard Routes */}
                         <Route path="/dashboard/salon" element={<SalonDashboard />} />
-
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </BookingNotificationProvider>
