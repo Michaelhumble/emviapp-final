@@ -52,9 +52,9 @@ const SuperMobileBottomNavBar = () => {
       label: t("Salons") 
     },
     { 
-      path: "/auth/signup", 
+      path: "/contact", 
       icon: <User strokeWidth={1.75} size={24} />, 
-      label: t("Sign Up") 
+      label: t("Contact") 
     }
   ];
 
