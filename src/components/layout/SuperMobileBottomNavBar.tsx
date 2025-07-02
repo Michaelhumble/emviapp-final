@@ -1,7 +1,7 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Home, Search, Briefcase, Store, User } from "lucide-react";
+import { Home, Search, Briefcase, Store, UserPlus } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getLanguagePreference } from "@/utils/languagePreference";
 import { useState, useEffect } from "react";
@@ -52,9 +52,9 @@ const SuperMobileBottomNavBar = () => {
       label: t("Salons") 
     },
     { 
-      path: "/contact", 
-      icon: <User strokeWidth={1.75} size={24} />, 
-      label: t("Contact") 
+      path: "/auth/signup", 
+      icon: <UserPlus strokeWidth={1.75} size={24} />, 
+      label: "Sign Up"
     }
   ];
 
