@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
-import MobileMenu from './MobileMenu';
+import MobileHamburgerMenu from './MobileHamburgerMenu';
 import MainNavigation from './navbar/MainNavigation';
 import AuthButtons from './navbar/AuthButtons';
 
@@ -35,7 +35,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            <MobileMenu />
+            <MobileHamburgerMenu />
           </div>
         </div>
       </div>
