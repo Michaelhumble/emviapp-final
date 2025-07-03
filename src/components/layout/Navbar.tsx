@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
@@ -11,6 +11,7 @@ import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
   const { isSignedIn } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
@@ -60,7 +61,10 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            <MobileHamburgerMenu />
+            <MobileHamburgerMenu 
+              isOpen={isMobileMenuOpen} 
+              onClose={() => setIsMobileMenuOpen(false)} 
+            />
           </div>
         </div>
       </div>
