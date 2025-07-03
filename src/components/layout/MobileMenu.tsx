@@ -68,7 +68,7 @@ const MobileMenu = () => {
   ];
 
   return (
-    <>
+    <React.Fragment key={`mobile-menu-${isSignedIn}`}>
       {/* Hamburger Menu Button */}
       <Button
         variant="ghost"
@@ -86,7 +86,6 @@ const MobileMenu = () => {
           <div 
             className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out"
             onClick={(e) => e.stopPropagation()}
-            key={`mobile-menu-${isSignedIn}`} // Force re-render when auth state changes
           >
             {/* Menu Header */}
             <div className="flex items-center justify-between p-4 border-b">
@@ -165,7 +164,7 @@ const MobileMenu = () => {
           </div>
         </div>
       )}
-    </>
+    </React.Fragment>
   );
 };
 
