@@ -4,11 +4,16 @@ import { Link } from 'react-router-dom';
 import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
 import Logo from '@/components/ui/Logo';
 
 const MobileHamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
+  const { isSignedIn, signOut, user } = useAuth();
+  
+  // Debug logging
+  console.log("🌟 MobileMenu: isSignedIn=", isSignedIn, "user=", user);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -98,6 +103,14 @@ const MobileHamburgerMenu = () => {
 
             {/* Menu Items */}
             <div className="flex flex-col p-4 space-y-2">
+              {/* Debug Sign Out Button - Always visible */}
+              <button
+                onClick={signOut}
+                className="w-full text-red-600 bg-white py-2 mt-2 rounded shadow hover:bg-red-50"
+              >
+                Sign Out (debug)
+              </button>
+
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
@@ -137,27 +150,39 @@ const MobileHamburgerMenu = () => {
                 </Button>
               </Link>
               
-              {/* Sign In Link */}
-              <Link
-                to="/auth/signin"
-                onClick={closeMenu}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
-              >
-                <span className="font-medium">Sign In</span>
-              </Link>
-
-              {/* Sign Up Button */}
-              <Link
-                to="/auth/signup"
-                onClick={closeMenu}
-                className="block"
-              >
-                <Button 
-                  className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-2 rounded-xl transition-all duration-200 shadow-sm"
+              {/* Conditional Auth Buttons */}
+              {isSignedIn ? (
+                <button
+                  onClick={signOut}
+                  className="w-full text-red-600 bg-white py-2 mt-6 rounded-xl border border-red-200 hover:bg-red-50 font-medium transition-colors"
                 >
-                  Sign Up
-                </Button>
-              </Link>
+                  Sign Out
+                </button>
+              ) : (
+                <>
+                  {/* Sign In Link */}
+                  <Link
+                    to="/auth/signin"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
+                  >
+                    <span className="font-medium">Sign In</span>
+                  </Link>
+
+                  {/* Sign Up Button */}
+                  <Link
+                    to="/auth/signup"
+                    onClick={closeMenu}
+                    className="block"
+                  >
+                    <Button 
+                      className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-2 rounded-xl transition-all duration-200 shadow-sm"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
