@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Home, Search, Briefcase, Store, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,10 +7,15 @@ import { useAuth } from '@/context/auth';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [authState, setAuthState] = useState<boolean>(false);
   const { t } = useTranslation();
   const { isSignedIn, signOut } = useAuth();
 
-  console.log('MobileMenu render - isSignedIn:', isSignedIn); // Debug log
+  // Force component to re-render when auth state changes
+  useEffect(() => {
+    setAuthState(isSignedIn);
+    console.log('MobileMenu auth state updated:', isSignedIn);
+  }, [isSignedIn]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -25,6 +29,7 @@ const MobileMenu = () => {
     try {
       await signOut();
       closeMenu();
+      console.log('Sign out successful');
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -112,7 +117,7 @@ const MobileMenu = () => {
               
               {/* Authentication Section */}
               <div className="mt-4 pt-4 border-t border-gray-200">
-                {isSignedIn ? (
+                {authState ? (
                   // Show Sign Out button when signed in
                   <Button 
                     onClick={handleSignOut}
