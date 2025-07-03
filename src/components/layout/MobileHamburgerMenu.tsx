@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone } from 'lucide-react';
+import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import Logo from '@/components/ui/Logo';
@@ -48,6 +48,11 @@ const MobileHamburgerMenu = () => {
       path: "/dashboard", 
       icon: LayoutDashboard, 
       label: t("Dashboard") 
+    },
+    { 
+      path: "/about", 
+      icon: Info, 
+      label: t("About") 
     },
     { 
       path: "/contact", 
