@@ -41,10 +41,18 @@ const MobileHamburgerMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-xl z-50 max-h-[50vh] overflow-y-auto">
-          <div className="px-3 py-2">
-            {/* Primary Navigation - Compact Grid Layout */}
-            <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="absolute top-16 left-0 right-0 bg-white/98 backdrop-blur-xl border border-gray-100 shadow-2xl z-50 mx-2 rounded-2xl overflow-hidden">
+          {/* Compact Header */}
+          <div className="px-4 py-3 border-b border-gray-50">
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-semibold text-gray-800">EmviApp</span>
+              <span className="text-xs text-gray-400">Menu</span>
+            </div>
+          </div>
+
+          <div className="p-4 space-y-3">
+            {/* Primary Navigation - Compact 2x3 Grid */}
+            <div className="grid grid-cols-3 gap-2">
               {primaryMenuItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -52,57 +60,61 @@ const MobileHamburgerMenu = () => {
                     key={item.to}
                     to={item.to}
                     onClick={closeMenu}
-                    className="flex flex-col items-center justify-center px-2 py-2 rounded-lg text-xs font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                    className="flex flex-col items-center justify-center p-2 rounded-xl text-gray-700 hover:text-primary hover:bg-gray-50 transition-all duration-200 hover:scale-105"
                   >
-                    <Icon className="h-4 w-4 mb-1" />
-                    <span className="text-center leading-tight">{item.label}</span>
+                    <Icon className="h-5 w-5 mb-1" />
+                    <span className="text-xs font-medium">{item.label}</span>
                   </Link>
                 );
               })}
             </div>
 
-            {/* Secondary Navigation - Horizontal */}
-            <div className="flex justify-center gap-4 py-2 border-t border-gray-100 mb-3">
-              {secondaryMenuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={closeMenu}
-                    className="flex items-center px-3 py-1 rounded-md text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                  >
-                    <Icon className="h-3 w-3 mr-1" />
-                    {item.label}
-                  </Link>
-                );
-              })}
+            {/* Secondary Links & Actions */}
+            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+              <div className="flex gap-3">
+                {secondaryMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={closeMenu}
+                      className="flex items-center text-xs text-gray-500 hover:text-gray-700"
+                    >
+                      <Icon className="h-4 w-4 mr-1" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+              
+              <div className="text-xs text-gray-400 italic">Sunshine ☀️</div>
             </div>
 
-            {/* Call-to-Action Buttons - Horizontal Layout */}
-            <div className="flex gap-2 mb-3 border-t border-gray-100 pt-2">
+            {/* CTA Buttons */}
+            <div className="flex gap-2 pt-1">
               <Link
                 to="/post-job"
                 onClick={closeMenu}
-                className="flex-1 text-center px-3 py-2 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary/90 shadow-sm"
+                className="flex-1 text-center py-2.5 px-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-md transition-all"
               >
                 Post Job
               </Link>
               <Link
                 to="/sell-salon"
                 onClick={closeMenu}
-                className="flex-1 text-center px-3 py-2 rounded-lg text-xs font-semibold text-white bg-secondary hover:bg-secondary/80 shadow-sm"
+                className="flex-1 text-center py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all"
               >
-                Post Salon
+                Sell Salon
               </Link>
             </div>
 
-            {/* Authentication - Compact */}
-            <div className="border-t border-gray-200 pt-2">
+            {/* Authentication */}
+            <div className="pt-1">
               {isSignedIn ? (
                 <button
                   onClick={signOut}
-                  className="w-full text-center px-3 py-2 rounded-md text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200"
+                  className="w-full text-center py-2 px-3 rounded-xl text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300 transition-all"
                 >
                   Sign Out
                 </button>
@@ -111,24 +123,19 @@ const MobileHamburgerMenu = () => {
                   <Link
                     to="/auth/signin"
                     onClick={closeMenu}
-                    className="flex-1 text-center px-3 py-2 rounded-md text-xs font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-gray-300"
+                    className="flex-1 text-center py-2 px-3 rounded-xl text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 transition-all"
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/auth/signup"
                     onClick={closeMenu}
-                    className="flex-1 text-center px-3 py-2 rounded-md text-xs font-medium text-white bg-primary hover:bg-primary/90"
+                    className="flex-1 text-center py-2 px-3 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-all"
                   >
                     Sign Up
                   </Link>
                 </div>
               )}
-            </div>
-
-            {/* Branding Credit - Minimal */}
-            <div className="text-center pt-2">
-              <p className="text-[10px] italic text-gray-400">Inspired by Sunshine ☀️</p>
             </div>
           </div>
         </div>
