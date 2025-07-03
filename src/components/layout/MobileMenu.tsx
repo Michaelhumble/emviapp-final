@@ -11,6 +11,8 @@ const MobileMenu = () => {
   const { t } = useTranslation();
   const { isSignedIn, signOut } = useAuth();
 
+  console.log('MobileMenu render - isSignedIn:', isSignedIn); // Debug log
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -109,39 +111,46 @@ const MobileMenu = () => {
               ))}
               
               {/* Authentication Section */}
-              {isSignedIn ? (
-                // Show Sign Out button when signed in
-                <Button 
-                  onClick={handleSignOut}
-                  variant="outline"
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 font-medium py-3 rounded-lg transition-colors mt-4"
-                >
-                  Sign Out
-                </Button>
-              ) : (
-                // Show Sign In and Sign Up when not signed in
-                <>
-                  <Link
-                    to="/sign-in"
-                    onClick={closeMenu}
-                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                {isSignedIn ? (
+                  // Show Sign Out button when signed in
+                  <Button 
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50 font-medium py-3 rounded-lg transition-colors"
                   >
-                    <span className="font-medium">Sign In</span>
-                  </Link>
-
-                  <Link
-                    to="/auth/signup"
-                    onClick={closeMenu}
-                    className="block mt-4"
-                  >
-                    <Button 
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                    Sign Out
+                  </Button>
+                ) : (
+                  // Show Sign In and Sign Up when not signed in
+                  <div className="space-y-2">
+                    <Link
+                      to="/sign-in"
+                      onClick={closeMenu}
+                      className="block"
                     >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
+                      <Button 
+                        variant="ghost"
+                        className="w-full justify-start px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        Sign In
+                      </Button>
+                    </Link>
+
+                    <Link
+                      to="/auth/signup"
+                      onClick={closeMenu}
+                      className="block"
+                    >
+                      <Button 
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                      >
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
