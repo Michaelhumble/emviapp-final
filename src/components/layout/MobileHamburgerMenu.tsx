@@ -1,193 +1,159 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone, Info } from 'lucide-react';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/hooks/useTranslation';
+import { X, Home, Briefcase, Building2, Users, MessageSquare, LayoutDashboard, Info, Phone } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import Logo from '@/components/ui/Logo';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const MobileHamburgerMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { t } = useTranslation();
-  const { isSignedIn, signOut, user } = useAuth();
-  
-  // Debug logging
-  console.log("🌟 MobileMenu: isSignedIn=", isSignedIn, "user=", user);
+interface MobileHamburgerMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAuthAction = async (action: string) => {
+    onClose();
+    if (action === 'signOut') {
+      await signOut();
+      navigate('/');
+    } else {
+      navigate(`/auth/${action}`);
+    }
   };
 
-  const closeMenu = () => {
-    setIsOpen(false);
+  const handleNavigation = (path: string) => {
+    onClose();
+    navigate(path);
   };
 
   const menuItems = [
-    { 
-      path: "/", 
-      icon: Home, 
-      label: t("Home") 
-    },
-    { 
-      path: "/jobs", 
-      icon: Briefcase, 
-      label: t("Jobs") 
-    },
-    { 
-      path: "/salons", 
-      icon: Store, 
-      label: t("Salons") 
-    },
-    { 
-      path: "/artists", 
-      icon: Users, 
-      label: t("Artists") 
-    },
-    { 
-      path: "/freelancers", 
-      icon: MessageSquare, 
-      label: t("Community") 
-    },
-    { 
-      path: "/dashboard", 
-      icon: LayoutDashboard, 
-      label: t("Dashboard") 
-    },
-    { 
-      path: "/about", 
-      icon: Info, 
-      label: t("About") 
-    },
-    { 
-      path: "/contact", 
-      icon: Phone, 
-      label: t("Contact") 
-    }
+    { icon: Home, label: 'Home', href: '/' },
+    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
+    { icon: Building2, label: 'Salons', href: '/salons' },
+    { icon: Users, label: 'Artists', href: '/artists' },
+    { icon: MessageSquare, label: 'Community', href: '/community' },
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+    { icon: Info, label: 'About', href: '/about' },
+    { icon: Phone, label: 'Contact', href: '/contact' },
   ];
 
   return (
-    <>
-      {/* Hamburger Menu Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggleMenu}
-        className="md:hidden"
-        aria-label="Toggle menu"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </Button>
-
-      {/* Mobile Menu Overlay */}
+    <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={closeMenu}>
-          <div 
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out backdrop-blur-sm border-l border-gray-100"
-            onClick={(e) => e.stopPropagation()}
-            style={{ backgroundColor: '#FFFFFF' }}
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            onClick={onClose}
+          />
+          
+          {/* Menu Panel */}
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-0 left-0 h-[35vh] max-h-[400px] w-80 bg-white/95 backdrop-blur-md shadow-2xl z-50 flex flex-col rounded-br-2xl border-r border-b border-gray-200/50"
           >
-            {/* Menu Header with Logo */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <Logo size="small" showText={true} />
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100/80">
+              <h2 className="text-lg font-semibold text-gray-800 font-serif">Menu</h2>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={closeMenu}
-                aria-label="Close menu"
-                className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-full"
+                onClick={onClose}
+                className="h-8 w-8 hover:bg-gray-100/80 rounded-full"
               >
-                <X size={24} />
+                <X className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Menu Items */}
-            <div className="flex flex-col p-4 space-y-2">
-              {/* Debug Sign Out Button - Always visible */}
-              <button
-                onClick={signOut}
-                className="w-full text-red-600 bg-white py-2 mt-2 rounded shadow hover:bg-red-50"
-              >
-                Sign Out (debug)
-              </button>
+            {/* Navigation Items - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <nav className="space-y-1 mb-4">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => handleNavigation(item.href)}
+                    className="flex items-center space-x-3 w-full px-3 py-2 rounded-lg hover:bg-gray-50/80 transition-colors duration-200 text-gray-700 hover:text-gray-900 text-left"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="font-medium text-sm">{item.label}</span>
+                  </button>
+                ))}
+              </nav>
 
-              {menuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={closeMenu}
-                  className="flex items-center gap-4 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
-                >
-                  <item.icon size={18} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
-                  <span className="font-medium group-hover:text-gray-900">{item.label}</span>
-                </Link>
-              ))}
-              
-              {/* Post a Job Button */}
-              <Link
-                to="/post-job"
-                onClick={closeMenu}
-                className="block mt-4"
-              >
-                <Button 
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-xl transition-colors shadow-sm"
+              {/* CTA Buttons */}
+              <div className="space-y-2 mb-4">
+                <Button
+                  onClick={() => handleNavigation('/post-job')}
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md text-sm py-2"
                 >
                   Post a Job
                 </Button>
-              </Link>
-
-              {/* Post Your Salon Button */}
-              <Link
-                to="/sell-salon"
-                onClick={closeMenu}
-                className="block"
-              >
-                <Button 
+                
+                <Button
+                  onClick={() => handleNavigation('/sell-salon')}
                   variant="outline"
-                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 font-medium py-2 rounded-xl transition-colors"
+                  className="w-full border-gray-200 hover:bg-gray-50/80 text-sm py-2"
                 >
-                  Post Your Salon
+                  Sell Salon
                 </Button>
-              </Link>
-              
-              {/* Conditional Auth Buttons */}
-              {isSignedIn ? (
-                <button
-                  onClick={signOut}
-                  className="w-full text-red-600 bg-white py-2 mt-6 rounded-xl border border-red-200 hover:bg-red-50 font-medium transition-colors"
-                >
-                  Sign Out
-                </button>
-              ) : (
-                <>
-                  {/* Sign In Link */}
-                  <Link
-                    to="/auth/signin"
-                    onClick={closeMenu}
-                    className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
-                  >
-                    <span className="font-medium">Sign In</span>
-                  </Link>
-
-                  {/* Sign Up Button */}
-                  <Link
-                    to="/auth/signup"
-                    onClick={closeMenu}
-                    className="block"
-                  >
-                    <Button 
-                      className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-2 rounded-xl transition-all duration-200 shadow-sm"
-                    >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
+              </div>
             </div>
-          </div>
-        </div>
+
+            {/* Auth Section */}
+            <div className="p-4 border-t border-gray-100/80 bg-gray-50/50">
+              {user ? (
+                <div className="space-y-2">
+                  <div className="text-xs text-gray-600 mb-2">
+                    Signed in as {user.email}
+                  </div>
+                  <Button
+                    onClick={() => handleAuthAction('signOut')}
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50 text-sm py-2"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => handleAuthAction('signin')}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => handleAuthAction('signup')}
+                    variant="outline"
+                    className="w-full border-gray-200 hover:bg-gray-50 text-sm py-2"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+              
+              {/* Credit */}
+              <div className="text-center mt-3">
+                <p className="text-xs text-gray-500">
+                  Inspired by Sunshine ☀️
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 
