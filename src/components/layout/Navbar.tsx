@@ -6,8 +6,12 @@ import LanguageToggle from './LanguageToggle';
 import MobileHamburgerMenu from './MobileHamburgerMenu';
 import MainNavigation from './navbar/MainNavigation';
 import AuthButtons from './navbar/AuthButtons';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
+  const { isSignedIn } = useAuth();
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,6 +30,27 @@ const Navbar = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-4">
+            {/* Post Job and Post Salon Buttons - Desktop Only */}
+            <div className="hidden md:flex items-center space-x-2">
+              <Link to="/post-job">
+                <Button 
+                  size="sm"
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Post a Job
+                </Button>
+              </Link>
+              <Link to="/sell-salon">
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                >
+                  Post Your Salon
+                </Button>
+              </Link>
+            </div>
+
             {/* Language Toggle */}
             <LanguageToggle />
             
