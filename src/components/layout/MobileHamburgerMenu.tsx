@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Home, Search, Briefcase, Store, Users, MessageSquare } from 'lucide-react';
+import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
-import EmviLogo from '@/components/branding/EmviLogo';
+import Logo from '@/components/ui/Logo';
 
 const MobileHamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,9 +45,14 @@ const MobileHamburgerMenu = () => {
       label: t("Community") 
     },
     { 
-      path: "/search", 
-      icon: Search, 
-      label: t("Search") 
+      path: "/dashboard", 
+      icon: LayoutDashboard, 
+      label: t("Dashboard") 
+    },
+    { 
+      path: "/contact", 
+      icon: Phone, 
+      label: t("Contact") 
     }
   ];
 
@@ -58,7 +63,7 @@ const MobileHamburgerMenu = () => {
         variant="ghost"
         size="icon"
         onClick={toggleMenu}
-        className="md:hidden text-gray-700 hover:bg-gray-100"
+        className="md:hidden"
         aria-label="Toggle menu"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -68,21 +73,21 @@ const MobileHamburgerMenu = () => {
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={closeMenu}>
           <div 
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out backdrop-blur-sm"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out backdrop-blur-sm border-l border-gray-100"
             onClick={(e) => e.stopPropagation()}
             style={{ backgroundColor: '#FFFFFF' }}
           >
             {/* Menu Header with Logo */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <EmviLogo size="small" showText={true} />
+              <Logo size="small" showText={true} />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={closeMenu}
-                className="text-gray-600 hover:bg-gray-100 rounded-full"
                 aria-label="Close menu"
+                className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-full"
               >
-                <X size={20} />
+                <X size={24} />
               </Button>
             </div>
 
@@ -93,73 +98,61 @@ const MobileHamburgerMenu = () => {
                   key={item.path}
                   to={item.path}
                   onClick={closeMenu}
-                  className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 hover:scale-[1.02]"
+                  className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100">
-                    <item.icon size={18} className="text-purple-600" />
-                  </div>
-                  <span className="font-medium text-gray-800">{item.label}</span>
+                  <item.icon size={20} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
+                  <span className="font-medium group-hover:text-gray-900">{item.label}</span>
                 </Link>
               ))}
               
-              {/* Divider */}
-              <div className="border-t border-gray-100 my-4"></div>
-              
-              {/* Auth Links */}
+              {/* Post a Job Button */}
               <Link
-                to="/sign-in"
+                to="/post-job"
                 onClick={closeMenu}
-                className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200"
+                className="block mt-4"
+              >
+                <Button 
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl transition-colors shadow-sm"
+                >
+                  Post a Job
+                </Button>
+              </Link>
+
+              {/* Post Your Salon Button */}
+              <Link
+                to="/post-salon"
+                onClick={closeMenu}
+                className="block"
+              >
+                <Button 
+                  variant="outline"
+                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 font-medium py-3 rounded-xl transition-colors"
+                >
+                  Post Your Salon
+                </Button>
+              </Link>
+              
+              {/* Sign In Link */}
+              <Link
+                to="/auth/signin"
+                onClick={closeMenu}
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
               >
                 <span className="font-medium">Sign In</span>
               </Link>
 
-              {/* Action Buttons */}
-              <div className="space-y-3 mt-6">
-                {/* Post a Job Button - Updated link */}
-                <Link
-                  to="/post-job"
-                  onClick={closeMenu}
-                  className="block"
+              {/* Sign Up Button */}
+              <Link
+                to="/auth/signup"
+                onClick={closeMenu}
+                className="block"
+              >
+                <Button 
+                  className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-3 rounded-xl transition-all duration-200 shadow-sm"
                 >
-                  <Button 
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                  >
-                    Post a Job
-                  </Button>
-                </Link>
-
-                {/* Post a Salon Button */}
-                <Link
-                  to="/post-salon"
-                  onClick={closeMenu}
-                  className="block"
-                >
-                  <Button 
-                    variant="outline"
-                    className="w-full border-2 border-purple-200 text-purple-700 hover:bg-purple-50 font-medium py-3 rounded-xl transition-all duration-200"
-                  >
-                    Post a Salon
-                  </Button>
-                </Link>
-
-                {/* Sign Up Button */}
-                <Link
-                  to="/auth/signup"
-                  onClick={closeMenu}
-                  className="block"
-                >
-                  <Button 
-                    className="w-full bg-gradient-to-r from-salmon-400 to-salmon-500 hover:from-salmon-500 hover:to-salmon-600 text-white font-medium py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                    style={{ 
-                      background: 'linear-gradient(135deg, #FFA07A 0%, #FF8C69 100%)',
-                      boxShadow: '0 4px 15px rgba(255, 160, 122, 0.3)'
-                    }}
-                  >
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
+                  Sign Up
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
