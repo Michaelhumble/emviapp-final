@@ -1,19 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Home, Search, Briefcase, Store, Users, Phone } from 'lucide-react';
+import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/context/auth';
+import Logo from '@/components/ui/Logo';
 
-const MobileMenu = () => {
+const MobileHamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
   const { isSignedIn, signOut } = useAuth();
-
-  // Add debugging to see what's happening with auth state
-  console.log('MobileMenu render - isSignedIn:', isSignedIn);
-  console.log('MobileMenu render - typeof isSignedIn:', typeof isSignedIn);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -25,10 +22,8 @@ const MobileMenu = () => {
 
   const handleSignOut = async () => {
     try {
-      console.log('Starting sign out process...');
       await signOut();
       closeMenu();
-      console.log('Sign out successful');
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -39,11 +34,6 @@ const MobileMenu = () => {
       path: "/", 
       icon: Home, 
       label: t("Home") 
-    },
-    { 
-      path: "/search", 
-      icon: Search, 
-      label: t("Search") 
     },
     { 
       path: "/jobs", 
@@ -59,6 +49,21 @@ const MobileMenu = () => {
       path: "/artists", 
       icon: Users, 
       label: t("Artists") 
+    },
+    { 
+      path: "/freelancers", 
+      icon: MessageSquare, 
+      label: t("Community") 
+    },
+    { 
+      path: "/dashboard", 
+      icon: LayoutDashboard, 
+      label: t("Dashboard") 
+    },
+    { 
+      path: "/about", 
+      icon: Info, 
+      label: t("About") 
     },
     { 
       path: "/contact", 
@@ -84,17 +89,19 @@ const MobileMenu = () => {
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={closeMenu}>
           <div 
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out backdrop-blur-sm border-l border-gray-100"
             onClick={(e) => e.stopPropagation()}
+            style={{ backgroundColor: '#FFFFFF' }}
           >
-            {/* Menu Header */}
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
+            {/* Menu Header with Logo */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <Logo size="small" showText={true} />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={closeMenu}
                 aria-label="Close menu"
+                className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-full"
               >
                 <X size={24} />
               </Button>
@@ -107,57 +114,74 @@ const MobileMenu = () => {
                   key={item.path}
                   to={item.path}
                   onClick={closeMenu}
-                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="flex items-center gap-4 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
                 >
-                  <item.icon size={20} />
-                  <span className="font-medium">{item.label}</span>
+                  <item.icon size={18} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
+                  <span className="font-medium group-hover:text-gray-900">{item.label}</span>
                 </Link>
               ))}
               
-              {/* Authentication Section */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                {/* Debug display */}
-                <div className="mb-2 text-xs text-gray-500">
-                  Auth Status: {isSignedIn ? 'SIGNED IN' : 'SIGNED OUT'}
-                </div>
-                
+              {/* Post a Job Button */}
+              <Link
+                to="/post-job"
+                onClick={closeMenu}
+                className="block mt-4"
+              >
+                <Button 
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-xl transition-colors shadow-sm"
+                >
+                  Post a Job
+                </Button>
+              </Link>
+
+              {/* Post Your Salon Button */}
+              <Link
+                to="/sell-salon"
+                onClick={closeMenu}
+                className="block"
+              >
+                <Button 
+                  variant="outline"
+                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 font-medium py-2 rounded-xl transition-colors"
+                >
+                  Post Your Salon
+                </Button>
+              </Link>
+              
+              {/* Authentication Buttons */}
+              <div className="mt-6 pt-6 border-t border-gray-100">
                 {isSignedIn ? (
-                  // Show Sign Out button when signed in
-                  <Button 
+                  <Button
                     onClick={handleSignOut}
+                    className="w-full text-red-600 bg-white border border-red-200 hover:bg-red-50 font-medium py-2 rounded-xl transition-colors"
                     variant="outline"
-                    className="w-full border-red-200 text-red-600 hover:bg-red-50 font-medium py-3 rounded-lg transition-colors"
                   >
                     Sign Out
                   </Button>
                 ) : (
-                  // Show Sign In and Sign Up when not signed in
-                  <div className="space-y-2">
+                  <>
+                    {/* Sign In Link */}
                     <Link
-                      to="/sign-in"
+                      to="/auth/signin"
                       onClick={closeMenu}
-                      className="block"
+                      className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
                     >
-                      <Button 
-                        variant="ghost"
-                        className="w-full justify-start px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        Sign In
-                      </Button>
+                      <span className="font-medium">Sign In</span>
                     </Link>
 
+                    {/* Sign Up Button */}
                     <Link
                       to="/auth/signup"
                       onClick={closeMenu}
-                      className="block"
+                      className="block mt-2"
                     >
                       <Button 
-                        className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                        className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-2 rounded-xl transition-all duration-200 shadow-sm"
                       >
                         Sign Up
                       </Button>
                     </Link>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -168,4 +192,4 @@ const MobileMenu = () => {
   );
 };
 
-export default MobileMenu;
+export default MobileHamburgerMenu;
