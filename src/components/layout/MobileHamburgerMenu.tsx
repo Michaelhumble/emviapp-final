@@ -1,15 +1,19 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Home, Users, Briefcase, MessageCircle, User, Phone } from 'lucide-react';
+import { Menu, X, Home, Briefcase, Store, Users, MessageSquare, LayoutDashboard, Phone, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
+import Logo from '@/components/ui/Logo';
 
 const MobileHamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isSignedIn, signOut } = useAuth();
   const { t } = useTranslation();
+  const { isSignedIn, signOut, user } = useAuth();
+  
+  // Debug logging
+  console.log("🌟 MobileMenu: isSignedIn=", isSignedIn, "user=", user);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -19,153 +23,171 @@ const MobileHamburgerMenu = () => {
     setIsOpen(false);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    closeMenu();
-  };
-
-  const navItems = [
+  const menuItems = [
     { 
-      icon: <Home className="h-5 w-5" />, 
-      label: t({ english: "Home", vietnamese: "Trang Chủ" }), 
-      href: "/" 
+      path: "/", 
+      icon: Home, 
+      label: t("Home") 
     },
     { 
-      icon: <Users className="h-5 w-5" />, 
-      label: t({ english: "Artists", vietnamese: "Thợ Làm Móng" }), 
-      href: "/artists" 
+      path: "/jobs", 
+      icon: Briefcase, 
+      label: t("Jobs") 
     },
     { 
-      icon: <Briefcase className="h-5 w-5" />, 
-      label: t({ english: "Jobs", vietnamese: "Việc Làm" }), 
-      href: "/jobs" 
+      path: "/salons", 
+      icon: Store, 
+      label: t("Salons") 
     },
     { 
-      icon: <MessageCircle className="h-5 w-5" />, 
-      label: t({ english: "Salons", vietnamese: "Tiệm Móng" }), 
-      href: "/salons" 
+      path: "/artists", 
+      icon: Users, 
+      label: t("Artists") 
     },
     { 
-      icon: <User className="h-5 w-5" />, 
-      label: t({ english: "Profile", vietnamese: "Hồ Sơ" }), 
-      href: "/profile" 
+      path: "/freelancers", 
+      icon: MessageSquare, 
+      label: t("Community") 
     },
     { 
-      icon: <Phone className="h-5 w-5" />, 
-      label: t({ english: "Contact", vietnamese: "Liên Hệ" }), 
-      href: "/contact" 
+      path: "/dashboard", 
+      icon: LayoutDashboard, 
+      label: t("Dashboard") 
+    },
+    { 
+      path: "/about", 
+      icon: Info, 
+      label: t("About") 
+    },
+    { 
+      path: "/contact", 
+      icon: Phone, 
+      label: t("Contact") 
     }
   ];
 
   return (
-    <div className="md:hidden">
-      {/* Hamburger Button */}
+    <>
+      {/* Hamburger Menu Button */}
       <Button
         variant="ghost"
         size="icon"
         onClick={toggleMenu}
-        className="h-9 w-9"
+        className="md:hidden"
+        aria-label="Toggle menu"
       >
-        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
       </Button>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-          onClick={closeMenu}
-        />
-      )}
-
-      {/* Mobile Menu */}
-      <div className={`
-        fixed top-16 right-4 left-4 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl z-50 p-6
-        transform transition-all duration-300 ease-out
-        ${isOpen ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-4 opacity-0 scale-95 pointer-events-none'}
-        max-h-[50vh] overflow-y-auto
-      `}>
-        {/* Navigation Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {navItems.map((item, index) => (
-            <Link
-              key={index}
-              to={item.href}
-              onClick={closeMenu}
-              className="flex flex-col items-center p-3 rounded-xl bg-gray-50/80 hover:bg-gray-100/80 transition-colors"
-            >
-              <div className="text-gray-600 mb-2">{item.icon}</div>
-              <span className="text-xs font-medium text-gray-700 text-center leading-tight">
-                {item.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Secondary Navigation */}
-        <div className="flex space-x-2 mb-4">
-          <Link 
-            to="/post-job" 
-            onClick={closeMenu}
-            className="flex-1"
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={closeMenu}>
+          <div 
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out backdrop-blur-sm border-l border-gray-100"
+            onClick={(e) => e.stopPropagation()}
+            style={{ backgroundColor: '#FFFFFF' }}
           >
-            <Button 
-              size="sm" 
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs"
-            >
-              {t({ english: "Post Job", vietnamese: "Đăng Việc" })}
-            </Button>
-          </Link>
-          <Link 
-            to="/sell-salon" 
-            onClick={closeMenu}
-            className="flex-1"
-          >
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 text-xs"
-            >
-              {t({ english: "Sell Salon", vietnamese: "Bán Tiệm" })}
-            </Button>
-          </Link>
-        </div>
-
-        {/* Auth Section */}
-        <div className="border-t border-gray-200 pt-4">
-          {isSignedIn ? (
-            <div className="space-y-2">
-              <Link to="/dashboard" onClick={closeMenu}>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-sm"
-                >
-                  {t({ english: "Dashboard", vietnamese: "Bảng Điều Khiển" })}
-                </Button>
-              </Link>
-              <Button 
-                onClick={handleSignOut}
-                className="w-full h-10 bg-white border border-red-200 text-red-600 font-semibold rounded-2xl mt-3 mb-1 hover:bg-rose-50 transition"
+            {/* Menu Header with Logo */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <Logo size="small" showText={true} />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeMenu}
+                aria-label="Close menu"
+                className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-full"
               >
-                {t({ english: "Sign Out", vietnamese: "Đăng Xuất" })}
+                <X size={24} />
               </Button>
             </div>
-          ) : (
-            <div className="space-y-2">
-              <Link to="/auth" onClick={closeMenu}>
-                <Button className="w-full text-sm">
-                  {t({ english: "Sign In", vietnamese: "Đăng Nhập" })}
+
+            {/* Menu Items */}
+            <div className="flex flex-col p-4 space-y-2">
+              {/* Debug Sign Out Button - Always visible */}
+              <button
+                onClick={signOut}
+                className="w-full text-red-600 bg-white py-2 mt-2 rounded shadow hover:bg-red-50"
+              >
+                Sign Out (debug)
+              </button>
+
+              {menuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={closeMenu}
+                  className="flex items-center gap-4 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
+                >
+                  <item.icon size={18} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
+                  <span className="font-medium group-hover:text-gray-900">{item.label}</span>
+                </Link>
+              ))}
+              
+              {/* Post a Job Button */}
+              <Link
+                to="/post-job"
+                onClick={closeMenu}
+                className="block mt-4"
+              >
+                <Button 
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-xl transition-colors shadow-sm"
+                >
+                  Post a Job
                 </Button>
               </Link>
-              <Link to="/auth" onClick={closeMenu}>
-                <Button variant="ghost" className="w-full text-sm">
-                  {t({ english: "Sign Up", vietnamese: "Đăng Ký" })}
+
+              {/* Post Your Salon Button */}
+              <Link
+                to="/sell-salon"
+                onClick={closeMenu}
+                className="block"
+              >
+                <Button 
+                  variant="outline"
+                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 font-medium py-2 rounded-xl transition-colors"
+                >
+                  Post Your Salon
                 </Button>
               </Link>
+              
+              {/* Conditional Auth Buttons */}
+              {isSignedIn ? (
+                <button
+                  onClick={signOut}
+                  className="w-full text-red-600 bg-white py-2 mt-6 rounded-xl border border-red-200 hover:bg-red-50 font-medium transition-colors"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <>
+                  {/* Sign In Link */}
+                  <Link
+                    to="/auth/signin"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
+                  >
+                    <span className="font-medium">Sign In</span>
+                  </Link>
+
+                  {/* Sign Up Button */}
+                  <Link
+                    to="/auth/signup"
+                    onClick={closeMenu}
+                    className="block"
+                  >
+                    <Button 
+                      className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-2 rounded-xl transition-all duration-200 shadow-sm"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
