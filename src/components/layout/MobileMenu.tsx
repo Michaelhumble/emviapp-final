@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom';
 import { Menu, X, Home, Search, Briefcase, Store, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
+  const { isSignedIn, signOut } = useAuth();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -97,27 +99,43 @@ const MobileMenu = () => {
                 </Link>
               ))}
               
-              {/* Sign In Link */}
-              <Link
-                to="/sign-in"
-                onClick={closeMenu}
-                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Sign In</span>
-              </Link>
-
-              {/* Sign Up Button - Links to Premium Form */}
-              <Link
-                to="/auth/signup"
-                onClick={closeMenu}
-                className="block mt-4"
-              >
+              {/* Authentication Section */}
+              {isSignedIn ? (
+                // Show Sign Out button when signed in
                 <Button 
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                  onClick={async () => {
+                    await signOut();
+                    closeMenu();
+                  }}
+                  variant="outline"
+                  className="w-full border-red-200 text-red-600 hover:bg-red-50 font-medium py-3 rounded-lg transition-colors mt-4"
                 >
-                  Sign Up
+                  Sign Out
                 </Button>
-              </Link>
+              ) : (
+                // Show Sign In and Sign Up when not signed in
+                <>
+                  <Link
+                    to="/sign-in"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <span className="font-medium">Sign In</span>
+                  </Link>
+
+                  <Link
+                    to="/auth/signup"
+                    onClick={closeMenu}
+                    className="block mt-4"
+                  >
+                    <Button 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
