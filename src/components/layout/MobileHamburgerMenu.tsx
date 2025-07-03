@@ -125,7 +125,7 @@ const MobileHamburgerMenu = () => {
 
               {/* Post Your Salon Button */}
               <Link
-                to="/post-salon"
+                to="/sell-salon"
                 onClick={closeMenu}
                 className="block"
               >
