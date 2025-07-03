@@ -40,7 +40,7 @@ const MobileHamburgerMenu = () => {
       label: t("Artists") 
     },
     { 
-      path: "/community", 
+      path: "/freelancers", 
       icon: MessageSquare, 
       label: t("Community") 
     },
@@ -97,15 +97,15 @@ const MobileHamburgerMenu = () => {
             </div>
 
             {/* Menu Items */}
-            <div className="flex flex-col p-6 space-y-3">
+            <div className="flex flex-col p-4 space-y-2">
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={closeMenu}
-                  className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
+                  className="flex items-center gap-4 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
                 >
-                  <item.icon size={20} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
+                  <item.icon size={18} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
                   <span className="font-medium group-hover:text-gray-900">{item.label}</span>
                 </Link>
               ))}
@@ -117,7 +117,7 @@ const MobileHamburgerMenu = () => {
                 className="block mt-4"
               >
                 <Button 
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl transition-colors shadow-sm"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-xl transition-colors shadow-sm"
                 >
                   Post a Job
                 </Button>
@@ -131,7 +131,7 @@ const MobileHamburgerMenu = () => {
               >
                 <Button 
                   variant="outline"
-                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 font-medium py-3 rounded-xl transition-colors"
+                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 font-medium py-2 rounded-xl transition-colors"
                 >
                   Post Your Salon
                 </Button>
@@ -141,7 +141,7 @@ const MobileHamburgerMenu = () => {
               <Link
                 to="/auth/signin"
                 onClick={closeMenu}
-                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
+                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-6 border-t border-gray-100 pt-6"
               >
                 <span className="font-medium">Sign In</span>
               </Link>
@@ -153,7 +153,7 @@ const MobileHamburgerMenu = () => {
                 className="block"
               >
                 <Button 
-                  className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-3 rounded-xl transition-all duration-200 shadow-sm"
+                  className="w-full bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 text-white font-medium py-2 rounded-xl transition-all duration-200 shadow-sm"
                 >
                   Sign Up
                 </Button>
