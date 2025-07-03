@@ -55,7 +55,24 @@ const MobileHamburgerMenu = () => {
               );
             })}
 
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 border-t border-gray-200 space-y-2">
+              <Link
+                to="/post-job"
+                onClick={closeMenu}
+                className="block w-full text-center px-3 py-2 rounded-md text-base font-medium text-white bg-primary hover:bg-primary/90"
+              >
+                Post a Job
+              </Link>
+              <Link
+                to="/sell-salon"
+                onClick={closeMenu}
+                className="block w-full text-center px-3 py-2 rounded-md text-base font-medium text-white bg-secondary hover:bg-secondary/80"
+              >
+                Post Your Salon
+              </Link>
+            </div>
+
+            <div className="pt-2 border-t border-gray-200">
               {isSignedIn ? (
                 <button
                   onClick={signOut}
