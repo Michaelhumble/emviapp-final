@@ -2,7 +2,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import Layout from '@/components/layout/Layout';
-import { AuthGuard } from '@/components/auth/AuthGuard';
+import AuthGuard from '@/components/auth/AuthGuard';
 
 // Lazy load pages
 const Home = lazy(() => import('./pages/Home'));
@@ -28,7 +28,7 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Layout><div /></Layout>}>
           <Route index element={<Home />} />
           <Route path="jobs" element={<Jobs />} />
           <Route path="artists" element={<Artists />} />
