@@ -26,7 +26,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
       <div className="fixed inset-0 bg-black/20" onClick={onClose} />
       <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
         <div className="flex h-full flex-col">
-          {/* Header */}
+          {/* Header with Logo */}
           <div className="flex items-center justify-between p-4 border-b">
             <EmviLogo />
             <button onClick={onClose} className="p-2">
@@ -36,8 +36,16 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className="flex flex-col space-y-1 p-4 pb-8">
+            <div className="flex flex-col space-y-1 p-4 pb-16">
               {/* Navigation Links */}
+              <Link
+                to="/"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
+              >
+                <span>Home</span>
+              </Link>
+
               <Link
                 to="/jobs"
                 className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
@@ -47,11 +55,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Link>
 
               <Link
-                to="/freelancers"
+                to="/explore"
                 className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
               >
-                <span>Community</span>
+                <span>Artists</span>
               </Link>
 
               <Link
@@ -63,12 +71,22 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Link>
 
               <Link
-                to="/explore"
+                to="/freelancers"
                 className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
               >
-                <span>Artists</span>
+                <span>Community</span>
               </Link>
+
+              {user && (
+                <Link
+                  to="/dashboard"
+                  className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                  onClick={onClose}
+                >
+                  <span>Dashboard</span>
+                </Link>
+              )}
 
               <Link
                 to="/about"
@@ -110,24 +128,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
                 {/* Auth Buttons */}
                 {user ? (
-                  <>
-                    <Link
-                      to="/dashboard"
-                      className="block"
-                      onClick={onClose}
-                    >
-                      <Button variant="outline" className="w-full">
-                        Dashboard
-                      </Button>
-                    </Link>
-                    <Button
-                      onClick={handleSignOut}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Sign Out
-                    </Button>
-                  </>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Sign Out
+                  </Button>
                 ) : (
                   <>
                     <Link
