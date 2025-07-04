@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import JobDetailContent from '@/components/jobs/JobDetailContent';
+import JobNotFound from '@/components/jobs/JobNotFound';
 import { Job } from '@/types/job';
 import { fetchJob } from '@/utils/jobs';
 
@@ -16,6 +17,7 @@ const JobDetail = () => {
     const loadJob = async () => {
       if (!id) {
         setError(true);
+        setLoading(false);
         return;
       }
 
@@ -49,19 +51,8 @@ const JobDetail = () => {
     );
   }
 
-  if (error) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-background">
-          <div className="container mx-auto py-12">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
-              <p className="text-gray-600">The job you're looking for could not be found.</p>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
+  if (error || !job) {
+    return <JobNotFound />;
   }
 
   return (
