@@ -1,7 +1,7 @@
 
 import { createBrowserRouter } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage';
-import SalonOwnerDashboard from './pages/dashboard/owner';
+import SalonDashboard from './pages/dashboard/SalonDashboard';
 import ArtistProfile from './pages/ArtistProfile';
 import SalonProfile from './pages/SalonProfile';
 
@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard/owner',
-    element: <SalonOwnerDashboard />,
+    element: <SalonDashboard />,
   },
   {
     path: '/artist/:id',

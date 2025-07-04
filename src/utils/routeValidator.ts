@@ -1,3 +1,4 @@
+
 import { isKnownRoute } from './routeChecker';
 import { router } from '../routes';
 
@@ -24,17 +25,18 @@ export const getSafePath = (path: string, fallback: string = '/dashboard'): stri
 // Get a human-readable name for the current route
 export const getCurrentRouteName = (): string => {
   const currentPath = window.location.pathname;
-  const matchingRoute = routes.find(route => {
+  const availableRoutes = getRoutePaths();
+  const matchingRoute = availableRoutes.find(route => {
     // Handle dynamic routes with parameters
-    if (route.path.includes(':')) {
-      const regexPath = route.path.replace(/:[^\/]+/g, '[^/]+');
+    if (route.includes(':')) {
+      const regexPath = route.replace(/:[^\/]+/g, '[^/]+');
       const routeRegex = new RegExp(`^${regexPath}$`);
       return routeRegex.test(currentPath);
     }
-    return route.path === currentPath;
+    return route === currentPath;
   });
   
-  return matchingRoute ? matchingRoute.path : 'Unknown Route';
+  return matchingRoute ? matchingRoute : 'Unknown Route';
 };
 
 // Find closest matching route for a 404 fallback suggestion
