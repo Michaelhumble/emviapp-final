@@ -1,12 +1,13 @@
-
 import { isKnownRoute } from './routeChecker';
-import routes from '../routes';
+import { router } from '../routes';
 
 // Map routes config to paths for validation
 const getRoutePaths = () => {
+  // Extract paths from router config
+  const routePaths = router.routes.map(route => route.path || '/');
   // Add explicit routes that might not be in the routes config
   const explicitRoutes = ['/salons', '/dashboard/artist/booking-calendar', '/dashboard/artist/inbox'];
-  return [...routes.map(route => route.path), ...explicitRoutes];
+  return [...routePaths, ...explicitRoutes];
 };
 
 // Validate that a path exists in our routes configuration
