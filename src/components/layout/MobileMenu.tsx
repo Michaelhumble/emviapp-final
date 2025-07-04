@@ -82,6 +82,16 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                     <span className="font-medium">{item.label}</span>
                   </Link>
                 ))}
+                
+                {/* Community menu item - linking to /freelancers */}
+                <Link
+                  to="/freelancers"
+                  onClick={onClose}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                >
+                  <Users className="h-5 w-5" />
+                  <span className="font-medium">Community</span>
+                </Link>
               </div>
 
               {/* Auth Buttons Section - Moved higher with better spacing */}
