@@ -108,7 +108,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </nav>
 
               {/* Auth Section */}
-              <div className="p-6 border-t border-gray-100 bg-gray-50 pb-96">
+              <div className="p-6 border-t border-gray-100 bg-gray-50">
                 {user ? (
                   <div className="space-y-3">
                     <div className="text-sm text-gray-600">
@@ -140,6 +140,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   </div>
                 )}
               </div>
+
+              {/* Large bottom white space for button visibility */}
+              <div className="h-32 bg-white"></div>
             </div>
           </motion.div>
         </>
