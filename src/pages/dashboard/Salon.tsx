@@ -4,13 +4,10 @@ import { useAuth } from "@/context/auth";
 import { SalonProvider } from "@/context/salon";
 import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
 import Layout from "@/components/layout/Layout";
-import SalonDashboardOverview from "@/components/dashboard/salon/SalonDashboardOverview";
-import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
-import SalonSettings from "@/components/dashboard/salon/SalonSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ProfileCompletionBar from "@/components/profile/ProfileCompletionBar";
 
+// SOURCE OF TRUTH: This is now the main Salon Dashboard used by /dashboard/owner
 const SalonDashboardPage = () => {
   const { userProfile } = useAuth();
   const [activeTab, setActiveTab] = React.useState("overview");
@@ -18,6 +15,48 @@ const SalonDashboardPage = () => {
   useEffect(() => {
     document.title = "Salon Dashboard | EmviApp";
   }, []);
+
+  // Placeholder components for dashboard sections
+  const SalonDashboardOverview = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle>Salon Overview</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Dashboard overview content coming soon...</p>
+      </CardContent>
+    </Card>
+  );
+
+  const SalonBookingCalendar = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle>Booking Calendar</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Booking calendar coming soon...</p>
+      </CardContent>
+    </Card>
+  );
+
+  const SalonSettings = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle>Salon Settings</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Settings panel coming soon...</p>
+      </CardContent>
+    </Card>
+  );
+
+  const ProfileCompletionBar = () => (
+    <Card className="border-muted shadow-sm mb-4">
+      <CardContent className="pt-6">
+        <p className="text-sm text-muted-foreground">Complete your profile to unlock more features</p>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <Layout>
