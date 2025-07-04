@@ -9,7 +9,7 @@ const Home = lazy(() => import('./pages/Index'));
 const Jobs = lazy(() => import('./pages/Jobs'));
 const Artists = lazy(() => import('./pages/Artists'));
 const Salons = lazy(() => import('./pages/salons/StableSalonPage'));
-const About = lazy(() => import('./pages/About.routes'));
+const About = lazy(() => import('./pages/About'));
 const Contact = lazy(() => import('./pages/Contact'));
 const PostJob = lazy(() => import('./pages/PostJob'));
 const SellSalon = lazy(() => import('./pages/sell-salon/index'));
