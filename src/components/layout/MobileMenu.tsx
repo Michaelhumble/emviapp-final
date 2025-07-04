@@ -1,12 +1,10 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { X, Home, Users, Briefcase, Store, Mail, Info, LogOut, User, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Sun } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { motion, AnimatePresence } from 'framer-motion';
-import Logo from '@/components/ui/Logo';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { EmviLogo } from '@/components/branding/EmviLogo';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -14,188 +12,160 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, userProfile, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user, signOut, profile } = useAuth();
 
-  const handleAuthAction = (action: string) => {
-    onClose();
-    if (action === 'signOut') {
-      signOut();
-    } else {
-      navigate(`/auth/${action}`);
-    }
-  };
+  if (!isOpen) return null;
 
-  const handleDashboardClick = () => {
+  const handleSignOut = async () => {
+    await signOut();
     onClose();
-    navigate('/dashboard');
   };
 
   const menuItems = [
     { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Users, label: 'Artists', href: '/artists' },
-    { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Community', href: '/freelancers' },
-    { icon: User, label: 'About', href: '/about' },
-    { icon: MessageSquare, label: 'Contact', href: '/contact' },
+    { icon: Users, label: 'Community', href: '/freelancers' },
+    { icon: Info, label: 'About', href: '/about' },
+    { icon: Mail, label: 'Contact', href: '/contact' },
   ];
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Premium backdrop with blur */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+    <div className="fixed inset-0 z-50 lg:hidden">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Menu Panel */}
+      <div className="absolute right-0 top-0 h-full w-[90%] bg-gradient-to-br from-white/95 to-gray-50/90 backdrop-blur-xl shadow-2xl border-l border-white/20 flex flex-col">
+        
+        {/* Header - Fixed */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-100/50 bg-white/30 backdrop-blur-sm">
+          <EmviLogo className="h-8" />
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-          />
-          
-          {/* Premium slide-in menu */}
-          <motion.div
-            initial={{ x: '100%', opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-            className="fixed top-0 right-0 h-full w-[90%] max-w-sm bg-gradient-to-b from-white to-gray-50/80 backdrop-blur-xl shadow-2xl z-50 flex flex-col"
+            className="text-gray-600 hover:text-gray-900 hover:bg-white/50"
           >
-            {/* Header with logo and close */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100/50">
-              <Logo size="small" showText={true} />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="h-10 w-10 rounded-full hover:bg-gray-100/50 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
 
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6 space-y-6">
+            
             {/* Profile Section */}
-            <div className="p-6 border-b border-gray-100/50">
+            <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30 shadow-lg">
               {user ? (
-                <div className="flex items-center space-x-4 bg-white/60 rounded-2xl p-4 shadow-sm">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={userProfile?.avatar_url || undefined} />
-                    <AvatarFallback className="bg-purple-100 text-purple-600 font-semibold">
-                      {userProfile?.full_name?.[0] || user.email?.[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 truncate">
-                      {userProfile?.full_name || 'User'}
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {profile?.full_name || 'User'}
                     </p>
-                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleDashboardClick}
-                      className="mt-1 h-7 px-3 text-xs bg-purple-50 hover:bg-purple-100 text-purple-600"
+                    <p className="text-sm text-gray-600">{user.email}</p>
+                    <Link 
+                      to="/dashboard" 
+                      onClick={onClose}
+                      className="text-sm text-purple-600 hover:text-purple-700 font-medium"
                     >
                       Dashboard →
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center bg-white/60 rounded-2xl p-6 shadow-sm">
-                  <div className="text-2xl mb-2">👋</div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Welcome!</h3>
-                  <p className="text-sm text-gray-500 mb-4">Join our beauty community</p>
-                </div>
-              )}
-            </div>
-
-            {/* Scrollable Navigation */}
-            <div className="flex-1 overflow-y-auto">
-              <nav className="p-6 space-y-3">
-                {menuItems.map((item, index) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link
-                      to={item.href}
-                      onClick={onClose}
-                      className="flex items-center space-x-4 p-4 rounded-2xl bg-white/60 hover:bg-white/80 shadow-sm hover:shadow-md transition-all duration-200 group"
-                    >
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center group-hover:from-purple-100 group-hover:to-purple-200 transition-colors">
-                        <item.icon className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <span className="font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
-                        {item.label}
-                      </span>
                     </Link>
-                  </motion.div>
-                ))}
-              </nav>
-            </div>
-
-            {/* Sticky Bottom CTAs */}
-            <div className="p-6 bg-white/80 backdrop-blur-sm border-t border-gray-100/50">
-              {user ? (
-                <div className="space-y-3">
-                  <div className="flex space-x-2">
-                    <Button
-                      asChild
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg rounded-xl h-11"
-                      onClick={onClose}
-                    >
-                      <Link to="/post-job">Post a Job</Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="flex-1 border-gray-200 hover:bg-gray-50 rounded-xl h-11"
-                      onClick={onClose}
-                    >
-                      <Link to="/sell-salon">Sell Salon</Link>
-                    </Button>
                   </div>
-                  <Button
-                    onClick={() => handleAuthAction('signOut')}
-                    variant="ghost"
-                    className="w-full text-red-600 hover:bg-red-50 rounded-xl h-11"
-                  >
-                    Sign Out
-                  </Button>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => handleAuthAction('signin')}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg rounded-xl h-12"
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    onClick={() => handleAuthAction('signup')}
-                    variant="outline"
-                    className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 rounded-xl h-12"
-                  >
-                    Sign Up
-                  </Button>
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Welcome!</h3>
+                  <p className="text-sm text-gray-600 mb-4">Join thousands of beauty professionals</p>
                 </div>
               )}
             </div>
 
-            {/* Inspiration Footer */}
-            <div className="px-6 pb-6">
-              <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
-                <Sun className="h-3 w-3" />
-                <span>Inspired by Sunshine</span>
-              </div>
+            {/* Navigation Items */}
+            <div className="space-y-3">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={onClose}
+                  className="flex items-center space-x-4 p-4 bg-white/40 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white/60 hover:shadow-xl transition-all duration-200 group"
+                >
+                  <item.icon className="h-6 w-6 text-gray-700 group-hover:text-purple-600 transition-colors" />
+                  <span className="text-lg font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+
+            {/* Add sufficient bottom spacing for the last items */}
+            <div className="h-32" />
+          </div>
+        </div>
+
+        {/* Sticky Bottom CTAs */}
+        <div className="bg-white/50 backdrop-blur-sm border-t border-gray-100/50 p-6">
+          {user ? (
+            <div className="space-y-3">
+              <div className="flex space-x-3">
+                <Link 
+                  to="/post-job" 
+                  onClick={onClose}
+                  className="flex-1"
+                >
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Post a Job
+                  </Button>
+                </Link>
+                <Link 
+                  to="/sell-salon" 
+                  onClick={onClose}
+                  className="flex-1"
+                >
+                  <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
+                    <Store className="h-4 w-4 mr-2" />
+                    Sell Salon
+                  </Button>
+                </Link>
+              </div>
+              <Button 
+                onClick={handleSignOut}
+                variant="ghost" 
+                className="w-full text-gray-600 hover:text-red-600 hover:bg-red-50"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <Link to="/auth/signup" onClick={onClose}>
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg">
+                  Sign Up
+                </Button>
+              </Link>
+              <Link to="/auth/signin" onClick={onClose}>
+                <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 text-center">
+          <p className="text-xs text-gray-500/70">
+            Inspired by Sunshine ☀️
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 
