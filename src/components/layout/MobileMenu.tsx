@@ -19,6 +19,15 @@ const MobileMenu = () => {
     setIsOpen(false);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      closeMenu();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   const menuItems = [
     { 
       path: "/", 
@@ -130,10 +139,7 @@ const MobileMenu = () => {
               {isSignedIn ? (
                 // Show Sign Out button when signed in
                 <Button 
-                  onClick={async () => {
-                    await signOut();
-                    closeMenu();
-                  }}
+                  onClick={handleSignOut}
                   variant="outline"
                   className="w-full border-red-200 text-red-600 hover:bg-red-50 font-medium py-3 rounded-lg transition-colors mt-4"
                 >
