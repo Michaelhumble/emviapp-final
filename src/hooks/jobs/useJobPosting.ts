@@ -32,10 +32,11 @@ export const useJobPosting = () => {
           return { success: false, error };
         }
 
-        if (data?.success) {
+        if (data?.success && data?.jobId) {
           console.log('✅ Free job created successfully:', data.jobId);
           toast.success('Job posted successfully!');
-          navigate('/post-success');
+          // Navigate to the actual job ID from the database
+          navigate(`/jobs/${data.jobId}`);
           return { success: true, data };
         } else {
           console.error('❌ Free job creation failed:', data);
