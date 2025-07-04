@@ -1,9 +1,9 @@
 
 import React from 'react';
-import ProfileRouter from './ProfileRouter';
+import RoleSpecificProfile from './RoleSpecificProfile';
 
 const UserProfile = () => {
-  return <ProfileRouter />;
+  return <RoleSpecificProfile />;
 };
 
 export default UserProfile;
