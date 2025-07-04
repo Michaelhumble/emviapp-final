@@ -1,201 +1,146 @@
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Menu, X, Home, Search, Briefcase, Store, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/context/auth';
-import { motion, AnimatePresence } from 'framer-motion';
-import EmviLogo from '@/components/branding/EmviLogo';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
+  const { isSignedIn, signOut } = useAuth();
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
-  const handleAuthAction = (action: string) => {
-    onClose();
-    if (action === 'signOut') {
-      signOut();
-    } else {
-      navigate(`/auth/${action}`);
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
+
+  const menuItems = [
+    { 
+      path: "/", 
+      icon: Home, 
+      label: t("Home") 
+    },
+    { 
+      path: "/search", 
+      icon: Search, 
+      label: t("Search") 
+    },
+    { 
+      path: "/jobs", 
+      icon: Briefcase, 
+      label: t("Jobs") 
+    },
+    { 
+      path: "/salons", 
+      icon: Store, 
+      label: t("Salons") 
+    },
+    { 
+      path: "/artists", 
+      icon: Users, 
+      label: t("Artists") 
+    },
+    { 
+      path: "/contact", 
+      icon: Phone, 
+      label: t("Contact") 
     }
-  };
-
-  const handleNavigation = (path: string) => {
-    onClose();
-    navigate(path);
-  };
+  ];
 
   return (
-    <AnimatePresence>
+    <>
+      {/* Hamburger Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleMenu}
+        className="md:hidden"
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </Button>
+
+      {/* Mobile Menu Overlay */}
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            onClick={onClose}
-          />
-          
-          {/* Menu */}
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col"
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={closeMenu}>
+          <div 
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out"
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
-            <div className="flex items-center justify-end p-4">
+            {/* Menu Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onClose}
-                className="h-8 w-8 hover:bg-gray-100"
+                onClick={closeMenu}
+                aria-label="Close menu"
               >
-                <X className="h-5 w-5" />
+                <X size={24} />
               </Button>
             </div>
 
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto px-6 pb-6">
-              {/* EmviApp Logo - Centered at top */}
-              <div className="flex justify-center mb-8">
-                <EmviLogo size="medium" showText={true} />
-              </div>
-
-              {/* Menu Items in exact order */}
-              <div className="space-y-4">
-                {/* Post a Job Button */}
-                <Button
-                  onClick={() => handleNavigation('/post-job')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+            {/* Menu Items */}
+            <div className="flex flex-col p-4 space-y-2">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  Post a Job
-                </Button>
-
-                {/* Sell Your Salon Button */}
-                <Button
-                  onClick={() => handleNavigation('/sell-salon')}
+                  <item.icon size={20} />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              ))}
+              
+              {/* Authentication Section */}
+              {isSignedIn ? (
+                // Show Sign Out button when signed in
+                <Button 
+                  onClick={async () => {
+                    await signOut();
+                    closeMenu();
+                  }}
                   variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50"
+                  className="w-full border-red-200 text-red-600 hover:bg-red-50 font-medium py-3 rounded-lg transition-colors mt-4"
                 >
-                  Sell Your Salon
+                  Sign Out
                 </Button>
-
-                {/* Navigation Links */}
-                <div className="space-y-2 mt-6">
-                  <Link
-                    to="/"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Home
-                  </Link>
-
-                  <Link
-                    to="/jobs"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Jobs
-                  </Link>
-
-                  <Link
-                    to="/salons"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Salons
-                  </Link>
-
-                  <Link
-                    to="/artists"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Artists
-                  </Link>
-
-                  <Link
-                    to="/freelancers"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Community
-                  </Link>
-
-                  <Link
-                    to="/dashboard"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Dashboard
-                  </Link>
-
-                  <Link
-                    to="/about"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    About
-                  </Link>
-
-                  <Link
-                    to="/contact"
-                    onClick={onClose}
-                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Contact
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Auth Section - Always visible at bottom */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50 flex-shrink-0">
-              {user ? (
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600 text-center">
-                    Signed in as {user.email}
-                  </div>
-                  <Button
-                    onClick={() => handleAuthAction('signOut')}
-                    variant="outline"
-                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Sign Out
-                  </Button>
-                </div>
               ) : (
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => handleAuthAction('signin')}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                // Show Sign In and Sign Up when not signed in
+                <>
+                  <Link
+                    to="/sign-in"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                   >
-                    Sign In
-                  </Button>
-                  <Button
-                    onClick={() => handleAuthAction('signup')}
-                    variant="outline"
-                    className="w-full border-gray-200 hover:bg-gray-50"
+                    <span className="font-medium">Sign In</span>
+                  </Link>
+
+                  <Link
+                    to="/auth/signup"
+                    onClick={closeMenu}
+                    className="block mt-4"
                   >
-                    Sign Up
-                  </Button>
-                </div>
+                    <Button 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
               )}
             </div>
-          </motion.div>
-        </>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 

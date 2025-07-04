@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Menu } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import EmviLogo from '@/components/branding/EmviLogo';
 import { Progress } from '@/components/ui/progress';
 import MobileMenu from '@/components/layout/MobileMenu';
@@ -21,7 +21,6 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const progress = (currentStep / totalSteps) * 100;
   
@@ -55,16 +54,8 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
             </div>
             
             <div className="flex items-center gap-2">
-              {/* Mobile menu hamburger */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+              {/* Add hamburger menu to PostWizardLayout */}
+              <MobileMenu />
             </div>
           </div>
           
@@ -94,12 +85,6 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           {children}
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <MobileMenu 
-        isOpen={isMobileMenuOpen} 
-        onClose={() => setIsMobileMenuOpen(false)} 
-      />
     </div>
   );
 };
