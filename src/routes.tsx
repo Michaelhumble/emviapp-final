@@ -5,19 +5,19 @@ import Layout from '@/components/layout/Layout';
 import AuthGuard from '@/components/auth/AuthGuard';
 
 // Lazy load pages
-const Home = lazy(() => import('./pages/Home'));
+const Home = lazy(() => import('./pages/Index'));
 const Jobs = lazy(() => import('./pages/Jobs'));
 const Artists = lazy(() => import('./pages/Artists'));
-const Salons = lazy(() => import('./pages/Salons'));
-const About = lazy(() => import('./pages/About'));
+const Salons = lazy(() => import('./pages/salons/StableSalonPage'));
+const About = lazy(() => import('./pages/About.routes'));
 const Contact = lazy(() => import('./pages/Contact'));
 const PostJob = lazy(() => import('./pages/PostJob'));
-const SellSalon = lazy(() => import('./pages/SellSalon'));
-const Auth = lazy(() => import('./pages/Auth'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
+const SellSalon = lazy(() => import('./pages/sell-salon/index'));
+const Auth = lazy(() => import('./pages/auth/SignIn'));
+const Dashboard = lazy(() => import('./pages/dashboard/index'));
 const Profile = lazy(() => import('./pages/Profile'));
-const Freelancers = lazy(() => import('./pages/Freelancers'));
-const Pricing = lazy(() => import('./pages/Pricing'));
+const Freelancers = lazy(() => import('./pages/dashboard/Freelancer'));
+const Pricing = lazy(() => import('./pages/pricing/index'));
 
 // Dashboard pages
 const ArtistDashboard = lazy(() => import('./pages/dashboard/Artist'));
