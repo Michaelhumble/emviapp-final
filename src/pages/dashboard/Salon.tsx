@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { SalonProvider } from "@/context/salon";
@@ -14,7 +13,10 @@ const SalonDashboardPage = () => {
   
   useEffect(() => {
     document.title = "Salon Dashboard | EmviApp";
-  }, []);
+    // DEBUG: Confirm which file is rendering
+    console.log("🔍 DEBUG: Rendering from src/pages/dashboard/Salon.tsx");
+    console.log("🔍 DEBUG: User profile:", userProfile);
+  }, [userProfile]);
 
   // Placeholder components for dashboard sections
   const SalonDashboardOverview = () => (
@@ -63,6 +65,11 @@ const SalonDashboardPage = () => {
       <ProfileCompletionProvider>
         <SalonProvider>
           <div className="container mx-auto px-4 py-8">
+            {/* DEBUG BANNER - Remove after confirmation */}
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+              <strong>🔍 DEBUG:</strong> This is rendering from <code>src/pages/dashboard/Salon.tsx</code>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Sidebar */}
               <div className="md:col-span-1">
