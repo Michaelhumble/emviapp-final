@@ -1,18 +1,25 @@
 
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
+import SalonListingWizard from '@/components/posting/salon/SalonListingWizard';
+import SalonOwnerGuard from '@/components/posting/salon/SalonOwnerGuard';
 
-const SellSalon = () => {
+const SellSalonIndex = () => {
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Coming Soon</h1>
-          <p className="text-gray-600">Sell Salon page is under development</p>
-        </div>
-      </div>
+      <Helmet>
+        <title>Sell Your Salon | EmviApp</title>
+        <meta 
+          name="description" 
+          content="List your salon for sale on EmviApp. Reach thousands of qualified buyers looking for salon businesses. Only verified salon owners can post listings."
+        />
+      </Helmet>
+      <SalonOwnerGuard>
+        <SalonListingWizard />
+      </SalonOwnerGuard>
     </Layout>
   );
 };
 
-export default SellSalon;
+export default SellSalonIndex;

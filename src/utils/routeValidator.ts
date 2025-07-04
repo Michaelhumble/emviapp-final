@@ -1,5 +1,6 @@
 
-import { routes } from '../routes';
+import { isKnownRoute } from './routeChecker';
+import routes from '../routes';
 
 // Map routes config to paths for validation
 const getRoutePaths = () => {
@@ -32,7 +33,7 @@ export const getCurrentRouteName = (): string => {
     return route.path === currentPath;
   });
   
-  return matchingRoute ? matchingRoute.name : 'Unknown Route';
+  return matchingRoute ? matchingRoute.path : 'Unknown Route';
 };
 
 // Find closest matching route for a 404 fallback suggestion
@@ -50,11 +51,6 @@ export const getClosestMatchingRoute = (path: string): string | null => {
   });
   
   return matchingRoute || null;
-};
-
-// Helper function to check if route is known
-const isKnownRoute = (path: string, availableRoutes: string[]): boolean => {
-  return availableRoutes.includes(path);
 };
 
 // Log route validation for debugging
