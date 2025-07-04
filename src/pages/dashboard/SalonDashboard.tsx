@@ -9,6 +9,11 @@ const SalonDashboard = () => {
   
   return (
     <Layout>
+      {/* DEBUG BANNER */}
+      <div className="bg-blue-400 text-blue-900 px-4 py-2 text-center font-bold w-full">
+        🔵 RENDERING SalonDashboard.tsx
+      </div>
+      
       <div className="container mx-auto px-4 py-8">
         {/* DEBUG BANNER - Remove after confirmation */}
         <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">

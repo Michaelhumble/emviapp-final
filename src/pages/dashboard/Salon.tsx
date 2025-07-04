@@ -62,6 +62,11 @@ const SalonDashboardPage = () => {
 
   return (
     <Layout>
+      {/* DEBUG BANNER */}
+      <div className="bg-yellow-400 text-yellow-900 px-4 py-2 text-center font-bold w-full">
+        🟡 RENDERING Salon.tsx
+      </div>
+      
       <ProfileCompletionProvider>
         <SalonProvider>
           <div className="container mx-auto px-4 py-8">
