@@ -47,13 +47,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             onClick={onClose}
           />
           
-          {/* Menu */}
+          {/* Menu - Increased height to h-[85vh] for better visibility */}
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 left-0 h-[85vh] w-80 bg-white shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
@@ -68,8 +68,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Button>
             </div>
 
-            {/* Navigation Items */}
-            <nav className="flex-1 p-6">
+            {/* Navigation Items - Made scrollable with flex-1 */}
+            <nav className="flex-1 p-6 overflow-y-auto">
               <div className="space-y-2">
                 {menuItems.map((item) => (
                   <Link
@@ -84,8 +84,29 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 ))}
               </div>
 
-              {/* CTA Buttons */}
+              {/* Auth Buttons Section - Moved higher with better spacing */}
               <div className="mt-8 space-y-3">
+                {!user && (
+                  <>
+                    <Button
+                      onClick={() => handleAuthAction('signin')}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      onClick={() => handleAuthAction('signup')}
+                      variant="outline"
+                      className="w-full border-gray-200 hover:bg-gray-50"
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              {/* CTA Buttons - Increased spacing for better visibility */}
+              <div className="mt-6 space-y-4">
                 <Button
                   asChild
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
@@ -97,17 +118,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50"
+                  className="w-full border-gray-200 hover:bg-gray-50 mb-4"
                   onClick={onClose}
                 >
-                  <Link to="/sell-salon">Sell Your Salon</Link>
+                  <Link to="/sell-salon">Post Your Salon</Link>
                 </Button>
               </div>
             </nav>
 
-            {/* Auth Section */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50">
-              {user ? (
+            {/* Auth Section - Only show sign out if user is logged in */}
+            {user && (
+              <div className="p-6 border-t border-gray-100 bg-gray-50">
                 <div className="space-y-3">
                   <div className="text-sm text-gray-600">
                     Signed in as {user.email}
@@ -120,24 +141,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                     Sign Out
                   </Button>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => handleAuthAction('signin')}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    onClick={() => handleAuthAction('signup')}
-                    variant="outline"
-                    className="w-full border-gray-200 hover:bg-gray-50"
-                  >
-                    Sign Up
-                  </Button>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </motion.div>
         </>
       )}
