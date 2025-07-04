@@ -83,9 +83,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   </Link>
                 ))}
                 
-                {/* Community menu item - linking to /community */}
+                {/* Community menu item - linking to /freelancers */}
                 <Link
-                  to="/community"
+                  to="/freelancers"
                   onClick={onClose}
                   className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                 >
