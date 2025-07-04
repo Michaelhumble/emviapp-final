@@ -106,7 +106,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             </nav>
 
             {/* Auth Section */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50 pb-8">
+            <div className="p-6 border-t border-gray-100 bg-gray-50 pb-20">
               {user ? (
                 <div className="space-y-3">
                   <div className="text-sm text-gray-600">
