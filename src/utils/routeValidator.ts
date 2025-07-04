@@ -1,12 +1,19 @@
 
 import { isKnownRoute } from './routeChecker';
-import routes from '../routes';
+import router from '../routes';
 
 // Map routes config to paths for validation
 const getRoutePaths = () => {
   // Add explicit routes that might not be in the routes config
-  const explicitRoutes = ['/salons', '/dashboard/artist/booking-calendar', '/dashboard/artist/inbox'];
-  return [...routes.map(route => route.path), ...explicitRoutes];
+  const explicitRoutes = [
+    '/salons', 
+    '/dashboard/artist/booking-calendar', 
+    '/dashboard/artist/inbox',
+    '/profile/customer',
+    '/profile/artist', 
+    '/profile/salon'
+  ];
+  return [...router.routes.map(route => route.path), ...explicitRoutes];
 };
 
 // Validate that a path exists in our routes configuration
@@ -23,7 +30,7 @@ export const getSafePath = (path: string, fallback: string = '/dashboard'): stri
 // Get a human-readable name for the current route
 export const getCurrentRouteName = (): string => {
   const currentPath = window.location.pathname;
-  const matchingRoute = routes.find(route => {
+  const matchingRoute = router.routes.find(route => {
     // Handle dynamic routes with parameters
     if (route.path.includes(':')) {
       const regexPath = route.path.replace(/:[^\/]+/g, '[^/]+');
