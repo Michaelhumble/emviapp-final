@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Menu, Home, Briefcase, Building2, Users, MessageSquare, User, Phone, Info } from 'lucide-react';
+import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,10 +14,8 @@ interface MobileHamburgerMenuProps {
 const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleAuthAction = (action: string) => {
-    setIsMenuOpen(false);
     onClose();
     if (action === 'signOut') {
       signOut();
@@ -26,149 +24,131 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
     }
   };
 
-  const handleNavigation = (path: string) => {
-    setIsMenuOpen(false);
-    onClose();
-    navigate(path);
-  };
-
   const menuItems = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: Briefcase, label: 'Jobs', path: '/jobs' },
-    { icon: Building2, label: 'Salons', path: '/salons' },
-    { icon: Users, label: 'Artists', path: '/artists' },
-    { icon: MessageSquare, label: 'Community', path: '/community' },
-    { icon: User, label: 'Dashboard', path: '/dashboard' },
-    { icon: Info, label: 'About', path: '/about' },
-    { icon: Phone, label: 'Contact', path: '/contact' },
+    { icon: Home, label: 'Home', href: '/' },
+    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
+    { icon: Users, label: 'Artists', href: '/artists' },
+    { icon: Building2, label: 'Salons', href: '/salons' },
+    { icon: MessageSquare, label: 'Messages', href: '/messages' },
+    { icon: User, label: 'Profile', href: '/profile' },
   ];
 
   return (
-    <>
-      {/* Hamburger Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden"
-        onClick={() => setIsMenuOpen(true)}
-        aria-label="Open menu"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            onClick={onClose}
+          />
+          
+          {/* Menu */}
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 min-h-[75vh] flex flex-col justify-between py-6"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="h-8 w-8 hover:bg-gray-100"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
-              onClick={() => setIsMenuOpen(false)}
-            />
-            
-            {/* Menu Panel */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white/95 backdrop-blur-lg shadow-2xl z-50 flex flex-col"
-              style={{ maxHeight: '35vh', minHeight: '300px' }}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-100/50">
-                <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
+            {/* Navigation Items */}
+            <nav className="flex-1 p-6">
+              <div className="space-y-2">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    onClick={onClose}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="mt-8 space-y-3">
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="h-8 w-8 hover:bg-gray-100/50 rounded-full"
+                  asChild
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+                  onClick={onClose}
                 >
-                  <X className="h-4 w-4" />
+                  <Link to="/post-job">Post a Job</Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full border-gray-200 hover:bg-gray-50"
+                  onClick={onClose}
+                >
+                  <Link to="/sell-salon">Sell Your Salon</Link>
                 </Button>
               </div>
+            </nav>
 
-              {/* Navigation Links */}
-              <nav className="flex-1 p-4 overflow-y-auto">
-                <div className="space-y-1">
-                  {menuItems.map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => handleNavigation(item.path)}
-                      className="flex items-center space-x-3 w-full px-3 py-2.5 rounded-lg hover:bg-gray-50/80 transition-colors duration-200 text-gray-700 hover:text-gray-900 text-left"
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span className="font-medium text-sm">{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="mt-6 space-y-2">
+            {/* Auth Section */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50">
+              {user ? (
+                <div className="space-y-3">
+                  <div className="text-sm text-gray-600">
+                    Signed in as {user.email}
+                  </div>
                   <Button
-                    onClick={() => handleNavigation('/post-job')}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm py-2.5 rounded-lg shadow-sm"
-                  >
-                    Post a Job
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleNavigation('/sell-salon')}
+                    onClick={() => handleAuthAction('signOut')}
                     variant="outline"
-                    className="w-full border-gray-200 hover:bg-gray-50/80 text-sm py-2.5 rounded-lg"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
                   >
-                    Sell Salon
+                    Sign Out
                   </Button>
                 </div>
-              </nav>
-
-              {/* Auth Section */}
-              <div className="p-4 border-t border-gray-100/50 bg-gray-50/30">
-                {user ? (
-                  <div className="space-y-3">
-                    <div className="text-xs text-gray-600 px-1">
-                      Signed in as {user.email}
-                    </div>
-                    <Button
-                      onClick={() => handleAuthAction('signOut')}
-                      variant="outline"
-                      className="w-full border-red-200 text-red-600 hover:bg-red-50 text-sm py-2.5 rounded-lg"
-                    >
-                      Sign Out
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Button
-                      onClick={() => handleAuthAction('signin')}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2.5 rounded-lg"
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      onClick={() => handleAuthAction('signup')}
-                      variant="outline"
-                      className="w-full border-gray-200 hover:bg-gray-50 text-sm py-2.5 rounded-lg"
-                    >
-                      Sign Up
-                    </Button>
-                  </div>
-                )}
-                
-                {/* Credit */}
-                <div className="mt-3 text-center">
-                  <span className="text-xs text-gray-500">Inspired by Sunshine ☀️</span>
+              ) : (
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => handleAuthAction('signin')}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => handleAuthAction('signup')}
+                    variant="outline"
+                    className="w-full border-gray-200 hover:bg-gray-50"
+                  >
+                    Sign Up
+                  </Button>
                 </div>
+              )}
+              
+              {/* Credit */}
+              <div className="mt-4 text-center">
+                <p className="text-xs text-gray-400">
+                  Inspired by Sunshine
+                </p>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 
