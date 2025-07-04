@@ -16,6 +16,7 @@ export const routes = [
   { path: '/dashboard/artist', name: 'Artist Dashboard' },
   { path: '/dashboard/customer', name: 'Customer Dashboard' },
   { path: '/dashboard/owner', name: 'Owner Dashboard' },
+  { path: '/dashboard/manager', name: 'Manager Dashboard' },
   { path: '/profile', name: 'Profile' }
 ];
 

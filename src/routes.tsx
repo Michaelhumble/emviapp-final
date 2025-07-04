@@ -22,7 +22,8 @@ const Pricing = lazy(() => import('./pages/pricing/index'));
 // Dashboard pages
 const ArtistDashboard = lazy(() => import('./pages/dashboard/Artist'));
 const CustomerDashboard = lazy(() => import('./pages/dashboard/Customer'));
-const OwnerDashboard = lazy(() => import('./pages/dashboard/owner'));
+const SalonDashboard = lazy(() => import('./pages/dashboard/Salon')); // SOURCE OF TRUTH: Main Salon Dashboard
+const ManagerDashboard = lazy(() => import('./pages/dashboard/Manager'));
 
 const AppRoutes = () => {
   return (
@@ -45,7 +46,8 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="dashboard/artist" element={<AuthGuard><ArtistDashboard /></AuthGuard>} />
           <Route path="dashboard/customer" element={<AuthGuard><CustomerDashboard /></AuthGuard>} />
-          <Route path="dashboard/owner" element={<AuthGuard><OwnerDashboard /></AuthGuard>} />
+          <Route path="dashboard/owner" element={<AuthGuard><SalonDashboard /></AuthGuard>} />
+          <Route path="dashboard/manager" element={<AuthGuard><ManagerDashboard /></AuthGuard>} />
           <Route path="profile" element={<AuthGuard><Profile /></AuthGuard>} />
         </Route>
       </Routes>

@@ -1,4 +1,6 @@
 
+// SOURCE OF TRUTH: This is now the main Salon Dashboard used by /dashboard/owner
+
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { SalonProvider } from "@/context/salon";
