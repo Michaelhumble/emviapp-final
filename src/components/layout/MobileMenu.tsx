@@ -35,8 +35,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="flex flex-col space-y-1 p-4 pb-16">
+          <div className="flex-1 overflow-y-auto h-[85vh]">
+            <div className="flex flex-col space-y-1 p-4 pb-20">
               {/* Navigation Links */}
               <Link
                 to="/"
