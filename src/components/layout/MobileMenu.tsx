@@ -2,9 +2,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
+import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Sun } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import Logo from '@/components/ui/Logo';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -12,7 +14,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut } = useAuth();
+  const { user, userProfile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleAuthAction = (action: string) => {
@@ -24,125 +26,171 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }
   };
 
+  const handleDashboardClick = () => {
+    onClose();
+    navigate('/dashboard');
+  };
+
   const menuItems = [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Users, label: 'Artists', href: '/artists' },
     { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
-    { icon: User, label: 'Profile', href: '/profile' },
+    { icon: MessageSquare, label: 'Community', href: '/freelancers' },
+    { icon: User, label: 'About', href: '/about' },
+    { icon: MessageSquare, label: 'Contact', href: '/contact' },
   ];
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Premium backdrop with blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             onClick={onClose}
           />
           
-          {/* Menu */}
+          {/* Premium slide-in menu */}
           <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col overflow-hidden"
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+            className="fixed top-0 right-0 h-full w-[90%] max-w-sm bg-gradient-to-b from-white to-gray-50/80 backdrop-blur-xl shadow-2xl z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
-              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
+            {/* Header with logo and close */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100/50">
+              <Logo size="small" showText={true} />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 hover:bg-gray-100"
+                className="h-10 w-10 rounded-full hover:bg-gray-100/50 transition-colors"
               >
                 <X className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* Scrollable Content */}
+            {/* Profile Section */}
+            <div className="p-6 border-b border-gray-100/50">
+              {user ? (
+                <div className="flex items-center space-x-4 bg-white/60 rounded-2xl p-4 shadow-sm">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={userProfile?.avatar_url || undefined} />
+                    <AvatarFallback className="bg-purple-100 text-purple-600 font-semibold">
+                      {userProfile?.full_name?.[0] || user.email?.[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 truncate">
+                      {userProfile?.full_name || 'User'}
+                    </p>
+                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleDashboardClick}
+                      className="mt-1 h-7 px-3 text-xs bg-purple-50 hover:bg-purple-100 text-purple-600"
+                    >
+                      Dashboard →
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center bg-white/60 rounded-2xl p-6 shadow-sm">
+                  <div className="text-2xl mb-2">👋</div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Welcome!</h3>
+                  <p className="text-sm text-gray-500 mb-4">Join our beauty community</p>
+                </div>
+              )}
+            </div>
+
+            {/* Scrollable Navigation */}
             <div className="flex-1 overflow-y-auto">
-              {/* Navigation Items */}
-              <nav className="p-6">
-                <div className="space-y-2">
-                  {menuItems.map((item) => (
+              <nav className="p-6 space-y-3">
+                {menuItems.map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
                     <Link
-                      key={item.label}
                       to={item.href}
                       onClick={onClose}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      className="flex items-center space-x-4 p-4 rounded-2xl bg-white/60 hover:bg-white/80 shadow-sm hover:shadow-md transition-all duration-200 group"
                     >
-                      <item.icon className="h-5 w-5" />
-                      <span className="font-medium">{item.label}</span>
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center group-hover:from-purple-100 group-hover:to-purple-200 transition-colors">
+                        <item.icon className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <span className="font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+                        {item.label}
+                      </span>
                     </Link>
-                  ))}
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="mt-8 space-y-3">
-                  <Button
-                    asChild
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                    onClick={onClose}
-                  >
-                    <Link to="/post-job">Post a Job</Link>
-                  </Button>
-                  
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full border-gray-200 hover:bg-gray-50"
-                    onClick={onClose}
-                  >
-                    <Link to="/sell-salon">Sell Your Salon</Link>
-                  </Button>
-                </div>
+                  </motion.div>
+                ))}
               </nav>
+            </div>
 
-              {/* Auth Section */}
-              <div className="p-6 border-t border-gray-100 bg-gray-50">
-                {user ? (
-                  <div className="space-y-3">
-                    <div className="text-sm text-gray-600">
-                      Signed in as {user.email}
-                    </div>
+            {/* Sticky Bottom CTAs */}
+            <div className="p-6 bg-white/80 backdrop-blur-sm border-t border-gray-100/50">
+              {user ? (
+                <div className="space-y-3">
+                  <div className="flex space-x-2">
                     <Button
-                      onClick={() => handleAuthAction('signOut')}
-                      variant="outline"
-                      className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                      asChild
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg rounded-xl h-11"
+                      onClick={onClose}
                     >
-                      Sign Out
+                      <Link to="/post-job">Post a Job</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="flex-1 border-gray-200 hover:bg-gray-50 rounded-xl h-11"
+                      onClick={onClose}
+                    >
+                      <Link to="/sell-salon">Sell Salon</Link>
                     </Button>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    <Button
-                      onClick={() => handleAuthAction('signin')}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      onClick={() => handleAuthAction('signup')}
-                      variant="outline"
-                      className="w-full border-gray-200 hover:bg-gray-50"
-                    >
-                      Sign Up
-                    </Button>
-                  </div>
-                )}
+                  <Button
+                    onClick={() => handleAuthAction('signOut')}
+                    variant="ghost"
+                    className="w-full text-red-600 hover:bg-red-50 rounded-xl h-11"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => handleAuthAction('signin')}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg rounded-xl h-12"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => handleAuthAction('signup')}
+                    variant="outline"
+                    className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 rounded-xl h-12"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Inspiration Footer */}
+            <div className="px-6 pb-6">
+              <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
+                <Sun className="h-3 w-3" />
+                <span>Inspired by Sunshine</span>
               </div>
-
-              {/* Large bottom white space for button visibility */}
-              <div className="h-32 bg-white"></div>
             </div>
           </motion.div>
         </>
