@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, User, Building2 } from 'lucide-react';
+import { X, Home, Briefcase, Users, Building2, MessageSquare, User, Phone, Info } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
@@ -30,10 +30,10 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Users, label: 'Artists', href: '/artists' },
     { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: Users, label: 'Community', href: '/freelancers' },
-    { icon: User, label: 'Profile', href: '/profile' },
-    { icon: Users, label: 'About', href: '/about' },
-    { icon: Users, label: 'Contact', href: '/contact' },
+    { icon: MessageSquare, label: 'Community', href: '/freelancers' },
+    { icon: User, label: 'Dashboard', href: '/profile' },
+    { icon: Info, label: 'About', href: '/about' },
+    { icon: Phone, label: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -52,28 +52,33 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
           
           {/* Menu */}
           <motion.div
-            initial={{ x: '-100%' }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
+            exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 min-h-[75vh] flex flex-col justify-between py-6"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col min-h-[75vh] justify-between py-6"
           >
-            {/* Header with Logo */}
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                <Logo size="medium" showText={true} />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onClose}
-                  className="h-8 w-8 hover:bg-gray-100"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="h-8 w-8 hover:bg-gray-100"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
 
-              {/* Navigation Items */}
-              <nav className="flex-1 p-6">
+            {/* Logo */}
+            <div className="px-6 py-4 border-b border-gray-100">
+              <Logo size="medium" showText={true} />
+            </div>
+
+            {/* Navigation Items - Scrollable */}
+            <div className="flex-1 overflow-y-auto">
+              <nav className="p-6">
                 <div className="space-y-2">
                   {menuItems.map((item) => (
                     <Link
@@ -142,13 +147,6 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
                   </Button>
                 </div>
               )}
-              
-              {/* Credit */}
-              <div className="mt-4 text-center">
-                <p className="text-xs text-gray-400">
-                  Inspired by Sunshine
-                </p>
-              </div>
             </div>
           </motion.div>
         </>
