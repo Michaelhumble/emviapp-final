@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Phone, Info } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import Logo from '@/components/ui/Logo';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -58,7 +59,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
-              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
+              <div className="flex-1 flex justify-center">
+                <Logo size="small" showText={true} />
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
