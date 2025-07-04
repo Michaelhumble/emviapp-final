@@ -1,18 +1,26 @@
 
-import { isKnownRoute } from './routeChecker';
-import routes from '../routes';
+import { router } from '../routes';
 
 // Map routes config to paths for validation
 const getRoutePaths = () => {
+  const routePaths = router.routes.map(route => route.path || '/');
   // Add explicit routes that might not be in the routes config
-  const explicitRoutes = ['/salons', '/dashboard/artist/booking-calendar', '/dashboard/artist/inbox'];
-  return [...routes.map(route => route.path), ...explicitRoutes];
+  const explicitRoutes = ['/dashboard/artist/booking-calendar', '/dashboard/artist/inbox'];
+  return [...routePaths, ...explicitRoutes];
 };
 
 // Validate that a path exists in our routes configuration
 export const validateRoute = (path: string): boolean => {
   const availableRoutes = getRoutePaths();
-  return isKnownRoute(path, availableRoutes);
+  return availableRoutes.includes(path) || availableRoutes.some(route => {
+    // Handle dynamic routes with parameters
+    if (route.includes(':')) {
+      const regexPath = route.replace(/:[^\/]+/g, '[^/]+');
+      const routeRegex = new RegExp(`^${regexPath}$`);
+      return routeRegex.test(path);
+    }
+    return route === path;
+  });
 };
 
 // Check if a path exists and provide fallback if it doesn't
@@ -23,17 +31,18 @@ export const getSafePath = (path: string, fallback: string = '/dashboard'): stri
 // Get a human-readable name for the current route
 export const getCurrentRouteName = (): string => {
   const currentPath = window.location.pathname;
-  const matchingRoute = routes.find(route => {
+  const matchingRoute = router.routes.find(route => {
+    const routePath = route.path || '/';
     // Handle dynamic routes with parameters
-    if (route.path.includes(':')) {
-      const regexPath = route.path.replace(/:[^\/]+/g, '[^/]+');
+    if (routePath.includes(':')) {
+      const regexPath = routePath.replace(/:[^\/]+/g, '[^/]+');
       const routeRegex = new RegExp(`^${regexPath}$`);
       return routeRegex.test(currentPath);
     }
-    return route.path === currentPath;
+    return routePath === currentPath;
   });
   
-  return matchingRoute ? matchingRoute.path : 'Unknown Route';
+  return matchingRoute?.path || 'Unknown Route';
 };
 
 // Find closest matching route for a 404 fallback suggestion
