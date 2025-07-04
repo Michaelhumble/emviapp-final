@@ -40,8 +40,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
         </Button>
       </div>
 
-      {/* Scrollable content container with much more bottom padding */}
-      <div className="flex flex-col h-full overflow-y-auto pb-48">
+      {/* Scrollable content container with MASSIVE bottom padding */}
+      <div className="flex flex-col h-full overflow-y-auto pb-80">
         {/* Logo at the very top, centered */}
         <div className="flex justify-center py-6 mb-4">
           <EmviLogo size="large" showText={true} />
@@ -128,24 +128,24 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           </Button>
         </div>
 
-        {/* Auth section at the bottom with much more padding */}
-        <div className="px-6 py-8 border-t bg-gray-50 mt-auto mb-16">
+        {/* Auth section at the bottom with MASSIVE padding */}
+        <div className="px-6 py-12 border-t bg-gray-50 mt-auto mb-32">
           {!isSignedIn ? (
-            <div className="space-y-6">
-              <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
+            <div className="space-y-8">
+              <Button asChild variant="default" className="w-full h-14 text-xl font-semibold">
                 <Link to="/auth/signin" onClick={handleLinkClick}>
                   Sign In
                 </Link>
               </Button>
 
-              <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
+              <Button asChild variant="outline" className="w-full h-14 text-xl font-semibold">
                 <Link to="/auth/signup" onClick={handleLinkClick}>
                   Sign Up
                 </Link>
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-6">
               {userProfile?.email && (
                 <p className="text-sm text-gray-600 text-center truncate">
                   {userProfile.email}
@@ -153,7 +153,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               )}
               <Button
                 variant="outline"
-                className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
+                className="w-full h-14 text-xl font-semibold border-red-200 text-red-600 hover:bg-red-50"
                 onClick={handleSignOut}
               >
                 Sign Out
