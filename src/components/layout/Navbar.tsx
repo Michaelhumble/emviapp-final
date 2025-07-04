@@ -7,12 +7,8 @@ import MobileHamburgerMenu from './MobileHamburgerMenu';
 import MainNavigation from './navbar/MainNavigation';
 import AuthButtons from './navbar/AuthButtons';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
-  const { isSignedIn } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,10 +57,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            <MobileHamburgerMenu 
-              isOpen={isMobileMenuOpen} 
-              onClose={() => setIsMobileMenuOpen(false)} 
-            />
+            <MobileHamburgerMenu />
           </div>
         </div>
       </div>
