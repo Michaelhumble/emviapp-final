@@ -40,8 +40,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
         </Button>
       </div>
 
-      {/* Scrollable content container */}
-      <div className="flex flex-col h-full overflow-y-auto pb-24">
+      {/* Scrollable content container with proper bottom padding */}
+      <div className="flex flex-col h-full overflow-y-auto pb-32">
         {/* Logo at the very top, centered */}
         <div className="flex justify-center py-6 mb-4">
           <EmviLogo size="large" showText={true} />
@@ -128,10 +128,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           </Button>
         </div>
 
-        {/* Auth section at the bottom */}
-        <div className="px-6 py-4 border-t bg-gray-50 mt-auto">
+        {/* Auth section at the bottom with extra padding */}
+        <div className="px-6 py-6 border-t bg-gray-50 mt-auto mb-8">
           {!isSignedIn ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
                 <Link to="/auth/signin" onClick={handleLinkClick}>
                   Sign In
