@@ -7,6 +7,7 @@ import MobileHamburgerMenu from './MobileHamburgerMenu';
 import MainNavigation from './navbar/MainNavigation';
 import AuthButtons from './navbar/AuthButtons';
 import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
@@ -60,14 +61,26 @@ const Navbar = () => {
               <AuthButtons />
             </div>
 
-            {/* Mobile Menu */}
-            <MobileHamburgerMenu 
-              isOpen={isMobileMenuOpen} 
-              onClose={() => setIsMobileMenuOpen(false)} 
-            />
+            {/* Mobile Hamburger Button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="h-8 w-8 hover:bg-gray-100"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <MobileHamburgerMenu 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
+      />
     </nav>
   );
 };
