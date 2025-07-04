@@ -12,7 +12,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, userProfile, signOut } = useAuth();
+  const { user, signOut } = useAuth();
 
   if (!isOpen) return null;
 
@@ -23,139 +23,131 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
+      {/* Backdrop */}
       <div className="fixed inset-0 bg-black/20" onClick={onClose} />
+      
+      {/* Menu Panel */}
       <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
         <div className="flex h-full flex-col">
-          {/* Header with Logo */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <EmviLogo />
-            <button onClick={onClose} className="p-2">
+          {/* Header with Logo and Close Button */}
+          <div className="flex items-center justify-between p-4 border-b bg-white">
+            <EmviLogo size="medium" />
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md">
               <X className="h-6 w-6" />
             </button>
           </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto h-[85vh]">
-            <div className="flex flex-col space-y-1 p-4 pb-20">
-              {/* Navigation Links */}
+          {/* Scrollable Menu Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="flex flex-col p-4 space-y-2 pb-20">
+              
+              {/* Main Navigation Links */}
               <Link
                 to="/"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>Home</span>
+                <span className="font-medium">Home</span>
               </Link>
 
               <Link
                 to="/jobs"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>Jobs</span>
+                <span className="font-medium">Jobs</span>
               </Link>
 
               <Link
-                to="/explore"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                to="/artists"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>Artists</span>
+                <span className="font-medium">Artists</span>
               </Link>
 
               <Link
                 to="/salons"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>Salons</span>
+                <span className="font-medium">Salons</span>
               </Link>
 
               <Link
                 to="/freelancers"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>Community</span>
+                <span className="font-medium">Community</span>
               </Link>
 
+              {/* Dashboard Link (only show when user is logged in) */}
               {user && (
                 <Link
                   to="/dashboard"
-                  className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                   onClick={onClose}
+                  className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <span>Dashboard</span>
+                  <span className="font-medium">Dashboard</span>
                 </Link>
               )}
 
               <Link
                 to="/about"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>About</span>
+                <span className="font-medium">About</span>
               </Link>
 
               <Link
                 to="/contact"
-                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={onClose}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <span>Contact</span>
+                <span className="font-medium">Contact</span>
               </Link>
 
-              {/* CTA Buttons */}
-              <div className="pt-4 space-y-3">
-                <Link
-                  to="/post-job"
-                  className="block"
-                  onClick={onClose}
-                >
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              {/* Divider */}
+              <div className="border-t my-4"></div>
+
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Link to="/post-job" onClick={onClose} className="block">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
                     Post a Job
                   </Button>
                 </Link>
 
-                <Link
-                  to="/post-salon"
-                  className="block"
-                  onClick={onClose}
-                >
-                  <Button variant="outline" className="w-full">
+                <Link to="/posting/salon" onClick={onClose} className="block">
+                  <Button variant="outline" className="w-full py-3">
                     Sell Your Salon
                   </Button>
                 </Link>
 
-                {/* Auth Buttons */}
+                {/* Authentication Buttons */}
                 {user ? (
                   <Button
                     onClick={handleSignOut}
                     variant="outline"
-                    className="w-full"
+                    className="w-full py-3 border-red-200 text-red-600 hover:bg-red-50"
                   >
                     Sign Out
                   </Button>
                 ) : (
-                  <>
-                    <Link
-                      to="/auth/signin"
-                      className="block"
-                      onClick={onClose}
-                    >
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <div className="space-y-3">
+                    <Link to="/auth/signin" onClick={onClose} className="block">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
                         Sign In
                       </Button>
                     </Link>
-                    <Link
-                      to="/auth/signup"
-                      className="block"
-                      onClick={onClose}
-                    >
-                      <Button variant="outline" className="w-full">
+                    <Link to="/auth/signup" onClick={onClose} className="block">
+                      <Button variant="outline" className="w-full py-3">
                         Sign Up
                       </Button>
                     </Link>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
