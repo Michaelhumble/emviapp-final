@@ -2,9 +2,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
+import { X, Home, Briefcase, Users, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import Logo from '@/components/ui/Logo';
 
 interface MobileHamburgerMenuProps {
   isOpen: boolean;
@@ -29,8 +30,10 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Users, label: 'Artists', href: '/artists' },
     { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
+    { icon: Users, label: 'Community', href: '/freelancers' },
     { icon: User, label: 'Profile', href: '/profile' },
+    { icon: Users, label: 'About', href: '/about' },
+    { icon: Users, label: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -55,55 +58,57 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 min-h-[75vh] flex flex-col justify-between py-6"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="h-8 w-8 hover:bg-gray-100"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+            {/* Header with Logo */}
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <Logo size="medium" showText={true} />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onClose}
+                  className="h-8 w-8 hover:bg-gray-100"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
 
-            {/* Navigation Items */}
-            <nav className="flex-1 p-6">
-              <div className="space-y-2">
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={item.href}
+              {/* Navigation Items */}
+              <nav className="flex-1 p-6">
+                <div className="space-y-2">
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      onClick={onClose}
+                      className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="mt-8 space-y-3">
+                  <Button
+                    asChild
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
                     onClick={onClose}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                   >
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="mt-8 space-y-3">
-                <Button
-                  asChild
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                  onClick={onClose}
-                >
-                  <Link to="/post-job">Post a Job</Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50"
-                  onClick={onClose}
-                >
-                  <Link to="/sell-salon">Sell Your Salon</Link>
-                </Button>
-              </div>
-            </nav>
+                    <Link to="/post-job">Post a Job</Link>
+                  </Button>
+                  
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full border-gray-200 hover:bg-gray-50"
+                    onClick={onClose}
+                  >
+                    <Link to="/sell-salon">Sell Your Salon</Link>
+                  </Button>
+                </div>
+              </nav>
+            </div>
 
             {/* Auth Section */}
             <div className="p-6 border-t border-gray-100 bg-gray-50">
