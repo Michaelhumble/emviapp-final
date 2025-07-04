@@ -1,171 +1,186 @@
 
 import React from 'react';
-import { X, Home, Users, Briefcase, Store, Mail, Info, LogOut, User, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { X, User, Home, Users, Mail, Phone, FileText, Briefcase, Store, LogOut } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
-import { EmviLogo } from '@/components/branding/EmviLogo';
+import { useNavigate } from 'react-router-dom';
+import EmviLogo from "@/components/branding/EmviLogo";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut, profile } = useAuth();
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { user, userProfile, signOut } = useAuth();
+  const navigate = useNavigate();
 
-  if (!isOpen) return null;
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
+  };
 
   const handleSignOut = async () => {
     await signOut();
     onClose();
   };
 
-  const menuItems = [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Users, label: 'Community', href: '/freelancers' },
-    { icon: Info, label: 'About', href: '/about' },
-    { icon: Mail, label: 'Contact', href: '/contact' },
-  ];
-
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
-      {/* Menu Panel */}
-      <div className="absolute right-0 top-0 h-full w-[90%] bg-gradient-to-br from-white/95 to-gray-50/90 backdrop-blur-xl shadow-2xl border-l border-white/20 flex flex-col">
-        
-        {/* Header - Fixed */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100/50 bg-white/30 backdrop-blur-sm">
-          <EmviLogo className="h-8" />
-          <Button
-            variant="ghost"
-            size="icon"
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 hover:bg-white/50"
+          />
+          
+          {/* Menu Panel */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed right-0 top-0 h-full w-[90%] bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 backdrop-blur-xl border-l border-white/20 shadow-2xl z-50 flex flex-col"
           >
-            <X className="h-6 w-6" />
-          </Button>
-        </div>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-white/10">
+                <EmviLogo className="h-8" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onClose}
+                  className="rounded-full hover:bg-white/20"
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-6 space-y-6">
-            
-            {/* Profile Section */}
-            <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30 shadow-lg">
+              {/* Profile Section */}
+              <div className="p-6 border-b border-white/10">
+                {user ? (
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                      <User className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{userProfile?.full_name || user.email}</p>
+                      <p className="text-sm text-gray-600">{user.email}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Welcome!</h3>
+                    <p className="text-gray-600 mb-4">Join EmviApp to connect with beauty professionals</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Items */}
+              <div className="p-4 space-y-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleNavigation('/')}
+                  className="w-full justify-start h-14 text-left bg-white/40 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl hover:bg-white/60 transition-all duration-200"
+                >
+                  <Home className="h-5 w-5 mr-3 text-purple-600" />
+                  <span className="font-medium text-gray-900">Home</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => handleNavigation('/freelancers')}
+                  className="w-full justify-start h-14 text-left bg-white/40 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl hover:bg-white/60 transition-all duration-200"
+                >
+                  <Users className="h-5 w-5 mr-3 text-purple-600" />
+                  <span className="font-medium text-gray-900">Community</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => handleNavigation('/about')}
+                  className="w-full justify-start h-14 text-left bg-white/40 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl hover:bg-white/60 transition-all duration-200"
+                >
+                  <FileText className="h-5 w-5 mr-3 text-purple-600" />
+                  <span className="font-medium text-gray-900">About</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => handleNavigation('/contact')}
+                  className="w-full justify-start h-14 text-left bg-white/40 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl hover:bg-white/60 transition-all duration-200"
+                >
+                  <Phone className="h-5 w-5 mr-3 text-purple-600" />
+                  <span className="font-medium text-gray-900">Contact</span>
+                </Button>
+              </div>
+
+              {/* Bottom Spacing for Scrolling */}
+              <div className="h-32"></div>
+            </div>
+
+            {/* Sticky Bottom Bar */}
+            <div className="p-4 bg-white/80 backdrop-blur-xl border-t border-white/20">
               {user ? (
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {profile?.full_name || 'User'}
-                    </p>
-                    <p className="text-sm text-gray-600">{user.email}</p>
-                    <Link 
-                      to="/dashboard" 
-                      onClick={onClose}
-                      className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+                <div className="space-y-3">
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={() => handleNavigation('/post-job')}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl h-12 font-medium shadow-lg"
                     >
-                      Dashboard →
-                    </Link>
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Post a Job
+                    </Button>
+                    <Button
+                      onClick={() => handleNavigation('/sell-salon')}
+                      className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl h-12 font-medium shadow-lg"
+                    >
+                      <Store className="h-4 w-4 mr-2" />
+                      Sell Salon
+                    </Button>
                   </div>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="w-full rounded-xl h-12 font-medium border-2 hover:bg-red-50 hover:border-red-200 hover:text-red-700"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
                 </div>
               ) : (
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Welcome!</h3>
-                  <p className="text-sm text-gray-600 mb-4">Join thousands of beauty professionals</p>
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={() => handleNavigation('/auth?mode=signin')}
+                    variant="outline"
+                    className="flex-1 rounded-xl h-12 font-medium border-2 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => handleNavigation('/auth?mode=signup')}
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl h-12 font-medium shadow-lg"
+                  >
+                    Sign Up
+                  </Button>
                 </div>
               )}
-            </div>
-
-            {/* Navigation Items */}
-            <div className="space-y-3">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  onClick={onClose}
-                  className="flex items-center space-x-4 p-4 bg-white/40 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white/60 hover:shadow-xl transition-all duration-200 group"
-                >
-                  <item.icon className="h-6 w-6 text-gray-700 group-hover:text-purple-600 transition-colors" />
-                  <span className="text-lg font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-
-            {/* Add sufficient bottom spacing for the last items */}
-            <div className="h-32" />
-          </div>
-        </div>
-
-        {/* Sticky Bottom CTAs */}
-        <div className="bg-white/50 backdrop-blur-sm border-t border-gray-100/50 p-6">
-          {user ? (
-            <div className="space-y-3">
-              <div className="flex space-x-3">
-                <Link 
-                  to="/post-job" 
-                  onClick={onClose}
-                  className="flex-1"
-                >
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Post a Job
-                  </Button>
-                </Link>
-                <Link 
-                  to="/sell-salon" 
-                  onClick={onClose}
-                  className="flex-1"
-                >
-                  <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
-                    <Store className="h-4 w-4 mr-2" />
-                    Sell Salon
-                  </Button>
-                </Link>
+              
+              {/* Footer */}
+              <div className="mt-4 text-center">
+                <p className="text-xs text-gray-500/70">Inspired by Sunshine ☀️</p>
               </div>
-              <Button 
-                onClick={handleSignOut}
-                variant="ghost" 
-                className="w-full text-gray-600 hover:text-red-600 hover:bg-red-50"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
             </div>
-          ) : (
-            <div className="space-y-3">
-              <Link to="/auth/signup" onClick={onClose}>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg">
-                  Sign Up
-                </Button>
-              </Link>
-              <Link to="/auth/signin" onClick={onClose}>
-                <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 text-center">
-          <p className="text-xs text-gray-500/70">
-            Inspired by Sunshine ☀️
-          </p>
-        </div>
-      </div>
-    </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 
