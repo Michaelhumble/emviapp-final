@@ -16,15 +16,11 @@ const SalonDashboardPage = () => {
   const [activeTab, setActiveTab] = React.useState("overview");
   
   useEffect(() => {
-    console.log("RENDERING Salon.tsx");
     document.title = "Salon Dashboard | EmviApp";
   }, []);
 
   return (
     <Layout>
-      <div style={{ backgroundColor: '#FFD700', color: '#000', padding: '10px', textAlign: 'center', fontSize: '18px', fontWeight: 'bold', width: '100%' }}>
-        RENDERING Salon.tsx
-      </div>
       <ProfileCompletionProvider>
         <SalonProvider>
           <div className="container mx-auto px-4 py-8">
