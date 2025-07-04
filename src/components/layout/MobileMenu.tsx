@@ -47,38 +47,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           <EmviLogo size="large" showText={true} />
         </div>
 
-        {/* Auth section right after logo */}
-        {!isSignedIn ? (
-          <div className="px-6 mb-6 space-y-3">
-            <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
-              <Link to="/auth/signin" onClick={handleLinkClick}>
-                Sign In
-              </Link>
-            </Button>
-
-            <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
-              <Link to="/auth/signup" onClick={handleLinkClick}>
-                Sign Up
-              </Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="px-6 mb-6 space-y-3">
-            {userProfile?.email && (
-              <p className="text-sm text-gray-600 text-center truncate">
-                {userProfile.email}
-              </p>
-            )}
-            <Button
-              variant="outline"
-              className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
-              onClick={handleSignOut}
-            >
-              Sign Out
-            </Button>
-          </div>
-        )}
-
         {/* Navigation Links */}
         <div className="px-6 space-y-3 flex-1">
           <Link
@@ -144,6 +112,38 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           >
             Contact
           </Link>
+
+          {/* Auth section moved to the bottom of navigation */}
+          {!isSignedIn ? (
+            <div className="pt-4 space-y-3">
+              <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
+                <Link to="/auth/signin" onClick={handleLinkClick}>
+                  Sign In
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
+                <Link to="/auth/signup" onClick={handleLinkClick}>
+                  Sign Up
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="pt-4 space-y-3">
+              {userProfile?.email && (
+                <p className="text-sm text-gray-600 text-center truncate">
+                  {userProfile.email}
+                </p>
+              )}
+              <Button
+                variant="outline"
+                className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </Button>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <Button asChild className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700 mt-4">
