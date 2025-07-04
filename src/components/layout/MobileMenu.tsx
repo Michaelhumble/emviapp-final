@@ -67,7 +67,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Button>
             </div>
 
-            {/* Top Action Buttons - Post Job, Salon, Auth */}
+            {/* Top Action Buttons */}
             <div className="p-6 border-b border-gray-100 space-y-3">
               {/* Post Job and Salon Buttons */}
               <Button
@@ -89,21 +89,31 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 </Link>
               </Button>
 
-              {/* Auth Buttons */}
-              {!user && (
+              {/* Auth Buttons - Now positioned under Post buttons */}
+              {!user ? (
                 <div className="space-y-2 pt-2">
                   <Button
-                    onClick={() => handleAuthAction('signin')}
+                    onClick={() => handleAuthAction('signup')}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    Sign In
+                    Sign Up
                   </Button>
                   <Button
-                    onClick={() => handleAuthAction('signup')}
+                    onClick={() => handleAuthAction('signin')}
                     variant="outline"
                     className="w-full border-gray-200 hover:bg-gray-50"
                   >
-                    Sign Up
+                    Sign In
+                  </Button>
+                </div>
+              ) : (
+                <div className="pt-2">
+                  <Button
+                    onClick={() => handleAuthAction('signOut')}
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                  >
+                    Sign Out
                   </Button>
                 </div>
               )}
@@ -126,20 +136,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </div>
             </nav>
 
-            {/* User Info and Sign Out (only if signed in) */}
+            {/* User Info (only if signed in) */}
             {user && (
               <div className="p-6 border-t border-gray-100 bg-gray-50">
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    Signed in as {user.email}
-                  </div>
-                  <Button
-                    onClick={() => handleAuthAction('signOut')}
-                    variant="outline"
-                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Sign Out
-                  </Button>
+                <div className="text-sm text-gray-600">
+                  Signed in as {user.email}
                 </div>
               </div>
             )}
