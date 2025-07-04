@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
@@ -7,8 +7,12 @@ import MobileHamburgerMenu from './MobileHamburgerMenu';
 import MainNavigation from './navbar/MainNavigation';
 import AuthButtons from './navbar/AuthButtons';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
+  const { isSignedIn } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,19 +31,22 @@ const Navbar = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-4">
-            {/* Post Your Free Job Button - Desktop */}
-            <div className="hidden md:block">
+            {/* Post Job and Post Salon Buttons - Desktop Only */}
+            <div className="hidden md:flex items-center space-x-2">
               <Link to="/post-job">
-                <Button variant="outline" size="sm">
-                  Post Your Free Job
+                <Button 
+                  size="sm"
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Post a Job
                 </Button>
               </Link>
-            </div>
-
-            {/* Post Your Salon Button - Desktop */}
-            <div className="hidden md:block">
               <Link to="/sell-salon">
-                <Button size="sm">
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                >
                   Post Your Salon
                 </Button>
               </Link>
@@ -54,7 +61,10 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            <MobileHamburgerMenu />
+            <MobileHamburgerMenu 
+              isOpen={isMobileMenuOpen} 
+              onClose={() => setIsMobileMenuOpen(false)} 
+            />
           </div>
         </div>
       </div>
