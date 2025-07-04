@@ -6,6 +6,7 @@ import LanguageToggle from './LanguageToggle';
 import MobileHamburgerMenu from './MobileHamburgerMenu';
 import MainNavigation from './navbar/MainNavigation';
 import AuthButtons from './navbar/AuthButtons';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   return (
@@ -26,6 +27,24 @@ const Navbar = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-4">
+            {/* Post Your Free Job Button - Desktop */}
+            <div className="hidden md:block">
+              <Link to="/post-job">
+                <Button variant="outline" size="sm">
+                  Post Your Free Job
+                </Button>
+              </Link>
+            </div>
+
+            {/* Post Your Salon Button - Desktop */}
+            <div className="hidden md:block">
+              <Link to="/sell-salon">
+                <Button size="sm">
+                  Post Your Salon
+                </Button>
+              </Link>
+            </div>
+
             {/* Language Toggle */}
             <LanguageToggle />
             

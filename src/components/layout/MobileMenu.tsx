@@ -69,7 +69,7 @@ const MobileMenu = () => {
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={closeMenu}>
           <div 
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Menu Header */}
@@ -87,6 +87,33 @@ const MobileMenu = () => {
 
             {/* Menu Items */}
             <div className="flex flex-col p-4 space-y-2">
+              {/* Post Your Free Job Button - Mobile */}
+              <Link
+                to="/post-job"
+                onClick={closeMenu}
+                className="block mb-4"
+              >
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors"
+                >
+                  Post Your Free Job
+                </Button>
+              </Link>
+
+              {/* Post Your Salon Button - Mobile */}
+              <Link
+                to="/sell-salon"
+                onClick={closeMenu}
+                className="block mb-4"
+              >
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                >
+                  Post Your Salon
+                </Button>
+              </Link>
+
+              {/* Navigation Links */}
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
@@ -118,7 +145,7 @@ const MobileMenu = () => {
                   <Link
                     to="/sign-in"
                     onClick={closeMenu}
-                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors mt-4"
                   >
                     <span className="font-medium">Sign In</span>
                   </Link>
@@ -126,7 +153,7 @@ const MobileMenu = () => {
                   <Link
                     to="/auth/signup"
                     onClick={closeMenu}
-                    className="block mt-4"
+                    className="block mt-2"
                   >
                     <Button 
                       className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
