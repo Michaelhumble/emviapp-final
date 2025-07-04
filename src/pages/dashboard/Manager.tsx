@@ -1,27 +1,18 @@
 
-import Layout from "@/components/layout/Layout";
-import { useAuth } from "@/context/auth";
-import ManagerGreetingHeader from "@/components/dashboard/salon/manager/ManagerGreetingHeader";
-import TeamOverviewCard from "@/components/dashboard/salon/manager/TeamOverviewCard";
-import BookingsOverviewCard from "@/components/dashboard/salon/manager/BookingsOverviewCard";
-import InternalNotesCard from "@/components/dashboard/salon/manager/InternalNotesCard";
-import QuickToolsCard from "@/components/dashboard/salon/manager/QuickToolsCard";
+import React from 'react';
+import Layout from '@/components/layout/Layout';
 
-// Responsive grid: 2-col on md+, stacked on mobile
-export default function ManagerDashboard() {
-  const { userProfile } = useAuth();
-
+const Manager = () => {
   return (
     <Layout>
-      <div className="container max-w-5xl mx-auto px-2 py-8">
-        <ManagerGreetingHeader userProfile={userProfile} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <BookingsOverviewCard />
-          <TeamOverviewCard />
-          <QuickToolsCard />
-          <InternalNotesCard />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Manager Dashboard</h1>
+          <p className="text-gray-600">Manager dashboard is under development</p>
         </div>
       </div>
     </Layout>
   );
-}
+};
+
+export default Manager;
