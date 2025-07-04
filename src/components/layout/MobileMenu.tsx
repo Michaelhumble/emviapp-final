@@ -67,62 +67,31 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Button>
             </div>
 
-            {/* Navigation Items */}
-            <nav className="flex-1 p-6 overflow-y-auto">
-              <div className="space-y-2">
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={item.href}
-                    onClick={onClose}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                ))}
-              </div>
+            {/* Top Action Buttons - Post Job, Salon, Auth */}
+            <div className="p-6 border-b border-gray-100 space-y-3">
+              {/* Post Job and Salon Buttons */}
+              <Button
+                asChild
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+              >
+                <Link to="/post-job" onClick={onClose}>
+                  Post Free Job
+                </Link>
+              </Button>
+              
+              <Button
+                asChild
+                variant="outline"
+                className="w-full border-gray-200 hover:bg-gray-50"
+              >
+                <Link to="/sell-salon" onClick={onClose}>
+                  Post Your Salon
+                </Link>
+              </Button>
 
-              {/* CTA Buttons */}
-              <div className="mt-8 space-y-3">
-                <Button
-                  asChild
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                >
-                  <Link to="/post-job" onClick={onClose}>
-                    Post a Job
-                  </Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50"
-                >
-                  <Link to="/sell-salon" onClick={onClose}>
-                    Sell Your Salon
-                  </Link>
-                </Button>
-              </div>
-            </nav>
-
-            {/* Auth Section */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50">
-              {user ? (
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    Signed in as {user.email}
-                  </div>
-                  <Button
-                    onClick={() => handleAuthAction('signOut')}
-                    variant="outline"
-                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Sign Out
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-3">
+              {/* Auth Buttons */}
+              {!user && (
+                <div className="space-y-2 pt-2">
                   <Button
                     onClick={() => handleAuthAction('signin')}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
@@ -139,6 +108,41 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 </div>
               )}
             </div>
+
+            {/* Navigation Items */}
+            <nav className="flex-1 p-6 overflow-y-auto">
+              <div className="space-y-2">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    onClick={onClose}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </nav>
+
+            {/* User Info and Sign Out (only if signed in) */}
+            {user && (
+              <div className="p-6 border-t border-gray-100 bg-gray-50">
+                <div className="space-y-3">
+                  <div className="text-sm text-gray-600">
+                    Signed in as {user.email}
+                  </div>
+                  <Button
+                    onClick={() => handleAuthAction('signOut')}
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              </div>
+            )}
           </motion.div>
         </>
       )}
