@@ -111,13 +111,32 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
                   >
                     <Link to="/sell-salon">Sell Your Salon</Link>
                   </Button>
+
+                  {/* Auth Buttons - Moved higher for better visibility */}
+                  {!user && (
+                    <div className="space-y-3 mt-4">
+                      <Button
+                        onClick={() => handleAuthAction('signin')}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        Sign In
+                      </Button>
+                      <Button
+                        onClick={() => handleAuthAction('signup')}
+                        variant="outline"
+                        className="w-full border-gray-200 hover:bg-gray-50"
+                      >
+                        Sign Up
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </nav>
             </div>
 
-            {/* Auth Section */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50">
-              {user ? (
+            {/* Auth Section - Only Sign Out for signed-in users */}
+            {user && (
+              <div className="p-6 border-t border-gray-100 bg-gray-50">
                 <div className="space-y-3">
                   <div className="text-sm text-gray-600">
                     Signed in as {user.email}
@@ -130,24 +149,8 @@ const MobileHamburgerMenu = ({ isOpen, onClose }: MobileHamburgerMenuProps) => {
                     Sign Out
                   </Button>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => handleAuthAction('signin')}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    onClick={() => handleAuthAction('signup')}
-                    variant="outline"
-                    className="w-full border-gray-200 hover:bg-gray-50"
-                  >
-                    Sign Up
-                  </Button>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </motion.div>
         </>
       )}
