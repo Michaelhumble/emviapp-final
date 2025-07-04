@@ -1,7 +1,7 @@
 
 import React from 'react';
+import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { X, Home, Briefcase, Store, Scissors, Users, Phone, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 import EmviLogo from '@/components/branding/EmviLogo';
@@ -11,8 +11,8 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, isSignedIn, signOut } = useAuth();
+const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const { user, userProfile, signOut } = useAuth();
 
   if (!isOpen) return null;
 
@@ -21,203 +21,141 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const handleLinkClick = () => {
-    onClose();
-  };
-
   return (
-    <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-        onClick={onClose}
-      />
-      
-      {/* Menu Panel */}
-      <div className="fixed top-0 right-0 h-full w-[90%] max-w-sm bg-white shadow-2xl z-50 flex flex-col">
-        {/* Header - Fixed */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white">
-          <EmviLogo size="small" />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 hover:bg-gray-100 rounded-full"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
+    <div className="fixed inset-0 z-50 lg:hidden">
+      <div className="fixed inset-0 bg-black/20" onClick={onClose} />
+      <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
+        <div className="flex h-full flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <EmviLogo />
+            <button onClick={onClose} className="p-2">
+              <X className="h-6 w-6" />
+            </button>
+          </div>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-6 space-y-6">
-            {/* Profile Section */}
-            {isSignedIn && user ? (
-              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
-                <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <span className="text-purple-600 font-semibold text-sm">
-                      {user.email?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800">{user.email}</p>
-                    <Link
-                      to="/dashboard"
-                      onClick={handleLinkClick}
-                      className="text-purple-600 text-sm hover:underline"
-                    >
-                      Go to Dashboard
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
-                <p className="text-gray-800 font-medium mb-2">Welcome! ☀️</p>
-                <p className="text-gray-600 text-sm">Sign in to access your dashboard</p>
-              </div>
-            )}
-
-            {/* Navigation Items */}
-            <div className="space-y-3">
-              <Link
-                to="/"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
-              >
-                <Home className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Home</span>
-              </Link>
-
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="flex flex-col space-y-1 p-4 pb-8">
+              {/* Navigation Links */}
               <Link
                 to="/jobs"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
               >
-                <Briefcase className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Jobs</span>
-              </Link>
-
-              <Link
-                to="/salons"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
-              >
-                <Store className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Salons</span>
-              </Link>
-
-              <Link
-                to="/artists"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
-              >
-                <Scissors className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Artists</span>
+                <span>Jobs</span>
               </Link>
 
               <Link
                 to="/freelancers"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
               >
-                <Users className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Community</span>
+                <span>Community</span>
+              </Link>
+
+              <Link
+                to="/salons"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
+              >
+                <span>Salons</span>
+              </Link>
+
+              <Link
+                to="/explore"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
+              >
+                <span>Artists</span>
               </Link>
 
               <Link
                 to="/about"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
               >
-                <Info className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">About</span>
+                <span>About</span>
               </Link>
 
               <Link
                 to="/contact"
-                onClick={handleLinkClick}
-                className="flex items-center space-x-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 shadow-sm"
+                className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={onClose}
               >
-                <Phone className="h-5 w-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Contact</span>
+                <span>Contact</span>
               </Link>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              {isSignedIn ? (
-                <>
-                  <Link
-                    to="/post-job"
-                    onClick={handleLinkClick}
-                    className="block"
-                  >
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white h-12 rounded-xl font-medium shadow-lg">
-                      Post a Job
-                    </Button>
-                  </Link>
-                  
-                  <Link
-                    to="/sell-salon"
-                    onClick={handleLinkClick}
-                    className="block"
-                  >
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 h-12 rounded-xl font-medium"
-                    >
-                      Sell Your Salon
-                    </Button>
-                  </Link>
-                  
-                  <Button
-                    onClick={handleSignOut}
-                    variant="ghost"
-                    className="w-full text-gray-600 hover:bg-gray-100 h-12 rounded-xl font-medium"
-                  >
-                    Sign Out
+              {/* CTA Buttons */}
+              <div className="pt-4 space-y-3">
+                <Link
+                  to="/post-job"
+                  className="block"
+                  onClick={onClose}
+                >
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    Post a Job
                   </Button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/sign-in"
-                    onClick={handleLinkClick}
-                    className="block"
-                  >
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white h-12 rounded-xl font-medium shadow-lg">
-                      Sign In
-                    </Button>
-                  </Link>
-                  
-                  <Link
-                    to="/sign-up"
-                    onClick={handleLinkClick}
-                    className="block"
-                  >
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 h-12 rounded-xl font-medium"
-                    >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+                </Link>
 
-            {/* Footer with extra padding */}
-            <div className="text-center pt-6 pb-8">
-              <p className="text-amber-600 text-sm font-medium opacity-70">
-                Inspired by Sunshine ☀️
-              </p>
+                <Link
+                  to="/post-salon"
+                  className="block"
+                  onClick={onClose}
+                >
+                  <Button variant="outline" className="w-full">
+                    Sell Your Salon
+                  </Button>
+                </Link>
+
+                {/* Auth Buttons */}
+                {user ? (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="block"
+                      onClick={onClose}
+                    >
+                      <Button variant="outline" className="w-full">
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={handleSignOut}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/auth/signin"
+                      className="block"
+                      onClick={onClose}
+                    >
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link
+                      to="/auth/signup"
+                      className="block"
+                      onClick={onClose}
+                    >
+                      <Button variant="outline" className="w-full">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
