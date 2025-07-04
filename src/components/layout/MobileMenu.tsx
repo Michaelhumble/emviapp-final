@@ -2,9 +2,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import EmviLogo from '@/components/branding/EmviLogo';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -24,14 +25,10 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }
   };
 
-  const menuItems = [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Users, label: 'Artists', href: '/artists' },
-    { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
-    { icon: User, label: 'Profile', href: '/profile' },
-  ];
+  const handleNavigation = (path: string) => {
+    onClose();
+    navigate(path);
+  };
 
   return (
     <AnimatePresence>
@@ -55,9 +52,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
+            {/* Close Button */}
+            <div className="flex items-center justify-end p-4">
               <Button
                 variant="ghost"
                 size="icon"
@@ -68,48 +64,106 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Button>
             </div>
 
-            {/* Navigation Items */}
-            <nav className="flex-1 p-6">
-              <div className="space-y-2">
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={item.href}
-                    onClick={onClose}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                ))}
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-6 pb-6">
+              {/* EmviApp Logo - Centered at top */}
+              <div className="flex justify-center mb-8">
+                <EmviLogo size="medium" showText={true} />
               </div>
 
-              {/* CTA Buttons */}
-              <div className="mt-8 space-y-3">
+              {/* Menu Items in exact order */}
+              <div className="space-y-4">
+                {/* Post a Job Button */}
                 <Button
-                  asChild
+                  onClick={() => handleNavigation('/post-job')}
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                  onClick={onClose}
                 >
-                  <Link to="/post-job">Post a Job</Link>
+                  Post a Job
                 </Button>
-                
+
+                {/* Sell Your Salon Button */}
                 <Button
-                  asChild
+                  onClick={() => handleNavigation('/sell-salon')}
                   variant="outline"
                   className="w-full border-gray-200 hover:bg-gray-50"
-                  onClick={onClose}
                 >
-                  <Link to="/sell-salon">Sell Your Salon</Link>
+                  Sell Your Salon
                 </Button>
-              </div>
-            </nav>
 
-            {/* Auth Section */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50">
+                {/* Navigation Links */}
+                <div className="space-y-2 mt-6">
+                  <Link
+                    to="/"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Home
+                  </Link>
+
+                  <Link
+                    to="/jobs"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Jobs
+                  </Link>
+
+                  <Link
+                    to="/salons"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Salons
+                  </Link>
+
+                  <Link
+                    to="/artists"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Artists
+                  </Link>
+
+                  <Link
+                    to="/freelancers"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Community
+                  </Link>
+
+                  <Link
+                    to="/dashboard"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Dashboard
+                  </Link>
+
+                  <Link
+                    to="/about"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    About
+                  </Link>
+
+                  <Link
+                    to="/contact"
+                    onClick={onClose}
+                    className="block px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Contact
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Auth Section - Always visible at bottom */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50 flex-shrink-0">
               {user ? (
                 <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 text-center">
                     Signed in as {user.email}
                   </div>
                   <Button
