@@ -68,8 +68,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Button>
             </div>
 
-            {/* Navigation Items - Made scrollable with flex-1 */}
-            <nav className="flex-1 p-6 overflow-y-auto">
+            {/* Navigation Items - Made scrollable with flex-1 and added bottom padding */}
+            <nav className="flex-1 p-6 overflow-y-auto pb-24">
               <div className="space-y-2">
                 {menuItems.map((item) => (
                   <Link
@@ -105,8 +105,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 )}
               </div>
 
-              {/* CTA Buttons - Increased spacing for better visibility */}
-              <div className="mt-6 space-y-4">
+              {/* CTA Buttons - Increased spacing and added extra bottom margin */}
+              <div className="mt-6 space-y-4 mb-8">
                 <Button
                   asChild
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
@@ -118,7 +118,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50 mb-4"
+                  className="w-full border-gray-200 hover:bg-gray-50"
                   onClick={onClose}
                 >
                   <Link to="/sell-salon">Post Your Salon</Link>
