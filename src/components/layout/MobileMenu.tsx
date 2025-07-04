@@ -47,43 +47,40 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           <EmviLogo size="large" showText={true} />
         </div>
 
-        {/* Auth section moved to top */}
-        <div className="px-6 py-4 border-b bg-gray-50 mb-6">
-          {!isSignedIn ? (
-            <div className="space-y-4">
-              <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
-                <Link to="/auth/signin" onClick={handleLinkClick}>
-                  Sign In
-                </Link>
-              </Button>
+        {/* Auth section right after logo */}
+        {!isSignedIn ? (
+          <div className="px-6 mb-6 space-y-3">
+            <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
+              <Link to="/auth/signin" onClick={handleLinkClick}>
+                Sign In
+              </Link>
+            </Button>
 
-              <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
-                <Link to="/auth/signup" onClick={handleLinkClick}>
-                  Sign Up
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {userProfile?.email && (
-                <p className="text-sm text-gray-600 text-center truncate">
-                  {userProfile.email}
-                </p>
-              )}
-              <Button
-                variant="outline"
-                className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </Button>
-            </div>
-          )}
-        </div>
+            <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
+              <Link to="/auth/signup" onClick={handleLinkClick}>
+                Sign Up
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="px-6 mb-6 space-y-3">
+            {userProfile?.email && (
+              <p className="text-sm text-gray-600 text-center truncate">
+                {userProfile.email}
+              </p>
+            )}
+            <Button
+              variant="outline"
+              className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
+              onClick={handleSignOut}
+            >
+              Sign Out
+            </Button>
+          </div>
+        )}
 
-        {/* All menu items in one scrollable section */}
+        {/* Navigation Links */}
         <div className="px-6 space-y-3 flex-1">
-          {/* Navigation Links */}
           <Link
             to="/"
             onClick={handleLinkClick}
