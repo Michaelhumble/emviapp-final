@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
+import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Phone, Info } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,8 +29,10 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Users, label: 'Artists', href: '/artists' },
     { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
-    { icon: User, label: 'Profile', href: '/profile' },
+    { icon: MessageSquare, label: 'Community', href: '/freelancers' },
+    { icon: User, label: 'Dashboard', href: '/dashboard' },
+    { icon: Info, label: 'About', href: '/about' },
+    { icon: Phone, label: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -52,10 +54,10 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col overflow-y-auto"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
               <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
               <Button
                 variant="ghost"
@@ -68,7 +70,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             </div>
 
             {/* Top Action Buttons */}
-            <div className="p-6 border-b border-gray-100 space-y-3">
+            <div className="p-6 border-b border-gray-100 space-y-3 flex-shrink-0">
               {/* Post Job and Salon Buttons */}
               <Button
                 asChild
@@ -138,7 +140,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
             {/* User Info (only if signed in) */}
             {user && (
-              <div className="p-6 border-t border-gray-100 bg-gray-50">
+              <div className="p-6 border-t border-gray-100 bg-gray-50 flex-shrink-0">
                 <div className="text-sm text-gray-600">
                   Signed in as {user.email}
                 </div>
