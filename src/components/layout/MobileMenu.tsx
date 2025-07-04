@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { X, Home, Briefcase, Users, Building2, User, LogOut, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { motion, AnimatePresence } from 'framer-motion';
+import { navigateToRoleDashboard } from '@/utils/navigation';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -15,66 +15,66 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
-  const handleAuthAction = (action: string) => {
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      onClose();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleDashboardClick = () => {
     onClose();
-    if (action === 'signOut') {
-      signOut();
+    if (user) {
+      navigateToRoleDashboard(navigate, user.user_metadata?.role || null);
     } else {
-      navigate(`/auth/${action}`);
+      navigate('/dashboard');
     }
   };
 
   const menuItems = [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Users, label: 'Artists', href: '/artists' },
-    { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
-    { icon: User, label: 'Profile', href: '/profile' },
+    { icon: Home, label: 'Home', to: '/' },
+    { icon: Briefcase, label: 'Jobs', to: '/jobs' },
+    { icon: Users, label: 'Artists', to: '/artists' },
+    { icon: Building2, label: 'Salons', to: '/salons' },
   ];
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            onClick={onClose}
-          />
-          
-          {/* Menu - Increased height to h-[90vh] for maximum visibility */}
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-[90vh] w-80 bg-white shadow-2xl z-50 flex flex-col"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="h-8 w-8 hover:bg-gray-100"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+  if (!isOpen) return null;
 
-            {/* Navigation Items - Made scrollable with flex-1 and added bottom padding */}
-            <nav className="flex-1 p-6 overflow-y-auto pb-24">
-              <div className="space-y-2">
+  return (
+    <div className="fixed inset-0 z-50 lg:hidden">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Menu Panel */}
+      <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl">
+        <div className="flex h-full flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+            <span className="text-lg font-semibold text-gray-900">Menu</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-8 w-8 p-0 hover:bg-gray-100"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex-1 overflow-y-auto px-4 py-6">
+            <nav className="space-y-2">
+              <div className="space-y-1">
                 {menuItems.map((item) => (
                   <Link
-                    key={item.label}
-                    to={item.href}
+                    key={item.to}
+                    to={item.to}
                     onClick={onClose}
                     className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                   >
@@ -83,9 +83,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   </Link>
                 ))}
                 
-                {/* Community menu item - linking to /freelancers */}
+                {/* Community menu item - linking to /community */}
                 <Link
-                  to="/freelancers"
+                  to="/community"
                   onClick={onClose}
                   className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                 >
@@ -95,68 +95,45 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </div>
 
               {/* Auth Buttons Section - Moved higher with better spacing */}
-              <div className="mt-8 space-y-3">
-                {!user && (
+              <div className="border-t border-gray-100 pt-6 mt-6 space-y-3">
+                {user ? (
                   <>
                     <Button
-                      onClick={() => handleAuthAction('signin')}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={handleDashboardClick}
+                      className="w-full justify-start h-12 text-left bg-primary hover:bg-primary/90"
                     >
-                      Sign In
+                      <User className="mr-3 h-5 w-5" />
+                      Dashboard
                     </Button>
                     <Button
-                      onClick={() => handleAuthAction('signup')}
-                      variant="outline"
-                      className="w-full border-gray-200 hover:bg-gray-50"
+                      onClick={handleSignOut}
+                      variant="ghost"
+                      className="w-full justify-start h-12 text-left text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                     >
-                      Sign Up
+                      <LogOut className="mr-3 h-5 w-5" />
+                      Sign Out
                     </Button>
                   </>
+                ) : (
+                  <div className="space-y-3">
+                    <Link to="/auth" onClick={onClose}>
+                      <Button className="w-full h-12">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/auth" onClick={onClose}>
+                      <Button variant="outline" className="w-full h-12">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div>
                 )}
               </div>
-
-              {/* CTA Buttons - Increased spacing and added extra bottom margin */}
-              <div className="mt-6 space-y-4 mb-8">
-                <Button
-                  asChild
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                  onClick={onClose}
-                >
-                  <Link to="/post-job">Post a Job</Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50"
-                  onClick={onClose}
-                >
-                  <Link to="/sell-salon">Post Your Salon</Link>
-                </Button>
-              </div>
             </nav>
-
-            {/* Auth Section - Only show sign out if user is logged in */}
-            {user && (
-              <div className="p-6 border-t border-gray-100 bg-gray-50">
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    Signed in as {user.email}
-                  </div>
-                  <Button
-                    onClick={() => handleAuthAction('signOut')}
-                    variant="outline"
-                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Sign Out
-                  </Button>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
