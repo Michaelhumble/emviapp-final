@@ -40,11 +40,45 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
         </Button>
       </div>
 
-      {/* Scrollable content container with MASSIVE bottom padding */}
-      <div className="flex flex-col h-full overflow-y-auto pb-80">
+      {/* Scrollable content container */}
+      <div className="flex flex-col h-full overflow-y-auto pb-8">
         {/* Logo at the very top, centered */}
         <div className="flex justify-center py-6 mb-4">
           <EmviLogo size="large" showText={true} />
+        </div>
+
+        {/* Auth section moved to top */}
+        <div className="px-6 py-4 border-b bg-gray-50 mb-6">
+          {!isSignedIn ? (
+            <div className="space-y-4">
+              <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
+                <Link to="/auth/signin" onClick={handleLinkClick}>
+                  Sign In
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
+                <Link to="/auth/signup" onClick={handleLinkClick}>
+                  Sign Up
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {userProfile?.email && (
+                <p className="text-sm text-gray-600 text-center truncate">
+                  {userProfile.email}
+                </p>
+              )}
+              <Button
+                variant="outline"
+                className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* All menu items in one scrollable section */}
@@ -126,40 +160,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               Sell Your Salon
             </Link>
           </Button>
-        </div>
-
-        {/* Auth section at the bottom with MASSIVE padding */}
-        <div className="px-6 py-12 border-t bg-gray-50 mt-auto mb-32">
-          {!isSignedIn ? (
-            <div className="space-y-8">
-              <Button asChild variant="default" className="w-full h-14 text-xl font-semibold">
-                <Link to="/auth/signin" onClick={handleLinkClick}>
-                  Sign In
-                </Link>
-              </Button>
-
-              <Button asChild variant="outline" className="w-full h-14 text-xl font-semibold">
-                <Link to="/auth/signup" onClick={handleLinkClick}>
-                  Sign Up
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {userProfile?.email && (
-                <p className="text-sm text-gray-600 text-center truncate">
-                  {userProfile.email}
-                </p>
-              )}
-              <Button
-                variant="outline"
-                className="w-full h-14 text-xl font-semibold border-red-200 text-red-600 hover:bg-red-50"
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </div>
