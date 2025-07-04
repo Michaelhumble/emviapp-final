@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 import EmviLogo from '@/components/branding/EmviLogo';
@@ -11,8 +11,8 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut } = useAuth();
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { isSignedIn, signOut } = useAuth();
 
   if (!isOpen) return null;
 
@@ -21,137 +21,136 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     onClose();
   };
 
+  const handleLinkClick = () => {
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/20" onClick={onClose} />
-      
-      {/* Menu Panel */}
-      <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
-        <div className="flex h-full flex-col">
-          {/* Header with Logo and Close Button */}
-          <div className="flex items-center justify-between p-4 border-b bg-white">
-            <EmviLogo size="medium" />
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md">
-              <X className="h-6 w-6" />
-            </button>
-          </div>
+    <div className="fixed inset-0 z-50 bg-white">
+      {/* Header with close button */}
+      <div className="flex justify-end p-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="h-10 w-10"
+        >
+          <X className="h-6 w-6" />
+          <span className="sr-only">Close menu</span>
+        </Button>
+      </div>
 
-          {/* Scrollable Menu Content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="flex flex-col p-4 space-y-2 pb-20">
-              
-              {/* Main Navigation Links */}
-              <Link
-                to="/"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Home</span>
-              </Link>
+      {/* Scrollable content */}
+      <div className="flex flex-col h-full overflow-y-auto pb-20">
+        {/* Logo - always at top, centered, large */}
+        <div className="flex justify-center py-6">
+          <EmviLogo size="large" showText={true} />
+        </div>
 
-              <Link
-                to="/jobs"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Jobs</span>
-              </Link>
+        {/* Top CTA buttons in exact order */}
+        <div className="px-6 space-y-4 mb-8">
+          <Button asChild className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700">
+            <Link to="/post-job" onClick={handleLinkClick}>
+              Post a Job
+            </Link>
+          </Button>
 
-              <Link
-                to="/artists"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Artists</span>
-              </Link>
+          <Button asChild className="w-full h-12 text-lg font-semibold bg-purple-600 hover:bg-purple-700">
+            <Link to="/sell-salon" onClick={handleLinkClick}>
+              Post Your Salon
+            </Link>
+          </Button>
 
-              <Link
-                to="/salons"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Salons</span>
-              </Link>
-
-              <Link
-                to="/freelancers"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Community</span>
-              </Link>
-
-              {/* Dashboard Link (only show when user is logged in) */}
-              {user && (
-                <Link
-                  to="/dashboard"
-                  onClick={onClose}
-                  className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <span className="font-medium">Dashboard</span>
+          {!isSignedIn ? (
+            <>
+              <Button asChild variant="default" className="w-full h-12 text-lg font-semibold">
+                <Link to="/auth/signup" onClick={handleLinkClick}>
+                  Sign Up
                 </Link>
-              )}
+              </Button>
 
-              <Link
-                to="/about"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">About</span>
-              </Link>
-
-              <Link
-                to="/contact"
-                onClick={onClose}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="font-medium">Contact</span>
-              </Link>
-
-              {/* Divider */}
-              <div className="border-t my-4"></div>
-
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Link to="/post-job" onClick={onClose} className="block">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
-                    Post a Job
-                  </Button>
+              <Button asChild variant="outline" className="w-full h-12 text-lg font-semibold">
+                <Link to="/auth/signin" onClick={handleLinkClick}>
+                  Sign In
                 </Link>
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-full h-12 text-lg font-semibold border-red-200 text-red-600 hover:bg-red-50"
+              onClick={handleSignOut}
+            >
+              Sign Out
+            </Button>
+          )}
+        </div>
 
-                <Link to="/posting/salon" onClick={onClose} className="block">
-                  <Button variant="outline" className="w-full py-3">
-                    Sell Your Salon
-                  </Button>
-                </Link>
+        {/* Navigation items */}
+        <div className="px-6 space-y-2">
+          <Link
+            to="/"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Home
+          </Link>
 
-                {/* Authentication Buttons */}
-                {user ? (
-                  <Button
-                    onClick={handleSignOut}
-                    variant="outline"
-                    className="w-full py-3 border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Sign Out
-                  </Button>
-                ) : (
-                  <div className="space-y-3">
-                    <Link to="/auth/signin" onClick={onClose} className="block">
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link to="/auth/signup" onClick={onClose} className="block">
-                      <Button variant="outline" className="w-full py-3">
-                        Sign Up
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <Link
+            to="/jobs"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Jobs
+          </Link>
+
+          <Link
+            to="/artists"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Artists
+          </Link>
+
+          <Link
+            to="/salons"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Salons
+          </Link>
+
+          <Link
+            to="/freelancers"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Community
+          </Link>
+
+          <Link
+            to="/dashboard"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Dashboard
+          </Link>
+
+          <Link
+            to="/about"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            About
+          </Link>
+
+          <Link
+            to="/contact"
+            onClick={handleLinkClick}
+            className="block py-4 px-4 text-lg font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Contact
+          </Link>
         </div>
       </div>
     </div>
