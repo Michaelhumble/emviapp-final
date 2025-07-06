@@ -61,12 +61,30 @@ const JobsPage = () => {
   };
 
   // Debug logging
-  console.log('📊 Jobs Page Debug:', {
+  console.log('📊 [DEBUG] Jobs Page Render:', {
     jobsCount: jobs.length,
     loading,
     error: error?.message,
-    jobs: jobs.map(j => ({ id: j.id, title: j.title, pricing_tier: j.pricing_tier }))
+    jobs: jobs.map(j => ({ id: j.id, title: j.title, pricing_tier: j.pricing_tier, status: j.status }))
   });
+
+  console.log('🔍 [DEBUG] Jobs page - FREE jobs specifically:', 
+    jobs.filter(j => j.pricing_tier === 'free').map(j => ({
+      id: j.id,
+      title: j.title,
+      pricing_tier: j.pricing_tier,
+      status: j.status
+    }))
+  );
+
+  console.log('🔍 [DEBUG] Jobs page - PAID jobs specifically:', 
+    jobs.filter(j => j.pricing_tier !== 'free').map(j => ({
+      id: j.id,
+      title: j.title,
+      pricing_tier: j.pricing_tier,
+      status: j.status
+    }))
+  );
 
   if (loading) {
     return (
@@ -106,7 +124,7 @@ const JobsPage = () => {
             <p className="text-gray-600">
               Find your next opportunity in the beauty industry 
               <span className="text-sm text-blue-600 ml-2">
-                ({jobs.length} jobs from database)
+                ({jobs.length} jobs from database - {jobs.filter(j => j.pricing_tier === 'free').length} free, {jobs.filter(j => j.pricing_tier !== 'free').length} paid)
               </span>
             </p>
           </div>
