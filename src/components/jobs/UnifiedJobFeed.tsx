@@ -18,7 +18,7 @@ const UnifiedJobFeed = ({
 }: UnifiedJobFeedProps) => {
   const [expirations] = useState<Record<string, boolean>>({});
 
-  console.log('🎨 [DEBUG] UnifiedJobFeed received jobs:', 
+  console.log('🎨 [UNIFIED-FEED] Rendering with jobs:', 
     jobs.map(j => ({ 
       id: j.id, 
       title: j.title, 
@@ -27,13 +27,22 @@ const UnifiedJobFeed = ({
     }))
   );
 
-  console.log('🆓 [DEBUG] UnifiedJobFeed - FREE jobs:', 
+  console.log('🆓 [UNIFIED-FEED] FREE jobs to display:', 
     jobs.filter(j => j.pricing_tier === 'free').map(j => ({
       id: j.id,
       title: j.title,
       pricing_tier: j.pricing_tier
     }))
   );
+
+  if (jobs.length === 0) {
+    console.log('⚠️ [UNIFIED-FEED] No jobs to display');
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">No jobs available at the moment.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

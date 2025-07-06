@@ -1,197 +1,133 @@
 
-import React, { useState, useEffect } from 'react';
-import Layout from '@/components/layout/Layout';
+import React, { useEffect, useState } from 'react';
 import { useJobsData } from '@/hooks/useJobsData';
-import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
-import { Job } from '@/types/job';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import JobsGrid from '@/components/jobs/JobsGrid';
+import { Helmet } from 'react-helmet';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const JobsPage = () => {
-  const { user } = useAuth();
-  const location = useLocation();
-  const {
-    jobs,
+  const { isVietnamese } = useTranslation();
+  const { jobs, loading, error, refetch } = useJobsData();
+  const [expirations, setExpirations] = useState<Record<string, boolean>>({});
+
+  console.log('📋 [JOBS-PAGE] Component rendered:', {
+    jobsCount: jobs.length,
     loading,
-    error,
-    renewalJobId,
-    setActiveRenewalJobId,
-    refetch
-  } = useJobsData();
+    error: error?.message,
+    jobs: jobs.map(j => ({ id: j.id, title: j.title, status: j.status, pricing_tier: j.pricing_tier }))
+  });
 
-  const [isRenewing, setIsRenewing] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  // Handle renewal functionality
+  const handleRenew = async (job: any) => {
+    console.log('🔄 [JOBS-PAGE] Renewing job:', job.id);
+    // Renewal logic would go here
+  };
 
-  // Check if coming from successful job posting
+  // Refresh jobs periodically to catch any missed real-time updates
   useEffect(() => {
-    if (location.pathname.includes('/success-')) {
-      console.log('🎉 [JOBS-PAGE] User returned from successful payment, refreshing jobs...');
-      // Force refresh when returning from successful payment
-      setTimeout(() => {
-        refetch();
-      }, 1000);
-    }
-  }, [location.pathname, refetch]);
-
-  // Auto-refresh jobs periodically to catch any missed updates
-  useEffect(() => {
-    console.log('🔄 [JOBS-PAGE] Setting up periodic refresh...');
     const interval = setInterval(() => {
-      console.log('🔄 [JOBS-PAGE] Auto-refreshing jobs...');
+      console.log('🔄 [JOBS-PAGE] Periodic refresh triggered');
       refetch();
     }, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
   }, [refetch]);
 
-  const handleRenewJob = async (job: Job) => {
-    if (!user) {
-      toast.error('Please sign in to renew jobs');
-      return;
-    }
-    
-    setIsRenewing(true);
-    setActiveRenewalJobId(job.id);
-    
-    try {
-      // Add 30 days to current expiration
-      const newExpiresAt = new Date();
-      newExpiresAt.setDate(newExpiresAt.getDate() + 30);
-      
-      const { error } = await supabase
-        .from('jobs')
-        .update({
-          expires_at: newExpiresAt.toISOString(),
-          status: 'active'
-        })
-        .eq('id', job.id)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast.success('Job renewed successfully!');
-      refetch();
-    } catch (error) {
-      console.error('Error renewing job:', error);
-      toast.error('Failed to renew job');
-    } finally {
-      setIsRenewing(false);
-      setActiveRenewalJobId(null);
-    }
-  };
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      console.log('🔄 [JOBS-PAGE] Manual refresh triggered...');
-      await refetch();
-      toast.success('Jobs refreshed!');
-    } catch (error) {
-      console.error('Refresh error:', error);
-      toast.error('Failed to refresh jobs');
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   if (loading) {
     return (
-      <Layout>
-        <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto px-4 py-8">
+        <Helmet>
+          <title>{isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}</title>
+        </Helmet>
+        <div className="flex justify-center items-center min-h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading jobs from database...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">
+              {isVietnamese ? "Đang tải việc làm..." : "Loading jobs from database..."}
+            </p>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (error) {
+    console.error('❌ [JOBS-PAGE] Error loading jobs:', error);
     return (
-      <Layout>
-        <div className="container mx-auto py-8 px-4">
-          <div className="text-center bg-red-50 border border-red-200 rounded-lg p-6">
-            <AlertCircle className="mx-auto h-12 w-12 text-red-600 mb-4" />
-            <h2 className="text-xl font-semibold text-red-800 mb-2">Error Loading Jobs</h2>
-            <p className="text-red-600 mb-4">{error.message}</p>
-            <div className="space-x-2">
-              <Button onClick={handleRefresh} variant="outline" disabled={isRefreshing}>
-                <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                {isRefreshing ? 'Retrying...' : 'Retry'}
-              </Button>
-              <Button onClick={() => window.location.reload()} variant="outline">
-                Reload Page
-              </Button>
-            </div>
+      <div className="container mx-auto px-4 py-8">
+        <Helmet>
+          <title>{isVietnamese ? "Lỗi - Việc Làm | EmviApp" : "Error - Jobs | EmviApp"}</title>
+        </Helmet>
+        <div className="flex justify-center items-center min-h-64">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">
+              {isVietnamese ? "Không thể tải việc làm" : "Failed to load jobs"}
+            </p>
+            <button 
+              onClick={() => refetch()}
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+            >
+              {isVietnamese ? "Thử lại" : "Try Again"}
+            </button>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
-  console.log('🎨 [JOBS-PAGE] Rendering with jobs:', {
-    count: jobs.length,
-    jobs: jobs.map(j => ({ id: j.id, title: j.title, pricing_tier: j.pricing_tier }))
-  });
-
   return (
-    <Layout>
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Beauty Industry Jobs</h1>
-            <p className="text-gray-600">
-              Find your next opportunity in the beauty industry 
-              <span className="text-sm text-blue-600 ml-2">
-                ({jobs.length} active jobs - {jobs.filter(j => j.pricing_tier === 'free').length} free, {jobs.filter(j => j.pricing_tier !== 'free').length} paid)
-              </span>
-            </p>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <Button 
-              onClick={handleRefresh} 
-              variant="outline" 
-              size="sm"
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              {isRefreshing ? 'Refreshing...' : 'Refresh'}
-            </Button>
-            
-            <Link to="/jobs/create">
-              <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Post a Job
-              </Button>
-            </Link>
-          </div>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <Helmet>
+        <title>
+          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
+        </title>
+        <meta 
+          name="description" 
+          content={isVietnamese 
+            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
+            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+          }
+        />
+      </Helmet>
 
-        {jobs.length === 0 ? (
-          <div className="text-center bg-gray-50 border border-gray-200 rounded-lg p-8">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Jobs Found</h3>
-            <p className="text-gray-600 mb-4">There are currently no active job postings in the database.</p>
-            <Link to="/jobs/create">
-              <Button>Post the First Job</Button>
-            </Link>
-          </div>
-        ) : (
-          <UnifiedJobFeed
-            jobs={jobs}
-            onRenew={handleRenewJob}
-            isRenewing={isRenewing}
-            renewalJobId={renewalJobId}
-          />
-        )}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {isVietnamese ? "Việc Làm Ngành Làm Đẹp" : "Beauty Industry Jobs"}
+        </h1>
+        <p className="text-gray-600">
+          {isVietnamese 
+            ? `Tìm thấy ${jobs.length} cơ hội việc làm`
+            : `Found ${jobs.length} job opportunities`
+          }
+        </p>
       </div>
-    </Layout>
+
+      {jobs.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-gray-500 mb-4">
+            <svg className="mx-auto h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 002 2h-4a2 2 0 002-2zm0 0V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 002 2h-4a2 2 0 002-2z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {isVietnamese ? "Chưa có việc làm nào" : "No jobs available"}
+          </h3>
+          <p className="text-gray-500">
+            {isVietnamese 
+              ? "Hãy quay lại sau để xem những cơ hội việc làm mới."
+              : "Check back later for new job opportunities."}
+          </p>
+        </div>
+      ) : (
+        <JobsGrid
+          jobs={jobs}
+          expirations={expirations}
+          onRenew={handleRenew}
+          isRenewing={false}
+          renewalJobId={null}
+        />
+      )}
+    </div>
   );
 };
 

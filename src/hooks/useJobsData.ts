@@ -14,19 +14,36 @@ export const useJobsData = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
+      setError(null);
       console.log('🔍 [JOBS-DATA] Fetching jobs from Supabase database...');
       
-      // Fetch ALL active jobs (not just user's own jobs)
+      // Fetch ALL active jobs with explicit column selection to avoid any issues
       const { data: supabaseJobs, error: supabaseError } = await supabase
         .from('jobs')
-        .select('*')
+        .select(`
+          id,
+          title,
+          category,
+          location,
+          description,
+          compensation_type,
+          compensation_details,
+          contact_info,
+          user_id,
+          status,
+          expires_at,
+          requirements,
+          pricing_tier,
+          created_at
+        `)
         .eq('status', 'active') // Only fetch active jobs
         .order('created_at', { ascending: false });
 
       console.log('🔍 [JOBS-DATA] Database query result:', {
         success: !supabaseError,
         count: supabaseJobs?.length || 0,
-        error: supabaseError?.message
+        error: supabaseError?.message,
+        rawData: supabaseJobs
       });
 
       if (supabaseError) {
@@ -67,7 +84,13 @@ export const useJobsData = () => {
       console.log('🎯 [JOBS-DATA] Transformed jobs for UI:', {
         total: transformedSupabaseJobs.length,
         free: transformedSupabaseJobs.filter(j => j.pricing_tier === 'free').length,
-        paid: transformedSupabaseJobs.filter(j => j.pricing_tier !== 'free').length
+        paid: transformedSupabaseJobs.filter(j => j.pricing_tier !== 'free').length,
+        transformedJobs: transformedSupabaseJobs.map(j => ({
+          id: j.id,
+          title: j.title,
+          status: j.status,
+          pricing_tier: j.pricing_tier
+        }))
       });
 
       setJobs(transformedSupabaseJobs);
@@ -75,6 +98,7 @@ export const useJobsData = () => {
     } catch (err) {
       console.error('💥 [JOBS-DATA] Error in fetchJobs:', err);
       setError(err as Error);
+      setJobs([]); // Clear jobs on error
     } finally {
       setLoading(false);
     }
@@ -112,7 +136,7 @@ export const useJobsData = () => {
     fetchJobs();
   }, []);
 
-  // Set up real-time subscription for job changes
+  // Set up real-time subscription for job changes - more robust
   useEffect(() => {
     console.log('🔄 [JOBS-DATA] Setting up real-time subscription');
     
@@ -121,21 +145,23 @@ export const useJobsData = () => {
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
           schema: 'public',
-          table: 'jobs',
-          filter: 'status=eq.active'
+          table: 'jobs'
         },
         (payload) => {
-          console.log('🔄 [JOBS-DATA] Real-time job change:', {
+          console.log('🔄 [JOBS-DATA] Real-time job change detected:', {
             eventType: payload.eventType,
             table: payload.table,
             jobId: payload.new && typeof payload.new === 'object' && 'id' in payload.new ? payload.new.id : 
                    payload.old && typeof payload.old === 'object' && 'id' in payload.old ? payload.old.id : 'unknown',
             newStatus: payload.new && typeof payload.new === 'object' && 'status' in payload.new ? payload.new.status : undefined,
-            oldStatus: payload.old && typeof payload.old === 'object' && 'status' in payload.old ? payload.old.status : undefined
+            oldStatus: payload.old && typeof payload.old === 'object' && 'status' in payload.old ? payload.old.status : undefined,
+            fullPayload: payload
           });
-          // Refetch jobs when there's a change
+          
+          // Always refetch to ensure we have the latest data
+          console.log('🔄 [JOBS-DATA] Triggering refetch due to real-time change');
           fetchJobs();
         }
       )
