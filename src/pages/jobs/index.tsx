@@ -50,7 +50,7 @@ const JobsPage = () => {
   }, [refetch]);
 
   if (loading) {
-    return <JobLoadingState message="Loading jobs..." />;
+    return <JobLoadingState />;
   }
 
   if (error) {
@@ -75,7 +75,7 @@ const JobsPage = () => {
   }
 
   if (jobs.length === 0) {
-    return <JobEmptyState />;
+    return <JobEmptyState onClearFilters={() => {}} />;
   }
 
   const handleRenew = (job: any) => {

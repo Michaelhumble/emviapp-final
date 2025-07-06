@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 interface JobEmptyStateProps {
   searchTerm?: string;
-  onClearFilters: () => void;
+  onClearFilters?: () => void;
 }
 
 const JobEmptyState = ({ searchTerm, onClearFilters }: JobEmptyStateProps) => {
@@ -26,14 +26,16 @@ const JobEmptyState = ({ searchTerm, onClearFilters }: JobEmptyStateProps) => {
       </p>
       
       <div className="flex gap-3">
-        <Button 
-          variant="outline" 
-          onClick={onClearFilters}
-          className="flex items-center font-inter font-medium"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Reset Filters
-        </Button>
+        {onClearFilters && (
+          <Button 
+            variant="outline" 
+            onClick={onClearFilters}
+            className="flex items-center font-inter font-medium"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Reset Filters
+          </Button>
+        )}
         
         <Link to="/post-job">
           <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">

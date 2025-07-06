@@ -35,7 +35,10 @@ export const useJobPosting = () => {
           description: jobData.description,
           user_id: user.id,
           status: 'active',
-          pricing_tier: 'free'
+          pricing_tier: 'free',
+          compensation_type: jobData.compensation_type || null,
+          compensation_details: jobData.compensation_details || null,
+          contact_info: jobData.contact_info || {}
         }
       };
 
@@ -109,7 +112,10 @@ export const useJobPosting = () => {
           description: jobData.description,
           user_id: user.id,
           pricing_tier: tier,
-          status: 'draft' // Will be activated by webhook after payment
+          status: 'draft', // Will be activated by webhook after payment
+          compensation_type: jobData.compensation_type || null,
+          compensation_details: jobData.compensation_details || null,
+          contact_info: jobData.contact_info || {}
         },
         jobId: null // Will be created in the function
       };
