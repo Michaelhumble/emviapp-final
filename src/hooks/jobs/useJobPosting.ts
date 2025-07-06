@@ -24,15 +24,25 @@ export const useJobPosting = () => {
     
     try {
       console.log('🆓 [JOB-POSTING] Submitting free job:', jobData);
+      console.log('🆓 [JOB-POSTING] User ID:', user.id);
       
-      // Fix the payload structure to match what the edge function expects
-      const { data, error } = await supabase.functions.invoke('create-free-post', {
-        body: { 
-          jobData: {
-            ...jobData,
-            user_id: user.id // Ensure user_id is included
-          }
+      // Ensure payload structure matches exactly what edge function expects
+      const payload = { 
+        jobData: {
+          title: jobData.title,
+          category: jobData.category || 'Other',
+          location: jobData.location,
+          description: jobData.description,
+          user_id: user.id,
+          status: 'active',
+          pricing_tier: 'free'
         }
+      };
+
+      console.log('🆓 [JOB-POSTING] Sending payload to create-free-post:', payload);
+      
+      const { data, error } = await supabase.functions.invoke('create-free-post', {
+        body: payload
       });
 
       console.log('🆓 [JOB-POSTING] Response from create-free-post:', { data, error });
@@ -53,11 +63,13 @@ export const useJobPosting = () => {
         return { success: false, error: errorMsg };
       }
 
-      console.log('✅ [JOB-POSTING] Free job posted successfully');
+      console.log('✅ [JOB-POSTING] Free job posted successfully, data:', data.data);
       toast.success('Job posted successfully!');
       
-      // Navigate to jobs page to see the new job
-      navigate('/jobs');
+      // Small delay to ensure database replication, then navigate
+      setTimeout(() => {
+        navigate('/jobs');
+      }, 500);
       
       return { success: true, data: data.data };
     } catch (err) {
@@ -84,14 +96,28 @@ export const useJobPosting = () => {
     
     try {
       console.log('💳 [JOB-POSTING] Submitting paid job:', { jobData, tier, finalPrice });
+      console.log('💳 [JOB-POSTING] User ID:', user.id);
+      
+      // Ensure consistent payload structure for paid jobs
+      const payload = {
+        tier, 
+        finalPrice, 
+        jobData: {
+          title: jobData.title,
+          category: jobData.category || 'Other',
+          location: jobData.location,
+          description: jobData.description,
+          user_id: user.id,
+          pricing_tier: tier,
+          status: 'draft' // Will be activated by webhook after payment
+        },
+        jobId: null // Will be created in the function
+      };
+
+      console.log('💳 [JOB-POSTING] Sending payload to create-job-checkout:', payload);
       
       const { data, error } = await supabase.functions.invoke('create-job-checkout', {
-        body: { 
-          tier, 
-          finalPrice, 
-          jobData,
-          jobId: null // Will be created in the function
-        }
+        body: payload
       });
 
       console.log('💳 [JOB-POSTING] Response from create-job-checkout:', { data, error });

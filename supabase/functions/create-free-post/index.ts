@@ -52,11 +52,36 @@ serve(async (req) => {
     // Initialize Supabase with service role key
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Validate required fields
+    if (!payload.jobData || !payload.jobData.title || !payload.jobData.user_id) {
+      console.error('❌ [FREE-POST] Missing required fields:', {
+        hasJobData: !!payload.jobData,
+        hasTitle: !!(payload.jobData && payload.jobData.title),
+        hasUserId: !!(payload.jobData && payload.jobData.user_id)
+      });
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Missing required fields: title and user_id are required' 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
+    console.log('✅ [FREE-POST] Inserting job with data:', {
+      title: payload.jobData.title,
+      category: payload.jobData.category,
+      location: payload.jobData.location,
+      user_id: payload.jobData.user_id,
+      status: 'active',
+      pricing_tier: 'free'
+    });
+
     const { data, error } = await supabase
       .from('jobs')
       .insert({
         title: payload.jobData.title,
-        category: payload.jobData.category,
+        category: payload.jobData.category || 'Other',
         location: payload.jobData.location,
         description: payload.jobData.description,
         user_id: payload.jobData.user_id,

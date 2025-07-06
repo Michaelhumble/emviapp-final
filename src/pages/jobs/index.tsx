@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useJobsData } from '@/hooks/useJobsData';
 import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
@@ -10,9 +10,11 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const JobsPage = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const {
     jobs,
     loading,
@@ -24,6 +26,28 @@ const JobsPage = () => {
 
   const [isRenewing, setIsRenewing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Check if coming from successful job posting
+  useEffect(() => {
+    if (location.pathname.includes('/success-')) {
+      console.log('🎉 [JOBS-PAGE] User returned from successful payment, refreshing jobs...');
+      // Force refresh when returning from successful payment
+      setTimeout(() => {
+        refetch();
+      }, 1000);
+    }
+  }, [location.pathname, refetch]);
+
+  // Auto-refresh jobs periodically to catch any missed updates
+  useEffect(() => {
+    console.log('🔄 [JOBS-PAGE] Setting up periodic refresh...');
+    const interval = setInterval(() => {
+      console.log('🔄 [JOBS-PAGE] Auto-refreshing jobs...');
+      refetch();
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   const handleRenewJob = async (job: Job) => {
     if (!user) {
@@ -64,6 +88,7 @@ const JobsPage = () => {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
+      console.log('🔄 [JOBS-PAGE] Manual refresh triggered...');
       await refetch();
       toast.success('Jobs refreshed!');
     } catch (error) {
@@ -109,6 +134,11 @@ const JobsPage = () => {
       </Layout>
     );
   }
+
+  console.log('🎨 [JOBS-PAGE] Rendering with jobs:', {
+    count: jobs.length,
+    jobs: jobs.map(j => ({ id: j.id, title: j.title, pricing_tier: j.pricing_tier }))
+  });
 
   return (
     <Layout>
