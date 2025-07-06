@@ -8,181 +8,135 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('🆓 [FREE-POST] Function called with method:', req.method);
+  console.log('🆓 [FREE-POST] Function called');
   
-  // Handle CORS preflight requests  
   if (req.method === 'OPTIONS') {
-    console.log('🆓 [FREE-POST] Handling OPTIONS request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get the request body
     const requestBody = await req.text();
     console.log('🆓 [FREE-POST] Raw request body:', requestBody);
-    
+
     let parsedBody;
     try {
       parsedBody = JSON.parse(requestBody);
     } catch (parseError) {
       console.error('❌ [FREE-POST] JSON parse error:', parseError);
-      throw new Error('Invalid JSON in request body');
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Invalid JSON in request body' 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
     }
-    
-    const { jobData } = parsedBody;
-    console.log('🆓 [FREE-POST] Parsed job data:', {
-      title: jobData?.title,
-      category: jobData?.category,
-      location: jobData?.location,
-      hasDescription: !!jobData?.description,
-      hasContactInfo: !!jobData?.contact_info
-    });
 
-    if (!jobData) {
-      console.error('❌ [FREE-POST] Missing jobData in request');
-      throw new Error('Missing job data in request');
-    }
+    const { jobData } = parsedBody;
+    console.log('🆓 [FREE-POST] Parsed job data:', jobData);
 
     // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    console.log('🆓 [FREE-POST] Environment check:', {
-      hasSupabaseUrl: !!supabaseUrl,
-      hasServiceKey: !!supabaseServiceKey
-    });
-    
+
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('❌ [FREE-POST] Missing environment variables');
-      throw new Error('Missing Supabase configuration');
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Server configuration error' 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      });
     }
 
-    // Create Supabase client with service role (bypasses RLS)
+    // Initialize Supabase with service role key
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get user from auth header
+    // Get user from request
     const authHeader = req.headers.get('Authorization');
-    console.log('🆓 [FREE-POST] Auth header present:', !!authHeader);
-    
     if (!authHeader) {
       console.error('❌ [FREE-POST] No authorization header');
-      throw new Error('Authorization header required');
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'No authorization header' 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      });
     }
 
-    // Extract user from token using anon client first
-    const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') || '');
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await anonClient.auth.getUser(token);
-    
-    console.log('🆓 [FREE-POST] Auth result:', {
-      hasUser: !!user,
-      userId: user?.id,
-      userEmail: user?.email,
-      authError: authError?.message
-    });
-    
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
     if (authError || !user) {
-      console.error('❌ [FREE-POST] Auth error:', authError);
-      throw new Error('Invalid authentication: ' + (authError?.message || 'No user found'));
+      console.error('❌ [FREE-POST] Invalid authentication:', authError);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Invalid authentication' 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      });
     }
 
     console.log('✅ [FREE-POST] User authenticated:', user.id);
 
-    // Prepare job data for insertion with explicit required fields
-    const jobToInsert = {
-      title: jobData.title || 'Untitled Job',
+    // Prepare job data for insertion
+    const jobPayload = {
+      title: jobData.title,
       description: jobData.description || '',
-      category: jobData.category || 'Other',
       location: jobData.location || '',
-      compensation_type: jobData.compensation_type || jobData.employment_type || '',
+      category: jobData.category || 'Other',
+      compensation_type: jobData.compensation_type || '',
       compensation_details: jobData.compensation_details || '',
-      requirements: Array.isArray(jobData.requirements) 
-        ? jobData.requirements.join('\n') 
-        : (jobData.requirements || ''),
-      contact_info: typeof jobData.contact_info === 'object' && jobData.contact_info 
-        ? jobData.contact_info 
-        : {},
+      requirements: jobData.requirements || '',
+      contact_info: jobData.contact_info || {},
       user_id: user.id,
+      status: 'active',
       pricing_tier: 'free',
-      status: 'active', // Free jobs are immediately active
-      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
     };
 
-    console.log('🆓 [FREE-POST] Job data prepared for insertion:', {
-      title: jobToInsert.title,
-      category: jobToInsert.category,
-      status: jobToInsert.status,
-      pricing_tier: jobToInsert.pricing_tier,
-      user_id: jobToInsert.user_id,
-      expires_at: jobToInsert.expires_at
-    });
+    console.log('🆓 [FREE-POST] JOB POSTING FUNCTION CALLED:', jobPayload);
 
-    // Insert the job directly as active using service role
-    console.log('🆓 [FREE-POST] Attempting database insert...');
-    const { data: newJob, error: insertError } = await supabase
+    // Insert job into database
+    const { data, error } = await supabase
       .from('jobs')
-      .insert([jobToInsert])
+      .insert([jobPayload])
       .select()
       .single();
 
-    console.log('🆓 [FREE-POST] Insert result:', {
-      success: !insertError,
-      jobId: newJob?.id,
-      insertError: insertError?.message,
-      insertErrorDetails: insertError?.details,
-      insertErrorHint: insertError?.hint,
-      insertErrorCode: insertError?.code
-    });
-
-    if (insertError) {
-      console.error('❌ [FREE-POST] Database insert error:', {
-        message: insertError.message,
-        details: insertError.details,
-        hint: insertError.hint,
-        code: insertError.code
+    if (error) {
+      console.error('❌ [FREE-POST] JOB INSERT FAILED:', error);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
       });
-      throw new Error(`Database error: ${insertError.message}`);
     }
 
-    if (!newJob) {
-      console.error('❌ [FREE-POST] No job returned from insert');
-      throw new Error('Job insert failed - no data returned');
-    }
+    console.log('✅ [FREE-POST] JOB INSERT SUCCESSFUL:', data);
 
-    console.log('✅ [FREE-POST] Job created successfully:', {
-      id: newJob.id,
-      title: newJob.title,
-      status: newJob.status,
-      user_id: newJob.user_id
-    });
-
-    // Return success response
-    return new Response(JSON.stringify({
-      success: true,
-      jobId: newJob.id,
-      status: newJob.status,
-      message: 'Free job posted successfully'
+    return new Response(JSON.stringify({ 
+      success: true, 
+      data: data 
     }), {
-      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
     });
 
   } catch (error) {
-    console.error('💥 [FREE-POST] Critical error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
-    
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message || 'Unknown error occurred',
-      details: 'Check edge function logs for more information'
+    console.error('💥 [FREE-POST] Unexpected error:', error);
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: 'Internal server error' 
     }), {
-      status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
     });
   }
 });

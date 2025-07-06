@@ -130,9 +130,10 @@ export const useJobsData = () => {
           console.log('🔄 [JOBS-DATA] Real-time job change:', {
             eventType: payload.eventType,
             table: payload.table,
-            jobId: payload.new?.id || payload.old?.id,
-            newStatus: payload.new?.status,
-            oldStatus: payload.old?.status
+            jobId: payload.new && typeof payload.new === 'object' && 'id' in payload.new ? payload.new.id : 
+                   payload.old && typeof payload.old === 'object' && 'id' in payload.old ? payload.old.id : 'unknown',
+            newStatus: payload.new && typeof payload.new === 'object' && 'status' in payload.new ? payload.new.status : undefined,
+            oldStatus: payload.old && typeof payload.old === 'object' && 'status' in payload.old ? payload.old.status : undefined
           });
           // Refetch jobs when there's a change
           fetchJobs();

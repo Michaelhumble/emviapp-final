@@ -1,178 +1,133 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 
 export const useJobPosting = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const submitJobPost = async (jobData: any) => {
-    setIsLoading(true);
+  const submitFreeJob = async (jobData: any) => {
+    if (!user) {
+      const errorMsg = 'Please sign in to post a job';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
+    setIsSubmitting(true);
+    setError(null);
     
     try {
-      console.log('📝 [HOOK] Starting job submission with data:', {
-        title: jobData.title,
-        pricing_tier: jobData.pricing_tier,
-        category: jobData.category,
-        hasDescription: !!jobData.description,
-        hasLocation: !!jobData.location
-      });
+      console.log('🆓 [JOB-POSTING] Submitting free job:', jobData);
       
-      // Check if this is a free job
-      if (jobData.pricing_tier === 'free' || !jobData.pricing_tier) {
-        console.log('🆓 [HOOK] Processing free job posting...');
-        
-        // Call the create-free-post edge function
-        const { data, error } = await supabase.functions.invoke('create-free-post', {
-          body: { jobData },
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+      const { data, error } = await supabase.functions.invoke('create-free-post', {
+        body: { jobData }
+      });
 
-        console.log('🆓 [HOOK] Free job response:', {
-          hasData: !!data,
-          hasError: !!error,
-          data,
-          error
-        });
+      console.log('🆓 [JOB-POSTING] Response from create-free-post:', { data, error });
 
-        if (error) {
-          console.error('❌ [HOOK] Free job creation error:', error);
-          toast.error(`Failed to create job posting: ${error.message}`);
-          return { success: false, error };
-        }
-
-        // Check if the response indicates success
-        if (data?.success && data?.jobId) {
-          console.log('✅ [HOOK] Free job created successfully:', {
-            jobId: data.jobId,
-            status: data.status
-          });
-          toast.success('Free job posted successfully! It\'s now live on the jobs page.');
-          
-          // Small delay to ensure database is updated, then navigate
-          setTimeout(() => {
-            navigate('/jobs');
-          }, 1000);
-          
-          return { success: true, data };
-        } else {
-          // Handle case where function runs but doesn't return success
-          console.error('❌ [HOOK] Free job creation failed with response:', data);
-          const errorMessage = data?.error || 'Unknown error occurred';
-          toast.error(`Failed to create job posting: ${errorMessage}`);
-          return { success: false, error: errorMessage };
-        }
+      if (error) {
+        console.error('❌ [JOB-POSTING] Error from edge function:', error);
+        const errorMsg = `Failed to post job: ${error.message || 'Unknown error'}`;
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
       }
 
-      // Handle paid job posting (Gold, Premium, Diamond)
-      console.log('💰 [HOOK] Processing paid job posting...');
+      if (!data?.success) {
+        console.error('❌ [JOB-POSTING] Function returned failure:', data);
+        const errorMsg = data?.error || 'Failed to post job';
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      console.log('✅ [JOB-POSTING] Free job posted successfully');
+      toast.success('Job posted successfully!');
       
-      // First, create the job as draft in the database
-      const { data: draftJob, error: draftError } = await supabase
-        .from('jobs')
-        .insert({
-          title: jobData.title || 'Job Title',
-          description: jobData.description || '',
-          category: jobData.category || 'Other',
-          location: jobData.location || '',
-          compensation_type: jobData.compensation_type || jobData.employment_type || '',
-          compensation_details: jobData.compensation_details || '',
-          requirements: Array.isArray(jobData.requirements) 
-            ? jobData.requirements.join('\n') 
-            : (jobData.requirements || ''),
-          contact_info: jobData.contact_info || {},
-          pricing_tier: jobData.pricing_tier,
-          status: 'draft', // Will be activated after payment
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
-        })
-        .select()
-        .single();
-
-      console.log('📝 [HOOK] Draft job creation result:', {
-        success: !draftError,
-        jobId: draftJob?.id,
-        error: draftError?.message
-      });
-
-      if (draftError) {
-        console.error('❌ [HOOK] Draft job creation error:', draftError);
-        toast.error(`Failed to create job draft: ${draftError.message}`);
-        return { success: false, error: draftError };
-      }
-
-      console.log('📝 [HOOK] Draft job created:', {
-        id: draftJob.id,
-        title: draftJob.title,
-        status: draftJob.status
-      });
-
-      // Now create Stripe checkout session with the draft job ID
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-job-checkout', {
-        body: {
-          tier: jobData.pricing_tier,
-          finalPrice: jobData.finalPrice || getPriceForTier(jobData.pricing_tier),
-          durationMonths: jobData.durationMonths || 1,
-          jobData: jobData,
-          jobId: draftJob.id // Pass the draft job ID
-        }
-      });
-
-      console.log('💳 [HOOK] Checkout response:', {
-        hasData: !!checkoutData,
-        hasError: !!checkoutError,
-        hasUrl: !!checkoutData?.url,
-        error: checkoutError?.message
-      });
-
-      if (checkoutError) {
-        console.error('❌ [HOOK] Checkout creation error:', checkoutError);
-        toast.error(`Failed to create checkout session: ${checkoutError.message}`);
-        return { success: false, error: checkoutError };
-      }
-
-      if (checkoutData?.url) {
-        console.log('💳 [HOOK] Redirecting to Stripe checkout...');
-        toast.success('Redirecting to payment...');
-        window.location.href = checkoutData.url;
-        return { success: true, redirected: true, jobId: draftJob.id };
-      } else {
-        console.error('❌ [HOOK] No checkout URL received:', checkoutData);
-        toast.error('Failed to create checkout session. Please try again.');
-        return { success: false, error: 'No checkout URL received' };
-      }
-
-    } catch (error) {
-      console.error('💥 [HOOK] Job posting error:', {
-        message: error.message,
-        stack: error.stack
-      });
-      toast.error(`An unexpected error occurred: ${error.message}`);
-      return { success: false, error };
+      // Navigate to jobs page to see the new job
+      navigate('/jobs');
+      
+      return { success: true, data: data.data };
+    } catch (err) {
+      console.error('💥 [JOB-POSTING] Unexpected error:', err);
+      const errorMsg = 'An unexpected error occurred while posting the job';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  // Helper function to get price for tier
-  const getPriceForTier = (tier: string) => {
-    switch (tier) {
-      case 'premium': return 25;
-      case 'gold': return 45;
-      case 'diamond': return 85;
-      default: return 0;
+  const submitPaidJob = async (jobData: any, tier: string, finalPrice: number) => {
+    if (!user) {
+      const errorMsg = 'Please sign in to post a job';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    
+    try {
+      console.log('💳 [JOB-POSTING] Submitting paid job:', { jobData, tier, finalPrice });
+      
+      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
+        body: { 
+          tier, 
+          finalPrice, 
+          jobData,
+          jobId: null // Will be created in the function
+        }
+      });
+
+      console.log('💳 [JOB-POSTING] Response from create-job-checkout:', { data, error });
+
+      if (error) {
+        console.error('❌ [JOB-POSTING] Error from checkout function:', error);
+        const errorMsg = `Failed to create checkout: ${error.message || 'Unknown error'}`;
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      if (!data?.url) {
+        console.error('❌ [JOB-POSTING] No checkout URL received:', data);
+        const errorMsg = 'Failed to create payment session';
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      console.log('✅ [JOB-POSTING] Redirecting to Stripe checkout:', data.url);
+      
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+      
+      return { success: true, data };
+    } catch (err) {
+      console.error('💥 [JOB-POSTING] Unexpected error:', err);
+      const errorMsg = 'An unexpected error occurred while processing payment';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  // Export both names for backward compatibility
-  const handleJobPost = submitJobPost;
 
   return {
-    submitJobPost,
-    handleJobPost, // Backward compatibility
-    isLoading
+    submitFreeJob,
+    submitPaidJob,
+    isSubmitting,
+    error,
+    setError
   };
 };
