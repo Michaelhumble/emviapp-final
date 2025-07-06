@@ -15,7 +15,9 @@ export const useJobPosting = () => {
       console.log('📝 [HOOK] Starting job submission with data:', {
         title: jobData.title,
         pricing_tier: jobData.pricing_tier,
-        category: jobData.category
+        category: jobData.category,
+        hasDescription: !!jobData.description,
+        hasLocation: !!jobData.location
       });
       
       // Check if this is a free job
@@ -30,12 +32,20 @@ export const useJobPosting = () => {
           }
         });
 
+        console.log('🆓 [HOOK] Free job response:', {
+          hasData: !!data,
+          hasError: !!error,
+          data,
+          error
+        });
+
         if (error) {
           console.error('❌ [HOOK] Free job creation error:', error);
-          toast.error('Failed to create job posting. Please try again.');
+          toast.error(`Failed to create job posting: ${error.message}`);
           return { success: false, error };
         }
 
+        // Check if the response indicates success
         if (data?.success && data?.jobId) {
           console.log('✅ [HOOK] Free job created successfully:', {
             jobId: data.jobId,
@@ -46,13 +56,15 @@ export const useJobPosting = () => {
           // Small delay to ensure database is updated, then navigate
           setTimeout(() => {
             navigate('/jobs');
-          }, 500);
+          }, 1000);
           
           return { success: true, data };
         } else {
-          console.error('❌ [HOOK] Free job creation failed:', data);
-          toast.error('Failed to create job posting. Please try again.');
-          return { success: false, error: data?.error || 'Unknown error' };
+          // Handle case where function runs but doesn't return success
+          console.error('❌ [HOOK] Free job creation failed with response:', data);
+          const errorMessage = data?.error || 'Unknown error occurred';
+          toast.error(`Failed to create job posting: ${errorMessage}`);
+          return { success: false, error: errorMessage };
         }
       }
 
@@ -80,9 +92,15 @@ export const useJobPosting = () => {
         .select()
         .single();
 
+      console.log('📝 [HOOK] Draft job creation result:', {
+        success: !draftError,
+        jobId: draftJob?.id,
+        error: draftError?.message
+      });
+
       if (draftError) {
         console.error('❌ [HOOK] Draft job creation error:', draftError);
-        toast.error('Failed to create job draft. Please try again.');
+        toast.error(`Failed to create job draft: ${draftError.message}`);
         return { success: false, error: draftError };
       }
 
@@ -103,9 +121,16 @@ export const useJobPosting = () => {
         }
       });
 
+      console.log('💳 [HOOK] Checkout response:', {
+        hasData: !!checkoutData,
+        hasError: !!checkoutError,
+        hasUrl: !!checkoutData?.url,
+        error: checkoutError?.message
+      });
+
       if (checkoutError) {
         console.error('❌ [HOOK] Checkout creation error:', checkoutError);
-        toast.error('Failed to create checkout session. Please try again.');
+        toast.error(`Failed to create checkout session: ${checkoutError.message}`);
         return { success: false, error: checkoutError };
       }
 
@@ -115,14 +140,17 @@ export const useJobPosting = () => {
         window.location.href = checkoutData.url;
         return { success: true, redirected: true, jobId: draftJob.id };
       } else {
-        console.error('❌ [HOOK] No checkout URL received');
+        console.error('❌ [HOOK] No checkout URL received:', checkoutData);
         toast.error('Failed to create checkout session. Please try again.');
         return { success: false, error: 'No checkout URL received' };
       }
 
     } catch (error) {
-      console.error('💥 [HOOK] Job posting error:', error);
-      toast.error('An unexpected error occurred. Please try again.');
+      console.error('💥 [HOOK] Job posting error:', {
+        message: error.message,
+        stack: error.stack
+      });
+      toast.error(`An unexpected error occurred: ${error.message}`);
       return { success: false, error };
     } finally {
       setIsLoading(false);

@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const JobsPage = () => {
@@ -67,6 +67,7 @@ const JobsPage = () => {
       await refetch();
       toast.success('Jobs refreshed!');
     } catch (error) {
+      console.error('Refresh error:', error);
       toast.error('Failed to refresh jobs');
     } finally {
       setIsRefreshing(false);
@@ -91,12 +92,13 @@ const JobsPage = () => {
       <Layout>
         <div className="container mx-auto py-8 px-4">
           <div className="text-center bg-red-50 border border-red-200 rounded-lg p-6">
+            <AlertCircle className="mx-auto h-12 w-12 text-red-600 mb-4" />
             <h2 className="text-xl font-semibold text-red-800 mb-2">Error Loading Jobs</h2>
             <p className="text-red-600 mb-4">{error.message}</p>
             <div className="space-x-2">
-              <Button onClick={handleRefresh} variant="outline">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Retry
+              <Button onClick={handleRefresh} variant="outline" disabled={isRefreshing}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                {isRefreshing ? 'Retrying...' : 'Retry'}
               </Button>
               <Button onClick={() => window.location.reload()} variant="outline">
                 Reload Page
@@ -130,7 +132,7 @@ const JobsPage = () => {
               disabled={isRefreshing}
             >
               <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </Button>
             
             <Link to="/jobs/create">

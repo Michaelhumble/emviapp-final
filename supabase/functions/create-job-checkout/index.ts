@@ -16,7 +16,18 @@ serve(async (req) => {
   }
 
   try {
-    const { tier, finalPrice, jobData, jobId } = await req.json();
+    const requestBody = await req.text();
+    console.log('💳 [JOB-CHECKOUT] Raw request body:', requestBody);
+
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(requestBody);
+    } catch (parseError) {
+      console.error('❌ [JOB-CHECKOUT] JSON parse error:', parseError);
+      throw new Error('Invalid JSON in request body');
+    }
+
+    const { tier, finalPrice, jobData, jobId } = parsedBody;
     
     console.log('💳 [JOB-CHECKOUT] Request data:', {
       tier,
@@ -30,7 +41,14 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
+    console.log('💳 [JOB-CHECKOUT] Environment check:', {
+      hasStripeKey: !!stripeSecretKey,
+      hasSupabaseUrl: !!supabaseUrl,
+      hasAnonKey: !!supabaseAnonKey
+    });
+
     if (!stripeSecretKey || !supabaseUrl || !supabaseAnonKey) {
+      console.error('❌ [JOB-CHECKOUT] Missing environment variables');
       throw new Error('Missing environment variables');
     }
 
@@ -45,13 +63,21 @@ serve(async (req) => {
     // Get user from request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('❌ [JOB-CHECKOUT] No authorization header');
       throw new Error('No authorization header');
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
+    console.log('💳 [JOB-CHECKOUT] Auth result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      authError: authError?.message
+    });
+
     if (authError || !user) {
+      console.error('❌ [JOB-CHECKOUT] Invalid authentication:', authError);
       throw new Error('Invalid authentication');
     }
 
@@ -66,6 +92,7 @@ serve(async (req) => {
 
     const config = tierConfig[tier as keyof typeof tierConfig];
     if (!config) {
+      console.error('❌ [JOB-CHECKOUT] Invalid tier:', tier);
       throw new Error(`Invalid tier: ${tier}`);
     }
 
@@ -107,7 +134,8 @@ serve(async (req) => {
 
     console.log('💳 [JOB-CHECKOUT] Checkout session created:', {
       sessionId: session.id,
-      url: session.url
+      url: session.url,
+      metadata: session.metadata
     });
 
     return new Response(JSON.stringify({ 
@@ -119,7 +147,11 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('💥 [JOB-CHECKOUT] Error:', error);
+    console.error('💥 [JOB-CHECKOUT] Error:', {
+      message: error.message,
+      stack: error.stack
+    });
+    
     return new Response(JSON.stringify({ 
       error: error.message 
     }), {

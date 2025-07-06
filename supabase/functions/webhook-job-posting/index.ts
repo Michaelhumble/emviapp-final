@@ -9,29 +9,28 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('💳 [JOB-WEBHOOK] Webhook called');
+  console.log('🔔 [WEBHOOK] Job posting webhook called');
   
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    console.log('💳 [JOB-WEBHOOK] Handling OPTIONS request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get the request body and signature header
-    const body = await req.text();
-    const signature = req.headers.get('stripe-signature') || '';
-    
-    console.log('💳 [JOB-WEBHOOK] Processing webhook with signature length:', signature.length);
-
     // Get environment variables
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
     const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+    console.log('🔔 [WEBHOOK] Environment check:', {
+      hasStripeKey: !!stripeSecretKey,
+      hasWebhookSecret: !!webhookSecret,
+      hasSupabaseUrl: !!supabaseUrl,
+      hasServiceKey: !!supabaseServiceKey
+    });
+
     if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !supabaseServiceKey) {
-      console.error('❌ [JOB-WEBHOOK] Missing environment variables');
+      console.error('❌ [WEBHOOK] Missing environment variables');
       throw new Error('Missing required environment variables');
     }
 
@@ -40,138 +39,168 @@ serve(async (req) => {
       apiVersion: '2023-08-16',
     });
 
+    // Initialize Supabase
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get request body and signature
+    const body = await req.text();
+    const signature = req.headers.get('stripe-signature');
+
+    console.log('🔔 [WEBHOOK] Request details:', {
+      hasBody: !!body,
+      bodyLength: body.length,
+      hasSignature: !!signature,
+      signaturePreview: signature?.substring(0, 20) + '...'
+    });
+
+    if (!signature) {
+      console.error('❌ [WEBHOOK] No Stripe signature header');
+      throw new Error('No Stripe signature header');
+    }
+
     // Verify webhook signature
     let event;
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-      console.log('✅ [JOB-WEBHOOK] Webhook signature verified successfully');
+      console.log('✅ [WEBHOOK] Signature verified, event type:', event.type);
     } catch (err) {
-      console.error('❌ [JOB-WEBHOOK] Webhook signature verification failed:', err.message);
+      console.error('❌ [WEBHOOK] Signature verification failed:', err.message);
       return new Response(JSON.stringify({ error: 'Invalid signature' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Initialize Supabase client with service role
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    console.log('💳 [JOB-WEBHOOK] Event type:', event.type);
-
     // Handle checkout.session.completed event
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
-      
-      // Get metadata from the session
-      const jobId = session.metadata?.job_id || session.metadata?.post_id;
+      console.log('💳 [WEBHOOK] Processing checkout session:', {
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+        hasMetadata: !!session.metadata,
+        metadata: session.metadata
+      });
+
+      const jobId = session.metadata?.job_id;
       const userId = session.metadata?.userId;
       const pricingTier = session.metadata?.pricing_tier;
-      
-      console.log('💳 [JOB-WEBHOOK] Processing successful job payment:', {
+
+      console.log('💳 [WEBHOOK] Session metadata:', {
         jobId,
         userId,
         pricingTier,
-        sessionId: session.id,
-        paymentStatus: session.payment_status
+        postType: session.metadata?.post_type
       });
-      
-      if (!jobId || !userId) {
-        console.error('❌ [JOB-WEBHOOK] Missing jobId or userId in session metadata');
-        return new Response(JSON.stringify({ error: 'Missing required metadata' }), {
+
+      if (!jobId) {
+        console.error('❌ [WEBHOOK] No job_id in session metadata');
+        return new Response(JSON.stringify({ error: 'No job_id in metadata' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
-      // First, update the job status from draft to active
+      // First, verify the job exists
+      console.log('🔍 [WEBHOOK] Looking up job:', jobId);
+      const { data: existingJob, error: lookupError } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('id', jobId)
+        .single();
+
+      console.log('🔍 [WEBHOOK] Job lookup result:', {
+        found: !!existingJob,
+        currentStatus: existingJob?.status,
+        userId: existingJob?.user_id,
+        title: existingJob?.title,
+        error: lookupError?.message
+      });
+
+      if (!existingJob) {
+        console.error('❌ [WEBHOOK] Job not found:', jobId);
+        return new Response(JSON.stringify({ error: 'Job not found' }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Activate the job
+      console.log('🔄 [WEBHOOK] Activating job:', jobId);
       const { data: updatedJob, error: updateError } = await supabase
         .from('jobs')
-        .update({ 
+        .update({
           status: 'active',
           updated_at: new Date().toISOString()
         })
         .eq('id', jobId)
-        .eq('user_id', userId)
-        .eq('status', 'draft')
         .select()
         .single();
-        
+
+      console.log('🔄 [WEBHOOK] Job activation result:', {
+        success: !updateError,
+        newStatus: updatedJob?.status,
+        updatedAt: updatedJob?.updated_at,
+        error: updateError?.message
+      });
+
       if (updateError) {
-        console.error('❌ [JOB-WEBHOOK] Error activating job:', updateError);
-        // Try to find the job to see what's wrong
-        const { data: existingJob, error: findError } = await supabase
-          .from('jobs')
-          .select('*')
-          .eq('id', jobId)
-          .single();
-          
-        console.log('🔍 [JOB-WEBHOOK] Existing job status:', existingJob?.status, 'Find error:', findError);
-        
-        return new Response(JSON.stringify({ error: 'Failed to activate job' }), {
+        console.error('❌ [WEBHOOK] Job activation failed:', updateError);
+        return new Response(JSON.stringify({ error: 'Job activation failed' }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      
-      if (updatedJob) {
-        console.log('✅ [JOB-WEBHOOK] Job activated successfully:', {
-          id: updatedJob.id,
-          title: updatedJob.title,
-          status: updatedJob.status,
-          pricing_tier: updatedJob.pricing_tier
-        });
-      } else {
-        console.log('⚠️ [JOB-WEBHOOK] No job was updated - may already be active');
-        
-        // Check if job exists and is already active
-        const { data: existingJob } = await supabase
-          .from('jobs')
-          .select('*')
-          .eq('id', jobId)
-          .single();
-          
-        if (existingJob?.status === 'active') {
-          console.log('✅ [JOB-WEBHOOK] Job is already active, proceeding with payment log');
-        } else {
-          console.error('❌ [JOB-WEBHOOK] Job not found or in unexpected state:', existingJob);
-        }
-      }
-      
-      // Update or create payment log
-      const { error: paymentLogError } = await supabase
+
+      // Log the payment
+      console.log('📝 [WEBHOOK] Creating payment log...');
+      const { error: logError } = await supabase
         .from('payment_logs')
-        .upsert({ 
-          stripe_payment_id: session.id,
-          user_id: userId,
+        .insert({
+          user_id: userId || existingJob.user_id,
           listing_id: jobId,
-          pricing_tier: pricingTier || 'premium',
-          plan_type: 'job_posting',
+          stripe_payment_id: session.id,
           payment_status: 'success',
+          plan_type: pricingTier || 'premium',
+          pricing_tier: pricingTier || 'premium',
           payment_date: new Date().toISOString(),
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          created_at: new Date().toISOString()
-        }, {
-          onConflict: 'stripe_payment_id'
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         });
-        
-      if (paymentLogError) {
-        console.error('❌ [JOB-WEBHOOK] Error updating payment log:', paymentLogError);
-      } else {
-        console.log('✅ [JOB-WEBHOOK] Payment log updated successfully');
-      }
-      
-      console.log('🎉 [JOB-WEBHOOK] Job posting payment processing completed successfully');
-      
-    } else {
-      console.log('ℹ️ [JOB-WEBHOOK] Unhandled event type:', event.type);
+
+      console.log('📝 [WEBHOOK] Payment log result:', {
+        success: !logError,
+        error: logError?.message
+      });
+
+      console.log('✅ [WEBHOOK] Job posting completed successfully:', {
+        jobId,
+        status: 'active',
+        paymentLogged: !logError
+      });
+
+      return new Response(JSON.stringify({ 
+        received: true, 
+        jobActivated: true,
+        jobId: jobId 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
+    console.log('ℹ️ [WEBHOOK] Unhandled event type:', event.type);
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+
   } catch (error) {
-    console.error('💥 [JOB-WEBHOOK] Critical error processing webhook:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('💥 [WEBHOOK] Critical error:', {
+      message: error.message,
+      stack: error.stack
+    });
+    
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: 'Check webhook logs for more information'
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

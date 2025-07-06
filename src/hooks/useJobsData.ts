@@ -23,6 +23,12 @@ export const useJobsData = () => {
         .eq('status', 'active') // Only fetch active jobs
         .order('created_at', { ascending: false });
 
+      console.log('🔍 [JOBS-DATA] Database query result:', {
+        success: !supabaseError,
+        count: supabaseJobs?.length || 0,
+        error: supabaseError?.message
+      });
+
       if (supabaseError) {
         console.error('❌ [JOBS-DATA] Error fetching jobs from Supabase:', supabaseError);
         throw supabaseError;
@@ -121,7 +127,13 @@ export const useJobsData = () => {
           filter: 'status=eq.active'
         },
         (payload) => {
-          console.log('🔄 [JOBS-DATA] Real-time job change:', payload);
+          console.log('🔄 [JOBS-DATA] Real-time job change:', {
+            eventType: payload.eventType,
+            table: payload.table,
+            jobId: payload.new?.id || payload.old?.id,
+            newStatus: payload.new?.status,
+            oldStatus: payload.old?.status
+          });
           // Refetch jobs when there's a change
           fetchJobs();
         }

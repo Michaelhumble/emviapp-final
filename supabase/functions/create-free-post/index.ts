@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('🆓 [FREE-POST] Function called');
+  console.log('🆓 [FREE-POST] Function called with method:', req.method);
   
   // Handle CORS preflight requests  
   if (req.method === 'OPTIONS') {
@@ -18,16 +18,39 @@ serve(async (req) => {
 
   try {
     // Get the request body
-    const { jobData } = await req.json();
-    console.log('🆓 [FREE-POST] Received job data:', {
+    const requestBody = await req.text();
+    console.log('🆓 [FREE-POST] Raw request body:', requestBody);
+    
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(requestBody);
+    } catch (parseError) {
+      console.error('❌ [FREE-POST] JSON parse error:', parseError);
+      throw new Error('Invalid JSON in request body');
+    }
+    
+    const { jobData } = parsedBody;
+    console.log('🆓 [FREE-POST] Parsed job data:', {
       title: jobData?.title,
       category: jobData?.category,
-      location: jobData?.location
+      location: jobData?.location,
+      hasDescription: !!jobData?.description,
+      hasContactInfo: !!jobData?.contact_info
     });
+
+    if (!jobData) {
+      console.error('❌ [FREE-POST] Missing jobData in request');
+      throw new Error('Missing job data in request');
+    }
 
     // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    console.log('🆓 [FREE-POST] Environment check:', {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasServiceKey: !!supabaseServiceKey
+    });
     
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('❌ [FREE-POST] Missing environment variables');
@@ -39,25 +62,35 @@ serve(async (req) => {
 
     // Get user from auth header
     const authHeader = req.headers.get('Authorization');
+    console.log('🆓 [FREE-POST] Auth header present:', !!authHeader);
+    
     if (!authHeader) {
       console.error('❌ [FREE-POST] No authorization header');
       throw new Error('Authorization header required');
     }
 
-    // Extract user from token
+    // Extract user from token using anon client first
+    const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') || '');
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = await anonClient.auth.getUser(token);
+    
+    console.log('🆓 [FREE-POST] Auth result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      authError: authError?.message
+    });
     
     if (authError || !user) {
       console.error('❌ [FREE-POST] Auth error:', authError);
-      throw new Error('Invalid authentication');
+      throw new Error('Invalid authentication: ' + (authError?.message || 'No user found'));
     }
 
     console.log('✅ [FREE-POST] User authenticated:', user.id);
 
-    // Prepare job data for insertion
+    // Prepare job data for insertion with explicit required fields
     const jobToInsert = {
-      title: jobData.title || 'Job Title',
+      title: jobData.title || 'Untitled Job',
       description: jobData.description || '',
       category: jobData.category || 'Other',
       location: jobData.location || '',
@@ -77,27 +110,53 @@ serve(async (req) => {
       updated_at: new Date().toISOString()
     };
 
-    console.log('🆓 [FREE-POST] Inserting job with data:', {
+    console.log('🆓 [FREE-POST] Job data prepared for insertion:', {
       title: jobToInsert.title,
       category: jobToInsert.category,
       status: jobToInsert.status,
       pricing_tier: jobToInsert.pricing_tier,
-      user_id: jobToInsert.user_id
+      user_id: jobToInsert.user_id,
+      expires_at: jobToInsert.expires_at
     });
 
-    // Insert the job directly as active
+    // Insert the job directly as active using service role
+    console.log('🆓 [FREE-POST] Attempting database insert...');
     const { data: newJob, error: insertError } = await supabase
       .from('jobs')
       .insert([jobToInsert])
       .select()
       .single();
 
+    console.log('🆓 [FREE-POST] Insert result:', {
+      success: !insertError,
+      jobId: newJob?.id,
+      insertError: insertError?.message,
+      insertErrorDetails: insertError?.details,
+      insertErrorHint: insertError?.hint,
+      insertErrorCode: insertError?.code
+    });
+
     if (insertError) {
-      console.error('❌ [FREE-POST] Database insert error:', insertError);
+      console.error('❌ [FREE-POST] Database insert error:', {
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint,
+        code: insertError.code
+      });
       throw new Error(`Database error: ${insertError.message}`);
     }
 
-    console.log('✅ [FREE-POST] Job created successfully:', newJob.id);
+    if (!newJob) {
+      console.error('❌ [FREE-POST] No job returned from insert');
+      throw new Error('Job insert failed - no data returned');
+    }
+
+    console.log('✅ [FREE-POST] Job created successfully:', {
+      id: newJob.id,
+      title: newJob.title,
+      status: newJob.status,
+      user_id: newJob.user_id
+    });
 
     // Return success response
     return new Response(JSON.stringify({
@@ -111,10 +170,16 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('💥 [FREE-POST] Critical error:', error);
+    console.error('💥 [FREE-POST] Critical error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
     return new Response(JSON.stringify({
       success: false,
-      error: error.message || 'Unknown error occurred'
+      error: error.message || 'Unknown error occurred',
+      details: 'Check edge function logs for more information'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
