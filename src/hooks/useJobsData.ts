@@ -16,11 +16,11 @@ export const useJobsData = () => {
       setLoading(true);
       console.log('🔍 Fetching jobs from Supabase database only...');
       
-      // Fetch ONLY jobs from Supabase database
+      // Fetch ONLY active jobs from Supabase database
       const { data: supabaseJobs, error: supabaseError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('status', 'active')
+        .eq('status', 'active') // Only fetch active jobs
         .order('created_at', { ascending: false });
 
       if (supabaseError) {
@@ -28,7 +28,13 @@ export const useJobsData = () => {
         throw supabaseError;
       }
 
-      console.log('✅ Fetched jobs from database:', supabaseJobs?.length || 0, 'jobs');
+      console.log('✅ Fetched active jobs from database:', supabaseJobs?.length || 0, 'jobs');
+      console.log('📋 Jobs details:', supabaseJobs?.map(j => ({ 
+        id: j.id, 
+        title: j.title, 
+        status: j.status, 
+        pricing_tier: j.pricing_tier 
+      })));
       
       // Transform Supabase jobs to match Job interface
       const transformedSupabaseJobs: Job[] = (supabaseJobs || []).map(job => ({
@@ -50,7 +56,7 @@ export const useJobsData = () => {
       }));
 
       console.log('🎯 Transformed jobs with pricing tiers:', 
-        transformedSupabaseJobs.map(j => ({ title: j.title, pricing_tier: j.pricing_tier }))
+        transformedSupabaseJobs.map(j => ({ title: j.title, pricing_tier: j.pricing_tier, status: j.status }))
       );
 
       setJobs(transformedSupabaseJobs);

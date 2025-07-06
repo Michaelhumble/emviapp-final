@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -33,10 +32,11 @@ export const useJobPosting = () => {
         }
 
         if (data?.success && data?.jobId) {
-          console.log('✅ [HOOK] Free job created successfully:', data.jobId);
-          toast.success('Job posted successfully!');
-          // Navigate to the actual job ID from the database
-          navigate(`/jobs/${data.jobId}`);
+          console.log('✅ [HOOK] Free job created successfully:', data.jobId, 'Status:', data.status);
+          toast.success('Free job posted successfully! It\'s now live on the jobs page.');
+          
+          // Navigate to the jobs page to show the new job immediately
+          navigate('/jobs');
           return { success: true, data };
         } else {
           console.error('❌ [HOOK] Free job creation failed:', data);
@@ -45,7 +45,7 @@ export const useJobPosting = () => {
         }
       }
 
-      // Handle paid job posting (Gold, Premium, Diamond)
+      // Handle paid job posting (Gold, Premium, Diamond) - UNCHANGED
       console.log('💰 [HOOK] Processing paid job posting...');
       
       // First, create the job as draft in the database

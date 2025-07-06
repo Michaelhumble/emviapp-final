@@ -56,11 +56,11 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Insert job into database with free pricing tier
+    // Insert job into database with free pricing tier - ENSURE ALL REQUIRED FIELDS
     const jobRecord = {
       title: jobData.title || 'Job Title',
       description: jobData.description || '',
-      category: jobData.category || 'Other',
+      category: jobData.category || 'Other', // Ensure category is set (required field)
       location: jobData.location || '',
       compensation_type: jobData.compensation_type || jobData.employment_type || '',
       compensation_details: jobData.compensation_details || '',
@@ -69,12 +69,12 @@ serve(async (req) => {
         : (jobData.requirements || ''),
       contact_info: jobData.contact_info || {},
       pricing_tier: 'free',
-      status: 'active', // Free jobs go live immediately
+      status: 'active', // Critical: Free jobs must be active immediately
       user_id: user.id,
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
     };
 
-    console.log('📝 [FREE-POST] Inserting job record:', JSON.stringify(jobRecord, null, 2));
+    console.log('📝 [FREE-POST] Inserting job record with active status:', JSON.stringify(jobRecord, null, 2));
 
     const { data: insertedJob, error: insertError } = await supabaseService
       .from('jobs')
@@ -87,7 +87,20 @@ serve(async (req) => {
       throw new Error(`Failed to create job: ${insertError.message}`);
     }
 
-    console.log('✅ [FREE-POST] Job created successfully:', insertedJob.id);
+    console.log('✅ [FREE-POST] Job created successfully with ID:', insertedJob.id, 'Status:', insertedJob.status);
+
+    // Verify the job was created as active
+    const { data: verifyJob, error: verifyError } = await supabaseService
+      .from('jobs')
+      .select('id, title, status, pricing_tier')
+      .eq('id', insertedJob.id)
+      .single();
+
+    if (verifyError) {
+      console.error('⚠️ [FREE-POST] Could not verify job creation:', verifyError);
+    } else {
+      console.log('🔍 [FREE-POST] Job verification:', verifyJob);
+    }
 
     // Log the successful free post
     const { error: paymentLogError } = await supabaseService
@@ -111,7 +124,8 @@ serve(async (req) => {
     const response = { 
       success: true, 
       jobId: insertedJob.id,
-      job: insertedJob
+      job: insertedJob,
+      status: insertedJob.status // Include status in response for debugging
     };
     
     console.log('🎉 [FREE-POST] Returning success response:', JSON.stringify(response, null, 2));
