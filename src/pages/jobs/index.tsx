@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const JobsPage = () => {
@@ -23,6 +23,7 @@ const JobsPage = () => {
   } = useJobsData();
 
   const [isRenewing, setIsRenewing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRenewJob = async (job: Job) => {
     if (!user) {
@@ -60,31 +61,17 @@ const JobsPage = () => {
     }
   };
 
-  // Debug logging
-  console.log('📊 [DEBUG] Jobs Page Render:', {
-    jobsCount: jobs.length,
-    loading,
-    error: error?.message,
-    jobs: jobs.map(j => ({ id: j.id, title: j.title, pricing_tier: j.pricing_tier, status: j.status }))
-  });
-
-  console.log('🔍 [DEBUG] Jobs page - FREE jobs specifically:', 
-    jobs.filter(j => j.pricing_tier === 'free').map(j => ({
-      id: j.id,
-      title: j.title,
-      pricing_tier: j.pricing_tier,
-      status: j.status
-    }))
-  );
-
-  console.log('🔍 [DEBUG] Jobs page - PAID jobs specifically:', 
-    jobs.filter(j => j.pricing_tier !== 'free').map(j => ({
-      id: j.id,
-      title: j.title,
-      pricing_tier: j.pricing_tier,
-      status: j.status
-    }))
-  );
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
+      toast.success('Jobs refreshed!');
+    } catch (error) {
+      toast.error('Failed to refresh jobs');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -106,9 +93,15 @@ const JobsPage = () => {
           <div className="text-center bg-red-50 border border-red-200 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-red-800 mb-2">Error Loading Jobs</h2>
             <p className="text-red-600 mb-4">{error.message}</p>
-            <Button onClick={() => window.location.reload()} variant="outline">
-              Retry
-            </Button>
+            <div className="space-x-2">
+              <Button onClick={handleRefresh} variant="outline">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Retry
+              </Button>
+              <Button onClick={() => window.location.reload()} variant="outline">
+                Reload Page
+              </Button>
+            </div>
           </div>
         </div>
       </Layout>
@@ -124,17 +117,29 @@ const JobsPage = () => {
             <p className="text-gray-600">
               Find your next opportunity in the beauty industry 
               <span className="text-sm text-blue-600 ml-2">
-                ({jobs.length} jobs from database - {jobs.filter(j => j.pricing_tier === 'free').length} free, {jobs.filter(j => j.pricing_tier !== 'free').length} paid)
+                ({jobs.length} active jobs - {jobs.filter(j => j.pricing_tier === 'free').length} free, {jobs.filter(j => j.pricing_tier !== 'free').length} paid)
               </span>
             </p>
           </div>
           
-          <Link to="/jobs/create">
-            <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
-              <Plus className="mr-2 h-4 w-4" />
-              Post a Job
+          <div className="flex items-center space-x-2">
+            <Button 
+              onClick={handleRefresh} 
+              variant="outline" 
+              size="sm"
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
             </Button>
-          </Link>
+            
+            <Link to="/jobs/create">
+              <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Post a Job
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {jobs.length === 0 ? (

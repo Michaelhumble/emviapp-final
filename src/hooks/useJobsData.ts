@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,31 +14,9 @@ export const useJobsData = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      console.log('🔍 [DEBUG] Fetching jobs from Supabase database...');
+      console.log('🔍 [JOBS-DATA] Fetching jobs from Supabase database...');
       
-      // First, let's see ALL jobs regardless of status for debugging
-      const { data: allJobs, error: allJobsError } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (allJobsError) {
-        console.error('❌ [DEBUG] Error fetching ALL jobs:', allJobsError);
-      } else {
-        console.log('📋 [DEBUG] ALL JOBS in database (regardless of status):', 
-          allJobs?.map(j => ({ 
-            id: j.id, 
-            title: j.title, 
-            status: j.status, 
-            pricing_tier: j.pricing_tier,
-            category: j.category,
-            created_at: j.created_at,
-            user_id: j.user_id
-          }))
-        );
-      }
-
-      // Now fetch ONLY active jobs (current production query)
+      // Fetch ONLY active jobs (current production query)
       const { data: supabaseJobs, error: supabaseError } = await supabase
         .from('jobs')
         .select('*')
@@ -45,24 +24,20 @@ export const useJobsData = () => {
         .order('created_at', { ascending: false });
 
       if (supabaseError) {
-        console.error('❌ [DEBUG] Error fetching ACTIVE jobs from Supabase:', supabaseError);
+        console.error('❌ [JOBS-DATA] Error fetching jobs from Supabase:', supabaseError);
         throw supabaseError;
       }
 
-      console.log('✅ [DEBUG] ACTIVE jobs from database:', supabaseJobs?.length || 0, 'jobs');
-      console.log('📋 [DEBUG] ACTIVE Jobs details with all fields:', 
-        supabaseJobs?.map(j => ({ 
+      console.log('✅ [JOBS-DATA] Active jobs from database:', {
+        count: supabaseJobs?.length || 0,
+        jobs: supabaseJobs?.map(j => ({ 
           id: j.id, 
           title: j.title, 
           status: j.status, 
           pricing_tier: j.pricing_tier,
-          category: j.category,
-          created_at: j.created_at,
-          user_id: j.user_id,
-          location: j.location,
-          description: j.description
+          created_at: j.created_at
         }))
-      );
+      });
       
       // Transform Supabase jobs to match Job interface
       const transformedSupabaseJobs: Job[] = (supabaseJobs || []).map(job => ({
@@ -83,28 +58,16 @@ export const useJobsData = () => {
         pricing_tier: job.pricing_tier || 'free'
       }));
 
-      console.log('🎯 [DEBUG] Transformed jobs array being passed to UI:', 
-        transformedSupabaseJobs.map(j => ({ 
-          id: j.id,
-          title: j.title, 
-          pricing_tier: j.pricing_tier, 
-          status: j.status,
-          category: j.category
-        }))
-      );
-
-      console.log('🔍 [DEBUG] FREE jobs specifically:', 
-        transformedSupabaseJobs.filter(j => j.pricing_tier === 'free').map(j => ({
-          id: j.id,
-          title: j.title,
-          pricing_tier: j.pricing_tier,
-          status: j.status
-        }))
-      );
+      console.log('🎯 [JOBS-DATA] Transformed jobs for UI:', {
+        total: transformedSupabaseJobs.length,
+        free: transformedSupabaseJobs.filter(j => j.pricing_tier === 'free').length,
+        paid: transformedSupabaseJobs.filter(j => j.pricing_tier !== 'free').length
+      });
 
       setJobs(transformedSupabaseJobs);
+      setError(null);
     } catch (err) {
-      console.error('💥 [DEBUG] Error in fetchJobs:', err);
+      console.error('💥 [JOBS-DATA] Error in fetchJobs:', err);
       setError(err as Error);
     } finally {
       setLoading(false);
@@ -127,6 +90,7 @@ export const useJobsData = () => {
 
       if (error) throw error;
 
+      // Refresh the jobs list after creating
       await fetchJobs();
       
       return { data, error: null };
@@ -140,6 +104,34 @@ export const useJobsData = () => {
 
   useEffect(() => {
     fetchJobs();
+  }, []);
+
+  // Set up real-time subscription for job changes
+  useEffect(() => {
+    console.log('🔄 [JOBS-DATA] Setting up real-time subscription');
+    
+    const channel = supabase
+      .channel('jobs-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'jobs',
+          filter: 'status=eq.active'
+        },
+        (payload) => {
+          console.log('🔄 [JOBS-DATA] Real-time job change:', payload);
+          // Refetch jobs when there's a change
+          fetchJobs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('🔄 [JOBS-DATA] Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return {

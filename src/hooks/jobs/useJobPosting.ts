@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,7 +12,11 @@ export const useJobPosting = () => {
     setIsLoading(true);
     
     try {
-      console.log('📝 [HOOK] Starting job submission with data:', jobData);
+      console.log('📝 [HOOK] Starting job submission with data:', {
+        title: jobData.title,
+        pricing_tier: jobData.pricing_tier,
+        category: jobData.category
+      });
       
       // Check if this is a free job
       if (jobData.pricing_tier === 'free' || !jobData.pricing_tier) {
@@ -32,11 +37,17 @@ export const useJobPosting = () => {
         }
 
         if (data?.success && data?.jobId) {
-          console.log('✅ [HOOK] Free job created successfully:', data.jobId, 'Status:', data.status);
+          console.log('✅ [HOOK] Free job created successfully:', {
+            jobId: data.jobId,
+            status: data.status
+          });
           toast.success('Free job posted successfully! It\'s now live on the jobs page.');
           
-          // Navigate to the jobs page to show the new job immediately
-          navigate('/jobs');
+          // Small delay to ensure database is updated, then navigate
+          setTimeout(() => {
+            navigate('/jobs');
+          }, 500);
+          
           return { success: true, data };
         } else {
           console.error('❌ [HOOK] Free job creation failed:', data);
@@ -45,7 +56,7 @@ export const useJobPosting = () => {
         }
       }
 
-      // Handle paid job posting (Gold, Premium, Diamond) - UNCHANGED
+      // Handle paid job posting (Gold, Premium, Diamond)
       console.log('💰 [HOOK] Processing paid job posting...');
       
       // First, create the job as draft in the database
@@ -75,7 +86,11 @@ export const useJobPosting = () => {
         return { success: false, error: draftError };
       }
 
-      console.log('📝 [HOOK] Draft job created:', draftJob.id);
+      console.log('📝 [HOOK] Draft job created:', {
+        id: draftJob.id,
+        title: draftJob.title,
+        status: draftJob.status
+      });
 
       // Now create Stripe checkout session with the draft job ID
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-job-checkout', {
@@ -96,6 +111,7 @@ export const useJobPosting = () => {
 
       if (checkoutData?.url) {
         console.log('💳 [HOOK] Redirecting to Stripe checkout...');
+        toast.success('Redirecting to payment...');
         window.location.href = checkoutData.url;
         return { success: true, redirected: true, jobId: draftJob.id };
       } else {
