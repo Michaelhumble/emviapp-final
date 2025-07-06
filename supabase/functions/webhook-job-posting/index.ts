@@ -56,6 +56,8 @@ serve(async (req) => {
       return new Response('Invalid signature', { status: 400 });
     }
 
+    console.log('🎣 [WEBHOOK-JOB] WEBHOOK TRIGGERED:', event);
+
     // Handle the checkout.session.completed event
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
