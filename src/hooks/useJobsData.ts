@@ -35,7 +35,6 @@ export const useJobsData = () => {
         .order('created_at', { ascending: false });
 
       console.log('🔍 [JOBS-DATA] Raw Supabase response:', { jobsData, fetchError });
-      console.log('🔍 [JOBS-DATA] Query executed: SELECT * FROM jobs WHERE status = "active" ORDER BY created_at DESC');
 
       if (fetchError) {
         console.error('❌ [JOBS-DATA] Supabase fetch error:', fetchError);
@@ -116,9 +115,9 @@ export const useJobsData = () => {
     console.log('🚀 [JOBS-DATA] Hook initialized, fetching jobs...');
     fetchJobs();
 
-    // Set up real-time subscription for job inserts
+    // Set up real-time subscription for immediate updates
     const channel = supabase
-      .channel('jobs-changes')
+      .channel('jobs-realtime')
       .on(
         'postgres_changes',
         {
@@ -128,8 +127,10 @@ export const useJobsData = () => {
         },
         (payload) => {
           console.log('⚡ [JOBS-DATA] Real-time INSERT detected:', payload);
-          // Immediately refetch to get the new job
-          fetchJobs();
+          // Only refetch if the new job is active
+          if (payload.new && payload.new.status === 'active') {
+            fetchJobs();
+          }
         }
       )
       .on(
@@ -141,7 +142,7 @@ export const useJobsData = () => {
         },
         (payload) => {
           console.log('⚡ [JOBS-DATA] Real-time UPDATE detected:', payload);
-          // Refetch on updates (like status changes)
+          // Refetch on status changes or other updates
           fetchJobs();
         }
       )
