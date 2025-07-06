@@ -60,23 +60,39 @@ export const useJobsData = () => {
         }))
       });
 
-      // Transform to Job interface
-      const transformedJobs: Job[] = jobsData.map(job => ({
-        id: job.id,
-        title: job.title || 'Untitled Job',
-        category: job.category || 'Other',
-        location: job.location || '',
-        description: job.description || '',
-        compensation_type: job.compensation_type || '',
-        compensation_details: job.compensation_details || '',
-        contact_info: job.contact_info || {},
-        user_id: job.user_id || '',
-        status: job.status || 'active',
-        expires_at: job.expires_at || '',
-        requirements: job.requirements || '',
-        pricing_tier: job.pricing_tier || 'free',
-        created_at: job.created_at || new Date().toISOString()
-      }));
+      // Transform to Job interface with proper contact_info handling
+      const transformedJobs: Job[] = jobsData.map(job => {
+        // Safely handle contact_info conversion
+        let contactInfo = {};
+        if (job.contact_info) {
+          if (typeof job.contact_info === 'object' && job.contact_info !== null) {
+            contactInfo = job.contact_info as any;
+          } else if (typeof job.contact_info === 'string') {
+            try {
+              contactInfo = JSON.parse(job.contact_info);
+            } catch {
+              contactInfo = {};
+            }
+          }
+        }
+
+        return {
+          id: job.id,
+          title: job.title || 'Untitled Job',
+          category: job.category || 'Other',
+          location: job.location || '',
+          description: job.description || '',
+          compensation_type: job.compensation_type || '',
+          compensation_details: job.compensation_details || '',
+          contact_info: contactInfo,
+          user_id: job.user_id || '',
+          status: job.status || 'active',
+          expires_at: job.expires_at || '',
+          requirements: job.requirements || '',
+          pricing_tier: job.pricing_tier || 'free',
+          created_at: job.created_at || new Date().toISOString()
+        };
+      });
 
       setJobs(transformedJobs);
       console.log('🎯 [JOBS-DATA] Final transformed jobs:', transformedJobs.length);
