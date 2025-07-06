@@ -10,6 +10,7 @@ export const useJobsData = () => {
 
   const fetchJobs = async () => {
     try {
+      console.log('🔍 [JOBS-DATA] ===================');
       console.log('🔍 [JOBS-DATA] Starting job fetch...');
       
       // EXACT QUERY: Fetch ALL active jobs regardless of pricing_tier
@@ -34,7 +35,12 @@ export const useJobsData = () => {
         .eq('status', 'active')  // ONLY filter by status = 'active'
         .order('created_at', { ascending: false });
 
-      console.log('🔍 [JOBS-DATA] Raw Supabase response:', { jobsData, fetchError });
+      console.log('🔍 [JOBS-DATA] Supabase query executed');
+      console.log('🔍 [JOBS-DATA] Raw Supabase response:', { 
+        dataCount: jobsData?.length || 0, 
+        fetchError,
+        rawData: jobsData 
+      });
 
       if (fetchError) {
         console.error('❌ [JOBS-DATA] Supabase fetch error:', fetchError);
@@ -42,40 +48,49 @@ export const useJobsData = () => {
       }
 
       if (!jobsData) {
-        console.log('⚠️ [JOBS-DATA] No jobs data returned');
+        console.log('⚠️ [JOBS-DATA] No jobs data returned from Supabase');
         setJobs([]);
         return;
       }
 
-      console.log('✅ [JOBS-DATA] Jobs fetched successfully:', {
-        count: jobsData.length,
-        jobs: jobsData.map(j => ({
-          id: j.id,
-          title: j.title,
-          status: j.status,
-          pricing_tier: j.pricing_tier,
-          user_id: j.user_id,
-          created_at: j.created_at
-        }))
+      console.log('📊 [JOBS-DATA] Database rows retrieved:', jobsData.length);
+      jobsData.forEach((job, index) => {
+        console.log(`📝 [JOBS-DATA] Job ${index + 1}:`, {
+          id: job.id,
+          title: job.title,
+          status: job.status,
+          pricing_tier: job.pricing_tier,
+          user_id: job.user_id,
+          created_at: job.created_at,
+          contact_info_type: typeof job.contact_info,
+          contact_info_value: job.contact_info
+        });
       });
 
       // Transform to Job interface with proper contact_info handling
-      const transformedJobs: Job[] = jobsData.map(job => {
+      const transformedJobs: Job[] = jobsData.map((job, index) => {
+        console.log(`🔄 [JOBS-DATA] Transforming job ${index + 1} (${job.id})...`);
+        
         // Safely handle contact_info conversion
         let contactInfo = {};
         if (job.contact_info) {
           if (typeof job.contact_info === 'object' && job.contact_info !== null) {
             contactInfo = job.contact_info as any;
+            console.log(`✅ [JOBS-DATA] Job ${index + 1} contact_info is object:`, contactInfo);
           } else if (typeof job.contact_info === 'string') {
             try {
               contactInfo = JSON.parse(job.contact_info);
-            } catch {
+              console.log(`✅ [JOBS-DATA] Job ${index + 1} contact_info parsed from string:`, contactInfo);
+            } catch (parseError) {
+              console.warn(`⚠️ [JOBS-DATA] Job ${index + 1} contact_info JSON parse failed:`, parseError);
               contactInfo = {};
             }
           }
+        } else {
+          console.log(`⚠️ [JOBS-DATA] Job ${index + 1} has no contact_info`);
         }
 
-        return {
+        const transformedJob = {
           id: job.id,
           title: job.title || 'Untitled Job',
           category: job.category || 'Other',
@@ -91,16 +106,26 @@ export const useJobsData = () => {
           pricing_tier: job.pricing_tier || 'free',
           created_at: job.created_at || new Date().toISOString()
         };
+
+        console.log(`✅ [JOBS-DATA] Job ${index + 1} transformed:`, transformedJob);
+        return transformedJob;
       });
 
       setJobs(transformedJobs);
-      console.log('🎯 [JOBS-DATA] Final transformed jobs:', transformedJobs.length);
+      console.log('🎯 [JOBS-DATA] Final transformed jobs set in state:', transformedJobs.length);
+      console.log('🎯 [JOBS-DATA] Jobs by pricing tier:', {
+        free: transformedJobs.filter(j => j.pricing_tier === 'free').length,
+        premium: transformedJobs.filter(j => j.pricing_tier === 'premium').length,
+        gold: transformedJobs.filter(j => j.pricing_tier === 'gold').length,
+        diamond: transformedJobs.filter(j => j.pricing_tier === 'diamond').length
+      });
 
     } catch (err) {
       console.error('💥 [JOBS-DATA] Error in fetchJobs:', err);
       setError(err as Error);
     } finally {
       setLoading(false);
+      console.log('🔍 [JOBS-DATA] =================== END');
     }
   };
 
@@ -129,6 +154,7 @@ export const useJobsData = () => {
           console.log('⚡ [JOBS-DATA] Real-time INSERT detected:', payload);
           // Only refetch if the new job is active
           if (payload.new && payload.new.status === 'active') {
+            console.log('⚡ [JOBS-DATA] New active job detected, refetching...');
             fetchJobs();
           }
         }
@@ -143,7 +169,10 @@ export const useJobsData = () => {
         (payload) => {
           console.log('⚡ [JOBS-DATA] Real-time UPDATE detected:', payload);
           // Refetch on status changes or other updates
-          fetchJobs();
+          if (payload.new && (payload.new.status === 'active' || payload.old?.status !== payload.new.status)) {
+            console.log('⚡ [JOBS-DATA] Job status change detected, refetching...');
+            fetchJobs();
+          }
         }
       )
       .subscribe();
