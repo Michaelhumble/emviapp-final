@@ -25,8 +25,14 @@ export const useJobPosting = () => {
     try {
       console.log('🆓 [JOB-POSTING] Submitting free job:', jobData);
       
+      // Fix the payload structure to match what the edge function expects
       const { data, error } = await supabase.functions.invoke('create-free-post', {
-        body: { jobData }
+        body: { 
+          jobData: {
+            ...jobData,
+            user_id: user.id // Ensure user_id is included
+          }
+        }
       });
 
       console.log('🆓 [JOB-POSTING] Response from create-free-post:', { data, error });

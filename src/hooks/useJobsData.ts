@@ -16,7 +16,7 @@ export const useJobsData = () => {
       setLoading(true);
       console.log('🔍 [JOBS-DATA] Fetching jobs from Supabase database...');
       
-      // Fetch ONLY active jobs (current production query)
+      // Fetch ALL active jobs (not just user's own jobs)
       const { data: supabaseJobs, error: supabaseError } = await supabase
         .from('jobs')
         .select('*')
