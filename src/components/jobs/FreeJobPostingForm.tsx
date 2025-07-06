@@ -1,15 +1,14 @@
 
 import React, { useState } from 'react';
 import { useJobPosting } from '@/hooks/jobs/useJobPosting';
-import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 
 const FreeJobPostingForm = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
   const { submitFreeJob, isSubmitting } = useJobPosting();
   
   const [formData, setFormData] = useState({
@@ -19,28 +18,43 @@ const FreeJobPostingForm = () => {
     description: '',
     compensation_type: '',
     compensation_details: '',
+    requirements: '',
     contact_info: {
       owner_name: '',
       phone: '',
       email: '',
-      notes: '',
-      zalo: ''
+      notes: ''
     }
   });
 
-  console.log('🆓 [FREE-FORM] Component rendered with user:', user?.id);
-  console.log('🆓 [FREE-FORM] Current form data:', formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log('🆓 [FREE-FORM] Form submission started:', {
+      title: formData.title,
+      category: formData.category,
+      location: formData.location
+    });
+
+    const result = await submitFreeJob(formData);
+    
+    console.log('🆓 [FREE-FORM] Submission result:', result);
+
+    if (result.success) {
+      console.log('✅ [FREE-FORM] Success! Navigating to jobs page');
+      // Navigate to jobs page to see the new listing
+      navigate('/jobs');
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    console.log('🆓 [FREE-FORM] Input change:', { field, value });
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleContactInfoChange = (field: string, value: string) => {
-    console.log('🆓 [FREE-FORM] Contact info change:', { field, value });
+  const handleContactChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       contact_info: {
@@ -50,62 +64,10 @@ const FreeJobPostingForm = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    console.log('🆓 [FREE-FORM] ===================');
-    console.log('🆓 [FREE-FORM] Form submission started');
-    console.log('🆓 [FREE-FORM] Form data being submitted:', formData);
-
-    if (!user) {
-      console.error('❌ [FREE-FORM] No authenticated user');
-      toast.error('Please sign in to post a job');
-      return;
-    }
-
-    if (!formData.title.trim()) {
-      console.error('❌ [FREE-FORM] Missing job title');
-      toast.error('Job title is required');
-      return;
-    }
-
-    if (!formData.location.trim()) {
-      console.error('❌ [FREE-FORM] Missing location');
-      toast.error('Location is required');
-      return;
-    }
-
-    console.log('✅ [FREE-FORM] Validation passed, calling submitFreeJob...');
-    const result = await submitFreeJob(formData);
-    
-    console.log('🆓 [FREE-FORM] Submit result:', result);
-    
-    if (result.success) {
-      console.log('✅ [FREE-FORM] Job posted successfully');
-      // Form will be reset and user redirected by the hook
-    } else {
-      console.error('❌ [FREE-FORM] Job posting failed:', result.error);
-    }
-    console.log('🆓 [FREE-FORM] =================== END');
-  };
-
-  if (!user) {
-    return (
-      <Card className="max-w-2xl mx-auto">
-        <CardContent className="p-6 text-center">
-          <p className="text-gray-600">Please sign in to post a job.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Post a Free Job</CardTitle>
-        <CardDescription>
-          Reach beauty professionals in your area with a free job posting.
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -120,17 +82,19 @@ const FreeJobPostingForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Category</label>
+            <label className="block text-sm font-medium mb-2">Category *</label>
             <select
               value={formData.category}
               onChange={(e) => handleInputChange('category', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              required
             >
-              <option value="Nails">Nails</option>
-              <option value="Hair">Hair</option>
-              <option value="Skincare">Skincare</option>
-              <option value="Massage">Massage</option>
               <option value="Other">Other</option>
+              <option value="Nail Technician">Nail Technician</option>
+              <option value="Hair Stylist">Hair Stylist</option>
+              <option value="Esthetician">Esthetician</option>
+              <option value="Massage Therapist">Massage Therapist</option>
+              <option value="Management">Management</option>
             </select>
           </div>
 
@@ -145,43 +109,53 @@ const FreeJobPostingForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Job Description</label>
+            <label className="block text-sm font-medium mb-2">Job Description *</label>
             <Textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe the position, requirements, and benefits..."
               rows={4}
+              required
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Compensation Type</label>
-              <Input
-                value={formData.compensation_type}
-                onChange={(e) => handleInputChange('compensation_type', e.target.value)}
-                placeholder="e.g. Hourly, Weekly, Commission"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Compensation Details</label>
-              <Input
-                value={formData.compensation_details}
-                onChange={(e) => handleInputChange('compensation_details', e.target.value)}
-                placeholder="e.g. $15-20/hour, $800-1200/week"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Compensation Type</label>
+            <Input
+              value={formData.compensation_type}
+              onChange={(e) => handleInputChange('compensation_type', e.target.value)}
+              placeholder="e.g. Hourly, Weekly, Commission"
+            />
           </div>
 
-          <div className="border-t pt-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Compensation Details</label>
+            <Input
+              value={formData.compensation_details}
+              onChange={(e) => handleInputChange('compensation_details', e.target.value)}
+              placeholder="e.g. $15-20/hour, $800-1200/week"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Requirements</label>
+            <Textarea
+              value={formData.requirements}
+              onChange={(e) => handleInputChange('requirements', e.target.value)}
+              placeholder="List any specific requirements or qualifications..."
+              rows={3}
+            />
+          </div>
+
+          <div className="border-t pt-4">
             <h3 className="text-lg font-medium mb-4">Contact Information</h3>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Name</label>
                 <Input
                   value={formData.contact_info.owner_name}
-                  onChange={(e) => handleContactInfoChange('owner_name', e.target.value)}
+                  onChange={(e) => handleContactChange('owner_name', e.target.value)}
                   placeholder="Your name"
                 />
               </div>
@@ -190,8 +164,8 @@ const FreeJobPostingForm = () => {
                 <label className="block text-sm font-medium mb-2">Phone</label>
                 <Input
                   value={formData.contact_info.phone}
-                  onChange={(e) => handleContactInfoChange('phone', e.target.value)}
-                  placeholder="Phone number"
+                  onChange={(e) => handleContactChange('phone', e.target.value)}
+                  placeholder="Your phone number"
                 />
               </div>
 
@@ -200,36 +174,26 @@ const FreeJobPostingForm = () => {
                 <Input
                   type="email"
                   value={formData.contact_info.email}
-                  onChange={(e) => handleContactInfoChange('email', e.target.value)}
-                  placeholder="Email address"
+                  onChange={(e) => handleContactChange('email', e.target.value)}
+                  placeholder="Your email address"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Zalo</label>
+                <label className="block text-sm font-medium mb-2">Additional Notes</label>
                 <Input
-                  value={formData.contact_info.zalo}
-                  onChange={(e) => handleContactInfoChange('zalo', e.target.value)}
-                  placeholder="Zalo ID"
+                  value={formData.contact_info.notes}
+                  onChange={(e) => handleContactChange('notes', e.target.value)}
+                  placeholder="Any additional contact info"
                 />
               </div>
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-sm font-medium mb-2">Additional Notes</label>
-              <Textarea
-                value={formData.contact_info.notes}
-                onChange={(e) => handleContactInfoChange('notes', e.target.value)}
-                placeholder="Any additional information..."
-                rows={2}
-              />
             </div>
           </div>
 
           <Button 
             type="submit" 
             disabled={isSubmitting} 
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full"
           >
             {isSubmitting ? 'Posting Job...' : 'Post Free Job'}
           </Button>
