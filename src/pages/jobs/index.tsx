@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useJobsData } from '@/hooks/useJobsData';
 import JobsGrid from '@/components/jobs/JobsGrid';
+import JobsDebugPanel from '@/components/debug/JobsDebugPanel';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -14,7 +15,14 @@ const JobsPage = () => {
     jobsCount: jobs.length,
     loading,
     error: error?.message,
-    jobs: jobs.map(j => ({ id: j.id, title: j.title, status: j.status, pricing_tier: j.pricing_tier }))
+    jobs: jobs.map(j => ({ 
+      id: j.id, 
+      title: j.title, 
+      status: j.status, 
+      pricing_tier: j.pricing_tier,
+      created_at: j.created_at,
+      user_id: j.user_id
+    }))
   });
 
   // Handle renewal functionality
@@ -23,16 +31,17 @@ const JobsPage = () => {
     // Renewal logic would go here
   };
 
-  // Refresh jobs periodically to catch any missed real-time updates
+  // CRITICAL: Force refresh every 10 seconds to catch new jobs
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('🔄 [JOBS-PAGE] Periodic refresh triggered');
+      console.log('🔄 [JOBS-PAGE] Periodic refresh triggered (every 10s)');
       refetch();
-    }, 30000); // Refresh every 30 seconds
+    }, 10000); // Every 10 seconds
 
     return () => clearInterval(interval);
   }, [refetch]);
 
+  // Show detailed loading state
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -43,7 +52,10 @@ const JobsPage = () => {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-gray-600">
-              {isVietnamese ? "Đang tải việc làm..." : "Loading jobs from database..."}
+              {isVietnamese ? "Đang tải việc làm..." : "Loading jobs..."}
+            </p>
+            <p className="text-xs text-gray-400 mt-2">
+              Fetching from database...
             </p>
           </div>
         </div>
@@ -51,6 +63,7 @@ const JobsPage = () => {
     );
   }
 
+  // Show detailed error state
   if (error) {
     console.error('❌ [JOBS-PAGE] Error loading jobs:', error);
     return (
@@ -62,6 +75,9 @@ const JobsPage = () => {
           <div className="text-center">
             <p className="text-red-600 mb-4">
               {isVietnamese ? "Không thể tải việc làm" : "Failed to load jobs"}
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              Error: {error.message}
             </p>
             <button 
               onClick={() => refetch()}
@@ -90,6 +106,9 @@ const JobsPage = () => {
         />
       </Helmet>
 
+      {/* TEMPORARY DEBUG PANEL - Remove after fixing */}
+      <JobsDebugPanel />
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {isVietnamese ? "Việc Làm Ngành Làm Đẹp" : "Beauty Industry Jobs"}
@@ -100,6 +119,15 @@ const JobsPage = () => {
             : `Found ${jobs.length} job opportunities`
           }
         </p>
+        <div className="mt-2 flex gap-4 text-sm text-gray-500">
+          <span>Query: status = 'active'</span>
+          <button 
+            onClick={refetch}
+            className="text-blue-600 hover:underline"
+          >
+            🔄 Refresh Now
+          </button>
+        </div>
       </div>
 
       {jobs.length === 0 ? (
@@ -110,12 +138,15 @@ const JobsPage = () => {
             </svg>
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {isVietnamese ? "Chưa có việc làm nào" : "No jobs available"}
+            {isVietnamese ? "Chưa có việc làm nào" : "No jobs found"}
           </h3>
-          <p className="text-gray-500">
+          <p className="text-gray-500 mb-4">
             {isVietnamese 
-              ? "Hãy quay lại sau để xem những cơ hội việc làm mới."
-              : "Check back later for new job opportunities."}
+              ? "Không tìm thấy việc làm với status = 'active'"
+              : "No jobs found with status = 'active'"}
+          </p>
+          <p className="text-xs text-gray-400">
+            Use the Debug Panel above to see all jobs in database
           </p>
         </div>
       ) : (
