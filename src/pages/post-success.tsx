@@ -16,58 +16,81 @@ const PostSuccess = () => {
 
   useEffect(() => {
     const verifyPayment = async () => {
+      console.log('🔄 [SUCCESS] Verifying payment and ensuring job activation');
+      
       if (!sessionId) {
         // No session ID, show generic success
+        console.log('ℹ️ [SUCCESS] No session ID - likely free job posting');
         setIsLoading(false);
         return;
       }
 
       try {
-        // Verify the Stripe session and get job details
-        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
-          body: { sessionId }
-        });
+        // Get payment log details first
+        const { data: paymentLog, error: paymentError } = await supabase
+          .from('payment_logs')
+          .select('*')
+          .eq('stripe_payment_id', sessionId)
+          .single();
 
-        if (error) {
-          console.error('Payment verification error:', error);
+        if (paymentError) {
+          console.error('❌ [SUCCESS] Error fetching payment log:', paymentError);
           toast.error('Payment verification failed');
           setIsLoading(false);
           return;
         }
 
-        if (data?.success) {
-          // For job postings, activate the draft job if not already active
-          if (data.post_type === 'job' && data.post_id) {
-            console.log('🔄 Ensuring job is activated after payment:', data.post_id);
+        if (paymentLog) {
+          console.log('✅ [SUCCESS] Payment log found:', paymentLog.listing_id);
+          
+          // Double-check that the job is activated (backup to webhook)
+          const { data: job, error: jobError } = await supabase
+            .from('jobs')
+            .select('*')
+            .eq('id', paymentLog.listing_id)
+            .single();
+
+          if (jobError) {
+            console.error('❌ [SUCCESS] Error fetching job:', jobError);
+          } else if (job) {
+            console.log('🔍 [SUCCESS] Job status check:', job.status);
             
-            // Double-check that the job is activated (backup to webhook)
-            const { error: activateError } = await supabase
-              .from('jobs')
-              .update({ 
-                status: 'active',
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', data.post_id)
-              .eq('status', 'draft'); // Only update if still in draft
-            
-            if (activateError) {
-              console.error('Error activating job on success page:', activateError);
+            // If job is still draft, activate it as backup
+            if (job.status === 'draft') {
+              console.log('🔄 [SUCCESS] Job still in draft, activating as backup...');
+              
+              const { error: activateError } = await supabase
+                .from('jobs')
+                .update({ 
+                  status: 'active',
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', job.id);
+              
+              if (activateError) {
+                console.error('❌ [SUCCESS] Backup activation failed:', activateError);
+                toast.error('Job activation failed - please contact support');
+              } else {
+                console.log('✅ [SUCCESS] Backup job activation successful');
+                toast.success('Payment successful! Your job posting is now live.');
+              }
             } else {
-              console.log('✅ Job activation confirmed on success page');
+              console.log('✅ [SUCCESS] Job already active via webhook');
+              toast.success('Payment successful! Your job posting is now live.');
             }
           }
           
           setJobDetails({
-            jobId: data.post_id || 'job-' + Math.random().toString(36).substr(2, 9),
-            jobTitle: data.jobTitle || 'Job Posting',
-            planType: data.pricing_tier || 'Standard'
+            jobId: paymentLog.listing_id,
+            jobTitle: job?.title || 'Job Posting',
+            planType: paymentLog.pricing_tier || 'Standard'
           });
-          toast.success('Payment successful! Your job posting is now live.');
         } else {
+          console.error('❌ [SUCCESS] No payment log found for session');
           toast.error('Payment verification failed');
         }
       } catch (error) {
-        console.error('Verification error:', error);
+        console.error('💥 [SUCCESS] Critical error verifying payment:', error);
         toast.error('Failed to verify payment');
       } finally {
         setIsLoading(false);
@@ -83,7 +106,7 @@ const PostSuccess = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Verifying payment...</p>
+            <p className="text-gray-600">Verifying payment and activating your job...</p>
           </div>
         </div>
       </Layout>
@@ -97,7 +120,7 @@ const PostSuccess = () => {
       </Helmet>
       
       <JobPostingSuccess
-        jobId={jobDetails?.jobId}
+        jobId={jobDetails?.jobId || 'success-' + Date.now()}
         jobTitle={jobDetails?.jobTitle || 'Job Posting'}
         planType={jobDetails?.planType || 'Standard'}
       />

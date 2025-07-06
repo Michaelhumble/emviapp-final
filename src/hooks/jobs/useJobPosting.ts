@@ -12,13 +12,13 @@ export const useJobPosting = () => {
     setIsLoading(true);
     
     try {
-      console.log('📝 Starting job submission with data:', jobData);
+      console.log('📝 [HOOK] Starting job submission with data:', jobData);
       
       // Check if this is a free job
       if (jobData.pricing_tier === 'free' || !jobData.pricing_tier) {
-        console.log('🆓 Processing free job posting...');
+        console.log('🆓 [HOOK] Processing free job posting...');
         
-        // Call the create-free-post edge function with proper parameters
+        // Call the create-free-post edge function
         const { data, error } = await supabase.functions.invoke('create-free-post', {
           body: { jobData },
           headers: {
@@ -27,26 +27,26 @@ export const useJobPosting = () => {
         });
 
         if (error) {
-          console.error('❌ Free job creation error:', error);
+          console.error('❌ [HOOK] Free job creation error:', error);
           toast.error('Failed to create job posting. Please try again.');
           return { success: false, error };
         }
 
         if (data?.success && data?.jobId) {
-          console.log('✅ Free job created successfully:', data.jobId);
+          console.log('✅ [HOOK] Free job created successfully:', data.jobId);
           toast.success('Job posted successfully!');
           // Navigate to the actual job ID from the database
           navigate(`/jobs/${data.jobId}`);
           return { success: true, data };
         } else {
-          console.error('❌ Free job creation failed:', data);
+          console.error('❌ [HOOK] Free job creation failed:', data);
           toast.error('Failed to create job posting. Please try again.');
           return { success: false, error: data?.error || 'Unknown error' };
         }
       }
 
       // Handle paid job posting (Gold, Premium, Diamond)
-      console.log('💰 Processing paid job posting...');
+      console.log('💰 [HOOK] Processing paid job posting...');
       
       // First, create the job as draft in the database
       const { data: draftJob, error: draftError } = await supabase
@@ -70,12 +70,12 @@ export const useJobPosting = () => {
         .single();
 
       if (draftError) {
-        console.error('❌ Draft job creation error:', draftError);
+        console.error('❌ [HOOK] Draft job creation error:', draftError);
         toast.error('Failed to create job draft. Please try again.');
         return { success: false, error: draftError };
       }
 
-      console.log('📝 Draft job created:', draftJob.id);
+      console.log('📝 [HOOK] Draft job created:', draftJob.id);
 
       // Now create Stripe checkout session with the draft job ID
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-job-checkout', {
@@ -89,23 +89,23 @@ export const useJobPosting = () => {
       });
 
       if (checkoutError) {
-        console.error('❌ Checkout creation error:', checkoutError);
+        console.error('❌ [HOOK] Checkout creation error:', checkoutError);
         toast.error('Failed to create checkout session. Please try again.');
         return { success: false, error: checkoutError };
       }
 
       if (checkoutData?.url) {
-        console.log('💳 Redirecting to Stripe checkout...');
+        console.log('💳 [HOOK] Redirecting to Stripe checkout...');
         window.location.href = checkoutData.url;
         return { success: true, redirected: true, jobId: draftJob.id };
       } else {
-        console.error('❌ No checkout URL received');
+        console.error('❌ [HOOK] No checkout URL received');
         toast.error('Failed to create checkout session. Please try again.');
         return { success: false, error: 'No checkout URL received' };
       }
 
     } catch (error) {
-      console.error('❌ Job posting error:', error);
+      console.error('💥 [HOOK] Job posting error:', error);
       toast.error('An unexpected error occurred. Please try again.');
       return { success: false, error };
     } finally {

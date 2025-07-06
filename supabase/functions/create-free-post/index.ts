@@ -8,28 +8,28 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('🔥 [DEBUG] create-free-post function called');
+  console.log('🆓 [FREE-POST] Free job posting function called');
   
   if (req.method === "OPTIONS") {
-    console.log('🔥 [DEBUG] Handling OPTIONS request');
+    console.log('🆓 [FREE-POST] Handling OPTIONS request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const requestBody = await req.json();
-    console.log('🔥 [DEBUG] Request body received:', JSON.stringify(requestBody, null, 2));
+    console.log('🆓 [FREE-POST] Request body received:', JSON.stringify(requestBody, null, 2));
     
     const { jobData } = requestBody;
-    console.log('🆓 [DEBUG] Creating free job post:', jobData);
+    console.log('🆓 [FREE-POST] Creating free job post:', jobData?.title);
 
-    // Simplified auth header extraction
+    // Get user from auth header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      console.error("❌ [DEBUG] No authorization header");
+      console.error("❌ [FREE-POST] No authorization header");
       throw new Error("No authorization header");
     }
 
-    // Create Supabase client with simplified auth
+    // Create Supabase client for user auth
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -40,15 +40,21 @@ serve(async (req) => {
       }
     );
 
-    // Get user from auth header
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     
     if (userError || !user) {
-      console.error("❌ [DEBUG] User authentication failed:", userError);
+      console.error("❌ [FREE-POST] User authentication failed:", userError);
       throw new Error("User not authenticated: " + (userError?.message || "Unknown auth error"));
     }
 
-    console.log('✅ [DEBUG] User authenticated:', user.id);
+    console.log('✅ [FREE-POST] User authenticated:', user.id);
+
+    // Use service role for database operations to bypass RLS
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
 
     // Insert job into database with free pricing tier
     const jobRecord = {
@@ -63,39 +69,44 @@ serve(async (req) => {
         : (jobData.requirements || ''),
       contact_info: jobData.contact_info || {},
       pricing_tier: 'free',
-      status: 'active',
+      status: 'active', // Free jobs go live immediately
       user_id: user.id,
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
     };
 
-    console.log('📝 [DEBUG] Inserting job record:', JSON.stringify(jobRecord, null, 2));
+    console.log('📝 [FREE-POST] Inserting job record:', JSON.stringify(jobRecord, null, 2));
 
-    const { data: insertedJob, error: insertError } = await supabaseClient
+    const { data: insertedJob, error: insertError } = await supabaseService
       .from('jobs')
       .insert([jobRecord])
       .select()
       .single();
 
     if (insertError) {
-      console.error('❌ [DEBUG] Database insert error:', insertError);
+      console.error('❌ [FREE-POST] Database insert error:', insertError);
       throw new Error(`Failed to create job: ${insertError.message}`);
     }
 
-    console.log('✅ [DEBUG] Job created successfully:', insertedJob.id);
+    console.log('✅ [FREE-POST] Job created successfully:', insertedJob.id);
 
     // Log the successful free post
-    const { data: paymentLog, error: paymentError } = await supabaseClient
+    const { error: paymentLogError } = await supabaseService
       .from('payment_logs')
       .insert({
         user_id: user.id,
         listing_id: insertedJob.id,
         plan_type: 'job',
         pricing_tier: 'free',
-        payment_status: 'success',
+        payment_status: 'success', // Free posts are immediately successful
         expires_at: jobRecord.expires_at
       });
 
-    console.log('📝 [DEBUG] Payment log result:', { paymentLog, paymentError });
+    if (paymentLogError) {
+      console.error('⚠️ [FREE-POST] Error logging payment (non-critical):', paymentLogError);
+      // Don't fail for logging errors
+    } else {
+      console.log('✅ [FREE-POST] Payment logged successfully');
+    }
 
     const response = { 
       success: true, 
@@ -103,7 +114,7 @@ serve(async (req) => {
       job: insertedJob
     };
     
-    console.log('✅ [DEBUG] Returning success response:', JSON.stringify(response, null, 2));
+    console.log('🎉 [FREE-POST] Returning success response:', JSON.stringify(response, null, 2));
 
     return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -111,7 +122,7 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error("❌ [DEBUG] Error creating free job post:", error);
+    console.error("💥 [FREE-POST] Error creating free job post:", error);
     
     const errorResponse = { 
       success: false, 

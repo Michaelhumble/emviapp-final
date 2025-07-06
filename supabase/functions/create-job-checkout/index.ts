@@ -9,13 +9,15 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('💰 [CHECKOUT] Creating job checkout session');
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { tier, finalPrice, durationMonths, jobData, jobId } = await req.json();
-    console.log('💰 Creating paid job checkout:', { tier, finalPrice, jobId });
+    console.log('💰 [CHECKOUT] Checkout params:', { tier, finalPrice, jobId });
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -30,9 +32,11 @@ serve(async (req) => {
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
-        auth: { persistSession: false }
+        global: {
+          headers: { Authorization: authHeader }
+        }
       }
     );
 
@@ -41,7 +45,7 @@ serve(async (req) => {
       throw new Error("User not authenticated or email not available");
     }
 
-    console.log('✅ User authenticated:', user.id);
+    console.log('✅ [CHECKOUT] User authenticated:', user.id);
 
     // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -50,7 +54,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create checkout session with job ID in metadata for webhook activation
+    // Create checkout session with comprehensive metadata
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -75,19 +79,28 @@ serve(async (req) => {
         durationMonths: durationMonths.toString(),
         jobTitle: jobData?.title || '',
         userId: user.id,
-        post_id: jobId, // This is the key - the draft job ID to activate
+        job_id: jobId, // Primary reference for webhook
+        post_id: jobId, // Backup reference
         post_type: 'job',
-        pricing_tier: tier,
-        job_id: jobId // Also store as job_id for webhook compatibility
+        pricing_tier: tier
       },
     });
 
-    // Log the payment attempt with the draft job ID
-    await supabaseClient
+    console.log('✅ [CHECKOUT] Stripe session created:', session.id);
+
+    // Use service role for payment log to bypass RLS
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
+    // Log the payment attempt
+    const { error: logError } = await supabaseService
       .from('payment_logs')
       .insert({
         user_id: user.id,
-        listing_id: jobId, // Reference the draft job
+        listing_id: jobId,
         plan_type: 'job',
         pricing_tier: tier,
         payment_status: 'pending',
@@ -95,14 +108,19 @@ serve(async (req) => {
         expires_at: new Date(Date.now() + (durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString()
       });
 
-    console.log('✅ Stripe session created:', session.id);
+    if (logError) {
+      console.error('❌ [CHECKOUT] Error logging payment:', logError);
+      // Don't fail checkout for logging errors
+    } else {
+      console.log('✅ [CHECKOUT] Payment logged successfully');
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("❌ Error creating checkout session:", error);
+    console.error("💥 [CHECKOUT] Error creating checkout session:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
