@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import JobPostingSuccess from '@/components/posting/job/JobPostingSuccess';
 import { toast } from 'sonner';
+import { CheckCircle, ArrowRight, Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const PostSuccess = () => {
   const location = useLocation();
@@ -19,8 +21,13 @@ const PostSuccess = () => {
       console.log('🔄 [SUCCESS] Verifying payment and ensuring job activation');
       
       if (!sessionId) {
-        // No session ID, show generic success
+        // No session ID, show generic success for free job
         console.log('ℹ️ [SUCCESS] No session ID - likely free job posting');
+        setJobDetails({
+          jobId: 'free-job-' + Date.now(),
+          jobTitle: 'Job Posting',
+          planType: 'Free'
+        });
         setIsLoading(false);
         return;
       }
@@ -116,14 +123,62 @@ const PostSuccess = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Post Created Successfully | EmviApp</title>
+        <title>Job Posted Successfully | EmviApp</title>
       </Helmet>
       
-      <JobPostingSuccess
-        jobId={jobDetails?.jobId || 'success-' + Date.now()}
-        jobTitle={jobDetails?.jobTitle || 'Job Posting'}
-        planType={jobDetails?.planType || 'Standard'}
-      />
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <Card className="text-center">
+            <CardHeader>
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl text-green-600">
+                Job Posted Successfully!
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <p className="text-gray-600">
+                  Your job posting "{jobDetails?.jobTitle}" has been published successfully.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Plan: {jobDetails?.planType}
+                </p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-blue-800 text-sm">
+                  Your job is now live and visible to beauty professionals on our platform. 
+                  You'll receive notifications when candidates apply.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/jobs">
+                  <Button className="flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
+                    View Your Job
+                  </Button>
+                </Link>
+                
+                <Link to="/dashboard">
+                  <Button variant="outline" className="flex items-center gap-2">
+                    Go to Dashboard
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="text-center pt-4">
+                <Link to="/post-job" className="text-purple-600 hover:text-purple-700 text-sm">
+                  Post Another Job
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </Layout>
   );
 };

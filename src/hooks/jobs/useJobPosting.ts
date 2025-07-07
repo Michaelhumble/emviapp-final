@@ -12,19 +12,24 @@ export const useJobPosting = () => {
 
   // Submit free job - insert directly into Supabase
   const submitFreeJob = async (jobData: JobDetailsSubmission) => {
-    console.log('🆓 [FREE-JOB] Starting free job submission:', { jobData });
+    console.log('🆓 [FREE-JOB] Starting free job submission:', { 
+      title: jobData.title, 
+      category: jobData.category,
+      hasUser: !!user 
+    });
     
     if (!user) {
       console.error('🆓 [FREE-JOB] ERROR: No authenticated user');
+      toast.error('Please sign in to post a job');
       throw new Error('User must be authenticated to post a job');
     }
 
     setIsSubmitting(true);
 
     try {
-      // Prepare job data with proper typing
+      // Prepare job data with proper typing - direct insert to Supabase
       const jobPayload = {
-        title: jobData.title,
+        title: jobData.title || '',
         category: jobData.category || 'Other',
         location: jobData.location || '',
         description: jobData.description || '',
@@ -37,8 +42,9 @@ export const useJobPosting = () => {
         pricing_tier: 'free'
       };
 
-      console.log('🆓 [FREE-JOB] Inserting job into Supabase:', { jobPayload });
+      console.log('🆓 [FREE-JOB] Direct Supabase insert payload:', jobPayload);
 
+      // Direct insert into Supabase jobs table
       const { data, error } = await supabase
         .from('jobs')
         .insert([jobPayload])
@@ -46,11 +52,18 @@ export const useJobPosting = () => {
         .single();
 
       if (error) {
-        console.error('🆓 [FREE-JOB] ERROR: Supabase insert failed:', error);
+        console.error('🆓 [FREE-JOB] ERROR: Direct Supabase insert failed:', error);
+        toast.error(`Failed to post job: ${error.message}`);
         throw error;
       }
 
-      console.log('🆓 [FREE-JOB] SUCCESS: Job inserted successfully:', { data });
+      if (!data) {
+        console.error('🆓 [FREE-JOB] ERROR: No data returned from insert');
+        toast.error('Failed to post job - no data returned');
+        throw new Error('No data returned from insert');
+      }
+
+      console.log('🆓 [FREE-JOB] SUCCESS: Job inserted successfully:', data);
       toast.success('Free job posted successfully!');
       
       return { success: true, jobId: data.id };
@@ -65,19 +78,24 @@ export const useJobPosting = () => {
 
   // Submit paid job - create draft then redirect to Stripe
   const submitPaidJob = async (jobData: JobDetailsSubmission, pricingTier: string) => {
-    console.log('💳 [PAID-JOB] Starting paid job submission:', { jobData, pricingTier });
+    console.log('💳 [PAID-JOB] Starting paid job submission:', { 
+      title: jobData.title, 
+      pricingTier,
+      hasUser: !!user 
+    });
     
     if (!user) {
       console.error('💳 [PAID-JOB] ERROR: No authenticated user');
+      toast.error('Please sign in to post a job');
       throw new Error('User must be authenticated to post a job');
     }
 
     setIsStripeLoading(true);
 
     try {
-      // First, create a draft job in Supabase
+      // First, create a draft job in Supabase - direct insert
       const jobPayload = {
-        title: jobData.title,
+        title: jobData.title || '',
         category: jobData.category || 'Other',
         location: jobData.location || '',
         description: jobData.description || '',
@@ -90,8 +108,9 @@ export const useJobPosting = () => {
         pricing_tier: pricingTier
       };
 
-      console.log('💳 [PAID-JOB] Creating draft job in Supabase:', { jobPayload });
+      console.log('💳 [PAID-JOB] Creating draft job in Supabase:', jobPayload);
 
+      // Direct insert into Supabase jobs table
       const { data: draftJob, error: insertError } = await supabase
         .from('jobs')
         .insert([jobPayload])
@@ -100,10 +119,17 @@ export const useJobPosting = () => {
 
       if (insertError) {
         console.error('💳 [PAID-JOB] ERROR: Failed to create draft job:', insertError);
+        toast.error(`Failed to create job draft: ${insertError.message}`);
         throw insertError;
       }
 
-      console.log('💳 [PAID-JOB] SUCCESS: Draft job created:', { draftJob });
+      if (!draftJob) {
+        console.error('💳 [PAID-JOB] ERROR: No draft job data returned');
+        toast.error('Failed to create job draft - no data returned');
+        throw new Error('No draft job data returned');
+      }
+
+      console.log('💳 [PAID-JOB] SUCCESS: Draft job created:', draftJob);
 
       // Now create Stripe checkout session
       console.log('💳 [PAID-JOB] Creating Stripe checkout session...');
@@ -112,17 +138,19 @@ export const useJobPosting = () => {
         body: {
           jobId: draftJob.id,
           pricingTier,
-          jobData
+          jobData: jobData
         }
       });
 
       if (checkoutError) {
         console.error('💳 [PAID-JOB] ERROR: Checkout creation failed:', checkoutError);
+        toast.error(`Failed to create payment session: ${checkoutError.message}`);
         throw checkoutError;
       }
 
       if (!checkoutData?.url) {
         console.error('💳 [PAID-JOB] ERROR: No checkout URL received:', checkoutData);
+        toast.error('Failed to create payment session - no URL received');
         throw new Error('Failed to create checkout session');
       }
 
