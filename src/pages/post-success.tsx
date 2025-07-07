@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, ExternalLink, Eye } from 'lucide-react';
+import { CheckCircle, ExternalLink, Eye, Loader2 } from 'lucide-react';
 import type { Job } from '@/types/job';
 
 const PostSuccessPage = () => {
@@ -18,8 +18,9 @@ const PostSuccessPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchJobDetails = async () => {
+    const fetchAndVerifyJob = async () => {
       if (!jobId) {
+        console.error('❌ [SUCCESS] No job ID provided in URL');
         setError('No job ID provided');
         setLoading(false);
         return;
@@ -28,6 +29,7 @@ const PostSuccessPage = () => {
       console.log('🔍 [SUCCESS] Fetching job details for:', jobId);
 
       try {
+        // Fetch the job from Supabase to verify it exists
         const { data: jobData, error: fetchError } = await supabase
           .from('jobs')
           .select('*')
@@ -35,33 +37,48 @@ const PostSuccessPage = () => {
           .single();
 
         if (fetchError) {
-          console.error('❌ [SUCCESS] Error fetching job:', fetchError);
-          setError(`Failed to load job details: ${fetchError.message}`);
+          console.error('❌ [SUCCESS] Error fetching job:', {
+            error: fetchError.message,
+            details: fetchError.details,
+            code: fetchError.code
+          });
+          setError(`Failed to verify job posting: ${fetchError.message}`);
         } else if (jobData) {
-          console.log('✅ [SUCCESS] Job loaded:', jobData);
+          console.log('✅ [SUCCESS] Job successfully verified in database:', jobData);
           setJob(jobData as Job);
+          
+          // Double-check that the job is active
+          if (jobData.status !== 'active') {
+            console.warn('⚠️ [SUCCESS] Job found but not active:', jobData.status);
+            setError('Job was posted but is not active');
+          }
         } else {
-          setError('Job not found');
+          console.error('❌ [SUCCESS] Job not found in database');
+          setError('Job not found in database');
         }
       } catch (err) {
         console.error('💥 [SUCCESS] Unexpected error:', err);
-        setError('Failed to load job details');
+        setError('Unexpected error while verifying job posting');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchJobDetails();
+    fetchAndVerifyJob();
   }, [jobId]);
 
   if (loading) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
-            <p>Loading job details...</p>
-          </div>
+          <Card className="w-full max-w-md">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-green-600" />
+                <p>Verifying your job posting...</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </Layout>
     );
@@ -71,13 +88,18 @@ const PostSuccessPage = () => {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md border-red-200">
             <CardContent className="pt-6">
               <div className="text-center">
                 <p className="text-red-600 mb-4">{error || 'Job not found'}</p>
-                <Link to="/jobs">
-                  <Button>View All Jobs</Button>
-                </Link>
+                <div className="space-y-2">
+                  <Link to="/post-job-free">
+                    <Button variant="outline" className="w-full">Try Posting Again</Button>
+                  </Link>
+                  <Link to="/jobs">
+                    <Button className="w-full">View All Jobs</Button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -105,10 +127,17 @@ const PostSuccessPage = () => {
                   <h3 className="font-semibold text-green-800 mb-2">Your Job Listing:</h3>
                   <p className="text-lg font-medium">{job.title}</p>
                   {job.location && <p className="text-gray-600">{job.location}</p>}
-                  <p className="text-sm text-green-600 mt-2">
-                    Status: {job.status === 'active' ? 'Published' : 'Draft'} • 
-                    Tier: {job.pricing_tier || 'Free'}
-                  </p>
+                  <div className="flex items-center gap-4 mt-2 text-sm">
+                    <span className="text-green-600">
+                      Status: {job.status === 'active' ? '✅ Published' : '⏳ Draft'}
+                    </span>
+                    <span className="text-blue-600">
+                      Tier: {job.pricing_tier === 'free' ? '🆓 Free' : '⭐ Premium'}
+                    </span>
+                    <span className="text-gray-600">
+                      ID: {job.id.slice(0, 8)}...
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -136,6 +165,10 @@ const PostSuccessPage = () => {
                       Post Another Job
                     </Button>
                   </Link>
+                </div>
+
+                <div className="text-xs text-gray-500 pt-4 border-t text-center">
+                  Job verified in database at {new Date().toLocaleTimeString()}
                 </div>
               </CardContent>
             </Card>
