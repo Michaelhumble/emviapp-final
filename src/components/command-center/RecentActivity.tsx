@@ -1,9 +1,17 @@
 
 import { Loader2, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BookingWithDetails } from "../types/ArtistDashboardTypes";
 import { useNewArtistStatus } from "@/hooks/useNewArtistStatus";
 import { useJobsData } from "@/hooks/useJobsData";
+
+// Define BookingWithDetails locally to avoid import issues
+interface BookingWithDetails {
+  id: string;
+  service_name?: string;
+  appointment_time?: string;
+  price?: number;
+  client_name?: string;
+}
 
 interface RecentActivityProps {
   bookings: BookingWithDetails[];
