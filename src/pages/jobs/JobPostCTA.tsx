@@ -3,61 +3,79 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, Sparkles } from "lucide-react";
+import { PlusCircle, DollarSign, UsersRound } from "lucide-react";
 import { useAuth } from "@/context/auth";
 
 const JobPostCTA = () => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userProfile } = useAuth();
+  const referralCount = userProfile?.referral_count || 0;
+  const totalJobPosts = 0; // In a real app, this would come from the user's profile
+  
+  // Calculate the pricing tier
+  const getPriceInfo = () => {
+    if (totalJobPosts === 0) {
+      return {
+        price: 5,
+        label: "First post special pricing!"
+      };
+    } else if (totalJobPosts === 1) {
+      return {
+        price: 10,
+        label: "Second post pricing"
+      };
+    } else {
+      return {
+        price: referralCount >= 1 ? 15 : 20,
+        label: referralCount >= 1 ? "Referral discount applied!" : "Standard pricing"
+      };
+    }
+  };
+  
+  const priceInfo = getPriceInfo();
   
   return (
     <div className="mb-8">
-      <Card className="bg-gradient-to-br from-purple-50 via-white to-indigo-50 border-purple-100 overflow-hidden shadow-lg">
-        <CardContent className="p-8">
+      <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-100 overflow-hidden">
+        <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-6 md:mb-0 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start mb-4">
-                <Heart className="text-red-500 mr-2 h-6 w-6" />
-                <Sparkles className="text-yellow-500 mr-2 h-6 w-6" />
-                <Users className="text-blue-500 h-6 w-6" />
-              </div>
-              
-              <h3 className="font-playfair text-2xl md:text-3xl font-bold mb-3 text-gray-900">
-                Find Your Perfect Team Member
+            <div className="mb-4 md:mb-0">
+              <h3 className="font-playfair text-xl font-bold mb-2 flex items-center text-gray-900">
+                <PlusCircle className="mr-2 h-5 w-5 text-[#8B5CF6]" /> 
+                Post a Job Opening
               </h3>
-              
-              <p className="text-gray-600 max-w-md font-inter text-lg leading-relaxed">
-                Connect with passionate beauty professionals who share your vision. 
-                Build meaningful relationships that grow your business and create lasting success together.
+              <p className="text-gray-600 max-w-md font-inter">
+                Share your job opportunity with thousands of qualified beauty professionals. 
+                First-time posts start at just $5!
               </p>
               
-              <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
-                <div className="flex items-center text-sm text-purple-600 font-inter font-medium">
-                  <Users className="h-4 w-4 mr-2" />
-                  <span>Reach 15,000+ qualified professionals</span>
+              <div className="flex items-center gap-4 mt-3">
+                <div className="flex items-center text-sm text-[#8B5CF6] font-inter font-medium">
+                  <UsersRound className="h-4 w-4 mr-1" />
+                  <span>Reach 15,000+ professionals</span>
                 </div>
                 <div className="flex items-center text-sm text-green-700 font-inter font-medium">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  <span>Trusted by successful salon owners</span>
+                  <DollarSign className="h-4 w-4 mr-1" />
+                  <span>From ${priceInfo.price}/post</span>
                 </div>
               </div>
             </div>
             
             <div className="flex flex-col items-center">
-              <div className="text-center mb-4">
-                <div className="text-sm text-gray-500 font-inter mb-1">Start building your team</div>
-                <div className="text-2xl font-bold text-purple-600 font-playfair">Today</div>
+              <div className="text-center mb-3">
+                <div className="text-sm text-gray-500 font-inter">{priceInfo.label}</div>
+                <div className="text-2xl font-bold text-[#8B5CF6] font-playfair">${priceInfo.price}</div>
               </div>
               
               {isSignedIn ? (
-                <Link to="/post-job-free">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-semibold rounded-xl px-8 py-4 text-lg shadow-lg transform hover:scale-105 transition-all">
-                    Post Your Opportunity
+                <Link to="/post-job">
+                  <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
+                    Post a Job
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth/signin?redirect=/post-job-free">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-semibold rounded-xl px-8 py-4 text-lg shadow-lg transform hover:scale-105 transition-all">
-                    Get Started
+                <Link to="/auth/signin?redirect=/post-job">
+                  <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
+                    Sign In to Post
                   </Button>
                 </Link>
               )}

@@ -38,7 +38,7 @@ const MobileBottomNavBar = () => {
       
       {/* Post Job floating button */}
       <button 
-        onClick={() => navigate('/post-job-free')}
+        onClick={() => navigate('/post-job')}
         className="absolute -top-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full p-3 shadow-lg"
         aria-label="Post a job"
       >

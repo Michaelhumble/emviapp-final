@@ -1,112 +1,198 @@
 
-import React, { useState, useEffect } from 'react';
-import { useJobsData } from '@/hooks/useJobsData';
-import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
-import JobPostCTA from './JobPostCTA';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
+import JobsGrid from '@/components/jobs/JobsGrid';
+import JobLoadingState from '@/components/jobs/JobLoadingState';
+import JobEmptyState from '@/components/jobs/JobEmptyState';
+import { Button } from '@/components/ui/button';
+import { RefreshCw, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const JobsPage = () => {
-  const { jobs, loading, error, refreshJobs } = useJobsData();
-  const [isRenewing, setIsRenewing] = useState(false);
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Real-time refresh every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshJobs();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [refreshJobs]);
-
-  const handleRenew = async (job: Job) => {
-    setIsRenewing(true);
-    setRenewalJobId(job.id);
-    
+  const fetchJobs = async () => {
     try {
-      // Placeholder renewal logic
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      setLoading(true);
+      setError(null);
+
+      console.log('📋 [JOBS-PAGE] Fetching jobs from Supabase...');
+
+      // Fetch jobs using public Supabase API
+      const { data, error: fetchError } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (fetchError) {
+        console.error('❌ [JOBS-PAGE] Fetch error:', fetchError);
+        console.error('❌ [JOBS-PAGE] Error details:', {
+          message: fetchError.message,
+          code: fetchError.code,
+          details: fetchError.details,
+          hint: fetchError.hint
+        });
+        setError(`Failed to load jobs: ${fetchError.message}`);
+        return;
+      }
+
+      console.log('📊 [JOBS-PAGE] Raw data from Supabase:', data);
+      console.log('📊 [JOBS-PAGE] Jobs count:', data?.length || 0);
+
+      if (!data) {
+        console.warn('⚠️ [JOBS-PAGE] No data returned from Supabase');
+        setJobs([]);
+        return;
+      }
+
+      // Transform database data to Job interface
+      const transformedJobs: Job[] = data.map(job => {
+        console.log('🔄 [JOBS-PAGE] Transforming job:', job.id, job.title);
+        
+        return {
+          id: job.id,
+          title: job.title || 'Untitled Job',
+          category: job.category || 'Other',
+          location: job.location || '',
+          description: job.description || '',
+          user_id: job.user_id || '',
+          status: job.status || 'active',
+          created_at: job.created_at || new Date().toISOString(),
+          compensation_type: job.compensation_type || '',
+          compensation_details: job.compensation_details || '',
+          requirements: job.requirements || '',
+          pricing_tier: job.pricing_tier || 'free',
+          contact_info: typeof job.contact_info === 'object' && job.contact_info ? 
+            job.contact_info as Job['contact_info'] : {},
+          // Legacy compatibility fields
+          role: job.title || 'Job Role',
+          company: job.title || 'Company Name',
+          posted_at: job.created_at || new Date().toISOString(),
+        };
+      });
+
+      console.log('✅ [JOBS-PAGE] Transformed jobs:', transformedJobs.length);
+      setJobs(transformedJobs);
+
     } catch (error) {
-      console.error('Job renewal failed:', error);
+      console.error('💥 [JOBS-PAGE] Unexpected error:', error);
+      setError('An unexpected error occurred while loading jobs');
     } finally {
-      setIsRenewing(false);
-      setRenewalJobId(null);
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    console.log('🚀 [JOBS-PAGE] Component mounted, fetching jobs...');
+    fetchJobs();
+
+    // Set up real-time subscription for job changes
+    console.log('⚡ [JOBS-PAGE] Setting up real-time subscription...');
+    const channel = supabase
+      .channel('jobs-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'jobs',
+          filter: 'status=eq.active'
+        },
+        (payload) => {
+          console.log('⚡ [JOBS-PAGE] Real-time update received:', payload);
+          console.log('🔄 [JOBS-PAGE] Refreshing jobs due to real-time update...');
+          fetchJobs(); // Refresh jobs when changes occur
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('🧹 [JOBS-PAGE] Cleaning up real-time subscription...');
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Auto-refresh every 30 seconds to catch new posts
+  useEffect(() => {
+    console.log('⏰ [JOBS-PAGE] Setting up auto-refresh timer...');
+    const interval = setInterval(() => {
+      console.log('🔄 [JOBS-PAGE] Auto-refresh triggered');
+      fetchJobs();
+    }, 30000);
+
+    return () => {
+      console.log('🧹 [JOBS-PAGE] Cleaning up auto-refresh timer...');
+      clearInterval(interval);
+    };
+  }, []);
+
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading opportunities...</p>
-          </div>
-        </div>
-      </div>
-    );
+    console.log('⏳ [JOBS-PAGE] Showing loading state...');
+    return <JobLoadingState />;
   }
 
   if (error) {
+    console.log('❌ [JOBS-PAGE] Showing error state:', error);
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto py-8">
         <div className="text-center">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <h2 className="text-lg font-medium text-red-800 mb-2">Error Loading Jobs</h2>
-            <p className="text-red-600">{error}</p>
-            <button 
-              onClick={refreshJobs}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Try Again
-            </button>
-          </div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={fetchJobs} variant="outline">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Try Again
+          </Button>
         </div>
       </div>
     );
   }
 
+  if (jobs.length === 0) {
+    console.log('📭 [JOBS-PAGE] No jobs found, showing empty state...');
+    return (
+      <div className="container mx-auto py-8">
+        <JobEmptyState onClearFilters={fetchJobs} />
+      </div>
+    );
+  }
+
+  console.log('🎉 [JOBS-PAGE] Rendering jobs page with', jobs.length, 'jobs');
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Beauty Industry Opportunities</h1>
-        <p className="text-gray-600">
-          Discover your next career opportunity in the beauty industry
-        </p>
-        <div className="text-sm text-gray-500 mt-2">
-          <span>{jobs.length} active opportunities available</span>
-          {jobs.length > 0 && (
-            <span className="ml-4">
-              Updated {new Date().toLocaleTimeString()}
-            </span>
-          )}
+    <div className="container mx-auto py-8">
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">Available Jobs</h1>
+          <p className="text-gray-600">
+            {jobs.length} active job{jobs.length !== 1 ? 's' : ''} available
+          </p>
+        </div>
+        
+        <div className="flex gap-2">
+          <Button onClick={fetchJobs} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+          
+          <Link to="/post-job-free">
+            <Button size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Post Job
+            </Button>
+          </Link>
         </div>
       </div>
-
-      {/* Job Post CTA */}
-      <JobPostCTA />
-
-      {jobs.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="bg-gray-50 rounded-lg p-8 max-w-md mx-auto">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs available</h3>
-            <p className="text-gray-500 mb-4">Be the first to post an opportunity!</p>
-            <button 
-              onClick={() => window.location.href = '/post-job-free'}
-              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            >
-              Post First Job
-            </button>
-          </div>
-        </div>
-      ) : (
-        <UnifiedJobFeed
-          jobs={jobs}
-          onRenew={handleRenew}
-          isRenewing={isRenewing}
-          renewalJobId={renewalJobId}
-        />
-      )}
+      
+      <JobsGrid 
+        jobs={jobs}
+        expirations={{}}
+        onRenew={() => {}}
+        isRenewing={false}
+        renewalJobId={null}
+      />
     </div>
   );
 };

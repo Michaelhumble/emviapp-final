@@ -13,9 +13,9 @@ export const useJobsData = () => {
       setLoading(true);
       setError(null);
 
-      console.log('🔍 [JOBS-DATA] Fetching jobs from new table structure...');
+      console.log('🔍 [JOBS-DATA] Fetching jobs from Supabase...');
 
-      // Query all active jobs (no RLS for now)
+      // Query only active jobs
       const { data, error: fetchError } = await supabase
         .from('jobs')
         .select('*')
@@ -24,12 +24,11 @@ export const useJobsData = () => {
 
       if (fetchError) {
         console.error('❌ [JOBS-DATA] Fetch error:', fetchError);
-        setError(`Failed to load jobs: ${fetchError.message}`);
+        setError('Failed to load jobs');
         return;
       }
 
       console.log('📊 [JOBS-DATA] Raw data from Supabase:', data);
-      console.log('📊 [JOBS-DATA] Number of jobs fetched:', data?.length || 0);
 
       // Process and type the jobs correctly
       const processedJobs: Job[] = (data || []).map(job => {
@@ -43,13 +42,11 @@ export const useJobsData = () => {
           user_id: job.user_id || '',
           status: job.status || 'active',
           created_at: job.created_at || new Date().toISOString(),
-          updated_at: job.updated_at || new Date().toISOString(),
-          expires_at: job.expires_at || '',
           
           // Job-specific fields
           compensation_type: job.compensation_type || '',
           compensation_details: job.compensation_details || '',
-          requirements: job.requirements || '',
+          requirements: job.requirements || '', // Always string
           pricing_tier: job.pricing_tier || 'free',
           
           // Handle contact_info as object
@@ -58,20 +55,18 @@ export const useJobsData = () => {
           
           // Legacy fields for compatibility
           role: job.title || 'Job Role',
-          company: job.title || 'Company Name',
           posted_at: job.created_at || new Date().toISOString(),
         };
 
         return processedJob;
       });
 
-      console.log('✅ [JOBS-DATA] Processed jobs:', processedJobs.length);
-      console.log('✅ [JOBS-DATA] Sample job:', processedJobs[0] || 'No jobs');
+      console.log('✅ [JOBS-DATA] Processed jobs:', processedJobs);
       setJobs(processedJobs);
 
     } catch (error) {
       console.error('💥 [JOBS-DATA] Unexpected error:', error);
-      setError(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setError('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -81,8 +76,6 @@ export const useJobsData = () => {
     fetchJobs();
 
     // Set up real-time subscription for job changes
-    console.log('📡 [JOBS-DATA] Setting up real-time subscription...');
-    
     const channel = supabase
       .channel('jobs-changes')
       .on(
@@ -98,19 +91,15 @@ export const useJobsData = () => {
           fetchJobs(); // Refresh jobs when changes occur
         }
       )
-      .subscribe((status) => {
-        console.log('📡 [JOBS-DATA] Subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
-      console.log('📡 [JOBS-DATA] Cleaning up subscription');
       supabase.removeChannel(channel);
     };
   }, []);
 
   // Manual refresh function
   const refreshJobs = () => {
-    console.log('🔄 [JOBS-DATA] Manual refresh triggered');
     fetchJobs();
   };
 

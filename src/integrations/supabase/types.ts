@@ -979,7 +979,15 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       jobs: {
         Row: {
@@ -987,53 +995,71 @@ export type Database = {
           compensation_details: string | null
           compensation_type: string | null
           contact_info: Json | null
-          created_at: string
+          created_at: string | null
           description: string | null
           expires_at: string | null
           id: string
           location: string | null
           pricing_tier: string | null
           requirements: string | null
-          status: string
+          salon_id: string | null
+          status: string | null
           title: string
-          updated_at: string
-          user_id: string
+          updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           category: string
           compensation_details?: string | null
           compensation_type?: string | null
           contact_info?: Json | null
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           expires_at?: string | null
           id?: string
           location?: string | null
           pricing_tier?: string | null
           requirements?: string | null
-          status?: string
+          salon_id?: string | null
+          status?: string | null
           title: string
-          updated_at?: string
-          user_id: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           category?: string
           compensation_details?: string | null
           compensation_type?: string | null
           contact_info?: Json | null
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           expires_at?: string | null
           id?: string
           location?: string | null
           pricing_tier?: string | null
           requirements?: string | null
-          status?: string
+          salon_id?: string | null
+          status?: string | null
           title?: string
-          updated_at?: string
-          user_id?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
       }
       listing_validation_logs: {
         Row: {
