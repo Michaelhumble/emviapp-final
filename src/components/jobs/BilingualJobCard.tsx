@@ -97,7 +97,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         )}
         <div className="flex items-center gap-1">
           <Calendar className="h-4 w-4" />
-          <span>{new Date(job.created_at).toLocaleDateString()}</span>
+          <span>{new Date(job.created_at || '').toLocaleDateString()}</span>
         </div>
       </div>
 
@@ -126,7 +126,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       {/* Requirements Preview */}
       {job.requirements && (
         <p className="text-gray-500 text-xs mb-4 line-clamp-1">
-          Requirements: {typeof job.requirements === 'string' ? job.requirements : job.requirements.join(', ')}
+          Requirements: {job.requirements}
         </p>
       )}
 

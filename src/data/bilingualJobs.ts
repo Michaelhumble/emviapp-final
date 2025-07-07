@@ -1,62 +1,68 @@
 
-import { Job } from "@/types/job";
+import { Job } from '@/types/job';
 
 export const bilingualJobs: Job[] = [
   {
-    id: "bilingual-1",
-    title: "Nail Technician Needed - Vietnamese & English",
-    role: "Nail Technician",
-    company: "Luxury Nails Spa",
-    location: "Houston, TX",
-    employment_type: "Full-time",
-    description: "Seeking bilingual nail technician fluent in Vietnamese and English. Experience with gel, acrylic, and nail art required.",
+    id: 'bilingual-1',
+    title: 'Nail Technician - Thợ Làm Nail',
+    category: 'Nail Technician',
+    location: 'San Jose, CA',
+    description: 'Looking for experienced nail technician. Weekly pay $800-1200. Cần thợ làm nail có kinh nghiệm. Lương tuần $800-1200.',
+    compensation_type: 'Weekly',
+    compensation_details: '$800-1200/week',
+    requirements: 'Experience required, bilingual preferred',
     contact_info: {
-      owner_name: "Linda Nguyen",
-      phone: "(713) 555-0123",
-      email: "hiring@luxurynails.com"
+      owner_name: 'Linda Nguyen',
+      phone: '(408) 555-0123',
+      email: 'linda@nailsalon.com'
     },
-    requirements: ["2+ years experience", "Vietnamese & English fluency", "Valid nail technician license"],
-    specialties: ["Gel manicures", "Acrylic nails", "Nail art"],
-    salary_range: "$15-25/hour + tips",
-    created_at: "2024-01-15T10:00:00Z",
-    category: "Nail Tech"
+    created_at: '2024-01-15T10:00:00.000Z',
+    status: 'active',
+    pricing_tier: 'free',
+    user_id: 'user-1',
+    role: 'Nail Technician',
+    posted_at: '2024-01-15T10:00:00.000Z'
   },
   {
-    id: "bilingual-2", 
-    title: "Hair Stylist - Korean Speaking Preferred",
-    role: "Hair Stylist",
-    company: "Seoul Beauty Salon",
-    location: "Los Angeles, CA",
-    employment_type: "Full-time",
-    description: "Hair stylist position available. Korean language skills preferred but not required. Experience with Asian hair textures a plus.",
+    id: 'bilingual-2',
+    title: 'Hair Stylist - Thợ Cắt Tóc',
+    category: 'Hair Stylist',
+    location: 'Westminster, CA',
+    description: 'High-end salon seeking talented hair stylist. Commission + tips. Salon cao cấp tìm thợ cắt tóc tài năng. Hoa hồng + tip.',
+    compensation_type: 'Commission',
+    compensation_details: '60% commission + tips',
+    requirements: 'Valid cosmetology license, 2+ years experience',
     contact_info: {
-      owner_name: "Sarah Kim",
-      phone: "(213) 555-0456",
-      email: "careers@seoulbeauty.com"
+      owner_name: 'Mai Tran',
+      phone: '(714) 555-0456',
+      email: 'mai@beautysalon.com'
     },
-    requirements: ["Valid cosmetology license", "3+ years experience", "Color and cut expertise"],
-    specialties: ["Hair coloring", "Asian hair techniques", "Keratin treatments"],
-    salary_range: "$20-30/hour + commission",
-    created_at: "2024-01-14T14:30:00Z",
-    category: "Hair Stylist"
+    created_at: '2024-01-14T14:30:00.000Z',
+    status: 'active',
+    pricing_tier: 'premium',
+    user_id: 'user-2',
+    role: 'Hair Stylist',
+    posted_at: '2024-01-14T14:30:00.000Z'
   },
   {
-    id: "bilingual-3",
-    title: "Lash Technician - Spanish/English",
-    role: "Lash Technician", 
-    company: "Bella Lashes Studio",
-    location: "Miami, FL",
-    employment_type: "Part-time",
-    description: "Part-time lash technician needed. Must be fluent in Spanish and English to serve our diverse clientele.",
+    id: 'bilingual-3',
+    title: 'Esthetician - Chuyên Viên Thẩm Mỹ',
+    category: 'Esthetician',
+    location: 'Garden Grove, CA',
+    description: 'Spa looking for licensed esthetician. Flexible schedule. Spa tìm chuyên viên thẩm mỹ có bằng. Lịch làm việc linh hoạt.',
+    compensation_type: 'Hourly + Commission',
+    compensation_details: '$18-25/hour + commission',
+    requirements: 'Valid esthetician license, experience with facials',
     contact_info: {
-      owner_name: "Maria Rodriguez",
-      phone: "(305) 555-0789",
-      email: "info@bellalashes.com"
+      owner_name: 'Linh Pham',
+      phone: '(714) 555-0789',
+      email: 'linh@relaxspa.com'
     },
-    requirements: ["Lash extension certification", "Spanish & English fluency", "Flexible schedule"],
-    specialties: ["Classic lashes", "Volume lashes", "Lash lifts"],
-    salary_range: "$18-25/hour",
-    created_at: "2024-01-13T09:15:00Z",
-    category: "Lash Tech"
+    created_at: '2024-01-13T09:15:00.000Z',
+    status: 'active',
+    pricing_tier: 'gold',
+    user_id: 'user-3',
+    role: 'Esthetician',
+    posted_at: '2024-01-13T09:15:00.000Z'
   }
 ];

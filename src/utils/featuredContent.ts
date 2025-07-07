@@ -1,216 +1,87 @@
+
 import { Job } from '@/types/job';
-import { Salon } from '@/types/salon';
-import { sampleSalons } from '@/data/sampleSalons';
 
-// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
-// These demo/sample listings must remain visible in production until at least June 26, 2026.
-// Only the project owner (Michael) can approve any removal or update of these mockups.
-
-// Mock featured salons data
-const featuredSalons: Salon[] = sampleSalons.filter(salon => salon.featured);
-
-// Mock salons for sale
-const salonsForSale: Salon[] = sampleSalons.slice(0, 6);
-
-// Mock featured jobs
-const featuredJobs: Job[] = [
-  {
-    id: "featured-1",
-    title: "Senior Nail Technician",
-    company: "Luxury Nails & Spa",
-    location: "Beverly Hills, CA",
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: true,
-    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
-    category: "Nail Tech" // Added category
-  },
-  {
-    id: "featured-2", 
-    title: "Hair Stylist Wanted",
-    company: "Elite Hair Studio",
-    location: "Manhattan, NY",
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: true,
-    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
-    category: "Hair Stylist" // Added category
-  },
-  {
-    id: "featured-3",
-    title: "Lash Technician",
-    company: "Beauty Bar",
-    location: "Miami, FL", 
-    created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: true,
-    image: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
-    category: "Lash Tech" // Added category
-  }
-];
-
-// Mock booths data
-const boothlListings = [
-  {
-    id: "booth-1",
-    title: "Premium Booth for Rent",
-    company: "Luxury Salon Space",
-    location: "Beverly Hills, CA",
-    created_at: new Date().toISOString(),
-    price: "500",
-    description: "Luxury booth available in high-end salon",
-    image: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png"
-  },
-  {
-    id: "booth-2",
-    title: "Nail Station Available",
-    company: "Nail Paradise",
-    location: "Newport Beach, CA",
-    created_at: new Date().toISOString(),
-    price: "350",
-    description: "Well-equipped nail station in busy location",
-    image: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png"
-  }
-];
-
-/**
- * Get a specific salon by ID and convert it to a Job format for compatibility
- */
-export const getSalonById = (id: string): Salon | undefined => {
-  return sampleSalons.find(salon => salon.id === id);
-};
-
-/**
- * Convert a Salon object to a Job object
- * This ensures proper type compatibility when displaying salon details with job components
- * IMPORTANT: This preserves all original image URLs
- */
-export const getSalonByIdAsJob = (id: string): Job | null => {
-  const salon = getSalonById(id);
-  if (!salon) return null;
-  
-  // Convert salon to job format with all required fields
-  const salonAsJob: Job = {
-    id: salon.id,
-    title: salon.name || '',
-    company: salon.name || '',
-    location: salon.location || '',
-    created_at: salon.created_at || new Date().toISOString(),
-    description: salon.description || '',
-    price: salon.price?.toString() || '',
-    
-    // PRESERVE ORIGINAL IMAGES - Do not override or provide defaults
-    // This ensures we keep the original image URLs
-    image: salon.image || salon.imageUrl || '',
-    
-    salon_features: salon.features || [],
-    contact_info: {
-      owner_name: salon.contact_info?.owner_name || "Salon Owner",
-      phone: salon.contact_info?.phone || "(555) 123-4567",
-      email: salon.contact_info?.email || "contact@emviapp.com"
-    },
-    type: 'salon'
-  };
-  
-  return salonAsJob;
-};
-
-/**
- * Get all featured salons, optionally limited by count
- */
-export const getFeaturedSalons = (count?: number): Salon[] => {
-  // Return unmodified featured salons - preserve all image URLs
-  return count ? featuredSalons.slice(0, count) : featuredSalons;
-};
-
-/**
- * Get all salons for sale, optionally limited by count
- */
-export const getSalonsForSale = (count?: number): Salon[] => {
-  // Return unmodified salons for sale - preserve all image URLs
-  return count ? salonsForSale.slice(0, count) : salonsForSale;
-};
-
-/**
- * Get featured job listings, optionally limited by count
- */
-export const getFeaturedJobs = (count?: number): Job[] => {
-  return count ? featuredJobs.slice(0, count) : featuredJobs;
-};
-
-/**
- * Get all booth listings
- */
-export const getAllBooths = (): Job[] => {
-  return boothlListings;
-};
-
-// Mock function to get trending salons data
-export const getTrendingSalons = (): Job[] => {
-  return [
-    // ... keep existing code for trending salons ...
-  ];
-};
-
-// Featured salon for sale
-export const featuredSalonForSale: Job = {
-  id: "featured-salon-1",
-  title: "Premium Nail Salon for Sale",
-  company: "Golden Touch Nails",
-  location: "Orange County, CA",
-  created_at: new Date().toISOString(),
-  description: "Established nail salon with loyal clientele in prime location. Fully equipped with modern amenities.",
-  price: "$180,000",
-  image: "/salon-banner.png",
-  salon_features: [
-    "20 Nail Stations",
-    "4 Pedicure Chairs", 
-    "VIP Room",
-    "Modern Equipment"
-  ],
+// Magic Nails - Always featured at top
+const magicNailsListing: Job = {
+  id: 'magic-nails-featured',
+  title: 'Magic Nails - Premium Nail Salon',
+  category: 'Nail Salon',
+  company: 'Magic Nails',
+  location: '123 Main St, San Jose, CA',
+  created_at: '2024-01-01T00:00:00.000Z',
+  description: 'Premier nail salon offering luxury manicure and pedicure services. Walk-ins welcome!',
+  price: '$25-85',
+  image: '/lovable-uploads/magic-nails-storefront.jpg',
+  salon_features: ['Luxury Spa Chairs', 'Premium Products', 'Expert Technicians'],
   contact_info: {
-    owner_name: "Maria Johnson",
-    phone: "(714) 555-0123",
-    email: "maria@goldentouchnails.com"
+    owner_name: 'Maria Santos',
+    phone: '(408) 555-NAIL',
+    email: 'info@magicnails.com'
   },
-  type: "salon",
-  category: "Salon" // Added category
+  type: 'salon',
+  status: 'active',
+  pricing_tier: 'diamond',
+  user_id: 'magic-nails-owner',
+  role: 'Nail Salon',
+  posted_at: '2024-01-01T00:00:00.000Z'
 };
 
-// Get featured opportunities
-export const getFeaturedOpportunities = (): Job[] => {
-  const opportunities: Job[] = [
-    {
-      id: "opp-1",
-      title: "Chair Rental Available",
-      company: "Upscale Salon",
-      location: "Dallas, TX",
-      created_at: new Date().toISOString(),
-      price: "$150/week",
-      description: "Prime chair rental in busy upscale salon.",
-      image: "/salon-banner.png",
-      category: "Other" // Added category
-    },
-    {
-      id: "opp-2", 
-      title: "Booth Rental - Hair Stylist",
-      company: "Modern Studio",
-      location: "Austin, TX",
-      created_at: new Date().toISOString(),
-      price: "$200/week",
-      description: "Modern booth rental for experienced hair stylist.",
-      image: "/salon-banner.png",
-      category: "Hair Stylist" // Added category
-    },
-    {
-      id: "opp-3",
-      title: "Spa Room Rental",
-      company: "Wellness Center", 
-      location: "Phoenix, AZ",
-      created_at: new Date().toISOString(),
-      price: "$300/week",
-      description: "Private spa room for esthetician or massage therapist.",
-      image: "/salon-banner.png",
-      category: "Spa" // Added category
+// Sample featured job listings
+const featuredJobListings: Job[] = [
+  {
+    id: 'featured-job-1',
+    title: 'Nail Technician Wanted - Immediate Start',
+    category: 'Nail Technician',
+    company: 'Bliss Nails & Spa',
+    location: 'Milpitas, CA',
+    created_at: '2024-01-05T10:00:00.000Z',
+    price: '$800-1200/week',
+    description: 'Busy nail salon looking for experienced technician. Weekly pay, flexible schedule.',
+    image: '/lovable-uploads/nail-salon-hiring.jpg',
+    status: 'active',
+    pricing_tier: 'premium',
+    user_id: 'bliss-nails-owner',
+    role: 'Nail Technician',
+    posted_at: '2024-01-05T10:00:00.000Z',
+    compensation_type: 'Weekly',
+    compensation_details: '$800-1200/week',
+    requirements: 'Valid nail tech license, 2+ years experience',
+    contact_info: {
+      owner_name: 'Lisa Chen',
+      phone: '(408) 555-0123',
+      email: 'lisa@blissnails.com'
     }
-  ];
+  },
+  {
+    id: 'featured-job-2',
+    title: 'Hair Stylist - High End Salon',
+    category: 'Hair Stylist',
+    company: 'Glamour Studio',
+    location: 'Cupertino, CA',
+    created_at: '2024-01-04T14:30:00.000Z',
+    price: '60% Commission',
+    description: 'Upscale salon seeking talented stylist. Great location, established clientele.',
+    image: '/lovable-uploads/hair-salon-luxury.jpg',
+    status: 'active',
+    pricing_tier: 'gold',
+    user_id: 'glamour-studio-owner',
+    role: 'Hair Stylist',
+    posted_at: '2024-01-04T14:30:00.000Z',
+    compensation_type: 'Commission',
+    compensation_details: '60% commission + tips',
+    requirements: 'Cosmetology license, advanced cutting techniques',
+    contact_info: {
+      owner_name: 'Sarah Johnson',
+      phone: '(408) 555-0456',
+      email: 'sarah@glamourstudio.com'
+    }
+  }
+];
 
-  return opportunities;
+export const getFeaturedContent = (): Job[] => {
+  return [magicNailsListing, ...featuredJobListings];
+};
+
+export const getMagicNailsListing = (): Job => {
+  return magicNailsListing;
 };

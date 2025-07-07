@@ -9,8 +9,6 @@ export const useJobsData = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchJobs = async () => {
-    console.log('🔍 [JOBS-DATA] Starting jobs fetch...');
-    
     try {
       setLoading(true);
       setError(null);
@@ -21,12 +19,6 @@ export const useJobsData = () => {
         .select('*')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
-
-      console.log('🔍 [JOBS-DATA] Raw Supabase response:', {
-        dataCount: data?.length || 0,
-        fetchError,
-        rawData: data?.slice(0, 3) // Show first 3 for debugging
-      });
 
       if (fetchError) {
         console.error('❌ [JOBS-DATA] Fetch error:', fetchError);
@@ -54,20 +46,9 @@ export const useJobsData = () => {
         contact_info: typeof job.contact_info === 'object' && job.contact_info ? 
           job.contact_info as Job['contact_info'] : {},
         // Legacy fields for compatibility
-        role: job.role || job.title || 'Job Role',
-        posted_at: job.posted_at || job.created_at || new Date().toISOString(),
+        role: job.title || 'Job Role',
+        posted_at: job.created_at || new Date().toISOString(),
       }));
-
-      console.log('📊 [JOBS-DATA] Processed jobs count:', processedJobs.length);
-      console.log('📝 [JOBS-DATA] Sample jobs:', processedJobs.slice(0, 2).map(job => ({
-        id: job.id,
-        title: job.title,
-        status: job.status,
-        pricing_tier: job.pricing_tier,
-        user_id: job.user_id,
-        created_at: job.created_at,
-        contact_info: job.contact_info
-      })));
 
       setJobs(processedJobs);
 
@@ -83,8 +64,6 @@ export const useJobsData = () => {
     fetchJobs();
 
     // Set up real-time subscription for job changes
-    console.log('⚡ [JOBS-DATA] Setting up real-time subscription');
-    
     const channel = supabase
       .channel('jobs-changes')
       .on(
@@ -103,14 +82,12 @@ export const useJobsData = () => {
       .subscribe();
 
     return () => {
-      console.log('⚡ [JOBS-DATA] Cleaning up subscription');
       supabase.removeChannel(channel);
     };
   }, []);
 
   // Manual refresh function
   const refreshJobs = () => {
-    console.log('🔄 [JOBS-DATA] Manual refresh triggered');
     fetchJobs();
   };
 

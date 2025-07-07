@@ -1,55 +1,51 @@
 
-// Import the proper Job type
 import { Job } from '@/types/job';
 
-// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
-// These demo/sample listings must remain visible in production until at least June 26, 2026.
-// Only the project owner (Michael) can approve any removal or update of these mockups.
-
-// Define a compatible mock function that doesn't use problematic properties
-export const createMockPremiumBooths = (): Job[] => {
-  return [
-    {
-      id: "booth-1",
-      title: "Nail Booth for Rent - Luxury Salon",
-      company: "Diamond Nails & Spa",
-      location: "Los Angeles, CA",
-      employment_type: "booth-rental",
-      description: "Premium booth available in high-end salon. Great location with steady clientele. Includes all utilities.",
-      compensation_details: "$200/week",
-      created_at: "2023-08-15T00:00:00.000Z",
-      contact_info: {
-        owner_name: "Lisa Wang",
-        phone: "310-555-9876",
-        email: "lisa@diamondnails.com"
-      },
-      requirements: ["Licensed nail technician", "professional attitude", "reliable"],
-      benefits: ["Free parking", "flexible hours", "walk-in clients"],
-      is_featured: true,
-      featured: true, // Using the proper field in the Job type
-      category: "Nail Tech"
+export const mockPremiumBooths: Job[] = [
+  {
+    id: 'booth-1',
+    title: 'Premium Nail Station Available',
+    category: 'Booth Rental',
+    location: 'San Jose, CA',
+    description: 'Beautiful nail station in busy salon. All utilities included. Parking available.',
+    price: '$200/week',
+    image: '/lovable-uploads/salon-interior-1.jpg',
+    contact_info: {
+      owner_name: 'Anna Nguyen',
+      phone: '(408) 555-0101',
+      email: 'anna@premiumsalon.com'
     },
-    {
-      id: "booth-2",
-      title: "Nail Station Rental - Busy Location",
-      company: "Glamour Nails",
-      location: "San Francisco, CA",
-      employment_type: "booth-rental",
-      description: "Booth rental available in busy downtown location. High foot traffic and established clientele.",
-      compensation_details: "$250/week",
-      created_at: "2023-08-10T00:00:00.000Z",
-      contact_info: {
-        owner_name: "Michael Chen",
-        phone: "415-555-3344",
-        email: "michael@glamournails.com"
-      },
-      requirements: ["Valid license", "2+ years experience"],
-      benefits: ["Product discount", "walk-in clients", "flexible schedule"],
-      is_featured: true,
-      featured: true, // Using the proper field in the Job type
-      category: "Nail Tech"
-    }
-  ];
-};
-
-export const mockPremiumBooths = createMockPremiumBooths();
+    created_at: '2024-01-10T08:00:00.000Z',
+    status: 'active',
+    pricing_tier: 'premium',
+    user_id: 'user-booth-1',
+    role: 'Booth Rental',
+    posted_at: '2024-01-10T08:00:00.000Z',
+    type: 'salon',
+    salon_features: ['Parking', 'WiFi', 'Break Room'],
+    requirements: 'Valid license required'
+  },
+  {
+    id: 'booth-2',
+    title: 'Hair Station - High Traffic Location',
+    category: 'Booth Rental',
+    location: 'Westminster, CA',
+    description: 'Hair station in established salon with loyal clientele. Perfect for experienced stylists.',
+    price: '$250/week',
+    image: '/lovable-uploads/salon-interior-2.jpg',
+    contact_info: {
+      owner_name: 'David Kim',
+      phone: '(714) 555-0202',
+      email: 'david@trendysalon.com'
+    },
+    created_at: '2024-01-09T12:30:00.000Z',
+    status: 'active',
+    pricing_tier: 'diamond',
+    user_id: 'user-booth-2',
+    role: 'Booth Rental',
+    posted_at: '2024-01-09T12:30:00.000Z',
+    type: 'salon',
+    salon_features: ['High Traffic', 'Established Clientele', 'Modern Equipment'],
+    requirements: 'Cosmetology license, 3+ years experience'
+  }
+];

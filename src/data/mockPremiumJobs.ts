@@ -1,86 +1,74 @@
 
-// Import necessary types
 import { Job } from '@/types/job';
 
-// 🚨 DO NOT REMOVE, HIDE, OR EDIT THESE MOCKUP LISTINGS.
-// These demo/sample listings must remain visible in production until at least June 26, 2026.
-// Only the project owner (Michael) can approve any removal or update of these mockups.
-
-// Create a compatible mock function that doesn't use problematic properties
-export const createMockPremiumJobs = (): Job[] => {
-  return [
-    {
-      id: "prem-job-1",
-      title: "Senior Nail Technician",
-      company: "Luxury Nails & Spa",
-      location: "Los Angeles, CA",
-      employment_type: "full-time",
-      description: "Join our luxury nail salon! We're seeking an experienced nail technician with at least 3 years of experience. Must be proficient in gel, acrylic, and nail art.",
-      compensation_details: "$25-35/hr + tips",
-      created_at: "2023-08-15T00:00:00.000Z",
-      contact_info: {
-        owner_name: "Hiring Manager",
-        email: "hiring@luxurynailsspa.com",
-        phone: "310-555-1234"
-      },
-      requirements: ["3+ years experience", "nail art skills", "customer service excellence"],
-      benefits: ["Healthcare", "paid time off", "flexible scheduling", "product discounts"],
-      is_featured: true,
-      featured: true, // Using the proper field in the Job type
-      category: "Nail Tech"
+export const mockPremiumJobs: Job[] = [
+  {
+    id: 'premium-1',
+    title: 'Senior Nail Technician - Premium Salon',
+    category: 'Nail Technician',
+    location: 'Beverly Hills, CA',
+    description: 'Exclusive high-end salon seeking experienced nail technician. Serve celebrity clientele.',
+    compensation_type: 'Commission',
+    compensation_details: '70% commission + tips',
+    requirements: 'Advanced nail art skills, 5+ years experience',
+    contact_info: {
+      owner_name: 'Sophie Chen',
+      phone: '(310) 555-0301',
+      email: 'sophie@luxurynails.com'
     },
-    {
-      id: "prem-job-2",
-      title: "Nail Salon Manager",
-      company: "Elegant Nails",
-      location: "San Francisco, CA",
-      employment_type: "full-time",
-      description: "Seeking an experienced salon manager to oversee daily operations, staff management, and customer service excellence. Must have previous management experience in the beauty industry.",
-      compensation_details: "$50,000-$65,000/year",
-      created_at: "2023-08-10T00:00:00.000Z",
-      contact_info: {
-        owner_name: "Careers Team",
-        email: "careers@elegantnails.com",
-        phone: "415-555-6789"
-      },
-      requirements: ["5+ years nail industry experience", "2+ years management", "bilingual preferred"],
-      benefits: ["Competitive salary", "health insurance", "paid vacation", "commission structure"],
-      is_featured: true,
-      featured: true, // Using the proper field in the Job type
-      category: "Nail Tech"
+    created_at: '2024-01-12T15:45:00.000Z',
+    status: 'active',
+    pricing_tier: 'diamond',
+    user_id: 'user-premium-1',
+    role: 'Senior Nail Technician',
+    posted_at: '2024-01-12T15:45:00.000Z',
+    is_featured: true,
+    weekly_pay: true
+  },
+  {
+    id: 'premium-2',
+    title: 'Master Hair Colorist',
+    category: 'Hair Stylist',
+    location: 'Newport Beach, CA',
+    description: 'Upscale salon looking for master colorist. High-end clientele, premium products.',
+    compensation_type: 'Commission + Salary',
+    compensation_details: '$3000 base + 50% commission',
+    requirements: 'Color specialist certification, portfolio required',
+    contact_info: {
+      owner_name: 'Rachel Martinez',
+      phone: '(949) 555-0402',
+      email: 'rachel@elitehair.com'
     },
-    {
-      id: "prem-job-3",
-      title: "Nail Technician - New Location",
-      company: "Diamond Nails",
-      location: "San Diego, CA",
-      employment_type: "full-time",
-      description: "Brand new upscale salon seeking talented nail technicians for our grand opening. Experience with luxury services and high-end clientele preferred.",
-      compensation_details: "$20-30/hr + tips",
-      created_at: "2023-08-05T00:00:00.000Z",
-      contact_info: {
-        owner_name: "Hiring Team",
-        email: "jobs@diamondnails.com",
-        phone: "619-555-4321"
-      },
-      requirements: ["2+ years experience", "exceptional customer service", "specialized in luxury services"],
-      benefits: ["Flexible schedule", "product discounts", "growth opportunities", "training provided"],
-      is_featured: true,
-      featured: true, // Using the proper field in the Job type
-      category: "Nail Tech"
-    }
-  ];
-};
-
-export const mockPremiumJobs = createMockPremiumJobs();
-
-// Additional processing functions if needed (modify these to avoid using problematic properties)
-export const processPremiumJobs = () => {
-  return mockPremiumJobs.map(job => {
-    return {
-      ...job,
-      processedTitle: `${job.title} - ${job.company}`,
-      processedLocation: `${job.location}`,
-    };
-  });
-};
+    created_at: '2024-01-11T11:20:00.000Z',
+    status: 'active',
+    pricing_tier: 'premium',
+    user_id: 'user-premium-2',
+    role: 'Master Hair Colorist',
+    posted_at: '2024-01-11T11:20:00.000Z',
+    specialties: ['Color Correction', 'Balayage', 'Fashion Colors'],
+    requirements: 'Advanced color techniques, 7+ years experience'
+  },
+  {
+    id: 'premium-3',
+    title: 'Lead Esthetician - Medical Spa',
+    category: 'Esthetician',
+    location: 'Irvine, CA',
+    description: 'Medical spa seeking lead esthetician for advanced treatments. Growth opportunity.',
+    compensation_type: 'Salary + Bonus',
+    compensation_details: '$55,000 - $70,000 + performance bonus',
+    requirements: 'Medical aesthetics training, leadership experience',
+    contact_info: {
+      owner_name: 'Dr. Jennifer Lee',
+      phone: '(949) 555-0503',
+      email: 'jennifer@medspa.com'
+    },
+    created_at: '2024-01-08T16:10:00.000Z',
+    status: 'active',
+    pricing_tier: 'gold',
+    user_id: 'user-premium-3',
+    role: 'Lead Esthetician',
+    posted_at: '2024-01-08T16:10:00.000Z',
+    specialties: ['Chemical Peels', 'Microneedling', 'Laser Treatments'],
+    requirements: 'Medical spa experience, advanced certifications preferred'
+  }
+];
