@@ -13,7 +13,7 @@ export const useJobsData = () => {
       setLoading(true);
       setError(null);
 
-      console.log('🔍 [JOBS-DATA] Fetching jobs from Supabase...');
+      console.log('🔍 [JOBS-DATA] Starting to fetch jobs from Supabase...');
 
       // Query only active jobs
       const { data, error: fetchError } = await supabase
@@ -22,16 +22,21 @@ export const useJobsData = () => {
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
+      console.log('📊 [JOBS-DATA] Supabase query completed');
+      console.log('📊 [JOBS-DATA] - Raw data from Supabase:', data);
+      console.log('📊 [JOBS-DATA] - Error from Supabase:', fetchError);
+      console.log('📊 [JOBS-DATA] - Jobs count:', data?.length || 0);
+
       if (fetchError) {
         console.error('❌ [JOBS-DATA] Fetch error:', fetchError);
         setError('Failed to load jobs');
         return;
       }
 
-      console.log('📊 [JOBS-DATA] Raw data from Supabase:', data);
-
       // Process and type the jobs correctly
-      const processedJobs: Job[] = (data || []).map(job => {
+      const processedJobs: Job[] = (data || []).map((job, index) => {
+        console.log(`🔄 [JOBS-DATA] Transforming job ${index + 1}:`, job.id, job.title);
+        
         const processedJob: Job = {
           // Core required fields
           id: job.id,
@@ -59,7 +64,8 @@ export const useJobsData = () => {
         return processedJob;
       });
 
-      console.log('✅ [JOBS-DATA] Processed jobs:', processedJobs);
+      console.log('✅ [JOBS-DATA] Processed jobs:', processedJobs.length);
+      console.log('✅ [JOBS-DATA] Final processed jobs array:', processedJobs);
       setJobs(processedJobs);
 
     } catch (error) {
@@ -71,9 +77,11 @@ export const useJobsData = () => {
   };
 
   useEffect(() => {
+    console.log('🔄 [JOBS-DATA] useEffect triggered - fetching jobs');
     fetchJobs();
 
     // Set up real-time subscription for job changes
+    console.log('🔄 [JOBS-DATA] Setting up real-time subscription');
     const channel = supabase
       .channel('jobs-changes')
       .on(
@@ -86,18 +94,25 @@ export const useJobsData = () => {
         },
         (payload) => {
           console.log('⚡ [JOBS-DATA] Real-time update received:', payload);
+          console.log('⚡ [JOBS-DATA] Event type:', payload.eventType);
+          console.log('⚡ [JOBS-DATA] New data:', payload.new);
+          console.log('⚡ [JOBS-DATA] Old data:', payload.old);
           fetchJobs(); // Refresh jobs when changes occur
         }
       )
       .subscribe();
 
+    console.log('🔄 [JOBS-DATA] Real-time subscription set up');
+
     return () => {
+      console.log('🔄 [JOBS-DATA] Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, []);
 
   // Manual refresh function
   const refreshJobs = () => {
+    console.log('🔄 [JOBS-DATA] Manual refresh triggered');
     fetchJobs();
   };
 
