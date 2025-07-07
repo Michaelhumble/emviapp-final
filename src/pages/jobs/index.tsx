@@ -31,6 +31,12 @@ const JobsPage = () => {
     return () => clearInterval(interval);
   }, [refreshJobs]);
 
+  // Refresh jobs when the component mounts or when returning from posting
+  useEffect(() => {
+    console.log('🔄 [JOBS-PAGE] Initial jobs refresh on mount');
+    refreshJobs();
+  }, []);
+
   if (loading) {
     return <JobLoadingState />;
   }

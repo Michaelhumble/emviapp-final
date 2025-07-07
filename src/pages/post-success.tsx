@@ -4,102 +4,110 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, ExternalLink, Eye, Loader2 } from 'lucide-react';
-import type { Job } from '@/types/job';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, ExternalLink, AlertCircle } from 'lucide-react';
+
+interface JobData {
+  id: string;
+  title: string;
+  category: string;
+  location: string;
+  pricing_tier: string;
+  created_at: string;
+  status: string;
+}
 
 const PostSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const jobId = searchParams.get('jobId');
-  const type = searchParams.get('type') || 'free';
+  const jobType = searchParams.get('type') || 'free';
   
-  const [job, setJob] = useState<Job | null>(null);
+  const [jobData, setJobData] = useState<JobData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAndVerifyJob = async () => {
+    const fetchJobData = async () => {
       if (!jobId) {
-        console.error('❌ [SUCCESS] No job ID provided in URL');
+        console.error('❌ [POST-SUCCESS] No job ID provided in URL');
         setError('No job ID provided');
         setLoading(false);
         return;
       }
 
-      console.log('🔍 [SUCCESS] Fetching job details for:', jobId);
+      console.log('🔍 [POST-SUCCESS] Fetching job data for ID:', jobId);
 
       try {
-        // Fetch the job from Supabase to verify it exists
-        const { data: jobData, error: fetchError } = await supabase
+        const { data, error: fetchError } = await supabase
           .from('jobs')
-          .select('*')
+          .select('id, title, category, location, pricing_tier, created_at, status')
           .eq('id', jobId)
           .single();
 
         if (fetchError) {
-          console.error('❌ [SUCCESS] Error fetching job:', {
-            error: fetchError.message,
-            details: fetchError.details,
-            code: fetchError.code
-          });
-          setError(`Failed to verify job posting: ${fetchError.message}`);
-        } else if (jobData) {
-          console.log('✅ [SUCCESS] Job successfully verified in database:', jobData);
-          setJob(jobData as Job);
-          
-          // Double-check that the job is active
-          if (jobData.status !== 'active') {
-            console.warn('⚠️ [SUCCESS] Job found but not active:', jobData.status);
-            setError('Job was posted but is not active');
-          }
-        } else {
-          console.error('❌ [SUCCESS] Job not found in database');
-          setError('Job not found in database');
+          console.error('❌ [POST-SUCCESS] Error fetching job:', fetchError);
+          setError(`Failed to fetch job: ${fetchError.message}`);
+          return;
         }
+
+        if (!data) {
+          console.error('❌ [POST-SUCCESS] Job not found in database');
+          setError('Job not found in database');
+          return;
+        }
+
+        console.log('✅ [POST-SUCCESS] Job data retrieved:', data);
+        setJobData(data);
       } catch (err) {
-        console.error('💥 [SUCCESS] Unexpected error:', err);
-        setError('Unexpected error while verifying job posting');
+        console.error('💥 [POST-SUCCESS] Unexpected error:', err);
+        setError('Unexpected error occurred');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAndVerifyJob();
+    fetchJobData();
   }, [jobId]);
 
   if (loading) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <Card className="w-full max-w-md">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-green-600" />
-                <p>Verifying your job posting...</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p>Verifying your job posting...</p>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  if (error || !job) {
+  if (error || !jobData) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <Card className="w-full max-w-md border-red-200">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-red-600 mb-4">{error || 'Job not found'}</p>
-                <div className="space-y-2">
-                  <Link to="/post-job-free">
-                    <Button variant="outline" className="w-full">Try Posting Again</Button>
-                  </Link>
-                  <Link to="/jobs">
-                    <Button className="w-full">View All Jobs</Button>
-                  </Link>
-                </div>
+          <Card className="max-w-md w-full">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="h-6 w-6 text-red-500" />
+                <CardTitle className="text-red-700">Error</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">
+                {error || 'Unable to verify your job posting'}
+              </p>
+              <div className="space-y-2">
+                <Link to="/jobs">
+                  <Button variant="outline" className="w-full">
+                    View All Jobs
+                  </Button>
+                </Link>
+                <Link to="/post-job-free">
+                  <Button className="w-full">
+                    Try Posting Again
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
@@ -110,70 +118,86 @@ const PostSuccessPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <Card className="border-green-200">
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <CheckCircle className="h-16 w-16 text-green-500" />
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <Card className="max-w-2xl w-full">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <CheckCircle className="h-16 w-16 text-green-500" />
+            </div>
+            <CardTitle className="text-3xl font-bold text-gray-900">
+              🎉 Job Posted Successfully!
+            </CardTitle>
+            <CardDescription className="text-lg">
+              Your job posting is now live and attracting qualified candidates
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-gray-50 rounded-lg p-6 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Job Title:</span>
+                <span className="font-medium">{jobData.title}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Category:</span>
+                <span className="font-medium">{jobData.category}</span>
+              </div>
+              {jobData.location && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Location:</span>
+                  <span className="font-medium">{jobData.location}</span>
                 </div>
-                <CardTitle className="text-2xl text-green-700">
-                  Job Posted Successfully!
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-green-800 mb-2">Your Job Listing:</h3>
-                  <p className="text-lg font-medium">{job.title}</p>
-                  {job.location && <p className="text-gray-600">{job.location}</p>}
-                  <div className="flex items-center gap-4 mt-2 text-sm">
-                    <span className="text-green-600">
-                      Status: {job.status === 'active' ? '✅ Published' : '⏳ Draft'}
-                    </span>
-                    <span className="text-blue-600">
-                      Tier: {job.pricing_tier === 'free' ? '🆓 Free' : '⭐ Premium'}
-                    </span>
-                    <span className="text-gray-600">
-                      ID: {job.id.slice(0, 8)}...
-                    </span>
-                  </div>
-                </div>
+              )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Plan:</span>
+                <span className="font-medium text-purple-600 capitalize">{jobData.pricing_tier}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Status:</span>
+                <span className="font-medium text-green-600 flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  Active
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Job ID:</span>
+                <span className="font-mono text-sm bg-white px-2 py-1 rounded border">
+                  {jobData.id}
+                </span>
+              </div>
+            </div>
 
-                <div className="space-y-4">
-                  <h4 className="font-semibold">What's Next?</h4>
-                  <ul className="space-y-2 text-gray-600">
-                    <li>• Your job is now live and visible to job seekers</li>
-                    <li>• Candidates can contact you directly through the provided contact information</li>
-                    <li>• Your job will remain active for 30 days</li>
-                    {type === 'free' && (
-                      <li>• Consider upgrading to a premium listing for better visibility</li>
-                    )}
-                  </ul>
-                </div>
+            <div className="bg-blue-50 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Your job is now visible to thousands of beauty professionals</li>
+                <li>• Candidates can apply directly through the platform</li>
+                <li>• You'll receive notifications when applications come in</li>
+                <li>• Your posting will remain active for 30 days</li>
+              </ul>
+            </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link to="/jobs" className="flex-1">
-                    <Button variant="outline" className="w-full">
-                      <Eye className="mr-2 h-4 w-4" />
-                      View All Jobs
-                    </Button>
-                  </Link>
-                  <Link to="/post-job-free" className="flex-1">
-                    <Button className="w-full">
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Post Another Job
-                    </Button>
-                  </Link>
-                </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/jobs" className="flex-1">
+                <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Your Job
+                </Button>
+              </Link>
+              <Link to="/post-job-free" className="flex-1">
+                <Button variant="outline" className="w-full">
+                  Post Another Job
+                </Button>
+              </Link>
+            </div>
 
-                <div className="text-xs text-gray-500 pt-4 border-t text-center">
-                  Job verified in database at {new Date().toLocaleTimeString()}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+            <div className="text-xs text-gray-500 text-center pt-4 border-t">
+              Need help managing your job postings? Visit our{' '}
+              <Link to="/help" className="text-purple-600 hover:underline">
+                help center
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );

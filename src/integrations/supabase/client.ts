@@ -3,8 +3,13 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://wwhqbjrhbajpabfdwnip.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM";
+const SUPABASE_URL = "https://wwhqbjrhbajpabfdwnip.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM";
+
+// Log Supabase configuration for debugging
+console.log('🔧 [SUPABASE-CONFIG] Project URL:', SUPABASE_URL);
+console.log('🔧 [SUPABASE-CONFIG] Project Ref:', SUPABASE_URL.split('//')[1].split('.')[0]);
+console.log('🔧 [SUPABASE-CONFIG] Anon Key (first 20 chars):', SUPABASE_PUBLISHABLE_KEY.substring(0, 20) + '...');
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
@@ -16,4 +21,11 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     detectSessionInUrl: false,
     storage: localStorage
   }
+});
+
+// Log auth state for debugging
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('🔧 [SUPABASE-AUTH] Event:', event);
+  console.log('🔧 [SUPABASE-AUTH] User ID:', session?.user?.id || 'None');
+  console.log('🔧 [SUPABASE-AUTH] User Email:', session?.user?.email || 'None');
 });
