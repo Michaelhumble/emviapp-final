@@ -1,269 +1,120 @@
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, UserPlus, Briefcase, Home, ShoppingBag } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
+import { Loader2, Calendar } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { BookingWithDetails } from "../types/ArtistDashboardTypes";
+import { useNewArtistStatus } from "@/hooks/useNewArtistStatus";
+import { useJobsData } from "@/hooks/useJobsData";
 
-interface RecentUser {
-  id: string;
-  full_name: string;
-  role: string;
-  created_at: string;
+interface RecentActivityProps {
+  bookings: BookingWithDetails[];
+  isLoading: boolean;
 }
 
-interface RecentItem {
-  id: string;
-  title: string;
-  type: 'user' | 'job' | 'booth' | 'salon';
-  actor_name: string;
-  created_at: string;
-}
+// Demo bookings for new artists
+const demoBookings = [
+  {
+    id: "demo-1",
+    service_name: "Gel Manicure",
+    appointment_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    price: 45,
+    client_name: "Sample Client"
+  },
+  {
+    id: "demo-2",
+    service_name: "Full Set Acrylics",
+    appointment_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+    price: 65,
+    client_name: "Sample Client"
+  }
+];
 
-const RecentActivity = () => {
-  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
-  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+const RecentActivity = ({ bookings, isLoading }: RecentActivityProps) => {
+  const isNewArtist = useNewArtistStatus();
+  const { jobs } = useJobsData();
+  
+  // Use demo bookings for new artists, otherwise use real bookings
+  const displayBookings = isNewArtist ? demoBookings as any[] : bookings;
 
-  useEffect(() => {
-    const fetchRecentActivity = async () => {
-      try {
-        // Get recent users
-        const { data: users, error: usersError } = await supabase
-          .from('users')
-          .select('id, full_name, role, created_at')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        
-        // Get recent jobs - updated to use salon_id instead of user_id
-        const { data: jobs, error: jobsError } = await supabase
-          .from('jobs')
-          .select('id, title, created_at, salon_id')
-          .order('created_at', { ascending: false })
-          .limit(3);
-        
-        // Get recent booth posts
-        const { data: booths, error: boothsError } = await supabase
-          .from('posts')
-          .select('id, title, created_at, user_id')
-          .eq('post_type', 'booth')
-          .order('created_at', { ascending: false })
-          .limit(3);
-        
-        // Get recent salon sales listings
-        const { data: salonSales, error: salesError } = await supabase
-          .from('salon_sales')
-          .select('id, salon_name, created_at, user_id')
-          .order('created_at', { ascending: false })
-          .limit(3);
-
-        if (usersError) {
-          console.error("Error fetching recent users:", usersError);
-        } else {
-          setRecentUsers(users || []);
-        }
-
-        // Process jobs, booths, and salon sales into a combined timeline
-        const combinedItems: RecentItem[] = [];
-        
-        // Add jobs to the timeline - updated to use salon_id
-        if (!jobsError && jobs) {
-          for (const job of jobs) {
-            // Get the salon name who posted the job
-            const { data: salonData } = await supabase
-              .from('salons')
-              .select('salon_name')
-              .eq('id', job.salon_id)
-              .single();
-            
-            combinedItems.push({
-              id: job.id,
-              title: job.title,
-              type: 'job',
-              actor_name: salonData?.salon_name || 'Unknown Salon',
-              created_at: job.created_at
-            });
-          }
-        }
-        
-        // Add booths to the timeline
-        if (!boothsError && booths) {
-          for (const booth of booths) {
-            // Get the user name who posted the booth
-            const { data: userData } = await supabase
-              .from('users')
-              .select('full_name')
-              .eq('id', booth.user_id)
-              .single();
-            
-            combinedItems.push({
-              id: booth.id,
-              title: booth.title,
-              type: 'booth',
-              actor_name: userData?.full_name || 'Unknown User',
-              created_at: booth.created_at
-            });
-          }
-        }
-        
-        // Add salon sales to the timeline
-        if (!salesError && salonSales) {
-          for (const sale of salonSales) {
-            // Get the user name who posted the salon sale
-            const { data: userData } = await supabase
-              .from('users')
-              .select('full_name')
-              .eq('id', sale.user_id)
-              .single();
-            
-            combinedItems.push({
-              id: sale.id,
-              title: sale.salon_name,
-              type: 'salon',
-              actor_name: userData?.full_name || 'Unknown User',
-              created_at: sale.created_at
-            });
-          }
-        }
-        
-        // Sort combined items by creation date (newest first)
-        combinedItems.sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        
-        setRecentItems(combinedItems.slice(0, 5));
-      } catch (error) {
-        console.error("Error fetching recent activity:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecentActivity();
-  }, []);
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'user':
-        return <UserPlus className="h-5 w-5 text-blue-500" />;
-      case 'job':
-        return <Briefcase className="h-5 w-5 text-green-500" />;
-      case 'booth':
-        return <Home className="h-5 w-5 text-amber-500" />;
-      case 'salon':
-        return <ShoppingBag className="h-5 w-5 text-purple-500" />;
-      default:
-        return <Clock className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-    } catch (e) {
-      return 'recently';
-    }
-  };
-
-  const getRoleBadgeClasses = (role: string) => {
-    switch (role) {
-      case 'artist':
-        return 'bg-blue-100 text-blue-800';
-      case 'salon':
-      case 'owner':
-        return 'bg-purple-100 text-purple-800';
-      case 'customer':
-        return 'bg-green-100 text-green-800';
-      case 'admin':
-        return 'bg-amber-100 text-amber-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  // Show recent jobs instead of salon-specific data since salon_id doesn't exist
+  const recentJobs = jobs?.slice(0, 3) || [];
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <h2 className="text-xl font-semibold">Recent Activity</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        {/* Recent Users */}
-        <Card className={`${loading ? 'animate-pulse' : ''}`}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium flex items-center">
-              <UserPlus className="h-4 w-4 mr-2 text-blue-600" />
-              New Users
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-3">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-9 bg-gray-100 rounded animate-pulse"></div>
+    <Card className="col-span-4">
+      <CardHeader>
+        <CardTitle>Recent Activity</CardTitle>
+        <CardDescription>
+          Your latest bookings and recent job postings
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[200px]">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Show bookings first */}
+            {displayBookings && displayBookings.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">Recent Bookings</h4>
+                {displayBookings.map((booking) => (
+                  <div key={booking.id} className="flex items-center mb-2">
+                    <div className="ml-4 space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {booking.service_name || "Nail Service"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(booking.appointment_time || "").toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      ${booking.price || 0}
+                    </div>
+                  </div>
                 ))}
               </div>
-            ) : recentUsers.length > 0 ? (
-              <ul className="space-y-3">
-                {recentUsers.map(user => (
-                  <li key={user.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
-                    <div className="flex flex-wrap items-center">
-                      <div className="font-medium mr-2 text-sm">{user.full_name}</div>
-                      <span className={`px-2 py-0.5 text-xs rounded-full ${getRoleBadgeClasses(user.role)}`}>
-                        {user.role}
-                      </span>
-                    </div>
-                    <div className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                      {formatDate(user.created_at)}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No recent users found</p>
             )}
-          </CardContent>
-        </Card>
-        
-        {/* Recent Activity */}
-        <Card className={`${loading ? 'animate-pulse' : ''}`}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium flex items-center">
-              <Clock className="h-4 w-4 mr-2 text-purple-600" />
-              Recent Activities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-3">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-9 bg-gray-100 rounded animate-pulse"></div>
+            
+            {/* Show recent jobs */}
+            {recentJobs.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">Recent Job Posts</h4>
+                {recentJobs.map((job) => (
+                  <div key={job.id} className="flex items-center mb-2">
+                    <div className="ml-4 space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {job.title || "Job Posting"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {job.location} • {job.category}
+                      </p>
+                    </div>
+                  </div>
                 ))}
               </div>
-            ) : recentItems.length > 0 ? (
-              <ul className="space-y-3">
-                {recentItems.map(item => (
-                  <li key={item.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center min-w-0">
-                      <span className="mr-2 flex-shrink-0">{getActivityIcon(item.type)}</span>
-                      <div className="min-w-0">
-                        <div className="font-medium text-sm truncate">{item.title}</div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          by {item.actor_name}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                      {formatDate(item.created_at)}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No recent activity found</p>
             )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            
+            {displayBookings.length === 0 && recentJobs.length === 0 && (
+              <div className="flex flex-col items-center justify-center text-center py-8">
+                <Calendar className="h-12 w-12 text-muted-foreground/50 mb-2" />
+                <p className="text-muted-foreground mb-1">No recent activity</p>
+                <p className="text-xs text-muted-foreground/70">
+                  {isNewArtist ? 
+                    "Complete your profile to start accepting bookings" : 
+                    "Activity will appear here when you have bookings or job posts"}
+                </p>
+              </div>
+            )}
+            
+            {isNewArtist && displayBookings.length > 0 && (
+              <p className="text-xs text-center mt-4 text-muted-foreground italic">
+                Example data shown
+              </p>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
