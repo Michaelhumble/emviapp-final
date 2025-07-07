@@ -8,7 +8,6 @@ export const fetchSalonJobs = async (salonId: string) => {
   const response = await supabase
     .from('jobs')
     .select('id')
-    .eq('salon_id', salonId)
     .eq('status', 'active');
     
   if (response.error) {
