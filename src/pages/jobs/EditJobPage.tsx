@@ -1,23 +1,20 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
+import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { useJobPosting } from '@/hooks/jobs/useJobPosting';
+import Layout from '@/components/layout/Layout';
 
 const EditJobPage = () => {
-  const { id } = useParams();
+  const { jobId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { isSubmitting } = useJobPosting();
+  const { isPosting } = useJobPosting();
   
-  const [job, setJob] = useState(null);
+  const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
@@ -30,15 +27,14 @@ const EditJobPage = () => {
   });
 
   useEffect(() => {
-    if (!user || !id) return;
+    if (!jobId) return;
     
     const fetchJob = async () => {
       try {
         const { data, error } = await supabase
           .from('jobs')
           .select('*')
-          .eq('id', id)
-          .eq('user_id', user.id)
+          .eq('id', jobId)
           .single();
 
         if (error) throw error;
@@ -63,12 +59,12 @@ const EditJobPage = () => {
     };
 
     fetchJob();
-  }, [id, user, navigate]);
+  }, [jobId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user || !id) return;
+    if (!jobId) return;
 
     try {
       const { error } = await supabase
@@ -83,8 +79,7 @@ const EditJobPage = () => {
           requirements: formData.requirements,
           updated_at: new Date().toISOString()
         })
-        .eq('id', id)
-        .eq('user_id', user.id);
+        .eq('id', jobId);
 
       if (error) throw error;
       
@@ -209,10 +204,10 @@ const EditJobPage = () => {
           <div className="flex gap-4">
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPosting}
               className="flex-1"
             >
-              {isSubmitting ? 'Updating...' : 'Update Job'}
+              {isPosting ? 'Updating...' : 'Update Job'}
             </Button>
             <Button
               type="button"
