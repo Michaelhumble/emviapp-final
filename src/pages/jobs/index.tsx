@@ -8,11 +8,27 @@ import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/integrations/supabase/client';
+import { useJobRenewal } from '@/hooks/useJobRenewal';
+import { Job } from '@/types/job';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
   const { isVietnamese } = useTranslation();
   const [autoRefreshCount, setAutoRefreshCount] = useState(0);
+  
+  // Use the job renewal hook for renewal functionality
+  const { renewJob, isRenewing, renewalJobId } = useJobRenewal({
+    onSuccess: () => {
+      console.log('🔄 [JOBS-PAGE] Job renewed successfully, refreshing jobs list');
+      refreshJobs();
+    }
+  });
+
+  // Handle job renewal
+  const handleRenewJob = async (job: Job) => {
+    console.log('🔄 [JOBS-PAGE] Renewing job:', job.id);
+    await renewJob(job.id);
+  };
 
   // Auto-refresh every 30 seconds to catch new jobs
   useEffect(() => {
@@ -144,7 +160,12 @@ const JobsPage = () => {
             )}
           </div>
           
-          <UnifiedJobFeed jobs={jobs} />
+          <UnifiedJobFeed 
+            jobs={jobs}
+            onRenew={handleRenewJob}
+            isRenewing={isRenewing}
+            renewalJobId={renewalJobId}
+          />
         </div>
       </div>
     </Layout>
