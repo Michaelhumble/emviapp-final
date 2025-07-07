@@ -67,13 +67,13 @@ const JobPostCTA = () => {
               </div>
               
               {isSignedIn ? (
-                <Link to="/post-job">
+                <Link to="/post-job-free">
                   <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
                     Post a Job
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth/signin?redirect=/post-job">
+                <Link to="/auth/signin?redirect=/post-job-free">
                   <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
                     Sign In to Post
                   </Button>

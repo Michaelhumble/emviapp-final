@@ -29,7 +29,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {/* Post Job and Post Salon Buttons - Desktop Only */}
             <div className="hidden md:flex items-center space-x-2">
-              <Link to="/post-job">
+              <Link to="/post-job-free">
                 <Button 
                   size="sm"
                   className="bg-purple-600 hover:bg-purple-700 text-white"
