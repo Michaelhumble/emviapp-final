@@ -62,7 +62,7 @@ const JobsPage = () => {
     console.log('📭 [JOBS-PAGE] Showing empty state');
     return (
       <div className="container mx-auto py-8">
-        <JobEmptyState />
+        <JobEmptyState onClearFilters={() => refreshJobs()} />
       </div>
     );
   }
@@ -71,19 +71,6 @@ const JobsPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      {/* Debug info for development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-700">
-            Debug: Showing {jobs.length} active jobs
-          </p>
-          <Button onClick={refreshJobs} size="sm" variant="outline" className="mt-2">
-            <RefreshCw className="mr-2 h-3 w-3" />
-            Refresh Jobs
-          </Button>
-        </div>
-      )}
-      
       <JobsGrid 
         jobs={jobs}
         expirations={{}}

@@ -1,184 +1,154 @@
 
 import { useState } from 'react';
+import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useAuth } from '@/context/auth';
-import type { JobDetailsSubmission } from '@/types/job';
+import { JobDetailsSubmission } from '@/types/job';
 
 export const useJobPosting = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isStripeLoading, setIsStripeLoading] = useState(false);
 
+  // Submit free job - insert directly into Supabase
   const submitFreeJob = async (jobData: JobDetailsSubmission) => {
-    console.log('🆓 [FREE-JOB] Starting free job submission:', {
-      title: jobData.title,
-      category: jobData.category,
-      location: jobData.location,
-      userId: user?.id
-    });
-
+    console.log('🆓 [FREE-JOB] Starting free job submission:', { jobData });
+    
     if (!user) {
-      console.error('❌ [FREE-JOB] No authenticated user found');
-      toast.error('Please sign in to post a job');
-      return { success: false };
+      console.error('🆓 [FREE-JOB] ERROR: No authenticated user');
+      throw new Error('User must be authenticated to post a job');
     }
 
     setIsSubmitting(true);
 
     try {
-      // Prepare payload for edge function
-      const payload = {
-        jobData: {
-          title: jobData.title,
-          category: jobData.category || 'Other',
-          location: jobData.location,
-          description: jobData.description,
-          user_id: user.id,
-          compensation_type: jobData.compensation_type,
-          compensation_details: jobData.compensation_details,
-          requirements: jobData.requirements,
-          contact_info: jobData.contact_info || {},
-          status: 'active'
-        }
+      // Prepare job data with proper typing
+      const jobPayload = {
+        title: jobData.title,
+        category: jobData.category || 'Other',
+        location: jobData.location || '',
+        description: jobData.description || '',
+        user_id: user.id,
+        compensation_type: jobData.compensation_type || '',
+        compensation_details: jobData.compensation_details || '',
+        requirements: Array.isArray(jobData.requirements) 
+          ? jobData.requirements.join(', ') 
+          : (jobData.requirements || ''), // Always convert to string
+        contact_info: jobData.contact_info || {},
+        status: 'active', // Free jobs are immediately active
+        pricing_tier: 'free'
       };
 
-      console.log('🆓 [FREE-JOB] Payload prepared:', payload);
+      console.log('🆓 [FREE-JOB] Inserting job into Supabase:', { jobPayload });
 
-      // Call edge function
-      const { data, error } = await supabase.functions.invoke('create-free-post', {
-        body: payload
-      });
-
-      console.log('🆓 [FREE-JOB] Edge function response:', { data, error });
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert([jobPayload])
+        .select()
+        .single();
 
       if (error) {
-        console.error('❌ [FREE-JOB] Edge function error:', error);
-        toast.error('Failed to post job. Please try again.');
-        return { success: false };
+        console.error('🆓 [FREE-JOB] ERROR: Supabase insert failed:', error);
+        throw error;
       }
 
-      if (!data?.success) {
-        console.error('❌ [FREE-JOB] Edge function returned failure:', data);
-        toast.error('Failed to post job. Please try again.');
-        return { success: false };
-      }
-
-      console.log('✅ [FREE-JOB] Job posted successfully:', data.data);
-      toast.success('Job posted successfully!');
+      console.log('🆓 [FREE-JOB] SUCCESS: Job inserted successfully:', { data });
+      toast.success('Free job posted successfully!');
       
-      // Verify job was inserted by checking database
-      setTimeout(async () => {
-        const { data: verifyData, error: verifyError } = await supabase
-          .from('jobs')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('title', jobData.title)
-          .single();
-        
-        console.log('🔍 [FREE-JOB] Database verification:', { verifyData, verifyError });
-      }, 1000);
-
-      return { success: true, data: data.data };
-
+      return { success: true, jobId: data.id };
     } catch (error) {
-      console.error('💥 [FREE-JOB] Unexpected error:', error);
-      toast.error('An unexpected error occurred');
-      return { success: false };
+      console.error('🆓 [FREE-JOB] ERROR: Failed to submit free job:', error);
+      toast.error('Failed to post job. Please try again.');
+      throw error;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const submitPaidJob = async (jobData: JobDetailsSubmission, tier: string) => {
-    console.log('💳 [PAID-JOB] Starting paid job submission:', {
-      title: jobData.title,
-      tier,
-      userId: user?.id
-    });
-
+  // Submit paid job - create draft then redirect to Stripe
+  const submitPaidJob = async (jobData: JobDetailsSubmission, pricingTier: string) => {
+    console.log('💳 [PAID-JOB] Starting paid job submission:', { jobData, pricingTier });
+    
     if (!user) {
-      console.error('❌ [PAID-JOB] No authenticated user found');
-      toast.error('Please sign in to post a job');
-      return { success: false };
+      console.error('💳 [PAID-JOB] ERROR: No authenticated user');
+      throw new Error('User must be authenticated to post a job');
     }
 
-    setIsSubmitting(true);
+    setIsStripeLoading(true);
 
     try {
-      // Step 1: Create draft job in database
-      console.log('💳 [PAID-JOB] Step 1: Creating draft job');
-      
-      const draftJobData = {
+      // First, create a draft job in Supabase
+      const jobPayload = {
         title: jobData.title,
         category: jobData.category || 'Other',
-        location: jobData.location,
-        description: jobData.description,
+        location: jobData.location || '',
+        description: jobData.description || '',
         user_id: user.id,
-        compensation_type: jobData.compensation_type,
-        compensation_details: jobData.compensation_details,
-        requirements: jobData.requirements,
+        compensation_type: jobData.compensation_type || '',
+        compensation_details: jobData.compensation_details || '',
+        requirements: Array.isArray(jobData.requirements) 
+          ? jobData.requirements.join(', ') 
+          : (jobData.requirements || ''), // Always convert to string
         contact_info: jobData.contact_info || {},
         status: 'draft', // Draft until payment completes
-        pricing_tier: tier
+        pricing_tier: pricingTier
       };
 
-      const { data: draftJob, error: draftError } = await supabase
+      console.log('💳 [PAID-JOB] Creating draft job in Supabase:', { jobPayload });
+
+      const { data: draftJob, error: insertError } = await supabase
         .from('jobs')
-        .insert(draftJobData)
+        .insert([jobPayload])
         .select()
         .single();
 
-      if (draftError) {
-        console.error('❌ [PAID-JOB] Failed to create draft job:', draftError);
-        toast.error('Failed to create job. Please try again.');
-        return { success: false };
+      if (insertError) {
+        console.error('💳 [PAID-JOB] ERROR: Failed to create draft job:', insertError);
+        throw insertError;
       }
 
-      console.log('✅ [PAID-JOB] Draft job created:', draftJob);
+      console.log('💳 [PAID-JOB] SUCCESS: Draft job created:', { draftJob });
 
-      // Step 2: Create Stripe checkout session
-      console.log('💳 [PAID-JOB] Step 2: Creating Stripe checkout');
+      // Now create Stripe checkout session
+      console.log('💳 [PAID-JOB] Creating Stripe checkout session...');
       
-      const checkoutPayload = {
-        tier,
-        finalPrice: tier === 'premium' ? 25 : tier === 'gold' ? 45 : 85,
-        jobData,
-        jobId: draftJob.id
-      };
-
-      console.log('💳 [PAID-JOB] Checkout payload:', checkoutPayload);
-
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-job-checkout', {
-        body: checkoutPayload
+        body: {
+          jobId: draftJob.id,
+          pricingTier,
+          jobData
+        }
       });
 
-      console.log('💳 [PAID-JOB] Checkout response:', { checkoutData, checkoutError });
-
-      if (checkoutError || !checkoutData?.url) {
-        console.error('❌ [PAID-JOB] Checkout creation failed:', checkoutError);
-        toast.error('Failed to create payment session');
-        return { success: false };
+      if (checkoutError) {
+        console.error('💳 [PAID-JOB] ERROR: Checkout creation failed:', checkoutError);
+        throw checkoutError;
       }
 
-      console.log('✅ [PAID-JOB] Redirecting to Stripe:', checkoutData.url);
+      if (!checkoutData?.url) {
+        console.error('💳 [PAID-JOB] ERROR: No checkout URL received:', checkoutData);
+        throw new Error('Failed to create checkout session');
+      }
+
+      console.log('💳 [PAID-JOB] SUCCESS: Redirecting to Stripe checkout:', { url: checkoutData.url });
       
       // Redirect to Stripe checkout
       window.location.href = checkoutData.url;
       
-      return { success: true, redirected: true };
-
+      return { success: true, jobId: draftJob.id, checkoutUrl: checkoutData.url };
     } catch (error) {
-      console.error('💥 [PAID-JOB] Unexpected error:', error);
-      toast.error('An unexpected error occurred');
-      return { success: false };
+      console.error('💳 [PAID-JOB] ERROR: Failed to submit paid job:', error);
+      toast.error('Failed to create paid job listing. Please try again.');
+      throw error;
     } finally {
-      setIsSubmitting(false);
+      setIsStripeLoading(false);
     }
   };
 
   return {
     submitFreeJob,
     submitPaidJob,
-    isSubmitting
+    isSubmitting,
+    isStripeLoading
   };
 };

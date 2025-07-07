@@ -3,17 +3,23 @@ export interface Job {
   id: string;
   title: string;
   
-  // Everything else is optional
-  role?: string;
-  company?: string;
+  // Core required fields
+  category: string;
   location?: string;
-  posted_at?: string;
-  created_at?: string;
   description?: string;
-  employment_type?: string;
-  compensation_details?: string;
+  user_id?: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+  expires_at?: string;
+  
+  // Job-specific fields
   compensation_type?: string;
-  category?: string;
+  compensation_details?: string;
+  requirements?: string; // Always string, not array
+  pricing_tier?: string;
+  
+  // Contact information as object
   contact_info?: {
     owner_name?: string;
     phone?: string;
@@ -21,18 +27,19 @@ export interface Job {
     notes?: string;
     zalo?: string;
   };
-  for_sale?: boolean;
-  asking_price?: string;
-  number_of_stations?: string;
-  square_feet?: string;
-  reason_for_selling?: string;
-  salon_features?: string[];
-  specialties?: string[];
-  is_featured?: boolean;
-  featured?: boolean;
-  featured_text?: string;
-  status?: string;
+  
+  // Legacy/optional fields for compatibility
+  role?: string;
+  company?: string;
+  posted_at?: string;
+  employment_type?: string;
   image?: string;
+  vietnamese_description?: string;
+  preferred_languages?: string[];
+  benefits?: string[];
+  features?: string[];
+  salon_type?: string;
+  specialties?: string[];
   weekly_pay?: boolean;
   has_housing?: boolean;
   has_wax_room?: boolean;
@@ -40,24 +47,10 @@ export interface Job {
   owner_will_train?: boolean;
   tip_range?: string;
   salary_range?: string;
-  vietnamese_description?: string;
-  salon_type?: string;
-  expires_at?: string;
+  is_featured?: boolean;
+  featured?: boolean;
+  featured_text?: string;
   boosted_until?: string;
-  user_id?: string;
-  requirements?: string[] | string;
-  preferred_languages?: string[];
-  benefits?: string[];
-  features?: string[];
-  price?: string;
-  monthly_rent?: string;
-  trust_indicators?: any;
-  revenue?: string;
-  has_dining_room?: boolean;
-  has_laundry?: boolean;
-  experience_level?: string;
-  is_remote?: boolean;
-  role_normalized?: string;
   is_urgent?: boolean;
   isPinned?: boolean;
   type?: 'salon' | 'job' | 'opportunity';
@@ -65,9 +58,8 @@ export interface Job {
   imageUrl?: string;
   is_vietnamese_listing?: boolean;
   industry?: string;
-  post_type?: string; 
+  post_type?: string;
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
-  pricing_tier?: string;
   salonName?: string;
   salon_id?: string;
   monthly_revenue?: string;
@@ -78,6 +70,21 @@ export interface Job {
   badge?: string;
   color?: string;
   hidden?: boolean;
+  for_sale?: boolean;
+  asking_price?: string;
+  number_of_stations?: string;
+  square_feet?: string;
+  reason_for_selling?: string;
+  salon_features?: string[];
+  trust_indicators?: any;
+  revenue?: string;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
+  experience_level?: string;
+  is_remote?: boolean;
+  role_normalized?: string;
+  price?: string;
+  monthly_rent?: string;
 }
 
 export type JobDetailsSubmission = {
@@ -88,7 +95,7 @@ export type JobDetailsSubmission = {
   compensation_details?: string;
   employment_type?: string;
   category?: string;
-  requirements?: string[] | string;
+  requirements?: string; // Always string
   contact_info?: {
     owner_name?: string;
     phone?: string;

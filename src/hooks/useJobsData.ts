@@ -34,9 +34,26 @@ export const useJobsData = () => {
         return;
       }
 
-      const processedJobs = (data || []).map(job => ({
+      // Process and type the jobs correctly
+      const processedJobs: Job[] = (data || []).map(job => ({
         ...job,
-        // Ensure all required fields are present
+        // Ensure all required fields are present with correct types
+        id: job.id,
+        title: job.title || 'Job Title',
+        category: job.category,
+        location: job.location || '',
+        description: job.description || '',
+        user_id: job.user_id || '',
+        status: job.status || 'active',
+        created_at: job.created_at || new Date().toISOString(),
+        compensation_type: job.compensation_type || '',
+        compensation_details: job.compensation_details || '',
+        requirements: job.requirements || '', // Always string
+        pricing_tier: job.pricing_tier || 'free',
+        // Handle contact_info as object
+        contact_info: typeof job.contact_info === 'object' && job.contact_info ? 
+          job.contact_info as Job['contact_info'] : {},
+        // Legacy fields for compatibility
         role: job.role || job.title || 'Job Role',
         posted_at: job.posted_at || job.created_at || new Date().toISOString(),
       }));
@@ -48,7 +65,8 @@ export const useJobsData = () => {
         status: job.status,
         pricing_tier: job.pricing_tier,
         user_id: job.user_id,
-        created_at: job.created_at
+        created_at: job.created_at,
+        contact_info: job.contact_info
       })));
 
       setJobs(processedJobs);
