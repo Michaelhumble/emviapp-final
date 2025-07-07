@@ -45,20 +45,7 @@ const PostJobFreePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto py-8 px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="mb-6 text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Post a Free Job</h1>
-              <p className="text-gray-600">
-                Reach talented beauty professionals with your job posting
-              </p>
-            </div>
-            
-            <FreeJobPostingForm />
-          </div>
-        </div>
-      </div>
+      <FreeJobPostingForm />
     </Layout>
   );
 };

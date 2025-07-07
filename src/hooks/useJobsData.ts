@@ -42,6 +42,8 @@ export const useJobsData = () => {
           user_id: job.user_id || '',
           status: job.status || 'active',
           created_at: job.created_at || new Date().toISOString(),
+          updated_at: job.updated_at || new Date().toISOString(),
+          expires_at: job.expires_at || '',
           
           // Job-specific fields
           compensation_type: job.compensation_type || '',
@@ -52,10 +54,6 @@ export const useJobsData = () => {
           // Handle contact_info as object
           contact_info: typeof job.contact_info === 'object' && job.contact_info ? 
             job.contact_info as Job['contact_info'] : {},
-          
-          // Legacy fields for compatibility
-          role: job.title || 'Job Role',
-          posted_at: job.created_at || new Date().toISOString(),
         };
 
         return processedJob;
