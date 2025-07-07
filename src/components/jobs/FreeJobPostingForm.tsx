@@ -3,38 +3,39 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
 const jobSchema = z.object({
-  title: z.string().min(2, 'Job title must be at least 2 characters'),
-  category: z.string().min(1, 'Please select a category'),
-  location: z.string().min(2, 'Location must be at least 2 characters'),
+  title: z.string().min(1, 'Job title is required'),
+  category: z.string().min(1, 'Category is required'),
+  location: z.string().min(1, 'Location is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   compensation_type: z.string().optional(),
   compensation_details: z.string().optional(),
   requirements: z.string().optional(),
   contact_name: z.string().min(1, 'Contact name is required'),
-  contact_phone: z.string().min(1, 'Contact phone is required'),
-  contact_email: z.string().email('Please enter a valid email address'),
+  contact_phone: z.string().optional(),
+  contact_email: z.string().email('Valid email is required').min(1, 'Email is required'),
+  contact_notes: z.string().optional(),
 });
 
-type JobFormData = z.infer<typeof jobSchema>;
+type JobFormValues = z.infer<typeof jobSchema>;
 
 const FreeJobPostingForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const form = useForm<JobFormData>({
+  const form = useForm<JobFormValues>({
     resolver: zodResolver(jobSchema),
     defaultValues: {
       title: '',
@@ -47,27 +48,25 @@ const FreeJobPostingForm = () => {
       contact_name: '',
       contact_phone: '',
       contact_email: '',
+      contact_notes: '',
     },
   });
 
-  const onSubmit = async (data: JobFormData) => {
-    console.log('🚀 [JOB-POST] Starting job submission process...');
-    
+  const onSubmit = async (data: JobFormValues) => {
+    console.log('🚀 [JOB-FORM] Form submission started');
+    console.log('🚀 [JOB-FORM] Form data:', data);
+    console.log('🚀 [JOB-FORM] Current user:', user);
+
     if (!user) {
-      console.error('❌ [JOB-POST] No authenticated user found');
-      toast.error('You must be logged in to post a job');
+      console.error('❌ [JOB-FORM] No authenticated user found');
+      toast.error('You must be signed in to post a job');
       return;
     }
-
-    console.log('👤 [JOB-POST] Authenticated user:', {
-      id: user.id,
-      email: user.email
-    });
 
     setIsSubmitting(true);
 
     try {
-      // Prepare the job payload with user_id
+      // Prepare the job payload with all required fields
       const jobPayload = {
         title: data.title,
         category: data.category,
@@ -76,20 +75,22 @@ const FreeJobPostingForm = () => {
         compensation_type: data.compensation_type || null,
         compensation_details: data.compensation_details || null,
         requirements: data.requirements || null,
-        contact_info: {
-          owner_name: data.contact_name,
-          phone: data.contact_phone,
-          email: data.contact_email,
-        },
         user_id: user.id, // CRITICAL: Include authenticated user's ID
         status: 'active',
         pricing_tier: 'free',
+        contact_info: {
+          owner_name: data.contact_name,
+          phone: data.contact_phone || null,
+          email: data.contact_email,
+          notes: data.contact_notes || null,
+        },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
       };
 
-      console.log('📦 [JOB-POST] Prepared payload:', jobPayload);
+      console.log('📤 [JOB-FORM] Sending payload to Supabase:', jobPayload);
 
-      // Attempt Supabase insert
-      console.log('💾 [JOB-POST] Calling supabase.from("jobs").insert()...');
       const { data: insertedJob, error } = await supabase
         .from('jobs')
         .insert([jobPayload])
@@ -97,57 +98,42 @@ const FreeJobPostingForm = () => {
         .single();
 
       if (error) {
-        console.error('❌ [JOB-POST] Supabase insert error:', {
+        console.error('❌ [JOB-FORM] Supabase insert error:', error);
+        console.error('❌ [JOB-FORM] Error details:', {
           message: error.message,
           details: error.details,
           hint: error.hint,
-          code: error.code,
+          code: error.code
         });
         
-        toast.error(`Job posting failed: ${error.message}`, {
-          description: error.details || error.hint || 'Please check your permissions and try again',
-        });
+        toast.error(`Failed to post job: ${error.message}`);
         return;
       }
 
-      console.log('✅ [JOB-POST] Job successfully inserted:', insertedJob);
-
-      // Verify the job was actually inserted
-      const { data: verificationJob, error: verifyError } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('id', insertedJob.id)
-        .single();
-
-      if (verifyError) {
-        console.error('⚠️ [JOB-POST] Could not verify job insertion:', verifyError);
-        toast.warning('Job may have been posted but verification failed');
-      } else {
-        console.log('✅ [JOB-POST] Job verified in database:', verificationJob);
-      }
-
-      toast.success('Job posted successfully!', {
-        description: 'Your job is now live and visible to candidates',
-      });
-
-      // Redirect to jobs page
-      console.log('🔄 [JOB-POST] Redirecting to /jobs...');
+      console.log('✅ [JOB-FORM] Job posted successfully:', insertedJob);
+      toast.success('Job posted successfully!');
+      
+      // Reset form
+      form.reset();
+      
+      // Redirect to jobs page to see the new job
       navigate('/jobs');
-
+      
     } catch (error) {
-      console.error('💥 [JOB-POST] Unexpected error during submission:', error);
-      toast.error('An unexpected error occurred', {
-        description: error instanceof Error ? error.message : 'Please try again later',
-      });
+      console.error('💥 [JOB-FORM] Unexpected error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card>
       <CardHeader>
         <CardTitle>Post a Free Job</CardTitle>
+        <CardDescription>
+          Fill out the form below to post your job listing for free
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -186,7 +172,7 @@ const FreeJobPostingForm = () => {
                       <SelectItem value="Barber">Barber</SelectItem>
                       <SelectItem value="Makeup Artist">Makeup Artist</SelectItem>
                       <SelectItem value="Management">Management</SelectItem>
-                      <SelectItem value="Reception">Reception</SelectItem>
+                      <SelectItem value="Receptionist">Receptionist</SelectItem>
                       <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -217,11 +203,14 @@ const FreeJobPostingForm = () => {
                   <FormLabel>Job Description *</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Describe the position, responsibilities, and what you're looking for..."
-                      className="min-h-32"
+                      placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
+                      className="min-h-[120px]"
                       {...field} 
                     />
                   </FormControl>
+                  <FormDescription>
+                    Minimum 10 characters required
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -244,7 +233,7 @@ const FreeJobPostingForm = () => {
                         <SelectItem value="hourly">Hourly</SelectItem>
                         <SelectItem value="salary">Salary</SelectItem>
                         <SelectItem value="commission">Commission</SelectItem>
-                        <SelectItem value="contract">Contract</SelectItem>
+                        <SelectItem value="commission_hourly">Commission + Hourly</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -259,7 +248,7 @@ const FreeJobPostingForm = () => {
                   <FormItem>
                     <FormLabel>Compensation Details</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. $18-25/hour + tips" {...field} />
+                      <Input placeholder="e.g. $18-25/hour plus tips" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,7 +264,7 @@ const FreeJobPostingForm = () => {
                   <FormLabel>Requirements</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="List any specific requirements, experience, or qualifications needed..."
+                      placeholder="List any specific requirements, certifications, or experience needed..."
                       {...field} 
                     />
                   </FormControl>
@@ -284,30 +273,31 @@ const FreeJobPostingForm = () => {
               )}
             />
 
-            <div className="space-y-4">
+            {/* Contact Information Section */}
+            <div className="space-y-4 border-t pt-6">
               <h3 className="text-lg font-semibold">Contact Information</h3>
               
-              <FormField
-                control={form.control}
-                name="contact_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your name or hiring manager name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="contact_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="contact_phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Contact Phone *</FormLabel>
+                      <FormLabel>Phone Number</FormLabel>
                       <FormControl>
                         <Input placeholder="(555) 123-4567" {...field} />
                       </FormControl>
@@ -315,27 +305,44 @@ const FreeJobPostingForm = () => {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="contact_email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contact Email *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="your@email.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
+
+              <FormField
+                control={form.control}
+                name="contact_email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address *</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="your@email.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contact_notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Additional Contact Notes</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Any additional information for applicants..."
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <Button 
               type="submit" 
-              className="w-full" 
               disabled={isSubmitting}
+              className="w-full"
             >
               {isSubmitting ? 'Posting Job...' : 'Post Job for Free'}
             </Button>

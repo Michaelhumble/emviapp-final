@@ -1,52 +1,77 @@
-
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useJobsData } from '@/hooks/useJobsData';
-import JobLoadingState from '@/components/jobs/JobLoadingState';
-import JobEmptyState from '@/components/jobs/JobEmptyState';
 import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
+import { Plus, Briefcase, TrendingUp, Users, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/integrations/supabase/client';
-import { useJobRenewal } from '@/hooks/useJobRenewal';
 import { Job } from '@/types/job';
+import { toast } from 'sonner';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
   const { isVietnamese } = useTranslation();
   const [autoRefreshCount, setAutoRefreshCount] = useState(0);
-  
-  // Use the job renewal hook for renewal functionality
-  const { renewJob, isRenewing, renewalJobId } = useJobRenewal({
-    onSuccess: () => {
-      console.log('🔄 [JOBS-PAGE] Job renewed successfully, refreshing jobs list');
-      refreshJobs();
-    }
-  });
+  const [isRenewing, setIsRenewing] = useState(false);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
 
   // Handle job renewal
   const handleRenewJob = async (job: Job) => {
     console.log('🔄 [JOBS-PAGE] Renewing job:', job.id);
-    await renewJob(job.id);
+    
+    try {
+      setIsRenewing(true);
+      setRenewalJobId(job.id);
+      
+      // Update job expiration date (extend by 30 days)
+      const newExpiresAt = new Date();
+      newExpiresAt.setDate(newExpiresAt.getDate() + 30);
+      
+      const { error } = await supabase
+        .from('jobs')
+        .update({ 
+          expires_at: newExpiresAt.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', job.id);
+
+      if (error) {
+        console.error('❌ [JOBS-PAGE] Job renewal failed:', error);
+        toast.error('Failed to renew job: ' + error.message);
+      } else {
+        console.log('✅ [JOBS-PAGE] Job renewed successfully');
+        toast.success('Job renewed successfully');
+        refreshJobs();
+      }
+    } catch (error) {
+      console.error('💥 [JOBS-PAGE] Unexpected renewal error:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsRenewing(false);
+      setRenewalJobId(null);
+    }
   };
 
   // Auto-refresh every 30 seconds to catch new jobs
   useEffect(() => {
+    console.log('🔄 [JOBS-PAGE] Auto-refresh triggered');
     const interval = setInterval(() => {
-      console.log('🔄 [JOBS-PAGE] Auto-refresh triggered');
       refreshJobs();
       setAutoRefreshCount(prev => prev + 1);
-    }, 30000);
+    }, 30000); // 30 seconds
 
     return () => clearInterval(interval);
   }, [refreshJobs]);
 
-  // Real-time subscription to jobs table
+  // Set up real-time subscription for new jobs
   useEffect(() => {
     console.log('📡 [JOBS-PAGE] Setting up real-time subscription...');
     
-    const channel = supabase
-      .channel('jobs-realtime')
+    const subscription = supabase
+      .channel('jobs-changes')
       .on(
         'postgres_changes',
         {
@@ -57,7 +82,7 @@ const JobsPage = () => {
         },
         (payload) => {
           console.log('⚡ [JOBS-PAGE] Real-time update received:', payload);
-          refreshJobs(); // Refresh jobs when changes occur
+          refreshJobs();
         }
       )
       .subscribe((status) => {
@@ -66,22 +91,25 @@ const JobsPage = () => {
 
     return () => {
       console.log('📡 [JOBS-PAGE] Cleaning up real-time subscription');
-      supabase.removeChannel(channel);
+      supabase.removeChannel(subscription);
     };
   }, [refreshJobs]);
 
-  console.log('🎉 [JOBS-PAGE] Rendering jobs page with', jobs.length, 'jobs');
+  const handleManualRefresh = () => {
+    console.log('🔄 [JOBS-PAGE] Manual refresh triggered');
+    refreshJobs();
+  };
 
   if (loading) {
     console.log('⏳ [JOBS-PAGE] Showing loading state...');
     return (
       <Layout>
-        <Helmet>
-          <title>
-            {isVietnamese ? "Đang tải việc làm..." : "Loading Jobs..."}
-          </title>
-        </Helmet>
-        <JobLoadingState />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p>Loading jobs...</p>
+          </div>
+        </div>
       </Layout>
     );
   }
@@ -90,73 +118,109 @@ const JobsPage = () => {
     console.error('❌ [JOBS-PAGE] Error state:', error);
     return (
       <Layout>
-        <Helmet>
-          <title>
-            {isVietnamese ? "Lỗi tải việc làm" : "Error Loading Jobs"}
-          </title>
-        </Helmet>
-        <div className="container mx-auto py-8 px-4">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">
-              {isVietnamese ? "Không thể tải việc làm" : "Failed to Load Jobs"}
-            </h2>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <button 
-              onClick={refreshJobs}
-              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-            >
-              {isVietnamese ? "Thử lại" : "Try Again"}
-            </button>
+            <p className="text-red-600 mb-4">Error loading jobs: {error}</p>
+            <Button onClick={handleManualRefresh}>Try Again</Button>
           </div>
         </div>
       </Layout>
     );
   }
 
-  if (jobs.length === 0) {
-    console.log('📭 [JOBS-PAGE] No jobs found, showing empty state');
-    return (
-      <Layout>
-        <Helmet>
-          <title>
-            {isVietnamese ? "Không có việc làm" : "No Jobs Available"}
-          </title>
-        </Helmet>
-        <JobEmptyState />
-      </Layout>
-    );
-  }
+  console.log('🎉 [JOBS-PAGE] Rendering jobs page with', jobs.length, 'jobs');
 
   return (
     <Layout>
       <Helmet>
-        <title>
-          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
-        </title>
+        <title>{isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}</title>
         <meta 
           name="description" 
           content={isVietnamese 
-            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
-            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+            ? "Tìm việc làm trong ngành làm đẹp. Cơ hội nghề nghiệp cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ."
+            : "Find beauty industry jobs. Career opportunities for nail technicians, hair stylists, estheticians."
           }
         />
       </Helmet>
       
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto py-8 px-4">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-4xl font-bold mb-4">
               {isVietnamese ? "Việc Làm Ngành Làm Đẹp" : "Beauty Industry Jobs"}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-xl mb-6 opacity-90">
               {isVietnamese 
-                ? `Tìm thấy ${jobs.length} cơ hội việc làm` 
-                : `Found ${jobs.length} job opportunities`}
+                ? "Khám phá cơ hội nghề nghiệp tuyệt vời trong ngành làm đẹp"
+                : "Discover amazing career opportunities in the beauty industry"
+              }
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/post-job-free">
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+                  <Plus className="mr-2 h-5 w-5" />
+                  {isVietnamese ? "Đăng Tin Tuyển Dụng" : "Post a Job"}
+                </Button>
+              </Link>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-purple-600"
+                onClick={handleManualRefresh}
+              >
+                {isVietnamese ? "Làm Mới" : "Refresh Jobs"}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="bg-white py-8 border-b">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+              <div className="flex items-center justify-center space-x-3">
+                <Briefcase className="h-8 w-8 text-purple-600" />
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">{jobs.length}</div>
+                  <div className="text-gray-600">{isVietnamese ? "Việc Làm" : "Active Jobs"}</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center space-x-3">
+                <TrendingUp className="h-8 w-8 text-green-600" />
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">24/7</div>
+                  <div className="text-gray-600">{isVietnamese ? "Cập Nhật" : "Updated"}</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center space-x-3">
+                <Users className="h-8 w-8 text-blue-600" />
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">500+</div>
+                  <div className="text-gray-600">{isVietnamese ? "Nghệ Nhân" : "Professionals"}</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center space-x-3">
+                <MapPin className="h-8 w-8 text-red-600" />
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">50+</div>
+                  <div className="text-gray-600">{isVietnamese ? "Thành Phố" : "Cities"}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Jobs Listing */}
+        <div className="container mx-auto py-8 px-4">
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {isVietnamese ? "Danh Sách Việc Làm" : "Available Positions"}
+            </h2>
             {autoRefreshCount > 0 && (
-              <p className="text-sm text-gray-500">
-                Auto-refreshed {autoRefreshCount} times - Real-time updates active
-              </p>
+              <div className="text-sm text-gray-500">
+                {isVietnamese ? "Tự động cập nhật" : "Auto-refreshed"} {autoRefreshCount} {isVietnamese ? "lần" : "times"}
+              </div>
             )}
           </div>
           
