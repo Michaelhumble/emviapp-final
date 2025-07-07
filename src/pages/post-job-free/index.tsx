@@ -53,6 +53,9 @@ const PostJobFreePage = () => {
               <p className="text-gray-600">
                 Reach talented beauty professionals with your job posting
               </p>
+              <p className="text-sm text-green-600 mt-2">
+                ✅ Signed in as: {user.email}
+              </p>
             </div>
             
             <FreeJobPostingForm />

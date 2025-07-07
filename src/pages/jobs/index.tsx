@@ -1,99 +1,36 @@
 
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Job } from '@/types/job';
-import JobsGrid from '@/components/jobs/JobsGrid';
+import { useEffect, useState } from 'react';
+import Layout from '@/components/layout/Layout';
+import { useJobsData } from '@/hooks/useJobsData';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
-import { Button } from '@/components/ui/button';
-import { RefreshCw, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
+import { Helmet } from 'react-helmet';
+import { useTranslation } from '@/hooks/useTranslation';
+import { supabase } from '@/integrations/supabase/client';
 
 const JobsPage = () => {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { jobs, loading, error, refreshJobs } = useJobsData();
+  const { isVietnamese } = useTranslation();
+  const [autoRefreshCount, setAutoRefreshCount] = useState(0);
 
-  const fetchJobs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      console.log('📋 [JOBS-PAGE] Fetching jobs from Supabase...');
-
-      // Fetch jobs using public Supabase API
-      const { data, error: fetchError } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (fetchError) {
-        console.error('❌ [JOBS-PAGE] Fetch error:', fetchError);
-        console.error('❌ [JOBS-PAGE] Error details:', {
-          message: fetchError.message,
-          code: fetchError.code,
-          details: fetchError.details,
-          hint: fetchError.hint
-        });
-        setError(`Failed to load jobs: ${fetchError.message}`);
-        return;
-      }
-
-      console.log('📊 [JOBS-PAGE] Raw data from Supabase:', data);
-      console.log('📊 [JOBS-PAGE] Jobs count:', data?.length || 0);
-
-      if (!data) {
-        console.warn('⚠️ [JOBS-PAGE] No data returned from Supabase');
-        setJobs([]);
-        return;
-      }
-
-      // Transform database data to Job interface
-      const transformedJobs: Job[] = data.map(job => {
-        console.log('🔄 [JOBS-PAGE] Transforming job:', job.id, job.title);
-        
-        return {
-          id: job.id,
-          title: job.title || 'Untitled Job',
-          category: job.category || 'Other',
-          location: job.location || '',
-          description: job.description || '',
-          user_id: job.user_id || '',
-          status: job.status || 'active',
-          created_at: job.created_at || new Date().toISOString(),
-          compensation_type: job.compensation_type || '',
-          compensation_details: job.compensation_details || '',
-          requirements: job.requirements || '',
-          pricing_tier: job.pricing_tier || 'free',
-          contact_info: typeof job.contact_info === 'object' && job.contact_info ? 
-            job.contact_info as Job['contact_info'] : {},
-          // Legacy compatibility fields
-          role: job.title || 'Job Role',
-          company: job.title || 'Company Name',
-          posted_at: job.created_at || new Date().toISOString(),
-        };
-      });
-
-      console.log('✅ [JOBS-PAGE] Transformed jobs:', transformedJobs.length);
-      setJobs(transformedJobs);
-
-    } catch (error) {
-      console.error('💥 [JOBS-PAGE] Unexpected error:', error);
-      setError('An unexpected error occurred while loading jobs');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Auto-refresh every 30 seconds to catch new jobs
   useEffect(() => {
-    console.log('🚀 [JOBS-PAGE] Component mounted, fetching jobs...');
-    fetchJobs();
+    const interval = setInterval(() => {
+      console.log('🔄 [JOBS-PAGE] Auto-refresh triggered');
+      refreshJobs();
+      setAutoRefreshCount(prev => prev + 1);
+    }, 30000);
 
-    // Set up real-time subscription for job changes
-    console.log('⚡ [JOBS-PAGE] Setting up real-time subscription...');
+    return () => clearInterval(interval);
+  }, [refreshJobs]);
+
+  // Real-time subscription to jobs table
+  useEffect(() => {
+    console.log('📡 [JOBS-PAGE] Setting up real-time subscription...');
+    
     const channel = supabase
-      .channel('jobs-changes')
+      .channel('jobs-realtime')
       .on(
         'postgres_changes',
         {
@@ -104,96 +41,113 @@ const JobsPage = () => {
         },
         (payload) => {
           console.log('⚡ [JOBS-PAGE] Real-time update received:', payload);
-          console.log('🔄 [JOBS-PAGE] Refreshing jobs due to real-time update...');
-          fetchJobs(); // Refresh jobs when changes occur
+          refreshJobs(); // Refresh jobs when changes occur
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 [JOBS-PAGE] Subscription status:', status);
+      });
 
     return () => {
-      console.log('🧹 [JOBS-PAGE] Cleaning up real-time subscription...');
+      console.log('📡 [JOBS-PAGE] Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [refreshJobs]);
 
-  // Auto-refresh every 30 seconds to catch new posts
-  useEffect(() => {
-    console.log('⏰ [JOBS-PAGE] Setting up auto-refresh timer...');
-    const interval = setInterval(() => {
-      console.log('🔄 [JOBS-PAGE] Auto-refresh triggered');
-      fetchJobs();
-    }, 30000);
-
-    return () => {
-      console.log('🧹 [JOBS-PAGE] Cleaning up auto-refresh timer...');
-      clearInterval(interval);
-    };
-  }, []);
+  console.log('🎉 [JOBS-PAGE] Rendering jobs page with', jobs.length, 'jobs');
 
   if (loading) {
     console.log('⏳ [JOBS-PAGE] Showing loading state...');
-    return <JobLoadingState />;
+    return (
+      <Layout>
+        <Helmet>
+          <title>
+            {isVietnamese ? "Đang tải việc làm..." : "Loading Jobs..."}
+          </title>
+        </Helmet>
+        <JobLoadingState />
+      </Layout>
+    );
   }
 
   if (error) {
-    console.log('❌ [JOBS-PAGE] Showing error state:', error);
+    console.error('❌ [JOBS-PAGE] Error state:', error);
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={fetchJobs} variant="outline">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Try Again
-          </Button>
+      <Layout>
+        <Helmet>
+          <title>
+            {isVietnamese ? "Lỗi tải việc làm" : "Error Loading Jobs"}
+          </title>
+        </Helmet>
+        <div className="container mx-auto py-8 px-4">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              {isVietnamese ? "Không thể tải việc làm" : "Failed to Load Jobs"}
+            </h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button 
+              onClick={refreshJobs}
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+            >
+              {isVietnamese ? "Thử lại" : "Try Again"}
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (jobs.length === 0) {
-    console.log('📭 [JOBS-PAGE] No jobs found, showing empty state...');
+    console.log('📭 [JOBS-PAGE] No jobs found, showing empty state');
     return (
-      <div className="container mx-auto py-8">
-        <JobEmptyState onClearFilters={fetchJobs} />
-      </div>
+      <Layout>
+        <Helmet>
+          <title>
+            {isVietnamese ? "Không có việc làm" : "No Jobs Available"}
+          </title>
+        </Helmet>
+        <JobEmptyState />
+      </Layout>
     );
   }
 
-  console.log('🎉 [JOBS-PAGE] Rendering jobs page with', jobs.length, 'jobs');
-
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">Available Jobs</h1>
-          <p className="text-gray-600">
-            {jobs.length} active job{jobs.length !== 1 ? 's' : ''} available
-          </p>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button onClick={fetchJobs} variant="outline" size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
+    <Layout>
+      <Helmet>
+        <title>
+          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
+        </title>
+        <meta 
+          name="description" 
+          content={isVietnamese 
+            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
+            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+          }
+        />
+      </Helmet>
+      
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto py-8 px-4">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isVietnamese ? "Việc Làm Ngành Làm Đẹp" : "Beauty Industry Jobs"}
+            </h1>
+            <p className="text-gray-600">
+              {isVietnamese 
+                ? `Tìm thấy ${jobs.length} cơ hội việc làm` 
+                : `Found ${jobs.length} job opportunities`}
+            </p>
+            {autoRefreshCount > 0 && (
+              <p className="text-sm text-gray-500">
+                Auto-refreshed {autoRefreshCount} times - Real-time updates active
+              </p>
+            )}
+          </div>
           
-          <Link to="/post-job-free">
-            <Button size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              Post Job
-            </Button>
-          </Link>
+          <UnifiedJobFeed jobs={jobs} />
         </div>
       </div>
-      
-      <JobsGrid 
-        jobs={jobs}
-        expirations={{}}
-        onRenew={() => {}}
-        isRenewing={false}
-        renewalJobId={null}
-      />
-    </div>
+    </Layout>
   );
 };
 
