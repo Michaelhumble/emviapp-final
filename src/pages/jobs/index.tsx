@@ -21,6 +21,16 @@ const JobsPage = () => {
     })));
   }, [jobs, totalJobs]);
 
+  // Auto-refresh jobs every 30 seconds to catch new posts
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('🔄 [JOBS-PAGE] Auto-refreshing jobs...');
+      refreshJobs();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [refreshJobs]);
+
   if (loading) {
     return <JobLoadingState />;
   }
@@ -49,11 +59,18 @@ const JobsPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Available Jobs</h1>
-        <p className="text-gray-600">
-          {totalJobs} active job{totalJobs !== 1 ? 's' : ''} available
-        </p>
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">Available Jobs</h1>
+          <p className="text-gray-600">
+            {totalJobs} active job{totalJobs !== 1 ? 's' : ''} available
+          </p>
+        </div>
+        
+        <Button onClick={refreshJobs} variant="outline" size="sm">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
       </div>
       
       <JobsGrid 

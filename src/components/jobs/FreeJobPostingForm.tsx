@@ -1,286 +1,225 @@
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
+import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useJobPosting } from '@/hooks/jobs/useJobPosting';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-
-const freeJobSchema = z.object({
-  title: z.string().min(1, 'Job title is required'),
-  category: z.string().min(1, 'Category is required'),
-  location: z.string().min(1, 'Location is required'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  compensation_type: z.string().optional(),
-  compensation_details: z.string().optional(),
-  requirements: z.string().optional(),
-  contact_phone: z.string().optional(),
-  contact_email: z.string().optional(),
-});
-
-type FreeJobFormData = z.infer<typeof freeJobSchema>;
-
-const categories = [
-  'Nail Technician',
-  'Hair Stylist',
-  'Esthetician',
-  'Massage Therapist',
-  'Makeup Artist',
-  'Barber',
-  'Other'
-];
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { JobDetailsSubmission } from '@/types/job';
 
 const FreeJobPostingForm = () => {
-  const { user } = useAuth();
-  const { postFreeJob, isPosting } = useJobPosting();
   const navigate = useNavigate();
-  const [debugInfo, setDebugInfo] = useState('');
-
-  const form = useForm<FreeJobFormData>({
-    resolver: zodResolver(freeJobSchema),
-    defaultValues: {
-      title: '',
-      category: '',
-      location: '',
-      description: '',
-      compensation_type: '',
-      compensation_details: '',
-      requirements: '',
-      contact_phone: '',
-      contact_email: '',
-    },
+  const { submitFreeJob, isSubmitting } = useJobPosting();
+  
+  const [formData, setFormData] = useState<JobDetailsSubmission>({
+    title: '',
+    category: '',
+    location: '',
+    description: '',
+    compensation_type: '',
+    compensation_details: '',
+    requirements: '',
+    contact_info: {
+      owner_name: '',
+      phone: '',
+      email: ''
+    }
   });
 
-  const onSubmit = async (data: FreeJobFormData) => {
-    console.log('📝 [FREE-FORM] Form submitted with data:', data);
-    setDebugInfo(`Form data: ${JSON.stringify(data, null, 2)}\nUser: ${user?.id}`);
+  const handleInputChange = (field: keyof JobDetailsSubmission, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
-    if (!user) {
-      toast.error('Please sign in to post a job');
+  const handleContactInfoChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      contact_info: {
+        ...prev.contact_info,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log('📝 [FORM] Form submitted with data:', formData);
+
+    if (!formData.title.trim()) {
+      alert('Please enter a job title');
       return;
     }
 
-    // Prepare contact info
-    const contactInfo: any = {};
-    if (data.contact_phone) contactInfo.phone = data.contact_phone;
-    if (data.contact_email) contactInfo.email = data.contact_email;
-    if (user.email) contactInfo.email = user.email; // Use user's email as fallback
+    if (!formData.category) {
+      alert('Please select a category');
+      return;
+    }
 
-    const jobData = {
-      ...data,
-      contact_info: contactInfo
-    };
-
-    console.log('📋 [FREE-FORM] Prepared job data:', jobData);
-    setDebugInfo(prev => prev + `\nPrepared job data: ${JSON.stringify(jobData, null, 2)}`);
-
-    const result = await postFreeJob(jobData);
-    
-    console.log('📊 [FREE-FORM] Post result:', result);
-    setDebugInfo(prev => prev + `\nPost result: ${JSON.stringify(result, null, 2)}`);
-
-    if (result.success) {
-      toast.success('Free job posted successfully! Redirecting...');
-      // Wait a moment for the user to see the success message, then navigate
-      setTimeout(() => {
-        navigate('/jobs');
-      }, 2000);
-    } else {
-      toast.error(`Failed to post job: ${result.error}`);
-      setDebugInfo(prev => prev + `\nERROR: ${result.error}`);
+    try {
+      const result = await submitFreeJob(formData);
+      
+      if (result.success && result.jobId) {
+        console.log('✅ [FORM] Job posted successfully, navigating to success page');
+        navigate(`/post-success?jobId=${result.jobId}&type=free`);
+      } else {
+        console.error('❌ [FORM] Job posting failed:', result.error);
+        alert(`Failed to post job: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('💥 [FORM] Unexpected error:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
   };
 
-  if (!user) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-gray-600">Please sign in to post a job.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card>
+    <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Post a Free Job</CardTitle>
-        <CardDescription>
-          Post your job listing for free. It will be visible to all users immediately.
-        </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Title *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Senior Nail Technician" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="title">Job Title *</Label>
+            <Input
+              id="title"
+              value={formData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              placeholder="e.g. Nail Technician, Hair Stylist, Massage Therapist"
+              required
             />
-
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Los Angeles, CA" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Description *</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe the position, responsibilities, and what you're looking for..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="compensation_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Compensation Type</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Hourly, Weekly, Commission" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="compensation_details"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Compensation Details</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. $15-20/hour, $800-1200/week" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="requirements"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Requirements</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="List any specific requirements, qualifications, or experience needed..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="contact_phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Phone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="(555) 123-4567" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="contact_email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="hiring@company.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <Button type="submit" disabled={isPosting} className="w-full">
-              {isPosting ? 'Posting Job...' : 'Post Free Job'}
-            </Button>
-          </form>
-        </Form>
-
-        {/* Debug Panel - Remove this after testing */}
-        {debugInfo && (
-          <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-            <h3 className="font-bold mb-2">Debug Info:</h3>
-            <pre className="text-xs whitespace-pre-wrap">{debugInfo}</pre>
           </div>
-        )}
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <Select onValueChange={(value) => handleInputChange('category', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select job category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Nail Technician">Nail Technician</SelectItem>
+                <SelectItem value="Hair Stylist">Hair Stylist</SelectItem>
+                <SelectItem value="Massage Therapist">Massage Therapist</SelectItem>
+                <SelectItem value="Esthetician">Esthetician</SelectItem>
+                <SelectItem value="Barber">Barber</SelectItem>
+                <SelectItem value="Makeup Artist">Makeup Artist</SelectItem>
+                <SelectItem value="Receptionist">Receptionist</SelectItem>
+                <SelectItem value="Manager">Manager</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="location">Location</Label>
+            <Input
+              id="location"
+              value={formData.location}
+              onChange={(e) => handleInputChange('location', e.target.value)}
+              placeholder="e.g. Los Angeles, CA"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Job Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="Describe the job responsibilities, work environment, and what you're looking for..."
+              rows={4}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="compensation_type">Compensation Type</Label>
+              <Select onValueChange={(value) => handleInputChange('compensation_type', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select compensation type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hourly">Hourly</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="commission">Commission</SelectItem>
+                  <SelectItem value="salary">Salary</SelectItem>
+                  <SelectItem value="booth_rental">Booth Rental</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="compensation_details">Compensation Details</Label>
+              <Input
+                id="compensation_details"
+                value={formData.compensation_details}
+                onChange={(e) => handleInputChange('compensation_details', e.target.value)}
+                placeholder="e.g. $15-20/hour, $800-1200/week"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="requirements">Requirements</Label>
+            <Textarea
+              id="requirements"
+              value={formData.requirements}
+              onChange={(e) => handleInputChange('requirements', e.target.value)}
+              placeholder="List any required qualifications, licenses, or experience..."
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Contact Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="owner_name">Contact Name</Label>
+                <Input
+                  id="owner_name"
+                  value={formData.contact_info?.owner_name || ''}
+                  onChange={(e) => handleContactInfoChange('owner_name', e.target.value)}
+                  placeholder="Your name or business name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={formData.contact_info?.phone || ''}
+                  onChange={(e) => handleContactInfoChange('phone', e.target.value)}
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.contact_info?.email || ''}
+                onChange={(e) => handleContactInfoChange('email', e.target.value)}
+                placeholder="contact@yourbusiness.com"
+              />
+            </div>
+          </div>
+
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Posting Job...' : 'Post Free Job'}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

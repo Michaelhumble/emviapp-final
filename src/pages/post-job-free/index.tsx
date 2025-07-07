@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import FreeJobPostingForm from '@/components/jobs/FreeJobPostingForm';
-import JobPostingDebugPanel from '@/components/jobs/JobPostingDebugPanel';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +10,6 @@ const PostJobFreePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Debug logging
     console.log('🔐 [POST-FREE] Auth state:', { user: user?.id, loading });
     
     if (!loading && !user) {
@@ -49,8 +47,6 @@ const PostJobFreePage = () => {
     <Layout>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto py-8 px-4">
-          <JobPostingDebugPanel />
-          
           <div className="max-w-2xl mx-auto">
             <div className="mb-6 text-center">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Post a Free Job</h1>

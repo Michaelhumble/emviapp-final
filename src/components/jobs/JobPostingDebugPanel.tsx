@@ -76,19 +76,6 @@ const JobPostingDebugPanel = () => {
         }
       }
 
-      // Test 3: Check RLS policies
-      console.log('🔍 [DEBUG] Checking RLS status...');
-      const { data: rlsData, error: rlsError } = await supabase
-        .rpc('pg_stat_user_tables')
-        .select('*')
-        .eq('relname', 'jobs');
-      
-      info.tests.rlsStatus = {
-        success: !rlsError,
-        error: rlsError?.message,
-        data: rlsData
-      };
-
     } catch (error) {
       info.tests.generalError = {
         message: error instanceof Error ? error.message : 'Unknown error',
