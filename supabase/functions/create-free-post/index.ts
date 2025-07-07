@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('🆓 [FREE-POST] Function called');
+  console.log('🆓 [FREE-POST] Function called with method:', req.method);
   
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -32,7 +32,7 @@ serve(async (req) => {
       });
     }
 
-    console.log("🚀 JOB POSTING FUNCTION CALLED with payload:", payload);
+    console.log("🚀 [FREE-POST] Function called with payload:", payload);
 
     // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -68,38 +68,46 @@ serve(async (req) => {
       });
     }
 
-    console.log('✅ [FREE-POST] Inserting job with data:', {
+    // Prepare job data for insertion
+    const jobInsertData = {
       title: payload.jobData.title,
-      category: payload.jobData.category,
-      location: payload.jobData.location,
+      category: payload.jobData.category || 'Other',
+      location: payload.jobData.location || '',
+      description: payload.jobData.description || '',
+      compensation_type: payload.jobData.compensation_type || '',
+      compensation_details: payload.jobData.compensation_details || '',
+      requirements: payload.jobData.requirements || '',
       user_id: payload.jobData.user_id,
       status: 'active',
-      pricing_tier: 'free'
-    });
+      pricing_tier: 'free',
+      contact_info: payload.jobData.contact_info || {}
+    };
+
+    console.log('✅ [FREE-POST] Inserting job with data:', jobInsertData);
 
     const { data, error } = await supabase
       .from('jobs')
-      .insert({
-        title: payload.jobData.title,
-        category: payload.jobData.category || 'Other',
-        location: payload.jobData.location,
-        description: payload.jobData.description,
-        user_id: payload.jobData.user_id,
-        status: 'active',
-        pricing_tier: 'free'
-      })
-      .select();
+      .insert([jobInsertData])
+      .select()
+      .single();
 
     if (error) {
-      console.error("❌ JOB INSERT FAILED:", error);
-      return new Response(JSON.stringify({ success: false, error: error.message }), { 
+      console.error("❌ [FREE-POST] JOB INSERT FAILED:", error);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: error.message,
+        details: error
+      }), { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400 
       });
     }
 
-    console.log("✅ JOB INSERT SUCCESSFUL:", data);
-    return new Response(JSON.stringify({ success: true, data }), { 
+    console.log("✅ [FREE-POST] JOB INSERT SUCCESSFUL:", data);
+    return new Response(JSON.stringify({ 
+      success: true, 
+      data: data 
+    }), { 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200 
     });
@@ -108,7 +116,8 @@ serve(async (req) => {
     console.error('💥 [FREE-POST] Unexpected error:', error);
     return new Response(JSON.stringify({ 
       success: false, 
-      error: 'Internal server error' 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
