@@ -11,39 +11,14 @@ const JobsPage = () => {
   const { jobs, loading, error, refreshJobs, totalJobs } = useJobsData();
 
   useEffect(() => {
-    console.log('📋 [JOBS-PAGE] Component rendered with state:', {
-      jobsCount: totalJobs,
-      loading,
-      hasError: !!error,
-      errorMessage: error
-    });
-
-    if (jobs.length > 0) {
-      console.log('📋 [JOBS-PAGE] Detailed jobs data:');
-      jobs.forEach((job, index) => {
-        console.log(`📝 [JOBS-PAGE] Job ${index + 1}:`, {
-          id: job.id,
-          title: job.title,
-          status: job.status,
-          pricing_tier: job.pricing_tier,
-          created_at: job.created_at,
-          user_id: job.user_id,
-          category: job.category,
-          location: job.location
-        });
-      });
-    }
+    console.log('📋 [JOBS-PAGE] Rendering with', totalJobs, 'jobs from Supabase');
   }, [jobs, loading, error, totalJobs]);
 
-  // Show loading state
   if (loading) {
-    console.log('⏳ [JOBS-PAGE] Showing loading state');
     return <JobLoadingState />;
   }
 
-  // Show error state
   if (error) {
-    console.log('❌ [JOBS-PAGE] Showing error state:', error);
     return (
       <div className="container mx-auto py-8">
         <div className="text-center">
@@ -57,17 +32,13 @@ const JobsPage = () => {
     );
   }
 
-  // Show empty state
   if (jobs.length === 0) {
-    console.log('📭 [JOBS-PAGE] Showing empty state');
     return (
       <div className="container mx-auto py-8">
         <JobEmptyState onClearFilters={() => refreshJobs()} />
       </div>
     );
   }
-
-  console.log('✅ [JOBS-PAGE] Rendering jobs grid with', jobs.length, 'jobs');
 
   return (
     <div className="container mx-auto py-8">

@@ -2,11 +2,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { getFeaturedSalons } from "@/utils/featuredContent";
-import { useEffect, useState } from "react";
-import { Salon } from "@/types/salon";
-import ValidatedSalonCard from "@/components/salons/ValidatedSalonCard";
-import ValidatedLink from "@/components/common/ValidatedLink";
 
 const container = {
   hidden: { opacity: 0 },
@@ -24,16 +19,6 @@ const item = {
 };
 
 const FeaturedSalons = () => {
-  const [salons, setSalons] = useState<Salon[]>([]);
-  
-  useEffect(() => {
-    // Get featured salons while preserving ALL original image URLs
-    const featuredSalons = getFeaturedSalons(3);
-    
-    // Ensure we preserve all original image URLs
-    setSalons(featuredSalons);
-  }, []);
-
   return (
     <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
@@ -48,28 +33,6 @@ const FeaturedSalons = () => {
           <p className="text-lg text-gray-600">
             Discover exceptional salons with opportunities for talented beauty professionals
           </p>
-        </motion.div>
-
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          {salons.map((salon) => (
-            <motion.div key={salon.id} variants={item}>
-              <ValidatedLink 
-                to={`/salons/${salon.id}`} 
-                listingId={salon.id} 
-                listingType="salon"
-                className="block h-full"
-                fallbackRoute="/salons"
-              >
-                <ValidatedSalonCard salon={salon} listingType="salon" />
-              </ValidatedLink>
-            </motion.div>
-          ))}
         </motion.div>
 
         <div className="mt-14 text-center">

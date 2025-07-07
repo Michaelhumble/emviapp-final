@@ -45,8 +45,7 @@ export const mockPremiumJobs: Job[] = [
     user_id: 'user-premium-2',
     role: 'Master Hair Colorist',
     posted_at: '2024-01-11T11:20:00.000Z',
-    specialties: ['Color Correction', 'Balayage', 'Fashion Colors'],
-    requirements: 'Advanced color techniques, 7+ years experience'
+    specialties: ['Color Correction', 'Balayage', 'Fashion Colors']
   },
   {
     id: 'premium-3',
@@ -68,7 +67,6 @@ export const mockPremiumJobs: Job[] = [
     user_id: 'user-premium-3',
     role: 'Lead Esthetician',
     posted_at: '2024-01-08T16:10:00.000Z',
-    specialties: ['Chemical Peels', 'Microneedling', 'Laser Treatments'],
-    requirements: 'Medical spa experience, advanced certifications preferred'
+    specialties: ['Chemical Peels', 'Microneedling', 'Laser Treatments']
   }
 ];

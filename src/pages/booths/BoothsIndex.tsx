@@ -1,51 +1,27 @@
+
 import React from 'react';
-import { Container } from '@/components/ui/container';
-import { Card, CardContent } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { MapPin, DollarSign } from 'lucide-react';
-import { getAllBooths } from '@/utils/featuredContent';
 
 const BoothsIndex = () => {
-  const booths = getAllBooths();
-
   return (
-    <Container className="py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold font-serif mb-2">Booth Rentals</h1>
-        <p className="text-gray-600">Find booth rental opportunities in your area.</p>
+    <div className="container mx-auto py-8">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-4">Booth Rentals</h1>
+        <p className="text-lg text-gray-600 mb-8">
+          Find the perfect booth rental for your beauty business
+        </p>
+        
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md mx-auto">
+          <p className="text-blue-800 mb-4">
+            Booth rental listings are coming soon! Check back later for available spaces.
+          </p>
+          <Link to="/jobs">
+            <Button>Browse Job Listings Instead</Button>
+          </Link>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {booths.map((booth) => (
-          <Card key={booth.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="relative">
-              <div className="aspect-video bg-gray-100">
-                <ImageWithFallback
-                  src={booth.image || ""}
-                  alt={booth.title || "Booth Rental"}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <Badge className="absolute top-2 left-2 bg-white text-black rounded-full">{booth.type}</Badge>
-            </div>
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-2">{booth.title}</h3>
-              <div className="flex items-center text-gray-500 mb-2">
-                <MapPin className="h-4 w-4 mr-1" />
-                {booth.location}
-              </div>
-              <div className="flex items-center text-gray-700 font-medium">
-                <DollarSign className="h-4 w-4 mr-1" />
-                {booth.price} / month
-              </div>
-              <Button variant="outline" className="mt-4 w-full">View Details</Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Container>
+    </div>
   );
 };
 

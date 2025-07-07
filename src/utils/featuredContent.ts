@@ -23,7 +23,8 @@ const magicNailsListing: Job = {
   pricing_tier: 'diamond',
   user_id: 'magic-nails-owner',
   role: 'Nail Salon',
-  posted_at: '2024-01-01T00:00:00.000Z'
+  posted_at: '2024-01-01T00:00:00.000Z',
+  requirements: 'Valid nail tech license, 2+ years experience'
 };
 
 // Sample featured job listings
@@ -78,10 +79,38 @@ const featuredJobListings: Job[] = [
   }
 ];
 
+// Export functions needed by other components
 export const getFeaturedContent = (): Job[] => {
   return [magicNailsListing, ...featuredJobListings];
 };
 
 export const getMagicNailsListing = (): Job => {
   return magicNailsListing;
+};
+
+export const getFeaturedJobs = (limit: number = 10): Job[] => {
+  return featuredJobListings.slice(0, limit);
+};
+
+export const getFeaturedSalons = (limit: number = 3): any[] => {
+  // Return empty array since we're focusing on Supabase data only
+  return [];
+};
+
+export const getSalonById = (id: string): any => {
+  if (id === 'magic-nails-featured') {
+    return magicNailsListing;
+  }
+  return null;
+};
+
+export const getSalonByIdAsJob = (id: string): Job | null => {
+  if (id === 'magic-nails-featured') {
+    return magicNailsListing;
+  }
+  return null;
+};
+
+export const getAllBooths = (): Job[] => {
+  return [];
 };

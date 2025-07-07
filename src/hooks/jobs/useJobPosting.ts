@@ -31,9 +31,7 @@ export const useJobPosting = () => {
         user_id: user.id,
         compensation_type: jobData.compensation_type || '',
         compensation_details: jobData.compensation_details || '',
-        requirements: Array.isArray(jobData.requirements) 
-          ? jobData.requirements.join(', ') 
-          : (jobData.requirements || ''), // Always convert to string
+        requirements: jobData.requirements || '', // Always string
         contact_info: jobData.contact_info || {},
         status: 'active', // Free jobs are immediately active
         pricing_tier: 'free'
@@ -86,9 +84,7 @@ export const useJobPosting = () => {
         user_id: user.id,
         compensation_type: jobData.compensation_type || '',
         compensation_details: jobData.compensation_details || '',
-        requirements: Array.isArray(jobData.requirements) 
-          ? jobData.requirements.join(', ') 
-          : (jobData.requirements || ''), // Always convert to string
+        requirements: jobData.requirements || '', // Always string
         contact_info: jobData.contact_info || {},
         status: 'draft', // Draft until payment completes
         pricing_tier: pricingTier

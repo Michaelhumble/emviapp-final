@@ -1,74 +1,40 @@
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
-import SalonDetailContent from '@/components/salons/SalonDetailContent';
-import SalonListingCta from '@/components/salons/SalonListingCta';
-import SalonNotFound from '@/components/salon/SalonNotFound';
-import { fetchJob } from '@/utils/jobs';
-import { getSalonByIdAsJob } from '@/utils/featuredContent';
-import { Job } from '@/types/job';
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 const SalonDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const [salon, setSalon] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { id } = useParams();
 
-  useEffect(() => {
-    const loadSalon = async () => {
-      if (!id) {
-        setError(true);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        // Try to get from the featured salons first (converted to Job type)
-        const salonData = getSalonByIdAsJob(id);
-        
-        if (salonData) {
-          setSalon(salonData);
-        } else {
-          // Fall back to fetching from jobs
-          const jobData = await fetchJob(id);
-          setSalon(jobData);
-        }
-      } catch (err) {
-        console.error('Error loading salon:', err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSalon();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-background">
-          <div className="container mx-auto py-12">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <span className="ml-2">Loading salon details...</span>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (error) return <SalonNotFound />;
-
+  // For now, show a placeholder since we're focusing on jobs flow
   return (
-    <Layout>
-      <div className="min-h-screen bg-background">
-        <SalonDetailContent salon={salon} />
-        <SalonListingCta />
+    <div className="container mx-auto py-8">
+      <div className="mb-6">
+        <Link to="/salons">
+          <Button variant="outline" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Salons
+          </Button>
+        </Link>
       </div>
-    </Layout>
+
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-4">Salon Details</h1>
+        <p className="text-lg text-gray-600 mb-8">
+          Salon ID: {id}
+        </p>
+        
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md mx-auto">
+          <p className="text-blue-800 mb-4">
+            Detailed salon listings are coming soon! 
+          </p>
+          <Link to="/jobs">
+            <Button>Browse Available Jobs</Button>
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 };
 
