@@ -21,6 +21,7 @@ const JobsPage = () => {
 
       console.log('📋 [JOBS-PAGE] Fetching jobs from Supabase...');
 
+      // Fetch jobs using public Supabase API
       const { data, error: fetchError } = await supabase
         .from('jobs')
         .select('*')
