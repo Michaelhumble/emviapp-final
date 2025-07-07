@@ -20,7 +20,6 @@ const JobsPage = () => {
       setError(null);
 
       console.log('📋 [JOBS-PAGE] Fetching jobs from Supabase...');
-      console.log('📋 [JOBS-PAGE] Supabase URL:', supabase.supabaseUrl);
 
       const { data, error: fetchError } = await supabase
         .from('jobs')
