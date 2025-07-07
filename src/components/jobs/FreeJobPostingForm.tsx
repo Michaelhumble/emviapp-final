@@ -1,20 +1,36 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const JOB_CATEGORIES = [
+  'Nail Technician',
+  'Hair Stylist', 
+  'Makeup Artist',
+  'Esthetician',
+  'Barber',
+  'Lash Technician',
+  'Massage Therapist',
+  'Receptionist',
+  'Manager',
+  'Other'
+];
 
 const FreeJobPostingForm = () => {
+  console.log('🎯 [JOB-FORM] Component mounted');
+  
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -32,94 +48,76 @@ const FreeJobPostingForm = () => {
     }
   });
 
-  // Debug Panel Component
-  const DebugPanel = ({ payload, error, userId }: { payload?: any, error?: any, userId?: string }) => {
-    if (!payload && !error) return null;
+  // Debug panel for showing errors
+  const DebugPanel = ({ info }: { info: any }) => {
+    if (!info) return null;
     
     return (
-      <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <h3 className="font-bold text-red-800 mb-2">🔍 DEBUG AUDIT RESULTS</h3>
-        <div className="space-y-2 text-sm">
-          <div>
-            <strong>Authenticated User ID:</strong> 
-            <span className={userId ? 'text-green-600' : 'text-red-600'}>
-              {userId || 'NOT AUTHENTICATED'}
-            </span>
-          </div>
-          <div>
-            <strong>Payload Sent to Supabase:</strong>
-            <pre className="bg-white p-2 rounded border text-xs overflow-auto max-h-32">
-              {JSON.stringify(payload, null, 2)}
-            </pre>
-          </div>
-          {error && (
-            <div>
-              <strong>Supabase Error:</strong>
-              <pre className="bg-red-100 p-2 rounded border text-xs overflow-auto max-h-32 text-red-800">
-                {JSON.stringify(error, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <h3 className="font-bold text-red-800 mb-2">🔍 Debug Information</h3>
+        <pre className="text-xs overflow-auto max-h-96 bg-red-100 p-2 rounded text-red-900">
+          {JSON.stringify(info, null, 2)}
+        </pre>
       </div>
     );
   };
 
-  const [debugData, setDebugData] = useState<{
-    payload?: any;
-    error?: any;
-    userId?: string;
-  }>({});
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🚀 [JOB-FORM] Form submitted');
     
-    console.log('🔍 [AUDIT] Starting job submission flow...');
-    
-    // STEP 1: Check Authentication
-    console.log('🔍 [AUDIT] STEP 1 - Authentication Check');
-    console.log('🔍 [AUDIT] User object:', user);
-    console.log('🔍 [AUDIT] User ID:', user?.id);
-    console.log('🔍 [AUDIT] User email:', user?.email);
-    
-    if (!user?.id) {
-      const errorMsg = 'User not authenticated - missing user.id';
-      console.error('❌ [AUDIT] Authentication failed:', errorMsg);
-      toast.error('Authentication Error: You must be signed in to post a job');
-      setDebugData({ userId: 'NOT_AUTHENTICATED', error: { message: errorMsg } });
+    // STEP 1: Verify user authentication
+    console.log('🔐 [STEP 1] Checking authentication:', {
+      user: user ? { id: user.id, email: user.email } : null,
+      authenticated: !!user
+    });
+
+    if (!user) {
+      const error = 'User not authenticated';
+      console.error('❌ [STEP 1] FAILED:', error);
+      toast.error(error);
+      setDebugInfo({ step: 1, error, user: null });
       return;
     }
+
+    console.log('✅ [STEP 1] PASSED: User authenticated');
+
+    // STEP 2: Validate required fields
+    console.log('📝 [STEP 2] Validating form data:', formData);
+    
+    if (!formData.title || !formData.category) {
+      const error = 'Title and category are required';
+      console.error('❌ [STEP 2] FAILED:', error);
+      toast.error(error);
+      setDebugInfo({ step: 2, error, formData });
+      return;
+    }
+
+    console.log('✅ [STEP 2] PASSED: Form validation');
 
     setIsSubmitting(true);
     
     try {
-      // STEP 2: Build Payload
-      console.log('🔍 [AUDIT] STEP 2 - Building payload...');
-      
+      // STEP 3: Prepare payload for Supabase
       const payload = {
-        title: formData.title.trim(),
-        category: formData.category,  
-        location: formData.location?.trim() || '',
-        description: formData.description?.trim() || '',
-        compensation_type: formData.compensation_type || '',
-        compensation_details: formData.compensation_details?.trim() || '',
-        requirements: formData.requirements?.trim() || '',
-        contact_info: formData.contact_info,
-        user_id: user.id, // ✅ CRITICAL: Set authenticated user ID
+        title: formData.title,
+        category: formData.category,
+        location: formData.location || '',
+        description: formData.description || '',
+        user_id: user.id, // CRITICAL: Include user_id
         status: 'active',
-        pricing_tier: 'free'
+        pricing_tier: 'free',
+        compensation_type: formData.compensation_type || '',
+        compensation_details: formData.compensation_details || '',
+        requirements: formData.requirements || '',
+        contact_info: formData.contact_info || {}
       };
 
-      console.log('🔍 [AUDIT] Final payload to be sent:', payload);
-      console.log('🔍 [AUDIT] Payload user_id:', payload.user_id);
-      console.log('🔍 [AUDIT] Auth user ID:', user.id);
-      console.log('🔍 [AUDIT] IDs match:', payload.user_id === user.id);
-      
-      setDebugData({ payload, userId: user.id });
+      console.log('📦 [STEP 3] Prepared payload:', payload);
+      console.log('✅ [STEP 3] PASSED: Payload prepared');
 
-      // STEP 3: Supabase Insert
-      console.log('🔍 [AUDIT] STEP 3 - Sending to Supabase...');
-      console.log('🔍 [AUDIT] About to call supabase.from("jobs").insert()');
+      // STEP 4: Insert into Supabase
+      console.log('💾 [STEP 4] Inserting into Supabase...');
       
       const { data, error } = await supabase
         .from('jobs')
@@ -127,228 +125,212 @@ const FreeJobPostingForm = () => {
         .select()
         .single();
 
-      console.log('🔍 [AUDIT] STEP 4 - Supabase Response');
-      console.log('🔍 [AUDIT] Insert data:', data);
-      console.log('🔍 [AUDIT] Insert error:', error);
-
       if (error) {
-        console.error('❌ [AUDIT] Supabase insert failed:', error);
-        console.error('❌ [AUDIT] Error code:', error.code);
-        console.error('❌ [AUDIT] Error message:', error.message);
-        console.error('❌ [AUDIT] Error details:', error.details);
-        console.error('❌ [AUDIT] Error hint:', error.hint);
-        
-        setDebugData({ payload, userId: user.id, error });
-        
-        // Show full error to user
-        toast.error(`Supabase Error: ${error.message}`, {
-          description: error.details || error.hint || 'Check console for full error details',
-          duration: 10000
+        console.error('❌ [STEP 4] FAILED - Supabase error:', error);
+        toast.error(`Database error: ${error.message}`);
+        setDebugInfo({ 
+          step: 4, 
+          error: error.message, 
+          fullError: error,
+          payload,
+          userID: user.id 
         });
-        
         return;
       }
 
-      if (!data) {
-        const noDataError = 'No data returned from Supabase insert';
-        console.error('❌ [AUDIT] No data returned:', noDataError);
-        setDebugData({ payload, userId: user.id, error: { message: noDataError } });
-        toast.error('Insert failed: No data returned from Supabase');
-        return;
-      }
+      console.log('✅ [STEP 4] PASSED: Job inserted successfully:', data);
 
-      // STEP 5: Success Verification
-      console.log('✅ [AUDIT] STEP 5 - Success!');
-      console.log('✅ [AUDIT] Job created with ID:', data.id);
-      console.log('✅ [AUDIT] Full job data:', data);
+      // STEP 5: Verify job exists in database
+      console.log('🔍 [STEP 5] Verifying job exists in database...');
       
-      // Verify job actually exists in table
-      console.log('🔍 [AUDIT] STEP 6 - Verifying job exists in table...');
       const { data: verifyData, error: verifyError } = await supabase
         .from('jobs')
         .select('*')
         .eq('id', data.id)
         .single();
-        
+
       if (verifyError || !verifyData) {
-        console.error('❌ [AUDIT] Job verification failed:', verifyError);
-        toast.error('Job may not have been saved properly');
-      } else {
-        console.log('✅ [AUDIT] Job verified in database:', verifyData);
-        toast.success('Job posted successfully!');
-        
-        // Clear debug data on success
-        setDebugData({});
-        
-        // Navigate to jobs page
-        navigate('/jobs');
+        console.error('❌ [STEP 5] FAILED - Job not found in database:', verifyError);
+        toast.error('Job creation could not be verified');
+        setDebugInfo({ 
+          step: 5, 
+          error: 'Job not found after insert',
+          verifyError,
+          insertedData: data 
+        });
+        return;
       }
 
-    } catch (err) {
-      console.error('💥 [AUDIT] Unexpected error during submission:', err);
-      setDebugData({ 
-        payload: debugData.payload, 
-        userId: user.id, 
-        error: { message: `Unexpected error: ${err}` } 
+      console.log('✅ [STEP 5] PASSED: Job verified in database:', verifyData);
+
+      // SUCCESS - All steps passed
+      console.log('🎉 [SUCCESS] Job posting completed successfully!');
+      toast.success('Job posted successfully!');
+      
+      // Reset form
+      setFormData({
+        title: '',
+        category: '',
+        location: '',
+        description: '',
+        compensation_type: '',
+        compensation_details: '',
+        requirements: '',
+        contact_info: {
+          owner_name: '',
+          phone: '',
+          email: '',
+          notes: ''
+        }
       });
-      toast.error(`Unexpected error: ${err}`);
+
+      // Navigate to jobs page to see the new job
+      setTimeout(() => {
+        navigate('/jobs');
+      }, 1000);
+
+    } catch (error) {
+      console.error('💥 [FATAL ERROR] Unexpected error:', error);
+      toast.error(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setDebugInfo({ 
+        step: 'fatal', 
+        error: error instanceof Error ? error.message : 'Unknown error',
+        fullError: error,
+        userID: user.id,
+        payload: formData
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleContactInfoChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      contact_info: {
-        ...prev.contact_info,
-        [field]: value
-      }
-    }));
-  };
-
-  const categories = [
-    'Nail Technician',
-    'Hair Stylist', 
-    'Esthetician',
-    'Massage Therapist',
-    'Barber',
-    'Makeup Artist',
-    'Lash Artist',
-    'Brow Artist',
-    'Management',
-    'Reception',
-    'Other'
-  ];
-
-  const compensationTypes = [
-    'hourly',
-    'commission',
-    'salary',
-    'booth_rental'
-  ];
-
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Post a Free Job</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <Label htmlFor="title">Job Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder="e.g., Senior Nail Technician"
-              required
-            />
-          </div>
+    <div className="max-w-2xl mx-auto p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Post a Free Job</CardTitle>
+          <p className="text-sm text-gray-600">
+            Current User: {user?.email || 'Not signed in'} | ID: {user?.id || 'None'}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <DebugPanel info={debugInfo} />
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="title">Job Title *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="e.g. Senior Nail Technician"
+                required
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="category">Category *</Label>
-            <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <Label htmlFor="category">Category *</Label>
+              <Select
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select job category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {JOB_CATEGORIES.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleInputChange('location', e.target.value)}
-              placeholder="e.g., Los Angeles, CA"
-            />
-          </div>
+            <div>
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="e.g. Los Angeles, CA"
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="compensation_type">Compensation Type</Label>
-            <Select value={formData.compensation_type} onValueChange={(value) => handleInputChange('compensation_type', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select compensation type" />
-              </SelectTrigger>
-              <SelectContent>
-                {compensationTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <Label htmlFor="description">Job Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Describe the position, responsibilities, and benefits..."
+                rows={4}
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="compensation_details">Compensation Details</Label>
-            <Input
-              id="compensation_details"
-              value={formData.compensation_details}
-              onChange={(e) => handleInputChange('compensation_details', e.target.value)}
-              placeholder="e.g., $18-25/hour plus tips"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Job Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Describe the position, responsibilities, and work environment..."
-              rows={4}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="requirements">Requirements</Label>
-            <Textarea
-              id="requirements"
-              value={formData.requirements}
-              onChange={(e) => handleInputChange('requirements', e.target.value)}
-              placeholder="List the required qualifications, experience, licenses..."
-              rows={3}
-            />
-          </div>
-
-          <div className="space-y-4 border-t pt-4">
-            <h3 className="font-medium">Contact Information</h3>
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="owner_name">Contact Name</Label>
+                <Label htmlFor="compensation_type">Compensation Type</Label>
                 <Input
-                  id="owner_name"
-                  value={formData.contact_info.owner_name}
-                  onChange={(e) => handleContactInfoChange('owner_name', e.target.value)}
-                  placeholder="Your name"
+                  id="compensation_type"
+                  value={formData.compensation_type}
+                  onChange={(e) => setFormData({ ...formData, compensation_type: e.target.value })}
+                  placeholder="e.g. Hourly, Weekly, Commission"
                 />
               </div>
 
               <div>
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="compensation_details">Compensation Details</Label>
                 <Input
-                  id="phone"
-                  value={formData.contact_info.phone}
-                  onChange={(e) => handleContactInfoChange('phone', e.target.value)}
-                  placeholder="(555) 123-4567"
+                  id="compensation_details"
+                  value={formData.compensation_details}
+                  onChange={(e) => setFormData({ ...formData, compensation_details: e.target.value })}
+                  placeholder="e.g. $15-20/hour, $800-1200/week"
                 />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="requirements">Requirements</Label>
+              <Textarea
+                id="requirements"
+                value={formData.requirements}
+                onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                placeholder="List any specific requirements, licenses, or qualifications..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="font-medium">Contact Information</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="owner_name">Contact Name</Label>
+                  <Input
+                    id="owner_name"
+                    value={formData.contact_info.owner_name}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      contact_info: { ...formData.contact_info, owner_name: e.target.value }
+                    })}
+                    placeholder="Your name"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    value={formData.contact_info.phone}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      contact_info: { ...formData.contact_info, phone: e.target.value }
+                    })}
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
               </div>
 
               <div>
@@ -357,32 +339,32 @@ const FreeJobPostingForm = () => {
                   id="email"
                   type="email"
                   value={formData.contact_info.email}
-                  onChange={(e) => handleContactInfoChange('email', e.target.value)}
-                  placeholder="contact@salon.com"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="notes">Additional Notes</Label>
-                <Input
-                  id="notes"
-                  value={formData.contact_info.notes}
-                  onChange={(e) => handleContactInfoChange('notes', e.target.value)}
-                  placeholder="Best time to contact, etc."
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    contact_info: { ...formData.contact_info, email: e.target.value }
+                  })}
+                  placeholder="your@email.com"
                 />
               </div>
             </div>
-          </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? 'Posting Job...' : 'Post Job'}
-          </Button>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting || !user}
+              className="w-full"
+            >
+              {isSubmitting ? 'Posting Job...' : 'Post Job (Free)'}
+            </Button>
 
-          {/* Debug Panel - shows detailed audit info */}
-          <DebugPanel {...debugData} />
-        </form>
-      </CardContent>
-    </Card>
+            {!user && (
+              <p className="text-sm text-red-600 text-center">
+                Please sign in to post a job
+              </p>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

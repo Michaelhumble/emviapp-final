@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useJobsData } from '@/hooks/useJobsData';
 import UnifiedJobFeed from '@/components/jobs/UnifiedJobFeed';
+import JobPostCTA from './JobPostCTA';
 import { Job } from '@/types/job';
 
 const JobsPage = () => {
@@ -9,49 +10,12 @@ const JobsPage = () => {
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
 
-  // Real-time subscription for instant updates
-  useEffect(() => {
-    console.log('📡 [JOBS-PAGE] Setting up real-time subscription...');
-    
-    import('@/integrations/supabase/client').then(({ supabase }) => {
-      const channel = supabase
-        .channel('jobs-realtime')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'jobs',
-            filter: 'status=eq.active'
-          },
-          (payload) => {
-            console.log('⚡ [JOBS-PAGE] Real-time job update:', payload);
-            
-            // Refresh jobs data when any job changes
-            setTimeout(() => {
-              console.log('🔄 [JOBS-PAGE] Refreshing jobs due to real-time update...');
-              refreshJobs();
-            }, 100); // Small delay to ensure data consistency
-          }
-        )
-        .subscribe((status) => {
-          console.log('📡 [JOBS-PAGE] Subscription status:', status);
-        });
-
-      // Cleanup subscription on unmount
-      return () => {
-        console.log('📡 [JOBS-PAGE] Cleaning up real-time subscription');
-        supabase.removeChannel(channel);
-      };
-    });
-  }, [refreshJobs]);
-
-  // Auto-refresh every 30 seconds as backup
+  // Real-time refresh every 10 seconds to ensure jobs appear
   useEffect(() => {
     const interval = setInterval(() => {
       console.log('🔄 [JOBS-PAGE] Auto-refresh triggered');
       refreshJobs();
-    }, 30000);
+    }, 10000); // Every 10 seconds
 
     return () => clearInterval(interval);
   }, [refreshJobs]);
@@ -63,7 +27,6 @@ const JobsPage = () => {
     
     try {
       // Placeholder renewal logic
-      // In a real app, this would make an API call to renew/boost the job
       await new Promise(resolve => setTimeout(resolve, 2000));
       console.log('✅ [JOBS-PAGE] Job renewed successfully');
     } catch (error) {
@@ -115,17 +78,59 @@ const JobsPage = () => {
         <p className="text-gray-600">
           Find your next opportunity in the beauty industry
         </p>
-        <div className="text-sm text-gray-500 mt-2">
-          Showing {jobs.length} active jobs
+        <div className="text-sm text-gray-500 mt-2 flex items-center gap-4">
+          <span>Showing {jobs.length} active jobs</span>
+          <button 
+            onClick={refreshJobs}
+            className="text-purple-600 hover:text-purple-700 underline"
+          >
+            Refresh
+          </button>
         </div>
       </div>
 
-      <UnifiedJobFeed
-        jobs={jobs}
-        onRenew={handleRenew}
-        isRenewing={isRenewing}
-        renewalJobId={renewalJobId}
-      />
+      {/* Job Post CTA */}
+      <JobPostCTA />
+
+      {/* Debug info */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <h3 className="font-bold text-blue-800 mb-2">🔍 Jobs Debug Info</h3>
+        <p className="text-sm text-blue-700">
+          Total jobs loaded: {jobs.length} | 
+          Last refresh: {new Date().toLocaleTimeString()}
+        </p>
+        {jobs.length > 0 && (
+          <details className="mt-2">
+            <summary className="cursor-pointer text-blue-600">View job titles</summary>
+            <ul className="mt-2 text-xs">
+              {jobs.map(job => (
+                <li key={job.id} className="text-blue-600">
+                  • {job.title} ({job.category}) - {job.pricing_tier}
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+      </div>
+
+      {jobs.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500 mb-4">No jobs available at the moment.</p>
+          <button 
+            onClick={refreshJobs}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Refresh Jobs
+          </button>
+        </div>
+      ) : (
+        <UnifiedJobFeed
+          jobs={jobs}
+          onRenew={handleRenew}
+          isRenewing={isRenewing}
+          renewalJobId={renewalJobId}
+        />
+      )}
     </div>
   );
 };

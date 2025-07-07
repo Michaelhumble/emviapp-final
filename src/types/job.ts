@@ -3,7 +3,7 @@ export interface Job {
   id: string;
   title: string;
   
-  // Core required fields
+  // Core required fields matching database schema
   category: string;
   location?: string;
   description?: string;
@@ -13,10 +13,10 @@ export interface Job {
   updated_at?: string;
   expires_at?: string;
   
-  // Job-specific fields
+  // Job-specific fields matching database schema
   compensation_type?: string;
   compensation_details?: string;
-  requirements?: string; // Always string, not array
+  requirements?: string;
   pricing_tier?: string;
   
   // Contact information as object
@@ -95,7 +95,7 @@ export type JobDetailsSubmission = {
   compensation_details?: string;
   employment_type?: string;
   category?: string;
-  requirements?: string; // Always string
+  requirements?: string;
   contact_info?: {
     owner_name?: string;
     phone?: string;
