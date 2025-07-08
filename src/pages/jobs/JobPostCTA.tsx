@@ -3,35 +3,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlusCircle, DollarSign, UsersRound } from "lucide-react";
+import { PlusCircle, UsersRound } from "lucide-react";
 import { useAuth } from "@/context/auth";
 
 const JobPostCTA = () => {
-  const { isSignedIn, userProfile } = useAuth();
-  const referralCount = userProfile?.referral_count || 0;
-  const totalJobPosts = 0; // In a real app, this would come from the user's profile
-  
-  // Calculate the pricing tier
-  const getPriceInfo = () => {
-    if (totalJobPosts === 0) {
-      return {
-        price: 5,
-        label: "First post special pricing!"
-      };
-    } else if (totalJobPosts === 1) {
-      return {
-        price: 10,
-        label: "Second post pricing"
-      };
-    } else {
-      return {
-        price: referralCount >= 1 ? 15 : 20,
-        label: referralCount >= 1 ? "Referral discount applied!" : "Standard pricing"
-      };
-    }
-  };
-  
-  const priceInfo = getPriceInfo();
+  const { isSignedIn } = useAuth();
   
   return (
     <div className="mb-8">
@@ -44,8 +20,7 @@ const JobPostCTA = () => {
                 Post a Job Opening
               </h3>
               <p className="text-gray-600 max-w-md font-inter">
-                Share your job opportunity with thousands of qualified beauty professionals. 
-                First-time posts start at just $5!
+                Share your job opportunity with thousands of qualified beauty professionals.
               </p>
               
               <div className="flex items-center gap-4 mt-3">
@@ -53,19 +28,10 @@ const JobPostCTA = () => {
                   <UsersRound className="h-4 w-4 mr-1" />
                   <span>Reach 15,000+ professionals</span>
                 </div>
-                <div className="flex items-center text-sm text-green-700 font-inter font-medium">
-                  <DollarSign className="h-4 w-4 mr-1" />
-                  <span>From ${priceInfo.price}/post</span>
-                </div>
               </div>
             </div>
             
             <div className="flex flex-col items-center">
-              <div className="text-center mb-3">
-                <div className="text-sm text-gray-500 font-inter">{priceInfo.label}</div>
-                <div className="text-2xl font-bold text-[#8B5CF6] font-playfair">${priceInfo.price}</div>
-              </div>
-              
               {isSignedIn ? (
                 <Link to="/post-job">
                   <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-inter font-semibold rounded-xl px-6 py-3">
