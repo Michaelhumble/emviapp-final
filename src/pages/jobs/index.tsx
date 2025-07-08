@@ -1,6 +1,5 @@
 
 import React, { useEffect } from 'react';
-import Layout from '@/components/layout/Layout';
 import { useJobsData } from '@/hooks/useJobsData';
 import JobsGrid from '@/components/jobs/JobsGrid';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
@@ -34,56 +33,50 @@ const JobsPage = () => {
   if (loading) {
     console.log('⏳ [JOBS-PAGE] Showing loading state');
     return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <JobLoadingState />
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 py-8">
+        <JobLoadingState />
+      </div>
     );
   }
 
   if (error) {
     console.log('❌ [JOBS-PAGE] Showing error state:', error);
     return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-8">
-            <p className="text-red-600">Error loading jobs: {error}</p>
-            <button 
-              onClick={refreshJobs}
-              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            >
-              Try Again
-            </button>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-8">
+          <p className="text-red-600">Error loading jobs: {error}</p>
+          <button 
+            onClick={refreshJobs}
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Try Again
+          </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   console.log('✅ [JOBS-PAGE] Showing jobs grid with', jobs.length, 'jobs');
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Latest Job Opportunities</h1>
-          <p className="text-gray-600">{jobs.length} jobs available</p>
-        </div>
-
-        {jobs.length === 0 ? (
-          <JobEmptyState />
-        ) : (
-          <JobsGrid
-            jobs={jobs}
-            expirations={{}}
-            onRenew={handleRenew}
-            isRenewing={false}
-            renewalJobId={null}
-          />
-        )}
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-4">Latest Job Opportunities</h1>
+        <p className="text-gray-600">{jobs.length} jobs available</p>
       </div>
-    </Layout>
+
+      {jobs.length === 0 ? (
+        <JobEmptyState />
+      ) : (
+        <JobsGrid
+          jobs={jobs}
+          expirations={{}}
+          onRenew={handleRenew}
+          isRenewing={false}
+          renewalJobId={null}
+        />
+      )}
+    </div>
   );
 };
 
