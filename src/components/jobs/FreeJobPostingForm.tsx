@@ -42,7 +42,7 @@ const FreeJobPostingForm = () => {
 
   // Add click handler debugging
   const handleButtonClick = (e: React.MouseEvent) => {
-    console.log('🔴 BUTTON CLICKED - This should trigger form submit');
+    console.log('🔴 BUTTON CLICKED');
     console.log('🔴 Button event:', e.type, e.currentTarget);
   };
 
@@ -86,7 +86,7 @@ const FreeJobPostingForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🚨 HANDLER TRIGGERED - Form submit event fired!');
+    console.log('🚨 SUBMIT HANDLER TRIGGERED');
     e.preventDefault();
     console.log('🎯 [SUBMIT-START] Form submission started');
     
