@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useJobsData } from '@/hooks/useJobsData';
+import { useJobsData } from '@/hooks/useJobsData.ts';
 import JobsGrid from '@/components/jobs/JobsGrid';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
@@ -136,32 +136,49 @@ const JobsPage = () => {
     jobsToDisplay: jobs
   });
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Latest Job Opportunities</h1>
-        <p className="text-gray-600">{jobs.length} jobs available</p>
-      </div>
+  try {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-4">Latest Job Opportunities</h1>
+          <p className="text-gray-600">{jobs?.length || 0} jobs available</p>
+        </div>
 
-      {jobs.length === 0 ? (
-        <>
-          {console.log('📭 [JOBS-PAGE] Rendering empty state - no jobs found')}
-          <JobEmptyState />
-        </>
-      ) : (
-        <>
-          {console.log('📋 [JOBS-PAGE] Rendering jobs grid with jobs:', jobs.map(j => ({ id: j.id, title: j.title })))}
-          <JobsGrid
-            jobs={jobs}
-            expirations={{}}
-            onRenew={handleRenew}
-            isRenewing={false}
-            renewalJobId={null}
-          />
-        </>
-      )}
-    </div>
-  );
+        {!jobs || jobs.length === 0 ? (
+          <>
+            {console.log('📭 [JOBS-PAGE] Rendering empty state - no jobs found')}
+            <JobEmptyState />
+          </>
+        ) : (
+          <>
+            {console.log('📋 [JOBS-PAGE] Rendering jobs grid with jobs:', jobs.map(j => ({ id: j.id, title: j.title })))}
+            <JobsGrid
+              jobs={jobs}
+              expirations={{}}
+              onRenew={handleRenew}
+              isRenewing={false}
+              renewalJobId={null}
+            />
+          </>
+        )}
+      </div>
+    );
+  } catch (renderError) {
+    console.error('💥 [JOBS-PAGE] Render error:', renderError);
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-8">
+          <p className="text-red-600">Unable to load jobs. Please try refreshing the page.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default JobsPage;

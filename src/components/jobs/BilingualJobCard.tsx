@@ -25,6 +25,17 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  
+  // Add defensive checks for job object
+  if (!job || !job.id) {
+    console.warn('⚠️ [BILINGUAL-JOB-CARD] Invalid job object:', job);
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <p className="text-gray-500">Invalid job data</p>
+      </div>
+    );
+  }
+  
   const isOwner = user?.id === job.user_id;
   const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false;
 
@@ -76,8 +87,8 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       {/* Header Section with Premium Badge */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.title}</h3>
-          <p className="text-sm text-gray-600">{job.company || 'Company Name'}</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.title || 'Untitled Job'}</h3>
+          <p className="text-sm text-gray-600">{job.company || job.title || 'Company Name'}</p>
         </div>
         
         {/* Pricing Tier Badge - CLEARLY VISIBLE */}
@@ -97,7 +108,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         )}
         <div className="flex items-center gap-1">
           <Calendar className="h-4 w-4" />
-          <span>{new Date(job.created_at || '').toLocaleDateString()}</span>
+          <span>{job.created_at ? new Date(job.created_at).toLocaleDateString() : 'Recently posted'}</span>
         </div>
       </div>
 
