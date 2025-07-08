@@ -47,6 +47,13 @@ serve(async (req) => {
     // Initialize Stripe
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
+    // Create Supabase client with service role to create draft job
+    const supabaseServiceClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
     // Get selected plan details and pricing
     const selectedPlan = jobData.selectedPlan || 'premium';
     const selectedPrice = jobData.selectedPrice || 39.99;
@@ -61,6 +68,42 @@ serve(async (req) => {
       selectedDuration,
       priceInCents
     });
+
+    // Step 1: Create a draft job in the database first
+    console.log('📝 Creating draft job first...');
+    const draftJobPayload = {
+      title: jobData.title,
+      category: jobData.category,
+      location: jobData.location || null,
+      description: jobData.description,
+      compensation_type: jobData.compensationType || null,
+      compensation_details: jobData.compensationDetails || null,
+      requirements: Array.isArray(jobData.requirements) ? jobData.requirements.join("\n") : jobData.requirements || null,
+      contact_info: {
+        owner_name: jobData.contactName || "",
+        phone: jobData.contactPhone || "",
+        email: jobData.contactEmail || "",
+        notes: jobData.contactNotes || ""
+      },
+      user_id: user.id,
+      status: "draft", // Important: Create as draft first
+      pricing_tier: selectedPlan,
+      payment_status: "pending"
+    };
+
+    const { data: draftJobData, error: draftJobError } = await supabaseServiceClient
+      .from("jobs")
+      .insert([draftJobPayload])
+      .select()
+      .single();
+
+    if (draftJobError) {
+      console.error("❌ Error creating draft job:", draftJobError);
+      throw new Error(`Failed to create draft job: ${draftJobError.message}`);
+    }
+
+    console.log("✅ Draft job created with ID:", draftJobData.id);
+    const jobId = draftJobData.id;
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -81,19 +124,8 @@ serve(async (req) => {
       mode: "payment",
       customer_email: user.email,
       metadata: {
+        job_id: jobId, // Critical: This is what the webhook needs
         user_id: user.id,
-        job_title: jobData.title,
-        job_category: jobData.category,
-        job_location: jobData.location || "",
-        job_description: jobData.description,
-        compensation_type: jobData.compensationType || "",
-        compensation_details: jobData.compensationDetails || "",
-        requirements: Array.isArray(jobData.requirements) ? jobData.requirements.join("\\n") : "",
-        contact_name: jobData.contactName || "",
-        contact_phone: jobData.contactPhone || "",
-        contact_email: jobData.contactEmail || "",
-        contact_notes: jobData.contactNotes || "",
-        // Include selected plan details
         selected_plan: selectedPlan,
         selected_price: selectedPrice.toString(),
         selected_duration: selectedDuration.toString(),

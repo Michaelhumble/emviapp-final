@@ -78,8 +78,9 @@ verify_jwt = false
 [functions.stripe-webhook-handler]
 verify_jwt = false
 
-[functions.stripe-webhook-job]
-verify_jwt = false
+# [functions.stripe-webhook-job] 
+# verify_jwt = false
+# DISABLED: Using webhook-job-posting instead for proper draft->active flow
 
 [edge-runtime]
 enabled = true
