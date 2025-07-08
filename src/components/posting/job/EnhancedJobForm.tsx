@@ -363,6 +363,115 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     }
   };
 
+  // Handle paid job submission function (copied from PaidJobTestFormExact)
+  const handlePaidJobSubmit = async (data: EnhancedJobFormValues) => {
+    console.log('🟡 PAID JOB SUBMISSION STARTED');
+    
+    // Clear previous states
+    setFreeJobError(null);
+    setFreeJobSuccess(false);
+    
+    // Auth check
+    if (!isSignedIn || !user) {
+      console.log('🔐 [PAID-AUTH-ERROR] User not authenticated');
+      setFreeJobError('You must be logged in to post a paid job');
+      return;
+    }
+
+    console.log('🔐 [PAID-AUTH-CHECK] User authenticated:', {
+      userId: user.id,
+      email: user.email
+    });
+
+    // Validate form
+    if (!data.title.trim()) {
+      console.log('❌ [PAID-VALIDATION] Title is required');
+      setFreeJobError('Job title is required');
+      return;
+    }
+    
+    if (!data.category.trim()) {
+      console.log('❌ [PAID-VALIDATION] Category is required');
+      setFreeJobError('Category is required');
+      return;
+    }
+    
+    if (!data.description.trim()) {
+      console.log('❌ [PAID-VALIDATION] Description is required');
+      setFreeJobError('Job description is required');
+      return;
+    }
+
+    console.log('✅ [PAID-VALIDATION] Form validation passed');
+
+    // Prepare payload - EXACTLY like free job except pricing_tier
+    const payload = {
+      title: data.title.trim(),
+      category: data.category.trim(),
+      location: data.location.trim() || null,
+      description: data.description.trim(),
+      compensation_type: data.compensationType.trim() || null,
+      compensation_details: data.compensationDetails?.trim() || null,
+      requirements: data.requirements.join('\n') || null,
+      contact_info: {
+        owner_name: data.contactName?.trim() || '',
+        phone: data.contactPhone?.trim() || '',
+        email: data.contactEmail?.trim() || '',
+        notes: data.contactNotes?.trim() || ''
+      },
+      user_id: user.id,
+      status: 'active',
+      pricing_tier: 'paid' // ONLY difference from free job
+    };
+
+    console.log('📋 [PAID-PAYLOAD] Prepared payload for Supabase:', payload);
+
+    setIsSubmittingFreeJob(true);
+
+    try {
+      console.log('🚀 [PAID-SUPABASE-CALL] Calling supabase.from("jobs").insert()');
+      
+      const { data: insertData, error } = await supabase
+        .from('jobs')
+        .insert([payload])
+        .select();
+
+      console.log('📨 [PAID-SUPABASE-RESPONSE] Response received:', {
+        data: insertData,
+        error,
+        hasData: !!insertData,
+        dataLength: insertData?.length || 0
+      });
+
+      if (error) {
+        console.log('💥 [PAID-SUPABASE-ERROR] Insert failed:', error);
+        setFreeJobError(`Failed to create paid job: ${error.message}`);
+        return;
+      }
+
+      if (!insertData || insertData.length === 0) {
+        console.log('💥 [PAID-SUPABASE-ERROR] No data returned from insert');
+        setFreeJobError('Failed to create paid job: No data returned');
+        return;
+      }
+
+      console.log('✅ [PAID-SUPABASE-SUCCESS] Paid job created successfully:', insertData[0]);
+      setFreeJobSuccess(true);
+
+      // Navigate to jobs page after a short delay
+      setTimeout(() => {
+        console.log('🔄 [PAID-NAVIGATION] Redirecting to /jobs');
+        navigate('/jobs');
+      }, 2000);
+
+    } catch (error) {
+      console.log('💥 [PAID-CATCH-ERROR] Unexpected error:', error);
+      setFreeJobError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSubmittingFreeJob(false);
+    }
+  };
+
   const handleSubmit = (data: EnhancedJobFormValues) => {
     console.log('📤 Form submitted with data:', data);
     console.log('📷 Photos attached:', photoUploads.length);
@@ -381,8 +490,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
         setFreeJobError('You have already used your free job post allowance. Please choose a paid plan.');
       }
     } else {
-      // Handle paid job submission (existing flow)
-      onSubmit({ ...data, photoUploads });
+      // Handle paid job submission (NO STRIPE/PAYMENT - direct Supabase insert for now)
+      console.log('🟡 Handling paid job creation (TEST MODE - no payment)');
+      handlePaidJobSubmit(data);
     }
   };
 
@@ -598,8 +708,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
             />
             <ContactInfoSection control={form.control} />
             
-            {/* Free Job Error/Success States */}
-            {selectedPlan === 'free' && freeJobError && (
+            {/* Job Error States (both free and paid) */}
+            {freeJobError && (
               <Alert className="border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />
                 <AlertDescription className="text-red-700">
@@ -608,7 +718,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               </Alert>
             )}
             
-            {selectedPlan === 'free' && freeJobSuccess && (
+            {freeJobSuccess && (
               <Alert className="border-green-200 bg-green-50">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-700">
@@ -640,8 +750,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                 ) : selectedPlan === 'free' ? (
                    hasPostedFreeJob && existingFreeJob ? 'Update Free Job ✨' : 'Post Free Job ✨'
                  ) : (
-                  'Continue to Pricing ✨'
-                )}
+                  'Post Paid Job ✨'
+                 )}
               </Button>
             </div>
           </form>

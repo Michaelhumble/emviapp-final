@@ -54,15 +54,9 @@ export const mainNavigationItems: NavigationItem[] = [
   }
 ];
 
-// Development/Testing navigation items - ONLY VISIBLE IN DEV MODE
+// Development/Testing navigation items - REMOVED (now integrated into main form)
 export const testNavigationItems: NavigationItem[] = [
-  {
-    title: "🧪 Paid Job Test",
-    path: "/post-job-paid-test",
-    icon: Plus,
-    highlight: true,
-    vietnameseTitle: "🧪 Test Job trả phí"
-  }
+  // All test navigation removed - paid job functionality now in main form
 ];
 
 // Production navigation items - REAL PAID JOB POSTING
