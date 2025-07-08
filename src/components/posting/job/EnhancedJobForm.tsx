@@ -17,6 +17,7 @@ import RequirementsSection from '@/components/posting/sections/RequirementsSecti
 import CompensationSection from '@/components/posting/sections/CompensationSection';
 import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
 import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
+import PremiumJobPricingCards from '@/components/posting/job/PremiumJobPricingCards';
 
 // Job categories - locked choices
 const JOB_CATEGORIES = [
@@ -74,6 +75,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   const [hasPostedFreeJob, setHasPostedFreeJob] = useState(false);
   const [isLoadingFreeJobStatus, setIsLoadingFreeJobStatus] = useState(true);
   const [existingFreeJob, setExistingFreeJob] = useState<any>(null);
+  
+  // Paid job plan selection state
+  const [selectedPaidPlan, setSelectedPaidPlan] = useState<string>('');
+  const [selectedPaidPrice, setSelectedPaidPrice] = useState<number>(0);
+  const [selectedPaidDuration, setSelectedPaidDuration] = useState<number>(1);
   
   console.log('🎯 EnhancedJobForm received initialValues:', initialValues);
   
@@ -363,6 +369,14 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     }
   };
 
+  // Handle paid job plan selection
+  const handlePaidPlanSelect = (tier: string, finalPrice: number, durationMonths: number) => {
+    console.log('🎯 PAID PLAN SELECTED:', { tier, finalPrice, durationMonths });
+    setSelectedPaidPlan(tier);
+    setSelectedPaidPrice(finalPrice);
+    setSelectedPaidDuration(durationMonths);
+  };
+
   // Handle paid job submission with Stripe checkout
   const handlePaidJobSubmit = async (data: EnhancedJobFormValues) => {
     console.log('💳 PAID JOB SUBMISSION STARTED - Creating Stripe checkout');
@@ -378,9 +392,19 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       return;
     }
 
+    // Validate plan selection
+    if (!selectedPaidPlan) {
+      console.log('❌ [PAID-VALIDATION] No plan selected');
+      setFreeJobError('Please select a paid plan before proceeding to payment');
+      return;
+    }
+
     console.log('🔐 [PAID-AUTH-CHECK] User authenticated:', {
       userId: user.id,
-      email: user.email
+      email: user.email,
+      selectedPlan: selectedPaidPlan,
+      selectedPrice: selectedPaidPrice,
+      selectedDuration: selectedPaidDuration
     });
 
     // Validate form
@@ -407,7 +431,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     setIsSubmittingFreeJob(true);
 
     try {
-      console.log('🚀 [STRIPE-CHECKOUT] Creating checkout session');
+      console.log('🚀 [STRIPE-CHECKOUT] Creating checkout session with plan details');
       
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
         'create-job-checkout',
@@ -424,7 +448,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               contactName: data.contactName?.trim() || '',
               contactPhone: data.contactPhone?.trim() || '',
               contactEmail: data.contactEmail?.trim() || '',
-              contactNotes: data.contactNotes?.trim() || ''
+              contactNotes: data.contactNotes?.trim() || '',
+              // Include selected plan details
+              selectedPlan: selectedPaidPlan,
+              selectedPrice: selectedPaidPrice,
+              selectedDuration: selectedPaidDuration
             }
           }
         }
@@ -681,6 +709,39 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               )}
             </div>
 
+            {/* Premium Pricing Cards - Show only when paid plan is selected */}
+            {selectedPlan === 'paid' && (
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-2">Choose Your Paid Plan</h2>
+                  <p className="text-slate-600">Select the plan that best fits your hiring needs</p>
+                </div>
+                
+                {!selectedPaidPlan && (
+                  <Alert className="mb-6 border-purple-200 bg-purple-50">
+                    <AlertCircle className="h-4 w-4 text-purple-600" />
+                    <AlertDescription className="text-purple-800">
+                      <strong>Plan selection required:</strong> Please choose a paid plan below before proceeding to payment.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                {selectedPaidPlan && (
+                  <Alert className="mb-6 border-green-200 bg-green-50">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800">
+                      <strong>{selectedPaidPlan.charAt(0).toUpperCase() + selectedPaidPlan.slice(1)} Plan Selected:</strong> ${selectedPaidPrice.toFixed(2)} for {selectedPaidDuration} month{selectedPaidDuration > 1 ? 's' : ''}
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                <PremiumJobPricingCards 
+                  onPricingSelect={handlePaidPlanSelect}
+                  jobData={form.getValues()}
+                />
+              </div>
+            )}
+
             <JobDetailsSection control={form.control} />
             <RequirementsSection form={form} />
             <CompensationSection control={form.control} />
@@ -710,20 +771,49 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               </Alert>
             )}
             
+            {/* Payment Summary for Paid Jobs */}
+            {selectedPlan === 'paid' && selectedPaidPlan && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Payment Summary</h3>
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="font-medium text-purple-800">
+                        {selectedPaidPlan.charAt(0).toUpperCase() + selectedPaidPlan.slice(1)} Plan
+                      </span>
+                      <p className="text-sm text-purple-600">
+                        {selectedPaidDuration} month{selectedPaidDuration > 1 ? 's' : ''} duration
+                      </p>
+                    </div>
+                    <span className="text-2xl font-bold text-purple-800">${selectedPaidPrice.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-end pt-8">
               <Button 
                 type="submit"
-                disabled={selectedPlan === 'free' && (isSubmittingFreeJob || freeJobSuccess)}
-                className={`px-12 py-4 text-lg font-semibold rounded-xl shadow-lg ${
+                disabled={
+                  (selectedPlan === 'free' && (isSubmittingFreeJob || freeJobSuccess)) ||
+                  (selectedPlan === 'paid' && !selectedPaidPlan) ||
+                  isSubmittingFreeJob
+                }
+                className={`px-12 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 ${
                   selectedPlan === 'free' 
                     ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
                     : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
-                }`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {selectedPlan === 'free' && isSubmittingFreeJob ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Posting Job...
+                  </>
+                ) : selectedPlan === 'paid' && isSubmittingFreeJob ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating Payment...
                   </>
                 ) : selectedPlan === 'free' && freeJobSuccess ? (
                   <>
@@ -732,8 +822,16 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                   </>
                 ) : selectedPlan === 'free' ? (
                    hasPostedFreeJob && existingFreeJob ? 'Update Free Job ✨' : 'Post Free Job ✨'
+                 ) : selectedPlan === 'paid' && selectedPaidPlan ? (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Pay ${selectedPaidPrice.toFixed(2)} & Post Job ✨
+                  </>
                  ) : (
-                  'Post Paid Job ✨'
+                  <>
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    Select a Plan Above to Continue
+                  </>
                  )}
               </Button>
             </div>

@@ -47,6 +47,21 @@ serve(async (req) => {
     // Initialize Stripe
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
+    // Get selected plan details and pricing
+    const selectedPlan = jobData.selectedPlan || 'premium';
+    const selectedPrice = jobData.selectedPrice || 39.99;
+    const selectedDuration = jobData.selectedDuration || 1;
+    
+    // Convert price to cents for Stripe
+    const priceInCents = Math.round(selectedPrice * 100);
+    
+    console.log('💳 Creating checkout with plan details:', {
+      selectedPlan,
+      selectedPrice,
+      selectedDuration,
+      priceInCents
+    });
+
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -55,10 +70,10 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `Job Posting: ${jobData.title}`,
-              description: `Premium job posting for ${jobData.category} position`,
+              name: `${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} Job Posting: ${jobData.title}`,
+              description: `${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} job posting for ${jobData.category} position (${selectedDuration} month${selectedDuration > 1 ? 's' : ''})`,
             },
-            unit_amount: 4999, // $49.99 in cents
+            unit_amount: priceInCents,
           },
           quantity: 1,
         },
@@ -78,6 +93,11 @@ serve(async (req) => {
         contact_phone: jobData.contactPhone || "",
         contact_email: jobData.contactEmail || "",
         contact_notes: jobData.contactNotes || "",
+        // Include selected plan details
+        selected_plan: selectedPlan,
+        selected_price: selectedPrice.toString(),
+        selected_duration: selectedDuration.toString(),
+        pricing_tier: 'paid'
       },
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/post-job?canceled=true`,
