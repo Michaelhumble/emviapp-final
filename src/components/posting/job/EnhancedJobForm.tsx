@@ -462,26 +462,41 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
       if (checkoutError) {
         console.error('💥 [STRIPE-ERROR] Checkout creation failed:', checkoutError);
+        console.error('💥 [STRIPE-ERROR] Full error object:', JSON.stringify(checkoutError, null, 2));
         
-        // Extract more meaningful error message from the response
-        let errorMessage = 'Payment setup failed';
-        if (checkoutError.message?.includes('STRIPE_SECRET_KEY not configured')) {
-          errorMessage = 'Stripe payment system is not configured. Please contact support.';
-        } else if (checkoutError.message?.includes('Invalid API Key')) {
-          errorMessage = 'Payment system configuration error. Please contact support.';
-        } else if (checkoutError.message?.includes('Edge Function returned a non-2xx status code')) {
-          errorMessage = 'Payment service temporarily unavailable. Please try again in a moment.';
-        } else if (checkoutError.message) {
-          errorMessage = `Payment setup failed: ${checkoutError.message}`;
+        // Extract the actual error details from the response
+        let fullErrorMessage = 'Payment setup failed';
+        let errorDetails = '';
+        
+        try {
+          // If there's error data from the Edge Function, use it
+          if (checkoutError.details) {
+            errorDetails = checkoutError.details;
+            fullErrorMessage = `Edge Function Error: ${errorDetails}`;
+          } else if (checkoutError.message) {
+            errorDetails = checkoutError.message;
+            fullErrorMessage = `Payment Error: ${errorDetails}`;
+          }
+          
+          console.error('💥 [STRIPE-ERROR] Error details for user:', {
+            errorMessage: fullErrorMessage,
+            errorDetails: errorDetails,
+            rawError: checkoutError
+          });
+        } catch (parseError) {
+          console.error('💥 [STRIPE-ERROR] Failed to parse error details:', parseError);
+          fullErrorMessage = `Payment setup failed: ${checkoutError.message || 'Unknown error'}`;
         }
         
-        setFreeJobError(errorMessage);
+        // Show the full technical error to the user
+        setFreeJobError(fullErrorMessage);
         return;
       }
 
       if (!checkoutData?.url) {
         console.error('💥 [STRIPE-ERROR] No checkout URL returned');
-        setFreeJobError('Payment setup failed: No checkout URL received');
+        console.error('💥 [STRIPE-ERROR] Full response data:', checkoutData);
+        setFreeJobError('Payment setup failed: No checkout URL received from Stripe');
         return;
       }
 
@@ -491,16 +506,12 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       window.location.href = checkoutData.url;
 
     } catch (error) {
-      console.log('💥 [PAID-CATCH-ERROR] Unexpected error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      setFreeJobError(`Payment setup failed: ${errorMessage}`);
+      console.error('💥 [STRIPE-CATCH] Unexpected error in paid job submission:', error);
+      console.error('💥 [STRIPE-CATCH] Error stack:', error instanceof Error ? error.stack : 'No stack');
       
-      // Show user-friendly error toast
-      toast({
-        title: "Payment Setup Failed",
-        description: `Unable to create payment session: ${errorMessage}`,
-        variant: "destructive",
-      });
+      // Show the full technical error details
+      const fullError = error instanceof Error ? error.message : 'Unknown error occurred';
+      setFreeJobError(`Unexpected error: ${fullError}`);
     } finally {
       setIsSubmittingFreeJob(false);
     }
