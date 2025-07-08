@@ -554,8 +554,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
         setFreeJobError('You have already used your free job post allowance. Please choose a paid plan.');
       }
     } else {
-      // Handle paid job submission (NO STRIPE/PAYMENT - direct Supabase insert for now)
-      console.log('🟡 Handling paid job creation (TEST MODE - no payment)');
+      // Handle paid job submission through Stripe checkout
+      console.log('💳 Handling paid job creation (LIVE MODE - real payment)');
       handlePaidJobSubmit(data);
     }
   };

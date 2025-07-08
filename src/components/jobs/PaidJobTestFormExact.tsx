@@ -253,9 +253,9 @@ const PaidJobTestFormExact: React.FC<PaidJobTestFormExactProps> = ({
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>{isEditMode ? 'Edit Your Paid Job' : '🧪 Post a PAID TEST Job'}</CardTitle>
-          <p className="text-sm text-amber-600 font-semibold">
-            This will create a job with pricing_tier: "paid" in Supabase
+          <CardTitle>{isEditMode ? 'Edit Your Paid Job' : 'Post a Premium Job'}</CardTitle>
+          <p className="text-sm text-gray-600">
+            Create a premium job listing that will be featured prominently
           </p>
         </CardHeader>
         <CardContent>

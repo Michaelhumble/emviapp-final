@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, AlertCircle, MapPin, DollarSign, Building, ArrowLeft, TestTube } from 'lucide-react';
+import { CheckCircle, AlertCircle, MapPin, DollarSign, Building, ArrowLeft, TestTube, CreditCard } from 'lucide-react';
 import JobPricingTable from './JobPricingTable';
 
 interface JobPostingTestFlowProps {
@@ -116,8 +116,8 @@ const JobPostingTestFlow: React.FC<JobPostingTestFlowProps> = ({ jobFormData, on
                 <Badge variant="secondary" className="bg-purple-100 text-purple-700">
                   {jobFormData.category}
                 </Badge>
-                <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300">
-                  TEST MODE
+                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                  LIVE MODE
                 </Badge>
               </div>
             </div>
@@ -167,7 +167,7 @@ const JobPostingTestFlow: React.FC<JobPostingTestFlowProps> = ({ jobFormData, on
         {/* Pricing Summary */}
         <Card className="border-2 border-green-200">
           <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
-            <CardTitle className="text-xl text-gray-900">Pricing Summary (Test)</CardTitle>
+            <CardTitle className="text-xl text-gray-900">Pricing Summary</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-3">
@@ -323,10 +323,10 @@ const JobPostingTestFlow: React.FC<JobPostingTestFlowProps> = ({ jobFormData, on
             </div>
             
             <div className="text-center mb-6">
-              <Alert className="border-yellow-200 bg-yellow-50 inline-flex items-center">
-                <TestTube className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-yellow-800 ml-2">
-                  <strong>Test Mode:</strong> All payments will be simulated
+              <Alert className="border-green-200 bg-green-50 inline-flex items-center">
+                <CreditCard className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800 ml-2">
+                  <strong>Live Mode:</strong> Real payments are processed securely
                 </AlertDescription>
               </Alert>
             </div>

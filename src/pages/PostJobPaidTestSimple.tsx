@@ -12,22 +12,7 @@ const PostJobPaidTest = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/20">
-      {/* Testing Warning Banner */}
-      <div className="bg-amber-500 text-amber-900 py-4 px-4">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg">🧪 PAID JOB TEST MODE</span>
-            </div>
-            <div className="text-sm font-medium">
-              Using modified free job form with paid pricing_tier
-            </div>
-          </div>
-          <div className="mt-2 text-sm">
-            ⚠️ This should create a job with pricing_tier: "paid" instead of "free"
-          </div>
-        </div>
-      </div>
+      {/* Production Mode - Banner Removed */}
       
       <PaidJobForm />
     </div>

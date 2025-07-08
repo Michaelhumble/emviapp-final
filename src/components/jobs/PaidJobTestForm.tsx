@@ -246,24 +246,8 @@ const PaidJobTestForm: React.FC<PaidJobTestFormProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
-      {/* Testing Warning Banner */}
-      <div className="bg-amber-500 text-amber-900 py-4 px-4">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TestTube className="h-6 w-6" />
-              <span className="font-bold text-lg">🧪 PAID JOB TEST MODE</span>
-            </div>
-            <div className="text-sm font-medium">
-              No payment required • Saves directly to database
-            </div>
-          </div>
-          <div className="mt-2 text-sm">
-            ⚠️ This creates a real job in Supabase with pricing_tier: "paid" for testing purposes
-          </div>
-        </div>
-      </div>
-
+      {/* Production Mode - Banner Removed */}
+      
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
