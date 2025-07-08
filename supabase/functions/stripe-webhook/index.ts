@@ -11,13 +11,25 @@ async function verifyStripeSignature(payload: string, signature: string, secret:
     const timestamp = elements.find(el => el.startsWith('t='))?.split('=')[1];
     
     if (!signatureHash || !timestamp) {
+      console.error('❌ [STRIPE-WEBHOOK] Missing signature hash or timestamp');
+      return false;
+    }
+    
+    // Validate timestamp (prevent replay attacks)
+    const webhookTimestamp = parseInt(timestamp, 10);
+    const currentTime = Math.floor(Date.now() / 1000);
+    const timeDifference = Math.abs(currentTime - webhookTimestamp);
+    
+    // Reject if timestamp is more than 5 minutes old
+    if (timeDifference > 300) {
+      console.error('❌ [STRIPE-WEBHOOK] Timestamp too old:', timeDifference, 'seconds');
       return false;
     }
     
     // Create the signed payload
     const signedPayload = `${timestamp}.${payload}`;
     
-    // Convert secret to key
+    // Convert secret to key using async crypto
     const key = await crypto.subtle.importKey(
       'raw',
       new TextEncoder().encode(secret),
@@ -26,7 +38,7 @@ async function verifyStripeSignature(payload: string, signature: string, secret:
       ['sign']
     );
     
-    // Generate signature
+    // Generate signature using async crypto
     const signature_bytes = await crypto.subtle.sign(
       'HMAC',
       key,
@@ -38,9 +50,12 @@ async function verifyStripeSignature(payload: string, signature: string, secret:
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
     
-    return expectedSignature === signatureHash;
+    const isValid = expectedSignature === signatureHash;
+    console.log(isValid ? '✅ [STRIPE-WEBHOOK] Signature matches' : '❌ [STRIPE-WEBHOOK] Signature mismatch');
+    
+    return isValid;
   } catch (error) {
-    console.error('Signature verification error:', error);
+    console.error('❌ [STRIPE-WEBHOOK] Signature verification error:', error);
     return false;
   }
 }
