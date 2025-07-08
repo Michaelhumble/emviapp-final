@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Zap } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, Zap, Loader2, AlertCircle } from 'lucide-react';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import RequirementsSection from '@/components/posting/sections/RequirementsSection';
 import CompensationSection from '@/components/posting/sections/CompensationSection';
@@ -61,7 +65,12 @@ interface EnhancedJobFormProps {
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubmit }) => {
+  const navigate = useNavigate();
+  const { user, isSignedIn } = useAuth();
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [isSubmittingFreeJob, setIsSubmittingFreeJob] = useState(false);
+  const [freeJobError, setFreeJobError] = useState<string | null>(null);
+  const [freeJobSuccess, setFreeJobSuccess] = useState(false);
   
   console.log('🎯 EnhancedJobForm received initialValues:', initialValues);
   
@@ -126,10 +135,127 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     }
   }, [initialValues, form]);
 
+  // Free job submission function (copied from FreeJobPostingForm)
+  const handleFreeJobSubmit = async (data: EnhancedJobFormValues) => {
+    console.log('🟢 FREE JOB SUBMISSION STARTED');
+    
+    // Clear previous states
+    setFreeJobError(null);
+    setFreeJobSuccess(false);
+    
+    // Auth check
+    if (!isSignedIn || !user) {
+      console.log('🔐 [AUTH-ERROR] User not authenticated');
+      setFreeJobError('You must be logged in to post a job');
+      return;
+    }
+
+    console.log('🔐 [AUTH-CHECK] User authenticated:', {
+      userId: user.id,
+      email: user.email
+    });
+
+    // Validate form
+    if (!data.title.trim()) {
+      console.log('❌ [VALIDATION] Title is required');
+      setFreeJobError('Job title is required');
+      return;
+    }
+    
+    if (!data.category.trim()) {
+      console.log('❌ [VALIDATION] Category is required');
+      setFreeJobError('Category is required');
+      return;
+    }
+    
+    if (!data.description.trim()) {
+      console.log('❌ [VALIDATION] Description is required');
+      setFreeJobError('Job description is required');
+      return;
+    }
+
+    console.log('✅ [VALIDATION] Form validation passed');
+
+    // Prepare payload (matching FreeJobPostingForm structure)
+    const payload = {
+      title: data.title.trim(),
+      category: data.category.trim(),
+      location: data.location.trim() || null,
+      description: data.description.trim(),
+      compensation_type: data.compensationType.trim() || null,
+      compensation_details: data.compensationDetails?.trim() || null,
+      requirements: data.requirements.join('\n') || null,
+      contact_info: {
+        owner_name: data.contactName?.trim() || '',
+        phone: data.contactPhone?.trim() || '',
+        email: data.contactEmail?.trim() || '',
+        notes: data.contactNotes?.trim() || ''
+      },
+      user_id: user.id,
+      status: 'active',
+      pricing_tier: 'free'
+    };
+
+    console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
+
+    setIsSubmittingFreeJob(true);
+
+    try {
+      console.log('🚀 [SUPABASE-CALL] Calling supabase.from("jobs").insert()');
+      
+      const { data: insertData, error } = await supabase
+        .from('jobs')
+        .insert([payload])
+        .select();
+
+      console.log('📨 [SUPABASE-RESPONSE] Response received:', {
+        data: insertData,
+        error,
+        hasData: !!insertData,
+        dataLength: insertData?.length || 0
+      });
+
+      if (error) {
+        console.log('💥 [SUPABASE-ERROR] Insert failed:', error);
+        setFreeJobError(`Failed to create job: ${error.message}`);
+        return;
+      }
+
+      if (!insertData || insertData.length === 0) {
+        console.log('💥 [SUPABASE-ERROR] No data returned from insert');
+        setFreeJobError('Failed to create job: No data returned');
+        return;
+      }
+
+      console.log('✅ [SUPABASE-SUCCESS] Job created successfully:', insertData[0]);
+      setFreeJobSuccess(true);
+
+      // Navigate to jobs page after a short delay
+      setTimeout(() => {
+        console.log('🔄 [NAVIGATION] Redirecting to /jobs');
+        navigate('/jobs');
+      }, 2000);
+
+    } catch (error) {
+      console.log('💥 [CATCH-ERROR] Unexpected error:', error);
+      setFreeJobError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSubmittingFreeJob(false);
+    }
+  };
+
   const handleSubmit = (data: EnhancedJobFormValues) => {
     console.log('📤 Form submitted with data:', data);
     console.log('📷 Photos attached:', photoUploads.length);
-    onSubmit({ ...data, photoUploads });
+    console.log('🎯 Plan type selected:', data.planType);
+    
+    if (data.planType === 'free') {
+      // Handle free job submission directly
+      handleFreeJobSubmit(data);
+    } else {
+      // Handle paid job submission (existing flow)
+      onSubmit({ ...data, photoUploads });
+    }
   };
 
   return (
@@ -299,16 +425,50 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
             />
             <ContactInfoSection control={form.control} />
             
+            {/* Free Job Error/Success States */}
+            {selectedPlan === 'free' && freeJobError && (
+              <Alert className="border-red-200 bg-red-50">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-700">
+                  {freeJobError}
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            {selectedPlan === 'free' && freeJobSuccess && (
+              <Alert className="border-green-200 bg-green-50">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-700">
+                  🎉 Job posted successfully! Redirecting to jobs page...
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <div className="flex justify-end pt-8">
               <Button 
-                type="submit" 
+                type="submit"
+                disabled={selectedPlan === 'free' && (isSubmittingFreeJob || freeJobSuccess)}
                 className={`px-12 py-4 text-lg font-semibold rounded-xl shadow-lg ${
                   selectedPlan === 'free' 
                     ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
                     : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                 }`}
               >
-                {selectedPlan === 'free' ? 'Post Free Job ✨' : 'Continue to Pricing ✨'}
+                {selectedPlan === 'free' && isSubmittingFreeJob ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Posting Job...
+                  </>
+                ) : selectedPlan === 'free' && freeJobSuccess ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Job Posted!
+                  </>
+                ) : selectedPlan === 'free' ? (
+                  'Post Free Job ✨'
+                ) : (
+                  'Continue to Pricing ✨'
+                )}
               </Button>
             </div>
           </form>
