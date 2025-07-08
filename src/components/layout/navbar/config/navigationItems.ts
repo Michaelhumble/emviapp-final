@@ -1,5 +1,5 @@
 
-import { LucideIcon, Users, Briefcase, Store, Scissors, Home, Info, Phone } from "lucide-react";
+import { LucideIcon, Users, Briefcase, Store, Scissors, Home, Info, Phone, Plus } from "lucide-react";
 
 export interface NavigationItem {
   title: string;
@@ -33,6 +33,12 @@ export const mainNavigationItems: NavigationItem[] = [
     path: "/jobs",
     icon: Briefcase,
     vietnameseTitle: "Công việc"
+  },
+  {
+    title: "🚨 Post Job (TEST)",
+    path: "/post-job-free",
+    icon: Plus,
+    vietnameseTitle: "Đăng công việc"
   },
   {
     title: "Community",
