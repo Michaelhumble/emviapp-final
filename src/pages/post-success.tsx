@@ -37,45 +37,119 @@ const PostSuccessPage = () => {
 
   const verifyStripeSession = async () => {
     try {
-      console.log('💳 [POST-SUCCESS] Verifying Stripe session for paid job...');
+      console.log('💳 [POST-SUCCESS] ======= VERIFYING STRIPE SESSION FOR PAID JOB =======');
+      console.log('💳 [POST-SUCCESS] Session ID:', sessionId);
       
-      // In a real implementation, you'd verify the session with Stripe
-      // For now, we'll look for active jobs posted recently by this user
-      const { data: recentJobs, error } = await supabase
+      // Get current user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('❌ [POST-SUCCESS] Authentication error:', authError);
+        setVerificationStatus('failed');
+        return;
+      }
+      
+      console.log('👤 [POST-SUCCESS] User authenticated:', user.id);
+
+      // Step 1: Look for the most recent job posted by this user
+      console.log('🔍 [POST-SUCCESS] Step 1: Checking for recent jobs in database...');
+      const { data: recentJobs, error: jobsError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .eq('status', 'active')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(1);
+        .limit(5); // Get last 5 jobs to debug
 
-      if (error) {
-        console.error('❌ [POST-SUCCESS] Stripe verification error:', error);
+      if (jobsError) {
+        console.error('❌ [POST-SUCCESS] Database query error:', jobsError);
         setVerificationStatus('failed');
         return;
       }
 
-      if (recentJobs && recentJobs.length > 0) {
-        const latestJob = recentJobs[0];
-        console.log('✅ [POST-SUCCESS] PAID JOB VERIFIED IN DATABASE:', latestJob);
-        console.log('✅ [POST-SUCCESS] PAID JOB NOW VISIBLE ON JOBS PAGE');
+      console.log('📋 [POST-SUCCESS] Found recent jobs:', {
+        totalCount: recentJobs?.length || 0,
+        jobs: recentJobs?.map(j => ({
+          id: j.id,
+          title: j.title,
+          status: j.status,
+          pricing_tier: j.pricing_tier,
+          created_at: j.created_at
+        })) || []
+      });
+
+      // Step 2: Find the most recent paid job
+      const latestPaidJob = recentJobs?.find(job => 
+        job.pricing_tier !== 'free' && job.status === 'active'
+      );
+
+      if (!latestPaidJob) {
+        console.error('❌ [POST-SUCCESS] No recent active paid job found');
+        console.error('❌ [POST-SUCCESS] This could mean:');
+        console.error('❌ [POST-SUCCESS] 1. Webhook has not been triggered yet');
+        console.error('❌ [POST-SUCCESS] 2. Job was created as draft but not activated');
+        console.error('❌ [POST-SUCCESS] 3. Payment failed but redirect happened anyway');
         
-        setJobData(latestJob);
-        setSessionData({ sessionId, verified: true });
-        setVerificationStatus('verified');
+        // Check for draft jobs
+        const draftJobs = recentJobs?.filter(j => j.status === 'draft');
+        if (draftJobs && draftJobs.length > 0) {
+          console.log('🔍 [POST-SUCCESS] Found draft jobs (not yet activated):', draftJobs);
+          toast.error('❌ Payment is being processed. Job will be live shortly.');
+        } else {
+          toast.error('❌ ERROR: PAID JOB POST NOT LIVE');
+        }
         
-        // Show success toasts and console logs
-        console.log('✅ PAID JOB POST SAVED TO DATABASE');
-        console.log('✅ PAID JOB NOW VISIBLE ON JOBS PAGE');
-        
-        toast.success('✅ PAID JOB POST SAVED TO DATABASE');
-        toast.success('✅ PAID JOB NOW VISIBLE ON JOBS PAGE');
-      } else {
-        console.error('❌ [POST-SUCCESS] No recent active job found after payment');
         setVerificationStatus('failed');
+        return;
       }
+
+      // Step 3: Verify job is actually visible on jobs page
+      console.log('🔍 [POST-SUCCESS] Step 2: Verifying job is visible on public jobs page...');
+      const { data: publicJobs, error: publicError } = await supabase
+        .from('jobs')
+        .select('id, title, status, pricing_tier')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (publicError) {
+        console.error('❌ [POST-SUCCESS] Error checking public jobs:', publicError);
+      } else {
+        const isJobVisible = publicJobs?.some(job => job.id === latestPaidJob.id);
+        console.log('👁️ [POST-SUCCESS] Job visibility check:', {
+          jobId: latestPaidJob.id,
+          isVisible: isJobVisible,
+          totalPublicJobs: publicJobs?.length || 0
+        });
+
+        if (!isJobVisible) {
+          console.error('❌ [POST-SUCCESS] Job exists in DB but not visible on public page!');
+          toast.error('❌ ERROR: PAID JOB POST NOT VISIBLE ON JOBS PAGE');
+        }
+      }
+
+      // Step 4: Success!
+      console.log('✅ [POST-SUCCESS] ======= VERIFICATION SUCCESSFUL =======');
+      console.log('✅ [POST-SUCCESS] PAID JOB VERIFIED IN DATABASE:', {
+        id: latestPaidJob.id,
+        title: latestPaidJob.title,
+        status: latestPaidJob.status,
+        pricing_tier: latestPaidJob.pricing_tier,
+        created_at: latestPaidJob.created_at
+      });
+      console.log('✅ [POST-SUCCESS] PAID JOB NOW VISIBLE ON JOBS PAGE');
+      
+      setJobData(latestPaidJob);
+      setSessionData({ sessionId, verified: true });
+      setVerificationStatus('verified');
+      
+      // Show success toasts and console logs
+      console.log('✅ PAID JOB POST SAVED TO DATABASE');
+      console.log('✅ PAID JOB NOW VISIBLE ON JOBS PAGE');
+      
+      toast.success('✅ PAID JOB POST SAVED TO DATABASE');
+      toast.success('✅ PAID JOB NOW VISIBLE ON JOBS PAGE');
+      
     } catch (error) {
-      console.error('💥 [POST-SUCCESS] Unexpected Stripe verification error:', error);
+      console.error('💥 [POST-SUCCESS] Unexpected verification error:', error);
+      toast.error('❌ ERROR: VERIFICATION FAILED');
       setVerificationStatus('failed');
     }
   };

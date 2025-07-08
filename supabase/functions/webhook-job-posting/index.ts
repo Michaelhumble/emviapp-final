@@ -9,9 +9,13 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('🎣 [WEBHOOK-JOB] Function called');
+  console.log('🎣 [WEBHOOK-JOB] ======= WEBHOOK FUNCTION CALLED =======');
+  console.log('🎣 [WEBHOOK-JOB] Method:', req.method);
+  console.log('🎣 [WEBHOOK-JOB] URL:', req.url);
+  console.log('🎣 [WEBHOOK-JOB] Headers:', Object.fromEntries(req.headers.entries()));
   
   if (req.method === 'OPTIONS') {
+    console.log('🎣 [WEBHOOK-JOB] CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -21,6 +25,17 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    console.log('🔑 [WEBHOOK-JOB] Environment check:', {
+      hasStripeKey: !!stripeSecretKey,
+      stripeKeyLength: stripeSecretKey?.length || 0,
+      hasWebhookSecret: !!webhookSecret,
+      webhookSecretLength: webhookSecret?.length || 0,
+      hasSupabaseUrl: !!supabaseUrl,
+      supabaseUrl: supabaseUrl?.substring(0, 30) + '...',
+      hasServiceKey: !!supabaseServiceKey,
+      serviceKeyLength: supabaseServiceKey?.length || 0
+    });
 
     if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !supabaseServiceKey) {
       console.error('❌ [WEBHOOK-JOB] Missing environment variables');
@@ -76,7 +91,53 @@ serve(async (req) => {
 
       console.log('🎯 [WEBHOOK-JOB] Activating job with ID:', jobId);
 
+      // First, let's check if the draft job exists
+      console.log('🔍 [WEBHOOK-JOB] Checking if draft job exists...');
+      const { data: existingJob, error: checkError } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('id', jobId)
+        .single();
+
+      if (checkError) {
+        console.error('❌ [WEBHOOK-JOB] Error checking for existing job:', checkError);
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: `Failed to check existing job: ${checkError.message}` 
+        }), { 
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      if (!existingJob) {
+        console.error('❌ [WEBHOOK-JOB] No job found with ID:', jobId);
+        return new Response('Job not found', { status: 404 });
+      }
+
+      console.log('📋 [WEBHOOK-JOB] Found existing job:', {
+        id: existingJob.id,
+        title: existingJob.title,
+        status: existingJob.status,
+        pricing_tier: existingJob.pricing_tier,
+        user_id: existingJob.user_id,
+        created_at: existingJob.created_at
+      });
+
+      if (existingJob.status === 'active') {
+        console.log('⚠️ [WEBHOOK-JOB] Job is already active, skipping update');
+        return new Response(JSON.stringify({ 
+          success: true, 
+          message: 'Job was already active',
+          data: existingJob 
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
       // Update job status from draft to active
+      console.log('🔄 [WEBHOOK-JOB] Updating job status from draft to active...');
       const { data, error } = await supabase
         .from('jobs')
         .update({ 
@@ -89,6 +150,12 @@ serve(async (req) => {
 
       if (error) {
         console.error('❌ [WEBHOOK-JOB] JOB ACTIVATION FAILED:', error);
+        console.error('❌ [WEBHOOK-JOB] Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         return new Response(JSON.stringify({ 
           success: false, 
           error: error.message 
@@ -99,11 +166,17 @@ serve(async (req) => {
       }
 
       if (!data || data.length === 0) {
-        console.error('❌ [WEBHOOK-JOB] No job found to activate with ID:', jobId);
+        console.error('❌ [WEBHOOK-JOB] No job was updated. Possible reasons:');
+        console.error('❌ [WEBHOOK-JOB] - Job ID not found:', jobId);
+        console.error('❌ [WEBHOOK-JOB] - Job status was not "draft"');
+        console.error('❌ [WEBHOOK-JOB] - Database update failed silently');
         return new Response('Job not found or already active', { status: 404 });
       }
 
-      console.log('✅ [WEBHOOK-JOB] JOB ACTIVATION SUCCESSFUL:', data);
+      console.log('✅ [WEBHOOK-JOB] ======= JOB ACTIVATION SUCCESSFUL =======');
+      console.log('✅ [WEBHOOK-JOB] PAID JOB POST SAVED TO DATABASE');
+      console.log('✅ [WEBHOOK-JOB] PAID JOB NOW VISIBLE ON JOBS PAGE');
+      console.log('✅ [WEBHOOK-JOB] Updated job data:', data[0]);
 
       return new Response(JSON.stringify({ 
         success: true, 

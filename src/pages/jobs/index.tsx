@@ -11,21 +11,56 @@ const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
   const { isSignedIn } = useAuth();
 
-  console.log('📊 [JOBS-PAGE] Rendering jobs page with state:', {
+  console.log('📊 [JOBS-PAGE] ======= JOBS PAGE RENDERING =======');
+  console.log('📊 [JOBS-PAGE] Jobs state:', {
     jobsCount: jobs.length,
     loading,
     error,
     isSignedIn,
-    jobsArray: jobs
+    jobsByTier: {
+      free: jobs.filter(j => j.pricing_tier === 'free').length,
+      premium: jobs.filter(j => j.pricing_tier === 'premium').length,
+      gold: jobs.filter(j => j.pricing_tier === 'gold').length,
+      diamond: jobs.filter(j => j.pricing_tier === 'diamond').length,
+    },
+    jobsArray: jobs.map(j => ({
+      id: j.id,
+      title: j.title,
+      status: j.status,
+      pricing_tier: j.pricing_tier,
+      created_at: j.created_at
+    }))
   });
 
   useEffect(() => {
-    console.log('🔄 [JOBS-PAGE] Jobs data updated in useEffect:', {
+    console.log('🔄 [JOBS-PAGE] ======= JOBS DATA UPDATED =======');
+    console.log('🔄 [JOBS-PAGE] Total jobs loaded:', jobs.length);
+    console.log('🔄 [JOBS-PAGE] Jobs breakdown:', {
       totalJobs: jobs.length,
+      activeJobs: jobs.filter(j => j.status === 'active').length,
+      draftJobs: jobs.filter(j => j.status === 'draft').length,
+      freeJobs: jobs.filter(j => j.pricing_tier === 'free').length,
+      paidJobs: jobs.filter(j => j.pricing_tier !== 'free').length,
       jobTitles: jobs.map(j => j.title),
       jobIds: jobs.map(j => j.id),
       fullJobsData: jobs
     });
+    
+    // Check for new paid jobs posted in the last 5 minutes
+    const recentPaidJobs = jobs.filter(job => {
+      const jobTime = new Date(job.created_at).getTime();
+      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+      return job.pricing_tier !== 'free' && 
+             job.status === 'active' && 
+             jobTime > fiveMinutesAgo;
+    });
+    
+    if (recentPaidJobs.length > 0) {
+      console.log('🎉 [JOBS-PAGE] NEW PAID JOBS DETECTED:', recentPaidJobs);
+      recentPaidJobs.forEach(job => {
+        console.log(`✅ [JOBS-PAGE] Paid job "${job.title}" is live and visible!`);
+      });
+    }
   }, [jobs]);
 
   const handleRenew = (job: Job) => {
