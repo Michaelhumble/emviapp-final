@@ -6,10 +6,38 @@ import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
+import { useSearchParams } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
   const { isSignedIn } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  // Check for payment success
+  useEffect(() => {
+    const payment = searchParams.get('payment');
+    const sessionId = searchParams.get('session_id');
+    
+    if (payment === 'success' && sessionId) {
+      console.log('🎉 [JOBS-PAGE] Payment successful, showing success message');
+      toast({
+        title: "Payment Successful! 🎉",
+        description: "Your job posting is now live and visible to candidates. It may take a moment to appear in the list.",
+        duration: 5000,
+      });
+      
+      // Refresh jobs to show the new paid job
+      setTimeout(() => {
+        console.log('🔄 [JOBS-PAGE] Refreshing jobs after payment success');
+        refreshJobs();
+      }, 2000);
+      
+      // Clear URL parameters
+      window.history.replaceState({}, '', '/jobs');
+    }
+  }, [searchParams, toast, refreshJobs]);
 
   console.log('📊 [JOBS-PAGE] ======= JOBS PAGE RENDERING =======');
   console.log('📊 [JOBS-PAGE] Jobs state:', {

@@ -78,9 +78,10 @@ verify_jwt = false
 [functions.stripe-webhook-handler]
 verify_jwt = false
 
-# [functions.stripe-webhook-job] 
-# verify_jwt = false
-# DISABLED: Using webhook-job-posting instead for proper draft->active flow
+# Removed conflicting stripe-webhook-job function - using webhook-job-posting for proper flow
+
+[functions.verify-payment]
+verify_jwt = false
 
 [edge-runtime]
 enabled = true

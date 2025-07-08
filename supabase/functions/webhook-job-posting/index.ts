@@ -202,9 +202,17 @@ serve(async (req) => {
       console.log('✅ [WEBHOOK-JOB] VERIFICATION PASSED: Job is confirmed active and visible');
       console.log('✅ [WEBHOOK-JOB] FINAL VERIFICATION DATA:', verifyData);
 
+      // Log successful activation for debugging
+      console.log('🎯 [WEBHOOK-JOB] PAID JOB POSTING FLOW COMPLETED SUCCESSFULLY:');
+      console.log('🎯 [WEBHOOK-JOB] - Stripe payment processed ✅');
+      console.log('🎯 [WEBHOOK-JOB] - Draft job found and activated ✅');  
+      console.log('🎯 [WEBHOOK-JOB] - Job now visible on /jobs page ✅');
+      console.log('🎯 [WEBHOOK-JOB] - Customer should see success message ✅');
+
       return new Response(JSON.stringify({ 
         success: true, 
-        data: data 
+        data: data,
+        message: 'Job activated successfully'
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }

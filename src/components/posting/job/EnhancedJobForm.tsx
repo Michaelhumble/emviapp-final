@@ -18,6 +18,7 @@ import CompensationSection from '@/components/posting/sections/CompensationSecti
 import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
 import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
 import PremiumJobPricingCards from '@/components/posting/job/PremiumJobPricingCards';
+import { useToast } from '@/hooks/use-toast';
 
 // Job categories - locked choices
 const JOB_CATEGORIES = [
@@ -68,6 +69,7 @@ interface EnhancedJobFormProps {
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubmit }) => {
   const navigate = useNavigate();
   const { user, isSignedIn } = useAuth();
+  const { toast } = useToast();
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmittingFreeJob, setIsSubmittingFreeJob] = useState(false);
   const [freeJobError, setFreeJobError] = useState<string | null>(null);
@@ -477,7 +479,15 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
     } catch (error) {
       console.log('💥 [PAID-CATCH-ERROR] Unexpected error:', error);
-      setFreeJobError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setFreeJobError(`Payment setup failed: ${errorMessage}`);
+      
+      // Show user-friendly error toast
+      toast({
+        title: "Payment Setup Failed",
+        description: `Unable to create payment session: ${errorMessage}`,
+        variant: "destructive",
+      });
     } finally {
       setIsSubmittingFreeJob(false);
     }
