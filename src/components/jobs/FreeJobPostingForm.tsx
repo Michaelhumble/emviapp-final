@@ -44,6 +44,12 @@ const FreeJobPostingForm = () => {
   const handleButtonClick = (e: React.MouseEvent) => {
     console.log('🔴 BUTTON CLICKED');
     console.log('🔴 Button event:', e.type, e.currentTarget);
+    console.log('🔴 Event target:', e.target);
+  };
+
+  // Test button to verify console is working
+  const handleTestClick = () => {
+    console.log('TEST BUTTON CLICKED');
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -243,6 +249,15 @@ const FreeJobPostingForm = () => {
               </AlertDescription>
             </Alert>
           )}
+
+          {/* Test button to verify console is working */}
+          <Button 
+            onClick={handleTestClick}
+            variant="outline"
+            className="mb-4"
+          >
+            Test Console (Click to verify console is working)
+          </Button>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
