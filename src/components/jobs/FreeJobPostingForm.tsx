@@ -80,6 +80,7 @@ const FreeJobPostingForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('🚨 HANDLER TRIGGERED - Form submit event fired!');
     e.preventDefault();
     console.log('🎯 [SUBMIT-START] Form submission started');
     
