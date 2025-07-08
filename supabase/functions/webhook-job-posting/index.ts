@@ -84,11 +84,13 @@ serve(async (req) => {
 
       // Extract job ID from session metadata
       const jobId = session.metadata?.job_id;
+      const selectedPlan = session.metadata?.selected_plan;
+      
       console.log('🔍 [WEBHOOK-JOB] Session metadata:', {
         fullMetadata: session.metadata,
         jobId: jobId,
         userId: session.metadata?.user_id,
-        selectedPlan: session.metadata?.selected_plan,
+        selectedPlan: selectedPlan,
         pricingTier: session.metadata?.pricing_tier
       });
       
