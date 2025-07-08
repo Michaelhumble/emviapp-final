@@ -40,13 +40,6 @@ const FreeJobPostingForm = () => {
     userEmail: user?.email
   });
 
-  // Add click handler debugging
-  const handleButtonClick = (e: React.MouseEvent) => {
-    console.log('🔴 BUTTON CLICKED');
-    console.log('🔴 Button event:', e.type, e.currentTarget);
-    console.log('🔴 Event target:', e.target);
-  };
-
   // Test button to verify console is working
   const handleTestClick = () => {
     console.log('TEST BUTTON CLICKED');
@@ -385,7 +378,7 @@ const FreeJobPostingForm = () => {
               type="submit" 
               disabled={isSubmitting}
               className="w-full"
-              onClick={handleButtonClick}
+              onClick={() => console.log('🔴BUTTON CLICKED')}
             >
               {isSubmitting ? (
                 <>
