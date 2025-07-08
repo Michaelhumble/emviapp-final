@@ -71,6 +71,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   const [isSubmittingFreeJob, setIsSubmittingFreeJob] = useState(false);
   const [freeJobError, setFreeJobError] = useState<string | null>(null);
   const [freeJobSuccess, setFreeJobSuccess] = useState(false);
+  const [hasPostedFreeJob, setHasPostedFreeJob] = useState(false);
+  const [isLoadingFreeJobStatus, setIsLoadingFreeJobStatus] = useState(true);
+  const [existingFreeJob, setExistingFreeJob] = useState<any>(null);
   
   console.log('🎯 EnhancedJobForm received initialValues:', initialValues);
   
@@ -102,6 +105,117 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
   const selectedCategory = form.watch('category');
   const selectedPlan = form.watch('planType');
+
+  // Check if user has already posted a free job
+  useEffect(() => {
+    const checkFreeJobStatus = async () => {
+      if (!isSignedIn || !user) {
+        setIsLoadingFreeJobStatus(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('pricing_tier', 'free')
+          .eq('status', 'active')
+          .limit(1);
+
+        if (error) {
+          console.error('Error checking free job status:', error);
+          setIsLoadingFreeJobStatus(false);
+          return;
+        }
+
+        const hasFreeJob = data && data.length > 0;
+        setHasPostedFreeJob(hasFreeJob);
+        if (hasFreeJob) {
+          setExistingFreeJob(data[0]);
+          // If user has a free job and no initial values (editing), populate the form
+          if (!initialValues) {
+            form.setValue('planType', 'paid'); // Force paid plan
+          }
+        }
+      } catch (error) {
+        console.error('Unexpected error checking free job status:', error);
+      } finally {
+        setIsLoadingFreeJobStatus(false);
+      }
+    };
+
+    checkFreeJobStatus();
+  }, [isSignedIn, user, form, initialValues]);
+
+  // Handle editing existing free job
+  const handleEditFreeJob = async (data: EnhancedJobFormValues) => {
+    console.log('🟡 EDITING EXISTING FREE JOB');
+    
+    if (!existingFreeJob) {
+      setFreeJobError('No existing free job found to edit');
+      return;
+    }
+
+    // Clear previous states
+    setFreeJobError(null);
+    setFreeJobSuccess(false);
+    
+    // Auth check
+    if (!isSignedIn || !user) {
+      setFreeJobError('You must be logged in to edit a job');
+      return;
+    }
+
+    // Prepare payload for update
+    const updatePayload = {
+      title: data.title.trim(),
+      category: data.category.trim(),
+      location: data.location.trim() || null,
+      description: data.description.trim(),
+      compensation_type: data.compensationType.trim() || null,
+      compensation_details: data.compensationDetails?.trim() || null,
+      requirements: data.requirements.join('\n') || null,
+      contact_info: {
+        owner_name: data.contactName?.trim() || '',
+        phone: data.contactPhone?.trim() || '',
+        email: data.contactEmail?.trim() || '',
+        notes: data.contactNotes?.trim() || ''
+      },
+      updated_at: new Date().toISOString()
+    };
+
+    setIsSubmittingFreeJob(true);
+
+    try {
+      const { data: updateData, error } = await supabase
+        .from('jobs')
+        .update(updatePayload)
+        .eq('id', existingFreeJob.id)
+        .eq('user_id', user.id)
+        .select();
+
+      if (error) {
+        console.log('💥 [SUPABASE-ERROR] Update failed:', error);
+        setFreeJobError(`Failed to update job: ${error.message}`);
+        return;
+      }
+
+      console.log('✅ [SUPABASE-SUCCESS] Job updated successfully:', updateData);
+      setFreeJobSuccess(true);
+
+      // Navigate to jobs page after a short delay
+      setTimeout(() => {
+        navigate('/jobs');
+      }, 2000);
+
+    } catch (error) {
+      console.log('💥 [CATCH-ERROR] Unexpected error:', error);
+      setFreeJobError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSubmittingFreeJob(false);
+    }
+  };
 
   // Update form values when initialValues change
   useEffect(() => {
@@ -250,8 +364,17 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     console.log('🎯 Plan type selected:', data.planType);
     
     if (data.planType === 'free') {
-      // Handle free job submission directly
-      handleFreeJobSubmit(data);
+      // Check if we're editing an existing free job or creating a new one
+      if (hasPostedFreeJob && existingFreeJob) {
+        console.log('🟡 Handling free job edit');
+        handleEditFreeJob(data);
+      } else if (!hasPostedFreeJob) {
+        console.log('🟢 Handling new free job creation');
+        handleFreeJobSubmit(data);
+      } else {
+        console.log('❌ Free job limit reached');
+        setFreeJobError('You have already used your free job post allowance. Please choose a paid plan.');
+      }
     } else {
       // Handle paid job submission (existing flow)
       onSubmit({ ...data, photoUploads });
@@ -270,6 +393,43 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">Select Your Plan</h2>
                 <p className="text-slate-600">Choose between free and paid job posting options</p>
               </div>
+
+              {/* Free Job Eligibility Notice */}
+              {hasPostedFreeJob && !isLoadingFreeJobStatus && (
+                <Alert className="mb-6 border-blue-200 bg-blue-50">
+                  <AlertCircle className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    You have already used your free job post allowance (one per account). 
+                    {existingFreeJob && (
+                      <span>
+                        {' '}You can <button 
+                          onClick={() => {
+                            // Populate form with existing free job data for editing
+                            const job = existingFreeJob;
+                            form.setValue('title', job.title || '');
+                            form.setValue('category', job.category || 'Nail Tech');
+                            form.setValue('location', job.location || '');
+                            form.setValue('description', job.description || '');
+                            form.setValue('compensationType', job.compensation_type || 'hourly');
+                            form.setValue('compensationDetails', job.compensation_details || '');
+                            form.setValue('requirements', job.requirements ? job.requirements.split('\n') : []);
+                            if (job.contact_info) {
+                              form.setValue('contactName', job.contact_info.owner_name || '');
+                              form.setValue('contactPhone', job.contact_info.phone || '');
+                              form.setValue('contactEmail', job.contact_info.email || '');
+                              form.setValue('contactNotes', job.contact_info.notes || '');
+                            }
+                            form.setValue('planType', 'free');
+                          }}
+                          className="text-blue-600 underline hover:text-blue-800"
+                        >
+                          edit your existing free job
+                        </button>
+                      </span>
+                    )} or choose a paid plan for additional job posts.
+                  </AlertDescription>
+                </Alert>
+              )}
               
               <FormField
                 control={form.control}
@@ -281,35 +441,78 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                     </FormLabel>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Card 
-                        className={`cursor-pointer transition-all duration-200 ${
-                          field.value === 'free' 
-                            ? 'ring-2 ring-green-500 bg-green-50' 
-                            : 'hover:bg-slate-50'
+                        className={`transition-all duration-200 ${
+                          hasPostedFreeJob && !existingFreeJob 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : hasPostedFreeJob && existingFreeJob
+                            ? field.value === 'free' 
+                              ? 'ring-2 ring-orange-500 bg-orange-50 cursor-pointer' 
+                              : 'hover:bg-slate-50 cursor-pointer'
+                            : field.value === 'free' 
+                              ? 'ring-2 ring-green-500 bg-green-50 cursor-pointer' 
+                              : 'hover:bg-slate-50 cursor-pointer'
                         }`}
-                        onClick={() => field.onChange('free')}
+                        onClick={() => {
+                          if (!hasPostedFreeJob || existingFreeJob) {
+                            field.onChange('free');
+                          }
+                        }}
                       >
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg text-green-600">Free Job Post</CardTitle>
-                            <Badge variant="secondary" className="bg-green-100 text-green-700">
-                              FREE
+                            <CardTitle className={`text-lg ${
+                              hasPostedFreeJob && existingFreeJob ? 'text-orange-600' : 'text-green-600'
+                            }`}>
+                              {hasPostedFreeJob && existingFreeJob ? 'Edit Free Job Post' : 'Free Job Post'}
+                            </CardTitle>
+                            <Badge variant="secondary" className={
+                              hasPostedFreeJob && existingFreeJob 
+                                ? 'bg-orange-100 text-orange-700' 
+                                : hasPostedFreeJob 
+                                ? 'bg-gray-100 text-gray-500'
+                                : 'bg-green-100 text-green-700'
+                            }>
+                              {hasPostedFreeJob && !existingFreeJob ? 'USED' : hasPostedFreeJob && existingFreeJob ? 'EDIT' : 'FREE'}
                             </Badge>
                           </div>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-2">
-                            <div className="flex items-center text-sm text-slate-600">
-                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                              Basic job listing
-                            </div>
-                            <div className="flex items-center text-sm text-slate-600">
-                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                              Standard visibility
-                            </div>
-                            <div className="flex items-center text-sm text-slate-600">
-                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                              All job categories
-                            </div>
+                            {hasPostedFreeJob && !existingFreeJob ? (
+                              <div className="text-sm text-gray-500">
+                                You have already used your free job post allowance (one per account).
+                              </div>
+                            ) : hasPostedFreeJob && existingFreeJob ? (
+                              <>
+                                <div className="flex items-center text-sm text-slate-600">
+                                  <CheckCircle className="w-4 h-4 mr-2 text-orange-500" />
+                                  Edit your existing job
+                                </div>
+                                <div className="flex items-center text-sm text-slate-600">
+                                  <CheckCircle className="w-4 h-4 mr-2 text-orange-500" />
+                                  Update job details
+                                </div>
+                                <div className="flex items-center text-sm text-slate-600">
+                                  <CheckCircle className="w-4 h-4 mr-2 text-orange-500" />
+                                  Keep standard visibility
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex items-center text-sm text-slate-600">
+                                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                                  Basic job listing
+                                </div>
+                                <div className="flex items-center text-sm text-slate-600">
+                                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                                  Standard visibility
+                                </div>
+                                <div className="flex items-center text-sm text-slate-600">
+                                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                                  All job categories
+                                </div>
+                              </>
+                            )}
                           </div>
                         </CardContent>
                       </Card>
@@ -465,8 +668,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                     Job Posted!
                   </>
                 ) : selectedPlan === 'free' ? (
-                  'Post Free Job ✨'
-                ) : (
+                   hasPostedFreeJob && existingFreeJob ? 'Update Free Job ✨' : 'Post Free Job ✨'
+                 ) : (
                   'Continue to Pricing ✨'
                 )}
               </Button>

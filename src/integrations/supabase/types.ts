@@ -2971,6 +2971,10 @@ export type Database = {
           artist_earnings: number
         }[]
       }
+      get_user_free_job_count: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       get_user_referral_stats: {
         Args: { user_id: string }
         Returns: {
@@ -2979,6 +2983,10 @@ export type Database = {
       }
       has_great_feedback: {
         Args: { p_artist_id: string }
+        Returns: boolean
+      }
+      has_posted_free_job: {
+        Args: { p_user_id: string }
         Returns: boolean
       }
       is_artist_available: {
