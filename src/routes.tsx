@@ -72,7 +72,7 @@ import SalonListingForm from './pages/salons/SalonListingForm';
 import TestEnhancedSignUp from "@/pages/TestEnhancedSignUp";
 
 // Import the new test page
-const PostJobPaidTest = React.lazy(() => import('./pages/PostJobPaidTest'));
+const PostJobPaidTest = React.lazy(() => import('./pages/PostJobPaidTestSimple'));
 
 const routes = [
   {

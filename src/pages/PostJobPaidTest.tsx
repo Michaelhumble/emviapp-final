@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import PaidJobTestForm from '@/components/jobs/PaidJobTestForm';
+import PaidJobTestFormExact from '@/components/jobs/PaidJobTestFormExact';
 
 const PostJobPaidTest: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ const PostJobPaidTest: React.FC = () => {
         <meta name="description" content="Test paid job posting - saves directly to database" />
       </Helmet>
 
-      <PaidJobTestForm />
+      <PaidJobTestFormExact />
     </>
   );
 };

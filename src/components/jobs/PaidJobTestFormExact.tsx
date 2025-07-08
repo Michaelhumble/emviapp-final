@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,18 +10,18 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
-interface FreeJobPostingFormProps {
+interface PaidJobTestFormExactProps {
   initialData?: any;
   onSuccess?: (data: any) => Promise<void>;
   isEditMode?: boolean;
 }
 
-const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
+const PaidJobTestFormExact: React.FC<PaidJobTestFormExactProps> = ({
   initialData,
   onSuccess,
   isEditMode = false
 }) => {
-  console.log('🚨 MOUNTED - FreeJobPostingForm component is rendering', { isEditMode, initialData });
+  console.log('🚨 MOUNTED - PaidJobTestFormExact component is rendering', { isEditMode, initialData });
   
   const navigate = useNavigate();
   const { user, isSignedIn } = useAuth();
@@ -46,7 +45,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
     }
   });
 
-  console.log('🔍 [FREE-JOB-FORM] Component rendered, user state:', {
+  console.log('🔍 [PAID-JOB-TEST-EXACT] Component rendered, user state:', {
     isSignedIn,
     userId: user?.id,
     userEmail: user?.email
@@ -54,7 +53,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
 
   // Test button to verify console is working
   const handleTestClick = () => {
-    console.log('TEST BUTTON CLICKED');
+    console.log('PAID TEST BUTTON CLICKED - Console is working');
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -75,31 +74,31 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
   };
 
   const validateForm = () => {
-    console.log('🔍 [VALIDATION] Starting form validation');
+    console.log('🔍 [PAID-VALIDATION] Starting form validation');
     
     if (!formData.title.trim()) {
-      console.log('❌ [VALIDATION] Title is required');
+      console.log('❌ [PAID-VALIDATION] Title is required');
       return 'Job title is required';
     }
     
     if (!formData.category.trim()) {
-      console.log('❌ [VALIDATION] Category is required');
+      console.log('❌ [PAID-VALIDATION] Category is required');
       return 'Category is required';
     }
     
     if (!formData.description.trim()) {
-      console.log('❌ [VALIDATION] Description is required');
+      console.log('❌ [PAID-VALIDATION] Description is required');
       return 'Job description is required';
     }
 
-    console.log('✅ [VALIDATION] Form validation passed');
+    console.log('✅ [PAID-VALIDATION] Form validation passed');
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🟢 HANDLER TRIGGERED');
+    console.log('🟢 PAID HANDLER TRIGGERED');
     e.preventDefault();
-    console.log('🎯 [SUBMIT-START] Form submission started');
+    console.log('🎯 [PAID-SUBMIT-START] Form submission started');
     
     // Clear previous states
     setSubmitError(null);
@@ -107,12 +106,12 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
     
     // Auth check
     if (!isSignedIn || !user) {
-      console.log('🔐 [AUTH-ERROR] User not authenticated');
-      setSubmitError('You must be logged in to post a job');
+      console.log('🔐 [PAID-AUTH-ERROR] User not authenticated');
+      setSubmitError('You must be logged in to post a paid job');
       return;
     }
 
-    console.log('🔐 [AUTH-CHECK] User authenticated:', {
+    console.log('🔐 [PAID-AUTH-CHECK] User authenticated:', {
       userId: user.id,
       email: user.email
     });
@@ -120,7 +119,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
     // Validate form
     const validationError = validateForm();
     if (validationError) {
-      console.log('❌ [VALIDATION-ERROR]', validationError);
+      console.log('❌ [PAID-VALIDATION-ERROR]', validationError);
       setSubmitError(validationError);
       return;
     }
@@ -130,16 +129,16 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
     try {
       // If edit mode and onSuccess is provided, use the edit flow
       if (isEditMode && onSuccess) {
-        console.log('🟡 [EDIT-MODE] Calling onSuccess handler for edit');
+        console.log('🟡 [PAID-EDIT-MODE] Calling onSuccess handler for edit');
         await onSuccess(formData);
         setSubmitSuccess(true);
         return;
       }
 
-      // Otherwise, create a new job (original flow)
-      console.log('🟢 [CREATE-MODE] Creating new job');
+      // Otherwise, create a new job (original flow with paid pricing_tier)
+      console.log('🟢 [PAID-CREATE-MODE] Creating new paid job');
       
-      // Prepare payload
+      // Prepare payload - EXACTLY like free job except pricing_tier
       const payload = {
         title: formData.title.trim(),
         category: formData.category.trim(),
@@ -151,19 +150,19 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
         contact_info: formData.contact_info,
         user_id: user.id,
         status: 'active',
-        pricing_tier: window.location.pathname === '/post-job-paid-test' ? 'paid' : 'free'
+        pricing_tier: 'paid' // ONLY difference from free job
       };
 
-      console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
+      console.log('📋 [PAID-PAYLOAD] Prepared payload for Supabase:', payload);
 
-      console.log('🚀 [SUPABASE-CALL] Calling supabase.from("jobs").insert()');
+      console.log('🚀 [PAID-SUPABASE-CALL] Calling supabase.from(\"jobs\").insert()');
       
       const { data, error } = await supabase
         .from('jobs')
         .insert([payload])
         .select();
 
-      console.log('📨 [SUPABASE-RESPONSE] Response received:', {
+      console.log('📨 [PAID-SUPABASE-RESPONSE] Response received:', {
         data,
         error,
         hasData: !!data,
@@ -171,18 +170,18 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
       });
 
       if (error) {
-        console.log('💥 [SUPABASE-ERROR] Insert failed:', error);
-        setSubmitError(`Failed to create job: ${error.message}`);
+        console.log('💥 [PAID-SUPABASE-ERROR] Insert failed:', error);
+        setSubmitError(`Failed to create paid job: ${error.message}`);
         return;
       }
 
       if (!data || data.length === 0) {
-        console.log('💥 [SUPABASE-ERROR] No data returned from insert');
-        setSubmitError('Failed to create job: No data returned');
+        console.log('💥 [PAID-SUPABASE-ERROR] No data returned from insert');
+        setSubmitError('Failed to create paid job: No data returned');
         return;
       }
 
-      console.log('✅ [SUPABASE-SUCCESS] Job created successfully:', data[0]);
+      console.log('✅ [PAID-SUPABASE-SUCCESS] Paid job created successfully:', data[0]);
       setSubmitSuccess(true);
 
       // Reset form
@@ -204,12 +203,12 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
 
       // Navigate to jobs page after a short delay
       setTimeout(() => {
-        console.log('🔄 [NAVIGATION] Redirecting to /jobs');
+        console.log('🔄 [PAID-NAVIGATION] Redirecting to /jobs');
         navigate('/jobs');
       }, 2000);
 
     } catch (error) {
-      console.log('💥 [CATCH-ERROR] Unexpected error:', error);
+      console.log('💥 [PAID-CATCH-ERROR] Unexpected error:', error);
       setSubmitError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
@@ -224,7 +223,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                You must be logged in to post a job. Please sign in first.
+                You must be logged in to post a paid job. Please sign in first.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -241,7 +240,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                {isEditMode ? 'Job updated successfully! Redirecting...' : (window.location.pathname === '/post-job-paid-test' ? '🧪 PAID test job created successfully! Check console and database.' : 'Job posted successfully! Redirecting to jobs page...')}
+                {isEditMode ? 'Paid job updated successfully! Redirecting...' : 'PAID JOB posted successfully! Redirecting to jobs page...'}
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -254,7 +253,10 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>{isEditMode ? 'Edit Your Job' : (window.location.pathname === '/post-job-paid-test' ? '🧪 Post a PAID Test Job' : 'Post a Free Job')}</CardTitle>
+          <CardTitle>{isEditMode ? 'Edit Your Paid Job' : '🧪 Post a PAID TEST Job'}</CardTitle>
+          <p className="text-sm text-amber-600 font-semibold">
+            This will create a job with pricing_tier: "paid" in Supabase
+          </p>
         </CardHeader>
         <CardContent>
           {submitError && (
@@ -272,7 +274,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
             variant="outline"
             className="mb-4"
           >
-            Test Console (Click to verify console is working)
+            🧪 Test Console (Click to verify console is working)
           </Button>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -282,7 +284,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="e.g., Nail Technician"
+                placeholder="e.g., PAID Nail Technician"
                 required
               />
             </div>
@@ -314,7 +316,7 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Describe the job requirements, duties, and benefits..."
+                placeholder="This is a PAID job test. Describe the job requirements, duties, and benefits..."
                 rows={4}
                 required
               />
@@ -400,16 +402,16 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
             <Button 
               type="submit" 
               disabled={isSubmitting}
-              className="w-full"
-              onClick={() => console.log('🔴BUTTON CLICKED')}
+              className="w-full bg-amber-600 hover:bg-amber-700"
+              onClick={() => console.log('🔴 PAID BUTTON CLICKED')}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isEditMode ? 'Updating Job...' : 'Posting Job...'}
+                  {isEditMode ? 'Updating Paid Job...' : 'Creating PAID Job...'}
                 </>
               ) : (
-                isEditMode ? 'Update Job' : (window.location.pathname === '/post-job-paid-test' ? '🧪 Create PAID Test Job' : 'Post Free Job')
+                isEditMode ? 'Update Paid Job' : '🧪 CREATE PAID JOB TEST'
               )}
             </Button>
           </form>
@@ -419,4 +421,4 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
   );
 };
 
-export default FreeJobPostingForm;
+export default PaidJobTestFormExact;
