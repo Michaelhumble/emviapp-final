@@ -78,6 +78,9 @@ verify_jwt = false
 [functions.stripe-webhook-handler]
 verify_jwt = false
 
+[functions.stripe-webhook-job]
+verify_jwt = false
+
 [edge-runtime]
 enabled = true
 port = 54330

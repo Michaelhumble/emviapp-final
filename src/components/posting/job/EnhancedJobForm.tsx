@@ -363,9 +363,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     }
   };
 
-  // Handle paid job submission function (copied from PaidJobTestFormExact)
+  // Handle paid job submission with Stripe checkout
   const handlePaidJobSubmit = async (data: EnhancedJobFormValues) => {
-    console.log('🟡 PAID JOB SUBMISSION STARTED');
+    console.log('💳 PAID JOB SUBMISSION STARTED - Creating Stripe checkout');
     
     // Clear previous states
     setFreeJobError(null);
@@ -404,65 +404,48 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
     console.log('✅ [PAID-VALIDATION] Form validation passed');
 
-    // Prepare payload - EXACTLY like free job except pricing_tier
-    const payload = {
-      title: data.title.trim(),
-      category: data.category.trim(),
-      location: data.location.trim() || null,
-      description: data.description.trim(),
-      compensation_type: data.compensationType.trim() || null,
-      compensation_details: data.compensationDetails?.trim() || null,
-      requirements: data.requirements.join('\n') || null,
-      contact_info: {
-        owner_name: data.contactName?.trim() || '',
-        phone: data.contactPhone?.trim() || '',
-        email: data.contactEmail?.trim() || '',
-        notes: data.contactNotes?.trim() || ''
-      },
-      user_id: user.id,
-      status: 'active',
-      pricing_tier: 'paid' // ONLY difference from free job
-    };
-
-    console.log('📋 [PAID-PAYLOAD] Prepared payload for Supabase:', payload);
-
     setIsSubmittingFreeJob(true);
 
     try {
-      console.log('🚀 [PAID-SUPABASE-CALL] Calling supabase.from("jobs").insert()');
+      console.log('🚀 [STRIPE-CHECKOUT] Creating checkout session');
       
-      const { data: insertData, error } = await supabase
-        .from('jobs')
-        .insert([payload])
-        .select();
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-job-checkout',
+        {
+          body: {
+            jobData: {
+              title: data.title.trim(),
+              category: data.category.trim(),
+              location: data.location.trim() || '',
+              description: data.description.trim(),
+              compensationType: data.compensationType.trim() || '',
+              compensationDetails: data.compensationDetails?.trim() || '',
+              requirements: data.requirements || [],
+              contactName: data.contactName?.trim() || '',
+              contactPhone: data.contactPhone?.trim() || '',
+              contactEmail: data.contactEmail?.trim() || '',
+              contactNotes: data.contactNotes?.trim() || ''
+            }
+          }
+        }
+      );
 
-      console.log('📨 [PAID-SUPABASE-RESPONSE] Response received:', {
-        data: insertData,
-        error,
-        hasData: !!insertData,
-        dataLength: insertData?.length || 0
-      });
-
-      if (error) {
-        console.log('💥 [PAID-SUPABASE-ERROR] Insert failed:', error);
-        setFreeJobError(`Failed to create paid job: ${error.message}`);
+      if (checkoutError) {
+        console.error('💥 [STRIPE-ERROR] Checkout creation failed:', checkoutError);
+        setFreeJobError(`Payment setup failed: ${checkoutError.message}`);
         return;
       }
 
-      if (!insertData || insertData.length === 0) {
-        console.log('💥 [PAID-SUPABASE-ERROR] No data returned from insert');
-        setFreeJobError('Failed to create paid job: No data returned');
+      if (!checkoutData?.url) {
+        console.error('💥 [STRIPE-ERROR] No checkout URL returned');
+        setFreeJobError('Payment setup failed: No checkout URL received');
         return;
       }
 
-      console.log('✅ [PAID-SUPABASE-SUCCESS] Paid job created successfully:', insertData[0]);
-      setFreeJobSuccess(true);
-
-      // Navigate to jobs page after a short delay
-      setTimeout(() => {
-        console.log('🔄 [PAID-NAVIGATION] Redirecting to /jobs');
-        navigate('/jobs');
-      }, 2000);
+      console.log('✅ [STRIPE-SUCCESS] Checkout session created, redirecting to:', checkoutData.url);
+      
+      // Redirect to Stripe Checkout
+      window.location.href = checkoutData.url;
 
     } catch (error) {
       console.log('💥 [PAID-CATCH-ERROR] Unexpected error:', error);
