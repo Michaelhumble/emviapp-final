@@ -709,6 +709,16 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               )}
             </div>
 
+            <JobDetailsSection control={form.control} />
+            <RequirementsSection form={form} />
+            <CompensationSection control={form.control} />
+            <PhotoUploadSection 
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              maxPhotos={5}
+            />
+            <ContactInfoSection control={form.control} />
+            
             {/* Premium Pricing Cards - Show only when paid plan is selected */}
             {selectedPlan === 'paid' && (
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60">
@@ -741,16 +751,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                 />
               </div>
             )}
-
-            <JobDetailsSection control={form.control} />
-            <RequirementsSection form={form} />
-            <CompensationSection control={form.control} />
-            <PhotoUploadSection 
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              maxPhotos={5}
-            />
-            <ContactInfoSection control={form.control} />
             
             {/* Job Error States (both free and paid) */}
             {freeJobError && (
