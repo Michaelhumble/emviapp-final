@@ -7,6 +7,7 @@ import CustomerExclusivePerks from './CustomerExclusivePerks';
 import CustomerSocialProof from './CustomerSocialProof';
 import CustomerGameifiedProgress from './CustomerGameifiedProgress';
 import CustomerInstantActions from './CustomerInstantActions';
+import UserFreeJobCard from './UserFreeJobCard';
 
 const CustomerDashboard = () => {
   return (
@@ -49,6 +50,16 @@ const CustomerDashboard = () => {
           className="mb-8"
         >
           <CustomerViralReferralCenter />
+        </motion.div>
+
+        {/* Free Job Post Section */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          className="mb-8"
+        >
+          <UserFreeJobCard />
         </motion.div>
 
         {/* Exclusive Perks - Make them feel special */}

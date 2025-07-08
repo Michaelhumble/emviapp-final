@@ -35,12 +35,6 @@ export const mainNavigationItems: NavigationItem[] = [
     vietnameseTitle: "Công việc"
   },
   {
-    title: "🚨 Post Job (TEST)",
-    path: "/post-job-free",
-    icon: Plus,
-    vietnameseTitle: "Đăng công việc"
-  },
-  {
     title: "Community",
     path: "/freelancers",
     icon: Users,

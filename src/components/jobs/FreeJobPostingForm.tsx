@@ -11,8 +11,18 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
-const FreeJobPostingForm = () => {
-  console.log('🚨 MOUNTED - FreeJobPostingForm component is rendering');
+interface FreeJobPostingFormProps {
+  initialData?: any;
+  onSuccess?: (data: any) => Promise<void>;
+  isEditMode?: boolean;
+}
+
+const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
+  initialData,
+  onSuccess,
+  isEditMode = false
+}) => {
+  console.log('🚨 MOUNTED - FreeJobPostingForm component is rendering', { isEditMode, initialData });
   
   const navigate = useNavigate();
   const { user, isSignedIn } = useAuth();
@@ -21,18 +31,18 @@ const FreeJobPostingForm = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    location: '',
-    description: '',
-    compensation_type: '',
-    compensation_details: '',
-    requirements: '',
+    title: initialData?.title || '',
+    category: initialData?.category || '',
+    location: initialData?.location || '',
+    description: initialData?.description || '',
+    compensation_type: initialData?.compensation_type || '',
+    compensation_details: initialData?.compensation_details || '',
+    requirements: initialData?.requirements || '',
     contact_info: {
-      owner_name: '',
-      phone: '',
-      email: '',
-      notes: ''
+      owner_name: initialData?.contact_info?.owner_name || '',
+      phone: initialData?.contact_info?.phone || '',
+      email: initialData?.contact_info?.email || '',
+      notes: initialData?.contact_info?.notes || ''
     }
   });
 
@@ -115,26 +125,37 @@ const FreeJobPostingForm = () => {
       return;
     }
 
-    // Prepare payload
-    const payload = {
-      title: formData.title.trim(),
-      category: formData.category.trim(),
-      location: formData.location.trim() || null,
-      description: formData.description.trim(),
-      compensation_type: formData.compensation_type.trim() || null,
-      compensation_details: formData.compensation_details.trim() || null,
-      requirements: formData.requirements.trim() || null,
-      contact_info: formData.contact_info,
-      user_id: user.id,
-      status: 'active',
-      pricing_tier: 'free'
-    };
-
-    console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
-
     setIsSubmitting(true);
 
     try {
+      // If edit mode and onSuccess is provided, use the edit flow
+      if (isEditMode && onSuccess) {
+        console.log('🟡 [EDIT-MODE] Calling onSuccess handler for edit');
+        await onSuccess(formData);
+        setSubmitSuccess(true);
+        return;
+      }
+
+      // Otherwise, create a new job (original flow)
+      console.log('🟢 [CREATE-MODE] Creating new job');
+      
+      // Prepare payload
+      const payload = {
+        title: formData.title.trim(),
+        category: formData.category.trim(),
+        location: formData.location.trim() || null,
+        description: formData.description.trim(),
+        compensation_type: formData.compensation_type.trim() || null,
+        compensation_details: formData.compensation_details.trim() || null,
+        requirements: formData.requirements.trim() || null,
+        contact_info: formData.contact_info,
+        user_id: user.id,
+        status: 'active',
+        pricing_tier: 'free'
+      };
+
+      console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
+
       console.log('🚀 [SUPABASE-CALL] Calling supabase.from("jobs").insert()');
       
       const { data, error } = await supabase
@@ -220,7 +241,7 @@ const FreeJobPostingForm = () => {
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                Job posted successfully! Redirecting to jobs page...
+                {isEditMode ? 'Job updated successfully! Redirecting...' : 'Job posted successfully! Redirecting to jobs page...'}
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -233,7 +254,7 @@ const FreeJobPostingForm = () => {
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Post a Free Job</CardTitle>
+          <CardTitle>{isEditMode ? 'Edit Your Free Job' : 'Post a Free Job'}</CardTitle>
         </CardHeader>
         <CardContent>
           {submitError && (
@@ -385,10 +406,10 @@ const FreeJobPostingForm = () => {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Posting Job...
+                  {isEditMode ? 'Updating Job...' : 'Posting Job...'}
                 </>
               ) : (
-                'Post Free Job'
+                isEditMode ? 'Update Free Job' : 'Post Free Job'
               )}
             </Button>
           </form>
