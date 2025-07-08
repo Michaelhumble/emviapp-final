@@ -71,6 +71,7 @@ import SalonListingForm from './pages/salons/SalonListingForm';
 
 import TestEnhancedSignUp from "@/pages/TestEnhancedSignUp";
 import PaymentSuccess from "@/pages/PaymentSuccess";
+import TestPaidJobFlow from "@/pages/TestPaidJobFlow";
 
 // Removed test page imports - paid job test now integrated into main form
 
@@ -346,6 +347,10 @@ const routes = [
     path: '/test-signup',
     element: <TestEnhancedSignUp />,
     errorElement: <NotFound />
+  },
+  {
+    path: '/test-paid-job-flow',
+    element: <TestPaidJobFlow />,
   },
   {
     path: '/payment-success',

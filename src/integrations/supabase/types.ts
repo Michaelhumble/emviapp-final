@@ -997,6 +997,7 @@ export type Database = {
           expires_at: string | null
           id: string
           location: string | null
+          payment_status: string | null
           pricing_tier: string | null
           requirements: string | null
           status: string
@@ -1014,6 +1015,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           location?: string | null
+          payment_status?: string | null
           pricing_tier?: string | null
           requirements?: string | null
           status?: string
@@ -1031,6 +1033,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           location?: string | null
+          payment_status?: string | null
           pricing_tier?: string | null
           requirements?: string | null
           status?: string
