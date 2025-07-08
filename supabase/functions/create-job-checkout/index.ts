@@ -27,37 +27,35 @@ serve(async (req) => {
       throw new Error('Invalid JSON in request body');
     }
 
-    const { tier, finalPrice, jobData, jobId } = parsedBody;
+    const { tier, finalPrice, durationMonths, jobData, jobId } = parsedBody;
     
+    // Get environment variables first
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
     console.log('💳 [JOB-CHECKOUT] Request data:', {
       tier,
       finalPrice,
+      durationMonths,
       jobId,
       hasJobData: !!jobData
     });
 
-    // Get environment variables
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-
     console.log('💳 [JOB-CHECKOUT] Environment check:', {
       hasStripeKey: !!stripeSecretKey,
       hasSupabaseUrl: !!supabaseUrl,
-      hasAnonKey: !!supabaseAnonKey
+      hasAnonKey: !!supabaseAnonKey,
+      hasServiceKey: !!supabaseServiceKey
     });
 
-    if (!stripeSecretKey || !supabaseUrl || !supabaseAnonKey) {
+    if (!stripeSecretKey || !supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
       console.error('❌ [JOB-CHECKOUT] Missing environment variables');
       throw new Error('Missing environment variables');
     }
 
-    // Initialize Stripe
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2023-08-16',
-    });
-
-    // Initialize Supabase
+    // Initialize Supabase with anon key for auth
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
     // Get user from request
@@ -83,6 +81,55 @@ serve(async (req) => {
 
     console.log('💳 [JOB-CHECKOUT] User authenticated:', user.id);
 
+    // Create draft job in database BEFORE payment
+    if (!jobId && jobData) {
+      console.log('💾 [JOB-CHECKOUT] Creating draft job in database');
+      
+      // Initialize Supabase with service role key for creating draft job
+      const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
+      
+      const expiresAt = new Date();
+      expiresAt.setMonth(expiresAt.getMonth() + (durationMonths || 1));
+      
+      const { data: jobInsertData, error: jobInsertError } = await supabaseService
+        .from('jobs')
+        .insert({
+          title: jobData.title || jobData.jobTitle,
+          company: jobData.salonName || jobData.title || jobData.jobTitle,
+          location: jobData.location,
+          description: jobData.description,
+          category: jobData.category,
+          requirements: jobData.requirements,
+          compensation_type: jobData.compensationType,
+          compensation_details: jobData.compensationDetails,
+          pricing_tier: tier,
+          status: 'draft', // IMPORTANT: Draft status until payment confirmed
+          expires_at: expiresAt.toISOString(),
+          user_id: user.id,
+          contact_info: {
+            email: user.email,
+            phone: '',
+            owner_name: user.user_metadata?.full_name || 'Job Poster',
+            notes: ''
+          }
+        })
+        .select('id')
+        .single();
+      
+      if (jobInsertError) {
+        console.error('❌ [JOB-CHECKOUT] Failed to create draft job:', jobInsertError);
+        throw new Error(`Failed to create draft job: ${jobInsertError.message}`);
+      }
+      
+      parsedBody.jobId = jobInsertData.id;
+      console.log('✅ [JOB-CHECKOUT] Draft job created with ID:', jobInsertData.id);
+    }
+
+    // Initialize Stripe
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-08-16',
+    });
+
     // Get tier configuration
     const tierConfig = {
       premium: { price: 2500, name: 'Premium Job Posting' }, // $25.00
@@ -101,7 +148,7 @@ serve(async (req) => {
     console.log('💳 [JOB-CHECKOUT] Creating checkout session:', {
       tier,
       priceAmount,
-      jobId,
+      jobId: parsedBody.jobId || jobId,
       userId: user.id
     });
 
@@ -125,7 +172,7 @@ serve(async (req) => {
       success_url: `${req.headers.get('origin')}/post-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/jobs/create`,
       metadata: {
-        job_id: jobId,
+        job_id: parsedBody.jobId || jobId,
         userId: user.id,
         pricing_tier: tier,
         post_type: 'job'

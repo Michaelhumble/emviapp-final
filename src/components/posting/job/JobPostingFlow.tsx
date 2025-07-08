@@ -88,18 +88,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         return;
       }
 
-      // SIMULATE PAYMENT FOR TESTING - DO NOT HIT STRIPE YET
-      if (simulatePayment) {
-        console.log('🧪 [DEBUG] SIMULATING PAYMENT - NOT HITTING STRIPE');
-        toast.success('Payment simulation successful! (No real payment made)');
-        
-        // Simulate payment processing delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // For now, redirect to success page without creating job in database
-        navigate('/post-success');
-        return;
-      }
+      // No simulation in production flow - proceed directly to Stripe
 
       // Create Stripe checkout session for paid plans (ONLY when not simulating)
       console.log('💰 [DEBUG] Creating Stripe checkout session for paid plan');
@@ -122,11 +111,20 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
       }
 
       if (data?.url) {
-        console.log('💰 [DEBUG] Redirecting to Stripe checkout:', data.url);
+        console.log('💰 [PRODUCTION] Redirecting to Stripe checkout:', data.url);
+        console.log('💰 [PRODUCTION] After successful payment, job will be saved to database');
+        console.log('💰 [PRODUCTION] Job data to be processed:', JSON.stringify(jobFormData, null, 2));
+        
+        // Log verification messages for production
+        console.log('💳 [PRODUCTION] CREATING STRIPE CHECKOUT SESSION');
+        console.log('💳 [PRODUCTION] JOB WILL BE SAVED AFTER SUCCESSFUL PAYMENT');
+        
+        toast.success('Redirecting to secure payment...');
+        
         // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
-        console.error('💰 [DEBUG] No checkout URL received in response');
+        console.error('💰 [PRODUCTION] No checkout URL received in response');
         toast.error('No checkout URL received');
         setIsProcessing(false);
       }
@@ -236,12 +234,12 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
           </CardContent>
         </Card>
 
-        {/* Testing Banner */}
-        <Alert className="border-yellow-200 bg-yellow-50">
-          <AlertCircle className="h-4 w-4 text-yellow-600" />
-          <AlertDescription className="text-yellow-800">
-            <strong>Testing Mode:</strong> This is a preview. Your job will NOT be saved until payment is confirmed. 
-            Payment processing is currently simulated for testing purposes.
+        {/* Production Info Banner */}
+        <Alert className="border-blue-200 bg-blue-50">
+          <AlertCircle className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            <strong>Production Mode:</strong> Your job will be saved to the database and appear on the Jobs page 
+            immediately after successful payment. This will process real payments via Stripe.
           </AlertDescription>
         </Alert>
 
@@ -256,18 +254,12 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
             Back to Pricing
           </Button>
           
-          <div className="space-x-4">
-            {/* Remove the simulate payment button from production flow */}
-            <Button
-              onClick={() => {
-                setSimulatePayment(false);
-                handleConfirmPreview();
-              }}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              Proceed to Payment
-            </Button>
-          </div>
+          <Button
+            onClick={handleConfirmPreview}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            Proceed to Payment
+          </Button>
         </div>
       </div>
     );
@@ -280,7 +272,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">
-            {simulatePayment ? 'Simulating payment...' : 'Redirecting to secure payment...'}
+            Redirecting to secure payment...
           </p>
           <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
         </div>
