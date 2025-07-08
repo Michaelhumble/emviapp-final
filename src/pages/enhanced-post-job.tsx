@@ -87,30 +87,6 @@ const EnhancedPostJob = () => {
       </Helmet>
       
       <div className="min-h-screen bg-gray-50">
-        {/* Production Mode Warning */}
-        <div className="bg-red-50 border-b border-red-200">
-          <div className="container mx-auto py-4 px-4">
-            <Alert className="bg-red-100 border-red-300">
-              <CreditCard className="h-5 w-5 text-red-600" />
-              <AlertDescription className="text-red-800 font-medium">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <strong>🔴 PRODUCTION MODE - REAL PAYMENT FLOW</strong>
-                    <div className="text-sm mt-1">
-                      This will process real Stripe payments. Use test cards (4242 4242 4242 4242) to avoid charges.
-                      Jobs will appear on the live Jobs page after payment.
-                    </div>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <CheckCircle className="h-4 w-4 mr-1 text-red-600" />
-                    Live Database
-                  </div>
-                </div>
-              </AlertDescription>
-            </Alert>
-          </div>
-        </div>
-
         {currentStep === 'template' && (
           <div className="container mx-auto py-8">
             <ConsolidatedJobTemplateSelector onTemplateSelect={handleTemplateSelect} />

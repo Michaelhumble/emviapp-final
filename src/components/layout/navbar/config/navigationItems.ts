@@ -59,13 +59,7 @@ export const testNavigationItems: NavigationItem[] = [
   // All test navigation removed - paid job functionality now in main form
 ];
 
-// Production navigation items - REAL PAID JOB POSTING
+// Production navigation items - removed paid job posting link
 export const paidJobNavigationItems: NavigationItem[] = [
-  {
-    title: "Post Paid Job",
-    path: "/post-job",
-    icon: Plus,
-    highlight: true,
-    vietnameseTitle: "Đăng việc trả phí"
-  }
+  // Removed "Post Paid Job" - now integrated into main Post Job form
 ];

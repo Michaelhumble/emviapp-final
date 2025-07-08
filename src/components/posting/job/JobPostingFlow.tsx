@@ -234,14 +234,6 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
           </CardContent>
         </Card>
 
-        {/* Production Info Banner */}
-        <Alert className="border-blue-200 bg-blue-50">
-          <AlertCircle className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            <strong>Production Mode:</strong> Your job will be saved to the database and appear on the Jobs page 
-            immediately after successful payment. This will process real payments via Stripe.
-          </AlertDescription>
-        </Alert>
 
         {/* Action Buttons */}
         <div className="flex justify-between items-center pt-6">
