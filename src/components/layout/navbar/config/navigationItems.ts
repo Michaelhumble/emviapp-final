@@ -57,11 +57,11 @@ export const mainNavigationItems: NavigationItem[] = [
 // Development/Testing navigation items - ONLY VISIBLE IN DEV MODE
 export const testNavigationItems: NavigationItem[] = [
   {
-    title: "🧪 Test Paid Jobs",
+    title: "🧪 Paid Job Test",
     path: "/post-job-paid-test",
     icon: Plus,
     highlight: true,
-    vietnameseTitle: "🧪 Thử nghiệm Job trả phí"
+    vietnameseTitle: "🧪 Test Job trả phí"
   }
 ];
 
