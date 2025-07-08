@@ -21,6 +21,23 @@ export const useJobsData = () => {
         .select('*', { count: 'exact' })
         .eq('status', 'active')
         .order('created_at', { ascending: false });
+        
+      // LOG ALL ACTIVE JOBS FOR DEBUGGING
+      console.log('🔍 [JOBS-DATA] ACTIVE JOBS QUERY RESULTS:');
+      if (jobsData && jobsData.length > 0) {
+        jobsData.forEach((job, index) => {
+          console.log(`📋 [JOBS-DATA] Job ${index + 1}:`, {
+            id: job.id,
+            title: job.title,
+            status: job.status,
+            pricing_tier: job.pricing_tier,
+            created_at: job.created_at,
+            user_id: job.user_id
+          });
+        });
+      } else {
+        console.log('⚠️ [JOBS-DATA] NO ACTIVE JOBS FOUND IN DATABASE');
+      }
 
       console.log('🔍 [JOBS-DATA] Raw Supabase response:', {
         data: jobsData,

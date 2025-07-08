@@ -177,6 +177,30 @@ serve(async (req) => {
       console.log('✅ [WEBHOOK-JOB] PAID JOB POST SAVED TO DATABASE');
       console.log('✅ [WEBHOOK-JOB] PAID JOB NOW VISIBLE ON JOBS PAGE');
       console.log('✅ [WEBHOOK-JOB] Updated job data:', data[0]);
+      
+      // VERIFICATION: Query the job to confirm it's actually active and visible
+      console.log('🔍 [WEBHOOK-JOB] VERIFICATION: Confirming job is now active in database...');
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('jobs')
+        .select('id, title, status, pricing_tier, created_at, user_id')
+        .eq('id', jobId)
+        .eq('status', 'active')
+        .single();
+        
+      if (verifyError || !verifyData) {
+        console.error('❌ [WEBHOOK-JOB] VERIFICATION FAILED: Job not found as active!', verifyError);
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Job activation verification failed',
+          verifyError: verifyError?.message 
+        }), { 
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      console.log('✅ [WEBHOOK-JOB] VERIFICATION PASSED: Job is confirmed active and visible');
+      console.log('✅ [WEBHOOK-JOB] FINAL VERIFICATION DATA:', verifyData);
 
       return new Response(JSON.stringify({ 
         success: true, 

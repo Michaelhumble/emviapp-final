@@ -107,9 +107,21 @@ const PostSuccessPage = () => {
       console.log('🔍 [POST-SUCCESS] Step 2: Verifying job is visible on public jobs page...');
       const { data: publicJobs, error: publicError } = await supabase
         .from('jobs')
-        .select('id, title, status, pricing_tier')
+        .select('id, title, status, pricing_tier, created_at, user_id')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
+        
+      console.log('📋 [POST-SUCCESS] ALL ACTIVE JOBS IN DATABASE:', {
+        totalActive: publicJobs?.length || 0,
+        jobs: publicJobs?.map(j => ({
+          id: j.id,
+          title: j.title,
+          status: j.status,
+          pricing_tier: j.pricing_tier,
+          created_at: j.created_at,
+          user_id: j.user_id
+        })) || []
+      });
 
       if (publicError) {
         console.error('❌ [POST-SUCCESS] Error checking public jobs:', publicError);
