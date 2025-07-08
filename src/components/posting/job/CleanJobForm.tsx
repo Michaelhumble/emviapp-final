@@ -11,7 +11,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { cleanJobFormSchema, type CleanJobFormData } from './cleanJobFormSchema';
 
-const CleanJobForm = () => {
+interface CleanJobFormProps {
+  onSubmit?: (data: CleanJobFormData) => void;
+  isTestMode?: boolean;
+}
+
+const CleanJobForm: React.FC<CleanJobFormProps> = ({ 
+  onSubmit: onSubmitProp, 
+  isTestMode = false 
+}) => {
   const form = useForm<CleanJobFormData>({
     resolver: zodResolver(cleanJobFormSchema),
     defaultValues: {
@@ -26,7 +34,14 @@ const CleanJobForm = () => {
 
   const onSubmit = (data: CleanJobFormData) => {
     console.log('Clean job form submitted:', data);
-    toast.success('Job details saved! 🎉 Ready for next step.');
+    
+    if (onSubmitProp) {
+      // External handler (like test mode)
+      onSubmitProp(data);
+    } else {
+      // Default behavior
+      toast.success('Job details saved! 🎉 Ready for next step.');
+    }
   };
 
   return (

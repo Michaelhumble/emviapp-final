@@ -1,25 +1,22 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, AlertCircle, MapPin, Clock, DollarSign, Building, Eye, ArrowLeft } from 'lucide-react';
+import { CheckCircle, AlertCircle, MapPin, DollarSign, Building, ArrowLeft, TestTube } from 'lucide-react';
 import JobPricingTable from './JobPricingTable';
-import PricingConfirmationModal from './PricingConfirmationModal';
 
-interface JobPostingFlowProps {
+interface JobPostingTestFlowProps {
   jobFormData: any;
   onBack: () => void;
 }
 
-type FlowStep = 'pricing' | 'preview' | 'confirmation' | 'processing';
+type FlowStep = 'pricing' | 'preview' | 'processing' | 'success';
 
-const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) => {
+const JobPostingTestFlow: React.FC<JobPostingTestFlowProps> = ({ jobFormData, onBack }) => {
   const [currentStep, setCurrentStep] = useState<FlowStep>('pricing');
   const [selectedPricing, setSelectedPricing] = useState<{
     tier: string;
@@ -27,125 +24,62 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
     durationMonths: number;
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [simulatePayment, setSimulatePayment] = useState(false);
+  const [simulateFailure, setSimulateFailure] = useState(false);
   
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const handlePricingSelect = (tier: string, finalPrice: number, durationMonths: number) => {
-    console.log('💰 [DEBUG] Pricing selected:', { tier, finalPrice, durationMonths });
-    console.log('💰 [DEBUG] Job form data for pricing:', JSON.stringify(jobFormData, null, 2));
+    console.log('🧪 [TEST] Pricing selected:', { tier, finalPrice, durationMonths });
     
-    // For Diamond tier, force 12-month duration and $999.99 pricing - NO OTHER OPTIONS
+    // For Diamond tier, force 12-month duration and $999.99 pricing
     if (tier === 'diamond') {
       setSelectedPricing({ tier, finalPrice: 999.99, durationMonths: 12 });
     } else {
       setSelectedPricing({ tier, finalPrice, durationMonths });
     }
     
-    // Show preview step before payment
-    console.log('💰 [DEBUG] Moving to preview step');
     setCurrentStep('preview');
   };
 
   const handleConfirmPreview = () => {
-    if (!selectedPricing) return;
-    
-    console.log('👁️ [DEBUG] Preview confirmed, showing payment confirmation');
-    setShowConfirmation(true);
+    setCurrentStep('processing');
+    simulatePaymentProcess();
   };
 
-  const proceedToPayment = async (tier: string, finalPrice: number, durationMonths: number) => {
-    console.log('💳 [DEBUG] proceedToPayment called with:', { tier, finalPrice, durationMonths });
-    console.log('💳 [DEBUG] Job data being processed:', JSON.stringify(jobFormData, null, 2));
+  const simulatePaymentProcess = async () => {
+    if (!selectedPricing) return;
     
-    setShowConfirmation(false);
+    console.log('🧪 [TEST] Simulating payment process...');
     setIsProcessing(true);
 
     try {
-      if (!user) {
-        console.error('💳 [DEBUG] No user found, redirecting to login');
-        toast.error('Please log in to continue');
-        navigate('/login');
-        return;
-      }
-
-      console.log('💳 [DEBUG] User authenticated:', user.id);
-
-      // For Diamond tier, enforce fixed pricing and duration - NO EXCEPTIONS
-      if (tier === 'diamond') {
-        finalPrice = 999.99;
-        durationMonths = 12;
-        console.log('💎 [DEBUG] Diamond tier - enforcing fixed pricing');
-      }
-
-      // For free tier, create job posting directly without payment
-      if (finalPrice === 0) {
-        console.log('🆓 [DEBUG] Free job - navigating directly to success page');
-        toast.success('Free job posting created successfully!');
-        navigate('/post-success');
-        return;
-      }
-
-      // SIMULATE PAYMENT FOR TESTING - DO NOT HIT STRIPE YET
-      if (simulatePayment) {
-        console.log('🧪 [DEBUG] SIMULATING PAYMENT - NOT HITTING STRIPE');
-        toast.success('Payment simulation successful! (No real payment made)');
-        
-        // Simulate payment processing delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // For now, redirect to success page without creating job in database
-        navigate('/post-success');
-        return;
-      }
-
-      // Create Stripe checkout session for paid plans (ONLY when not simulating)
-      console.log('💰 [DEBUG] Creating Stripe checkout session for paid plan');
-      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
-        body: {
-          tier,
-          finalPrice,
-          durationMonths,
-          jobData: jobFormData
-        }
-      });
-
-      console.log('💰 [DEBUG] Stripe checkout response:', { data, error });
-
-      if (error) {
-        console.error('💰 [DEBUG] Stripe checkout error:', error);
-        toast.error('Failed to create payment session');
+      // Simulate payment processing delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      if (simulateFailure) {
+        console.log('🧪 [TEST] Simulating payment failure');
+        toast.error('Payment simulation failed! (This is intentional for testing)');
+        setCurrentStep('preview');
         setIsProcessing(false);
+        setSimulateFailure(false);
         return;
       }
 
-      if (data?.url) {
-        console.log('💰 [DEBUG] Redirecting to Stripe checkout:', data.url);
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        console.error('💰 [DEBUG] No checkout URL received in response');
-        toast.error('No checkout URL received');
-        setIsProcessing(false);
-      }
-    } catch (error) {
-      console.error('💥 [DEBUG] Payment error:', error);
-      console.error('💥 [DEBUG] Error stack trace:', error instanceof Error ? error.stack : 'No stack trace');
-      toast.error('Payment processing failed');
+      console.log('🧪 [TEST] Payment simulation successful');
+      toast.success('Payment simulation successful! (No real payment made)');
+      
+      // Simulate database save (but don't actually save to live database)
+      console.log('🧪 [TEST] Simulating job post save to test database');
+      
+      setCurrentStep('success');
       setIsProcessing(false);
-    }
-  };
-
-  const handleConfirmPayment = () => {
-    console.log('✅ [DEBUG] Payment confirmed, proceeding...');
-    if (selectedPricing) {
-      proceedToPayment(
-        selectedPricing.tier,
-        selectedPricing.finalPrice,
-        selectedPricing.durationMonths
-      );
+      
+    } catch (error) {
+      console.error('🧪 [TEST] Payment simulation error:', error);
+      toast.error('Payment simulation error');
+      setCurrentStep('preview');
+      setIsProcessing(false);
     }
   };
 
@@ -157,8 +91,11 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-gray-900">Review Your Job Post</h1>
-          <p className="text-gray-600">Please review your job details and pricing before proceeding to payment</p>
+          <div className="flex items-center justify-center gap-2">
+            <TestTube className="h-6 w-6 text-yellow-600" />
+            <h1 className="text-3xl font-bold text-gray-900">Review Your Test Job Post</h1>
+          </div>
+          <p className="text-gray-600">Review job details and test the payment simulation</p>
         </div>
 
         {/* Job Details Preview */}
@@ -166,9 +103,14 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
           <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl text-gray-900">{jobFormData.title}</CardTitle>
-              <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                {jobFormData.category}
-              </Badge>
+              <div className="flex gap-2">
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                  {jobFormData.category}
+                </Badge>
+                <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300">
+                  TEST MODE
+                </Badge>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
@@ -216,7 +158,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         {/* Pricing Summary */}
         <Card className="border-2 border-green-200">
           <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
-            <CardTitle className="text-xl text-gray-900">Pricing Summary</CardTitle>
+            <CardTitle className="text-xl text-gray-900">Pricing Summary (Test)</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-3">
@@ -229,19 +171,46 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
                 <span className="font-semibold">{selectedPricing.durationMonths} months</span>
               </div>
               <div className="flex justify-between items-center text-lg font-bold border-t pt-3">
-                <span className="text-gray-900">Total:</span>
+                <span className="text-gray-900">Total (Simulated):</span>
                 <span className="text-green-600">${selectedPricing.finalPrice.toFixed(2)}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Testing Banner */}
+        {/* Testing Controls */}
         <Alert className="border-yellow-200 bg-yellow-50">
-          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <TestTube className="h-4 w-4 text-yellow-600" />
           <AlertDescription className="text-yellow-800">
-            <strong>Testing Mode:</strong> This is a preview. Your job will NOT be saved until payment is confirmed. 
-            Payment processing is currently simulated for testing purposes.
+            <div className="space-y-3">
+              <p><strong>Payment Simulation Testing:</strong></p>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={() => {
+                    setSimulateFailure(false);
+                    handleConfirmPreview();
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  size="sm"
+                >
+                  ✅ Simulate Payment Success
+                </Button>
+                <Button
+                  onClick={() => {
+                    setSimulateFailure(true);
+                    handleConfirmPreview();
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                  size="sm"
+                >
+                  ❌ Simulate Payment Failure
+                </Button>
+              </div>
+              <p className="text-sm">
+                Test both success and failure scenarios. No real payments will be processed and 
+                no jobs will be saved to the live database.
+              </p>
+            </div>
           </AlertDescription>
         </Alert>
 
@@ -255,34 +224,75 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
             <ArrowLeft className="h-4 w-4" />
             Back to Pricing
           </Button>
-          
-          <div className="space-x-4">
-            {/* Remove the simulate payment button from production flow */}
-            <Button
-              onClick={() => {
-                setSimulatePayment(false);
-                handleConfirmPreview();
-              }}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              Proceed to Payment
-            </Button>
-          </div>
         </div>
       </div>
     );
   };
 
+  // Success Page
+  const SuccessPage = () => (
+    <div className="max-w-2xl mx-auto text-center space-y-6">
+      <div className="space-y-4">
+        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+          <CheckCircle className="h-8 w-8 text-green-600" />
+        </div>
+        <h1 className="text-3xl font-bold text-gray-900">Test Payment Successful!</h1>
+        <p className="text-gray-600">
+          Payment simulation completed successfully. In a real scenario, your job post would now be live.
+        </p>
+      </div>
+
+      <Alert className="border-green-200 bg-green-50 text-left">
+        <CheckCircle className="h-4 w-4 text-green-600" />
+        <AlertDescription className="text-green-800">
+          <div className="space-y-2">
+            <p><strong>Test Results:</strong></p>
+            <ul className="list-disc list-inside space-y-1 text-sm">
+              <li>✅ Form validation passed</li>
+              <li>✅ Pricing selection worked</li>
+              <li>✅ Job preview displayed correctly</li>
+              <li>✅ Payment simulation successful</li>
+              <li>✅ No real payment processed</li>
+              <li>✅ No job saved to live database</li>
+            </ul>
+          </div>
+        </AlertDescription>
+      </Alert>
+
+      <div className="space-y-4">
+        <Button
+          onClick={() => navigate('/post-job-paid-test')}
+          className="bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          Test Another Job Post
+        </Button>
+        <div>
+          <Button
+            onClick={() => navigate('/jobs')}
+            variant="outline"
+          >
+            View Live Jobs Page
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isProcessing) {
-    console.log('⏳ [DEBUG] Showing processing screen');
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
         <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <TestTube className="h-6 w-6 text-yellow-600" />
+            <span className="text-lg font-semibold text-gray-900">Testing Mode</span>
+          </div>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">
-            {simulatePayment ? 'Simulating payment...' : 'Redirecting to secure payment...'}
+            Simulating payment processing...
           </p>
-          <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
+          <p className="text-sm text-gray-500 mt-2">
+            {simulateFailure ? 'Testing payment failure scenario' : 'Testing payment success scenario'}
+          </p>
         </div>
       </div>
     );
@@ -303,6 +313,15 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
               </button>
             </div>
             
+            <div className="text-center mb-6">
+              <Alert className="border-yellow-200 bg-yellow-50 inline-flex items-center">
+                <TestTube className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="text-yellow-800 ml-2">
+                  <strong>Test Mode:</strong> All payments will be simulated
+                </AlertDescription>
+              </Alert>
+            </div>
+            
             <JobPricingTable
               onPricingSelect={handlePricingSelect}
               jobData={jobFormData}
@@ -311,20 +330,10 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         )}
 
         {currentStep === 'preview' && <JobPreview />}
-
-        {/* Pricing Confirmation Modal */}
-        <PricingConfirmationModal
-          open={showConfirmation}
-          onClose={() => setShowConfirmation(false)}
-          selectedTier={selectedPricing?.tier || ''}
-          finalPrice={selectedPricing?.finalPrice || 0}
-          durationMonths={selectedPricing?.durationMonths || 1}
-          onConfirmPayment={handleConfirmPayment}
-        />
+        {currentStep === 'success' && <SuccessPage />}
       </div>
     </div>
   );
 };
 
-export default JobPostingFlow;
-
+export default JobPostingTestFlow;

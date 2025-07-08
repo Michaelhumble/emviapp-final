@@ -71,6 +71,9 @@ import SalonListingForm from './pages/salons/SalonListingForm';
 
 import TestEnhancedSignUp from "@/pages/TestEnhancedSignUp";
 
+// Import the new test page
+const PostJobPaidTest = React.lazy(() => import('./pages/PostJobPaidTest'));
+
 const routes = [
   {
     path: '/auth/redirect',
@@ -109,6 +112,12 @@ const routes = [
   {
     path: '/post-job-free',
     element: <PostJobFreePage />,
+  },
+  {
+    path: '/post-job-paid-test',
+    element: <React.Suspense fallback={<div>Loading...</div>}>
+      <PostJobPaidTest />
+    </React.Suspense>,
   },
   {
     path: '/salons',

@@ -53,3 +53,14 @@ export const mainNavigationItems: NavigationItem[] = [
     vietnameseTitle: "Liên hệ"
   }
 ];
+
+// Development/Testing navigation items
+export const testNavigationItems: NavigationItem[] = [
+  {
+    title: "Test Paid Jobs",
+    path: "/post-job-paid-test",
+    icon: Plus,
+    highlight: true,
+    vietnameseTitle: "Thử nghiệm Job trả phí"
+  }
+];
