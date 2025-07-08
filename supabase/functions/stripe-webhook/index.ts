@@ -3,6 +3,48 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
 import Stripe from "https://esm.sh/stripe@12.1.1";
 
+// Async webhook signature verification for Edge Functions
+async function verifyStripeSignature(payload: string, signature: string, secret: string): Promise<boolean> {
+  try {
+    const elements = signature.split(',');
+    const signatureHash = elements.find(el => el.startsWith('v1='))?.split('=')[1];
+    const timestamp = elements.find(el => el.startsWith('t='))?.split('=')[1];
+    
+    if (!signatureHash || !timestamp) {
+      return false;
+    }
+    
+    // Create the signed payload
+    const signedPayload = `${timestamp}.${payload}`;
+    
+    // Convert secret to key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    
+    // Generate signature
+    const signature_bytes = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      new TextEncoder().encode(signedPayload)
+    );
+    
+    // Convert to hex
+    const expectedSignature = Array.from(new Uint8Array(signature_bytes))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
+    return expectedSignature === signatureHash;
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
+}
+
 serve(async (req) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -20,12 +62,25 @@ serve(async (req) => {
 
     const body = await req.text();
     const signature = req.headers.get('stripe-signature') || '';
+    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") || "";
 
-    const event = stripe.webhooks.constructEvent(
-      body, 
-      signature, 
-      Deno.env.get("STRIPE_WEBHOOK_SECRET") || ""
-    );
+    console.log('🔐 [STRIPE-WEBHOOK] Verifying signature...');
+    
+    // Verify the webhook signature using async crypto
+    const isValidSignature = await verifyStripeSignature(body, signature, webhookSecret);
+    
+    if (!isValidSignature) {
+      console.error('❌ [STRIPE-WEBHOOK] Invalid signature');
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    console.log('✅ [STRIPE-WEBHOOK] Signature verified');
+
+    // Parse the event manually since we can't use constructEvent
+    const event = JSON.parse(body);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") || "",
