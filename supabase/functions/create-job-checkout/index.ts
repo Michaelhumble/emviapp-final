@@ -13,20 +13,81 @@ serve(async (req) => {
   }
 
   try {
-    const { jobData } = await req.json();
-    console.log("🚀 Creating job checkout session with data:", jobData);
-
-    // Get Stripe secret key
+    console.log("🚀 Job checkout function invoked");
+    
+    // Check environment variables first
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    
+    console.log("🔧 Environment check:", {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasAnonKey: !!supabaseAnonKey,
+      hasServiceKey: !!supabaseServiceKey,
+      hasStripeKey: !!stripeKey
+    });
+
     if (!stripeKey) {
-      throw new Error("STRIPE_SECRET_KEY not configured");
+      console.error("❌ STRIPE_SECRET_KEY not configured");
+      return new Response(
+        JSON.stringify({ 
+          error: "STRIPE_SECRET_KEY not configured. Please add your Stripe secret key to the Edge Function secrets." 
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        }
+      );
+    }
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      console.error("❌ Missing Supabase configuration");
+      return new Response(
+        JSON.stringify({ 
+          error: "Missing Supabase configuration" 
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        }
+      );
+    }
+
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      console.error("❌ Failed to parse request body:", parseError);
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid request body" 
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        }
+      );
+    }
+
+    const { jobData } = requestBody;
+    console.log("📝 Job data received:", jobData);
+
+    if (!jobData) {
+      console.error("❌ No jobData provided");
+      return new Response(
+        JSON.stringify({ 
+          error: "Missing jobData in request" 
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        }
+      );
     }
 
     // Create Supabase client for auth
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
     // Get authenticated user
     const authHeader = req.headers.get("Authorization");
@@ -49,8 +110,8 @@ serve(async (req) => {
 
     // Create Supabase client with service role to create draft job
     const supabaseServiceClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      supabaseUrl,
+      supabaseServiceKey,
       { auth: { persistSession: false } }
     );
 
@@ -149,9 +210,25 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("❌ Error creating job checkout:", error);
+    console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    
+    // Provide more specific error messages
+    let errorMessage = "Unknown error occurred";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      
+      // Handle specific Stripe errors
+      if (error.message.includes("Invalid API Key")) {
+        errorMessage = "Invalid Stripe API key. Please check your STRIPE_SECRET_KEY configuration.";
+      } else if (error.message.includes("network")) {
+        errorMessage = "Network error connecting to Stripe. Please try again.";
+      }
+    }
+    
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error" 
+        error: errorMessage,
+        details: error instanceof Error ? error.message : "No details available"
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -462,7 +462,20 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
       if (checkoutError) {
         console.error('💥 [STRIPE-ERROR] Checkout creation failed:', checkoutError);
-        setFreeJobError(`Payment setup failed: ${checkoutError.message}`);
+        
+        // Extract more meaningful error message from the response
+        let errorMessage = 'Payment setup failed';
+        if (checkoutError.message?.includes('STRIPE_SECRET_KEY not configured')) {
+          errorMessage = 'Stripe payment system is not configured. Please contact support.';
+        } else if (checkoutError.message?.includes('Invalid API Key')) {
+          errorMessage = 'Payment system configuration error. Please contact support.';
+        } else if (checkoutError.message?.includes('Edge Function returned a non-2xx status code')) {
+          errorMessage = 'Payment service temporarily unavailable. Please try again in a moment.';
+        } else if (checkoutError.message) {
+          errorMessage = `Payment setup failed: ${checkoutError.message}`;
+        }
+        
+        setFreeJobError(errorMessage);
         return;
       }
 
