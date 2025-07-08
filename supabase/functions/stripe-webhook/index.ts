@@ -48,6 +48,59 @@ serve(async (req) => {
       const metadata = session.metadata || {};
       const durationMonths = Number(metadata.duration_months || 1);
       
+      console.log('💳 [STRIPE-WEBHOOK] Processing completed checkout session:', {
+        sessionId: session.id,
+        metadata: metadata,
+        paymentStatus: session.payment_status
+      });
+
+      // Check if this is a job posting payment
+      const jobId = metadata.job_id;
+      if (jobId) {
+        console.log('🎯 [STRIPE-WEBHOOK] JOB PAYMENT DETECTED - Activating job:', jobId);
+        
+        // First, check if the job exists and is in draft status
+        const { data: existingJob, error: checkError } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('id', jobId)
+          .single();
+
+        if (checkError) {
+          console.error('❌ [STRIPE-WEBHOOK] Error checking for existing job:', checkError);
+        } else if (!existingJob) {
+          console.error('❌ [STRIPE-WEBHOOK] No job found with ID:', jobId);
+        } else {
+          console.log('📋 [STRIPE-WEBHOOK] Found job to activate:', {
+            id: existingJob.id,
+            title: existingJob.title,
+            status: existingJob.status,
+            pricing_tier: existingJob.pricing_tier
+          });
+
+          // Update job status from draft to active
+          const { data: updatedJob, error: updateError } = await supabase
+            .from('jobs')
+            .update({ 
+              status: 'active',
+              payment_status: 'completed',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', jobId)
+            .eq('status', 'draft')
+            .select();
+
+          if (updateError) {
+            console.error('❌ [STRIPE-WEBHOOK] JOB ACTIVATION FAILED:', updateError);
+          } else if (!updatedJob || updatedJob.length === 0) {
+            console.error('❌ [STRIPE-WEBHOOK] No job was updated - may not be in draft status');
+          } else {
+            console.log('✅ [STRIPE-WEBHOOK] JOB SUCCESSFULLY ACTIVATED:', updatedJob[0]);
+            console.log('✅ [STRIPE-WEBHOOK] PAID JOB NOW VISIBLE ON JOBS PAGE');
+          }
+        }
+      }
+      
       // Calculate expiration date based on duration
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + (durationMonths * 30)); // Approximate months as 30 days
