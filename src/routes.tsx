@@ -101,6 +101,12 @@ const routes = [
     element: <JobsPage />,
   },
   {
+    path: '/jobs/edit/:jobId',
+    element: <React.Suspense fallback={<div>Loading...</div>}>
+      {React.createElement(React.lazy(() => import('./pages/jobs/EditJobPage')))}
+    </React.Suspense>,
+  },
+  {
     path: '/post-job-free',
     element: <PostJobFreePage />,
   },
