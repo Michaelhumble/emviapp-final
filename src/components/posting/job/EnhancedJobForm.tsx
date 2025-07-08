@@ -464,32 +464,51 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
         console.error('💥 [STRIPE-ERROR] Checkout creation failed:', checkoutError);
         console.error('💥 [STRIPE-ERROR] Full error object:', JSON.stringify(checkoutError, null, 2));
         
-        // Extract the actual error details from the response
-        let fullErrorMessage = 'Payment setup failed';
-        let errorDetails = '';
+        // Extract the actual error details from the Edge Function response
+        let userFriendlyMessage = 'Payment setup failed';
+        let debugMessage = '';
         
         try {
-          // If there's error data from the Edge Function, use it
-          if (checkoutError.details) {
-            errorDetails = checkoutError.details;
-            fullErrorMessage = `Edge Function Error: ${errorDetails}`;
+          // Check if it's a FunctionsHttpError with details
+          if (checkoutError.context?.body) {
+            const errorBody = checkoutError.context.body;
+            console.error('💥 [STRIPE-ERROR] Function response body:', errorBody);
+            
+            if (errorBody.error) {
+              userFriendlyMessage = `Payment Error: ${errorBody.error}`;
+              debugMessage = errorBody.details || errorBody.error;
+            }
+          }
+          // Fallback to direct error properties
+          else if (checkoutError.details) {
+            userFriendlyMessage = `Edge Function Error: ${checkoutError.details}`;
+            debugMessage = checkoutError.details;
           } else if (checkoutError.message) {
-            errorDetails = checkoutError.message;
-            fullErrorMessage = `Payment Error: ${errorDetails}`;
+            // Handle common Supabase/Edge Function errors
+            if (checkoutError.message.includes('Failed to invoke')) {
+              userFriendlyMessage = 'Edge Function invocation failed - check function name and deployment';
+            } else if (checkoutError.message.includes('STRIPE_SECRET_KEY')) {
+              userFriendlyMessage = 'Stripe configuration error: STRIPE_SECRET_KEY not configured';
+            } else if (checkoutError.message.includes('Invalid API Key')) {
+              userFriendlyMessage = 'Stripe configuration error: Invalid STRIPE_SECRET_KEY';
+            } else {
+              userFriendlyMessage = `Payment Error: ${checkoutError.message}`;
+            }
+            debugMessage = checkoutError.message;
           }
           
-          console.error('💥 [STRIPE-ERROR] Error details for user:', {
-            errorMessage: fullErrorMessage,
-            errorDetails: errorDetails,
-            rawError: checkoutError
+          console.error('💥 [STRIPE-ERROR] Parsed error for user:', {
+            userMessage: userFriendlyMessage,
+            debugMessage: debugMessage,
+            fullError: checkoutError
           });
         } catch (parseError) {
           console.error('💥 [STRIPE-ERROR] Failed to parse error details:', parseError);
-          fullErrorMessage = `Payment setup failed: ${checkoutError.message || 'Unknown error'}`;
+          userFriendlyMessage = `Payment setup failed: ${checkoutError.message || 'Unknown error'}`;
         }
         
-        // Show the full technical error to the user
-        setFreeJobError(fullErrorMessage);
+        // Show the detailed error to the user (helpful for debugging in development)
+        setFreeJobError(userFriendlyMessage);
         return;
       }
 
