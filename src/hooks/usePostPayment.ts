@@ -124,7 +124,7 @@ export const usePostPayment = () => {
         idempotencyKey
       });
       
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
         body: { 
           postType,
           postDetails,
