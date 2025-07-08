@@ -11,22 +11,29 @@ const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
   const { isSignedIn } = useAuth();
 
-  console.log('📊 [JOBS-PAGE] Rendering jobs page with:', {
+  console.log('📊 [JOBS-PAGE] Rendering jobs page with state:', {
     jobsCount: jobs.length,
     loading,
     error,
-    isSignedIn
+    isSignedIn,
+    jobsArray: jobs
   });
 
   useEffect(() => {
-    console.log('🔄 [JOBS-PAGE] Jobs data updated:', {
+    console.log('🔄 [JOBS-PAGE] Jobs data updated in useEffect:', {
       totalJobs: jobs.length,
-      jobTitles: jobs.map(j => j.title)
+      jobTitles: jobs.map(j => j.title),
+      jobIds: jobs.map(j => j.id),
+      fullJobsData: jobs
     });
   }, [jobs]);
 
   const handleRenew = (job: Job) => {
-    console.log('🔄 [JOBS-PAGE] Renew requested for job:', job.id);
+    console.log('🔄 [JOBS-PAGE] Renew requested for job:', {
+      jobId: job.id,
+      jobTitle: job.title,
+      fullJob: job
+    });
     // Renewal logic would go here
   };
 
@@ -40,7 +47,11 @@ const JobsPage = () => {
   }
 
   if (error) {
-    console.log('❌ [JOBS-PAGE] Showing error state:', error);
+    console.log('❌ [JOBS-PAGE] Showing error state:', {
+      error,
+      errorType: typeof error,
+      errorMessage: error
+    });
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-8">
@@ -56,7 +67,11 @@ const JobsPage = () => {
     );
   }
 
-  console.log('✅ [JOBS-PAGE] Showing jobs grid with', jobs.length, 'jobs');
+  console.log('✅ [JOBS-PAGE] Showing jobs grid with data:', {
+    jobsCount: jobs.length,
+    emptyState: jobs.length === 0,
+    jobsToDisplay: jobs
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -66,15 +81,21 @@ const JobsPage = () => {
       </div>
 
       {jobs.length === 0 ? (
-        <JobEmptyState />
+        <>
+          {console.log('📭 [JOBS-PAGE] Rendering empty state - no jobs found')}
+          <JobEmptyState />
+        </>
       ) : (
-        <JobsGrid
-          jobs={jobs}
-          expirations={{}}
-          onRenew={handleRenew}
-          isRenewing={false}
-          renewalJobId={null}
-        />
+        <>
+          {console.log('📋 [JOBS-PAGE] Rendering jobs grid with jobs:', jobs.map(j => ({ id: j.id, title: j.title })))}
+          <JobsGrid
+            jobs={jobs}
+            expirations={{}}
+            onRenew={handleRenew}
+            isRenewing={false}
+            renewalJobId={null}
+          />
+        </>
       )}
     </div>
   );
