@@ -5,6 +5,9 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, Zap } from 'lucide-react';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import RequirementsSection from '@/components/posting/sections/RequirementsSection';
 import CompensationSection from '@/components/posting/sections/CompensationSection';
@@ -25,6 +28,9 @@ const JOB_CATEGORIES = [
 ] as const;
 
 const enhancedJobFormSchema = z.object({
+  planType: z.enum(['free', 'paid'], { 
+    required_error: "Please select a plan type" 
+  }),
   category: z.enum(JOB_CATEGORIES, { 
     required_error: "Please select a beauty industry category" 
   }),
@@ -62,6 +68,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   const form = useForm<EnhancedJobFormValues>({
     resolver: zodResolver(enhancedJobFormSchema),
     defaultValues: {
+      planType: 'free', // Default to free plan
       category: 'Nail Tech', // Default to first option
       otherCategoryDescription: '',
       title: '',
@@ -85,6 +92,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   });
 
   const selectedCategory = form.watch('category');
+  const selectedPlan = form.watch('planType');
 
   // Update form values when initialValues change
   useEffect(() => {
@@ -93,6 +101,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       
       // Reset form with new values
       form.reset({
+        planType: initialValues.planType || 'free',
         category: initialValues.category || 'Nail Tech',
         otherCategoryDescription: initialValues.otherCategoryDescription || '',
         title: initialValues.title || '',
@@ -129,7 +138,98 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-12">
             
-            {/* Category Selection - Required First Step */}
+            {/* Plan Selection - First Step */}
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">Select Your Plan</h2>
+                <p className="text-slate-600">Choose between free and paid job posting options</p>
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="planType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold text-slate-700 mb-4 block">
+                      Plan Type *
+                    </FormLabel>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Card 
+                        className={`cursor-pointer transition-all duration-200 ${
+                          field.value === 'free' 
+                            ? 'ring-2 ring-green-500 bg-green-50' 
+                            : 'hover:bg-slate-50'
+                        }`}
+                        onClick={() => field.onChange('free')}
+                      >
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg text-green-600">Free Job Post</CardTitle>
+                            <Badge variant="secondary" className="bg-green-100 text-green-700">
+                              FREE
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="flex items-center text-sm text-slate-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              Basic job listing
+                            </div>
+                            <div className="flex items-center text-sm text-slate-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              Standard visibility
+                            </div>
+                            <div className="flex items-center text-sm text-slate-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              All job categories
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card 
+                        className={`cursor-pointer transition-all duration-200 ${
+                          field.value === 'paid' 
+                            ? 'ring-2 ring-purple-500 bg-purple-50' 
+                            : 'hover:bg-slate-50'
+                        }`}
+                        onClick={() => field.onChange('paid')}
+                      >
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg text-purple-600">Paid/Featured Job Post</CardTitle>
+                            <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                              <Zap className="w-3 h-3 mr-1" />
+                              FEATURED
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="flex items-center text-sm text-slate-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              Priority placement
+                            </div>
+                            <div className="flex items-center text-sm text-slate-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              Enhanced visibility
+                            </div>
+                            <div className="flex items-center text-sm text-slate-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              Premium features & upsells
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* Category Selection - Required Second Step */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">Beauty Industry Category</h2>
@@ -202,9 +302,13 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
             <div className="flex justify-end pt-8">
               <Button 
                 type="submit" 
-                className="px-12 py-4 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl shadow-lg"
+                className={`px-12 py-4 text-lg font-semibold rounded-xl shadow-lg ${
+                  selectedPlan === 'free' 
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+                }`}
               >
-                Continue to Pricing ✨
+                {selectedPlan === 'free' ? 'Post Free Job ✨' : 'Continue to Pricing ✨'}
               </Button>
             </div>
           </form>
