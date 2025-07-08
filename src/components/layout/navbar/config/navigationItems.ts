@@ -54,13 +54,24 @@ export const mainNavigationItems: NavigationItem[] = [
   }
 ];
 
-// Development/Testing navigation items
+// Development/Testing navigation items - ONLY VISIBLE IN DEV MODE
 export const testNavigationItems: NavigationItem[] = [
   {
-    title: "Test Paid Jobs",
+    title: "🧪 Test Paid Jobs",
     path: "/post-job-paid-test",
     icon: Plus,
     highlight: true,
-    vietnameseTitle: "Thử nghiệm Job trả phí"
+    vietnameseTitle: "🧪 Thử nghiệm Job trả phí"
+  }
+];
+
+// Production navigation items - REAL PAID JOB POSTING
+export const paidJobNavigationItems: NavigationItem[] = [
+  {
+    title: "Post Paid Job",
+    path: "/post-job",
+    icon: Plus,
+    highlight: true,
+    vietnameseTitle: "Đăng việc trả phí"
   }
 ];

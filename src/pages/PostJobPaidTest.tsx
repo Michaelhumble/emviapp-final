@@ -30,14 +30,20 @@ const PostJobPaidTest: React.FC = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
         {/* Testing Warning Banner */}
-        <div className="bg-yellow-500 text-yellow-900 py-3 px-4">
-          <div className="container mx-auto flex items-center justify-center gap-2">
-            <TestTube className="h-5 w-5" />
-            <span className="font-semibold">TESTING ENVIRONMENT</span>
-            <span>•</span>
-            <span>No real payments will be processed</span>
-            <span>•</span>
-            <span>Test posts will not appear on live site</span>
+        <div className="bg-yellow-500 text-yellow-900 py-4 px-4">
+          <div className="container mx-auto">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TestTube className="h-6 w-6" />
+                <span className="font-bold text-lg">🧪 SIMULATION/TEST MODE ONLY</span>
+              </div>
+              <div className="text-sm font-medium">
+                For REAL job posting: <a href="/post-job" className="underline font-bold">/post-job</a>
+              </div>
+            </div>
+            <div className="mt-2 text-sm">
+              ⚠️ No real payments • No live database saves • For UI testing only
+            </div>
           </div>
         </div>
 

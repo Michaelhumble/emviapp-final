@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { mainNavigationItems, testNavigationItems } from '@/components/layout/navbar/config/navigationItems';
+import { mainNavigationItems, testNavigationItems, paidJobNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const MainNavigation = () => {
@@ -14,9 +14,10 @@ const MainNavigation = () => {
                        window.location.hostname === 'localhost' ||
                        window.location.search.includes('test=true');
   
+  // Include test navigation in development, paid job navigation in production
   const allNavigationItems = isDevelopment 
-    ? [...mainNavigationItems, ...testNavigationItems]
-    : mainNavigationItems;
+    ? [...mainNavigationItems, ...testNavigationItems, ...paidJobNavigationItems]
+    : [...mainNavigationItems, ...paidJobNavigationItems];
   
   return (
     <nav className="hidden md:flex items-center space-x-1">

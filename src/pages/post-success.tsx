@@ -20,6 +20,8 @@ const PostSuccessPage = () => {
 
   useEffect(() => {
     console.log('🎉 [POST-SUCCESS] Success page loaded');
+    console.log('🔗 [POST-SUCCESS] Current URL:', window.location.href);
+    console.log('🎯 [POST-SUCCESS] This is the PRODUCTION success page for REAL paid jobs');
     console.log('🔍 [POST-SUCCESS] Job ID from params:', jobId);
     console.log('🔍 [POST-SUCCESS] Session ID from params:', sessionId);
 
