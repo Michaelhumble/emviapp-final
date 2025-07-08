@@ -84,8 +84,17 @@ serve(async (req) => {
 
       // Extract job ID from session metadata
       const jobId = session.metadata?.job_id;
+      console.log('🔍 [WEBHOOK-JOB] Session metadata:', {
+        fullMetadata: session.metadata,
+        jobId: jobId,
+        userId: session.metadata?.user_id,
+        selectedPlan: session.metadata?.selected_plan,
+        pricingTier: session.metadata?.pricing_tier
+      });
+      
       if (!jobId) {
         console.error('❌ [WEBHOOK-JOB] No job_id in session metadata');
+        console.error('❌ [WEBHOOK-JOB] Available metadata:', session.metadata);
         return new Response('Missing job ID in metadata', { status: 400 });
       }
 
@@ -138,10 +147,15 @@ serve(async (req) => {
 
       // Update job status from draft to active
       console.log('🔄 [WEBHOOK-JOB] Updating job status from draft to active...');
+      console.log('🔄 [WEBHOOK-JOB] Current job status before update:', existingJob.status);
+      console.log('🔄 [WEBHOOK-JOB] Current job payment_status before update:', existingJob.payment_status);
+      
+      // Also update payment_status to ensure consistency
       const { data, error } = await supabase
         .from('jobs')
         .update({ 
           status: 'active',
+          payment_status: 'completed',
           updated_at: new Date().toISOString()
         })
         .eq('id', jobId)
@@ -166,10 +180,26 @@ serve(async (req) => {
       }
 
       if (!data || data.length === 0) {
-        console.error('❌ [WEBHOOK-JOB] No job was updated. Possible reasons:');
-        console.error('❌ [WEBHOOK-JOB] - Job ID not found:', jobId);
-        console.error('❌ [WEBHOOK-JOB] - Job status was not "draft"');
-        console.error('❌ [WEBHOOK-JOB] - Database update failed silently');
+        console.error('❌ [WEBHOOK-JOB] No job was updated. Detailed analysis:');
+        console.error('❌ [WEBHOOK-JOB] - Target job ID:', jobId);
+        console.error('❌ [WEBHOOK-JOB] - Job found during check:', !!existingJob);
+        console.error('❌ [WEBHOOK-JOB] - Job current status:', existingJob?.status);
+        console.error('❌ [WEBHOOK-JOB] - Job current payment_status:', existingJob?.payment_status);
+        console.error('❌ [WEBHOOK-JOB] - Expected status for update: "draft"');
+        
+        if (existingJob?.status !== 'draft') {
+          console.error('❌ [WEBHOOK-JOB] CRITICAL: Job status is not "draft", cannot activate!');
+          console.error('❌ [WEBHOOK-JOB] This suggests the job was created with wrong status or already processed.');
+          return new Response(JSON.stringify({ 
+            success: false, 
+            error: `Job status is "${existingJob?.status}", expected "draft"`,
+            jobData: existingJob 
+          }), { 
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+        
         return new Response('Job not found or already active', { status: 404 });
       }
 
