@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
 const FreeJobPostingForm = () => {
+  console.log('🚨 MOUNTED - FreeJobPostingForm component is rendering');
+  
   const navigate = useNavigate();
   const { user, isSignedIn } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
