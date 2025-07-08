@@ -59,6 +59,7 @@ import PricingPage from './pages/pricing/PricingPage';
 import InvitePage from './pages/invite/InvitePage';
 
 const Messages = React.lazy(() => import('./pages/messages/index'));
+import PostJobFreePage from './pages/post-job-free/index';
 
 import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
@@ -98,6 +99,10 @@ const routes = [
   {
     path: '/jobs/:id',
     element: <JobsPage />,
+  },
+  {
+    path: '/post-job-free',
+    element: <PostJobFreePage />,
   },
   {
     path: '/salons',
