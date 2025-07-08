@@ -1,23 +1,17 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Briefcase } from 'lucide-react';
-import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useJobPosting, type JobFormData } from '@/hooks/jobs/useJobPosting';
 
 const FreeJobPostingForm = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { submitJob, isSubmitting, error, clearError } = useJobPosting();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<JobFormData>({
     title: '',
     category: '',
     location: '',
@@ -33,100 +27,95 @@ const FreeJobPostingForm = () => {
     }
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    if (field.startsWith('contact_info.')) {
-      const contactField = field.replace('contact_info.', '');
-      setFormData(prev => ({
-        ...prev,
-        contact_info: {
-          ...prev.contact_info,
-          [contactField]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
+  const handleInputChange = (field: keyof JobFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (error) clearError();
+  };
+
+  const handleContactInfoChange = (field: keyof JobFormData['contact_info'], value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      contact_info: {
+        ...prev.contact_info,
         [field]: value
-      }));
-    }
+      }
+    }));
+    if (error) clearError();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('📝 [JOB-FORM] Form submitted with data:', formData);
     
-    if (!user) {
-      console.error('🔐 [JOB-FORM] User not authenticated');
-      toast.error('Please sign in to post a job');
+    // Basic validation
+    if (!formData.title || !formData.category || !formData.location) {
+      console.warn('⚠️ [JOB-FORM] Validation failed - missing required fields');
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      // Prepare job data for submission
-      const jobData = {
-        title: formData.title,
-        category: formData.category,
-        location: formData.location,
-        description: formData.description,
-        compensation_type: formData.compensation_type,
-        compensation_details: formData.compensation_details,
-        requirements: formData.requirements,
-        contact_info: formData.contact_info,
-        user_id: user.id,
-        pricing_tier: 'free',
-        status: 'active'
-      };
-
-      console.log('📝 [JOB-FORM] Job data to submit:', jobData);
-
-      // Insert job into Supabase
-      const { data, error } = await supabase
-        .from('jobs')
-        .insert([jobData])
-        .select()
-        .single();
-
-      console.log('📊 [JOB-FORM] Supabase insert response:', { data, error });
-
-      if (error) {
-        console.error('❌ [JOB-FORM] Supabase insert error:', error);
-        throw error;
-      }
-
-      console.log('✅ [JOB-FORM] Job successfully created:', data);
-      
-      toast.success('Job posted successfully!');
-      
-      // Navigate to jobs page to see the new listing
-      navigate('/jobs');
-      
-    } catch (error: any) {
-      console.error('💥 [JOB-FORM] Form submission error:', error);
-      toast.error(error.message || 'Failed to post job. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+    const success = await submitJob(formData);
+    
+    if (success) {
+      console.log('🎉 [JOB-FORM] Job posted successfully, form will be reset');
+      // Reset form on success
+      setFormData({
+        title: '',
+        category: '',
+        location: '',
+        description: '',
+        compensation_type: '',
+        compensation_details: '',
+        requirements: '',
+        contact_info: {
+          owner_name: '',
+          phone: '',
+          email: '',
+          notes: ''
+        }
+      });
     }
   };
 
+  const categories = [
+    'Nail Technician',
+    'Hair Stylist',
+    'Esthetician',
+    'Massage Therapist',
+    'Makeup Artist',
+    'Barber',
+    'Salon Manager',
+    'Receptionist',
+    'Other'
+  ];
+
+  const compensationTypes = [
+    'Hourly',
+    'Commission',
+    'Salary',
+    'Commission + Base',
+    'Per Service',
+    'Booth Rental'
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-2xl">
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <Briefcase className="h-6 w-6 text-purple-600" />
-              <div>
-                <CardTitle className="text-2xl">Post a Free Job</CardTitle>
-                <CardDescription>
-                  Connect with talented beauty professionals in your area
-                </CardDescription>
-              </div>
-            </div>
+            <CardTitle className="text-2xl font-playfair text-center">Post a Job Opening</CardTitle>
+            <p className="text-center text-gray-600">Share your opportunity with beauty professionals</p>
           </CardHeader>
-          
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                  <p className="text-red-800 text-sm">{error}</p>
+                </div>
+              )}
+
               {/* Job Title */}
               <div className="space-y-2">
                 <Label htmlFor="title">Job Title *</Label>
@@ -134,7 +123,7 @@ const FreeJobPostingForm = () => {
                   id="title"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="e.g., Nail Technician, Hair Stylist"
+                  placeholder="e.g., Experienced Nail Technician"
                   required
                 />
               </div>
@@ -142,23 +131,14 @@ const FreeJobPostingForm = () => {
               {/* Category */}
               <div className="space-y-2">
                 <Label htmlFor="category">Category *</Label>
-                <Select 
-                  value={formData.category} 
-                  onValueChange={(value) => handleInputChange('category', value)}
-                  required
-                >
+                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select job category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="nails">Nails</SelectItem>
-                    <SelectItem value="hair">Hair</SelectItem>
-                    <SelectItem value="facial-skincare">Facial & Skincare</SelectItem>
-                    <SelectItem value="massage-spa">Massage & Spa</SelectItem>
-                    <SelectItem value="brow-lashes">Brow & Lashes</SelectItem>
-                    <SelectItem value="makeup">Makeup</SelectItem>
-                    <SelectItem value="management">Management</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -170,40 +150,34 @@ const FreeJobPostingForm = () => {
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="City, State"
+                  placeholder="e.g., Los Angeles, CA"
                   required
                 />
               </div>
 
-              {/* Job Description */}
+              {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Job Description *</Label>
+                <Label htmlFor="description">Job Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Describe the position, responsibilities, and what you're looking for..."
+                  placeholder="Describe the role, responsibilities, and what you're looking for..."
                   rows={4}
-                  required
                 />
               </div>
 
               {/* Compensation Type */}
               <div className="space-y-2">
                 <Label htmlFor="compensation_type">Compensation Type</Label>
-                <Select 
-                  value={formData.compensation_type} 
-                  onValueChange={(value) => handleInputChange('compensation_type', value)}
-                >
+                <Select value={formData.compensation_type} onValueChange={(value) => handleInputChange('compensation_type', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select compensation type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hourly">Hourly</SelectItem>
-                    <SelectItem value="commission">Commission</SelectItem>
-                    <SelectItem value="salary">Salary</SelectItem>
-                    <SelectItem value="booth-rental">Booth Rental</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
+                    {compensationTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -215,7 +189,7 @@ const FreeJobPostingForm = () => {
                   id="compensation_details"
                   value={formData.compensation_details}
                   onChange={(e) => handleInputChange('compensation_details', e.target.value)}
-                  placeholder="e.g., $15-20/hour, 50% commission, $800/week"
+                  placeholder="e.g., $15-20/hour, 50% commission, etc."
                 />
               </div>
 
@@ -226,7 +200,7 @@ const FreeJobPostingForm = () => {
                   id="requirements"
                   value={formData.requirements}
                   onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  placeholder="List any required skills, certifications, or experience..."
+                  placeholder="List any required experience, certifications, or skills..."
                   rows={3}
                 />
               </div>
@@ -240,18 +214,18 @@ const FreeJobPostingForm = () => {
                     <Label htmlFor="owner_name">Contact Name</Label>
                     <Input
                       id="owner_name"
-                      value={formData.contact_info.owner_name}
-                      onChange={(e) => handleInputChange('contact_info.owner_name', e.target.value)}
+                      value={formData.contact_info.owner_name || ''}
+                      onChange={(e) => handleContactInfoChange('owner_name', e.target.value)}
                       placeholder="Your name"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input
                       id="phone"
-                      value={formData.contact_info.phone}
-                      onChange={(e) => handleInputChange('contact_info.phone', e.target.value)}
+                      value={formData.contact_info.phone || ''}
+                      onChange={(e) => handleContactInfoChange('phone', e.target.value)}
                       placeholder="(555) 123-4567"
                     />
                   </div>
@@ -262,8 +236,8 @@ const FreeJobPostingForm = () => {
                   <Input
                     id="email"
                     type="email"
-                    value={formData.contact_info.email}
-                    onChange={(e) => handleInputChange('contact_info.email', e.target.value)}
+                    value={formData.contact_info.email || ''}
+                    onChange={(e) => handleContactInfoChange('email', e.target.value)}
                     placeholder="your@email.com"
                   />
                 </div>
@@ -272,31 +246,21 @@ const FreeJobPostingForm = () => {
                   <Label htmlFor="notes">Additional Notes</Label>
                   <Textarea
                     id="notes"
-                    value={formData.contact_info.notes}
-                    onChange={(e) => handleInputChange('contact_info.notes', e.target.value)}
+                    value={formData.contact_info.notes || ''}
+                    onChange={(e) => handleContactInfoChange('notes', e.target.value)}
                     placeholder="Any additional information for applicants..."
                     rows={2}
                   />
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <div className="pt-6">
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting || !formData.title || !formData.category || !formData.location || !formData.description}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Posting Job...
-                    </>
-                  ) : (
-                    'Post Free Job'
-                  )}
-                </Button>
-              </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Posting Job...' : 'Post Job'}
+              </Button>
             </form>
           </CardContent>
         </Card>
