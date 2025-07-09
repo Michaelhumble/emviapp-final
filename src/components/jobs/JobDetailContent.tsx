@@ -67,14 +67,44 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            {job.description && (
+            {/* Description with Vietnamese support */}
+            {(job.vietnamese_description || job.description) && (
               <Card>
                 <CardHeader>
                   <CardTitle>Job Description</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
+                  {job.category === 'Nail Tech' && job.vietnamese_description ? (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Tiếng Việt:</h4>
+                        <p className="text-gray-700 whitespace-pre-wrap">{job.vietnamese_description}</p>
+                      </div>
+                      {job.description && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">English:</h4>
+                          <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {job.description && (
+                        <div>
+                          {job.vietnamese_description && (
+                            <h4 className="font-medium text-gray-900 mb-2">English:</h4>
+                          )}
+                          <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
+                        </div>
+                      )}
+                      {job.vietnamese_description && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Tiếng Việt:</h4>
+                          <p className="text-gray-700 whitespace-pre-wrap">{job.vietnamese_description}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

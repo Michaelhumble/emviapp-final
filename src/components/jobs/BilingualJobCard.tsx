@@ -127,11 +127,39 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         </div>
       )}
 
-      {/* Description Preview */}
-      {job.description && (
-        <p className="text-gray-600 text-sm line-clamp-2 mb-4">
-          {job.description}
-        </p>
+      {/* Job Image */}
+      {job.image && (
+        <div className="mb-4 -mx-6 -mt-6">
+          <img
+            src={job.image}
+            alt={job.title}
+            className="w-full h-48 object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
+      {/* Description Preview - Vietnamese first for Nail Tech category */}
+      {(job.vietnamese_description || job.description) && (
+        <div className="text-gray-600 text-sm line-clamp-2 mb-4">
+          {job.category === 'Nail Tech' && job.vietnamese_description ? (
+            <div>
+              <p className="mb-1">{job.vietnamese_description}</p>
+              {job.description && (
+                <p className="text-gray-500 text-xs">{job.description}</p>
+              )}
+            </div>
+          ) : (
+            <div>
+              {job.description && <p className="mb-1">{job.description}</p>}
+              {job.vietnamese_description && (
+                <p className="text-gray-500 text-xs">{job.vietnamese_description}</p>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Requirements Preview */}

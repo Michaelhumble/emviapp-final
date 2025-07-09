@@ -69,8 +69,39 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
           createdAt={jobCreatedAt} 
         />
         
-        {job.description && (
-          <p className="text-gray-600 text-sm mt-2 line-clamp-2">{job.description}</p>
+        {/* Job Image */}
+        {job.image && (
+          <div className="mt-3 mb-3">
+            <img
+              src={job.image}
+              alt={job.title}
+              className="w-full h-32 object-cover rounded"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+        
+        {/* Description with Vietnamese support */}
+        {(job.vietnamese_description || job.description) && (
+          <div className="text-gray-600 text-sm mt-2 line-clamp-2">
+            {job.category === 'Nail Tech' && job.vietnamese_description ? (
+              <div>
+                <p className="mb-1">{job.vietnamese_description}</p>
+                {job.description && (
+                  <p className="text-gray-500 text-xs">{job.description}</p>
+                )}
+              </div>
+            ) : (
+              <div>
+                {job.description && <p className="mb-1">{job.description}</p>}
+                {job.vietnamese_description && (
+                  <p className="text-gray-500 text-xs">{job.vietnamese_description}</p>
+                )}
+              </div>
+            )}
+          </div>
         )}
         
         <div className="mt-4 flex gap-2">

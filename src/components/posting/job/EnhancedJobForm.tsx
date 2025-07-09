@@ -295,6 +295,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       category: 'General', // Fixed category since UI no longer shows selection
       location: data.location.trim() || null,
       description: data.description.trim(),
+      vietnamese_description: data.vietnameseDescription?.trim() || null,
       compensation_type: data.compensationType.trim() || null,
       compensation_details: data.compensationDetails?.trim() || null,
       requirements: data.requirements.join('\n') || null,
@@ -306,7 +307,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       },
       user_id: user.id,
       status: 'active',
-      pricing_tier: 'free'
+      pricing_tier: 'free',
+      // Store first uploaded image URL (will be implemented with image upload)
+      image: photoUploads.length > 0 ? null : null // Placeholder for image upload implementation
     };
 
     console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
@@ -425,6 +428,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               category: 'General', // Fixed category since UI no longer shows selection
               location: data.location.trim() || '',
               description: data.description.trim(),
+              vietnamese_description: data.vietnameseDescription?.trim() || '',
               compensationType: data.compensationType.trim() || '',
               compensationDetails: data.compensationDetails?.trim() || '',
               requirements: data.requirements || [],
@@ -432,6 +436,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               contactPhone: data.contactPhone?.trim() || '',
               contactEmail: data.contactEmail?.trim() || '',
               contactNotes: data.contactNotes?.trim() || '',
+              // Include images (will be processed by edge function)
+              photoUploads: photoUploads,
               // Include selected plan details
               selectedPlan: selectedPaidPlan,
               selectedPrice: selectedPaidPrice,
