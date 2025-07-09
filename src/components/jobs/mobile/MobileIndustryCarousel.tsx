@@ -1,4 +1,15 @@
 import React from 'react';
+import { 
+  Sparkles, 
+  Scissors, 
+  Zap, 
+  Heart, 
+  Star, 
+  Palette, 
+  Pen, 
+  Eye,
+  Brush
+} from 'lucide-react';
 
 interface MobileIndustryCarouselProps {
   industries: string[];
@@ -41,18 +52,18 @@ const MobileIndustryCarousel: React.FC<MobileIndustryCarouselProps> = ({
             // Skip industries with no jobs
             if (count === 0) return null;
             
-            // Get industry emoji
-            const getIndustryEmoji = (ind: string) => {
+            // Get industry icon
+            const getIndustryIcon = (ind: string) => {
               const lower = ind.toLowerCase();
-              if (lower.includes('nail')) return '💅';
-              if (lower.includes('hair')) return '✂️';
-              if (lower.includes('barber')) return '💈';
-              if (lower.includes('massage')) return '💆';
-              if (lower.includes('makeup')) return '💄';
-              if (lower.includes('lash') || lower.includes('brow')) return '👁️';
-              if (lower.includes('tattoo')) return '🎨';
-              if (lower.includes('esthetic')) return '✨';
-              return '🏢';
+              if (lower.includes('nail')) return <Sparkles className="h-4 w-4" />;
+              if (lower.includes('hair')) return <Scissors className="h-4 w-4" />;
+              if (lower.includes('barber')) return <Zap className="h-4 w-4" />;
+              if (lower.includes('massage')) return <Heart className="h-4 w-4" />;
+              if (lower.includes('makeup')) return <Palette className="h-4 w-4" />;
+              if (lower.includes('lash') || lower.includes('brow')) return <Eye className="h-4 w-4" />;
+              if (lower.includes('tattoo')) return <Pen className="h-4 w-4" />;
+              if (lower.includes('esthetic')) return <Star className="h-4 w-4" />;
+              return <Brush className="h-4 w-4" />;
             };
 
             // Shorten industry names for mobile
@@ -69,16 +80,16 @@ const MobileIndustryCarousel: React.FC<MobileIndustryCarouselProps> = ({
                 key={industry}
                 onClick={() => onIndustryChange(industry)}
                 className={`
-                  flex-shrink-0 px-3 py-2 rounded-full text-sm font-medium transition-colors flex items-center
+                  flex-shrink-0 px-3 py-2 rounded-full text-sm font-semibold transition-colors flex items-center gap-2
                   ${activeIndustry === industry 
-                    ? 'bg-purple-600 text-white' 
+                    ? 'bg-purple-600 text-white shadow-lg' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }
                 `}
               >
-                <span className="mr-1">{getIndustryEmoji(industry)}</span>
+                {getIndustryIcon(industry)}
                 {getShortName(industry)}
-                <span className="ml-1 text-xs">({count})</span>
+                <span className="text-xs font-medium">({count})</span>
               </button>
             );
           })}

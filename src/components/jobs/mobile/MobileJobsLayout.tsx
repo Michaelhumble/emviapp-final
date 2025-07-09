@@ -4,7 +4,18 @@ import { expiredJobsData } from '@/data/expiredJobsData';
 import MobileJobCard from './MobileJobCard';
 import MobileCompactJobCard from './MobileCompactJobCard';
 import MobileIndustryCarousel from './MobileIndustryCarousel';
-import { ChevronRight } from 'lucide-react';
+import { 
+  ChevronRight, 
+  Sparkles, 
+  Scissors, 
+  Zap, 
+  Heart, 
+  Star, 
+  Palette, 
+  Pen, 
+  Eye,
+  Brush
+} from 'lucide-react';
 
 interface MobileJobsLayoutProps {
   jobs: Job[];
@@ -65,6 +76,20 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
     setExpandedJob(expandedJob === jobId ? null : jobId);
   };
 
+  // Get industry icon helper
+  const getIndustryIcon = (category: string) => {
+    const lower = category.toLowerCase();
+    if (lower.includes('nail')) return <Sparkles className="h-6 w-6 text-purple-600" />;
+    if (lower.includes('hair')) return <Scissors className="h-6 w-6 text-indigo-600" />;
+    if (lower.includes('barber')) return <Zap className="h-6 w-6 text-blue-600" />;
+    if (lower.includes('massage')) return <Heart className="h-6 w-6 text-pink-600" />;
+    if (lower.includes('makeup')) return <Palette className="h-6 w-6 text-rose-600" />;
+    if (lower.includes('lash') || lower.includes('brow')) return <Eye className="h-6 w-6 text-emerald-600" />;
+    if (lower.includes('tattoo')) return <Pen className="h-6 w-6 text-amber-600" />;
+    if (lower.includes('esthetic')) return <Star className="h-6 w-6 text-teal-600" />;
+    return <Brush className="h-6 w-6 text-gray-600" />;
+  };
+
   const renderJobSection = (category: string, activeJobs: Job[], expiredJobs: any[]) => {
     const allJobs = [...activeJobs, ...expiredJobs];
     const displayJobs = allJobs.slice(0, 10); // First 10 as full cards
@@ -72,9 +97,14 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
 
     return (
       <div key={category} className="mb-8">
-        <div className="flex items-center justify-between mb-4 px-4">
-          <h3 className="text-xl font-bold text-gray-900">{category}</h3>
-          <span className="text-sm text-gray-500">{allJobs.length} jobs</span>
+        <div className="flex items-center justify-between mb-6 px-4">
+          <div className="flex items-center gap-3">
+            {getIndustryIcon(category)}
+            <h3 className="text-2xl font-bold text-gray-900 tracking-tight">{category}</h3>
+          </div>
+          <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            {allJobs.length} jobs
+          </span>
         </div>
 
         {/* Horizontal scrolling for full photo cards */}
