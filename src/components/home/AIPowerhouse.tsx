@@ -106,10 +106,10 @@ const AIPowerhouse = () => {
             AI-Powered Solutions
           </Badge>
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-serif tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6 text-foreground tracking-tight">
             Powered by AI, Built for Humans
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-inter">
             From finding talent to bringing customers to your door — EmviApp is powered by AI agents designed to help your beauty business grow without limits.
           </p>
         </motion.div>
@@ -140,11 +140,11 @@ const AIPowerhouse = () => {
                       <tool.icon className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold font-serif">{tool.title}</h3>
-                      <p className="text-gray-600 italic">{tool.tagline}</p>
+                      <h3 className="text-xl font-playfair font-semibold text-foreground">{tool.title}</h3>
+                      <p className="text-muted-foreground italic font-inter">{tool.tagline}</p>
                     </div>
                   </div>
-                  <p className="text-gray-600">{tool.description}</p>
+                  <p className="text-muted-foreground font-inter">{tool.description}</p>
                   
                   <div className="mt-6 flex">
                     <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
@@ -165,7 +165,7 @@ const AIPowerhouse = () => {
           className="text-center mb-12"
         >
           <div className="max-w-3xl mx-auto">
-            <p className="text-2xl font-serif italic border-t border-b py-8 px-4">
+            <p className="text-2xl font-playfair italic border-t border-b py-8 px-4 text-foreground">
               "Our AI doesn't just find jobs — it builds careers and businesses."
             </p>
           </div>
@@ -190,7 +190,7 @@ const AIPowerhouse = () => {
           <Link to="/auth/signup">
             <Button 
               size="lg" 
-              className="font-medium px-8 py-6 text-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+              className="font-inter font-medium px-8 py-6 text-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
             >
               Join EmviApp Today
             </Button>

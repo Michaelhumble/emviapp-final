@@ -29,11 +29,11 @@ const WhyTrustSection: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4 text-foreground tracking-tight">
             Why Artists & Salons Trust Us
-            {isVietnamese && <span className="block text-xl md:text-2xl text-gray-600 mt-2">Vì sao thợ & tiệm chọn EmviApp</span>}
+            {isVietnamese && <span className="block text-xl md:text-2xl text-muted-foreground mt-2 font-inter">Vì sao thợ & tiệm chọn EmviApp</span>}
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto font-inter">
             We're building a community that puts your needs first.
           </p>
         </motion.div>

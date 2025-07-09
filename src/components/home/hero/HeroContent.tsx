@@ -70,7 +70,7 @@ const HeroContent = ({
           This title must remain exactly as written - core to EmviApp identity
         */}
         <motion.h1 
-          className={`font-serif font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`}
+          className={`font-playfair font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -82,7 +82,7 @@ const HeroContent = ({
           ⚠️ PERMANENT SUBHEADLINE - DO NOT MODIFY WITHOUT PERMISSION ⚠️
         */}
         <motion.p 
-          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-2xl mx-auto text-white/90`}
+          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-2xl mx-auto text-white/90 font-inter`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
@@ -100,7 +100,7 @@ const HeroContent = ({
           <Link to="/auth/signup">
             <Button 
               size="lg" 
-              className="font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
+              className="font-inter font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
             >
               Join EmviApp Today
             </Button>

@@ -62,13 +62,13 @@ const AITeam = () => {
             AI Powerhouse
           </Badge>
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-serif tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6 text-foreground tracking-tight">
             🔥 Meet the AI Behind EmviApp
           </h2>
-          <p className="text-xl font-medium text-gray-700 mb-4">
+          <p className="text-xl font-inter font-medium text-foreground mb-4">
             This isn't just tech—it's your personal beauty business team.
           </p>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto font-inter">
             From boosting your job post to ranking you on Google, our AI agents do the work for you. 
             Whether you're hiring, applying, or selling your salon—EmviApp's built-in AI makes sure you get seen, hired, and supported.
           </p>
@@ -91,8 +91,8 @@ const AITeam = () => {
                     <feature.icon className={`h-8 w-8 ${feature.color.split(' ')[0]}`} />
                   </div>
                   
-                  <h3 className="text-xl font-bold font-serif mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-xl font-playfair font-bold text-foreground mb-3">{feature.title}</h3>
+                  <p className="text-muted-foreground font-inter">{feature.description}</p>
                 </CardContent>
               </Card>
             </motion.div>
