@@ -23,15 +23,15 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
         />
       </div>
       <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-2 line-clamp-1">{listing.title}</h3>
-        <div className="flex items-center text-gray-600 mb-3">
+        <h3 className="font-playfair font-semibold text-xl mb-2 line-clamp-1 text-foreground">{listing.title}</h3>
+        <div className="flex items-center text-muted-foreground mb-3">
           <MapPin className="h-4 w-4 mr-1" />
-          <span className="text-sm">{listing.location}</span>
+          <span className="text-base font-inter">{listing.location}</span>
         </div>
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-foreground">
             <Building className="h-4 w-4 mr-1" />
-            <span className="text-sm font-medium">
+            <span className="text-base font-inter font-medium">
               ${listing.price.toLocaleString()}
             </span>
           </div>

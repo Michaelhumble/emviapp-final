@@ -188,31 +188,31 @@ const JobsPage = () => {
         {/* Hero Trust Section */}
         <section className="w-full bg-gradient-to-r from-[#fff2df] via-[#f9eaff] to-[#e6f2ff] py-12 mb-10 shadow-xl flex flex-col items-center text-center max-w-6xl mx-auto border border-[#e7d1ff] relative overflow-hidden mx-4 lg:mx-auto rounded-3xl">
           <div className="absolute top-4 right-4 text-5xl animate-pulse select-none pointer-events-none">✨</div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-[#8a55e6] mb-3 tracking-tight drop-shadow-lg leading-tight">
+          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-[#8a55e6] mb-3 tracking-tight drop-shadow-lg leading-tight">
             America's Most Trusted Beauty Job Community.<br className="hidden md:inline" /> Powered by AI & Heart.
           </h1>
-          <p className="text-lg md:text-xl text-[#54362e] font-medium mb-3 max-w-xl mx-auto px-4">
+          <p className="text-lg md:text-xl text-foreground font-inter font-medium mb-3 max-w-xl mx-auto px-4">
             Discover new job opportunities, connect with caring salons and artists, and join a network built for YOU.<br/>  
             Bilingual support, secure by design, and always putting the beauty community first.
           </p>
           <div className="flex flex-wrap gap-2 justify-center mb-3 px-4">
-            <span className="bg-gradient-to-r from-purple-100 to-purple-300 text-purple-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-purple-200">AI-Powered, Human-Centered</span>
-            <span className="bg-gradient-to-r from-pink-100 to-pink-300 text-pink-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-pink-200">Vietnamese Language Support</span>
-            <span className="bg-gradient-to-r from-yellow-100 to-yellow-300 text-yellow-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-yellow-200">No Bots, No Spam</span>
-            <span className="bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-blue-200">New Jobs Every Day</span>
-            <span className="bg-gradient-to-r from-green-100 to-green-300 text-green-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-green-200">Community-Safe</span>
+            <span className="bg-gradient-to-r from-purple-100 to-purple-300 text-purple-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-purple-200">AI-Powered, Human-Centered</span>
+            <span className="bg-gradient-to-r from-pink-100 to-pink-300 text-pink-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-pink-200">Vietnamese Language Support</span>
+            <span className="bg-gradient-to-r from-yellow-100 to-yellow-300 text-yellow-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-yellow-200">No Bots, No Spam</span>
+            <span className="bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-blue-200">New Jobs Every Day</span>
+            <span className="bg-gradient-to-r from-green-100 to-green-300 text-green-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-green-200">Community-Safe</span>
           </div>
           <button
-            className="bg-[#8a55e6] hover:bg-[#5a359a] text-white font-bold py-3 px-10 rounded-xl shadow-2xl text-lg mt-2 transition-all border border-[#c7b3f6] animate-bounce"
+            className="bg-[#8a55e6] hover:bg-[#5a359a] text-white font-inter font-bold py-3 px-10 rounded-xl shadow-2xl text-lg mt-2 transition-all border border-[#c7b3f6] animate-bounce"
             onClick={() => navigate('/post-job')}
           >
             Post Your First Job FREE ✨
           </button>
-          <p className="text-xs text-[#88684c] mt-4 italic px-4">
+          <p className="text-base text-foreground mt-4 italic px-4 font-inter">
             "I found my dream team here—and felt supported from day one."<br/>
             <span className="font-semibold">— Linda N., Salon Owner, Houston TX</span>
           </p>
-          <p className="mt-2 text-sm text-[#755c8a] font-medium px-4">
+          <p className="mt-2 text-base text-foreground font-inter font-medium px-4">
             Built by beauty pros. For the community. With AI & heart. 💜
           </p>
         </section>

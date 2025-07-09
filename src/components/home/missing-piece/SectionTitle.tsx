@@ -17,7 +17,7 @@ const SectionTitle = ({ language, itemVariants }: SectionTitleProps) => {
       variants={itemVariants}
     >
       <div className="relative inline-block">
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-gray-800 mb-4 leading-tight">
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-foreground mb-4 leading-tight">
           {language === "en" ? (
             <>
               Let's Experience EmviApp<br />Together

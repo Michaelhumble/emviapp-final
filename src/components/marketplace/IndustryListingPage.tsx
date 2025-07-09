@@ -138,10 +138,10 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
               {headerTitle}
             </h1>
-            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground font-inter max-w-3xl mx-auto">
               {headerSubtitle}
             </p>
           </motion.div>
@@ -158,7 +158,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
         >
           <Link 
             to="/jobs" 
-            className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
+            className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-inter font-medium text-base transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to All Beauty Jobs
@@ -175,10 +175,10 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             <div className="text-center mb-8">
               <div className="flex items-center justify-center mb-4">
                 <Crown className="w-8 h-8 text-amber-500 mr-3" />
-                <h2 className="text-3xl font-bold text-gray-900">Diamond Exclusive</h2>
+                <h2 className="text-3xl font-playfair font-bold text-foreground">Diamond Exclusive</h2>
                 <Crown className="w-8 h-8 text-amber-500 ml-3" />
               </div>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-muted-foreground font-inter">
                 Only 3 spots available — The most exclusive {industryName.toLowerCase()} opportunities
               </p>
               <Badge className="bg-red-500 text-white mt-2">
@@ -219,11 +219,11 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                     </div>
 
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      <h3 className="text-xl font-playfair font-bold text-foreground mb-2">
                         {listing.title}
                       </h3>
 
-                      <div className="flex items-center text-gray-600 mb-2">
+                      <div className="flex items-center text-muted-foreground mb-2 font-inter">
                         <MapPin className="w-4 h-4 mr-2" />
                         {listing.location}
                       </div>
@@ -235,14 +235,14 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                         </div>
                       </div>
 
-                      <p className="text-gray-700 mb-4 line-clamp-2">
+                      <p className="text-muted-foreground font-inter mb-4 line-clamp-2">
                         {listing.summary}
                       </p>
 
                       {/* Contact Info - Gated */}
                       <div className="mb-4">
                         {isSignedIn && listing.phone ? (
-                          <div className="flex items-center text-gray-700">
+                          <div className="flex items-center text-foreground font-inter">
                             <Phone className="w-4 h-4 mr-2" />
                             {listing.phone}
                           </div>
@@ -251,7 +251,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                             customTitle="Sign in to see contact details"
                             onAction={() => true}
                             fallbackContent={
-                              <div className="text-sm text-gray-500 italic flex items-center gap-2">
+                              <div className="text-base text-muted-foreground italic flex items-center gap-2 font-inter">
                                 <LockIcon className="w-4 h-4" />
                                 <span>Sign in to see contact details</span>
                               </div>
@@ -260,13 +260,13 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                         )}
                       </div>
 
-                      <Button
-                        onClick={() => handleViewDetails(listing)}
-                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Full Details
-                      </Button>
+                        <Button
+                          onClick={() => handleViewDetails(listing)}
+                          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-inter font-bold"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Full Details
+                        </Button>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -293,18 +293,18 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                     </div>
 
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      <h3 className="text-xl font-playfair font-bold text-foreground mb-2">
                         Diamond Tier Available
                       </h3>
-                      <p className="text-gray-700 mb-4">
+                      <p className="text-muted-foreground font-inter mb-4">
                         Secure your spot in the most exclusive tier. Maximum visibility, premium placement, VIP treatment.
                       </p>
                       <div className="bg-amber-100 rounded-lg p-3 mb-4">
-                        <div className="text-amber-800 font-bold text-center">
+                        <div className="text-amber-800 font-inter font-bold text-center">
                           $9,999/year • Only 3 spots total
                         </div>
                       </div>
-                      <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold">
+                      <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white font-inter font-bold">
                         Claim Diamond Spot
                       </Button>
                     </CardContent>
@@ -324,8 +324,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             className="mb-16"
           >
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Premium Listings</h2>
-              <p className="text-lg text-gray-600">
+              <h2 className="text-3xl font-playfair font-bold text-foreground mb-2">Premium Listings</h2>
+              <p className="text-lg text-muted-foreground font-inter">
                 Hand-selected {industryName.toLowerCase()} opportunities with exceptional benefits
               </p>
             </div>
@@ -363,30 +363,30 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                     </div>
 
                     <CardContent className="p-5">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <h3 className="text-lg font-playfair font-bold text-foreground mb-2">
                         {listing.title}
                       </h3>
 
-                      <div className="flex items-center text-gray-600 mb-2">
+                      <div className="flex items-center text-muted-foreground mb-2 font-inter">
                         <MapPin className="w-4 h-4 mr-2" />
                         {listing.location}
                       </div>
 
                       <div className="bg-green-100 rounded-lg p-2 mb-3">
-                        <div className="flex items-center text-green-800 font-semibold text-sm">
+                        <div className="flex items-center text-green-800 font-inter font-semibold text-base">
                           <DollarSign className="w-4 h-4 mr-1" />
                           {listing.salary}
                         </div>
                       </div>
 
-                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+                      <p className="text-muted-foreground font-inter text-base mb-4 line-clamp-2">
                         {listing.summary}
                       </p>
 
                       <Button
                         onClick={() => handleViewDetails(listing)}
                         variant="outline"
-                        className="w-full"
+                        className="w-full font-inter"
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         View Details
@@ -408,8 +408,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             className="mb-16"
           >
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Opportunities</h2>
-              <p className="text-lg text-gray-600">
+              <h2 className="text-3xl font-playfair font-bold text-foreground mb-2">Featured Opportunities</h2>
+              <p className="text-lg text-muted-foreground font-inter">
                 Quality {industryName.toLowerCase()} positions with competitive compensation
               </p>
             </div>
@@ -447,23 +447,23 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                     </div>
 
                     <CardContent className="p-4">
-                      <h3 className="text-base font-bold text-gray-900 mb-1">
+                      <h3 className="text-lg font-playfair font-bold text-foreground mb-1">
                         {listing.title}
                       </h3>
 
-                      <div className="flex items-center text-gray-600 mb-2 text-sm">
-                        <MapPin className="w-3 h-3 mr-1" />
+                      <div className="flex items-center text-muted-foreground mb-2 text-base font-inter">
+                        <MapPin className="w-4 h-4 mr-1" />
                         {listing.location}
                       </div>
 
                       <div className="bg-green-100 rounded p-2 mb-2">
-                        <div className="flex items-center text-green-800 font-semibold text-xs">
-                          <DollarSign className="w-3 h-3 mr-1" />
+                        <div className="flex items-center text-green-800 font-inter font-semibold text-base">
+                          <DollarSign className="w-4 h-4 mr-1" />
                           {listing.salary}
                         </div>
                       </div>
 
-                      <p className="text-gray-700 text-xs mb-3 line-clamp-2">
+                      <p className="text-muted-foreground font-inter text-base mb-3 line-clamp-2">
                         {listing.summary}
                       </p>
 
@@ -471,9 +471,9 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                         onClick={() => handleViewDetails(listing)}
                         variant="outline"
                         size="sm"
-                        className="w-full"
+                        className="w-full font-inter"
                       >
-                        <Eye className="w-3 h-3 mr-1" />
+                        <Eye className="w-4 h-4 mr-1" />
                         View Details
                       </Button>
                     </CardContent>
@@ -492,13 +492,13 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
           className="text-center"
         >
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-playfair font-bold text-foreground mb-4">
               Ready to Post Your {displayName} Position?
             </h2>
-            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+            <p className="text-muted-foreground font-inter mb-6 max-w-2xl mx-auto">
               Join thousands of successful {industryName.toLowerCase()} businesses that have found their perfect team members through EmviApp.
             </p>
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-bold">
+            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold">
               Post Your Job Now
             </Button>
           </div>
@@ -522,10 +522,10 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-playfair font-bold text-foreground">
                     {selectedListing.title}
                   </h2>
-                  <p className="text-gray-600">{selectedListing.location}</p>
+                  <p className="text-muted-foreground font-inter">{selectedListing.location}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -563,14 +563,14 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                 )}
 
                 <div className="prose max-w-none">
-                  <p className="text-gray-700 whitespace-pre-line">
+                  <p className="text-foreground font-inter whitespace-pre-line">
                     {selectedListing.fullDescription || selectedListing.summary}
                   </p>
                 </div>
 
                 <Button
                   size="lg"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
                 >
                   Apply Now
                 </Button>
