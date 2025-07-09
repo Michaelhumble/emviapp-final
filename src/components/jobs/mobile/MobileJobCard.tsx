@@ -128,27 +128,27 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
           <h3 className={`font-bold text-gray-900 mb-1 ${expanded ? 'text-lg' : 'text-sm'} line-clamp-2`}>
             {job.vietnamese_title || job.title || 'Untitled Job'}
           </h3>
-          <p className={`text-gray-600 ${expanded ? 'text-base' : 'text-xs'}`}>
+          <p className={`font-medium text-gray-800 ${expanded ? 'text-base' : 'text-xs'}`}>
             {job.company || 'Company Name'}
           </p>
         </div>
 
         {/* Job details */}
         <div className="space-y-2 mb-4">
-          <div className="flex items-center text-gray-600">
-            <MapPin className="h-3 w-3 mr-1 text-gray-400" />
-            <span className="text-xs">{job.location || 'Location TBD'}</span>
+          <div className="flex items-center">
+            <MapPin className="h-3 w-3 mr-1 text-gray-600" />
+            <span className="text-xs font-medium text-gray-800">{job.location || 'Location TBD'}</span>
           </div>
           
-          <div className="flex items-center text-gray-600">
-            <DollarSign className="h-3 w-3 mr-1 text-gray-400" />
-            <span className="text-xs font-medium text-green-600">{getSalary()}</span>
+          <div className="flex items-center">
+            <DollarSign className="h-3 w-3 mr-1 text-green-600" />
+            <span className="text-xs font-bold text-green-600">{getSalary()}</span>
           </div>
           
           {job.employment_type && (
-            <div className="flex items-center text-gray-600">
-              <Clock className="h-3 w-3 mr-1 text-gray-400" />
-              <span className="text-xs">{job.employment_type}</span>
+            <div className="flex items-center">
+              <Clock className="h-3 w-3 mr-1 text-gray-600" />
+              <span className="text-xs font-medium text-gray-800">{job.employment_type}</span>
             </div>
           )}
         </div>
@@ -156,7 +156,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         {/* Description - only in expanded mode */}
         {expanded && (
           <div className="mb-4">
-            <p className="text-sm text-gray-700 line-clamp-3">
+            <p className="text-sm font-medium text-gray-800 line-clamp-3">
               {job.vietnamese_description || job.description || 'Job description not available.'}
             </p>
           </div>
@@ -186,7 +186,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
 
         {/* Filled date for expired jobs */}
         {isExpired && job.filled_date && (
-          <div className="mt-2 text-xs text-gray-500 text-center">
+          <div className="mt-2 text-xs font-medium text-gray-700 text-center">
             Filled on {new Date(job.filled_date).toLocaleDateString()}
           </div>
         )}

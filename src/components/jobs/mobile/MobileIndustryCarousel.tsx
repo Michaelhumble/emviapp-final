@@ -32,15 +32,15 @@ const MobileIndustryCarousel: React.FC<MobileIndustryCarouselProps> = ({
           <button
             onClick={() => onIndustryChange('All')}
             className={`
-              flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors
+              flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors
               ${activeIndustry === 'All' 
-                ? 'bg-purple-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-purple-600 text-white shadow-lg' 
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
               }
             `}
           >
             All Jobs
-            <span className="ml-1 text-xs">
+            <span className="ml-1 text-xs font-medium">
               ({Object.values(jobCounts).reduce((a, b) => a + b, 0)})
             </span>
           </button>
@@ -55,15 +55,15 @@ const MobileIndustryCarousel: React.FC<MobileIndustryCarouselProps> = ({
             // Get industry icon
             const getIndustryIcon = (ind: string) => {
               const lower = ind.toLowerCase();
-              if (lower.includes('nail')) return <Sparkles className="h-4 w-4" />;
-              if (lower.includes('hair')) return <Scissors className="h-4 w-4" />;
-              if (lower.includes('barber')) return <Zap className="h-4 w-4" />;
-              if (lower.includes('massage')) return <Heart className="h-4 w-4" />;
-              if (lower.includes('makeup')) return <Palette className="h-4 w-4" />;
-              if (lower.includes('lash') || lower.includes('brow')) return <Eye className="h-4 w-4" />;
-              if (lower.includes('tattoo')) return <Pen className="h-4 w-4" />;
-              if (lower.includes('esthetic')) return <Star className="h-4 w-4" />;
-              return <Brush className="h-4 w-4" />;
+              if (lower.includes('nail')) return <Sparkles className="h-5 w-5" />;
+              if (lower.includes('hair')) return <Scissors className="h-5 w-5" />;
+              if (lower.includes('barber')) return <Zap className="h-5 w-5" />;
+              if (lower.includes('massage')) return <Heart className="h-5 w-5" />;
+              if (lower.includes('makeup')) return <Palette className="h-5 w-5" />;
+              if (lower.includes('lash') || lower.includes('brow')) return <Eye className="h-5 w-5" />;
+              if (lower.includes('tattoo')) return <Pen className="h-5 w-5" />;
+              if (lower.includes('esthetic')) return <Star className="h-5 w-5" />;
+              return <Brush className="h-5 w-5" />;
             };
 
             // Shorten industry names for mobile
@@ -80,16 +80,16 @@ const MobileIndustryCarousel: React.FC<MobileIndustryCarouselProps> = ({
                 key={industry}
                 onClick={() => onIndustryChange(industry)}
                 className={`
-                  flex-shrink-0 px-3 py-2 rounded-full text-sm font-semibold transition-colors flex items-center gap-2
+                  flex-shrink-0 px-3 py-2 rounded-full text-sm font-bold transition-colors flex items-center gap-2
                   ${activeIndustry === industry 
                     ? 'bg-purple-600 text-white shadow-lg' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                   }
                 `}
               >
                 {getIndustryIcon(industry)}
                 {getShortName(industry)}
-                <span className="text-xs font-medium">({count})</span>
+                <span className="text-xs font-bold">({count})</span>
               </button>
             );
           })}
@@ -99,8 +99,8 @@ const MobileIndustryCarousel: React.FC<MobileIndustryCarouselProps> = ({
       {/* Active industry indicator */}
       {activeIndustry !== 'All' && (
         <div className="px-4 pb-2">
-          <div className="text-xs text-gray-600">
-            Showing jobs in <span className="font-medium">{activeIndustry}</span>
+          <div className="text-xs font-medium text-gray-800">
+            Showing jobs in <span className="font-bold text-gray-900">{activeIndustry}</span>
           </div>
         </div>
       )}

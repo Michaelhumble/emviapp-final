@@ -79,15 +79,15 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
   // Get industry icon helper
   const getIndustryIcon = (category: string) => {
     const lower = category.toLowerCase();
-    if (lower.includes('nail')) return <Sparkles className="h-6 w-6 text-purple-600" />;
-    if (lower.includes('hair')) return <Scissors className="h-6 w-6 text-indigo-600" />;
-    if (lower.includes('barber')) return <Zap className="h-6 w-6 text-blue-600" />;
-    if (lower.includes('massage')) return <Heart className="h-6 w-6 text-pink-600" />;
-    if (lower.includes('makeup')) return <Palette className="h-6 w-6 text-rose-600" />;
-    if (lower.includes('lash') || lower.includes('brow')) return <Eye className="h-6 w-6 text-emerald-600" />;
-    if (lower.includes('tattoo')) return <Pen className="h-6 w-6 text-amber-600" />;
-    if (lower.includes('esthetic')) return <Star className="h-6 w-6 text-teal-600" />;
-    return <Brush className="h-6 w-6 text-gray-600" />;
+    if (lower.includes('nail')) return <Sparkles className="h-7 w-7 text-purple-600" />;
+    if (lower.includes('hair')) return <Scissors className="h-7 w-7 text-indigo-600" />;
+    if (lower.includes('barber')) return <Zap className="h-7 w-7 text-blue-600" />;
+    if (lower.includes('massage')) return <Heart className="h-7 w-7 text-pink-600" />;
+    if (lower.includes('makeup')) return <Palette className="h-7 w-7 text-rose-600" />;
+    if (lower.includes('lash') || lower.includes('brow')) return <Eye className="h-7 w-7 text-emerald-600" />;
+    if (lower.includes('tattoo')) return <Pen className="h-7 w-7 text-amber-600" />;
+    if (lower.includes('esthetic')) return <Star className="h-7 w-7 text-teal-600" />;
+    return <Brush className="h-7 w-7 text-gray-800" />;
   };
 
   const renderJobSection = (category: string, activeJobs: Job[], expiredJobs: any[]) => {
@@ -100,9 +100,9 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
         <div className="flex items-center justify-between mb-6 px-4">
           <div className="flex items-center gap-3">
             {getIndustryIcon(category)}
-            <h3 className="text-2xl font-bold text-gray-900 tracking-tight">{category}</h3>
+            <h3 className="text-2xl font-extrabold text-gray-900 tracking-tight">{category}</h3>
           </div>
-          <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+          <span className="text-sm font-bold text-gray-800 bg-gray-100 px-3 py-1 rounded-full">
             {allJobs.length} jobs
           </span>
         </div>
@@ -140,7 +140,7 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
         {/* Compact list for overflow jobs */}
         {compactJobs.length > 0 && (
           <div className="px-4 space-y-2">
-            <div className="text-sm text-gray-600 mb-2">
+            <div className="text-sm font-semibold text-gray-800 mb-2">
               {compactJobs.length} more jobs in {category}
             </div>
             {compactJobs.map((job) => (

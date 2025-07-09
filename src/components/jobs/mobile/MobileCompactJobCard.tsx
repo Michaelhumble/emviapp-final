@@ -1,6 +1,6 @@
 import React from 'react';
 import { Job } from '@/types/job';
-import { ChevronDown, ChevronUp, MapPin, DollarSign } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, DollarSign, Sparkles, Scissors, Zap, Heart, Star, Palette, Pen, Eye, Brush } from 'lucide-react';
 import MobileJobCard from './MobileJobCard';
 
 interface MobileCompactJobCardProps {
@@ -16,18 +16,18 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
   isExpanded,
   isExpired = false
 }) => {
-  // Get industry emoji based on category
-  const getCategoryEmoji = (category: string) => {
+  // Get industry icon based on category
+  const getCategoryIcon = (category: string) => {
     const cat = category?.toLowerCase() || '';
-    if (cat.includes('nail')) return '💅';
-    if (cat.includes('hair')) return '✂️';
-    if (cat.includes('barber')) return '💈';
-    if (cat.includes('massage')) return '💆';
-    if (cat.includes('makeup')) return '💄';
-    if (cat.includes('lash') || cat.includes('brow')) return '👁️';
-    if (cat.includes('tattoo')) return '🎨';
-    if (cat.includes('esthetic') || cat.includes('skin')) return '✨';
-    return '🏢';
+    if (cat.includes('nail')) return <Sparkles className="h-4 w-4 text-purple-600" />;
+    if (cat.includes('hair')) return <Scissors className="h-4 w-4 text-indigo-600" />;
+    if (cat.includes('barber')) return <Zap className="h-4 w-4 text-blue-600" />;
+    if (cat.includes('massage')) return <Heart className="h-4 w-4 text-pink-600" />;
+    if (cat.includes('makeup')) return <Palette className="h-4 w-4 text-rose-600" />;
+    if (cat.includes('lash') || cat.includes('brow')) return <Eye className="h-4 w-4 text-emerald-600" />;
+    if (cat.includes('tattoo')) return <Pen className="h-4 w-4 text-amber-600" />;
+    if (cat.includes('esthetic') || cat.includes('skin')) return <Star className="h-4 w-4 text-teal-600" />;
+    return <Brush className="h-4 w-4 text-gray-800" />;
   };
 
   // Format salary display
@@ -46,29 +46,29 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center flex-1 min-w-0">
-            {/* Category emoji */}
-            <span className="text-lg mr-3 flex-shrink-0">
-              {getCategoryEmoji(job.category)}
-            </span>
+            {/* Category icon */}
+            <div className="mr-3 flex-shrink-0">
+              {getCategoryIcon(job.category)}
+            </div>
             
             {/* Job info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-medium text-gray-900 truncate">
+                  <h4 className="text-sm font-bold text-gray-900 truncate">
                     {job.company || 'Company Name'}
                   </h4>
-                  <p className="text-xs text-gray-600 truncate">
+                  <p className="text-xs font-medium text-gray-800 truncate">
                     {job.vietnamese_title || job.title || 'Job Title'}
                   </p>
                 </div>
                 
                 <div className="ml-2 text-right flex-shrink-0">
-                  <div className="text-xs font-medium text-green-600 mb-1">
+                  <div className="text-xs font-bold text-green-600 mb-1">
                     {getSalary().split(' ')[0]} {/* First part of salary */}
                   </div>
-                  <div className="flex items-center text-xs text-gray-500">
-                    <MapPin className="h-3 w-3 mr-1" />
+                  <div className="flex items-center text-xs font-medium text-gray-800">
+                    <MapPin className="h-3 w-3 mr-1 text-gray-600" />
                     {job.location?.split(',')[0] || 'TBD'} {/* Just city */}
                   </div>
                 </div>
@@ -88,7 +88,7 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
 
         {/* Status indicator for expired jobs */}
         {isExpired && (
-          <div className="mt-2 text-xs text-red-600 font-medium">
+          <div className="mt-2 text-xs text-red-600 font-bold">
             Position Filled • {new Date(job.filled_date).toLocaleDateString()}
           </div>
         )}
