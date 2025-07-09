@@ -37,10 +37,6 @@ const enhancedJobFormSchema = z.object({
   planType: z.enum(['free', 'paid'], { 
     required_error: "Please select a plan type" 
   }),
-  category: z.enum(JOB_CATEGORIES, { 
-    required_error: "Please select a beauty industry category" 
-  }),
-  otherCategoryDescription: z.string().optional(),
   title: z.string().min(1, "Job title is required"),
   company: z.string().optional(),
   salonName: z.string().min(1, "Salon name is required"),
@@ -89,8 +85,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     resolver: zodResolver(enhancedJobFormSchema),
     defaultValues: {
       planType: 'free', // Default to free plan
-      category: 'Nail Tech', // Default to first option
-      otherCategoryDescription: '',
       title: '',
       company: '',
       salonName: '',
@@ -111,7 +105,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     }
   });
 
-  const selectedCategory = form.watch('category');
   const selectedPlan = form.watch('planType');
 
   // Check if user has already posted a free job
@@ -183,7 +176,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     // Prepare payload for update
     const updatePayload = {
       title: data.title.trim(),
-      category: data.category.trim(),
+      category: 'General', // Fixed category since UI no longer shows selection
       location: data.location.trim() || null,
       description: data.description.trim(),
       compensation_type: data.compensationType.trim() || null,
@@ -238,8 +231,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       // Reset form with new values
       form.reset({
         planType: initialValues.planType || 'free',
-        category: initialValues.category || 'Nail Tech',
-        otherCategoryDescription: initialValues.otherCategoryDescription || '',
         title: initialValues.title || '',
         company: initialValues.company || '',
         salonName: initialValues.company || initialValues.salonName || '',
@@ -289,11 +280,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       return;
     }
     
-    if (!data.category.trim()) {
-      console.log('❌ [VALIDATION] Category is required');
-      setFreeJobError('Category is required');
-      return;
-    }
     
     if (!data.description.trim()) {
       console.log('❌ [VALIDATION] Description is required');
@@ -306,7 +292,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     // Prepare payload (matching FreeJobPostingForm structure)
     const payload = {
       title: data.title.trim(),
-      category: data.category.trim(),
+      category: 'General', // Fixed category since UI no longer shows selection
       location: data.location.trim() || null,
       description: data.description.trim(),
       compensation_type: data.compensationType.trim() || null,
@@ -416,11 +402,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       return;
     }
     
-    if (!data.category.trim()) {
-      console.log('❌ [PAID-VALIDATION] Category is required');
-      setFreeJobError('Category is required');
-      return;
-    }
     
     if (!data.description.trim()) {
       console.log('❌ [PAID-VALIDATION] Description is required');
@@ -441,7 +422,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
           body: {
             jobData: {
               title: data.title.trim(),
-              category: data.category.trim(),
+              category: 'General', // Fixed category since UI no longer shows selection
               location: data.location.trim() || '',
               description: data.description.trim(),
               compensationType: data.compensationType.trim() || '',
@@ -702,65 +683,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               />
             </div>
             
-            {/* Category Selection - Required Second Step */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">Beauty Industry Category</h2>
-                <p className="text-slate-600">Select the primary category for this job posting</p>
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base font-semibold text-slate-700">
-                      Job Category *
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full h-12 text-base">
-                          <SelectValue placeholder="Select a beauty industry category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {JOB_CATEGORIES.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Other Category Description Field */}
-              {selectedCategory === 'Other' && (
-                <div className="mt-4">
-                  <FormField
-                    control={form.control}
-                    name="otherCategoryDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-semibold text-slate-700">
-                          Please specify the job category
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            {...field}
-                            className="w-full h-12 px-4 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            placeholder="e.g., Massage Therapist, Receptionist, etc."
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-            </div>
 
             <JobDetailsSection control={form.control} />
             <RequirementsSection form={form} />
