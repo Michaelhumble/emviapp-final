@@ -1,5 +1,5 @@
 
-import { Building, Calendar, DollarSign, MapPin, TrendingUp, Users } from "lucide-react";
+import { Building, Calendar, DollarSign, MapPin, TrendingUp, Users, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,6 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useAuth } from "@/context/auth";
+import AuthAction from "@/components/common/AuthAction";
 
 interface SalonDetailsDialogProps {
   isOpen: boolean;
@@ -29,6 +31,8 @@ interface SalonDetailsDialogProps {
 }
 
 export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetailsDialogProps) => {
+  const { isSignedIn } = useAuth();
+  
   if (!salon) return null;
 
   const formatPrice = (price: number) => {
@@ -139,7 +143,21 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
               </div>
             </div>
             
-            <Button className="w-full">Contact Seller</Button>
+            {isSignedIn ? (
+              <Button className="w-full">Contact Seller</Button>
+            ) : (
+              <AuthAction
+                customTitle="Sign in to contact seller"
+                onAction={() => true}
+                redirectPath="/marketplace"
+                fallbackContent={
+                  <Button variant="outline" className="w-full">
+                    <LockIcon className="w-4 h-4 mr-2" />
+                    Sign in to Contact Seller
+                  </Button>
+                }
+              />
+            )}
           </div>
         </div>
       </DialogContent>

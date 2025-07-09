@@ -2,7 +2,9 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, Phone } from 'lucide-react';
+import { Star, Phone, LockIcon } from 'lucide-react';
+import { useAuth } from "@/context/auth";
+import AuthAction from "@/components/common/AuthAction";
 
 type NailSalonDetailModalProps = {
   open: boolean;
@@ -21,6 +23,8 @@ type NailSalonDetailModalProps = {
 }
 
 const NailSalonDetailModal = ({ open, onOpenChange, listing }: NailSalonDetailModalProps) => {
+  const { isSignedIn } = useAuth();
+  
   if (!listing) return null;
 
   return (
@@ -57,10 +61,24 @@ const NailSalonDetailModal = ({ open, onOpenChange, listing }: NailSalonDetailMo
           
           {listing.contact && (
             <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
-              <div className="flex items-center">
-                <Phone className="w-4 h-4 text-primary mr-2" />
-                <span className="font-medium">{listing.contact}</span>
-              </div>
+              {isSignedIn ? (
+                <div className="flex items-center">
+                  <Phone className="w-4 h-4 text-primary mr-2" />
+                  <span className="font-medium">{listing.contact}</span>
+                </div>
+              ) : (
+                <AuthAction
+                  customTitle="Sign in to see contact details"
+                  onAction={() => true}
+                  redirectPath={`/nails`}
+                  fallbackContent={
+                    <div className="flex items-center text-gray-500 cursor-pointer">
+                      <LockIcon className="w-4 h-4 mr-2" />
+                      <span className="text-sm">Sign in to see contact details</span>
+                    </div>
+                  }
+                />
+              )}
             </div>
           )}
           
