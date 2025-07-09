@@ -8,6 +8,7 @@ import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
@@ -192,6 +193,9 @@ const JobsPage = () => {
               isRenewing={false}
               renewalJobId={null}
             />
+            
+            {/* Expired Jobs Section */}
+            <ExpiredJobsSection />
           </>
         )}
       </div>
