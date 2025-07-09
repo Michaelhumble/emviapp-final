@@ -493,7 +493,7 @@ export const industryConfig = {
     name: 'nails',
     displayName: 'Nails',
     listings: nailListings,
-    routePath: '/jobs?category=nails',
+    routePath: '/nails',
     gradientColors: 'from-pink-100 via-purple-50 to-indigo-100',
     icon: '💅'
   },
@@ -501,7 +501,7 @@ export const industryConfig = {
     name: 'hair',
     displayName: 'Hair',
     listings: hairListings,
-    routePath: '/jobs?category=hair',
+    routePath: '/hair',
     gradientColors: 'from-amber-100 via-orange-50 to-red-100',
     icon: '💇'
   },
@@ -509,7 +509,7 @@ export const industryConfig = {
     name: 'barber',
     displayName: 'Barber',
     listings: barberListings,
-    routePath: '/jobs?category=barber',
+    routePath: '/barber',
     gradientColors: 'from-blue-100 via-indigo-50 to-purple-100',
     icon: '💈'
   },
@@ -517,7 +517,7 @@ export const industryConfig = {
     name: 'massage',
     displayName: 'Massage',
     listings: massageListings,
-    routePath: '/jobs?category=massage',
+    routePath: '/massage',
     gradientColors: 'from-green-100 via-emerald-50 to-teal-100',
     icon: '💆'
   },
@@ -525,7 +525,7 @@ export const industryConfig = {
     name: 'skincare',
     displayName: 'Skincare',
     listings: skincareListings,
-    routePath: '/jobs?category=skincare',
+    routePath: '/skincare',
     gradientColors: 'from-rose-100 via-pink-50 to-purple-100',
     icon: '🧴'
   },
@@ -533,7 +533,7 @@ export const industryConfig = {
     name: 'makeup',
     displayName: 'Makeup',
     listings: makeupListings,
-    routePath: '/jobs?category=makeup',
+    routePath: '/makeup',
     gradientColors: 'from-fuchsia-100 via-pink-50 to-rose-100',
     icon: '💄'
   },
@@ -541,7 +541,7 @@ export const industryConfig = {
     name: 'brows-lashes',
     displayName: 'Brows & Lashes',
     listings: browsLashesListings,
-    routePath: '/jobs?category=brows-lashes',
+    routePath: '/brows-lashes',
     gradientColors: 'from-violet-100 via-purple-50 to-indigo-100',
     icon: '👁️'
   },
@@ -549,7 +549,7 @@ export const industryConfig = {
     name: 'tattoo',
     displayName: 'Tattoo',
     listings: tattooListings,
-    routePath: '/jobs?category=tattoo',
+    routePath: '/tattoo',
     gradientColors: 'from-gray-100 via-slate-50 to-zinc-100',
     icon: '🎨'
   }

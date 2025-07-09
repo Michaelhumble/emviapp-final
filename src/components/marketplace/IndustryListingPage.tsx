@@ -1,0 +1,539 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon } from 'lucide-react';
+import { useAuth } from '@/context/auth';
+import AuthAction from '@/components/common/AuthAction';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+
+interface IndustryListing {
+  id: string;
+  title: string;
+  location: string;
+  salary: string;
+  tier: 'diamond' | 'premium' | 'featured';
+  summary: string;
+  imageUrl: string;
+  phone?: string;
+  rating?: number;
+  isFeatured?: boolean;
+  fullDescription?: string;
+}
+
+interface IndustryListingPageProps {
+  industryName: string;
+  displayName: string;
+  listings: IndustryListing[];
+  headerTitle: string;
+  headerSubtitle: string;
+  gradientColors: string;
+  metaDescription: string;
+}
+
+const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
+  industryName,
+  displayName,
+  listings,
+  headerTitle,
+  headerSubtitle,
+  gradientColors,
+  metaDescription
+}) => {
+  const { isSignedIn } = useAuth();
+  const [selectedListing, setSelectedListing] = useState<IndustryListing | null>(null);
+
+  const getTierBadge = (tier: string) => {
+    switch (tier) {
+      case 'diamond':
+        return (
+          <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 font-bold px-3 py-1">
+            <Crown className="w-3 h-3 mr-1" />
+            Diamond
+          </Badge>
+        );
+      case 'premium':
+        return (
+          <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 font-bold px-3 py-1">
+            <Star className="w-3 h-3 mr-1" />
+            Premium
+          </Badge>
+        );
+      case 'featured':
+        return (
+          <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 font-bold px-3 py-1">
+            Featured
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getTierCardClass = (tier: string) => {
+    switch (tier) {
+      case 'diamond':
+        return 'border-2 border-amber-300 shadow-2xl shadow-amber-200/50 bg-gradient-to-br from-amber-50 to-yellow-50';
+      case 'premium':
+        return 'border border-purple-200 shadow-xl shadow-purple-100/50 bg-gradient-to-br from-purple-50 to-indigo-50';
+      case 'featured':
+        return 'border border-blue-200 shadow-lg shadow-blue-100/50 bg-gradient-to-br from-blue-50 to-cyan-50';
+      default:
+        return 'border border-gray-200 shadow-md';
+    }
+  };
+
+  const handleViewDetails = (listing: IndustryListing) => {
+    if (!isSignedIn) {
+      // Show sign-in prompt
+      return;
+    }
+    setSelectedListing(listing);
+  };
+
+  const diamondListings = listings.filter(l => l.tier === 'diamond');
+  const premiumListings = listings.filter(l => l.tier === 'premium');
+  const featuredListings = listings.filter(l => l.tier === 'featured');
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{headerTitle} | EmviApp</title>
+        <meta name="description" content={metaDescription} />
+      </Helmet>
+
+      {/* Hero Header */}
+      <section className={`w-full bg-gradient-to-br ${gradientColors} py-16 mb-12`}>
+        <div className="container mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              {headerTitle}
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto">
+              {headerSubtitle}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 pb-16">
+        {/* Diamond Tier Section */}
+        {diamondListings.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-16"
+          >
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <Crown className="w-8 h-8 text-amber-500 mr-3" />
+                <h2 className="text-3xl font-bold text-gray-900">Diamond Exclusive</h2>
+                <Crown className="w-8 h-8 text-amber-500 ml-3" />
+              </div>
+              <p className="text-lg text-gray-600">
+                Only 3 spots available — The most exclusive {industryName.toLowerCase()} opportunities
+              </p>
+              <Badge className="bg-red-500 text-white mt-2">
+                Only {3 - diamondListings.length} spots remaining
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {diamondListings.map((listing, index) => (
+                <motion.div
+                  key={listing.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
+                    <div className="relative aspect-video">
+                      <ImageWithFallback
+                        src={listing.imageUrl}
+                        alt={listing.title}
+                        className="w-full h-full object-cover"
+                        businessName={listing.title}
+                      />
+                      <div className="absolute top-3 left-3">
+                        {getTierBadge(listing.tier)}
+                      </div>
+                      {listing.rating && (
+                        <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
+                          <div className="flex items-center text-sm font-medium">
+                            <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />
+                            {listing.rating}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        {listing.title}
+                      </h3>
+
+                      <div className="flex items-center text-gray-600 mb-2">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {listing.location}
+                      </div>
+
+                      <div className="bg-green-100 rounded-lg p-3 mb-3">
+                        <div className="flex items-center text-green-800 font-bold">
+                          <DollarSign className="w-4 h-4 mr-1" />
+                          {listing.salary}
+                        </div>
+                      </div>
+
+                      <p className="text-gray-700 mb-4 line-clamp-2">
+                        {listing.summary}
+                      </p>
+
+                      {/* Contact Info - Gated */}
+                      <div className="mb-4">
+                        {isSignedIn && listing.phone ? (
+                          <div className="flex items-center text-gray-700">
+                            <Phone className="w-4 h-4 mr-2" />
+                            {listing.phone}
+                          </div>
+                        ) : (
+                          <AuthAction
+                            customTitle="Sign in to see contact details"
+                            onAction={() => true}
+                            fallbackContent={
+                              <div className="text-sm text-gray-500 italic flex items-center gap-2">
+                                <LockIcon className="w-4 h-4" />
+                                <span>Sign in to see contact details</span>
+                              </div>
+                            }
+                          />
+                        )}
+                      </div>
+
+                      <Button
+                        onClick={() => handleViewDetails(listing)}
+                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Full Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+
+              {/* Fill remaining Diamond slots with house ads */}
+              {Array.from({ length: Math.max(0, 3 - diamondListings.length) }, (_, index) => (
+                <motion.div
+                  key={`diamond-slot-${index}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: (diamondListings.length + index) * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <Card className={`h-full ${getTierCardClass('diamond')} overflow-hidden`}>
+                    <div className="relative aspect-video bg-gradient-to-br from-amber-100 to-yellow-200 flex items-center justify-center">
+                      <div className="text-center">
+                        <Crown className="w-12 h-12 text-amber-600 mx-auto mb-2" />
+                        <p className="text-amber-800 font-bold">Your Brand Here</p>
+                      </div>
+                      <div className="absolute top-3 left-3">
+                        {getTierBadge('diamond')}
+                      </div>
+                    </div>
+
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        Diamond Tier Available
+                      </h3>
+                      <p className="text-gray-700 mb-4">
+                        Secure your spot in the most exclusive tier. Maximum visibility, premium placement, VIP treatment.
+                      </p>
+                      <div className="bg-amber-100 rounded-lg p-3 mb-4">
+                        <div className="text-amber-800 font-bold text-center">
+                          $9,999/year • Only 3 spots total
+                        </div>
+                      </div>
+                      <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold">
+                        Claim Diamond Spot
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* Premium Tier Section */}
+        {premiumListings.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-16"
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Premium Listings</h2>
+              <p className="text-lg text-gray-600">
+                Hand-selected {industryName.toLowerCase()} opportunities with exceptional benefits
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {premiumListings.map((listing, index) => (
+                <motion.div
+                  key={listing.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -3 }}
+                >
+                  <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
+                    <div className="relative aspect-video">
+                      <ImageWithFallback
+                        src={listing.imageUrl}
+                        alt={listing.title}
+                        className="w-full h-full object-cover"
+                        businessName={listing.title}
+                      />
+                      <div className="absolute top-3 left-3">
+                        {getTierBadge(listing.tier)}
+                      </div>
+                      {listing.rating && (
+                        <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
+                          <div className="flex items-center text-sm font-medium">
+                            <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />
+                            {listing.rating}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <CardContent className="p-5">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                        {listing.title}
+                      </h3>
+
+                      <div className="flex items-center text-gray-600 mb-2">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {listing.location}
+                      </div>
+
+                      <div className="bg-green-100 rounded-lg p-2 mb-3">
+                        <div className="flex items-center text-green-800 font-semibold text-sm">
+                          <DollarSign className="w-4 h-4 mr-1" />
+                          {listing.salary}
+                        </div>
+                      </div>
+
+                      <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+                        {listing.summary}
+                      </p>
+
+                      <Button
+                        onClick={() => handleViewDetails(listing)}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* Featured Tier Section */}
+        {featuredListings.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mb-16"
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Opportunities</h2>
+              <p className="text-lg text-gray-600">
+                Quality {industryName.toLowerCase()} positions with competitive compensation
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredListings.map((listing, index) => (
+                <motion.div
+                  key={listing.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -3 }}
+                >
+                  <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
+                    <div className="relative aspect-video">
+                      <ImageWithFallback
+                        src={listing.imageUrl}
+                        alt={listing.title}
+                        className="w-full h-full object-cover"
+                        businessName={listing.title}
+                      />
+                      <div className="absolute top-2 left-2">
+                        {getTierBadge(listing.tier)}
+                      </div>
+                      {listing.rating && (
+                        <div className="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1">
+                          <div className="flex items-center text-xs font-medium">
+                            <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />
+                            {listing.rating}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <CardContent className="p-4">
+                      <h3 className="text-base font-bold text-gray-900 mb-1">
+                        {listing.title}
+                      </h3>
+
+                      <div className="flex items-center text-gray-600 mb-2 text-sm">
+                        <MapPin className="w-3 h-3 mr-1" />
+                        {listing.location}
+                      </div>
+
+                      <div className="bg-green-100 rounded p-2 mb-2">
+                        <div className="flex items-center text-green-800 font-semibold text-xs">
+                          <DollarSign className="w-3 h-3 mr-1" />
+                          {listing.salary}
+                        </div>
+                      </div>
+
+                      <p className="text-gray-700 text-xs mb-3 line-clamp-2">
+                        {listing.summary}
+                      </p>
+
+                      <Button
+                        onClick={() => handleViewDetails(listing)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        <Eye className="w-3 h-3 mr-1" />
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* CTA Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="text-center"
+        >
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Ready to Post Your {displayName} Position?
+            </h2>
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+              Join thousands of successful {industryName.toLowerCase()} businesses that have found their perfect team members through EmviApp.
+            </p>
+            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-bold">
+              Post Your Job Now
+            </Button>
+          </div>
+        </motion.section>
+      </div>
+
+      {/* Detail Modal */}
+      {selectedListing && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedListing(null)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {selectedListing.title}
+                  </h2>
+                  <p className="text-gray-600">{selectedListing.location}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedListing(null)}
+                >
+                  ✕
+                </Button>
+              </div>
+
+              <div className="aspect-video mb-4 rounded-lg overflow-hidden">
+                <ImageWithFallback
+                  src={selectedListing.imageUrl}
+                  alt={selectedListing.title}
+                  className="w-full h-full object-cover"
+                  businessName={selectedListing.title}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-green-100 rounded-lg p-4">
+                  <div className="flex items-center text-green-800 font-bold text-lg">
+                    <DollarSign className="w-5 h-5 mr-2" />
+                    {selectedListing.salary}
+                  </div>
+                </div>
+
+                {selectedListing.phone && (
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="flex items-center text-blue-800 font-semibold">
+                      <Phone className="w-5 h-5 mr-2" />
+                      {selectedListing.phone}
+                    </div>
+                  </div>
+                )}
+
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 whitespace-pre-line">
+                    {selectedListing.fullDescription || selectedListing.summary}
+                  </p>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                >
+                  Apply Now
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+export default IndustryListingPage;

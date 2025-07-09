@@ -34,6 +34,16 @@ import PostSalon from "@/pages/PostSalon";
 import SalonListingSuccessPage from "@/pages/salon-listing-success";
 import CustomerProfilePage from "@/pages/customer/ProfilePage";
 
+// Industry Pages
+import NailsPage from "@/pages/nails";
+import HairPage from "@/pages/hair";
+import BarberPage from "@/pages/barber";
+import MassagePage from "@/pages/massage";
+import SkincarePage from "@/pages/skincare";
+import MakeupPage from "@/pages/makeup";
+import BrowsLashesPage from "@/pages/brows-lashes";
+import TattooPage from "@/pages/tattoo";
+
 function App() {
   const location = useLocation();
 
@@ -84,6 +94,17 @@ function App() {
                     {/* Other pages */}
                     <Route path="/salons" element={<Layout><StableSalonPage /></Layout>} />
                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                    
+                    {/* Industry Pages */}
+                    <Route path="/nails" element={<Layout><NailsPage /></Layout>} />
+                    <Route path="/hair" element={<Layout><HairPage /></Layout>} />
+                    <Route path="/barber" element={<Layout><BarberPage /></Layout>} />
+                    <Route path="/massage" element={<Layout><MassagePage /></Layout>} />
+                    <Route path="/skincare" element={<Layout><SkincarePage /></Layout>} />
+                    <Route path="/makeup" element={<Layout><MakeupPage /></Layout>} />
+                    <Route path="/brows-lashes" element={<Layout><BrowsLashesPage /></Layout>} />
+                    <Route path="/tattoo" element={<Layout><TattooPage /></Layout>} />
+                    
                     <Route path="/about" element={<Layout><About /></Layout>} />
                     <Route path="/contact" element={<Layout><Contact /></Layout>} />
                     <Route path="/terms" element={<Layout><Terms /></Layout>} />
