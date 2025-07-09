@@ -14,6 +14,15 @@ import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
 import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
+import { getIndustryRoute } from '@/utils/industryRouteMap';
+
+// Development validation
+if (process.env.NODE_ENV === 'development') {
+  import('@/utils/industryRouteValidation').then(({ testIndustryRouting }) => {
+    console.log('🔧 [JOBS-PAGE] Running route validation...');
+    testIndustryRouting();
+  });
+}
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
@@ -274,11 +283,11 @@ const JobsPage = () => {
                               Post a Job
                             </button>
                            <button
-                              onClick={() => navigate(`/${tab.id}`)}
+                              onClick={() => navigate(getIndustryRoute(tab.label))}
                                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-6 rounded-xl"
-                            >
-                              Browse All {tab.label} Jobs →
-                            </button>
+                             >
+                               Browse All {tab.label} Jobs →
+                             </button>
                           </div>
                         </div>
                       </div>
@@ -301,7 +310,7 @@ const JobsPage = () => {
                   <div className="text-center py-8 border-t border-gray-200 pt-8">
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                       <button
-                        onClick={() => navigate(`/${tab.id}`)}
+                        onClick={() => navigate(getIndustryRoute(tab.label))}
                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                        >
                         Browse All {tab.label} Jobs →

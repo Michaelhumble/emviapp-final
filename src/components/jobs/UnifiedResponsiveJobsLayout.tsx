@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
+import { getIndustryRoute } from '@/utils/industryRouteMap';
 
 interface UnifiedResponsiveJobsLayoutProps {
   jobs: Job[];
@@ -214,7 +215,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         {filteredJobs.length > 8 && (
           <div className="px-4 lg:px-0 mt-6">
             <button 
-              onClick={() => navigate(`/${category.toLowerCase().replace(/\s+/g, '-')}`)}
+              onClick={() => navigate(getIndustryRoute(category))}
               className="flex items-center justify-center w-full py-4 text-purple-600 font-inter font-bold border-2 border-purple-200 rounded-xl hover:bg-purple-50 transition-colors text-base"
             >
               See all {filteredJobs.length} jobs in {category}
