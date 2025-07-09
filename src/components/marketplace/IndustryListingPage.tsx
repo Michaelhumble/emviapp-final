@@ -498,7 +498,11 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             <p className="text-muted-foreground font-inter mb-6 max-w-2xl mx-auto">
               Join thousands of successful {industryName.toLowerCase()} businesses that have found their perfect team members through EmviApp.
             </p>
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold">
+            <Button 
+              size="lg" 
+              className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
+              onClick={() => navigate('/post-job')}
+            >
               Post Your Job Now
             </Button>
           </div>
