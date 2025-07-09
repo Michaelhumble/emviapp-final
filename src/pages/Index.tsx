@@ -20,14 +20,11 @@ import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
-import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 import EmviQASection from "@/components/home/EmviQASection";
 
-// Listing section components
-import BarberListingsSection from "@/components/home/BarberListingsSection";
-import SkincareListingsSection from "@/components/home/SkincareListingsSection";
-import MakeupListingsSection from "@/components/home/MakeupListingsSection";
-import TattooListingsSection from "@/components/home/TattooListingsSection";
+// Premium Industry Showcase
+import PremiumIndustryShowcase from "@/components/home/PremiumIndustryShowcase";
+import { industryConfig } from "@/data/industryListings";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -56,8 +53,18 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
-      {/* 2. Emvi Beauty Connections™ - Contains all listing sections */}
-      <BeautyExchangeSection />
+      {/* 2. Premium Industry Showcases - Diamond listings first */}
+      {Object.values(industryConfig).map((industry) => (
+        <PremiumIndustryShowcase
+          key={industry.name}
+          industryName={industry.name}
+          displayName={industry.displayName}
+          listings={industry.listings}
+          routePath={industry.routePath}
+          gradientColors={industry.gradientColors}
+          icon={industry.icon}
+        />
+      ))}
       
       {/* 3. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
