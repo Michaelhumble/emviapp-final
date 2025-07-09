@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, DollarSign, Crown, Star, Phone, LockIcon, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
 
 // Icon mapping for professional icons
@@ -60,14 +61,11 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
   icon
 }) => {
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleViewDetails = (listing: IndustryListing) => {
-    if (!isSignedIn) {
-      // Show sign-in prompt
-      return;
-    }
-    // Show full details modal
-    console.log('Show details for:', listing.title);
+    // Navigate to the specific industry page with listing ID for deep linking
+    navigate(`${routePath}?listing=${listing.id}`);
   };
 
   const getTierIcon = (tier: string) => {
@@ -236,7 +234,7 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
               size="lg"
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              See all {displayName} jobs <ArrowRight className="ml-2 h-5 w-5" />
+              See all {displayName} Jobs <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon } from 'lucide-react';
+import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon, ArrowLeft, Home } from 'lucide-react';
 import { useAuth } from '@/context/auth';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
@@ -43,7 +44,32 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   metaDescription
 }) => {
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [selectedListing, setSelectedListing] = useState<IndustryListing | null>(null);
+  
+  // Check if we have a listing ID in the URL parameters for deep linking
+  const highlightedListingId = searchParams.get('listing');
+  
+  useEffect(() => {
+    if (highlightedListingId) {
+      const listing = listings.find(l => l.id === highlightedListingId);
+      if (listing) {
+        setSelectedListing(listing);
+        // Scroll to the listing or open modal
+        setTimeout(() => {
+          const element = document.getElementById(`listing-${highlightedListingId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+  }, [highlightedListingId, listings]);
+
+  const handleBackToHome = () => {
+    navigate('/');
+  };
 
   const getTierBadge = (tier: string) => {
     switch (tier) {
@@ -123,6 +149,22 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
       </section>
 
       <div className="container mx-auto px-4 pb-16">
+        {/* Back Navigation */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <Button
+            variant="outline"
+            onClick={handleBackToHome}
+            className="flex items-center gap-2 hover:bg-gray-50"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to All Beauty Jobs
+          </Button>
+        </motion.div>
         {/* Diamond Tier Section */}
         {diamondListings.length > 0 && (
           <motion.section
@@ -149,10 +191,12 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               {diamondListings.map((listing, index) => (
                 <motion.div
                   key={listing.id}
+                  id={`listing-${listing.id}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -5 }}
+                  className={highlightedListingId === listing.id ? 'ring-4 ring-amber-300 rounded-lg' : ''}
                 >
                   <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
                     <div className="relative aspect-video">
@@ -291,10 +335,12 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               {premiumListings.map((listing, index) => (
                 <motion.div
                   key={listing.id}
+                  id={`listing-${listing.id}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -3 }}
+                  className={highlightedListingId === listing.id ? 'ring-4 ring-purple-300 rounded-lg' : ''}
                 >
                   <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
                     <div className="relative aspect-video">
@@ -373,10 +419,12 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               {featuredListings.map((listing, index) => (
                 <motion.div
                   key={listing.id}
+                  id={`listing-${listing.id}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -3 }}
+                  className={highlightedListingId === listing.id ? 'ring-4 ring-blue-300 rounded-lg' : ''}
                 >
                   <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
                     <div className="relative aspect-video">
