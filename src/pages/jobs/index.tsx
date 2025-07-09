@@ -144,31 +144,31 @@ const JobsPage = () => {
         <section className="w-full bg-gradient-to-r from-[#fff2df] via-[#f9eaff] to-[#e6f2ff] py-12 mb-10 rounded-3xl shadow-xl flex flex-col items-center text-center max-w-4xl mx-auto border border-[#e7d1ff] relative overflow-hidden">
           <div className="absolute top-4 right-4 text-5xl animate-pulse select-none pointer-events-none">✨</div>
           <h1 className="text-4xl md:text-5xl font-extrabold text-[#8a55e6] mb-3 tracking-tight drop-shadow-lg leading-tight">
-            The Billion-Dollar Beauty Job Marketplace 🚀
+            The Future of Beauty Jobs. <br className="hidden md:inline" />Powered by Community & AI.
           </h1>
           <p className="text-lg md:text-xl text-[#54362e] font-medium mb-3 max-w-xl mx-auto">
-            Where the <span className="font-bold text-[#f39c12]">top salons</span> and <span className="font-bold text-[#16a34a]">the best artists</span> connect.  
-            Get hired, grow your income, and join America's fastest-growing, trust-powered beauty network.
+            Real jobs. Real people. <span className="font-bold text-[#f39c12]">No scams. No fees.</span>  
+            Join the most supportive beauty network in America—where your next opportunity is just a click away.
           </p>
           <div className="flex flex-wrap gap-2 justify-center mb-3">
             <span className="bg-gradient-to-r from-green-200 to-green-400 text-green-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-green-300 animate-pulse">100% Real Listings</span>
-            <span className="bg-gradient-to-r from-purple-100 to-purple-300 text-purple-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-purple-200">Backed by Stripe</span>
+            <span className="bg-gradient-to-r from-purple-100 to-purple-300 text-purple-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-purple-200">AI-Powered & Secure</span>
             <span className="bg-gradient-to-r from-pink-100 to-pink-300 text-pink-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-pink-200">Tiếng Việt hỗ trợ</span>
-            <span className="bg-gradient-to-r from-yellow-100 to-yellow-300 text-yellow-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-yellow-200">No Scams, No Bots</span>
-            <span className="bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-blue-200">Daily Verified</span>
+            <span className="bg-gradient-to-r from-yellow-100 to-yellow-300 text-yellow-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-yellow-200">No Bots, No Spam</span>
+            <span className="bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-blue-200">Updated Daily</span>
           </div>
           <button
             className="bg-[#8a55e6] hover:bg-[#5a359a] text-white font-bold py-3 px-10 rounded-xl shadow-2xl text-lg mt-2 transition-all border border-[#c7b3f6] animate-bounce"
             onClick={() => navigate('/post-job')}
           >
-            Post Your First Job FREE 🚀
+            Post Your First Job FREE ✨
           </button>
           <p className="text-xs text-[#88684c] mt-4 italic">
-            "I posted my first job here and got 4 high-quality applicants in 24 hours. The real deal!" <br/>
+            "I posted my first job here and found the perfect team member in less than a day. It really works!" <br/>
             <span className="font-semibold">— Linda N., Salon Owner, Houston TX</span>
           </p>
           <p className="mt-2 text-sm text-[#755c8a] font-medium">
-            Built by beauty industry pros. For dreamers, by dreamers. 💜
+            Built with love & AI. For the beauty industry, by the beauty industry. 💜
           </p>
         </section>
 
