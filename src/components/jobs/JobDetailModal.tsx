@@ -37,8 +37,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
-        <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl p-6">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm">
+        <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl p-6 m-4">
           <Button 
             variant="ghost" 
             size="icon" 

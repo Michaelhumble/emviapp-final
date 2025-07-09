@@ -75,8 +75,8 @@ const QuickJobDetailsPanel: React.FC<QuickJobDetailsPanelProps> = ({
   };
 
   return (
-    <div className="w-1/3 bg-white border-l border-gray-200 overflow-y-auto">
-      <Card className="h-full rounded-none border-0">
+    <div className="w-1/3 bg-white border-l border-gray-200 overflow-y-auto relative z-20">
+      <Card className="h-full rounded-none border-0 shadow-lg">
         <CardHeader className="sticky top-0 bg-white border-b border-gray-200 z-10">
           <div className="flex items-start justify-between">
             <div className="flex-1">

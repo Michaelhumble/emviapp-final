@@ -186,16 +186,22 @@ const JobsPage = () => {
         ) : (
           <>
             {console.log('📋 [JOBS-PAGE] Rendering jobs grid with jobs:', jobs.map(j => ({ id: j.id, title: j.title })))}
-            <JobsGrid
-              jobs={jobs}
-              expirations={{}}
-              onRenew={handleRenew}
-              isRenewing={false}
-              renewalJobId={null}
-            />
             
-            {/* Expired Jobs Section */}
-            <ExpiredJobsSection />
+            {/* Jobs Grid Container with proper spacing */}
+            <div className="relative z-10 mb-20">
+              <JobsGrid
+                jobs={jobs}
+                expirations={{}}
+                onRenew={handleRenew}
+                isRenewing={false}
+                renewalJobId={null}
+              />
+            </div>
+            
+            {/* Separator and Expired Jobs Section */}
+            <div className="relative z-0 mt-24 mb-16">
+              <ExpiredJobsSection />
+            </div>
           </>
         )}
       </div>

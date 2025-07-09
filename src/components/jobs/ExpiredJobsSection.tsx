@@ -81,18 +81,25 @@ const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
 
 const ExpiredJobsSection: React.FC = () => {
   return (
-    <section className="w-full max-w-6xl mx-auto mt-16 mb-8">
+    <section className="w-full max-w-6xl mx-auto pt-12 pb-8 relative z-0">
+      {/* Clear visual separator */}
+      <div className="border-t border-gray-200 mb-12"></div>
+      
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-700 mb-2">Recently Expired Beauty Industry Listings</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold text-gray-700 mb-4">Recently Expired Beauty Industry Listings</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto mb-6">
           These listings are now closed, but new jobs are posted daily. 
           <span className="font-semibold text-purple-700"> Sign in to unlock future posts.</span>
         </p>
-        <div className="mt-4 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-4 max-w-2xl mx-auto">
-          <p className="text-red-800 text-sm font-medium">
-            🔥 <span className="font-bold">FOMO Alert:</span> These great jobs filled up fast! 
-            Don't miss the next batch—check back daily for fresh opportunities.
-          </p>
+        
+        {/* FOMO Alert in its own dedicated container */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-4 shadow-sm">
+            <p className="text-red-800 text-sm font-medium">
+              🔥 <span className="font-bold">FOMO Alert:</span> These great jobs filled up fast! 
+              Don't miss the next batch—check back daily for fresh opportunities.
+            </p>
+          </div>
         </div>
       </div>
       
