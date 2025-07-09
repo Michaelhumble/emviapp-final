@@ -33,7 +33,8 @@ const FeatureGate = ({
       free: 0,
       basic: 1,
       professional: 2,
-      premium: 3
+      premium: 3,
+      diamond: 4
     };
     return tiers[tier] || 0;
   };

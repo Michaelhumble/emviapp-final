@@ -4,14 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import NailListingsSection from './NailListingsSection';
-import HairListingsSection from './HairListingsSection';
-import BarberListingsSection from './BarberListingsSection';
-import MakeupListingsSection from './MakeupListingsSection';
-import SkincareListingsSection from './SkincareListingsSection';
-import TattooListingsSection from './TattooListingsSection';
-import EyebrowLashListingsSection from './EyebrowLashListingsSection';
-import MassageListingsSection from './MassageListingsSection';
+import IndustryPreviewSection from './IndustryPreviewSection';
 
 const BeautyExchangeSection = () => {
   // Sparkle animation keyframes
@@ -236,46 +229,119 @@ const BeautyExchangeSection = () => {
           </motion.div>
         </div>
 
-        {/* Preview sections for Home page - No job cards, only CTAs */}
+        {/* Industry Preview Sections */}
         <div className="space-y-16">
           {/* Nail Jobs Preview */}
-          <motion.div 
-            className="text-center bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-8 md:p-12 border border-pink-100"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gray-800 mb-4">
-              🔥 Hot Nail Jobs Available Now
-            </h3>
-            <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
-              Real Vietnamese nail salon jobs with top salaries ($1,200-$2,500+/week). Featured and Premium listings updated daily.
-            </p>
-            <Link to="/jobs">
-              <Button className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                See Latest Nail Jobs ✨
-              </Button>
-            </Link>
-          </motion.div>
+          <IndustryPreviewSection
+            industryName="Nail"
+            displayName="Nail Tech"
+            jobs={[
+              {
+                id: "nail-1",
+                title: "TIM THỢ NAILS – Clawson, MI",
+                location: "Clawson, MI",
+                salary: "$1,200–$1,800/tuần",
+                type: "gold",
+                summary: "Khu Downtown, khách Mỹ trắng, tip hậu",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png"
+              },
+              {
+                id: "nail-2", 
+                title: "TIM THỢ NAILS – Humble, TX",
+                location: "Humble, TX",
+                salary: ">$2,000/tuần",
+                type: "gold",
+                summary: "Tiệm lớn nhất, chuyên design, 60 người",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png"
+              },
+              {
+                id: "nail-3",
+                title: "Houston Premium Nails", 
+                location: "Houston, TX",
+                salary: "$800-$1,000/tuần",
+                type: "premium",
+                summary: "Full/part time, không cạnh tranh, vui vẻ",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png"
+              },
+              {
+                id: "nail-4",
+                title: "Lake Tahoe Nails",
+                location: "South Lake Tahoe, CA", 
+                salary: "$1,600-$2,500+/tuần",
+                type: "gold",
+                summary: "Khách du lịch, giá cao, tip $3,000+/tháng",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png"
+              }
+            ]}
+            routePath="/jobs"
+            gradientColors="from-pink-50 to-purple-50"
+            icon="💅"
+          />
 
-          {/* Other Beauty Industries Preview */}
+          {/* Hair Stylist Preview */}
+          <IndustryPreviewSection
+            industryName="Hair"
+            displayName="Hair Stylist"
+            jobs={[
+              {
+                id: "hair-1",
+                title: "Senior Hair Stylist – Beverly Hills",
+                location: "Beverly Hills, CA",
+                salary: "$80,000-$120,000/year",
+                type: "gold",
+                summary: "Luxury salon, celebrity clientele, commission + tips",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated-hair-1.png"
+              },
+              {
+                id: "hair-2",
+                title: "Color Specialist – Manhattan",
+                location: "New York, NY", 
+                salary: "$60,000-$90,000/year",
+                type: "premium",
+                summary: "High-end salon, expert colorist needed",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated-hair-2.png"
+              },
+              {
+                id: "hair-3",
+                title: "Hair Stylist – Miami Beach",
+                location: "Miami, FL",
+                salary: "$45,000-$70,000/year", 
+                type: "premium",
+                summary: "Beachfront salon, fashion-forward styles",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated-hair-3.png"
+              },
+              {
+                id: "hair-4",
+                title: "Master Stylist – Austin",
+                location: "Austin, TX",
+                salary: "$50,000-$75,000/year",
+                type: "gold", 
+                summary: "Creative salon, music scene, artistic freedom",
+                imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated-hair-4.png"
+              }
+            ]}
+            routePath="/jobs/hair"
+            gradientColors="from-blue-50 to-indigo-50"
+            icon="✂️"
+          />
+
+          {/* All Industries CTA */}
           <motion.div 
-            className="text-center bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 md:p-12 border border-blue-100"
+            className="text-center bg-gradient-to-br from-gray-50 to-slate-100 rounded-3xl p-8 md:p-12 border border-gray-200"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
             <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gray-800 mb-4">
-              💼 All Beauty Industries
+              🏢 Every Beauty Industry
             </h3>
             <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
-              Hair, Barber, Makeup, Skincare, Tattoo, Eyebrow & Lash, Massage, and more. Discover opportunities across the entire beauty industry.
+              Barber, Makeup, Skincare, Tattoo, Eyebrow & Lash, Massage, and more. Discover opportunities across the entire beauty ecosystem.
             </p>
             <Link to="/jobs">
-              <Button variant="outline" className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300">
-                Explore All Jobs 🚀
+              <Button variant="outline" className="border-2 border-gray-400 text-gray-700 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300">
+                Explore All Industries 🚀
               </Button>
             </Link>
           </motion.div>

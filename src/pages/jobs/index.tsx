@@ -10,6 +10,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
 import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
+import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
@@ -175,6 +176,9 @@ const JobsPage = () => {
         </section>
 
         <div className="space-y-8">
+          {/* Diamond Plan - Always at Top */}
+          <DiamondPlanBlock spotsLeft={1} maxSpots={3} />
+          
           {/* FOMO Nail Jobs Section - Always Show */}
           <FOMONailJobsSection />
           

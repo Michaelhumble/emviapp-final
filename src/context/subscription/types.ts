@@ -1,5 +1,5 @@
 
-export type PlanTier = 'free' | 'basic' | 'professional' | 'premium';
+export type PlanTier = 'free' | 'basic' | 'professional' | 'premium' | 'diamond';
 
 export interface SubscriptionPlan {
   id: string;

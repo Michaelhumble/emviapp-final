@@ -55,6 +55,24 @@ export const basePlans: SubscriptionPlan[] = [
       "Email notifications",
       "AI-powered recommendations"
     ]
+  },
+  {
+    id: "diamond",
+    name: "Diamond Exclusive",
+    price: 9999,
+    tier: "diamond",
+    features: [
+      "Everything in Premium",
+      "VIP Premium Placement",
+      "Personal Account Manager",
+      "Custom Branding Options",
+      "Unlimited Featured Listings",
+      "Advanced Analytics Dashboard",
+      "Priority Phone Support",
+      "Exclusive Industry Events",
+      "White-glove Service",
+      "Custom Integration Support"
+    ]
   }
 ];
 
