@@ -3,6 +3,9 @@ import { Job } from "@/types/job";
 import BilingualJobCard from "@/components/jobs/BilingualJobCard";
 import MobileJobsLayout from "./mobile/MobileJobsLayout";
 import { useState } from "react";
+import { JobDetailModal } from "./JobDetailModal";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 
 interface UnifiedJobFeedProps {
   jobs: Job[];
@@ -18,6 +21,27 @@ const UnifiedJobFeed = ({
   renewalJobId 
 }: UnifiedJobFeedProps) => {
   const [expirations] = useState<Record<string, boolean>>({});
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleViewDetails = (job: Job) => {
+    setSelectedJob(job);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleEditJob = (job: Job) => {
+    // Only allow editing if user owns the job
+    if (user && user.id === job.user_id) {
+      navigate(`/jobs/edit/${job.id}`);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedJob(null);
+  };
 
   // Add defensive checks
   if (!jobs || !Array.isArray(jobs)) {
@@ -56,6 +80,8 @@ const UnifiedJobFeed = ({
           onRenew={onRenew}
           isRenewing={isRenewing}
           renewalJobId={renewalJobId}
+          onViewDetails={handleViewDetails}
+          onEditJob={handleEditJob}
         />
 
         {/* Desktop Layout */}
@@ -65,13 +91,22 @@ const UnifiedJobFeed = ({
               <BilingualJobCard
                 key={job.id}
                 job={job}
-                onViewDetails={() => {}}
+                onViewDetails={() => handleViewDetails(job)}
                 onRenew={() => onRenew(job)}
                 isRenewing={isRenewing && renewalJobId === job.id}
               />
             ))}
           </div>
         </div>
+
+        {/* Job Detail Modal */}
+        {selectedJob && (
+          <JobDetailModal
+            job={selectedJob}
+            isOpen={isDetailModalOpen}
+            onClose={handleCloseModal}
+          />
+        )}
       </div>
     );
   } catch (error) {

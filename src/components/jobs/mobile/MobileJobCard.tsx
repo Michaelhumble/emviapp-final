@@ -1,8 +1,9 @@
 import React from 'react';
 import { Job } from '@/types/job';
-import { MapPin, DollarSign, Clock, Star, Crown } from 'lucide-react';
+import { MapPin, DollarSign, Clock, Star, Crown, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth';
 
 interface MobileJobCardProps {
   job: Job | any; // Allow expired job type too
@@ -11,6 +12,8 @@ interface MobileJobCardProps {
   isRenewing: boolean;
   isExpired?: boolean;
   expanded?: boolean;
+  onEditJob?: () => void;
+  showEditButton?: boolean;
 }
 
 const MobileJobCard: React.FC<MobileJobCardProps> = ({
@@ -19,7 +22,9 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   onRenew,
   isRenewing,
   isExpired = false,
-  expanded = false
+  expanded = false,
+  onEditJob,
+  showEditButton = false
 }) => {
   const getPricingTierDisplay = () => {
     const tier = job.pricing_tier?.toLowerCase() || 'free';
@@ -46,6 +51,8 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   };
 
   const pricingDisplay = getPricingTierDisplay();
+  const { user } = useAuth();
+  const isOwner = user?.id === job.user_id;
 
   // Format salary display
   const getSalary = () => {
@@ -162,8 +169,8 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
           </div>
         )}
 
-        {/* Action Button */}
-        <div className="pt-2">
+        {/* Action Buttons */}
+        <div className="pt-2 space-y-2">
           {isExpired ? (
             <Button 
               variant="outline" 
@@ -174,13 +181,27 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
               Position Filled
             </Button>
           ) : (
-            <Button 
-              onClick={expanded ? () => {} : onViewDetails}
-              size="sm"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs"
-            >
-              {expanded ? 'Apply Now' : 'View Details'}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={expanded ? () => {} : onViewDetails}
+                size="sm"
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-xs"
+              >
+                {expanded ? 'Apply Now' : 'View Details'}
+              </Button>
+              
+              {isOwner && onEditJob && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onEditJob}
+                  className="px-3"
+                  title="Edit Job"
+                >
+                  <Edit className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
 

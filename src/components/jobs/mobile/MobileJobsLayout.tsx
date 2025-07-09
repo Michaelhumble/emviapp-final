@@ -22,13 +22,17 @@ interface MobileJobsLayoutProps {
   onRenew: (job: Job) => void;
   isRenewing: boolean;
   renewalJobId: string | null;
+  onViewDetails: (job: Job) => void;
+  onEditJob: (job: Job) => void;
 }
 
 const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
   jobs,
   onRenew,
   isRenewing,
-  renewalJobId
+  renewalJobId,
+  onViewDetails,
+  onEditJob
 }) => {
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [activeIndustry, setActiveIndustry] = useState<string>('All');
@@ -72,8 +76,9 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
     'Brow Tech'
   ];
 
-  const handleJobTap = (jobId: string) => {
-    setExpandedJob(expandedJob === jobId ? null : jobId);
+  const handleJobTap = (job: Job | any) => {
+    // For mobile, directly open view details modal
+    onViewDetails(job);
   };
 
   // Get industry icon helper
@@ -114,7 +119,8 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
               <div key={job.id} className="flex-shrink-0 w-64">
                 <MobileJobCard 
                   job={job}
-                  onViewDetails={() => handleJobTap(job.id)}
+                  onViewDetails={() => handleJobTap(job)}
+                  onEditJob={() => onEditJob(job)}
                   onRenew={() => onRenew(job as Job)}
                   isRenewing={isRenewing && renewalJobId === job.id}
                   isExpired={'expired_at' in job}
@@ -127,7 +133,8 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
               <div key={job.id} className="flex-shrink-0 w-64">
                 <MobileJobCard 
                   job={job}
-                  onViewDetails={() => handleJobTap(job.id)}
+                  onViewDetails={() => handleJobTap(job)}
+                  onEditJob={() => onEditJob(job)}
                   onRenew={() => {}}
                   isRenewing={false}
                   isExpired={true}
@@ -147,7 +154,7 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
               <MobileCompactJobCard
                 key={job.id}
                 job={job}
-                onTap={() => handleJobTap(job.id)}
+                onTap={() => handleJobTap(job)}
                 isExpanded={expandedJob === job.id}
                 isExpired={'expired_at' in job}
               />

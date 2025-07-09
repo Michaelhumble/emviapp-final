@@ -8,7 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
-import CleanJobForm from '@/components/posting/job/CleanJobForm';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const EditJobPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -17,6 +20,15 @@ const EditJobPage: React.FC = () => {
   const [jobData, setJobData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    location: '',
+    category: '',
+    compensation_details: '',
+    requirements: '',
+    compensation_type: ''
+  });
 
   useEffect(() => {
     fetchJobData();
@@ -58,6 +70,18 @@ const EditJobPage: React.FC = () => {
 
       console.log('✅ Job data fetched:', data);
       setJobData(data);
+      
+      // Initialize form with job data
+      setFormData({
+        title: data.title || '',
+        description: data.description || '',
+        location: data.location || '',
+        category: data.category || '',
+        compensation_details: data.compensation_details || '',
+        requirements: data.requirements || '',
+        compensation_type: data.compensation_type || ''
+      });
+      
       setLoading(false);
       
     } catch (error) {
@@ -67,7 +91,15 @@ const EditJobPage: React.FC = () => {
     }
   };
 
-  const handleJobUpdate = async (formData: any) => {
+  const handleFormChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleJobUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!jobId || !user) return;
 
     try {
@@ -76,14 +108,13 @@ const EditJobPage: React.FC = () => {
       const { error: updateError } = await supabase
         .from('jobs')
         .update({
-          title: formData.jobTitle,
+          title: formData.title,
           description: formData.description,
           location: formData.location,
           category: formData.category,
-          compensation_type: formData.compensationType,
-          compensation_details: formData.compensationDetails,
+          compensation_details: formData.compensation_details,
           requirements: formData.requirements,
-          contact_info: formData.contactInfo || {},
+          compensation_type: formData.compensation_type,
           updated_at: new Date().toISOString()
         })
         .eq('id', jobId)
@@ -201,40 +232,116 @@ const EditJobPage: React.FC = () => {
                 </p>
               </CardHeader>
               <CardContent>
-                {/* Note: CleanJobForm would need to be extended to support edit mode with pre-filled data */}
-                <Alert className="mb-6 border-blue-200 bg-blue-50">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-800">
-                    <p><strong>Current Job Details:</strong></p>
-                    <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                      <li><strong>Title:</strong> {jobData.title}</li>
-                      <li><strong>Category:</strong> {jobData.category}</li>
-                      <li><strong>Location:</strong> {jobData.location || 'Not specified'}</li>
-                      <li><strong>Status:</strong> {jobData.status}</li>
-                      <li><strong>Pricing Tier:</strong> {jobData.pricing_tier}</li>
-                    </ul>
-                    <p className="mt-2 text-sm">
-                      Note: Job editing form integration is in progress. For now, please contact support to edit your job post.
-                    </p>
-                  </AlertDescription>
-                </Alert>
-                
-                <div className="text-center space-y-4">
-                  <Button
-                    onClick={() => navigate('/contact')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    Contact Support for Edits
-                  </Button>
-                  <div>
-                    <Button
-                      onClick={() => navigate('/jobs')}
-                      variant="outline"
+                <form onSubmit={handleJobUpdate} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Job Title *</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => handleFormChange('title', e.target.value)}
+                      placeholder="e.g., Nail Technician"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category *</Label>
+                    <Select 
+                      value={formData.category} 
+                      onValueChange={(value) => handleFormChange('category', value)}
                     >
-                      Back to Jobs
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Nail Tech">Nail Tech</SelectItem>
+                        <SelectItem value="Hair Stylist">Hair Stylist</SelectItem>
+                        <SelectItem value="Barber">Barber</SelectItem>
+                        <SelectItem value="Massage Therapist">Massage Therapist</SelectItem>
+                        <SelectItem value="Esthetician">Esthetician</SelectItem>
+                        <SelectItem value="Makeup Artist">Makeup Artist</SelectItem>
+                        <SelectItem value="Tattoo Artist">Tattoo Artist</SelectItem>
+                        <SelectItem value="Lash Tech">Lash Tech</SelectItem>
+                        <SelectItem value="Brow Tech">Brow Tech</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => handleFormChange('location', e.target.value)}
+                      placeholder="e.g., Houston, TX"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="compensation_type">Employment Type</Label>
+                    <Select 
+                      value={formData.compensation_type} 
+                      onValueChange={(value) => handleFormChange('compensation_type', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select employment type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Contract">Contract</SelectItem>
+                        <SelectItem value="Commission">Commission</SelectItem>
+                        <SelectItem value="Booth Rental">Booth Rental</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="compensation_details">Compensation Details</Label>
+                    <Input
+                      id="compensation_details"
+                      value={formData.compensation_details}
+                      onChange={(e) => handleFormChange('compensation_details', e.target.value)}
+                      placeholder="e.g., $20-25/hour + tips"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Job Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => handleFormChange('description', e.target.value)}
+                      placeholder="Describe the position, responsibilities, and work environment..."
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="requirements">Requirements</Label>
+                    <Textarea
+                      id="requirements"
+                      value={formData.requirements}
+                      onChange={(e) => handleFormChange('requirements', e.target.value)}
+                      placeholder="List required qualifications, experience, and skills..."
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button type="submit" className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
+                      Update Job
+                    </Button>
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      onClick={() => navigate('/jobs')}
+                      className="flex-1"
+                    >
+                      Cancel
                     </Button>
                   </div>
-                </div>
+                </form>
               </CardContent>
             </Card>
           </div>
