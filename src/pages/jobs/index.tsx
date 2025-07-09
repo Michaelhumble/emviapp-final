@@ -140,18 +140,18 @@ const JobsPage = () => {
 
   try {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="w-full">
         {/* Hero Trust Section */}
-        <section className="w-full bg-gradient-to-r from-[#fff2df] via-[#f9eaff] to-[#e6f2ff] py-12 mb-10 rounded-3xl shadow-xl flex flex-col items-center text-center max-w-4xl mx-auto border border-[#e7d1ff] relative overflow-hidden">
+        <section className="w-full bg-gradient-to-r from-[#fff2df] via-[#f9eaff] to-[#e6f2ff] py-12 mb-10 shadow-xl flex flex-col items-center text-center max-w-6xl mx-auto border border-[#e7d1ff] relative overflow-hidden mx-4 lg:mx-auto rounded-3xl">
           <div className="absolute top-4 right-4 text-5xl animate-pulse select-none pointer-events-none">✨</div>
           <h1 className="text-4xl md:text-5xl font-extrabold text-[#8a55e6] mb-3 tracking-tight drop-shadow-lg leading-tight">
             America's Most Trusted Beauty Job Community.<br className="hidden md:inline" /> Powered by AI & Heart.
           </h1>
-          <p className="text-lg md:text-xl text-[#54362e] font-medium mb-3 max-w-xl mx-auto">
+          <p className="text-lg md:text-xl text-[#54362e] font-medium mb-3 max-w-xl mx-auto px-4">
             Discover new job opportunities, connect with caring salons and artists, and join a network built for YOU.<br/>  
             Bilingual support, secure by design, and always putting the beauty community first.
           </p>
-          <div className="flex flex-wrap gap-2 justify-center mb-3">
+          <div className="flex flex-wrap gap-2 justify-center mb-3 px-4">
             <span className="bg-gradient-to-r from-purple-100 to-purple-300 text-purple-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-purple-200">AI-Powered, Human-Centered</span>
             <span className="bg-gradient-to-r from-pink-100 to-pink-300 text-pink-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-pink-200">Vietnamese Language Support</span>
             <span className="bg-gradient-to-r from-yellow-100 to-yellow-300 text-yellow-900 px-4 py-1 rounded-full font-semibold text-xs shadow border border-yellow-200">No Bots, No Spam</span>
@@ -164,46 +164,36 @@ const JobsPage = () => {
           >
             Post Your First Job FREE ✨
           </button>
-          <p className="text-xs text-[#88684c] mt-4 italic">
+          <p className="text-xs text-[#88684c] mt-4 italic px-4">
             "I found my dream team here—and felt supported from day one."<br/>
             <span className="font-semibold">— Linda N., Salon Owner, Houston TX</span>
           </p>
-          <p className="mt-2 text-sm text-[#755c8a] font-medium">
+          <p className="mt-2 text-sm text-[#755c8a] font-medium px-4">
             Built by beauty pros. For the community. With AI & heart. 💜
           </p>
         </section>
 
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-4">Latest Job Opportunities</h2>
-          <p className="text-gray-600">{jobs?.length || 0} jobs available</p>
-        </div>
-
-        {!jobs || jobs.length === 0 ? (
-          <>
-            {console.log('📭 [JOBS-PAGE] Rendering empty state - no jobs found')}
-            <JobEmptyState />
-          </>
-        ) : (
-          <>
-            {console.log('📋 [JOBS-PAGE] Rendering jobs grid with jobs:', jobs.map(j => ({ id: j.id, title: j.title })))}
-            
-            {/* Jobs Grid Container with proper spacing */}
-            <div className="relative z-10 mb-20">
-              <JobsGrid
-                jobs={jobs}
-                expirations={{}}
-                onRenew={handleRenew}
-                isRenewing={false}
-                renewalJobId={null}
-              />
-            </div>
-            
-            {/* Separator and Expired Jobs Section */}
-            <div className="relative z-0 mt-24 mb-16">
-              <ExpiredJobsSection />
-            </div>
-          </>
-        )}
+{(() => {
+          if (!jobs || jobs.length === 0) {
+            console.log('📭 [JOBS-PAGE] Rendering empty state - no jobs found');
+            return (
+              <div className="container mx-auto px-4 py-8">
+                <JobEmptyState />
+              </div>
+            );
+          }
+          
+          console.log('📋 [JOBS-PAGE] Rendering unified jobs layout with jobs:', jobs.map(j => ({ id: j.id, title: j.title })));
+          return (
+            <JobsGrid
+              jobs={jobs}
+              expirations={{}}
+              onRenew={handleRenew}
+              isRenewing={false}
+              renewalJobId={null}
+            />
+          );
+        })()}
       </div>
     );
   } catch (renderError) {

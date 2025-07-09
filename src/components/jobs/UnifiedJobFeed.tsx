@@ -1,13 +1,10 @@
 
 import { Job } from "@/types/job";
-import BilingualJobCard from "@/components/jobs/BilingualJobCard";
-import MobileJobsLayout from "./mobile/MobileJobsLayout";
-import DesktopJobsLayout from "./desktop/DesktopJobsLayout";
 import { useState } from "react";
 import { JobDetailModal } from "./JobDetailModal";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { useIsMobile } from "@/hooks/use-mobile";
+import UnifiedResponsiveJobsLayout from "./UnifiedResponsiveJobsLayout";
 
 interface UnifiedJobFeedProps {
   jobs: Job[];
@@ -73,33 +70,21 @@ const UnifiedJobFeed = ({
     );
   }
 
-  const isMobile = useIsMobile();
-
   try {
     return (
       <div className="w-full">
-        {/* Mobile/Tablet Layout (up to lg breakpoint) */}
-        {isMobile ? (
-          <MobileJobsLayout
-            jobs={jobs}
-            onRenew={onRenew}
-            isRenewing={isRenewing}
-            renewalJobId={renewalJobId}
-            onViewDetails={handleViewDetails}
-            onEditJob={handleEditJob}
-          />
-        ) : (
-          /* Desktop Power Layout (lg and above) */
-          <DesktopJobsLayout
-            jobs={jobs}
-            onRenew={onRenew}
-            isRenewing={isRenewing}
-            renewalJobId={renewalJobId}
-          />
-        )}
+        {/* Unified Responsive Layout - Same design across ALL devices */}
+        <UnifiedResponsiveJobsLayout
+          jobs={jobs}
+          onRenew={onRenew}
+          isRenewing={isRenewing}
+          renewalJobId={renewalJobId}
+          onViewDetails={handleViewDetails}
+          onEditJob={handleEditJob}
+        />
 
-        {/* Job Detail Modal - For mobile fallback */}
-        {selectedJob && isMobile && (
+        {/* Job Detail Modal - Universal */}
+        {selectedJob && (
           <JobDetailModal
             job={selectedJob}
             isOpen={isDetailModalOpen}

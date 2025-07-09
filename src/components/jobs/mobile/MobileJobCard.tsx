@@ -96,7 +96,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-64'}`}>
+    <div className={`bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border-2 border-gray-200 hover:border-purple-300 overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}>
       {/* Image Section */}
       <div className="relative">
         <img 
@@ -132,10 +132,10 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
       <div className="p-4">
         {/* Title and Company */}
         <div className="mb-3">
-          <h3 className={`font-bold text-gray-900 mb-1 ${expanded ? 'text-lg' : 'text-sm'} line-clamp-2`}>
+          <h3 className={`font-black text-gray-900 mb-1 ${expanded ? 'text-lg' : 'text-base'} line-clamp-2 leading-tight`}>
             {job.vietnamese_title || job.title || 'Untitled Job'}
           </h3>
-          <p className={`font-medium text-gray-800 ${expanded ? 'text-base' : 'text-xs'}`}>
+          <p className={`font-bold text-gray-900 ${expanded ? 'text-base' : 'text-sm'}`}>
             {job.company || 'Company Name'}
           </p>
         </div>
@@ -143,19 +143,19 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         {/* Job details */}
         <div className="space-y-2 mb-4">
           <div className="flex items-center">
-            <MapPin className="h-3 w-3 mr-1 text-gray-600" />
-            <span className="text-xs font-medium text-gray-800">{job.location || 'Location TBD'}</span>
+            <MapPin className="h-4 w-4 mr-2 text-gray-700" />
+            <span className="text-sm font-bold text-gray-900">{job.location || 'Location TBD'}</span>
           </div>
           
           <div className="flex items-center">
-            <DollarSign className="h-3 w-3 mr-1 text-green-600" />
-            <span className="text-xs font-bold text-green-600">{getSalary()}</span>
+            <DollarSign className="h-4 w-4 mr-2 text-green-700" />
+            <span className="text-sm font-black text-green-700">{getSalary()}</span>
           </div>
           
           {job.employment_type && (
             <div className="flex items-center">
-              <Clock className="h-3 w-3 mr-1 text-gray-600" />
-              <span className="text-xs font-medium text-gray-800">{job.employment_type}</span>
+              <Clock className="h-4 w-4 mr-2 text-gray-700" />
+              <span className="text-sm font-bold text-gray-900">{job.employment_type}</span>
             </div>
           )}
         </div>
@@ -163,29 +163,29 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         {/* Description - only in expanded mode */}
         {expanded && (
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-800 line-clamp-3">
+            <p className="text-base font-bold text-gray-900 line-clamp-3 leading-relaxed">
               {job.vietnamese_description || job.description || 'Job description not available.'}
             </p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="pt-2 space-y-2">
+        <div className="pt-3 space-y-3">
           {isExpired ? (
             <Button 
               variant="outline" 
-              size="sm" 
+              size="default" 
               disabled 
-              className="w-full text-xs"
+              className="w-full text-sm font-bold border-2"
             >
               Position Filled
             </Button>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button 
                 onClick={expanded ? () => {} : onViewDetails}
-                size="sm"
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-xs"
+                size="default"
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-3 shadow-lg"
               >
                 {expanded ? 'Apply Now' : 'View Details'}
               </Button>
@@ -193,12 +193,12 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
               {isOwner && onEditJob && (
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="default"
                   onClick={onEditJob}
-                  className="px-3"
+                  className="px-4 border-2 hover:bg-gray-100 font-bold"
                   title="Edit Job"
                 >
-                  <Edit className="h-3 w-3" />
+                  <Edit className="h-4 w-4" />
                 </Button>
               )}
             </div>
