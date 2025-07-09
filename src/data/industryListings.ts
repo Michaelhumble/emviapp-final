@@ -495,7 +495,7 @@ export const industryConfig = {
     listings: nailListings,
     routePath: '/nails',
     gradientColors: 'from-pink-100 via-purple-50 to-indigo-100',
-    icon: '💅'
+    icon: 'Sparkles'
   },
   hair: {
     name: 'hair',
@@ -503,7 +503,7 @@ export const industryConfig = {
     listings: hairListings,
     routePath: '/hair',
     gradientColors: 'from-amber-100 via-orange-50 to-red-100',
-    icon: '💇'
+    icon: 'Scissors'
   },
   barber: {
     name: 'barber',
@@ -511,7 +511,7 @@ export const industryConfig = {
     listings: barberListings,
     routePath: '/barber',
     gradientColors: 'from-blue-100 via-indigo-50 to-purple-100',
-    icon: '💈'
+    icon: 'Scissors'
   },
   massage: {
     name: 'massage',
@@ -519,7 +519,7 @@ export const industryConfig = {
     listings: massageListings,
     routePath: '/massage',
     gradientColors: 'from-green-100 via-emerald-50 to-teal-100',
-    icon: '💆'
+    icon: 'Hand'
   },
   skincare: {
     name: 'skincare',
@@ -527,7 +527,7 @@ export const industryConfig = {
     listings: skincareListings,
     routePath: '/skincare',
     gradientColors: 'from-rose-100 via-pink-50 to-purple-100',
-    icon: '🧴'
+    icon: 'Droplets'
   },
   makeup: {
     name: 'makeup',
@@ -535,7 +535,7 @@ export const industryConfig = {
     listings: makeupListings,
     routePath: '/makeup',
     gradientColors: 'from-fuchsia-100 via-pink-50 to-rose-100',
-    icon: '💄'
+    icon: 'Palette'
   },
   browsLashes: {
     name: 'brows-lashes',
@@ -543,7 +543,7 @@ export const industryConfig = {
     listings: browsLashesListings,
     routePath: '/brows-lashes',
     gradientColors: 'from-violet-100 via-purple-50 to-indigo-100',
-    icon: '👁️'
+    icon: 'Eye'
   },
   tattoo: {
     name: 'tattoo',
@@ -551,6 +551,6 @@ export const industryConfig = {
     listings: tattooListings,
     routePath: '/tattoo',
     gradientColors: 'from-gray-100 via-slate-50 to-zinc-100',
-    icon: '🎨'
+    icon: 'Brush'
   }
 };

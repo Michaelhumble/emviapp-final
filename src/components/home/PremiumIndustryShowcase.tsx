@@ -4,9 +4,30 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, DollarSign, Crown, Star, Phone, LockIcon } from 'lucide-react';
+import { ArrowRight, MapPin, DollarSign, Crown, Star, Phone, LockIcon, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
+
+// Icon mapping for professional icons
+const iconMap = {
+  'Sparkles': Sparkles,
+  'Scissors': Scissors,
+  'Hand': Hand,
+  'Droplets': Droplets,
+  'Palette': Palette,
+  'Eye': Eye,
+  'Brush': Brush,
+};
+
+interface IndustryIconProps {
+  iconName: string;
+  className?: string;
+}
+
+const IndustryIcon: React.FC<IndustryIconProps> = ({ iconName, className }) => {
+  const IconComponent = iconMap[iconName as keyof typeof iconMap] || Sparkles;
+  return <IconComponent className={className} />;
+};
 
 interface IndustryListing {
   id: string;
@@ -107,7 +128,7 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 flex items-center justify-center">
-            <span className="text-5xl mr-4">{icon}</span>
+            <IndustryIcon iconName={icon} className="w-12 h-12 mr-4 text-gray-700" />
             {displayName} Listings — Premium Spaces
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
