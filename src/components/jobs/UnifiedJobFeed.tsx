@@ -1,6 +1,7 @@
 
 import { Job } from "@/types/job";
-import JobGrid from "./JobGrid";
+import BilingualJobCard from "@/components/jobs/BilingualJobCard";
+import MobileJobsLayout from "./mobile/MobileJobsLayout";
 import { useState } from "react";
 
 interface UnifiedJobFeedProps {
@@ -37,14 +38,6 @@ const UnifiedJobFeed = ({
     }))
   );
 
-  console.log('🆓 [UNIFIED-FEED] FREE jobs to display:', 
-    jobs.filter(j => j.pricing_tier === 'free').map(j => ({
-      id: j.id,
-      title: j.title,
-      pricing_tier: j.pricing_tier
-    }))
-  );
-
   if (jobs.length === 0) {
     console.log('⚠️ [UNIFIED-FEED] No jobs to display');
     return (
@@ -57,13 +50,28 @@ const UnifiedJobFeed = ({
   try {
     return (
       <div className="space-y-6">
-        <JobGrid
+        {/* Mobile Layout */}
+        <MobileJobsLayout
           jobs={jobs}
-          expirations={expirations}
           onRenew={onRenew}
           isRenewing={isRenewing}
           renewalJobId={renewalJobId}
         />
+
+        {/* Desktop Layout */}
+        <div className="hidden md:block">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {jobs.map((job) => (
+              <BilingualJobCard
+                key={job.id}
+                job={job}
+                onViewDetails={() => {}}
+                onRenew={() => onRenew(job)}
+                isRenewing={isRenewing && renewalJobId === job.id}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     );
   } catch (error) {
