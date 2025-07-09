@@ -8,11 +8,11 @@ export function useIsMobile(): boolean {
     // Check if window is available (client-side)
     if (typeof window === 'undefined') return;
     
-    // Initial check
-    setIsMobile(window.innerWidth < 768);
+    // Initial check - Desktop is 1024px+, Mobile/Tablet is below that
+    setIsMobile(window.innerWidth < 1024);
     
-    // Create the media query list
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    // Create the media query list for desktop breakpoint
+    const mediaQuery = window.matchMedia('(max-width: 1023px)');
     
     // Define the handler
     const handleResize = (e: MediaQueryListEvent) => {

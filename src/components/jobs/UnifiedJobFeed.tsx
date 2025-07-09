@@ -2,10 +2,12 @@
 import { Job } from "@/types/job";
 import BilingualJobCard from "@/components/jobs/BilingualJobCard";
 import MobileJobsLayout from "./mobile/MobileJobsLayout";
+import DesktopJobsLayout from "./desktop/DesktopJobsLayout";
 import { useState } from "react";
 import { JobDetailModal } from "./JobDetailModal";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface UnifiedJobFeedProps {
   jobs: Job[];
@@ -71,36 +73,33 @@ const UnifiedJobFeed = ({
     );
   }
 
+  const isMobile = useIsMobile();
+
   try {
     return (
-      <div className="space-y-6">
-        {/* Mobile Layout */}
-        <MobileJobsLayout
-          jobs={jobs}
-          onRenew={onRenew}
-          isRenewing={isRenewing}
-          renewalJobId={renewalJobId}
-          onViewDetails={handleViewDetails}
-          onEditJob={handleEditJob}
-        />
+      <div className="w-full">
+        {/* Mobile/Tablet Layout (up to lg breakpoint) */}
+        {isMobile ? (
+          <MobileJobsLayout
+            jobs={jobs}
+            onRenew={onRenew}
+            isRenewing={isRenewing}
+            renewalJobId={renewalJobId}
+            onViewDetails={handleViewDetails}
+            onEditJob={handleEditJob}
+          />
+        ) : (
+          /* Desktop Power Layout (lg and above) */
+          <DesktopJobsLayout
+            jobs={jobs}
+            onRenew={onRenew}
+            isRenewing={isRenewing}
+            renewalJobId={renewalJobId}
+          />
+        )}
 
-        {/* Desktop Layout */}
-        <div className="hidden md:block">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => (
-              <BilingualJobCard
-                key={job.id}
-                job={job}
-                onViewDetails={() => handleViewDetails(job)}
-                onRenew={() => onRenew(job)}
-                isRenewing={isRenewing && renewalJobId === job.id}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Job Detail Modal */}
-        {selectedJob && (
+        {/* Job Detail Modal - For mobile fallback */}
+        {selectedJob && isMobile && (
           <JobDetailModal
             job={selectedJob}
             isOpen={isDetailModalOpen}

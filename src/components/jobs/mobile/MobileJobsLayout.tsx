@@ -112,11 +112,11 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
           </span>
         </div>
 
-        {/* Horizontal scrolling for full photo cards */}
+        {/* Horizontal scrolling for full photo cards - Responsive sizing */}
         <div className="overflow-x-auto pb-4 scrollbar-hide">
           <div className="flex space-x-4 px-4" style={{ minWidth: `${displayJobs.length * 280}px` }}>
             {displayJobs.map((job) => (
-              <div key={job.id} className="flex-shrink-0 w-64">
+              <div key={job.id} className="flex-shrink-0 w-64 sm:w-72 md:w-80">
                 <MobileJobCard 
                   job={job}
                   onViewDetails={() => handleJobTap(job)}
@@ -176,7 +176,7 @@ const MobileJobsLayout: React.FC<MobileJobsLayoutProps> = ({
   };
 
   return (
-    <div className="block md:hidden"> {/* Only show on mobile */}
+    <div className="block lg:hidden"> {/* Mobile/Tablet Experience - up to lg breakpoint */}
       {/* Industry tabs */}
       <MobileIndustryCarousel 
         industries={industries}
