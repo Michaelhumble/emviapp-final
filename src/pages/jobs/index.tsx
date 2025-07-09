@@ -9,6 +9,7 @@ import { Job } from '@/types/job';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
+import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
@@ -173,27 +174,33 @@ const JobsPage = () => {
           </p>
         </section>
 
-{(() => {
-          if (!jobs || jobs.length === 0) {
-            console.log('📭 [JOBS-PAGE] Rendering empty state - no jobs found');
-            return (
-              <div className="container mx-auto px-4 py-8">
-                <JobEmptyState />
-              </div>
-            );
-          }
+        <div className="space-y-8">
+          {/* FOMO Nail Jobs Section - Always Show */}
+          <FOMONailJobsSection />
           
-          console.log('📋 [JOBS-PAGE] Rendering unified jobs layout with jobs:', jobs.map(j => ({ id: j.id, title: j.title })));
-          return (
-            <JobsGrid
-              jobs={jobs}
-              expirations={{}}
-              onRenew={handleRenew}
-              isRenewing={false}
-              renewalJobId={null}
-            />
-          );
-        })()}
+          {/* All Other Jobs */}
+          {(() => {
+            if (!jobs || jobs.length === 0) {
+              console.log('📭 [JOBS-PAGE] No regular jobs found, showing empty state');
+              return (
+                <div className="container mx-auto px-4 py-8">
+                  <JobEmptyState />
+                </div>
+              );
+            }
+            
+            console.log('📋 [JOBS-PAGE] Rendering unified jobs layout with jobs:', jobs.map(j => ({ id: j.id, title: j.title })));
+            return (
+              <JobsGrid
+                jobs={jobs}
+                expirations={{}}
+                onRenew={handleRenew}
+                isRenewing={false}
+                renewalJobId={null}
+              />
+            );
+          })()}
+        </div>
       </div>
     );
   } catch (renderError) {

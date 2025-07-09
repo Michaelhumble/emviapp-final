@@ -236,15 +236,50 @@ const BeautyExchangeSection = () => {
           </motion.div>
         </div>
 
-        {/* All listing sections */}
-        <NailListingsSection />
-        <HairListingsSection />
-        <BarberListingsSection />
-        <MakeupListingsSection />
-        <SkincareListingsSection />
-        <TattooListingsSection />
-        <EyebrowLashListingsSection />
-        <MassageListingsSection />
+        {/* Preview sections for Home page - No job cards, only CTAs */}
+        <div className="space-y-16">
+          {/* Nail Jobs Preview */}
+          <motion.div 
+            className="text-center bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-8 md:p-12 border border-pink-100"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gray-800 mb-4">
+              🔥 Hot Nail Jobs Available Now
+            </h3>
+            <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
+              Real Vietnamese nail salon jobs with top salaries ($1,200-$2,500+/week). Featured and Premium listings updated daily.
+            </p>
+            <Link to="/jobs">
+              <Button className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                See Latest Nail Jobs ✨
+              </Button>
+            </Link>
+          </motion.div>
+
+          {/* Other Beauty Industries Preview */}
+          <motion.div 
+            className="text-center bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 md:p-12 border border-blue-100"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gray-800 mb-4">
+              💼 All Beauty Industries
+            </h3>
+            <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
+              Hair, Barber, Makeup, Skincare, Tattoo, Eyebrow & Lash, Massage, and more. Discover opportunities across the entire beauty industry.
+            </p>
+            <Link to="/jobs">
+              <Button variant="outline" className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300">
+                Explore All Jobs 🚀
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
