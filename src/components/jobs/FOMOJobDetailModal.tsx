@@ -13,7 +13,7 @@ interface FOMOJob {
   location: string;
   phone: string;
   type: 'gold' | 'premium';
-  fomoLabel: string;
+  summary: string;
   imageUrl: string;
 }
 
@@ -43,16 +43,6 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
             <X className="h-4 w-4" />
           </Button>
           
-          {/* FOMO Label */}
-          <div className={`absolute -top-6 -right-6 z-10 px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg ${
-            job.fomoLabel === 'Real Job' 
-              ? 'bg-green-500' 
-              : job.fomoLabel === 'Position Just Filled'
-              ? 'bg-red-500'
-              : 'bg-orange-500'
-          }`}>
-            {job.fomoLabel}
-          </div>
 
           <DialogTitle className="text-2xl font-bold text-gray-900 pr-12">
             {job.salonName}
@@ -73,26 +63,13 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
             />
             
             {/* Tier Badge */}
-            <Badge className={`absolute top-3 left-3 font-bold ${
+            <Badge className={`absolute top-3 left-3 font-medium ${
               job.type === 'gold' 
-                ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-white' 
-                : 'bg-gradient-to-r from-purple-500 to-violet-600 text-white'
+                ? 'bg-yellow-500 text-white' 
+                : 'bg-purple-500 text-white'
             }`}>
-              {job.type === 'gold' ? '✨ GOLD FEATURED' : '👑 PREMIUM'}
+              {job.type === 'gold' ? 'Featured' : 'Premium'}
             </Badge>
-
-            {/* Verified Badge */}
-            <Badge className="absolute top-3 right-3 bg-blue-500 text-white">
-              ✓ Facebook Group
-            </Badge>
-
-            {/* Status Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-              <p className="text-white font-semibold flex items-center">
-                <Clock className="w-4 h-4 mr-2" />
-                Just Expired · Position Filled · Check Back for Similar Jobs
-              </p>
-            </div>
           </div>
 
           {/* Key Details */}
@@ -129,16 +106,16 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
               <div className="space-y-2">
                 <p className="text-lg font-bold text-green-600">📞 {job.phone}</p>
                 <p className="text-sm text-green-700">
-                  ✅ Contact details unlocked! Call now to inquire about similar positions.
+                  ✅ Contact details unlocked! Call now to apply.
                 </p>
               </div>
             ) : (
               <div className="space-y-3">
                 <p className="font-bold text-red-600">🔒 Contact details are locked</p>
                 <p className="text-sm text-red-700 mb-4">
-                  Sign in to unlock phone numbers and direct contact information for this and hundreds of other real nail salon jobs.
+                  Sign in to unlock phone numbers and direct contact information.
                 </p>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold">
+                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium">
                   Sign In to Unlock Contact Info
                 </Button>
               </div>
@@ -156,39 +133,24 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
             </p>
           </div>
 
-          {/* Additional Information */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-            <div className="flex items-center mb-3">
-              <Star className="w-5 h-5 text-yellow-600 mr-2" />
-              <h3 className="font-bold text-yellow-800">Important Note</h3>
-            </div>
-            <div className="space-y-2 text-yellow-700">
-              <p className="font-semibold">
-                ⚠️ This position has been filled, but similar opportunities are available!
-              </p>
-              <p className="text-sm">
-                • New nail salon jobs are posted daily on EmviApp<br/>
-                • Many positions offer similar or better compensation<br/>
-                • Sign up for instant notifications when new jobs match your criteria
-              </p>
-            </div>
-          </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col space-y-3">
-            <Button 
-              onClick={onClose}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3"
-            >
-              Browse Similar Jobs
-            </Button>
+          <div className="flex space-x-3">
             <Button 
               variant="outline" 
               onClick={onClose}
-              className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-bold"
+              className="flex-1"
             >
               Close
             </Button>
+            {isSignedIn && (
+              <Button 
+                onClick={onClose}
+                className="flex-1 bg-slate-900 hover:bg-slate-800 text-white"
+              >
+                Apply Now
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
