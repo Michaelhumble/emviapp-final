@@ -1,7 +1,7 @@
 // Premium Expired Jobs Data - FOMO Marketing Section
 // Using real Supabase beauty industry bucket images and authentic American salon names
 export const expiredJobsData = [
-  // Vietnamese Nail Jobs (15 jobs - shown first) - High salary, authentic American names, Vietnamese titles
+  // Vietnamese Nail Jobs (15 jobs - shown first) - High salary, English salon names, Vietnamese titles
   {
     id: 'exp-nail-1',
     title: 'Thợ Nail Có Kinh Nghiệm - Bao Lương',
@@ -13,7 +13,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Cần thợ nail có kinh nghiệm cho salon cao cấp. Lương ổn định, môi trường làm việc tốt.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/9d6f82f3-66a2-4ff3-bdd8-7b7cd561bf8f.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated.png',
     created_at: '2024-11-15',
     expired_at: '2024-11-20',
     filled_date: '2024-11-19'
@@ -22,14 +22,14 @@ export const expiredJobsData = [
     id: 'exp-nail-2',
     title: 'Thợ Nail Chính - Lương Cao',
     vietnamese_title: 'Thợ Nail Chính - Lương Cao',
-    company: 'Serenity Nail & Spa',
+    company: 'Serenity Nail Studio',
     location: 'Los Angeles, CA',
     salary: '$1,400-2,000/tuần',
     description: 'Senior nail artist position at luxury spa.',
     vietnamese_description: 'Vị trí thợ nail chính tại spa sang trọng. Lương cao, tip tốt.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (1).png',
     created_at: '2024-11-12',
     expired_at: '2024-11-18',
     filled_date: '2024-11-17'
@@ -38,14 +38,14 @@ export const expiredJobsData = [
     id: 'exp-nail-3',
     title: 'Tuyển Thợ Nail - Salon Mới',
     vietnamese_title: 'Tuyển Thợ Nail - Salon Mới',
-    company: 'Glamour Nail Studio',
+    company: 'Glamour Nail Bar',
     location: 'Chicago, IL',
     salary: '$1,300-1,700/tuần',
     description: 'New luxury salon opening, nail technicians needed.',
     vietnamese_description: 'Salon mới mở cần thợ nail. Thiết bị hiện đại, khách hàng cao cấp.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/7a729a53-192a-40cd-a28f-e28023529d8f.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (2).png',
     created_at: '2024-11-10',
     expired_at: '2024-11-16',
     filled_date: '2024-11-15'
@@ -54,14 +54,14 @@ export const expiredJobsData = [
     id: 'exp-nail-4',
     title: 'Thợ Nail Thiết Kế - Lương Thưởng',
     vietnamese_title: 'Thợ Nail Thiết Kế - Lương Thưởng',
-    company: 'Bliss Nail Bar',
+    company: 'Bliss Nail Boutique',
     location: 'Miami, FL',
     salary: '$1,500-2,200/tuần',
     description: 'Artistic nail designer for high-end clientele.',
     vietnamese_description: 'Thợ nail nghệ thuật cho khách hàng cao cấp. Có thưởng thiết kế.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/7a58770c-404e-4259-b1a6-f044c8eefdc0.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (3).png',
     created_at: '2024-11-08',
     expired_at: '2024-11-14',
     filled_date: '2024-11-13'
@@ -77,7 +77,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail làm cuối tuần cho salon sang trọng. Lương giờ cao.',
     category: 'Nail Tech',
     employment_type: 'Part-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/749e5584-caa4-4229-84a2-93589c7455c2.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (4).png',
     created_at: '2024-11-06',
     expired_at: '2024-11-12',
     filled_date: '2024-11-11'
@@ -86,14 +86,14 @@ export const expiredJobsData = [
     id: 'exp-nail-6',
     title: 'Thợ Nail Di Động - Tự Do',
     vietnamese_title: 'Thợ Nail Di Động - Tự Do',
-    company: 'Luxe Mobile Nails',
+    company: 'Mobile Nail Pro',
     location: 'Seattle, WA',
     salary: '$40-60/giờ + phí di chuyển',
     description: 'Mobile nail technician for VIP clients.',
     vietnamese_description: 'Thợ nail di động phục vụ khách VIP. Lương cao, giờ tự do.',
     category: 'Nail Tech',
     employment_type: 'Contract',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (5).png',
     created_at: '2024-11-04',
     expired_at: '2024-11-10',
     filled_date: '2024-11-09'
@@ -109,7 +109,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Trưởng nhóm thợ nail và giám sát đội. Có thưởng quản lý.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/6d593f49-dc5d-4e4c-9685-87d13b4eb7ca.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (6).png',
     created_at: '2024-11-02',
     expired_at: '2024-11-08',
     filled_date: '2024-11-07'
@@ -125,7 +125,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail tại spa y tế. Môi trường chuyên nghiệp, phúc lợi tốt.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/6bb628b4-8daf-4c22-9c03-4c84a54f36a0.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (7).png',
     created_at: '2024-10-31',
     expired_at: '2024-11-06',
     filled_date: '2024-11-05'
@@ -141,7 +141,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Chuyên gia nail cô dâu cho đám cưới và sự kiện. Lương cao.',
     category: 'Nail Tech',
     employment_type: 'Contract',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/686136f8-8023-4c9e-8b2c-11e9c4eded78.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (8).png',
     created_at: '2024-10-29',
     expired_at: '2024-11-04',
     filled_date: '2024-11-03'
@@ -157,7 +157,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Nghệ sĩ nail thi đấu cho cuộc thi và triển lãm. Thưởng cao.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/67947adb-5754-4569-aa1c-228d8f9db461.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (9).png',
     created_at: '2024-10-27',
     expired_at: '2024-11-02',
     filled_date: '2024-11-01'
@@ -173,7 +173,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail dịch vụ nhanh cho salon khối lượng cao. Thưởng tốc độ.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/65299059-7518-43f3-b0db-62f30739b2b4.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (10).png',
     created_at: '2024-10-25',
     expired_at: '2024-10-31',
     filled_date: '2024-10-30'
@@ -189,7 +189,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail hữu cơ cho salon thân thiện môi trường. Thưởng xanh.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/634c2c48-154b-4a6c-9f6b-f6bca32ad5c7.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (11).png',
     created_at: '2024-10-23',
     expired_at: '2024-10-29',
     filled_date: '2024-10-28'
@@ -205,7 +205,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail đào tạo cho sinh viên mới tốt nghiệp. Có chương trình học.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/5f8eaed6-4a17-4992-a270-6394aad0f43b.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (12).png',
     created_at: '2024-10-21',
     expired_at: '2024-10-27',
     filled_date: '2024-10-26'
@@ -221,7 +221,7 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail VIP phục vụ khách hàng nổi tiếng. Lương cao, bảo mật.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/5f4b0b9e-d1c2-43ad-a85c-92c4b6c61441.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (13).png',
     created_at: '2024-10-19',
     expired_at: '2024-10-25',
     filled_date: '2024-10-24'
@@ -237,13 +237,13 @@ export const expiredJobsData = [
     vietnamese_description: 'Thợ nail 3D với công nghệ tiên tiến. Lương cao nhất thị trường.',
     category: 'Nail Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/5b0dc7b0-886f-4c09-93c1-33f17d236690.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated (14).png',
     created_at: '2024-10-17',
     expired_at: '2024-10-23',
     filled_date: '2024-10-22'
   },
 
-  // Other Beauty Industry Jobs (15 jobs) - English titles, authentic American salon names
+  // Other Beauty Industry Jobs (15 jobs) - English titles, using real bucket filenames
   {
     id: 'exp-hair-1',
     title: 'Master Hair Stylist - Celebrity Salon',
@@ -253,7 +253,7 @@ export const expiredJobsData = [
     description: 'Elite hair stylist for A-list celebrity clientele in luxury salon.',
     category: 'Hair Stylist',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/b851c5dd-95de-4137-a29c-9833ea410cf4.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/generated.png',
     created_at: '2024-11-14',
     expired_at: '2024-11-19',
     filled_date: '2024-11-18'
@@ -267,7 +267,7 @@ export const expiredJobsData = [
     description: 'Certified lash artist for luxury lash extension services.',
     category: 'Lash Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/b4f26c5f-97b6-4a68-9acf-1b370937ef1a.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated.png',
     created_at: '2024-11-13',
     expired_at: '2024-11-18',
     filled_date: '2024-11-17'
@@ -281,7 +281,7 @@ export const expiredJobsData = [
     description: 'Traditional master barber with straight razor expertise.',
     category: 'Barber',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/ac31083b-3861-4851-99ac-ed1bc185c4d9.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/generated.png',
     created_at: '2024-11-11',
     expired_at: '2024-11-16',
     filled_date: '2024-11-15'
@@ -295,7 +295,7 @@ export const expiredJobsData = [
     description: 'Therapeutic massage therapist for luxury resort spa.',
     category: 'Massage Therapist',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/a59ea036-184e-4057-b4ba-8a0f2ab2c365.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/generated.png',
     created_at: '2024-11-09',
     expired_at: '2024-11-14',
     filled_date: '2024-11-13'
@@ -309,7 +309,7 @@ export const expiredJobsData = [
     description: 'Professional makeup artist for film and television production.',
     category: 'Makeup Artist',
     employment_type: 'Contract',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/9f39ea95-e42c-4f4e-89a9-b44cb4e215e2.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/generated.png',
     created_at: '2024-11-07',
     expired_at: '2024-11-12',
     filled_date: '2024-11-11'
@@ -323,7 +323,7 @@ export const expiredJobsData = [
     description: 'Licensed esthetician specializing in anti-aging treatments.',
     category: 'Esthetician',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/9e713225-1758-4c21-84d3-33e7707a2806.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/generated.png',
     created_at: '2024-11-05',
     expired_at: '2024-11-10',
     filled_date: '2024-11-09'
@@ -337,7 +337,7 @@ export const expiredJobsData = [
     description: 'Professional tattoo artist for custom designs and artwork.',
     category: 'Tattoo Artist',
     employment_type: 'Contract',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo/9c17ae10-5590-4c10-a59f-0830de25f070.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo/generated.png',
     created_at: '2024-11-03',
     expired_at: '2024-11-08',
     filled_date: '2024-11-07'
@@ -351,7 +351,7 @@ export const expiredJobsData = [
     description: 'Certified microblading artist and eyebrow shaping specialist.',
     category: 'Brow Tech',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/955feb1d-3a31-4a0e-b6b2-44f8240519c1.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated (1).png',
     created_at: '2024-11-01',
     expired_at: '2024-11-06',
     filled_date: '2024-11-05'
@@ -365,7 +365,7 @@ export const expiredJobsData = [
     description: 'Hair color expert specializing in balayage and highlights.',
     category: 'Hair Stylist',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/91f0b5d3-f1ed-461a-8623-51fedf676fe2.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/generated (1).png',
     created_at: '2024-10-30',
     expired_at: '2024-11-04',
     filled_date: '2024-11-03'
@@ -379,7 +379,7 @@ export const expiredJobsData = [
     description: 'Sports massage specialist for professional athletes.',
     category: 'Massage Therapist',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/8fe0f798-c1eb-4d74-8a75-eca70a89d788.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/generated (1).png',
     created_at: '2024-10-28',
     expired_at: '2024-11-02',
     filled_date: '2024-11-01'
@@ -393,7 +393,7 @@ export const expiredJobsData = [
     description: 'Expert barber specializing in modern fade techniques.',
     category: 'Barber',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/8df4a272-7afd-41a2-bbf7-994276084ec4.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/generated (1).png',
     created_at: '2024-10-26',
     expired_at: '2024-10-31',
     filled_date: '2024-10-30'
@@ -407,7 +407,7 @@ export const expiredJobsData = [
     description: 'Lash lift and tinting specialist for natural enhancement.',
     category: 'Lash Tech',
     employment_type: 'Part-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/858af941-13ac-412a-9747-38bc7a6f0e19.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated (2).png',
     created_at: '2024-10-24',
     expired_at: '2024-10-29',
     filled_date: '2024-10-28'
@@ -421,7 +421,7 @@ export const expiredJobsData = [
     description: 'Bridal hair specialist for weddings and special events.',
     category: 'Hair Stylist',
     employment_type: 'Contract',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/81e6d95d-e09b-45f0-a4bc-96358592e462.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/generated (2).png',
     created_at: '2024-10-22',
     expired_at: '2024-10-27',
     filled_date: '2024-10-26'
@@ -435,7 +435,7 @@ export const expiredJobsData = [
     description: 'Acne treatment specialist with medical-grade skincare.',
     category: 'Esthetician',
     employment_type: 'Full-time',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/7fa90fdd-d4e6-4d07-9d3b-b00811006d23.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/generated (1).png',
     created_at: '2024-10-20',
     expired_at: '2024-10-25',
     filled_date: '2024-10-24'
@@ -449,7 +449,7 @@ export const expiredJobsData = [
     description: 'Luxury bridal makeup artist for high-end weddings.',
     category: 'Makeup Artist',
     employment_type: 'Contract',
-    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png',
+    image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/generated (1).png',
     created_at: '2024-10-18',
     expired_at: '2024-10-23',
     filled_date: '2024-10-22'
