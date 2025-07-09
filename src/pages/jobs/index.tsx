@@ -164,10 +164,10 @@ const JobsPage = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-8">
-          <p className="text-red-600">Error loading jobs: {error}</p>
+          <p className="text-red-600 font-inter">Error loading jobs: {error}</p>
           <button 
             onClick={refreshJobs}
-            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+             className="mt-4 px-4 py-2 bg-purple-600 text-white font-inter font-medium rounded hover:bg-purple-700"
           >
             Try Again
           </button>
@@ -256,22 +256,22 @@ const JobsPage = () => {
                     return (
                       <div className="container mx-auto px-4 py-8">
                         <div className="text-center py-12">
-                          <h3 className="text-xl font-semibold text-gray-600 mb-4">
-                            No {tab.label} jobs available right now
+                           <h3 className="text-xl font-playfair font-bold text-foreground mb-4">
+                             No {tab.label} jobs available right now
                           </h3>
-                          <p className="text-gray-500 mb-6">
+                          <p className="text-muted-foreground font-inter mb-6">
                             Be the first to know when new {tab.label.toLowerCase()} opportunities are posted.
                           </p>
                           <div className="flex gap-4 justify-center">
                             <button
                               onClick={() => navigate('/post-job')}
-                              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl"
-                            >
+                               className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold py-3 px-6 rounded-xl"
+                             >
                               Post a Job
                             </button>
-                            <button
-                              onClick={() => navigate(`/${tab.id}`)}
-                              className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-xl"
+                             <button
+                               onClick={() => navigate(`/${tab.id}`)}
+                               className="bg-gray-100 hover:bg-gray-200 text-foreground font-inter font-bold py-3 px-6 rounded-xl"
                             >
                               See All {tab.label} Listings
                             </button>
@@ -297,8 +297,8 @@ const JobsPage = () => {
                   <div className="text-center py-8">
                     <button
                       onClick={() => navigate(`/${tab.id}`)}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-xl"
-                    >
+                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-8 rounded-xl"
+                     >
                       See all {tab.label} Jobs →
                     </button>
                   </div>
@@ -314,10 +314,10 @@ const JobsPage = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-8">
-          <p className="text-red-600">Unable to load jobs. Please try refreshing the page.</p>
+          <p className="text-red-600 font-inter">Unable to load jobs. Please try refreshing the page.</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            className="mt-4 px-4 py-2 bg-purple-600 text-white font-inter font-medium rounded hover:bg-purple-700"
           >
             Refresh Page
           </button>

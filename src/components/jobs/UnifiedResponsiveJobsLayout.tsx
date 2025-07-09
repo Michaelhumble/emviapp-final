@@ -146,9 +146,9 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         <div className="flex items-center justify-between mb-8 px-4 lg:px-0">
           <div className="flex items-center gap-4">
             {getIndustryIcon(category)}
-            <h3 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">{category}</h3>
+            <h3 className="text-2xl lg:text-3xl font-playfair font-black text-foreground tracking-tight">{category}</h3>
           </div>
-          <span className="text-sm font-bold text-gray-900 bg-gray-100 px-4 py-2 rounded-full border">
+          <span className="text-sm font-inter font-bold text-foreground bg-gray-100 px-4 py-2 rounded-full border">
             {filteredJobs.length} jobs
           </span>
         </div>
@@ -193,7 +193,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         {/* Compact list for overflow jobs - ALL devices */}
         {compactJobs.length > 0 && (
           <div className="px-4 lg:px-0 space-y-3 mt-8">
-            <div className="text-base font-bold text-gray-900 mb-4">
+            <div className="text-base font-inter font-bold text-foreground mb-4">
               {compactJobs.length} more jobs in {category}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -213,7 +213,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         {/* See All CTA */}
         {filteredJobs.length > 8 && (
           <div className="px-4 lg:px-0 mt-6">
-            <button className="flex items-center justify-center w-full py-4 text-purple-600 font-bold border-2 border-purple-200 rounded-xl hover:bg-purple-50 transition-colors text-base">
+            <button className="flex items-center justify-center w-full py-4 text-purple-600 font-inter font-bold border-2 border-purple-200 rounded-xl hover:bg-purple-50 transition-colors text-base">
               See all {filteredJobs.length} jobs in {category}
               <ChevronRight className="h-5 w-5 ml-2" />
             </button>
@@ -224,7 +224,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         {(category === 'Hair Stylist' || (industries.indexOf(category) === 1)) && (
           <div className="max-w-4xl mx-auto px-4 lg:px-0 mt-16 mb-8">
             <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-6 shadow-sm">
-              <p className="text-red-800 text-base font-bold text-center">
+              <p className="text-red-800 text-base font-inter font-bold text-center">
                 🔥 <span className="font-black">FOMO Alert:</span> These great jobs filled up fast! 
                 Don't miss the next batch—check back daily for fresh opportunities.
               </p>
@@ -241,7 +241,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
       <div className="sticky top-0 z-40 bg-white border-b-2 border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl lg:text-3xl font-black text-gray-900">Beauty Jobs</h1>
+            <h1 className="text-2xl lg:text-3xl font-playfair font-black text-foreground">Beauty Jobs</h1>
             
             {/* Desktop: Horizontal layout */}
             <div className="hidden lg:flex items-center space-x-4">
@@ -251,13 +251,13 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
                   placeholder="Search jobs, locations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-80 border-2 font-medium"
+                  className="pl-10 w-80 border-2 font-inter font-medium"
                 />
               </div>
               
               <Button 
                 onClick={() => navigate('/post-job')}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 text-base"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold px-6 py-3 text-base"
               >
                 <Plus className="h-5 w-5 mr-2" />
                 Post a Job
@@ -269,7 +269,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
               <Button 
                 onClick={() => navigate('/post-job')}
                 size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Post Job
@@ -285,7 +285,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
                 placeholder="Search jobs, locations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 w-full border-2 font-medium"
+                className="pl-9 w-full border-2 font-inter font-medium"
               />
             </div>
           </div>
@@ -294,10 +294,10 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex space-x-2 pb-2" style={{ minWidth: 'max-content' }}>
               <button
-                className={`flex items-center space-x-2 px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap transition-colors border-2 ${
+                className={`flex items-center space-x-2 px-4 py-3 rounded-xl font-inter font-bold text-sm whitespace-nowrap transition-colors border-2 ${
                   activeIndustry === 'All'
                     ? 'bg-purple-600 text-white border-purple-600'
-                    : 'bg-white text-gray-900 border-gray-200 hover:border-purple-300'
+                    : 'bg-white text-foreground border-gray-200 hover:border-purple-300'
                 }`}
                 onClick={() => setActiveIndustry('All')}
               >
@@ -313,10 +313,10 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
                 return (
                   <button
                     key={industry}
-                    className={`flex items-center space-x-2 px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap transition-colors border-2 ${
+                    className={`flex items-center space-x-2 px-4 py-3 rounded-xl font-inter font-bold text-sm whitespace-nowrap transition-colors border-2 ${
                       activeIndustry === industry
                         ? 'bg-purple-600 text-white border-purple-600'
-                        : 'bg-white text-gray-900 border-gray-200 hover:border-purple-300'
+                        : 'bg-white text-foreground border-gray-200 hover:border-purple-300'
                     }`}
                     onClick={() => setActiveIndustry(industry)}
                   >
@@ -352,13 +352,13 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         {/* No results message */}
         {filteredIndustries.length === 0 && searchQuery && (
           <div className="text-center py-12 px-4">
-            <p className="text-gray-600 text-lg font-medium mb-4">
+            <p className="text-muted-foreground font-inter text-lg font-medium mb-4">
               No jobs found for "{searchQuery}"
             </p>
             <Button 
               variant="outline" 
               onClick={() => setSearchQuery('')}
-              className="font-bold"
+              className="font-inter font-bold"
             >
               Clear Search
             </Button>

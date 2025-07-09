@@ -164,26 +164,26 @@ const FOMONailJobsSection: React.FC = () => {
           className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-lg mb-8 shadow-lg border border-slate-700"
         >
           <div className="flex items-center justify-center text-center space-x-2">
-            <p className="text-sm md:text-base font-medium">
-              🔥 Những job thật, lương thật vừa đăng—chỉ hiển thị trên EmviApp! Đăng nhập để xem số điện thoại & deal trực tiếp với chủ tiệm.
-            </p>
+             <p className="text-sm md:text-base font-inter font-medium">
+               🔥 Những job thật, lương thật vừa đăng—chỉ hiển thị trên EmviApp! Đăng nhập để xem số điện thoại & deal trực tiếp với chủ tiệm.
+             </p>
           </div>
         </motion.div>
 
         {/* Premium Listings Section */}
         <div className="mb-16">
           <div className="flex flex-col text-center items-center justify-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-foreground mb-2">
               Featured & Premium Listings
             </h2>
-            <p className="text-gray-600 text-base max-w-2xl">
+            <p className="text-muted-foreground font-inter text-base max-w-2xl">
               Real Vietnamese nail jobs with verified contact details
             </p>
           </div>
 
           {/* Gold Featured Row */}
           <div className="mb-12">
-            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <h3 className="text-xl font-playfair font-bold text-foreground mb-6 flex items-center">
               <Star className="w-5 h-5 text-yellow-500 mr-2" />
               Featured
             </h3>
@@ -224,7 +224,7 @@ const FOMONailJobsSection: React.FC = () => {
 
           {/* Premium Row */}
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <h3 className="text-xl font-playfair font-bold text-foreground mb-6 flex items-center">
               <Star className="w-5 h-5 text-purple-500 mr-2" />
               Premium
             </h3>
@@ -313,29 +313,29 @@ const JobCard: React.FC<JobCardProps> = ({ job, onViewDetails, isSignedIn }) => 
       
       <CardContent className="p-4 flex flex-col flex-grow space-y-3">
         <div>
-          <h3 className="text-lg font-bold text-gray-900 line-clamp-1">
+          <h3 className="text-lg font-inter font-bold text-foreground line-clamp-1">
             {job.title}
           </h3>
           
-          <p className="text-sm text-gray-600 flex items-center mt-1">
+          <p className="text-sm text-muted-foreground font-inter flex items-center mt-1">
             <MapPin className="w-3 h-3 mr-1" />
             {job.location}
           </p>
         </div>
         
         <div className="bg-green-50 p-2 rounded-lg">
-          <p className="text-lg font-bold text-green-700">
+          <p className="text-lg font-inter font-bold text-green-700">
             {job.salary}
           </p>
         </div>
         
-        <p className="text-sm text-gray-700 line-clamp-2 flex-grow">
+        <p className="text-sm text-muted-foreground font-inter line-clamp-2 flex-grow">
           {job.summary}
         </p>
         
         <div className="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-100">
           {!isSignedIn && (
-            <p className="text-xs text-amber-600 font-medium">
+            <p className="text-xs text-amber-600 font-inter font-medium">
               🔒 Sign in to view contact info
             </p>
           )}
@@ -348,7 +348,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onViewDetails, isSignedIn }) => 
               onClick={() => onViewDetails(job)}
               size="sm" 
               variant="outline"
-              className="text-xs font-medium"
+              className="text-xs font-inter font-medium"
             >
               Xem Chi Tiết
             </Button>

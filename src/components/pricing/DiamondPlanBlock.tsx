@@ -47,17 +47,17 @@ const DiamondPlanBlock: React.FC<DiamondPlanBlockProps> = ({
           <div className="flex items-center justify-center mb-4">
             <Crown className="w-12 h-12 text-amber-500 mr-4" />
             <div>
-              <h3 className="text-3xl font-bold text-gray-900">Diamond Exclusive</h3>
-              <p className="text-amber-600 font-semibold">VIP Everything</p>
+              <h3 className="text-3xl font-playfair font-bold text-foreground">Diamond Exclusive</h3>
+              <p className="text-amber-600 font-inter font-semibold">VIP Everything</p>
             </div>
           </div>
 
           <div className="mb-6">
-            <div className="text-5xl font-bold text-gray-900 mb-2">
+            <div className="text-5xl font-inter font-bold text-foreground mb-2">
               $9,999
-              <span className="text-lg text-gray-600 font-normal">/year</span>
+              <span className="text-lg text-muted-foreground font-inter font-normal">/year</span>
             </div>
-            <p className="text-red-600 font-bold text-lg">
+            <p className="text-red-600 font-inter font-bold text-lg">
               Only {spotsLeft} of {maxSpots} spots remaining
             </p>
           </div>
@@ -73,9 +73,9 @@ const DiamondPlanBlock: React.FC<DiamondPlanBlockProps> = ({
               "🤝 White-glove Concierge Service",
               "⚡ Custom Integration Support"
             ].map((feature, index) => (
-              <div key={index} className="flex items-center text-gray-700">
-                <span className="text-lg mr-3">{feature.split(' ')[0]}</span>
-                <span className="font-medium">{feature.substring(feature.indexOf(' ') + 1)}</span>
+               <div key={index} className="flex items-center text-muted-foreground">
+                 <span className="text-lg mr-3">{feature.split(' ')[0]}</span>
+                 <span className="font-inter font-medium">{feature.substring(feature.indexOf(' ') + 1)}</span>
               </div>
             ))}
           </div>
@@ -83,13 +83,13 @@ const DiamondPlanBlock: React.FC<DiamondPlanBlockProps> = ({
           <Button 
             onClick={onSelectPlan}
             size="lg"
-            className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold py-4 text-lg shadow-lg"
+            className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-inter font-bold py-4 text-lg shadow-lg"
           >
             <Zap className="w-5 h-5 mr-2" />
             Apply for Diamond Status
           </Button>
 
-          <p className="text-xs text-gray-500 mt-4 italic">
+          <p className="text-xs text-muted-foreground font-inter mt-4 italic">
             * Subject to approval. Limited availability.
           </p>
         </CardContent>
