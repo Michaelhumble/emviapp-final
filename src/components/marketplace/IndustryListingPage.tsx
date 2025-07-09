@@ -156,14 +156,13 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <Button
-            variant="outline"
-            onClick={handleBackToHome}
-            className="flex items-center gap-2 hover:bg-gray-50"
+          <Link 
+            to="/jobs" 
+            className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to All Beauty Jobs
-          </Button>
+          </Link>
         </motion.div>
         {/* Diamond Tier Section */}
         {diamondListings.length > 0 && (

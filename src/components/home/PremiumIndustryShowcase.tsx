@@ -64,8 +64,8 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
   const navigate = useNavigate();
 
   const handleViewDetails = (listing: IndustryListing) => {
-    // Navigate to the specific industry page with listing ID for deep linking
-    navigate(`${routePath}?listing=${listing.id}`);
+    // Navigate to main /jobs page with industry and listing parameters for deep linking
+    navigate(`/jobs?industry=${industryName}&listing=${listing.id}`);
   };
 
   const getTierIcon = (tier: string) => {

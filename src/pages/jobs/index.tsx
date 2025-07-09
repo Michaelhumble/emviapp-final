@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useJobsData } from '@/hooks/useJobsData.ts';
 import JobsGrid from '@/components/jobs/JobsGrid';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
 import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
 import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 
 const JobsPage = () => {
   const { jobs, loading, error, refreshJobs } = useJobsData();
@@ -18,6 +20,46 @@ const JobsPage = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Industry navigation state
+  const industryParam = searchParams.get('industry');
+  const listingParam = searchParams.get('listing');
+  const [activeIndustryTab, setActiveIndustryTab] = useState(industryParam || 'all');
+
+  // Industry tab configuration
+  const industryTabs = [
+    { id: 'all', label: 'All Jobs', icon: Sparkles },
+    { id: 'nails', label: 'Nail Tech', icon: Sparkles },
+    { id: 'hair', label: 'Hair Stylist', icon: Scissors },
+    { id: 'barber', label: 'Barber', icon: Scissors },
+    { id: 'massage', label: 'Massage', icon: Hand },
+    { id: 'skincare', label: 'Skincare', icon: Droplets },
+    { id: 'makeup', label: 'Makeup', icon: Palette },
+    { id: 'brows-lashes', label: 'Brows & Lashes', icon: Eye },
+    { id: 'tattoo', label: 'Tattoo', icon: Brush }
+  ];
+
+  // Handle industry tab pre-selection and deep linking
+  useEffect(() => {
+    if (industryParam) {
+      setActiveIndustryTab(industryParam);
+      
+      // If there's a specific listing, scroll to it after a brief delay
+      if (listingParam) {
+        setTimeout(() => {
+          const listingElement = document.querySelector(`[data-listing-id="${listingParam}"]`);
+          if (listingElement) {
+            listingElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Add temporary highlight
+            listingElement.classList.add('ring-4', 'ring-purple-500', 'ring-opacity-50');
+            setTimeout(() => {
+              listingElement.classList.remove('ring-4', 'ring-purple-500', 'ring-opacity-50');
+            }, 3000);
+          }
+        }, 500);
+      }
+    }
+  }, [industryParam, listingParam]);
 
   // Check for payment success
   useEffect(() => {
@@ -175,35 +217,95 @@ const JobsPage = () => {
           </p>
         </section>
 
-        <div className="space-y-8">
-          {/* Diamond Plan - Always at Top */}
-          <DiamondPlanBlock spotsLeft={1} maxSpots={3} />
-          
-          {/* FOMO Nail Jobs Section - Always Show */}
-          <FOMONailJobsSection />
-          
-          {/* All Other Jobs */}
-          {(() => {
-            if (!jobs || jobs.length === 0) {
-              console.log('📭 [JOBS-PAGE] No regular jobs found, showing empty state');
-              return (
-                <div className="container mx-auto px-4 py-8">
-                  <JobEmptyState />
-                </div>
-              );
-            }
-            
-            console.log('📋 [JOBS-PAGE] Rendering unified jobs layout with jobs:', jobs.map(j => ({ id: j.id, title: j.title })));
-            return (
-              <JobsGrid
-                jobs={jobs}
-                expirations={{}}
-                onRenew={handleRenew}
-                isRenewing={false}
-                renewalJobId={null}
-              />
-            );
-          })()}
+        {/* Industry Tabs Navigation */}
+        <div className="container mx-auto px-4 mb-8">
+          <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 mb-6">
+              {industryTabs.map(tab => {
+                const IconComponent = tab.icon;
+                return (
+                  <TabsTrigger 
+                    key={tab.id} 
+                    value={tab.id}
+                    className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    <span className="hidden lg:inline">{tab.label}</span>
+                    <span className="lg:hidden text-xs">{tab.label.split(' ')[0]}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+
+            {industryTabs.map(tab => (
+              <TabsContent key={tab.id} value={tab.id} className="space-y-8">
+                {/* Diamond Plan - Always at Top */}
+                <DiamondPlanBlock spotsLeft={1} maxSpots={3} />
+                
+                {/* FOMO Nail Jobs Section - Show for nails tab or all */}
+                {(tab.id === 'all' || tab.id === 'nails') && <FOMONailJobsSection />}
+                
+                {/* Filtered Jobs for this industry */}
+                {(() => {
+                  const filteredJobs = tab.id === 'all' 
+                    ? jobs 
+                    : jobs.filter(job => job.category?.toLowerCase().includes(tab.id) || 
+                                        job.title?.toLowerCase().includes(tab.id.replace('-', ' ')));
+                  
+                  if (!filteredJobs || filteredJobs.length === 0) {
+                    return (
+                      <div className="container mx-auto px-4 py-8">
+                        <div className="text-center py-12">
+                          <h3 className="text-xl font-semibold text-gray-600 mb-4">
+                            No {tab.label} jobs available right now
+                          </h3>
+                          <p className="text-gray-500 mb-6">
+                            Be the first to know when new {tab.label.toLowerCase()} opportunities are posted.
+                          </p>
+                          <div className="flex gap-4 justify-center">
+                            <button
+                              onClick={() => navigate('/post-job')}
+                              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl"
+                            >
+                              Post a Job
+                            </button>
+                            <button
+                              onClick={() => navigate(`/${tab.id}`)}
+                              className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-xl"
+                            >
+                              See All {tab.label} Listings
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <JobsGrid
+                      jobs={filteredJobs}
+                      expirations={{}}
+                      onRenew={handleRenew}
+                      isRenewing={false}
+                      renewalJobId={null}
+                    />
+                  );
+                })()}
+
+                {/* Industry-specific CTA */}
+                {tab.id !== 'all' && (
+                  <div className="text-center py-8">
+                    <button
+                      onClick={() => navigate(`/${tab.id}`)}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-xl"
+                    >
+                      See all {tab.label} Jobs →
+                    </button>
+                  </div>
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </div>
     );
