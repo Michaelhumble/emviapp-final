@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Flame, Star, Clock, Phone, MapPin } from 'lucide-react';
+import { Eye, Flame, Star, Clock, Phone, MapPin, LockIcon } from 'lucide-react';
 import { useSession } from '@/context/auth/hooks/useSession';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import FOMOJobDetailModal from './FOMOJobDetailModal';
@@ -165,7 +165,7 @@ const FOMONailJobsSection: React.FC = () => {
         >
           <div className="flex items-center justify-center text-center space-x-2">
              <p className="text-sm md:text-base font-inter font-medium">
-                Cơ hội lương cao, việc tốt được xác thực trên EmviApp! Đăng nhập để xem chi tiết liên hệ.
+                Verified listings. Trusted by the beauty industry's top professionals. All contact details are protected—sign in to connect directly with owners.
               </p>
           </div>
         </motion.div>
@@ -335,9 +335,10 @@ const JobCard: React.FC<JobCardProps> = ({ job, onViewDetails, isSignedIn }) => 
         
         <div className="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-100">
           {!isSignedIn && (
-            <p className="text-xs text-amber-600 font-inter font-medium">
-              🔒 Sign in to view contact info
-            </p>
+            <div className="flex items-center text-xs text-amber-600 font-inter font-medium">
+              <LockIcon className="w-3 h-3 mr-1" />
+              <span>Sign in to view contact info</span>
+            </div>
           )}
           
           <div className="flex items-center justify-between">

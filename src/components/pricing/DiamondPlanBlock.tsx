@@ -48,7 +48,7 @@ const DiamondPlanBlock: React.FC<DiamondPlanBlockProps> = ({
             <Crown className="w-12 h-12 text-amber-500 mr-4" />
             <div>
               <h3 className="text-3xl font-playfair font-bold text-foreground">Diamond Exclusive</h3>
-              <p className="text-amber-600 font-inter font-semibold">VIP Everything</p>
+              <p className="text-amber-600 font-inter font-semibold">Get Seen First, Get Hired Fast</p>
             </div>
           </div>
 
@@ -62,22 +62,29 @@ const DiamondPlanBlock: React.FC<DiamondPlanBlockProps> = ({
             </p>
           </div>
 
-          <div className="space-y-3 mb-8 text-left">
+          <div className="space-y-4 mb-6 text-left">
             {[
-              "🎯 VIP Premium Placement Above All Others",
-              "👑 Personal Account Manager",
-              "🎨 Custom Branding & White-Label Options", 
-              "📊 Advanced Analytics Dashboard",
-              "📞 Priority Phone Support",
-              "🎪 Exclusive Industry Events Access",
-              "🤝 White-glove Concierge Service",
-              "⚡ Custom Integration Support"
-            ].map((feature, index) => (
-               <div key={index} className="flex items-center text-muted-foreground">
-                 <span className="text-lg mr-3">{feature.split(' ')[0]}</span>
-                 <span className="font-inter font-medium">{feature.substring(feature.indexOf(' ') + 1)}</span>
-              </div>
-            ))}
+              { icon: Crown, text: "VIP Premium Placement: Your listing always appears first in every search" },
+              { icon: Zap, text: "Maximum Visibility: All eyes on your job—most clicks, most views, every day" },
+              { icon: Sparkles, text: "Priority Marketing: Featured in all EmviApp marketing emails and homepage" },
+              { icon: Star, text: "Brand Prestige: Diamond badge shows your business is a leader" },
+              { icon: Crown, text: "Dedicated Support: Fast help from our real team when you need it" },
+              { icon: Zap, text: "Access to New Features: Be first to try all new EmviApp upgrades" }
+            ].map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <div key={index} className="flex items-start text-foreground">
+                  <IconComponent className="w-5 h-5 mr-3 mt-0.5 text-amber-500 flex-shrink-0" />
+                  <span className="font-inter font-medium">{feature.text}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+            <p className="text-sm font-inter text-foreground leading-relaxed">
+              Diamond spots are the most powerful way to hire fast, get more applicants, and become the go-to salon or studio in your area. Every visitor will see you first—guaranteed as long as you keep your spot.
+            </p>
           </div>
 
           <Button 
@@ -85,7 +92,7 @@ const DiamondPlanBlock: React.FC<DiamondPlanBlockProps> = ({
             size="lg"
             className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-inter font-bold py-4 text-lg shadow-lg"
           >
-            <Zap className="w-5 h-5 mr-2" />
+            <Sparkles className="w-5 h-5 mr-2" />
             Apply for Diamond Status
           </Button>
 
