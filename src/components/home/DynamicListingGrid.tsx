@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, BadgeCheck } from "lucide-react";
+import { ArrowRight, MapPin, BadgeCheck, Sparkles, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
@@ -363,16 +363,18 @@ const DynamicListingGrid = () => {
             <Button
               variant={activeCategory === "salons" ? "default" : "outline"}
               onClick={() => setActiveCategory("salons")}
-              className="rounded-full"
+              className="rounded-full font-inter font-medium"
             >
-              🔥 Salons Hiring
+              <Sparkles className="w-4 h-4 mr-1" />
+              Salons Hiring
             </Button>
             <Button
               variant={activeCategory === "booths" ? "default" : "outline"}
               onClick={() => setActiveCategory("booths")}
-              className="rounded-full"
+              className="rounded-full font-inter font-medium"
             >
-              🪑 Booths Available
+              <CheckCircle className="w-4 h-4 mr-1" />
+              Booths Available
             </Button>
             <Button
               variant={activeCategory === "artists" ? "default" : "outline"}

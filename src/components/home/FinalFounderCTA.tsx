@@ -15,20 +15,20 @@ const FinalFounderCTA = () => {
         transition={{ duration: 0.7 }}
       >
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-6 text-foreground">
             Ready to Transform Your Beauty Career?
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-muted-foreground mb-8 font-inter">
             Join thousands of artists, salon owners, and beauty enthusiasts who've found success with EmviApp.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/auth/signup">
-              <Button size="lg" className="font-medium px-6">
+              <Button size="lg" className="font-inter font-medium px-6">
                 Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link to="/salons">
-              <Button size="lg" variant="outline" className="font-medium">
+              <Button size="lg" variant="outline" className="font-inter font-medium">
                 Explore Services
               </Button>
             </Link>

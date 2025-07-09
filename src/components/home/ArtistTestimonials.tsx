@@ -65,10 +65,10 @@ const ArtistTestimonials = () => {
           transition={{ duration: 0.7 }}
           className="text-center max-w-3xl mx-auto mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4 tracking-tight text-foreground">
             Why Artists Love EmviApp
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground font-inter">
             Real stories from industry professionals just like you
           </p>
         </motion.div>
@@ -86,11 +86,11 @@ const ArtistTestimonials = () => {
                 <div className={`bg-gradient-to-br ${testimonial.color} h-2`} />
                 <CardContent className="p-6 flex flex-col h-full">
                   <div className="flex items-center mb-4">
-                    <span className="text-xl mr-2">{testimonial.icon}</span>
-                    <div className="flex-1">{testimonial.role}</div>
+                    <span className="mr-2">{iconComponents[testimonial.icon as keyof typeof iconComponents]}</span>
+                    <div className="flex-1 font-inter font-medium text-foreground">{testimonial.role}</div>
                   </div>
                   
-                  <blockquote className="font-serif text-lg mb-6 flex-1 italic text-gray-700">
+                  <blockquote className="font-playfair text-lg mb-6 flex-1 italic text-foreground">
                     "{testimonial.quote}"
                   </blockquote>
                   
@@ -100,8 +100,8 @@ const ArtistTestimonials = () => {
                       <AvatarFallback>{testimonial.artist.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-sm">{testimonial.artist}</p>
-                      <p className="text-sm text-gray-500">{testimonial.role}</p>
+                      <p className="font-inter font-medium text-sm text-foreground">{testimonial.artist}</p>
+                      <p className="text-sm text-muted-foreground font-inter">{testimonial.role}</p>
                     </div>
                   </div>
                 </CardContent>

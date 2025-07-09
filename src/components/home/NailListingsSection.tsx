@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Flame, Star, Clock } from 'lucide-react';
+import { Eye, Flame, Star, Clock, Sparkles } from 'lucide-react';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
@@ -183,8 +183,8 @@ const NailListingsSection: React.FC = () => {
         >
           <div className="flex items-center justify-center text-center space-x-2">
             <Flame className="w-5 h-5 text-yellow-300" />
-            <p className="text-sm md:text-base font-semibold">
-              🔥 These are real, live jobs from our Nail Community—just filled! Join now to see the newest offers and unlock contact info. EmviApp is #1 for real beauty jobs—don't miss out!
+            <p className="text-sm md:text-base font-inter font-semibold">
+              Cơ hội lương cao, việc tốt được xác thực trên EmviApp! Đăng nhập để xem chi tiết liên hệ và bắt đầu kết nối ngay.
             </p>
             <Flame className="w-5 h-5 text-yellow-300" />
           </div>
@@ -193,11 +193,12 @@ const NailListingsSection: React.FC = () => {
         {/* Recently Filled Top Listings Section */}
         <div className="mb-16">
           <div className="flex flex-col text-center items-center justify-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2 text-gray-900">
-              🔥 Recently Filled Top Listings
+            <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2 text-foreground flex items-center justify-center">
+              <Sparkles className="w-8 h-8 mr-3 text-amber-500" />
+              Recently Filled Top Listings
             </h2>
-            <p className="text-gray-600 text-lg">
-              Real Vietnamese nail jobs that just filled up — see what you're missing!
+            <p className="text-muted-foreground text-lg font-inter">
+              High-value opportunities that just filled up — see what premium positions look like!
             </p>
           </div>
 

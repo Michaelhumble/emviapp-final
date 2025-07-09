@@ -61,10 +61,10 @@ const SalonClientGrowthSystem = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold font-playfair text-gray-800 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold font-playfair text-foreground mb-4">
             What's Really Keeping Your Salon From Growing?
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground font-inter">
             Select a question below to uncover the hidden barriers to your salon's success
           </p>
         </motion.div>
@@ -81,7 +81,7 @@ const SalonClientGrowthSystem = () => {
                 answeredQuestion === index ? "border-primary shadow-lg" : "border-gray-200"
               } transition-all duration-300`}
             >
-              <h3 className="text-xl font-medium mb-4">{q.question}</h3>
+              <h3 className="text-xl font-inter font-medium text-foreground mb-4">{q.question}</h3>
               
               {answeredQuestion === index ? (
                 <motion.div
@@ -90,7 +90,7 @@ const SalonClientGrowthSystem = () => {
                   variants={containerVariants}
                   className="space-y-4"
                 >
-                  <motion.p variants={itemVariants} className="text-gray-700">
+                  <motion.p variants={itemVariants} className="text-foreground font-inter">
                     {q.answer}
                   </motion.p>
                   
@@ -100,7 +100,7 @@ const SalonClientGrowthSystem = () => {
                       onClick={handleCtaClick}
                       className="block w-full"
                     >
-                      <Button className="w-full mt-2">
+                      <Button className="w-full mt-2 font-inter font-medium">
                         Get Started Free
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
@@ -110,7 +110,7 @@ const SalonClientGrowthSystem = () => {
               ) : (
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full font-inter font-medium"
                   onClick={() => setAnsweredQuestion(index)}
                 >
                   Select This Question

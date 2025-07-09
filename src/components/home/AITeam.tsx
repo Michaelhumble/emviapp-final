@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Megaphone, Shield, Bot } from "lucide-react";
+import { Globe, Megaphone, Shield, Bot, Sparkles } from "lucide-react";
 
 interface AIFeature {
   id: string;
@@ -62,8 +62,9 @@ const AITeam = () => {
             AI Powerhouse
           </Badge>
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6 text-foreground tracking-tight">
-            🔥 Meet the AI Behind EmviApp
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6 text-foreground tracking-tight flex items-center justify-center">
+            <Sparkles className="w-8 h-8 mr-3 text-amber-500" />
+            Meet the AI Behind EmviApp
           </h2>
           <p className="text-xl font-inter font-medium text-foreground mb-4">
             This isn't just tech—it's your personal beauty business team.

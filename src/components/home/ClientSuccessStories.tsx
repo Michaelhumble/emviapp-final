@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Brush, Scissors, Palette, Pen, Hand, Eye, Sparkles } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
   Carousel,
@@ -15,47 +15,47 @@ import {
 // Industry icons and colors for different professions
 const professionStyles = {
   "Nail Technician": { 
-    icon: "💅", 
+    icon: "Brush", 
     borderColor: "border-pink-400",
     iconBgColor: "bg-pink-100" 
   },
   "Barber": { 
-    icon: "✂️", 
+    icon: "Scissors", 
     borderColor: "border-blue-400",
     iconBgColor: "bg-blue-100" 
   },
   "Makeup Artist": { 
-    icon: "💄", 
+    icon: "Palette", 
     borderColor: "border-purple-400",
     iconBgColor: "bg-purple-100" 
   },
   "Tattoo Artist": { 
-    icon: "🖋️", 
+    icon: "Pen", 
     borderColor: "border-amber-400",
     iconBgColor: "bg-amber-100" 
   },
   "Massage Therapist": { 
-    icon: "👐", 
+    icon: "Hand", 
     borderColor: "border-green-400",
     iconBgColor: "bg-green-100" 
   },
   "Lash Specialist": { 
-    icon: "👁️", 
+    icon: "Eye", 
     borderColor: "border-teal-400",
     iconBgColor: "bg-teal-100" 
   },
   "Brow Artist": { 
-    icon: "✨", 
+    icon: "Sparkles", 
     borderColor: "border-rose-400",
-    iconBgColor: "bg-rose-100" 
+    iconBgColor: "bg-rose-100"
   },
   "Hairstylist": { 
-    icon: "💇", 
+    icon: "Scissors", 
     borderColor: "border-violet-400",
     iconBgColor: "bg-violet-100" 
   },
   "Freelancer": { 
-    icon: "🌟", 
+    icon: "Sparkles", 
     borderColor: "border-indigo-400",
     iconBgColor: "bg-indigo-100" 
   },
@@ -127,6 +127,20 @@ const testimonials = [
     quote: "Working across multiple specialties made marketing impossible. EmviApp lets me showcase all my skills in one profile, helping me attract exactly the clients I want.",
   },
 ];
+
+// Icon component helper
+const getIconComponent = (iconName: string) => {
+  const iconMap = {
+    Brush: <Brush className="h-5 w-5 text-pink-600" />,
+    Scissors: <Scissors className="h-5 w-5 text-blue-600" />,
+    Palette: <Palette className="h-5 w-5 text-purple-600" />,
+    Pen: <Pen className="h-5 w-5 text-amber-600" />,
+    Hand: <Hand className="h-5 w-5 text-green-600" />,
+    Eye: <Eye className="h-5 w-5 text-teal-600" />,
+    Sparkles: <Sparkles className="h-5 w-5 text-indigo-600" />
+  };
+  return iconMap[iconName as keyof typeof iconMap] || <Sparkles className="h-5 w-5 text-gray-600" />;
+};
 
 const ClientSuccessStories = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -205,7 +219,7 @@ const ClientSuccessStories = () => {
             <div className="flex">
               {testimonials.map((testimonial, idx) => {
                 const professionStyle = professionStyles[testimonial.profession] || 
-                                        { icon: "✨", borderColor: "border-gray-400", iconBgColor: "bg-gray-100" };
+                                        { icon: "Sparkles", borderColor: "border-gray-400", iconBgColor: "bg-gray-100" };
                 
                 return (
                   <div 
@@ -223,8 +237,8 @@ const ClientSuccessStories = () => {
                       <div className="p-6 h-full flex flex-col">
                         <div className="flex items-center mb-4">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 
-                                        ${professionStyle.iconBgColor} text-xl`}>
-                            {professionStyle.icon}
+                                        ${professionStyle.iconBgColor}`}>
+                            {getIconComponent(professionStyle.icon)}
                           </div>
                           <div>
                             <h3 className="font-inter font-semibold text-foreground">{testimonial.name}</h3>

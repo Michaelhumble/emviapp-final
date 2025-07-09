@@ -165,8 +165,8 @@ const FOMONailJobsSection: React.FC = () => {
         >
           <div className="flex items-center justify-center text-center space-x-2">
              <p className="text-sm md:text-base font-inter font-medium">
-               🔥 Những job thật, lương thật vừa đăng—chỉ hiển thị trên EmviApp! Đăng nhập để xem số điện thoại & deal trực tiếp với chủ tiệm.
-             </p>
+                Cơ hội lương cao, việc tốt được xác thực trên EmviApp! Đăng nhập để xem chi tiết liên hệ.
+              </p>
           </div>
         </motion.div>
 

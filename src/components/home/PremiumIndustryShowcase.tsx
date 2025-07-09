@@ -229,7 +229,7 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
 
         {/* CTA Button */}
         <div className="text-center">
-          <Link to={routePath}>
+          <Link to={`/jobs?industry=${industryName}`}>
             <Button 
               size="lg"
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-4 px-8 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-300"
