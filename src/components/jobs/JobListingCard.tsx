@@ -39,22 +39,26 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
     navigate(`/jobs/edit/${job.id}`);
   };
 
+  const isPaidJob = job.pricing_tier && job.pricing_tier !== 'free';
+  
   const getPricingTierBadge = (tier?: string) => {
     switch (tier) {
       case 'diamond':
-        return <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-medium">💎 Diamond</span>;
+        return <span className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-900 text-xs px-3 py-1.5 rounded-full font-bold shadow-md border border-purple-400">💎 Featured Diamond</span>;
       case 'premium':
-        return <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">⭐ Premium</span>;
+        return <span className="bg-gradient-to-r from-blue-200 to-blue-300 text-blue-900 text-xs px-3 py-1.5 rounded-full font-bold shadow-md border border-blue-400">⭐ Featured Premium</span>;
       case 'gold':
-        return <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">🏆 Gold</span>;
+        return <span className="bg-gradient-to-r from-yellow-200 to-yellow-300 text-yellow-900 text-xs px-3 py-1.5 rounded-full font-bold shadow-md border border-yellow-400">🏆 Featured Gold</span>;
       default:
-        return <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Free</span>;
+        return <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-medium border border-gray-300">Free</span>;
     }
   };
   
   return (
-    <div className={`border rounded-lg overflow-hidden bg-white ${isExpired ? 'opacity-60' : ''}`}>
-      <div className="p-4">
+    <div className={`border rounded-lg overflow-hidden bg-white ${isExpired ? 'opacity-60' : ''} ${
+      isPaidJob ? 'border-blue-200 shadow-lg ring-1 ring-blue-100' : 'border-gray-200'
+    }`}>
+      <div className={`p-4 ${isPaidJob ? 'bg-gradient-to-br from-blue-50/30 to-purple-50/30' : ''}`}>
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-semibold">{job.title}</h3>
           {getPricingTierBadge(job.pricing_tier)}
@@ -69,17 +73,27 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
           createdAt={jobCreatedAt} 
         />
         
-        {/* Job Image */}
-        {job.image && (
+        {/* Job Image - Only show for paid jobs */}
+        {isPaidJob && job.image && (
           <div className="mt-3 mb-3">
             <img
               src={job.image}
               alt={job.title}
-              className="w-full h-32 object-cover rounded"
+              className="w-full h-32 object-cover rounded-lg shadow-sm border border-gray-200"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
             />
+          </div>
+        )}
+        
+        {/* Placeholder for free jobs - subtle visual hint */}
+        {!isPaidJob && (
+          <div className="mt-3 mb-3 h-24 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center">
+            <div className="text-center text-gray-400">
+              <p className="text-xs font-medium">📸 Photo available with</p>
+              <p className="text-xs font-medium">Featured listings</p>
+            </div>
           </div>
         )}
         
