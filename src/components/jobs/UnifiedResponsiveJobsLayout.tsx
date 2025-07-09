@@ -213,7 +213,10 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         {/* See All CTA */}
         {filteredJobs.length > 8 && (
           <div className="px-4 lg:px-0 mt-6">
-            <button className="flex items-center justify-center w-full py-4 text-purple-600 font-inter font-bold border-2 border-purple-200 rounded-xl hover:bg-purple-50 transition-colors text-base">
+            <button 
+              onClick={() => navigate(`/${category.toLowerCase().replace(/\s+/g, '-')}`)}
+              className="flex items-center justify-center w-full py-4 text-purple-600 font-inter font-bold border-2 border-purple-200 rounded-xl hover:bg-purple-50 transition-colors text-base"
+            >
               See all {filteredJobs.length} jobs in {category}
               <ChevronRight className="h-5 w-5 ml-2" />
             </button>
