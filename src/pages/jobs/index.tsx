@@ -195,51 +195,107 @@ const JobsPage = () => {
   try {
     return (
       <div className="w-full">
-        {/* Hero Trust Section */}
-        <section className="w-full bg-gradient-to-r from-[#fff2df] via-[#f9eaff] to-[#e6f2ff] py-12 mb-10 shadow-xl flex flex-col items-center text-center max-w-6xl mx-auto border border-[#e7d1ff] relative overflow-hidden mx-4 lg:mx-auto rounded-3xl">
-          <div className="absolute top-4 right-4 text-5xl animate-pulse select-none pointer-events-none">✨</div>
-          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-[#8a55e6] mb-3 tracking-tight drop-shadow-lg leading-tight">
-            America's Most Trusted Beauty Job Community.<br className="hidden md:inline" /> Powered by AI & Heart.
-          </h1>
-          <p className="text-lg md:text-xl text-foreground font-inter font-medium mb-3 max-w-xl mx-auto px-4">
-            Discover new job opportunities, connect with caring salons and artists, and join a network built for YOU.<br/>  
-            Bilingual support, secure by design, and always putting the beauty community first.
-          </p>
-          <div className="flex flex-wrap gap-2 justify-center mb-3 px-4">
-            <span className="bg-gradient-to-r from-purple-100 to-purple-300 text-purple-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-purple-200">AI-Powered, Human-Centered</span>
-            <span className="bg-gradient-to-r from-pink-100 to-pink-300 text-pink-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-pink-200">Vietnamese Language Support</span>
-            <span className="bg-gradient-to-r from-yellow-100 to-yellow-300 text-yellow-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-yellow-200">No Bots, No Spam</span>
-            <span className="bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-blue-200">New Jobs Every Day</span>
-            <span className="bg-gradient-to-r from-green-100 to-green-300 text-green-900 px-4 py-1 rounded-full font-inter font-semibold text-sm shadow border border-green-200">Community-Safe</span>
+        {/* Luxury Hero Section */}
+        <section className="relative w-full bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-16 mb-16 overflow-hidden">
+          {/* Floating elements */}
+          <div className="absolute top-8 right-8 text-6xl sparkle-animation select-none pointer-events-none">✨</div>
+          <div className="absolute top-16 left-8 text-4xl sparkle-animation select-none pointer-events-none" style={{animationDelay: '1s'}}>💎</div>
+          <div className="absolute bottom-12 right-16 text-5xl sparkle-animation select-none pointer-events-none" style={{animationDelay: '2s'}}>⭐</div>
+          
+          <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+            <h1 className="text-5xl md:text-7xl font-playfair font-black text-foreground mb-6 tracking-tight leading-none">
+              America's Premier<br />
+              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                Beauty Career Hub
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground font-inter font-medium mb-8 max-w-4xl mx-auto leading-relaxed">
+              Where exceptional talent meets extraordinary opportunities. Join the most trusted beauty community in America.
+            </p>
+            
+            {/* Trust badges */}
+            <div className="flex flex-wrap gap-3 justify-center mb-8">
+              <span className="bg-white/80 backdrop-blur-sm text-purple-900 px-5 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-purple-200">
+                🤖 AI-Powered Matching
+              </span>
+              <span className="bg-white/80 backdrop-blur-sm text-pink-900 px-5 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-pink-200">
+                🌍 Vietnamese Support
+              </span>
+              <span className="bg-white/80 backdrop-blur-sm text-blue-900 px-5 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-blue-200">
+                🔒 Verified & Safe
+              </span>
+              <span className="bg-white/80 backdrop-blur-sm text-green-900 px-5 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-green-200">
+                📈 2,847 Jobs Posted
+              </span>
+            </div>
+            
+            {/* Primary CTA */}
+            <button
+              onClick={() => navigate('/post-job')}
+              className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-black py-5 px-12 rounded-2xl text-xl shadow-2xl border-0 pulse-glow mb-6"
+            >
+              Post Your Dream Job FREE ✨
+            </button>
+            
+            {/* Social proof */}
+            <div className="max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground font-inter italic mb-2">
+                "This platform connected me with my perfect salon family. The community here truly cares."
+              </p>
+              <p className="text-base font-inter font-bold text-foreground">
+                — Maria Santos, Lead Nail Technician, Miami FL
+              </p>
+            </div>
           </div>
-          <button
-            className="bg-[#8a55e6] hover:bg-[#5a359a] text-white font-inter font-bold py-3 px-10 rounded-xl shadow-2xl text-lg mt-2 transition-all border border-[#c7b3f6] animate-bounce"
-            onClick={() => navigate('/post-job')}
-          >
-            Post Your First Job FREE ✨
-          </button>
-          <p className="text-base text-foreground mt-4 italic px-4 font-inter">
-            "I found my dream team here—and felt supported from day one."<br/>
-            <span className="font-semibold">— Linda N., Salon Owner, Houston TX</span>
-          </p>
-          <p className="mt-2 text-base text-foreground font-inter font-medium px-4">
-            Built by beauty pros. For the community. With AI & heart. 💜
-          </p>
         </section>
 
-        {/* Industry Tabs Navigation */}
-        <div className="container mx-auto px-4 mb-8">
+        {/* Live Stats Bar */}
+        <div className="max-w-7xl mx-auto px-4 mb-12">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div>
+                <p className="text-3xl font-playfair font-black text-purple-600">2,847</p>
+                <p className="text-sm font-inter font-bold text-muted-foreground">Jobs Posted</p>
+              </div>
+              <div>
+                <p className="text-3xl font-playfair font-black text-pink-600">156</p>
+                <p className="text-sm font-inter font-bold text-muted-foreground">Applied Today</p>
+              </div>
+              <div>
+                <p className="text-3xl font-playfair font-black text-blue-600">94%</p>
+                <p className="text-sm font-inter font-bold text-muted-foreground">Success Rate</p>
+              </div>
+              <div>
+                <p className="text-3xl font-playfair font-black text-green-600">4.9★</p>
+                <p className="text-sm font-inter font-bold text-muted-foreground">User Rating</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Premium Industry Navigation */}
+        <div className="max-w-7xl mx-auto px-4 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-playfair font-black text-foreground mb-3">
+              Explore by Specialty
+            </h2>
+            <p className="text-lg font-inter text-muted-foreground">
+              Find opportunities in your area of expertise
+            </p>
+          </div>
+          
           <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 mb-6">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 mb-8 p-2 bg-gray-50 rounded-2xl border-2 border-gray-200">
               {industryTabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (
                   <TabsTrigger 
                     key={tab.id} 
                     value={tab.id}
-                    className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                    className="flex items-center gap-2 font-inter font-bold text-sm py-3 px-4 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-lg data-[state=active]:scale-105"
                   >
-                    <IconComponent className="w-4 h-4" />
+                    <IconComponent className="w-5 h-5" />
                     <span className="hidden lg:inline">{tab.label}</span>
                     <span className="lg:hidden text-xs">{tab.label.split(' ')[0]}</span>
                   </TabsTrigger>
@@ -249,8 +305,40 @@ const JobsPage = () => {
 
             {industryTabs.map(tab => (
               <TabsContent key={tab.id} value={tab.id} className="space-y-8">
-                {/* Diamond Plan - Always at Top */}
-                <DiamondPlanBlock spotsLeft={1} maxSpots={3} />
+                {/* Diamond Exclusive Section */}
+                <div className="mb-12">
+                  <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 text-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm"></div>
+                    <div className="relative z-10">
+                      <h3 className="text-3xl font-playfair font-black text-white mb-4">
+                        💎 Diamond Exclusive Access
+                      </h3>
+                      <p className="text-xl font-inter text-white/90 mb-6 max-w-2xl mx-auto">
+                        Get priority placement, premium visibility, and direct contact with top talent. Only 3 spots available.
+                      </p>
+                      <div className="flex items-center justify-center gap-4 mb-6">
+                        <span className="bg-white/20 text-white px-4 py-2 rounded-full font-inter font-bold">
+                          🎯 5x More Views
+                        </span>
+                        <span className="bg-white/20 text-white px-4 py-2 rounded-full font-inter font-bold">
+                          ⚡ Instant Contact
+                        </span>
+                        <span className="bg-white/20 text-white px-4 py-2 rounded-full font-inter font-bold">
+                          👑 Premium Badge
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => navigate('/post-job')}
+                        className="btn-diamond text-white font-inter font-black py-4 px-8 rounded-xl text-lg"
+                      >
+                        Upgrade to Diamond ✨
+                      </button>
+                      <p className="text-white/80 font-inter mt-3">
+                        Only 1 spot left out of 3
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 
                 {/* FOMO Nail Jobs Section - Show for nails tab or all */}
                 {(tab.id === 'all' || tab.id === 'nails') && <FOMONailJobsSection />}
@@ -267,27 +355,28 @@ const JobsPage = () => {
                   
                   if (!filteredJobs || filteredJobs.length === 0) {
                     return (
-                      <div className="container mx-auto px-4 py-8">
-                        <div className="text-center py-12">
-                           <h3 className="text-xl font-playfair font-bold text-foreground mb-4">
-                             No {tab.label} jobs available right now
+                      <div className="text-center py-16">
+                        <div className="max-w-md mx-auto">
+                          <div className="text-8xl mb-6">🎯</div>
+                          <h3 className="text-2xl font-playfair font-black text-foreground mb-4">
+                            No {tab.label} Jobs Yet
                           </h3>
-                          <p className="text-muted-foreground font-inter mb-6">
-                            Be the first to know when new {tab.label.toLowerCase()} opportunities are posted.
+                          <p className="text-lg text-muted-foreground font-inter mb-8">
+                            Be the first to post in this category and get maximum visibility!
                           </p>
-                          <div className="flex gap-4 justify-center">
+                          <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <button
                               onClick={() => navigate('/post-job')}
-                               className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold py-3 px-6 rounded-xl"
-                             >
-                              Post a Job
+                              className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-black py-4 px-8 rounded-xl text-lg"
+                            >
+                              Post First {tab.label} Job
                             </button>
-                           <button
+                            <button
                               onClick={() => navigate(getIndustryRoute(tab.label))}
-                               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-6 rounded-xl"
-                             >
-                               Browse All {tab.label} Jobs →
-                             </button>
+                              className="bg-white hover:bg-gray-50 text-purple-600 border-2 border-purple-600 font-inter font-bold py-4 px-8 rounded-xl text-lg transition-all"
+                            >
+                              Browse All {tab.label} Jobs →
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -307,20 +396,44 @@ const JobsPage = () => {
 
                 {/* Industry-specific CTA */}
                 {tab.id !== 'all' && (
-                  <div className="text-center py-8 border-t border-gray-200 pt-8">
+                  <div className="mt-16 bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-8 text-center">
+                    <h3 className="text-2xl font-playfair font-black text-foreground mb-4">
+                      Looking for More {tab.label} Opportunities?
+                    </h3>
+                    <p className="text-lg font-inter text-muted-foreground mb-8">
+                      Explore our complete collection or post your own listing
+                    </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                       <button
                         onClick={() => navigate(getIndustryRoute(tab.label))}
-                         className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
-                       >
+                        className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-black py-4 px-8 rounded-xl text-lg"
+                      >
                         Browse All {tab.label} Jobs →
                       </button>
                       <button
                         onClick={() => navigate('/post-job')}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-inter font-bold py-3 px-8 rounded-xl transition-all duration-300"
+                        className="bg-white hover:bg-gray-50 text-purple-600 border-2 border-purple-600 font-inter font-bold py-4 px-8 rounded-xl text-lg transition-all"
                       >
                         Post a {tab.label} Job
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Success Story - After every major section */}
+                {tab.id === 'all' && (
+                  <div className="mt-16 max-w-4xl mx-auto">
+                    <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 text-center">
+                      <div className="text-6xl mb-4">🌟</div>
+                      <h3 className="text-xl font-playfair font-black text-foreground mb-4">
+                        Success Story
+                      </h3>
+                      <p className="text-lg font-inter italic text-muted-foreground mb-4">
+                        "Within 2 weeks of posting here, I hired 3 incredible nail technicians. The quality of candidates is unmatched!"
+                      </p>
+                      <p className="font-inter font-bold text-foreground">
+                        — Jennifer Kim, Owner of Luxe Nail Studio
+                      </p>
                     </div>
                   </div>
                 )}

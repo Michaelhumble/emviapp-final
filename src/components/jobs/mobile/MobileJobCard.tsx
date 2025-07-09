@@ -31,21 +31,31 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     switch (tier) {
       case 'premium':
         return { 
-          color: 'bg-purple-100 text-purple-800 border-purple-200', 
-          icon: <Star className="h-3 w-3" />,
-          text: 'Premium'
+          color: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-lg', 
+          icon: <Star className="h-4 w-4" />,
+          text: 'Premium',
+          glow: 'shadow-purple-500/50'
         };
       case 'diamond':
         return { 
-          color: 'bg-blue-100 text-blue-800 border-blue-200', 
-          icon: <Crown className="h-3 w-3" />,
-          text: 'Diamond'
+          color: 'bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-lg', 
+          icon: <Crown className="h-4 w-4" />,
+          text: 'Diamond',
+          glow: 'shadow-blue-500/50'
+        };
+      case 'gold':
+        return { 
+          color: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg', 
+          icon: <Crown className="h-4 w-4" />,
+          text: 'Gold',
+          glow: 'shadow-yellow-500/50'
         };
       default:
         return { 
-          color: 'bg-green-100 text-green-800 border-green-200', 
+          color: 'bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 shadow-sm', 
           icon: null,
-          text: 'Free'
+          text: 'Free',
+          glow: ''
         };
     }
   };
@@ -96,13 +106,13 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border-2 border-gray-200 hover:border-purple-300 overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}>
+    <div className={`card-luxury bg-white rounded-2xl overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}>
       {/* Image Section */}
       <div className="relative">
         <img 
           src={getJobImage()}
           alt={job.title || job.company}
-          className={`w-full object-cover ${expanded ? 'h-48' : 'h-36'} ${isExpired ? 'grayscale' : ''}`}
+          className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
           onError={(e) => {
             e.currentTarget.src = '/placeholder-salon.jpg';
           }}
@@ -110,73 +120,78 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         
         {/* Expired overlay */}
         {isExpired && (
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-            <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+            <div className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-inter font-bold shadow-lg">
               Position Filled
             </div>
           </div>
         )}
 
-        {/* Pricing tier badge */}
+        {/* Premium Pricing tier badge */}
         {!isExpired && (
-          <div className="absolute top-2 right-2">
-            <Badge className={`${pricingDisplay.color} flex items-center gap-1 text-xs`}>
+          <div className="absolute top-3 right-3">
+            <Badge className={`${pricingDisplay.color} ${pricingDisplay.glow} flex items-center gap-2 text-sm font-inter font-bold px-3 py-1 rounded-full`}>
               {pricingDisplay.icon}
               {pricingDisplay.text}
             </Badge>
           </div>
         )}
+
+        {/* Premium sparkle effect for paid tiers */}
+        {!isExpired && job.pricing_tier !== 'free' && (
+          <div className="absolute top-3 left-3 text-2xl sparkle-animation">✨</div>
+        )}
       </div>
 
       {/* Content Section */}
-      <div className="p-4">
+      <div className="p-6">
         {/* Title and Company */}
-        <div className="mb-3">
-          <h3 className={`font-black text-gray-900 mb-1 ${expanded ? 'text-lg' : 'text-base'} line-clamp-2 leading-tight`}>
+        <div className="mb-4">
+          <h3 className={`font-playfair font-black text-foreground mb-2 ${expanded ? 'text-xl' : 'text-lg'} line-clamp-2 leading-tight`}>
             {job.vietnamese_title || job.title || 'Untitled Job'}
           </h3>
-          <p className={`font-bold text-gray-900 ${expanded ? 'text-base' : 'text-sm'}`}>
+          <p className={`font-inter font-bold text-muted-foreground ${expanded ? 'text-base' : 'text-sm'}`}>
             {job.company || 'Company Name'}
           </p>
         </div>
 
         {/* Job details */}
-        <div className="space-y-2 mb-4">
+        <div className="space-y-3 mb-6">
           <div className="flex items-center">
-            <MapPin className="h-4 w-4 mr-2 text-gray-700" />
-            <span className="text-sm font-bold text-gray-900">{job.location || 'Location TBD'}</span>
+            <MapPin className="h-5 w-5 mr-3 text-muted-foreground" />
+            <span className="text-sm font-inter font-bold text-foreground">{job.location || 'Location TBD'}</span>
           </div>
           
           <div className="flex items-center">
-            <DollarSign className="h-4 w-4 mr-2 text-green-700" />
-            <span className="text-sm font-black text-green-700">{getSalary()}</span>
+            <DollarSign className="h-5 w-5 mr-3 text-emerald-600" />
+            <span className="text-sm font-inter font-black text-emerald-600">{getSalary()}</span>
           </div>
           
           {job.employment_type && (
             <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-2 text-gray-700" />
-              <span className="text-sm font-bold text-gray-900">{job.employment_type}</span>
+              <Clock className="h-5 w-5 mr-3 text-muted-foreground" />
+              <span className="text-sm font-inter font-bold text-foreground">{job.employment_type}</span>
             </div>
           )}
         </div>
 
         {/* Description - only in expanded mode */}
         {expanded && (
-          <div className="mb-4">
-            <p className="text-base font-bold text-gray-900 line-clamp-3 leading-relaxed">
+          <div className="mb-6">
+            <p className="text-base font-inter text-muted-foreground line-clamp-3 leading-relaxed">
               {job.vietnamese_description || job.description || 'Job description not available.'}
             </p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="pt-3 space-y-3">
+        <div className="pt-4 space-y-3">
           {isExpired ? (
             <Button 
               variant="outline" 
               size="default" 
               disabled 
-              className="w-full text-sm font-bold border-2"
+              className="w-full text-sm font-inter font-bold border-2 py-3"
             >
               Position Filled
             </Button>
@@ -185,9 +200,9 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
               <Button 
                 onClick={expanded ? () => {} : onViewDetails}
                 size="default"
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-3 shadow-lg"
+                className="btn-luxury flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-inter font-black py-3"
               >
-                {expanded ? 'Apply Now' : 'View Details'}
+                {expanded ? 'Apply Now ✨' : 'View Details'}
               </Button>
               
               {isOwner && onEditJob && (
@@ -195,7 +210,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
                   variant="outline"
                   size="default"
                   onClick={onEditJob}
-                  className="px-4 border-2 hover:bg-gray-100 font-bold"
+                  className="px-4 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 font-inter font-bold"
                   title="Edit Job"
                 >
                   <Edit className="h-4 w-4" />
@@ -207,8 +222,15 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
 
         {/* Filled date for expired jobs */}
         {isExpired && job.filled_date && (
-          <div className="mt-2 text-xs font-medium text-gray-700 text-center">
+          <div className="mt-3 text-xs font-inter font-medium text-muted-foreground text-center">
             Filled on {new Date(job.filled_date).toLocaleDateString()}
+          </div>
+        )}
+
+        {/* FOMO message for expired jobs */}
+        {isExpired && (
+          <div className="mt-2 text-xs font-inter font-medium text-red-600 text-center italic">
+            Missed out? Check back daily for new opportunities! 🎯
           </div>
         )}
       </div>

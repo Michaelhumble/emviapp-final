@@ -241,67 +241,69 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
 
   return (
     <div className="w-full">
-      {/* Sticky Header with Search and Post Job - ALL devices */}
-      <div className="sticky top-0 z-40 bg-white border-b-2 border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl lg:text-3xl font-playfair font-black text-foreground">Beauty Jobs</h1>
+      {/* Luxury Header with Search and Post Job */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl lg:text-4xl font-playfair font-black text-foreground">
+              Premium Jobs
+            </h1>
             
-            {/* Desktop: Horizontal layout */}
-            <div className="hidden lg:flex items-center space-x-4">
+            {/* Desktop: Enhanced layout */}
+            <div className="hidden lg:flex items-center space-x-6">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-4 h-5 w-5 text-muted-foreground" />
                 <Input
-                  placeholder="Search jobs, locations..."
+                  placeholder="Search jobs, locations, companies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-80 border-2 font-inter font-medium"
+                  className="pl-12 w-96 h-12 border-2 border-gray-300 rounded-xl font-inter font-medium text-base focus:border-purple-500"
                 />
               </div>
               
               <Button 
                 onClick={() => navigate('/post-job')}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold px-6 py-3 text-base"
+                className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-black px-8 py-3 text-base rounded-xl"
               >
                 <Plus className="h-5 w-5 mr-2" />
-                Post a Job
+                Post Premium Job
               </Button>
             </div>
 
-            {/* Mobile: Stack vertically */}
+            {/* Mobile: Minimalist */}
             <div className="lg:hidden">
               <Button 
                 onClick={() => navigate('/post-job')}
                 size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-inter font-bold rounded-xl"
               >
                 <Plus className="h-4 w-4 mr-1" />
-                Post Job
+                Post
               </Button>
             </div>
           </div>
 
           {/* Mobile Search */}
-          <div className="lg:hidden mb-4">
+          <div className="lg:hidden mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-4 top-4 h-5 w-5 text-muted-foreground" />
               <Input
                 placeholder="Search jobs, locations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 w-full border-2 font-inter font-medium"
+                className="pl-12 w-full h-12 border-2 border-gray-300 rounded-xl font-inter font-medium text-base focus:border-purple-500"
               />
             </div>
           </div>
 
-          {/* Industry Category Tabs - Sticky, Bold - ALL devices */}
+          {/* Premium Industry Category Tabs */}
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex space-x-2 pb-2" style={{ minWidth: 'max-content' }}>
+            <div className="flex space-x-3 pb-4" style={{ minWidth: 'max-content' }}>
               <button
-                className={`flex items-center space-x-2 px-4 py-3 rounded-xl font-inter font-bold text-sm whitespace-nowrap transition-colors border-2 ${
+                className={`flex items-center space-x-3 px-6 py-4 rounded-2xl font-inter font-black text-sm whitespace-nowrap transition-all duration-300 ${
                   activeIndustry === 'All'
-                    ? 'bg-purple-600 text-white border-purple-600'
-                    : 'bg-white text-foreground border-gray-200 hover:border-purple-300'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
+                    : 'bg-white text-foreground border-2 border-gray-200 hover:border-purple-300 hover:scale-105 shadow-md'
                 }`}
                 onClick={() => setActiveIndustry('All')}
               >
@@ -317,16 +319,22 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
                 return (
                   <button
                     key={industry}
-                    className={`flex items-center space-x-2 px-4 py-3 rounded-xl font-inter font-bold text-sm whitespace-nowrap transition-colors border-2 ${
+                    className={`flex items-center space-x-3 px-6 py-4 rounded-2xl font-inter font-black text-sm whitespace-nowrap transition-all duration-300 ${
                       activeIndustry === industry
-                        ? 'bg-purple-600 text-white border-purple-600'
-                        : 'bg-white text-foreground border-gray-200 hover:border-purple-300'
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
+                        : 'bg-white text-foreground border-2 border-gray-200 hover:border-purple-300 hover:scale-105 shadow-md'
                     }`}
                     onClick={() => setActiveIndustry(industry)}
                   >
                     {getIndustryIcon(industry)}
                     <span>{industry}</span>
-                    <span className="bg-white/20 text-xs px-2 py-1 rounded-full">{jobCount}</span>
+                    <span className={`text-xs px-3 py-1 rounded-full font-bold ${
+                      activeIndustry === industry 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-purple-100 text-purple-600'
+                    }`}>
+                      {jobCount}
+                    </span>
                   </button>
                 );
               })}
@@ -370,14 +378,27 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         )}
       </div>
 
-      {/* Floating Post Job Button - Mobile */}
+      {/* Floating Post Job Button - Mobile & Desktop */}
       <Button
         onClick={() => navigate('/post-job')}
-        className="fixed bottom-6 right-6 rounded-full w-16 h-16 bg-purple-600 hover:bg-purple-700 text-white shadow-xl z-50 lg:hidden"
+        className="fixed bottom-8 right-8 rounded-full w-16 h-16 lg:w-20 lg:h-20 btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white z-50 pulse-glow"
         size="lg"
       >
-        <Plus className="h-8 w-8" />
+        <Plus className="h-8 w-8 lg:h-10 lg:w-10" />
       </Button>
+
+      {/* Sticky Post Job Banner - Mobile only */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 z-40">
+        <div className="text-center">
+          <p className="font-inter font-bold mb-2">Ready to hire the best talent?</p>
+          <Button
+            onClick={() => navigate('/post-job')}
+            className="bg-white text-purple-600 hover:bg-gray-100 font-inter font-black py-2 px-6 rounded-full"
+          >
+            Post Your Job FREE
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
