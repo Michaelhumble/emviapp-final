@@ -6,7 +6,7 @@ import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 const JobsPage = () => {
@@ -14,6 +14,7 @@ const JobsPage = () => {
   const { isSignedIn } = useAuth();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Check for payment success
   useEffect(() => {
@@ -139,8 +140,30 @@ const JobsPage = () => {
   try {
     return (
       <div className="container mx-auto px-4 py-8">
+        {/* Hero Trust Section */}
+        <section className="w-full bg-gradient-to-r from-[#ffeedd] via-[#fff] to-[#e6d8f5] py-10 mb-8 rounded-2xl shadow-lg flex flex-col items-center text-center max-w-4xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#9A7B69] mb-2 drop-shadow-lg">
+            The Best Beauty Jobs in America. Trusted. Real. Updated Daily.
+          </h1>
+          <p className="text-base md:text-lg text-[#555] mb-4 max-w-2xl">
+            Find your dream salon job or post your first job for <b>FREE</b>—no credit card required. EmviApp is built by the community, for the community.
+          </p>
+          <div className="flex gap-3 flex-wrap justify-center mb-4">
+            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium text-xs shadow">Real Listings Only</span>
+            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium text-xs shadow">Secure Payments</span>
+            <span className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium text-xs shadow">Vietnamese Language Supported</span>
+            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium text-xs shadow">No Scam Guarantee</span>
+          </div>
+          <button
+            className="bg-[#9A7B69] hover:bg-[#7b5f50] text-white font-bold py-3 px-8 rounded-xl shadow-lg transition"
+            onClick={() => navigate('/post-job')}
+          >
+            Post Your First Job Free
+          </button>
+        </section>
+
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Latest Job Opportunities</h1>
+          <h2 className="text-3xl font-bold mb-4">Latest Job Opportunities</h2>
           <p className="text-gray-600">{jobs?.length || 0} jobs available</p>
         </div>
 
