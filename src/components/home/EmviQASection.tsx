@@ -225,12 +225,12 @@ const EmviQASection = () => {
                     boxShadow: "0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5)"
                   }}
                 >
-                  <AccordionTrigger className="px-6 py-4 hover:no-underline text-left font-medium text-gray-800 hover:text-purple-700 transition-colors duration-200">
+                   <AccordionTrigger className="px-6 py-4 hover:no-underline text-left font-inter font-medium text-foreground hover:text-purple-700 transition-colors duration-200">
                     <span className="text-sm md:text-base leading-relaxed pr-4">
                       {index + 1}. {qa.question}
                     </span>
                   </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-6 text-gray-700 leading-relaxed">
+                  <AccordionContent className="px-6 pb-6 text-foreground font-inter leading-relaxed">
                     <div className="text-sm md:text-base pt-2">
                       {qa.answer}
                     </div>
@@ -256,18 +256,18 @@ const EmviQASection = () => {
               boxShadow: "0 32px 64px -12px rgba(139,92,246,0.15), 0 0 0 1px rgba(255,255,255,0.3), inset 0 1px 0 rgba(255,255,255,0.4)"
             }}
           >
-            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gray-800 mb-6">
+            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-foreground mb-6">
               Ready to Join the Movement?
             </h3>
             
-            <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-foreground font-inter leading-relaxed mb-8 max-w-3xl mx-auto">
               EmviApp isn't just another app—it's a mission, a movement, and a community. If you're ready to grow, share, and succeed together, join us and let's make the beauty industry better for everyone!
             </p>
             
             <Link to="/auth/signup">
               <Button 
                 size="lg" 
-                className="text-lg px-12 py-6 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                className="text-lg px-12 py-6 rounded-2xl font-inter font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                 style={{
                   background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)",
                   boxShadow: "0 8px 32px rgba(139,92,246,0.3), inset 0 1px 0 rgba(255,255,255,0.2)"

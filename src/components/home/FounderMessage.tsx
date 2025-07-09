@@ -107,7 +107,7 @@ Cảm ơn bạn đã trở thành một phần của cộng đồng này. Cùng 
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="space-y-6"
               >
-                <p className="text-lg md:text-xl leading-relaxed text-gray-700 font-medium">
+                <p className="text-lg md:text-xl leading-relaxed text-foreground font-inter font-medium">
                   {content[language].message.split('\n\n').map((paragraph, index) => (
                     <span key={index} className="block mb-6 last:mb-0">
                       {paragraph}

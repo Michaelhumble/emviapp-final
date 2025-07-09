@@ -190,10 +190,10 @@ const ClientSuccessStories = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4 tracking-tight text-foreground">
             No Matter Your Craft — We Know the Struggle
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground font-inter">
             Real stories from Nail Techs, Barbers, Tattoo Artists, Makeup Artists, Massage Therapists, and more — 
             finally, a platform built for all of us.
           </p>
@@ -227,8 +227,8 @@ const ClientSuccessStories = () => {
                             {professionStyle.icon}
                           </div>
                           <div>
-                            <h3 className="font-semibold text-gray-800">{testimonial.name}</h3>
-                            <p className="text-sm text-gray-600">{testimonial.profession} • {testimonial.location}</p>
+                            <h3 className="font-inter font-semibold text-foreground">{testimonial.name}</h3>
+                            <p className="text-sm text-muted-foreground font-inter">{testimonial.profession} • {testimonial.location}</p>
                           </div>
                         </div>
                         
@@ -242,7 +242,7 @@ const ClientSuccessStories = () => {
                           </div>
                         </div>
                         
-                        <blockquote className="text-gray-700 italic text-sm md:text-base mb-3">
+                        <blockquote className="text-foreground font-inter italic text-sm md:text-base mb-3">
                           "{testimonial.quote}"
                         </blockquote>
                       </div>
@@ -288,7 +288,7 @@ const ClientSuccessStories = () => {
         
         {/* CTA button */}
         <div className="mt-12 text-center">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-md transition-all
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-inter font-medium px-6 py-2 rounded-md transition-all
                                      hover:shadow-lg hover:translate-y-[-2px]">
             Join Thousands Taking Control of Their Career — Get Started with EmviApp
           </Button>
