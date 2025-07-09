@@ -83,14 +83,14 @@ const ExpiredJobsSection: React.FC = () => {
   return (
     <section className="w-full max-w-6xl mx-auto mt-16 mb-8">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-700 mb-2">Recently Filled Positions</h2>
+        <h2 className="text-3xl font-bold text-gray-700 mb-2">Recently Expired Beauty Industry Listings</h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          See what opportunities were recently available. These positions have been filled, 
-          but similar roles are posted daily. <span className="font-semibold text-purple-700">Stay tuned for new openings!</span>
+          These listings are now closed, but new jobs are posted daily. 
+          <span className="font-semibold text-purple-700"> Sign in to unlock future posts.</span>
         </p>
-        <div className="mt-4 bg-gradient-to-r from-yellow-100 to-orange-100 border border-yellow-300 rounded-lg p-4 max-w-xl mx-auto">
-          <p className="text-yellow-800 text-sm font-medium">
-            💡 <span className="font-bold">FOMO Alert:</span> These great jobs filled up fast! 
+        <div className="mt-4 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-4 max-w-2xl mx-auto">
+          <p className="text-red-800 text-sm font-medium">
+            🔥 <span className="font-bold">FOMO Alert:</span> These great jobs filled up fast! 
             Don't miss the next batch—check back daily for fresh opportunities.
           </p>
         </div>
