@@ -20,6 +20,7 @@ export const useJobsData = () => {
         .from('jobs')
         .select('*', { count: 'exact' })
         .eq('status', 'active')
+        .or('expires_at.is.null,expires_at.gt.now()')
         .order('created_at', { ascending: false });
         
       // LOG ALL ACTIVE JOBS FOR DEBUGGING

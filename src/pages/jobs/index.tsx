@@ -9,6 +9,7 @@ import { Job } from '@/types/job';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
+import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
 import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -245,6 +246,9 @@ const JobsPage = () => {
                 {/* FOMO Nail Jobs Section - Show for nails tab or all */}
                 {(tab.id === 'all' || tab.id === 'nails') && <FOMONailJobsSection />}
                 
+                {/* What You Missed Section - Show expired jobs */}
+                {tab.id === 'all' && <WhatYouMissedSection />}
+                
                 {/* Filtered Jobs for this industry */}
                 {(() => {
                   const filteredJobs = tab.id === 'all' 
@@ -269,11 +273,11 @@ const JobsPage = () => {
                              >
                               Post a Job
                             </button>
-                             <button
-                               onClick={() => navigate(`/${tab.id}`)}
-                               className="bg-gray-100 hover:bg-gray-200 text-foreground font-inter font-bold py-3 px-6 rounded-xl"
+                           <button
+                              onClick={() => navigate(`/${tab.id}`)}
+                               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-6 rounded-xl"
                             >
-                              See All {tab.label} Listings
+                              Browse All {tab.label} Jobs →
                             </button>
                           </div>
                         </div>
@@ -294,13 +298,21 @@ const JobsPage = () => {
 
                 {/* Industry-specific CTA */}
                 {tab.id !== 'all' && (
-                  <div className="text-center py-8">
-                    <button
-                      onClick={() => navigate(`/${tab.id}`)}
-                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-8 rounded-xl"
-                     >
-                      See all {tab.label} Jobs →
-                    </button>
+                  <div className="text-center py-8 border-t border-gray-200 pt-8">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                      <button
+                        onClick={() => navigate(`/${tab.id}`)}
+                         className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                       >
+                        Browse All {tab.label} Jobs →
+                      </button>
+                      <button
+                        onClick={() => navigate('/post-job')}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-inter font-bold py-3 px-8 rounded-xl transition-all duration-300"
+                      >
+                        Post a {tab.label} Job
+                      </button>
+                    </div>
                   </div>
                 )}
               </TabsContent>

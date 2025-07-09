@@ -28,9 +28,10 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
       const result = await signIn(email, password);
       
       if (result) {
-        // Decode the redirect URL if it exists
+        // Decode the redirect URL if it exists, default to dashboard
         const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        navigate(decodedRedirect);
+        // Use window.location.href for full page refresh to ensure auth state is properly updated
+        window.location.href = decodedRedirect;
       }
     } catch (error) {
       // Error handling is done in the signIn method
@@ -40,12 +41,40 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
   };
 
   return (
-    <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
-      <CardHeader className="space-y-1 pb-6">
-        <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
-          Welcome Back
-        </CardTitle>
-      </CardHeader>
+    <div className="space-y-6">
+      {/* Trust Section */}
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span>Secure & Private</span>
+          </div>
+          <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <span>100% Free</span>
+          </div>
+          <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+            <span>Industry Trusted</span>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-100">
+          <p className="text-sm text-gray-700 italic">
+            "EmviApp helped me find my dream job in just 3 days! The community is so supportive and genuine."
+          </p>
+          <p className="text-xs text-gray-600 mt-2 font-medium">— Maria S., Nail Technician, Los Angeles</p>
+        </div>
+      </div>
+
+      <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
+        <CardHeader className="space-y-1 pb-6">
+          <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
+            Welcome Back
+          </CardTitle>
+        </CardHeader>
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
@@ -103,6 +132,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
         </CardFooter>
       </form>
     </Card>
+    </div>
   );
 };
 

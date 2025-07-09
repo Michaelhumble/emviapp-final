@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon, ArrowLeft, Home } from 'lucide-react';
+import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon, ArrowLeft, Home, Plus } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
@@ -149,13 +149,26 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
       </section>
 
       <div className="container mx-auto px-4 pb-16">
-        {/* Back Navigation */}
+        {/* Breadcrumb Navigation */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
+          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
+            <Link to="/" className="hover:text-purple-600 transition-colors flex items-center gap-1">
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
+            <span>/</span>
+            <Link to="/jobs" className="hover:text-purple-600 transition-colors">
+              Jobs
+            </Link>
+            <span>/</span>
+            <span className="text-gray-900 font-medium">{displayName}</span>
+          </nav>
+          
           <Link 
             to="/jobs" 
             className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-inter font-medium text-base transition-colors"
@@ -581,8 +594,20 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               </div>
             </div>
           </motion.div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      
+      {/* Floating Post Job Button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <Button
+          size="lg"
+          className="bg-purple-600 hover:bg-purple-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 rounded-full px-6 py-4 font-inter font-bold"
+          onClick={() => navigate('/post-job')}
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Post Job
+        </Button>
+      </div>
     </div>
   );
 };

@@ -27,12 +27,12 @@ const JobCardContact = ({ phoneNumber }: JobCardContactProps) => {
   // Otherwise show lock icon with sign in prompt
   return (
     <AuthAction
-      customTitle="Sign in to see contact details"
+      customTitle="Sign in to unlock contact details"
       onAction={() => true}
       fallbackContent={
-        <div className="text-xs text-gray-500 italic flex items-center gap-1">
+        <div className="text-xs text-gray-500 italic flex items-center gap-1 cursor-pointer hover:text-purple-600 transition-colors">
           <LockIcon className="h-3 w-3" />
-          <span>Sign in to see contact details</span>
+          <span>Sign in to unlock contact details</span>
         </div>
       }
     />
