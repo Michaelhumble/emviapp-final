@@ -195,135 +195,184 @@ const JobsPage = () => {
   try {
     return (
       <div className="w-full">
-        {/* Ultra-Premium Hero Section */}
-        <section className="relative w-full bg-gradient-to-br from-slate-50 via-white to-[#F6F6F7] dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-24 md:py-32 overflow-hidden">
-          {/* Enhanced Background with Brand Colors */}
+        {/* WORLD-CLASS HERO SECTION */}
+        <section className="relative w-full bg-gradient-to-br from-[#FDFDFD] via-[#F6F6F7] to-white dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-32 md:py-40 overflow-hidden">
+          {/* Stunning Premium Background */}
           <div className="absolute inset-0">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-100/30 via-[#FDFDFD]/80 to-[#F6F6F7]/60 dark:from-slate-800/40 dark:via-slate-700/30 dark:to-gray-800/50"></div>
-            <div className="absolute top-1/4 right-1/5 w-96 h-96 bg-gradient-to-br from-[#9A7B69]/10 to-[#9A7B69]/20 dark:from-[#9A7B69]/5 dark:to-[#9A7B69]/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 left-1/5 w-80 h-80 bg-gradient-to-tr from-[#8A898C]/10 to-[#9A7B69]/15 dark:from-[#8A898C]/5 dark:to-[#9A7B69]/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-[#9A7B69]/8 to-slate-100/25 dark:from-[#9A7B69]/5 dark:to-slate-800/25 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            {/* Base luxury gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/3 via-[#FDFDFD]/95 to-[#F6F6F7]/90 dark:from-[#9A7B69]/8 dark:via-slate-800/90 dark:to-gray-900/95"></div>
+            
+            {/* Floating orbs with brand colors */}
+            <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-[#9A7B69]/12 via-[#8A898C]/8 to-transparent rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-32 left-32 w-80 h-80 bg-gradient-to-tr from-[#8A898C]/10 via-[#9A7B69]/12 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-gradient-to-br from-[#9A7B69]/6 via-[#F6F6F7]/20 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+            
+            {/* Subtle grid pattern for texture */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(154,123,105,0.03)_1px,transparent_1px)] bg-[length:60px_60px] opacity-40"></div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-              {/* Hero Content - Left aligned on desktop, centered on mobile */}
-              <div className="lg:col-span-8 text-center lg:text-left">
-                <div className="animate-fade-in">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-playfair font-bold text-gray-900 dark:text-white mb-8 leading-tight tracking-tight">
-                    <span className="block animate-slide-in-right">Unlock the Beauty Industry's</span>
-                    <span className="block animate-slide-in-right" style={{ animationDelay: '0.2s' }}>Best-Kept Secrets.</span>
-                    <span className="block text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-slate-600 dark:text-slate-300 mt-4 animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
-                      Where Top Salons & Artists Connect First—<br />
-                      Quietly, Confidently, Successfully.
+          <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
+            <div className="text-center max-w-5xl mx-auto">
+              {/* Trust Badge */}
+              <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-[#9A7B69]/20 dark:border-slate-700/50 rounded-full px-6 py-3 mb-8 shadow-lg">
+                <div className="w-3 h-3 bg-gradient-to-r from-[#9A7B69] to-[#8A898C] rounded-full animate-pulse"></div>
+                <span className="text-sm font-inter font-medium text-gray-700 dark:text-gray-300">Trusted by 2,800+ Top Salons</span>
+              </div>
+              
+              {/* Hero Headline */}
+              <div className="animate-fade-in">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-playfair font-bold text-gray-900 dark:text-white mb-8 leading-[0.9] tracking-tight">
+                  <span className="block bg-gradient-to-r from-gray-900 via-[#9A7B69] to-gray-900 dark:from-white dark:via-[#9A7B69] dark:to-white bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">
+                    Finding Great Artists
+                  </span>
+                  <span className="block text-gray-900 dark:text-white mt-2">
+                    Is Hard—
+                  </span>
+                  <span className="block bg-gradient-to-r from-[#9A7B69] via-[#8A898C] to-[#9A7B69] bg-clip-text text-transparent">
+                    EmviApp Makes It Easy.
+                  </span>
+                </h1>
+              </div>
+              
+              {/* Emotional Subheadline */}
+              <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 font-inter mb-16 max-w-4xl mx-auto leading-relaxed font-light">
+                  Stop wasting time on job boards that don't work. Connect with top nail techs, stylists, and beauty professionals who are serious about their craft—and ready to grow with you.
+                </p>
+              </div>
+              
+              {/* Premium CTA Buttons */}
+              <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+                  <button
+                    onClick={() => navigate('/post-job')}
+                    className="group relative bg-gradient-to-r from-[#9A7B69] via-[#8A898C] to-[#9A7B69] hover:from-[#8A898C] hover:via-[#9A7B69] hover:to-[#8A898C] text-white font-inter font-bold py-6 px-12 rounded-2xl text-xl shadow-[0_25px_50px_rgba(154,123,105,0.25)] hover:shadow-[0_35px_70px_rgba(154,123,105,0.35)] transition-all duration-700 min-w-[280px] overflow-hidden border border-white/20"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Post a Job
                     </span>
-                  </h1>
-                </div>
-                
-                <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-                  <p className="text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 font-inter mb-12 max-w-4xl leading-relaxed">
-                    Trusted by industry leaders. Find your dream artist or your next big move before anyone else knows it's available. No noise. No spam. Just results—built for those who expect the best.
-                  </p>
-                </div>
-                
-                {/* Ultra-Premium CTAs */}
-                <div className="animate-fade-in" style={{ animationDelay: '0.8s' }}>
-                  <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center mb-8">
-                    <button
-                      onClick={() => navigate('/post-job')}
-                      className="group relative bg-gradient-to-r from-[#9A7B69] via-[#8A898C] to-[#9A7B69] hover:from-[#9A7B69] hover:via-[#9A7B69] hover:to-[#8A898C] text-white font-inter font-bold py-6 px-12 rounded-2xl text-lg shadow-[0_20px_40px_rgba(154,123,105,0.3)] hover:shadow-[0_30px_60px_rgba(154,123,105,0.4)] transition-all duration-500 min-w-[220px] overflow-hidden border border-[#9A7B69]/50 animate-pulse hover:animate-none"
-                    >
-                      <span className="relative z-10 flex items-center gap-3">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        Post a Job
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#8A898C] via-[#9A7B69] to-[#8A898C] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        const jobsSection = document.querySelector('#jobs-section');
-                        if (jobsSection) {
-                          jobsSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      }}
-                      className="group relative bg-white/90 hover:bg-[#F6F6F7] dark:bg-slate-800/80 backdrop-blur-sm text-[#9A7B69] dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-lg shadow-[0_15px_35px_rgba(154,123,105,0.15)] hover:shadow-[0_25px_50px_rgba(154,123,105,0.25)] transition-all duration-500 min-w-[220px] overflow-hidden border-2 border-[#9A7B69]/30 hover:border-[#9A7B69]/50"
-                    >
-                      <span className="relative z-10 flex items-center gap-3">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Find My Dream Job
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#F6F6F7]/50 to-[#FDFDFD]/80 dark:from-slate-700/90 dark:to-slate-600/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                    </button>
-                  </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
+                  </button>
                   
-                  {/* Subtle FOMO Line */}
-                  <div className="text-center lg:text-left">
-                    <p className="text-sm font-inter text-gray-600 dark:text-gray-400 italic">
-                      Most positions fill in under 48 hours. Don't wait—top talent moves fast.
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => {
+                      const jobsSection = document.querySelector('#jobs-section');
+                      if (jobsSection) {
+                        jobsSection.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    className="group relative bg-white/95 hover:bg-[#F6F6F7] dark:bg-slate-800/90 dark:hover:bg-slate-700/90 backdrop-blur-sm text-[#9A7B69] dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-xl shadow-[0_20px_40px_rgba(154,123,105,0.15)] hover:shadow-[0_30px_60px_rgba(154,123,105,0.25)] transition-all duration-700 min-w-[280px] overflow-hidden border-2 border-[#9A7B69]/20 hover:border-[#9A7B69]/40"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      Find My Dream Job
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#9A7B69]/5 via-[#F6F6F7]/50 to-[#9A7B69]/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
+                  </button>
                 </div>
                 
-                {/* Elegant Trust Signals */}
-                <div className="flex flex-wrap justify-center lg:justify-start items-center gap-8 text-sm font-inter text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-gray-900 dark:bg-white rounded-full"></div>
-                    <span>Used by leaders</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-gray-900 dark:bg-white rounded-full"></div>
-                    <span>Loved by talent</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-gray-900 dark:bg-white rounded-full"></div>
-                    <span>Private</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-gray-900 dark:bg-white rounded-full"></div>
-                    <span>Discreet</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-gray-900 dark:bg-white rounded-full"></div>
-                    <span>Secure</span>
-                  </div>
+                {/* Emotional Trust Line */}
+                <div className="text-center">
+                  <p className="text-lg font-inter text-gray-500 dark:text-gray-400">
+                    <span className="font-medium text-[#9A7B69]">1,247 successful hires</span> in the last 30 days. Join the best.
+                  </p>
                 </div>
               </div>
               
-              {/* Right side - subtle visual element */}
-              <div className="lg:col-span-4 hidden lg:block">
-                <div className="relative">
-                  <div className="w-full h-96 bg-gradient-to-br from-slate-100 to-gray-50 dark:from-slate-800 dark:to-gray-900 rounded-none shadow-2xl border border-slate-200 dark:border-slate-700"></div>
-                  <div className="absolute inset-4 bg-white dark:bg-gray-800 rounded-none shadow-inner border border-slate-100 dark:border-slate-600"></div>
-                  <div className="absolute inset-8 bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-none"></div>
+              {/* Premium Trust Indicators */}
+              <div className="animate-fade-in" style={{ animationDelay: '0.9s' }}>
+                <div className="flex flex-wrap justify-center items-center gap-12 text-sm font-inter text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#9A7B69] to-[#8A898C] rounded-full"></div>
+                    <span className="font-medium">Private & Confidential</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#8A898C] to-[#9A7B69] rounded-full"></div>
+                    <span className="font-medium">Verified Professionals</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#9A7B69] to-[#8A898C] rounded-full"></div>
+                    <span className="font-medium">48hr Average Fill Time</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Premium Testimonial Section */}
-        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-          <div className="relative bg-gradient-to-br from-[#F6F6F7]/90 via-white/95 to-[#FDFDFD]/90 dark:bg-gradient-to-br dark:from-slate-900/90 dark:via-slate-800/90 dark:to-gray-900/90 backdrop-blur-sm border border-[#9A7B69]/20 dark:border-slate-700/50 rounded-3xl shadow-[0_25px_50px_rgba(154,123,105,0.15)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.4)] py-16 overflow-hidden">
-            {/* Enhanced background glow with brand colors */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#9A7B69]/5 via-[#F6F6F7]/30 to-[#9A7B69]/8 dark:from-[#9A7B69]/5 dark:via-slate-800/30 dark:to-[#9A7B69]/8"></div>
-            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#9A7B69]/30 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#9A7B69]/30 to-transparent"></div>
-            
-            <div className="max-w-4xl mx-auto text-center relative z-10">
-              <div className="animate-fade-in">
-                <div className="w-20 h-20 bg-gradient-to-br from-[#9A7B69] to-[#8A898C] rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-8 shadow-[0_15px_30px_rgba(154,123,105,0.3)]">
-                  B
+        {/* WORLD-CLASS TESTIMONIALS & HELP SECTION */}
+        <section className="max-w-7xl mx-auto px-6 md:px-8 py-20">
+          {/* We're Here to Help Banner */}
+          <div className="text-center mb-16">
+            <div className="inline-block bg-gradient-to-r from-[#9A7B69] via-[#8A898C] to-[#9A7B69] p-[2px] rounded-3xl shadow-[0_20px_40px_rgba(154,123,105,0.2)]">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl px-12 py-8">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-gray-900 dark:text-white mb-4">
+                  We're Here to Help You Hire Faster & Easier
+                </h2>
+                <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 font-inter leading-relaxed max-w-4xl mx-auto">
+                  Finding top talent is tough. EmviApp is here to help you connect with the best artists and nail techs—faster, easier, and with real results.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Premium Testimonials Carousel */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Testimonial 1 */}
+            <div className="group relative bg-gradient-to-br from-[#FDFDFD] via-white to-[#F6F6F7] dark:from-slate-800 dark:via-slate-700 dark:to-slate-900 p-8 rounded-3xl shadow-[0_20px_40px_rgba(154,123,105,0.1)] hover:shadow-[0_30px_60px_rgba(154,123,105,0.15)] transition-all duration-500 border border-[#9A7B69]/10 hover:border-[#9A7B69]/20 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/5 via-transparent to-[#8A898C]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#9A7B69] to-[#8A898C] rounded-full flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg">
+                  S
                 </div>
-                <blockquote className="text-3xl md:text-4xl lg:text-5xl font-playfair italic text-gray-900 dark:text-white mb-8 leading-tight">
+                <blockquote className="text-xl md:text-2xl font-playfair italic text-gray-900 dark:text-white mb-6 leading-tight">
                   "We hired in 36 hours—no noise, just results."
                 </blockquote>
-                <div className="text-center">
-                  <p className="font-inter font-bold text-gray-900 dark:text-white text-xl mb-2">Bella R.</p>
-                  <p className="text-[#8A898C] dark:text-gray-400 font-inter text-lg">Salon Owner</p>
+                <div>
+                  <p className="font-inter font-bold text-gray-900 dark:text-white text-lg mb-1">Sarah M.</p>
+                  <p className="text-[#8A898C] dark:text-gray-400 font-inter">Salon Owner, Elite Nails</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="group relative bg-gradient-to-br from-[#F6F6F7] via-[#FDFDFD] to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 p-8 rounded-3xl shadow-[0_20px_40px_rgba(154,123,105,0.1)] hover:shadow-[0_30px_60px_rgba(154,123,105,0.15)] transition-all duration-500 border border-[#9A7B69]/10 hover:border-[#9A7B69]/20 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8A898C]/5 via-transparent to-[#9A7B69]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#8A898C] to-[#9A7B69] rounded-full flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg">
+                  M
+                </div>
+                <blockquote className="text-xl md:text-2xl font-playfair italic text-gray-900 dark:text-white mb-6 leading-tight">
+                  "Finally found artists who care about quality as much as we do."
+                </blockquote>
+                <div>
+                  <p className="font-inter font-bold text-gray-900 dark:text-white text-lg mb-1">Maria L.</p>
+                  <p className="text-[#8A898C] dark:text-gray-400 font-inter">Manager, Luxe Beauty Bar</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="group relative bg-gradient-to-br from-white via-[#F6F6F7] to-[#FDFDFD] dark:from-slate-700 dark:via-slate-900 dark:to-slate-800 p-8 rounded-3xl shadow-[0_20px_40px_rgba(154,123,105,0.1)] hover:shadow-[0_30px_60px_rgba(154,123,105,0.15)] transition-all duration-500 border border-[#9A7B69]/10 hover:border-[#9A7B69]/20 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/5 via-transparent to-[#8A898C]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#9A7B69] via-[#8A898C] to-[#9A7B69] rounded-full flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg">
+                  D
+                </div>
+                <blockquote className="text-xl md:text-2xl font-playfair italic text-gray-900 dark:text-white mb-6 leading-tight">
+                  "Best investment we've made. Our team is stronger than ever."
+                </blockquote>
+                <div>
+                  <p className="font-inter font-bold text-gray-900 dark:text-white text-lg mb-1">David C.</p>
+                  <p className="text-[#8A898C] dark:text-gray-400 font-inter">Owner, Premier Hair Studio</p>
                 </div>
               </div>
             </div>
