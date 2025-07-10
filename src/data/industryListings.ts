@@ -27,7 +27,7 @@ export const nailListings = [
     salary: '$3,200–$4,500/week',
     tier: 'diamond' as const,
     summary: 'Luxury Vegas nail studio with VIP clientele and premium treatments.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-11.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png',
     phone: '(702) 555-0199',
     rating: 4.9,
     isFeatured: true,
@@ -43,7 +43,7 @@ export const nailListings = [
     salary: '$2,000–$3,500/week',
     tier: 'premium' as const,
     summary: 'Join EmviApp\'s exclusive network of top-tier nail salons.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png',
     rating: 5.0,
     fullDescription: 'Access to the most exclusive nail positions in luxury salons nationwide. EmviApp connects you with premium opportunities.',
     isHouseAd: true
@@ -55,7 +55,7 @@ export const nailListings = [
     salary: '$2,500–$4,000/week',
     tier: 'premium' as const,
     summary: 'High-end celebrity clientele, artistic nail designs, premium location.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png',
     rating: 4.8,
     fullDescription: 'Seeking master nail artists for our Beverly Hills location. Celebrity clientele, artistic freedom, exceptional compensation.',
     urgencyBadge: 'Hiring Now'
@@ -67,7 +67,7 @@ export const nailListings = [
     salary: '$2,800–$3,800/week',
     tier: 'premium' as const,
     summary: 'Upscale NYC nail bar, high-volume luxury clientele.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-14.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
     rating: 4.7,
     fullDescription: 'Premier Manhattan nail bar seeking experienced nail technicians for our luxury location.',
     applicationDeadline: '2025-01-15'
@@ -79,7 +79,7 @@ export const nailListings = [
     salary: '$2,200–$3,400/week',
     tier: 'premium' as const,
     summary: 'Modern nail lounge in downtown Chicago, artistic nail designs.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-15.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png',
     rating: 4.6,
     fullDescription: 'Contemporary nail lounge seeking creative nail artists for our Chicago location.'
   },
@@ -90,7 +90,7 @@ export const nailListings = [
     salary: '$2,400–$3,600/week',
     tier: 'premium' as const,
     summary: 'Beachfront nail spa, resort clientele, tropical nail art.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-16.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png',
     rating: 4.8,
     fullDescription: 'Luxury beachfront nail spa seeking skilled technicians for our Miami Beach location.'
   },
@@ -114,7 +114,7 @@ export const nailListings = [
     salary: '$1,800–$2,800/week',
     tier: 'featured' as const,
     summary: 'Pacific Northwest nail studio, natural nail care, eco-friendly.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-7.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png',
     rating: 4.5,
     fullDescription: 'Eco-friendly nail studio in Seattle seeking nail technicians passionate about natural nail care.'
   },
@@ -125,7 +125,7 @@ export const nailListings = [
     salary: '$1,600–$2,400/week',
     tier: 'featured' as const,
     summary: 'Creative nail collective, artistic freedom, music city vibes.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-8.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png',
     rating: 4.6,
     fullDescription: 'Creative nail collective in Austin seeking artistic nail technicians.'
   },
@@ -136,7 +136,7 @@ export const nailListings = [
     salary: '$1,700–$2,500/week',
     tier: 'featured' as const,
     summary: 'Mountain city nail bar, relaxed atmosphere, loyal clientele.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-9.png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png',
     rating: 4.4,
     fullDescription: 'Friendly nail bar in Denver seeking reliable nail technicians.'
   },
@@ -147,7 +147,7 @@ export const nailListings = [
     salary: '$3,000–$5,000/week',
     tier: 'featured' as const,
     summary: 'Exclusive access to the highest-paying nail positions in the industry.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png',
     rating: 5.0,
     fullDescription: 'EmviApp Diamond members get first access to the most exclusive, highest-paying positions in luxury nail salons.',
     isHouseAd: true
