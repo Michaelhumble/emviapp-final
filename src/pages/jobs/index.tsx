@@ -825,14 +825,6 @@ const JobsPage = () => {
                       ) : (
                         /* For 'all' tab and other cases, use existing JobsGrid */
                         <div>
-                          <div className="text-center mb-8">
-                            <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white">
-                              {tab.id === 'all' ? 'Latest Beauty Industry Opportunities' : `${tab.label} Positions Available`}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 mt-2">
-                              {allJobs.length} opportunities • Updated daily
-                            </p>
-                          </div>
                           <JobsGrid
                             jobs={allJobs}
                             expirations={{}}
