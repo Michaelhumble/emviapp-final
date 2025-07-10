@@ -729,21 +729,30 @@ const JobsPage = () => {
                                   </div>
                                 )}
                                 
-                                {/* Job image - use industry-specific images */}
-                                {job.imageUrl ? (
-                                  <div className="w-full h-40 mb-4 rounded-lg overflow-hidden">
-                                    <img 
-                                      src={job.imageUrl} 
-                                      alt={job.title}
-                                      className="w-full h-full object-cover"
-                                      loading="lazy"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="w-full h-40 mb-4 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-                                    <tab.icon className="w-12 h-12 text-gray-400" />
-                                  </div>
-                                )}
+                                 {/* Job image - use industry-specific images */}
+                                 {job.imageUrl ? (
+                                   <div className="w-full h-40 mb-4 rounded-lg overflow-hidden relative">
+                                     <img 
+                                       src={job.imageUrl} 
+                                       alt={job.title}
+                                       className="w-full h-full object-cover"
+                                       loading="lazy"
+                                     />
+                                     {/* Star rating overlay - ONLY for nails industry */}
+                                     {job.rating && tab.id === 'nails' && (
+                                       <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
+                                         <div className="flex items-center text-sm font-medium">
+                                           <span className="text-yellow-500 mr-1">★</span>
+                                           {job.rating.toFixed(1)}
+                                         </div>
+                                       </div>
+                                     )}
+                                   </div>
+                                 ) : (
+                                   <div className="w-full h-40 mb-4 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                                     <tab.icon className="w-12 h-12 text-gray-400" />
+                                   </div>
+                                 )}
                                 
                                 <div className="space-y-3">
                                   <h4 className="font-playfair font-bold text-lg text-gray-900 dark:text-white line-clamp-2">
