@@ -56,6 +56,7 @@ export interface Job {
   type?: 'salon' | 'job' | 'opportunity';
   name?: string;
   imageUrl?: string;
+  image_url?: string; // Database field
   is_vietnamese_listing?: boolean;
   industry?: string;
   post_type?: string;

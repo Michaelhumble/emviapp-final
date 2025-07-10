@@ -996,6 +996,7 @@ export type Database = {
           description: string | null
           expires_at: string | null
           id: string
+          image_url: string | null
           location: string | null
           payment_status: string | null
           pricing_tier: string | null
@@ -1014,6 +1015,7 @@ export type Database = {
           description?: string | null
           expires_at?: string | null
           id?: string
+          image_url?: string | null
           location?: string | null
           payment_status?: string | null
           pricing_tier?: string | null
@@ -1032,6 +1034,7 @@ export type Database = {
           description?: string | null
           expires_at?: string | null
           id?: string
+          image_url?: string | null
           location?: string | null
           payment_status?: string | null
           pricing_tier?: string | null

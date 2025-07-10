@@ -38,6 +38,44 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   
   const isOwner = user?.id === job.user_id;
   const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false;
+  
+  // Image and paid job logic
+  const isPaidJob = job.pricing_tier && job.pricing_tier !== 'free';
+  const hasImage = !!(job.image || job.imageUrl);
+  
+  const renderJobImage = () => {
+    const imageUrl = job.image || job.imageUrl;
+    
+    if (imageUrl) {
+      return (
+        <div className="mb-4 -mx-6 -mt-6">
+          <img
+            src={imageUrl}
+            alt={job.title}
+            className="w-full h-48 object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      );
+    }
+    
+    // Show placeholder for paid jobs without images
+    if (isPaidJob) {
+      return (
+        <div className="mb-4 -mx-6 -mt-6 h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">📸</div>
+            <p className="text-xs text-gray-500">Premium listing</p>
+            <p className="text-xs text-gray-400">Contact for photos</p>
+          </div>
+        </div>
+      );
+    }
+    
+    return null;
+  };
 
   const handleEditJob = () => {
     navigate(`/jobs/edit/${job.id}`);
@@ -127,17 +165,15 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         </div>
       )}
 
-      {/* Job Image */}
-      {job.image && (
-        <div className="mb-4 -mx-6 -mt-6">
-          <img
-            src={job.image}
-            alt={job.title}
-            className="w-full h-48 object-cover"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+      {/* Job Image - Required for paid posts, optional for free */}
+      {renderJobImage()}
+
+      {/* FOMO message for paid jobs without images */}
+      {isPaidJob && !hasImage && (
+        <div className="mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-xs text-amber-700 font-medium text-center">
+            ⚠️ Premium listing missing photos - Contact salon directly for visual details
+          </p>
         </div>
       )}
 
