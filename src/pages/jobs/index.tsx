@@ -679,48 +679,182 @@ const JobsPage = () => {
                   
                   return (
                     <div>
-                      <div className="text-center mb-8">
-                        <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white">
-                          {tab.id === 'all' ? 'Latest Beauty Industry Opportunities' : `${tab.label} Positions Available`}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
-                          {allJobs.length} opportunities • Updated daily
-                        </p>
-                      </div>
-                      <JobsGrid
-                        jobs={allJobs}
-                        expirations={{}}
-                        onRenew={handleRenew}
-                        isRenewing={false}
-                        renewalJobId={null}
-                      />
-                      
-                      {/* View All Jobs Link for non-nail industries */}
-                      {tab.id !== 'all' && tab.id !== 'nails' && (
-                        <div className="text-center mt-12">
-                          <button
-                            onClick={() => navigate(getIndustryRoute(tab.label))}
-                            className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-inter font-semibold text-lg transition-colors"
-                          >
-                            View all {(() => {
-                              // Get actual count from full industry listings
-                              let totalCount = 0;
-                              switch (tab.id) {
-                                case 'hair': totalCount = hairListings.length; break;
-                                case 'barber': totalCount = barberListings.length; break;
-                                case 'massage': totalCount = massageListings.length; break;
-                                case 'skincare': totalCount = facialListings.length; break;
-                                case 'makeup': totalCount = makeupListings.length; break;
-                                case 'brows-lashes': totalCount = browLashListings.length; break;
-                                case 'tattoo': totalCount = tattooListings.length; break;
-                                default: totalCount = 0;
-                              }
-                              return totalCount;
-                            })()} {tab.label.toLowerCase()} jobs
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                          </button>
+                      {/* For non-nail industries, show premium job cards matching Nails layout */}
+                      {tab.id !== 'all' && tab.id !== 'nails' ? (
+                        <div className="space-y-8">
+                          {/* Industry Header */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <tab.icon className="w-6 h-6 text-[#8A53F8]" />
+                              <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white">
+                                {tab.label}
+                              </h3>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
+                                {(() => {
+                                  switch (tab.id) {
+                                    case 'hair': return hairListings.length;
+                                    case 'barber': return barberListings.length;
+                                    case 'massage': return massageListings.length;
+                                    case 'skincare': return facialListings.length;
+                                    case 'makeup': return makeupListings.length;
+                                    case 'brows-lashes': return browLashListings.length;
+                                    case 'tattoo': return tattooListings.length;
+                                    default: return 0;
+                                  }
+                                })()} jobs
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Job Cards Grid - matching Nails layout exactly */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {industryListings.slice(0, 6).map((job, index) => (
+                              <div
+                                key={job.id}
+                                className={`group bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 relative ${
+                                  job.isPositionFilled ? 'opacity-60' : ''
+                                }`}
+                              >
+                                {/* Expired overlay - matching Nails style */}
+                                {job.isPositionFilled && (
+                                  <div className="absolute top-4 left-4 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold z-10">
+                                    Position Filled
+                                  </div>
+                                )}
+                                
+                                {/* Tier badge for active jobs - matching Nails style */}
+                                {!job.isPositionFilled && job.tier && job.tier !== 'free' && (
+                                  <div className={`absolute top-4 left-4 text-white text-xs px-3 py-1 rounded-full font-bold z-10 ${
+                                    job.tier === 'premium' ? 'bg-[#8A53F8]' :
+                                    job.tier === 'gold' ? 'bg-yellow-500' :
+                                    job.tier === 'diamond' ? 'bg-blue-600' :
+                                    'bg-gray-500'
+                                  }`}>
+                                    {job.tier === 'premium' ? 'Premium' :
+                                     job.tier === 'gold' ? 'Gold' :
+                                     job.tier === 'diamond' ? 'Diamond' :
+                                     job.tier?.charAt(0).toUpperCase() + job.tier?.slice(1)}
+                                  </div>
+                                )}
+                                
+                                {/* Job image - use industry-specific images */}
+                                {job.imageUrl ? (
+                                  <div className="w-full h-40 mb-4 rounded-lg overflow-hidden">
+                                    <img 
+                                      src={job.imageUrl} 
+                                      alt={job.title}
+                                      className="w-full h-full object-cover"
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="w-full h-40 mb-4 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                                    <tab.icon className="w-12 h-12 text-gray-400" />
+                                  </div>
+                                )}
+                                
+                                <div className="space-y-3">
+                                  <h4 className="font-playfair font-bold text-lg text-gray-900 dark:text-white line-clamp-2">
+                                    {job.title}
+                                  </h4>
+                                  
+                                  <p className="text-sm text-gray-600 dark:text-gray-400 font-inter">
+                                    {job.company || job.businessName || 
+                                     (tab.id === 'hair' ? 'Hair Salon' :
+                                      tab.id === 'barber' ? 'Barber Shop' :
+                                      tab.id === 'massage' ? 'Spa & Wellness' :
+                                      tab.id === 'skincare' ? 'Spa & Skincare' :
+                                      tab.id === 'makeup' ? 'Beauty Studio' :
+                                      tab.id === 'brows-lashes' ? 'Brow & Lash Studio' :
+                                      tab.id === 'tattoo' ? 'Tattoo Studio' :
+                                      'Beauty Business')}
+                                  </p>
+                                  
+                                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
+                                    </svg>
+                                    <span>{job.location}</span>
+                                  </div>
+                                  
+                                  {job.salary && (
+                                    <div className="text-[#8A53F8] font-bold text-lg">
+                                      {job.salary}
+                                    </div>
+                                  )}
+                                  
+                                  {job.employmentType && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <span>{job.employmentType}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Rating display - 1 decimal place only */}
+                                  {job.rating && (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-yellow-500">★</span>
+                                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {job.rating.toFixed(1)}
+                                      </span>
+                                    </div>
+                                  )}
+                                  
+                                  {job.isPositionFilled && (
+                                    <div className="text-xs text-gray-400 border-t pt-3">
+                                      Position Filled • {new Date().toLocaleDateString()}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* View all link - matching Nails style */}
+                          <div className="text-center pt-6">
+                            <button
+                              onClick={() => navigate(getIndustryRoute(tab.label))}
+                              className="inline-flex items-center gap-2 text-[#8A53F8] hover:text-[#8A53F8]/80 font-inter font-semibold text-lg transition-colors duration-300 group"
+                            >
+                              <span>View all {(() => {
+                                switch (tab.id) {
+                                  case 'hair': return hairListings.length;
+                                  case 'barber': return barberListings.length;
+                                  case 'massage': return massageListings.length;
+                                  case 'skincare': return facialListings.length;
+                                  case 'makeup': return makeupListings.length;
+                                  case 'brows-lashes': return browLashListings.length;
+                                  case 'tattoo': return tattooListings.length;
+                                  default: return 0;
+                                }
+                              })()} jobs in {tab.label}</span>
+                              <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* For 'all' tab and other cases, use existing JobsGrid */
+                        <div>
+                          <div className="text-center mb-8">
+                            <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white">
+                              {tab.id === 'all' ? 'Latest Beauty Industry Opportunities' : `${tab.label} Positions Available`}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mt-2">
+                              {allJobs.length} opportunities • Updated daily
+                            </p>
+                          </div>
+                          <JobsGrid
+                            jobs={allJobs}
+                            expirations={{}}
+                            onRenew={handleRenew}
+                            isRenewing={false}
+                            renewalJobId={null}
+                          />
                         </div>
                       )}
                     </div>
