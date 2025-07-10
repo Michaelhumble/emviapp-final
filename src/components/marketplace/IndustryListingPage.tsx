@@ -10,6 +10,8 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { IndustryListing } from '@/types/industryListing';
+import DiamondFOMOCard from './DiamondFOMOCard';
+import MagicNailsDiamondCard from './MagicNailsDiamondCard';
 
 interface IndustryListingPageProps {
   industryName: string;
@@ -62,7 +64,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
     switch (tier) {
       case 'diamond':
         return (
-          <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 font-bold px-3 py-1">
+          <Badge className="bg-blue-600 text-white border-0 font-bold px-3 py-1" style={{ backgroundColor: '#2176FF' }}>
             <Crown className="w-3 h-3 mr-1" />
             Diamond
           </Badge>
@@ -94,7 +96,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   const getTierCardClass = (tier: string) => {
     switch (tier) {
       case 'diamond':
-        return 'border-2 border-amber-300 shadow-2xl shadow-amber-200/50 bg-gradient-to-br from-amber-50 to-yellow-50';
+        return 'border-2 border-blue-300 shadow-2xl shadow-blue-200/50 bg-gradient-to-br from-blue-50 to-indigo-50';
       case 'premium':
         return 'border border-purple-200 shadow-xl shadow-purple-100/50 bg-gradient-to-br from-purple-50 to-indigo-50';
       case 'featured':
@@ -174,156 +176,35 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
           </Link>
         </motion.div>
         {/* Diamond Tier Section */}
-        {diamondListings.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-16"
-          >
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center mb-4">
-                <Crown className="w-8 h-8 text-amber-500 mr-3" />
-                <h2 className="text-3xl font-playfair font-bold text-foreground">Diamond Exclusive</h2>
-                <Crown className="w-8 h-8 text-amber-500 ml-3" />
-              </div>
-              <p className="text-lg text-muted-foreground font-inter">
-                Only 3 spots available — The most exclusive {industryName.toLowerCase()} opportunities
-              </p>
-              <Badge className="bg-red-500 text-white mt-2">
-                Only {3 - diamondListings.length} spots remaining
-              </Badge>
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center mb-4">
+              <Crown className="w-8 h-8 text-blue-600 mr-3" />
+              <h2 className="text-3xl font-playfair font-bold text-foreground">Diamond Exclusive</h2>
+              <Crown className="w-8 h-8 text-blue-600 ml-3" />
             </div>
+            <p className="text-lg text-muted-foreground font-inter">
+              Only 1 spot available — The most exclusive {industryName.toLowerCase()} opportunity
+            </p>
+            <Badge className="bg-red-500 text-white mt-2 animate-pulse">
+              1 SPOT ONLY
+            </Badge>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {diamondListings.map((listing, index) => (
-                <motion.div
-                  key={listing.id}
-                  id={`listing-${listing.id}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className={highlightedListingId === listing.id ? 'ring-4 ring-amber-300 rounded-lg' : ''}
-                >
-                  <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
-                    <div className="relative aspect-video">
-                      <ImageWithFallback
-                        src={listing.imageUrl}
-                        alt={listing.title}
-                        className="w-full h-full object-cover"
-                        businessName={listing.title}
-                      />
-                      <div className="absolute top-3 left-3">
-                        {getTierBadge(listing.tier)}
-                      </div>
-                      {/* Only show rating for nails industry */}
-                      {listing.rating && industryName === 'nails' && (
-                        <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
-                          <div className="flex items-center text-sm font-medium">
-                            <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />
-                            {listing.rating}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-playfair font-bold text-foreground mb-2">
-                        {listing.title}
-                      </h3>
-
-                      <div className="flex items-center text-muted-foreground mb-2 font-inter">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {listing.location}
-                      </div>
-
-                      <div className="bg-green-100 rounded-lg p-3 mb-3">
-                        <div className="flex items-center text-green-800 font-bold">
-                          <DollarSign className="w-4 h-4 mr-1" />
-                          {listing.salary}
-                        </div>
-                      </div>
-
-                      <p className="text-muted-foreground font-inter mb-4 line-clamp-2">
-                        {listing.summary}
-                      </p>
-
-                      {/* Contact Info - Gated */}
-                      <div className="mb-4">
-                        {isSignedIn && listing.phone ? (
-                          <div className="flex items-center text-foreground font-inter">
-                            <Phone className="w-4 h-4 mr-2" />
-                            {listing.phone}
-                          </div>
-                        ) : (
-                          <AuthAction
-                            customTitle="Sign in to see contact details"
-                            onAction={() => true}
-                            fallbackContent={
-                              <div className="text-base text-muted-foreground italic flex items-center gap-2 font-inter">
-                                <LockIcon className="w-4 h-4" />
-                                <span>Sign in to see contact details</span>
-                              </div>
-                            }
-                          />
-                        )}
-                      </div>
-
-                        <Button
-                          onClick={() => handleViewDetails(listing)}
-                          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-inter font-bold"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Full Details
-                        </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-
-              {/* Fill remaining Diamond slots with house ads */}
-              {Array.from({ length: Math.max(0, 3 - diamondListings.length) }, (_, index) => (
-                <motion.div
-                  key={`diamond-slot-${index}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: (diamondListings.length + index) * 0.1 }}
-                  whileHover={{ y: -5 }}
-                >
-                  <Card className={`h-full ${getTierCardClass('diamond')} overflow-hidden`}>
-                    <div className="relative aspect-video bg-gradient-to-br from-amber-100 to-yellow-200 flex items-center justify-center">
-                      <div className="text-center">
-                        <Crown className="w-12 h-12 text-amber-600 mx-auto mb-2" />
-                        <p className="text-amber-800 font-bold">Your Brand Here</p>
-                      </div>
-                      <div className="absolute top-3 left-3">
-                        {getTierBadge('diamond')}
-                      </div>
-                    </div>
-
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-playfair font-bold text-foreground mb-2">
-                        Diamond Tier Available
-                      </h3>
-                      <p className="text-muted-foreground font-inter mb-4">
-                        Secure your spot in the most exclusive tier. Maximum visibility, premium placement, VIP treatment.
-                      </p>
-                      <div className="bg-amber-100 rounded-lg p-3 mb-4">
-                        <div className="text-amber-800 font-inter font-bold text-center">
-                          $9,999/year • Only 3 spots total
-                        </div>
-                      </div>
-                      <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white font-inter font-bold">
-                        Claim Diamond Spot
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
+          <div className="max-w-md mx-auto">
+            {/* Show Magic Nails Diamond card for nails industry, FOMO card for all others */}
+            {industryName === 'nails' ? (
+              <MagicNailsDiamondCard />
+            ) : (
+              <DiamondFOMOCard industryName={industryName} />
+            )}
+          </div>
+        </motion.section>
 
         {/* Premium Tier Section */}
         {premiumListings.length > 0 && (
