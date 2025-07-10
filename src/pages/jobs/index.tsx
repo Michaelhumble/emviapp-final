@@ -567,32 +567,39 @@ const JobsPage = () => {
                        console.log(`💅 [JOBS-PAGE] Nails listings loaded: ${industryListings.length} total`);
                        break;
                      case 'hair':
-                       industryListings = hairListings;
-                       console.log(`✂️ [JOBS-PAGE] Hair listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...hairListings.slice(0, 3), ...hairListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`✂️ [JOBS-PAGE] Hair listings loaded: ${industryListings.length} total for display`);
                        break;
                      case 'barber':
-                       industryListings = barberListings;
-                       console.log(`💈 [JOBS-PAGE] Barber listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...barberListings.slice(0, 3), ...barberListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`💈 [JOBS-PAGE] Barber listings loaded: ${industryListings.length} total for display`);
                        break;
                      case 'massage':
-                       industryListings = massageListings;
-                       console.log(`🤲 [JOBS-PAGE] Massage listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...massageListings.slice(0, 3), ...massageListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`🤲 [JOBS-PAGE] Massage listings loaded: ${industryListings.length} total for display`);
                        break;
                      case 'skincare':
-                       industryListings = facialListings;
-                       console.log(`🧴 [JOBS-PAGE] Skincare listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...facialListings.slice(0, 3), ...facialListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`🧴 [JOBS-PAGE] Skincare listings loaded: ${industryListings.length} total for display`);
                        break;
                      case 'makeup':
-                       industryListings = makeupListings;
-                       console.log(`💄 [JOBS-PAGE] Makeup listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...makeupListings.slice(0, 3), ...makeupListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`💄 [JOBS-PAGE] Makeup listings loaded: ${industryListings.length} total for display`);
                        break;
                      case 'brows-lashes':
-                       industryListings = browLashListings;
-                       console.log(`👁️ [JOBS-PAGE] Brows & Lashes listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...browLashListings.slice(0, 3), ...browLashListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`👁️ [JOBS-PAGE] Brows & Lashes listings loaded: ${industryListings.length} total for display`);
                        break;
                      case 'tattoo':
-                       industryListings = tattooListings;
-                       console.log(`🎨 [JOBS-PAGE] Tattoo listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       // Show 6 jobs: mix of active and expired
+                       industryListings = [...tattooListings.slice(0, 3), ...tattooListings.filter(l => l.isPositionFilled).slice(0, 3)];
+                       console.log(`🎨 [JOBS-PAGE] Tattoo listings loaded: ${industryListings.length} total for display`);
                        break;
                     case 'all':
                     default:
@@ -610,7 +617,7 @@ const JobsPage = () => {
                       break;
                   }
                   
-                  // Convert industry listings to Job format for JobsGrid
+                  // Convert industry listings to Job format for JobsGrid with proper rating display
                   const convertedJobs: Job[] = industryListings.map(listing => ({
                     id: listing.id,
                     title: listing.title,
@@ -623,7 +630,12 @@ const JobsPage = () => {
                     created_at: new Date().toISOString(),
                     imageUrl: listing.imageUrl,
                     contact_info: listing.phone ? { phone: listing.phone } : undefined,
-                    type: 'job'
+                    type: 'job',
+                    // Format rating to 2 decimal places max
+                    rating: listing.rating ? Number(listing.rating.toFixed(1)) : undefined,
+                    isPositionFilled: listing.isPositionFilled || false,
+                    fomoText: listing.fomoText,
+                    urgencyBadge: listing.urgencyBadge
                   }));
                   
                   // Also include user-submitted jobs for this category
@@ -682,6 +694,35 @@ const JobsPage = () => {
                         isRenewing={false}
                         renewalJobId={null}
                       />
+                      
+                      {/* View All Jobs Link for non-nail industries */}
+                      {tab.id !== 'all' && tab.id !== 'nails' && (
+                        <div className="text-center mt-12">
+                          <button
+                            onClick={() => navigate(getIndustryRoute(tab.label))}
+                            className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-inter font-semibold text-lg transition-colors"
+                          >
+                            View all {(() => {
+                              // Get actual count from full industry listings
+                              let totalCount = 0;
+                              switch (tab.id) {
+                                case 'hair': totalCount = hairListings.length; break;
+                                case 'barber': totalCount = barberListings.length; break;
+                                case 'massage': totalCount = massageListings.length; break;
+                                case 'skincare': totalCount = facialListings.length; break;
+                                case 'makeup': totalCount = makeupListings.length; break;
+                                case 'brows-lashes': totalCount = browLashListings.length; break;
+                                case 'tattoo': totalCount = tattooListings.length; break;
+                                default: totalCount = 0;
+                              }
+                              return totalCount;
+                            })()} {tab.label.toLowerCase()} jobs
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
