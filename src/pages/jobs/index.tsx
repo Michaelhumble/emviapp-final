@@ -557,33 +557,43 @@ const JobsPage = () => {
                 {/* Filtered Jobs for this industry */}
                 {(() => {
                   // Get industry-specific listings from our comprehensive data
-                  let industryListings = [];
-                  
-                  switch (tab.id) {
-                    case 'nails':
-                      industryListings = nailListings;
-                      break;
-                    case 'hair':
-                      industryListings = hairListings;
-                      break;
-                    case 'barber':
-                      industryListings = barberListings;
-                      break;
-                    case 'massage':
-                      industryListings = massageListings;
-                      break;
-                    case 'skincare':
-                      industryListings = facialListings;
-                      break;
-                    case 'makeup':
-                      industryListings = makeupListings;
-                      break;
-                    case 'brows-lashes':
-                      industryListings = browLashListings;
-                      break;
-                    case 'tattoo':
-                      industryListings = tattooListings;
-                      break;
+                   let industryListings = [];
+                   
+                   console.log(`🎯 [JOBS-PAGE] Loading listings for ${tab.id} industry...`);
+                   
+                   switch (tab.id) {
+                     case 'nails':
+                       industryListings = nailListings;
+                       console.log(`💅 [JOBS-PAGE] Nails listings loaded: ${industryListings.length} total`);
+                       break;
+                     case 'hair':
+                       industryListings = hairListings;
+                       console.log(`✂️ [JOBS-PAGE] Hair listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
+                     case 'barber':
+                       industryListings = barberListings;
+                       console.log(`💈 [JOBS-PAGE] Barber listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
+                     case 'massage':
+                       industryListings = massageListings;
+                       console.log(`🤲 [JOBS-PAGE] Massage listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
+                     case 'skincare':
+                       industryListings = facialListings;
+                       console.log(`🧴 [JOBS-PAGE] Skincare listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
+                     case 'makeup':
+                       industryListings = makeupListings;
+                       console.log(`💄 [JOBS-PAGE] Makeup listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
+                     case 'brows-lashes':
+                       industryListings = browLashListings;
+                       console.log(`👁️ [JOBS-PAGE] Brows & Lashes listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
+                     case 'tattoo':
+                       industryListings = tattooListings;
+                       console.log(`🎨 [JOBS-PAGE] Tattoo listings loaded: ${industryListings.length} total (expired: ${industryListings.filter(l => l.isPositionFilled).length}, active: ${industryListings.filter(l => !l.isPositionFilled).length})`);
+                       break;
                     case 'all':
                     default:
                       // For 'all' tab, combine user jobs with some industry listings
