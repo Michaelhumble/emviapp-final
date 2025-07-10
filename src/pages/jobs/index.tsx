@@ -238,6 +238,173 @@ const JobsPage = () => {
             </div>
           </div>
 
+          {/* Elite Placement & Visibility Section */}
+          <div className="text-center mb-16">
+            <div className="inline-block bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm font-medium mb-8">
+              PREMIUM ACCESS
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
+              Elite Placement & Visibility
+            </h2>
+            <p className="text-xl font-inter text-gray-600 max-w-4xl mx-auto mb-12">
+              For those who demand results—access exclusive visibility and attract the industry's best talent, faster.
+            </p>
+
+            {/* Feature Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {/* Priority Placement */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-playfair font-bold text-gray-900 mb-4">
+                  Priority Placement
+                </h3>
+                <p className="text-gray-600 font-inter leading-relaxed">
+                  Always at the top—seen first by top talent.
+                </p>
+              </div>
+
+              {/* Instant Visibility */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-playfair font-bold text-gray-900 mb-4">
+                  Instant Visibility
+                </h3>
+                <p className="text-gray-600 font-inter leading-relaxed">
+                  Featured in discovery alerts & searches.
+                </p>
+              </div>
+
+              {/* Prestige Badge */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-playfair font-bold text-gray-900 mb-4">
+                  Prestige Badge
+                </h3>
+                <p className="text-gray-600 font-inter leading-relaxed">
+                  Build trust instantly with verified status.
+                </p>
+              </div>
+
+              {/* Advanced Analytics */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-playfair font-bold text-gray-900 mb-4">
+                  Advanced Analytics
+                </h3>
+                <p className="text-gray-600 font-inter leading-relaxed">
+                  Track, measure, and optimize every hire.
+                </p>
+              </div>
+            </div>
+
+            {/* Unlock Elite Access Button */}
+            <button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-inter font-bold py-4 px-12 rounded-2xl text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-3 mx-auto">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              UNLOCK ELITE ACCESS
+            </button>
+
+            <p className="text-gray-500 font-inter mt-4">
+              Trusted by 2,800+ salons & studios. Verified by industry leaders.
+            </p>
+          </div>
+
+          {/* Statistics Section */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center mb-16">
+            <div>
+              <div className="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-2">2,847</div>
+              <div className="text-sm font-inter text-gray-500 uppercase tracking-wide">ACTIVE OPPORTUNITIES</div>
+            </div>
+            <div>
+              <div className="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-2">156</div>
+              <div className="text-sm font-inter text-gray-500 uppercase tracking-wide">MATCHES TODAY</div>
+            </div>
+            <div>
+              <div className="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-2">94%</div>
+              <div className="text-sm font-inter text-gray-500 uppercase tracking-wide">SUCCESS RATE</div>
+            </div>
+            <div>
+              <div className="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-2">4.9</div>
+              <div className="text-sm font-inter text-gray-500 uppercase tracking-wide">PROFESSIONAL RATING</div>
+            </div>
+          </div>
+
+          {/* We're Here to Help Section */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-8 lg:p-12 mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-playfair font-bold text-gray-900 mb-6">
+                We're Here to Help You Hire Faster & Easier
+              </h2>
+              <p className="text-xl font-inter text-gray-600 max-w-4xl mx-auto">
+                Finding top talent is tough. EmviApp is here to help you connect with the best artists and nail techs—faster, easier, and with real results.
+              </p>
+            </div>
+
+            {/* Testimonials */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Sarah M. */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mb-6">
+                  S
+                </div>
+                <p className="text-lg font-playfair italic text-gray-700 mb-6">
+                  "We hired in 36 hours—no noise, just results."
+                </p>
+                <div>
+                  <div className="font-inter font-bold text-gray-900">Sarah M.</div>
+                  <div className="font-inter text-gray-500">Salon Owner, Elite Nails</div>
+                </div>
+              </div>
+
+              {/* Maria L. */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mb-6">
+                  M
+                </div>
+                <p className="text-lg font-playfair italic text-gray-700 mb-6">
+                  "Finally found artists who care about quality as much as we do."
+                </p>
+                <div>
+                  <div className="font-inter font-bold text-gray-900">Maria L.</div>
+                  <div className="font-inter text-gray-500">Manager, Luxe Beauty Bar</div>
+                </div>
+              </div>
+
+              {/* David C. */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mb-6">
+                  D
+                </div>
+                <p className="text-lg font-playfair italic text-gray-700 mb-6">
+                  "Best investment we've made. Our team is stronger than ever."
+                </p>
+                <div>
+                  <div className="font-inter font-bold text-gray-900">David C.</div>
+                  <div className="font-inter text-gray-500">Owner, Premier Hair Studio</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Explore by Specialty Section */}
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
