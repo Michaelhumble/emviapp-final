@@ -356,36 +356,105 @@ const JobsPage = () => {
 
             {industryTabs.map(tab => (
               <TabsContent key={tab.id} value={tab.id} className="space-y-12">
-                {/* Premium Features Section */}
-                <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-indigo-500/10"></div>
+                {/* Elite Placement & Visibility Section */}
+                <div className="relative bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-slate-800 dark:via-slate-900 dark:to-gray-800 rounded-3xl p-8 md:p-12 border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden">
+                  {/* Glassmorphism overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-slate-50/30 to-white/20 dark:from-slate-800/20 dark:via-slate-700/30 dark:to-slate-800/20 backdrop-blur-sm"></div>
+                  
+                  {/* Subtle geometric background elements */}
+                  <div className="absolute top-8 right-8 w-32 h-32 bg-gradient-to-br from-slate-200/20 to-gray-300/20 dark:from-slate-600/20 dark:to-slate-500/20 rounded-full blur-2xl"></div>
+                  <div className="absolute bottom-8 left-8 w-24 h-24 bg-gradient-to-tr from-slate-300/20 to-gray-200/20 dark:from-slate-500/20 dark:to-slate-600/20 rounded-full blur-xl"></div>
+                  
                   <div className="relative z-10">
-                    <h3 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-6">
-                      💎 Premium Opportunities
-                    </h3>
-                    <p className="text-xl font-inter text-white/90 mb-8 max-w-3xl mx-auto">
-                      Get exclusive access to top-tier positions and premium visibility. Stand out from the crowd.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
-                        <div className="text-2xl mb-2">🎯</div>
-                        <p className="text-white font-inter font-medium">Priority Placement</p>
+                    <div className="text-center mb-12">
+                      <h3 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                        Elite Placement & Visibility
+                      </h3>
+                      <p className="text-xl font-inter text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                        For those who demand results—access exclusive visibility and attract the industry's best talent, faster.
+                      </p>
+                    </div>
+                    
+                    {/* Premium Feature Boxes */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-12">
+                      {/* Priority Placement */}
+                      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 dark:border-slate-600/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Priority Placement</h4>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Appear at the top of every search and category listing.</p>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
-                        <div className="text-2xl mb-2">⚡</div>
-                        <p className="text-white font-inter font-medium">Instant Visibility</p>
+                      
+                      {/* Instant Visibility */}
+                      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 dark:border-slate-600/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Instant Visibility</h4>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Featured in daily discovery alerts and notifications.</p>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
-                        <div className="text-2xl mb-2">👑</div>
-                        <p className="text-white font-inter font-medium">Premium Badge</p>
+                      
+                      {/* Prestige Badge */}
+                      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 dark:border-slate-600/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Prestige Badge</h4>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Build trust at a glance with top-tier verification status.</p>
+                      </div>
+                      
+                      {/* Advanced Analytics */}
+                      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 dark:border-slate-600/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Advanced Analytics</h4>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Track performance and optimize your recruiting success.</p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => navigate('/post-job')}
-                      className="bg-white text-purple-600 font-inter font-bold py-4 px-8 rounded-xl text-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-200"
-                    >
-                      Get Premium Access
-                    </button>
+                    
+                    {/* Premium CTA */}
+                    <div className="text-center">
+                      <button
+                        onClick={() => navigate('/post-job')}
+                        className="group relative bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white text-white dark:text-gray-900 font-inter font-bold py-6 px-12 rounded-2xl text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden border border-gray-800 dark:border-gray-200"
+                      >
+                        <span className="relative z-10 flex items-center gap-3">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Unlock Elite Access
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-gray-700 to-slate-800 dark:from-gray-200 dark:via-gray-50 dark:to-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Testimonial Below Premium Section */}
+                  <div className="mt-16 text-center">
+                    <div className="max-w-4xl mx-auto bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/30 dark:border-slate-600/30">
+                      <blockquote className="text-lg md:text-xl font-inter italic text-gray-800 dark:text-gray-200 mb-6">
+                        "Top salons hire faster with Premium Placement. Trusted by 2,800+ businesses nationwide."
+                      </blockquote>
+                      <div className="flex items-center justify-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-slate-400 to-slate-600 dark:from-slate-500 dark:to-slate-700 rounded-full flex items-center justify-center text-white font-bold">
+                          E
+                        </div>
+                        <div className="text-left">
+                          <p className="font-inter font-semibold text-gray-900 dark:text-white">EmviApp Analytics</p>
+                          <p className="text-gray-600 dark:text-gray-400 font-inter text-sm">Industry Performance Data</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
