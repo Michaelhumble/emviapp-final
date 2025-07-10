@@ -195,35 +195,36 @@ const JobsPage = () => {
   try {
     return (
       <div className="w-full">
-        {/* Hero Section */}
-        <section className="relative w-full bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-16 md:py-24 overflow-hidden">
+        {/* Premium Hero Section */}
+        <section className="relative w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 py-20 md:py-28 overflow-hidden">
           {/* Elegant animated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-100/20 via-blue-100/20 to-indigo-100/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-100/40 via-blue-100/40 to-indigo-100/40 dark:from-slate-800/40 dark:via-blue-800/40 dark:to-indigo-800/40"></div>
           <div className="absolute inset-0">
-            <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-indigo-200/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-200/20 dark:bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-indigo-200/20 dark:bg-indigo-400/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute top-1/2 right-1/3 w-72 h-72 bg-slate-200/20 dark:bg-slate-400/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
           </div>
           
           <div className="max-w-7xl mx-auto px-4 md:px-6 text-center relative z-10">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-gray-900 mb-6 leading-tight">
-              Find Your Dream Opportunity,<br />
-              <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Before Someone Else Does
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-gray-900 dark:text-white mb-8 leading-tight">
+              Where Top Talent & Leading Salons<br />
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Meet Quietly—And Win
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-700 font-inter mb-12 max-w-4xl mx-auto leading-relaxed">
-              Trusted by leading salons and artists. Connect with opportunities that matter, grow your team, or unlock your next big move.
+            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-inter mb-12 max-w-4xl mx-auto leading-relaxed">
+              The beauty industry's most trusted, premium jobs hub. Instant access to opportunity—trusted by salons, artists, and those who move ahead of the crowd.
             </p>
             
-            {/* Dual CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            {/* Dual Premium CTAs */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <button
                 onClick={() => navigate('/post-job')}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-inter font-bold py-4 px-8 rounded-xl text-lg shadow-xl transform hover:scale-105 transition-all duration-200 min-w-[240px]"
+                className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-inter font-semibold py-5 px-10 rounded-2xl text-lg shadow-2xl transform hover:scale-105 transition-all duration-300 min-w-[220px] relative overflow-hidden"
               >
-                Post a Job Now
+                <span className="relative z-10">Post a Job</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <button
                 onClick={() => {
@@ -232,57 +233,78 @@ const JobsPage = () => {
                     jobsSection.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-inter font-bold py-4 px-8 rounded-xl text-lg shadow-xl transform hover:scale-105 transition-all duration-200 min-w-[240px]"
+                className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-inter font-semibold py-5 px-10 rounded-2xl text-lg shadow-2xl transform hover:scale-105 transition-all duration-300 min-w-[220px] relative overflow-hidden"
               >
-                Find My Dream Job
+                <span className="relative z-10">Find My Dream Job</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </div>
             
-            {/* Trust signals */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-4xl mx-auto mb-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
-                <div className="text-green-600 mb-2">✓</div>
-                <p className="text-sm font-inter font-medium text-gray-800">Verified Listings</p>
+            {/* Trust signals row */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-5xl mx-auto mb-12">
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow">
+                <div className="w-8 h-8 mx-auto mb-3 text-emerald-600 dark:text-emerald-400">
+                  <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="text-sm font-inter font-medium text-gray-800 dark:text-gray-200">Verified Network</p>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
-                <div className="text-blue-600 mb-2">💬</div>
-                <p className="text-sm font-inter font-medium text-gray-800">Private Messaging</p>
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow">
+                <div className="w-8 h-8 mx-auto mb-3 text-blue-600 dark:text-blue-400">
+                  <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-inter font-medium text-gray-800 dark:text-gray-200">Private Messaging</p>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
-                <div className="text-purple-600 mb-2">🌎</div>
-                <p className="text-sm font-inter font-medium text-gray-800">Bilingual Support</p>
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow">
+                <div className="w-8 h-8 mx-auto mb-3 text-purple-600 dark:text-purple-400">
+                  <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="text-sm font-inter font-medium text-gray-800 dark:text-gray-200">Bilingual Support</p>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
-                <div className="text-indigo-600 mb-2">📈</div>
-                <p className="text-sm font-inter font-medium text-gray-800">Thousands of Hires</p>
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow">
+                <div className="w-8 h-8 mx-auto mb-3 text-indigo-600 dark:text-indigo-400">
+                  <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-inter font-medium text-gray-800 dark:text-gray-200">Thousands of Hires</p>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
-                <div className="text-amber-600 mb-2">⭐</div>
-                <p className="text-sm font-inter font-medium text-gray-800">Top-rated by Professionals</p>
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow">
+                <div className="w-8 h-8 mx-auto mb-3 text-amber-600 dark:text-amber-400">
+                  <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-inter font-medium text-gray-800 dark:text-gray-200">Top-rated by Professionals</p>
               </div>
             </div>
             
             {/* Testimonial */}
-            <div className="max-w-2xl mx-auto bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-              <p className="text-lg text-gray-800 font-inter italic mb-4">
-                "Finally, a platform built for us. I found my dream position in 3 days and the salon found exactly what they were looking for."
+            <div className="max-w-3xl mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50 dark:border-gray-700/50 mb-8">
+              <p className="text-lg text-gray-800 dark:text-gray-200 font-inter italic mb-6 leading-relaxed">
+                "This platform changed everything for our salon. We found our lead nail artist in 24 hours—someone we never would have connected with otherwise. The quality of candidates here is exceptional."
               </p>
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  M
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  S
                 </div>
-                <div>
-                  <p className="font-inter font-bold text-gray-900">Maria Rodriguez, Nail Artist</p>
-                  <p className="text-sm text-gray-600 font-inter">Beverly Hills</p>
+                <div className="text-left">
+                  <p className="font-inter font-semibold text-gray-900 dark:text-white text-lg">Sarah Martinez</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 font-inter">Owner, Luxe Beauty Studio</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-500 font-inter">Beverly Hills, CA</p>
                 </div>
               </div>
             </div>
-          </div>
-          
-          {/* Subtle FOMO at bottom */}
-          <div className="text-center mt-8">
-            <p className="text-sm text-gray-600 font-inter max-w-lg mx-auto">
-              Popular positions fill up daily. Create your account to never miss out.
+            
+            {/* Subtle FOMO */}
+            <p className="text-sm text-gray-600 dark:text-gray-400 font-inter italic max-w-lg mx-auto">
+              Opportunities go fast. The best teams move quietly. Don't miss out.
             </p>
           </div>
         </section>
@@ -314,24 +336,24 @@ const JobsPage = () => {
         {/* Industry Navigation */}
         <div id="jobs-section" className="max-w-7xl mx-auto px-4 md:px-6 mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
-              Nail Tech Opportunities
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 dark:text-white mb-4">
+              Explore by Specialty
             </h2>
-            <p className="text-xl font-inter text-gray-600 max-w-2xl mx-auto">
-              Connect with the perfect opportunity or talent in your specialty area
+            <p className="text-xl font-inter text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Connect with the perfect opportunity in your area of expertise
             </p>
           </div>
           
           <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
-            <div className="overflow-x-auto mb-8">
-              <TabsList className="inline-flex w-max min-w-full p-2 bg-white rounded-2xl shadow-lg border border-gray-200">
+            <div className="overflow-x-auto pb-4 mb-12">
+              <TabsList className="inline-flex w-max min-w-full p-3 bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700">
                 {industryTabs.map(tab => {
                   const IconComponent = tab.icon;
                   return (
                     <TabsTrigger 
                       key={tab.id} 
                       value={tab.id}
-                      className="flex items-center gap-3 font-inter font-medium text-sm py-4 px-6 rounded-xl transition-all whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:transform data-[state=active]:scale-105 hover:bg-gray-50"
+                      className="flex items-center gap-3 font-inter font-medium text-sm py-4 px-6 rounded-2xl transition-all duration-300 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=active]:transform data-[state=active]:scale-105 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                     >
                       <IconComponent className="w-5 h-5" />
                       <span>{tab.label}</span>
