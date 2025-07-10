@@ -195,56 +195,35 @@ const JobsPage = () => {
   try {
     return (
       <div className="w-full">
-        {/* Premium FOMO Hero Section */}
-        <section className="relative w-full bg-gradient-to-br from-amber-50 via-rose-50 to-purple-50 py-20 mb-16 overflow-hidden">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-100/30 via-rose-100/30 to-purple-100/30"></div>
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-12 right-12 text-5xl animate-pulse select-none pointer-events-none opacity-80">💎</div>
-            <div className="absolute top-20 left-16 text-3xl animate-pulse select-none pointer-events-none opacity-60" style={{animationDelay: '0.5s'}}>⚡</div>
-            <div className="absolute bottom-16 right-20 text-4xl animate-pulse select-none pointer-events-none opacity-70" style={{animationDelay: '1s'}}>🔥</div>
-            <div className="absolute bottom-20 left-12 text-2xl animate-pulse select-none pointer-events-none opacity-50" style={{animationDelay: '1.5s'}}>⭐</div>
+        {/* Hero Section */}
+        <section className="relative w-full bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-16 md:py-24 overflow-hidden">
+          {/* Elegant animated background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-100/20 via-blue-100/20 to-indigo-100/20"></div>
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-indigo-200/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
           </div>
           
-          <div className="max-w-6xl mx-auto px-4 text-center relative z-10">
-            {/* Urgency Alert Bar */}
-            <div className="inline-flex items-center gap-2 bg-red-500/90 text-white px-6 py-3 rounded-full font-inter font-bold text-sm mb-8 shadow-lg animate-pulse">
-              <span className="w-2 h-2 bg-white rounded-full animate-ping"></span>
-              LIVE: 847 Active Jobs • 3,429 Artists Searching Now
-            </div>
-
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-black text-gray-900 mb-6 tracking-tight leading-none">
-              Beauty Jobs Don't Wait—<br />
-              <span className="bg-gradient-to-r from-red-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Land Yours Before Someone Else Does
+          <div className="max-w-7xl mx-auto px-4 md:px-6 text-center relative z-10">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-gray-900 mb-6 leading-tight">
+              Find Your Dream Opportunity,<br />
+              <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Before Someone Else Does
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-700 font-inter font-semibold mb-10 max-w-4xl mx-auto leading-tight">
-              Top salons and artists hire here first. Instant matches, real results.<br />
-              <span className="text-red-600 font-black">Miss your shot—and it's gone.</span>
+            <p className="text-xl md:text-2xl text-gray-700 font-inter mb-12 max-w-4xl mx-auto leading-relaxed">
+              Trusted by leading salons and artists. Connect with opportunities that matter, grow your team, or unlock your next big move.
             </p>
             
-            {/* Verification badges */}
-            <div className="flex flex-wrap gap-3 justify-center mb-10">
-              <span className="bg-white/90 backdrop-blur-sm text-green-800 px-4 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-green-300">
-                ✅ Verified by Real Salons & Artists
-              </span>
-              <span className="bg-white/90 backdrop-blur-sm text-purple-800 px-4 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-purple-300">
-                🚀 2,847 Jobs Filled This Month
-              </span>
-              <span className="bg-white/90 backdrop-blur-sm text-blue-800 px-4 py-2 rounded-full font-inter font-bold text-sm shadow-lg border border-blue-300">
-                🔒 100% Secure, Bilingual Support
-              </span>
-            </div>
-            
-            {/* Primary CTA */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            {/* Dual CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <button
                 onClick={() => navigate('/post-job')}
-                className="bg-gradient-to-r from-red-600 to-purple-600 hover:from-red-700 hover:to-purple-700 text-white font-inter font-black py-6 px-10 rounded-2xl text-xl shadow-2xl transform hover:scale-105 transition-all duration-200 border-0 min-w-[280px]"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-inter font-bold py-4 px-8 rounded-xl text-lg shadow-xl transform hover:scale-105 transition-all duration-200 min-w-[240px]"
               >
-                🔥 Post a Job Now—Don't Miss Out
+                Post a Job Now
               </button>
               <button
                 onClick={() => {
@@ -253,126 +232,147 @@ const JobsPage = () => {
                     jobsSection.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-inter font-black py-6 px-10 rounded-2xl text-xl shadow-2xl transform hover:scale-105 transition-all duration-200 border-0 min-w-[280px]"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-inter font-bold py-4 px-8 rounded-xl text-lg shadow-xl transform hover:scale-105 transition-all duration-200 min-w-[240px]"
               >
-                ⚡ Find My Dream Job Today
+                Find My Dream Job
               </button>
             </div>
             
-            {/* FOMO text */}
-            <p className="text-base text-gray-600 font-inter font-medium mb-8 italic">
-              Seen by thousands—don't let your perfect match slip away.
-            </p>
+            {/* Trust signals */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-4xl mx-auto mb-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
+                <div className="text-green-600 mb-2">✓</div>
+                <p className="text-sm font-inter font-medium text-gray-800">Verified Listings</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
+                <div className="text-blue-600 mb-2">💬</div>
+                <p className="text-sm font-inter font-medium text-gray-800">Private Messaging</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
+                <div className="text-purple-600 mb-2">🌎</div>
+                <p className="text-sm font-inter font-medium text-gray-800">Bilingual Support</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
+                <div className="text-indigo-600 mb-2">📈</div>
+                <p className="text-sm font-inter font-medium text-gray-800">Thousands of Hires</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
+                <div className="text-amber-600 mb-2">⭐</div>
+                <p className="text-sm font-inter font-medium text-gray-800">Top-rated by Professionals</p>
+              </div>
+            </div>
             
-            {/* Trust testimonial */}
-            <div className="max-w-3xl mx-auto bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
-              <p className="text-lg text-gray-800 font-inter font-medium mb-3 italic">
-                "I posted here and filled my chair in 2 days—don't wait, jobs go fast. This is where the industry comes to find real talent."
+            {/* Testimonial */}
+            <div className="max-w-2xl mx-auto bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+              <p className="text-lg text-gray-800 font-inter italic mb-4">
+                "Finally, a platform built for us. I found my dream position in 3 days and the salon found exactly what they were looking for."
               </p>
               <div className="flex items-center justify-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                  L
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  M
                 </div>
                 <div>
-                  <p className="text-base font-inter font-bold text-gray-900">
-                    Lisa Chen, Salon Owner
-                  </p>
-                  <p className="text-sm text-gray-600 font-inter">
-                    Elite Nails & Spa, Orange County CA
-                  </p>
+                  <p className="font-inter font-bold text-gray-900">Maria Rodriguez, Nail Artist</p>
+                  <p className="text-sm text-gray-600 font-inter">Beverly Hills</p>
                 </div>
               </div>
             </div>
           </div>
+          
+          {/* Subtle FOMO at bottom */}
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-600 font-inter max-w-lg mx-auto">
+              Popular positions fill up daily. Create your account to never miss out.
+            </p>
+          </div>
         </section>
 
         {/* Live Stats Bar */}
-        <div className="max-w-7xl mx-auto px-4 mb-12">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <p className="text-3xl font-playfair font-black text-purple-600">2,847</p>
-                <p className="text-sm font-inter font-bold text-muted-foreground">Jobs Posted</p>
+        <div className="max-w-7xl mx-auto px-4 md:px-6 mb-16">
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div className="group">
+                <p className="text-4xl font-playfair font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform">2,847</p>
+                <p className="text-sm font-inter font-medium text-gray-600">Active Opportunities</p>
               </div>
-              <div>
-                <p className="text-3xl font-playfair font-black text-pink-600">156</p>
-                <p className="text-sm font-inter font-bold text-muted-foreground">Applied Today</p>
+              <div className="group">
+                <p className="text-4xl font-playfair font-bold text-blue-600 mb-2 group-hover:scale-110 transition-transform">156</p>
+                <p className="text-sm font-inter font-medium text-gray-600">Matches Today</p>
               </div>
-              <div>
-                <p className="text-3xl font-playfair font-black text-blue-600">94%</p>
-                <p className="text-sm font-inter font-bold text-muted-foreground">Success Rate</p>
+              <div className="group">
+                <p className="text-4xl font-playfair font-bold text-indigo-600 mb-2 group-hover:scale-110 transition-transform">94%</p>
+                <p className="text-sm font-inter font-medium text-gray-600">Success Rate</p>
               </div>
-              <div>
-                <p className="text-3xl font-playfair font-black text-green-600">4.9★</p>
-                <p className="text-sm font-inter font-bold text-muted-foreground">User Rating</p>
+              <div className="group">
+                <p className="text-4xl font-playfair font-bold text-amber-600 mb-2 group-hover:scale-110 transition-transform">4.9★</p>
+                <p className="text-sm font-inter font-medium text-gray-600">Professional Rating</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Premium Industry Navigation */}
-        <div id="jobs-section" className="max-w-7xl mx-auto px-4 mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-playfair font-black text-foreground mb-3">
-              Explore by Specialty
+        {/* Industry Navigation */}
+        <div id="jobs-section" className="max-w-7xl mx-auto px-4 md:px-6 mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
+              Nail Tech Opportunities
             </h2>
-            <p className="text-lg font-inter text-muted-foreground">
-              Find opportunities in your area of expertise
+            <p className="text-xl font-inter text-gray-600 max-w-2xl mx-auto">
+              Connect with the perfect opportunity or talent in your specialty area
             </p>
           </div>
           
           <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 mb-8 p-2 bg-gray-50 rounded-2xl border-2 border-gray-200">
-              {industryTabs.map(tab => {
-                const IconComponent = tab.icon;
-                return (
-                  <TabsTrigger 
-                    key={tab.id} 
-                    value={tab.id}
-                    className="flex items-center gap-2 font-inter font-bold text-sm py-3 px-4 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-lg data-[state=active]:scale-105"
-                  >
-                    <IconComponent className="w-5 h-5" />
-                    <span className="hidden lg:inline">{tab.label}</span>
-                    <span className="lg:hidden text-xs">{tab.label.split(' ')[0]}</span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+            <div className="overflow-x-auto mb-8">
+              <TabsList className="inline-flex w-max min-w-full p-2 bg-white rounded-2xl shadow-lg border border-gray-200">
+                {industryTabs.map(tab => {
+                  const IconComponent = tab.icon;
+                  return (
+                    <TabsTrigger 
+                      key={tab.id} 
+                      value={tab.id}
+                      className="flex items-center gap-3 font-inter font-medium text-sm py-4 px-6 rounded-xl transition-all whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:transform data-[state=active]:scale-105 hover:bg-gray-50"
+                    >
+                      <IconComponent className="w-5 h-5" />
+                      <span>{tab.label}</span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
 
             {industryTabs.map(tab => (
-              <TabsContent key={tab.id} value={tab.id} className="space-y-8">
-                {/* Diamond Exclusive Section */}
-                <div className="mb-12">
-                  <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 text-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm"></div>
-                    <div className="relative z-10">
-                      <h3 className="text-3xl font-playfair font-black text-white mb-4">
-                        💎 Diamond Exclusive Access
-                      </h3>
-                      <p className="text-xl font-inter text-white/90 mb-6 max-w-2xl mx-auto">
-                        Get priority placement, premium visibility, and direct contact with top talent. Only 3 spots available.
-                      </p>
-                      <div className="flex items-center justify-center gap-4 mb-6">
-                        <span className="bg-white/20 text-white px-4 py-2 rounded-full font-inter font-bold">
-                          🎯 5x More Views
-                        </span>
-                        <span className="bg-white/20 text-white px-4 py-2 rounded-full font-inter font-bold">
-                          ⚡ Instant Contact
-                        </span>
-                        <span className="bg-white/20 text-white px-4 py-2 rounded-full font-inter font-bold">
-                          👑 Premium Badge
-                        </span>
+              <TabsContent key={tab.id} value={tab.id} className="space-y-12">
+                {/* Premium Features Section */}
+                <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-indigo-500/10"></div>
+                  <div className="relative z-10">
+                    <h3 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-6">
+                      💎 Premium Opportunities
+                    </h3>
+                    <p className="text-xl font-inter text-white/90 mb-8 max-w-3xl mx-auto">
+                      Get exclusive access to top-tier positions and premium visibility. Stand out from the crowd.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                        <div className="text-2xl mb-2">🎯</div>
+                        <p className="text-white font-inter font-medium">Priority Placement</p>
                       </div>
-                      <button
-                        onClick={() => navigate('/post-job')}
-                        className="btn-diamond text-white font-inter font-black py-4 px-8 rounded-xl text-lg"
-                      >
-                        Upgrade to Diamond ✨
-                      </button>
-                      <p className="text-white/80 font-inter mt-3">
-                        Only 1 spot left out of 3
-                      </p>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                        <div className="text-2xl mb-2">⚡</div>
+                        <p className="text-white font-inter font-medium">Instant Visibility</p>
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                        <div className="text-2xl mb-2">👑</div>
+                        <p className="text-white font-inter font-medium">Premium Badge</p>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => navigate('/post-job')}
+                      className="bg-white text-purple-600 font-inter font-bold py-4 px-8 rounded-xl text-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-200"
+                    >
+                      Get Premium Access
+                    </button>
                   </div>
                 </div>
                 
