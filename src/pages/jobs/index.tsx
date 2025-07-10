@@ -196,49 +196,76 @@ const JobsPage = () => {
     return (
       <div className="w-full">
         {/* Ultra-Premium Hero Section */}
-        <section className="relative w-full bg-gradient-to-br from-slate-50 via-pearl-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-24 md:py-32 overflow-hidden">
-          {/* Subtle luxury background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-100/20 via-white/40 to-slate-50/30 dark:from-slate-800/40 dark:via-slate-700/20 dark:to-gray-800/30"></div>
+        <section className="relative w-full bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-24 md:py-32 overflow-hidden">
+          {/* Custom Abstract Background */}
           <div className="absolute inset-0">
-            <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-slate-200/10 dark:bg-slate-600/5 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-gray-100/15 dark:bg-gray-700/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-100/30 via-white/60 to-slate-50/40 dark:from-slate-800/40 dark:via-slate-700/30 dark:to-gray-800/50"></div>
+            <div className="absolute top-1/4 right-1/5 w-96 h-96 bg-gradient-to-br from-blue-100/20 to-indigo-100/30 dark:from-blue-900/10 dark:to-indigo-900/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 left-1/5 w-80 h-80 bg-gradient-to-tr from-purple-100/20 to-pink-100/30 dark:from-purple-900/10 dark:to-pink-900/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-gray-100/15 to-slate-100/25 dark:from-gray-800/15 dark:to-slate-800/25 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           </div>
           
           <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               {/* Hero Content - Left aligned on desktop, centered on mobile */}
               <div className="lg:col-span-8 text-center lg:text-left">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-playfair font-bold text-gray-900 dark:text-white mb-8 leading-tight tracking-tight">
-                  Your Next Move.<br />
-                  Someone Else's Dream.<br />
-                  <span className="text-slate-600 dark:text-slate-300">— Don't Miss It.</span>
-                </h1>
+                <div className="animate-fade-in">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-playfair font-bold text-gray-900 dark:text-white mb-8 leading-tight tracking-tight">
+                    <span className="block animate-slide-in-right">Unlock the Beauty Industry's</span>
+                    <span className="block animate-slide-in-right" style={{ animationDelay: '0.2s' }}>Best-Kept Secrets.</span>
+                    <span className="block text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-slate-600 dark:text-slate-300 mt-4 animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
+                      Where Top Salons & Artists Connect First—<br />
+                      Quietly, Confidently, Successfully.
+                    </span>
+                  </h1>
+                </div>
                 
-                <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-inter mb-12 max-w-3xl leading-relaxed">
-                  Opportunities change lives in a moment. Top salons and artists connect here before the rest of the world even knows. Secure your next step—before it's gone.
-                </p>
+                <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+                  <p className="text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 font-inter mb-12 max-w-4xl leading-relaxed">
+                    Trusted by industry leaders. Find your dream artist or your next big move before anyone else knows it's available. No noise. No spam. Just results—built for those who expect the best.
+                  </p>
+                </div>
                 
                 {/* Ultra-Premium CTAs */}
-                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center mb-16">
-                  <button
-                    onClick={() => navigate('/post-job')}
-                    className="group relative bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-inter font-semibold py-6 px-12 rounded-none text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 min-w-[200px] overflow-hidden border border-gray-900 dark:border-white"
-                  >
-                    <span className="relative z-10">Post a Job</span>
-                    <div className="absolute inset-0 bg-gray-800 dark:bg-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      const jobsSection = document.querySelector('#jobs-section');
-                      if (jobsSection) {
-                        jobsSection.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    className="group relative bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-inter font-semibold py-6 px-12 rounded-none text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 min-w-[200px] overflow-hidden border border-gray-900 dark:border-white"
-                  >
-                    <span className="relative z-10">Find My Dream Job</span>
-                    <div className="absolute inset-0 bg-gray-50 dark:bg-gray-800 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                  </button>
+                <div className="animate-fade-in" style={{ animationDelay: '0.8s' }}>
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center mb-8">
+                    <button
+                      onClick={() => navigate('/post-job')}
+                      className="group relative bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white text-white dark:text-gray-900 font-inter font-bold py-6 px-12 rounded-2xl text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 min-w-[220px] overflow-hidden border border-gray-800 dark:border-gray-200 animate-pulse hover:animate-none"
+                    >
+                      <span className="relative z-10 flex items-center gap-3">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Post a Job
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-gray-700 to-slate-800 dark:from-gray-200 dark:via-gray-50 dark:to-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                    </button>
+                    <button
+                      onClick={() => {
+                        const jobsSection = document.querySelector('#jobs-section');
+                        if (jobsSection) {
+                          jobsSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                      className="group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-gray-900 dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-lg shadow-xl hover:shadow-2xl transition-all duration-500 min-w-[220px] overflow-hidden border border-slate-300 dark:border-slate-600"
+                    >
+                      <span className="relative z-10 flex items-center gap-3">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Find My Dream Job
+                      </span>
+                      <div className="absolute inset-0 bg-gray-50/90 dark:bg-slate-700/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                    </button>
+                  </div>
+                  
+                  {/* Subtle FOMO Line */}
+                  <div className="text-center lg:text-left">
+                    <p className="text-sm font-inter text-gray-600 dark:text-gray-400 italic">
+                      Most positions fill in under 48 hours. Don't wait—top talent moves fast.
+                    </p>
+                  </div>
                 </div>
                 
                 {/* Elegant Trust Signals */}
@@ -278,22 +305,23 @@ const JobsPage = () => {
           </div>
         </section>
 
-        {/* FOMO Testimonial Slider */}
+        {/* Premium Testimonial Section */}
         <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-          <div className="bg-white dark:bg-gray-900 border-t border-b border-slate-200 dark:border-slate-700 py-12">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="animate-pulse-slow">
-                <blockquote className="text-2xl md:text-3xl font-playfair italic text-gray-900 dark:text-white mb-8 leading-relaxed">
-                  "We hired in 36 hours—no noise, just results. I wish I had found this sooner."
+          <div className="relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-3xl shadow-2xl py-16 overflow-hidden">
+            {/* Subtle background glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-white/50 to-purple-50/30 dark:from-blue-900/10 dark:via-slate-800/30 dark:to-purple-900/10"></div>
+            
+            <div className="max-w-4xl mx-auto text-center relative z-10">
+              <div className="animate-fade-in">
+                <div className="w-20 h-20 bg-gradient-to-br from-slate-500 to-slate-700 dark:from-slate-400 dark:to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-8 shadow-lg">
+                  B
+                </div>
+                <blockquote className="text-3xl md:text-4xl lg:text-5xl font-playfair italic text-gray-900 dark:text-white mb-8 leading-tight">
+                  "We hired in 36 hours—no noise, just results."
                 </blockquote>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                    B
-                  </div>
-                  <div className="text-left">
-                    <p className="font-inter font-semibold text-gray-900 dark:text-white text-lg">Bella Rodriguez</p>
-                    <p className="text-gray-600 dark:text-gray-400 font-inter">Salon Owner, Dallas</p>
-                  </div>
+                <div className="text-center">
+                  <p className="font-inter font-bold text-gray-900 dark:text-white text-xl mb-2">Bella R.</p>
+                  <p className="text-gray-600 dark:text-gray-400 font-inter text-lg">Salon Owner</p>
                 </div>
               </div>
             </div>
@@ -385,7 +413,7 @@ const JobsPage = () => {
                           </svg>
                         </div>
                         <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Priority Placement</h4>
-                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Appear at the top of every search and category listing.</p>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Always at the top—seen first by top talent.</p>
                       </div>
                       
                       {/* Instant Visibility */}
@@ -396,7 +424,7 @@ const JobsPage = () => {
                           </svg>
                         </div>
                         <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Instant Visibility</h4>
-                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Featured in daily discovery alerts and notifications.</p>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Featured in discovery alerts & searches.</p>
                       </div>
                       
                       {/* Prestige Badge */}
@@ -407,7 +435,7 @@ const JobsPage = () => {
                           </svg>
                         </div>
                         <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Prestige Badge</h4>
-                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Build trust at a glance with top-tier verification status.</p>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Build trust instantly with verified status.</p>
                       </div>
                       
                       {/* Advanced Analytics */}
@@ -418,7 +446,7 @@ const JobsPage = () => {
                           </svg>
                         </div>
                         <h4 className="text-xl font-playfair font-bold text-gray-900 dark:text-white mb-3">Advanced Analytics</h4>
-                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Track performance and optimize your recruiting success.</p>
+                        <p className="text-gray-700 dark:text-gray-300 font-inter leading-relaxed">Track, measure, and optimize every hire.</p>
                       </div>
                     </div>
                     
@@ -443,7 +471,7 @@ const JobsPage = () => {
                   <div className="mt-16 text-center">
                     <div className="max-w-4xl mx-auto bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/30 dark:border-slate-600/30">
                       <blockquote className="text-lg md:text-xl font-inter italic text-gray-800 dark:text-gray-200 mb-6">
-                        "Top salons hire faster with Premium Placement. Trusted by 2,800+ businesses nationwide."
+                        "Trusted by 2,800+ salons & studios. Verified by industry leaders."
                       </blockquote>
                       <div className="flex items-center justify-center gap-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-slate-400 to-slate-600 dark:from-slate-500 dark:to-slate-700 rounded-full flex items-center justify-center text-white font-bold">
