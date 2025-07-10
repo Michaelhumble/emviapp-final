@@ -172,13 +172,79 @@ const JobsPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
         <div className="container mx-auto px-4 py-8">
-          {/* Page Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-playfair font-black text-foreground mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Beauty Industry Jobs
+          {/* Premium Jobs Hero Section - Restored from original */}
+          <div className="text-center mb-16 max-w-6xl mx-auto">
+            {/* Trust Badge */}
+            <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-sm border border-purple-100 mb-8">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <span className="text-gray-600 font-inter font-medium">Trusted by 2,800+ Top Salons</span>
+            </div>
+
+            {/* Main Headlines */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-playfair font-black mb-4">
+              <span className="text-gray-900">Finding Great Artists</span>
+              <br />
+              <span className="text-gray-900">Is Hard—</span>
+              <br />
+              <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                EmviApp Makes It Easy.
+              </span>
             </h1>
-            <p className="text-xl font-inter text-muted-foreground max-w-3xl mx-auto">
-              Discover premium opportunities in nail tech, hair styling, barbering, massage therapy, skincare, makeup artistry, and more.
+
+            {/* Subheading */}
+            <p className="text-xl md:text-2xl font-inter text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed">
+              Stop wasting time on job boards that don't work. Connect with top nail techs, stylists, and beauty professionals who are serious about their craft—and ready to grow with you.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <button
+                onClick={() => navigate('/post-job')}
+                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-inter font-bold py-4 px-8 rounded-2xl text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
+              >
+                <span className="text-xl">+</span>
+                Post a Job
+              </button>
+              <button
+                onClick={() => navigate('/artists')}
+                className="bg-white hover:bg-gray-50 text-purple-600 border-2 border-purple-200 font-inter font-bold py-4 px-8 rounded-2xl text-lg transition-all flex items-center gap-2"
+              >
+                <span className="text-xl">🔍</span>
+                Find My Dream Job
+              </button>
+            </div>
+
+            {/* Success Stats */}
+            <div className="mb-8">
+              <p className="text-lg font-inter text-gray-600">
+                <span className="text-purple-600 font-bold">1,247 successful hires</span> in the last 30 days. Join the best.
+              </p>
+            </div>
+
+            {/* Feature Badges */}
+            <div className="flex flex-wrap justify-center gap-6 text-sm font-inter text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>Private & Confidential</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>Verified Professionals</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>48hr Average Fill Time</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Explore by Specialty Section */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+              Explore by Specialty
+            </h2>
+            <p className="text-xl font-inter text-gray-600 max-w-3xl mx-auto mb-8">
+              Connect with the perfect opportunity in your area of expertise
             </p>
           </div>
 
