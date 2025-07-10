@@ -738,15 +738,7 @@ const JobsPage = () => {
                                        className="w-full h-full object-cover"
                                        loading="lazy"
                                      />
-                                      {/* Star rating overlay - ONLY for nails industry */}
-                                      {job.rating && tab.id === 'nails' && (
-                                        <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
-                                          <div className="flex items-center text-sm font-medium">
-                                            <span className="text-yellow-500 mr-1">★</span>
-                                            {job.rating.toFixed(1)}
-                                          </div>
-                                        </div>
-                                      )}
+                                      {/* Star rating overlay - COMPLETELY REMOVED for all non-nail industries */}
                                    </div>
                                  ) : (
                                    <div className="w-full h-40 mb-4 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
@@ -794,15 +786,7 @@ const JobsPage = () => {
                                     </div>
                                   )}
                                    
-                                    {/* Rating display - only show for nails industry */}
-                                    {job.rating && tab.id === 'nails' && (
-                                      <div className="flex items-center gap-1">
-                                        <span className="text-yellow-500">★</span>
-                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                          {job.rating.toFixed(1)}
-                                        </span>
-                                      </div>
-                                    )}
+                                    {/* Rating display - COMPLETELY REMOVED for all non-nail industries */}
                                   
                                   {job.isPositionFilled && (
                                     <div className="text-xs text-gray-400 border-t pt-3">
