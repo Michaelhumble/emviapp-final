@@ -1,4 +1,5 @@
 import { IndustryListing, IndustryConfig } from '@/types/industryListing';
+import { realVietnameseNailListings } from './realVietnameseNailListings';
 
 // Premium industry listings with Michael's brother's Diamond listing always first
 
@@ -16,9 +17,10 @@ export const magicNailsDiamondListing = {
   fullDescription: 'Tìm Thợ Nails\n\nMagic Nails – Great Falls, MT\n\nMagic Nails cần thợ biết làm bột và tay chân nước.\n\nGreat Falls, MT\n\n(406) 770-3070\n\n$1,200–$1,500/tuần'
 };
 
-// Nail Industry Listings
+// Nail Industry Listings - Now using real Vietnamese nail job listings
 export const nailListings = [
   magicNailsDiamondListing,
+  ...realVietnameseNailListings,
   // Additional Diamond listings (total 3 max)
   {
     id: 'diamond-nails-vegas',
