@@ -52,9 +52,17 @@ const DiamondFOMOCard: React.FC<DiamondFOMOCardProps> = ({ industryName }) => {
 
           <div className="bg-blue-100 rounded-lg p-4 mb-4 border border-blue-200">
             <div className="text-center">
-              <p className="text-blue-800 font-bold text-lg mb-1">
+              <p className="text-blue-800 font-bold text-lg mb-2">
                 Your salon here! Unlock Diamond placement
               </p>
+              <div className="bg-white rounded-lg p-3 mb-3 border border-blue-300">
+                <p className="text-blue-900 font-bold text-2xl">
+                  $999.99 / 12 months
+                </p>
+                <p className="text-blue-700 text-sm mt-1">
+                  Billed annually • Only 1 Diamond spot per industry
+                </p>
+              </div>
               <p className="text-blue-700 text-sm">
                 1 spot only. Maximum visibility. Contact us to claim this exclusive spot before it's gone.
               </p>
@@ -77,17 +85,17 @@ const DiamondFOMOCard: React.FC<DiamondFOMOCardProps> = ({ industryName }) => {
           </div>
 
           <Button 
-            disabled
+            onClick={() => window.location.href = '/post-job?tier=diamond'}
             className="w-full font-inter font-bold text-white transition-all duration-300 hover:scale-105" 
             style={{ backgroundColor: '#2176FF' }}
           >
             <Crown className="w-4 h-4 mr-2" />
-            Apply for Diamond
+            Apply for Diamond – $999.99/year
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
           
           <p className="text-xs text-center text-gray-500 mt-2 font-inter">
-            Contact EmviApp team for availability
+            Your salon will be reviewed before approval
           </p>
         </CardContent>
       </Card>
