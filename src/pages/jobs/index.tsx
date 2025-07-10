@@ -15,6 +15,16 @@ import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { getIndustryRoute } from '@/utils/industryRouteMap';
+import { 
+  nailListings, 
+  hairListings, 
+  barberListings, 
+  massageListings, 
+  facialListings, 
+  makeupListings, 
+  browLashListings, 
+  tattooListings 
+} from '@/data/industryListings';
 
 // Development validation
 if (process.env.NODE_ENV === 'development') {
@@ -546,12 +556,76 @@ const JobsPage = () => {
                 
                 {/* Filtered Jobs for this industry */}
                 {(() => {
-                  const filteredJobs = tab.id === 'all' 
+                  // Get industry-specific listings from our comprehensive data
+                  let industryListings = [];
+                  
+                  switch (tab.id) {
+                    case 'nails':
+                      industryListings = nailListings;
+                      break;
+                    case 'hair':
+                      industryListings = hairListings;
+                      break;
+                    case 'barber':
+                      industryListings = barberListings;
+                      break;
+                    case 'massage':
+                      industryListings = massageListings;
+                      break;
+                    case 'skincare':
+                      industryListings = facialListings;
+                      break;
+                    case 'makeup':
+                      industryListings = makeupListings;
+                      break;
+                    case 'brows-lashes':
+                      industryListings = browLashListings;
+                      break;
+                    case 'tattoo':
+                      industryListings = tattooListings;
+                      break;
+                    case 'all':
+                    default:
+                      // For 'all' tab, combine user jobs with some industry listings
+                      industryListings = [
+                        ...nailListings.slice(0, 5),
+                        ...hairListings.slice(0, 3),
+                        ...barberListings.slice(0, 3),
+                        ...massageListings.slice(0, 2),
+                        ...facialListings.slice(0, 2),
+                        ...makeupListings.slice(0, 2),
+                        ...browLashListings.slice(0, 2),
+                        ...tattooListings.slice(0, 2)
+                      ];
+                      break;
+                  }
+                  
+                  // Convert industry listings to Job format for JobsGrid
+                  const convertedJobs: Job[] = industryListings.map(listing => ({
+                    id: listing.id,
+                    title: listing.title,
+                    location: listing.location,
+                    description: listing.summary || listing.fullDescription,
+                    category: tab.id === 'all' ? 'various' : tab.id,
+                    pricing_tier: listing.tier,
+                    salary_range: listing.salary,
+                    status: listing.isPositionFilled ? 'expired' : 'active',
+                    created_at: new Date().toISOString(),
+                    imageUrl: listing.imageUrl,
+                    contact_info: listing.phone ? { phone: listing.phone } : undefined,
+                    type: 'job'
+                  }));
+                  
+                  // Also include user-submitted jobs for this category
+                  const userJobs = tab.id === 'all' 
                     ? jobs 
                     : jobs.filter(job => job.category?.toLowerCase().includes(tab.id) || 
                                         job.title?.toLowerCase().includes(tab.id.replace('-', ' ')));
                   
-                  if (!filteredJobs || filteredJobs.length === 0) {
+                  // Combine and sort (industry listings first, then user jobs)
+                  const allJobs = [...convertedJobs, ...userJobs];
+                  
+                  if (allJobs.length === 0) {
                     return (
                       <div className="text-center py-16">
                         <div className="max-w-md mx-auto">
@@ -582,13 +656,23 @@ const JobsPage = () => {
                   }
                   
                   return (
-                    <JobsGrid
-                      jobs={filteredJobs}
-                      expirations={{}}
-                      onRenew={handleRenew}
-                      isRenewing={false}
-                      renewalJobId={null}
-                    />
+                    <div>
+                      <div className="text-center mb-8">
+                        <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white">
+                          {tab.id === 'all' ? 'Latest Beauty Industry Opportunities' : `${tab.label} Positions Available`}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                          {allJobs.length} opportunities • Updated daily
+                        </p>
+                      </div>
+                      <JobsGrid
+                        jobs={allJobs}
+                        expirations={{}}
+                        onRenew={handleRenew}
+                        isRenewing={false}
+                        renewalJobId={null}
+                      />
+                    </div>
                   );
                 })()}
 
