@@ -196,19 +196,19 @@ const JobsPage = () => {
     return (
       <div className="w-full">
         {/* WORLD-CLASS HERO SECTION */}
-        <section className="relative w-full bg-gradient-to-br from-[#FDFDFD] via-[#F6F6F7] to-white dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-32 md:py-40 overflow-hidden">
+        <section className="relative w-full bg-gradient-to-br from-[hsl(var(--pearl-white))] via-[hsl(var(--emvi-offwhite))] to-white dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-32 md:py-40 overflow-hidden">
           {/* Stunning Premium Background */}
           <div className="absolute inset-0">
             {/* Base luxury gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/3 via-[#FDFDFD]/95 to-[#F6F6F7]/90 dark:from-[#9A7B69]/8 dark:via-slate-800/90 dark:to-gray-900/95"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/3 via-[hsl(var(--pearl-white))]/95 to-[hsl(var(--emvi-offwhite))]/90 dark:from-[hsl(var(--emvi-accent))]/8 dark:via-slate-800/90 dark:to-gray-900/95"></div>
             
             {/* Floating orbs with brand colors */}
-            <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-[#9A7B69]/12 via-[#8A898C]/8 to-transparent rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-32 left-32 w-80 h-80 bg-gradient-to-tr from-[#8A898C]/10 via-[#9A7B69]/12 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-            <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-gradient-to-br from-[#9A7B69]/6 via-[#F6F6F7]/20 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+            <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/12 via-[hsl(var(--emvi-light))]/8 to-transparent rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-32 left-32 w-80 h-80 bg-gradient-to-tr from-[hsl(var(--emvi-light))]/10 via-[hsl(var(--emvi-accent))]/12 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/6 via-[hsl(var(--emvi-offwhite))]/20 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
             
             {/* Subtle grid pattern for texture */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(154,123,105,0.03)_1px,transparent_1px)] bg-[length:60px_60px] opacity-40"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--emvi-accent)/0.03)_1px,transparent_1px)] bg-[length:60px_60px] opacity-40"></div>
           </div>
           
           <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">

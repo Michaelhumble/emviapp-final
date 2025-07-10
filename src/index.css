@@ -35,6 +35,13 @@
 
     --radius: 0.75rem;
 
+    /* EmviApp Brand Palette */
+    --emvi-accent: 25 29% 52%;      /* #9A7B69 */
+    --emvi-dark: 0 0% 10%;          /* #1A1A1A */
+    --emvi-light: 240 3% 55%;       /* #8A898C */
+    --emvi-offwhite: 240 6% 96%;    /* #F6F6F7 */
+    --pearl-white: 240 100% 99%;    /* #FDFDFD */
+
     /* Premium color palette */
     --luxury-gold: 45 100% 60%;
     --luxury-gold-dark: 38 90% 45%;
@@ -93,7 +100,6 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
-}
 
 @layer base {
   * {
