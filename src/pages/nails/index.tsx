@@ -1,6 +1,6 @@
 import React from 'react';
 import IndustryListingPage from '@/components/marketplace/IndustryListingPage';
-import { nailListings } from '@/data/industryListings';
+import { nailListings, expiredNailListings } from '@/data/industryListings';
 
 const NailsPage = () => {
   return (
@@ -8,6 +8,7 @@ const NailsPage = () => {
       industryName="nails"
       displayName="Nails"
       listings={nailListings}
+      expiredListings={expiredNailListings}
       headerTitle="Nail Listings — Premium Spaces"
       headerSubtitle="Discover exclusive nail salon opportunities and connect with the finest establishments in the beauty industry."
       gradientColors="from-pink-100 via-purple-100 to-indigo-100"

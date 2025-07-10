@@ -7,6 +7,7 @@ import { Eye, Flame, Star, Clock, Phone, MapPin, LockIcon } from 'lucide-react';
 import { useSession } from '@/context/auth/hooks/useSession';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import FOMOJobDetailModal from './FOMOJobDetailModal';
+import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
 
 interface FOMOJob {
   salonName: string;
@@ -25,121 +26,21 @@ const FOMONailJobsSection: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<FOMOJob | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  // Real Vietnamese Nail Job Ads - Clean Listing Format
-  const premiumJobs: FOMOJob[] = [
-    // Gold Featured (5 jobs)
-    {
-      salonName: "Elite Nail Studio",
-      title: "TIM THỢ NAILS – Clawson, MI",
-      salary: "$1,200–$1,800/tuần",
-      description: "Chúng tôi đang tuyển gấp thợ nail có kinh nghiệm làm bột, dip và gel-x. Tiệm nằm tại vị trí đắt địa – khu Downtown Clawson, khách chủ yếu là người Mỹ trắng, lịch sự và tip hậu. Tiệm nhỏ xinh, chỉ 6 ghế, dễ làm, dễ quản lý.",
-      location: "Clawson, MI",
-      phone: "(248) 403-6472",
-      type: "gold",
-      summary: "Khu Downtown, khách Mỹ trắng, tip hậu",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png"
-    },
-    {
-      salonName: "Milano Nail Spa",
-      title: "TIM THỢ NAILS – Humble, TX",
-      salary: ">$2,000/tuần",
-      description: "Tiệm nail lớn nhất khu Humble/Kingwood/Atascocita, zipcode 77346. Tuyển thợ bột chuyên design >$2,000/tuần. Receptionist $150/ngày. 60 người đang làm chung. 6947 FM 1960 Rd E, Humble TX 77346.",
-      location: "Humble, TX",
-      phone: "(346) 398-6868",
-      type: "gold",
-      summary: "Tiệm lớn nhất, chuyên design, 60 người",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png"
-    },
-    {
-      salonName: "Lake Tahoe Nails",
-      title: "TIM THỢ NAILS – South Lake Tahoe, CA",
-      salary: "$1,600-$2,500+/tuần",
-      description: "Tiệm thợ trẻ, dễ thương cần tìm đồng đội làm CTN hoặc everything. Giá nail cao, tip cao khỏi chê. Khách du lịch chịu xài tiền. Thu nhập mùa hè $1,600-$2,500+/tuần. Tip $3,000+/tháng. Ưu tiên biết tiếng Anh, có sức khỏe.",
-      location: "South Lake Tahoe, CA",
-      phone: "(916) 802-1922",
-      type: "gold",
-      summary: "Khách du lịch, giá cao, tip $3,000+/tháng",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png"
-    },
-    {
-      salonName: "Killeen Elite Nails",
-      title: "TIM THỢ NAILS – Killeen, TX",
-      salary: "Ít nhất $1,500/tuần",
-      description: "Tiệm lớn, khách đông, làm giá cao, tip nhiều. Thợ làm ít nhất $1500/tuần chưa kể tip. Liên hệ: Johnny / Hannah (512) 540-6173 | (806) 777-0526",
-      location: "Killeen, TX",
-      phone: "(512) 540-6173",
-      type: "gold",
-      summary: "Tiệm lớn, giá cao, tip nhiều",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png"
-    },
-    {
-      salonName: "Luxury Nails Columbus",
-      title: "CẦN THỢ NAIL Ở COLUMBUS, GA",
-      salary: "$1,500-$2,200/tuần",
-      description: "Tiệm Luxury Nails and Spa cần thợ biết bột, tay chân nước, design. Thu nhập mùa này từ $1,500 - $2,200/tuần. Có chỗ ở cho thợ ở xa – môi trường làm việc vui vẻ, không tranh giành. Tiệm chuyên design – khách lịch sự, dễ thương. Gần Columbus Airport, trong shopping center.",
-      location: "Columbus, GA",
-      phone: "(706) 221-3953",
-      type: "gold",
-      summary: "Có chỗ ở, chuyên design, khách lịch sự",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png"
-    },
-    // Premium Listings (5 jobs)
-    {
-      salonName: "Houston Premium Nails",
-      title: "Cần Thợ Nails Gấp Làm Việc Tại Houston, TX",
-      salary: "$800-$1,000/tuần",
-      description: "Tiệm đang cần thợ nail biết làm bột, tay chân nước. Thợ nam nữ đều ok. Không quang trọng tuổi tác. Làm full hoặc part time. Thợ bột lương $ 1,000 / tuần. Thợ tay chân nước $ 800 / tuần. Tiệm đóng cửa chủ nhật. Tiệm nhỏ, không cạnh tranh. Không khí làm việc vui vẻ, hòa đồng.",
-      location: "Houston, TX",
-      phone: "(832) 489-6956",
-      type: "premium",
-      summary: "Full/part time, không cạnh tranh, vui vẻ",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png"
-    },
-    {
-      salonName: "V Star Nails Spa",
-      title: "Cần Gấp Thợ Nails In Placerville CA 95667",
-      salary: "Bao lương theo tay nghề",
-      description: "Tiệm V Star Nails Spa đang cần thợ biết làm bột, dip, tay chân nước, biết làm đủ thứ càng tốt. Bao lương hoặc ăn chia tùy tay nghề. Tiệm khu shopping center, khu đông khách. Giá nails cao, típ hậu...Good location. Nơi làm việc vui vẻ, hòa đồng, thoải mái, bảo đảm thu nhập quanh năm.",
-      location: "Placerville, CA",
-      phone: "(530) 622-8918",
-      type: "premium",
-      summary: "Shopping center, giá cao, tip hậu",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png"
-    },
-    {
-      salonName: "Houston Mix Nails",
-      title: "TUYỂN THỢ NAIL (Houston, TX)",
-      salary: "$900-$1,200/tuần",
-      description: "Tiệm cần tuyển thợ bột (có thể design càng tốt). Tiệm nằm gần khu chợ Thắng Hưng, HK3 , khu khách mix và tip cao. Bao lương từ $900 -$ 1,200 (tuỳ theo tay nghề). Không trừ tiền supply và clean up.",
-      location: "Houston, TX",
-      phone: "(832) 513-0833",
-      type: "premium",
-      summary: "Gần chợ Thắng Hưng, tip cao, không trừ supply",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png"
-    },
-    {
-      salonName: "Champaign Nail Group",
-      title: "Cần Gấp Thợ Nails In Champaign, Illinois",
-      salary: "$1,000-$1,400/tuần",
-      description: "Tiệm 3 tiệm lớn ở vùng Champaign and Mahomet, cần gấp thợ nails. Cần thợ biết làm bột, tay chân nước, wax, biết làm đủ thứ càng tốt. Bao lương $1000-$1400/6 ngày. Tùy khả năng. không trừ tiền supply và clean up của thợ. chủ trẻ hơn hồi đó… không vào turn, có manager, chia turn qua system công bằng. môi trường làm việc vui vẻ, thoải mái. Có chỗ ở cho thợ.",
-      location: "Champaign, IL",
-      phone: "(817) 501-6750",
-      type: "premium",
-      summary: "3 tiệm lớn, có chỗ ở, chia turn công bằng",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png"
-    },
-    {
-      salonName: "Massachusetts Nail Studio",
-      title: "Tiệm đang cần thêm thợ biết làm bột everything biết vẽ có tay ghề",
-      salary: "$1,500-$2,200/tuần",
-      description: "Mùa hè income ( 1500-2200) up. Tiền Tip 400-500up. Có bao lương nếu thợ có Tay nghề , biết vẽ , biết lấy shape chuẩn ( coffin or almond). Tiệm my T rang, khong drama. Không trừ supply của thợ, Có phòng riêng tư sạch sẽ gần tiệm 5p. Tiệm hoà đồng, vui vẽ, không tranh giành và làm có tiền ổn định lâu dài,và ko thích ồn ào drama.",
-      location: "Massachusetts",
-      phone: "(617) 540-2096",
-      type: "premium",
-      summary: "Biết vẽ, shape chuẩn, có phòng riêng, không drama",
-      imageUrl: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png"
-    }
-  ];
+  // Transform real Vietnamese jobs from protected data  
+  const transformToFOMOJob = (job: any): FOMOJob => ({
+    salonName: job.company || 'Nail Salon',
+    title: job.title,
+    salary: job.salary_range || job.compensation_details || 'Contact for details',
+    description: job.description,
+    location: job.location,
+    phone: job.contact_info?.phone || '',
+    type: job.pricingTier === 'diamond' ? 'gold' : 'premium',
+    summary: job.description.substring(0, 100) + '...',
+    imageUrl: job.image || 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png'
+  });
+
+  // Real Vietnamese Nail Job Ads - Using protected authentic data
+  const premiumJobs: FOMOJob[] = vietnameseJobs.map(transformToFOMOJob);
 
   const handleViewDetails = (job: FOMOJob) => {
     setSelectedJob(job);

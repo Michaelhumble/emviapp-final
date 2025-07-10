@@ -1,10 +1,44 @@
 import { IndustryListing, IndustryConfig } from '@/types/industryListing';
 
-// Premium industry listings with Michael's brother's Diamond listing always first
+// LOCKED REAL VIETNAMESE NAIL LISTINGS - Protected by Michael Nguyen
+// ⚠️ DO NOT MODIFY: These are the authentic Vietnamese job posts provided by Michael
 
-export const magicNailsDiamondListing = {
-  id: 'magic-nails-diamond',
-  title: 'Magic Nails – Great Falls, MT',
+import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
+import { vietnameseExpiredJobs } from '@/data/vietnameseExpiredJobs';
+
+// Transform protected Vietnamese listings to industry format
+const transformVietnameseJobToListing = (job: any): IndustryListing => ({
+  id: job.id,
+  title: job.title,
+  location: job.location,
+  salary: job.salary_range || job.compensation_details || 'Contact for details',
+  tier: job.pricingTier === 'diamond' ? 'diamond' : 
+        job.pricingTier === 'premium' ? 'premium' : 
+        job.is_featured ? 'featured' : 'free',
+  summary: job.description,
+  imageUrl: job.image || 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png',
+  phone: job.contact_info?.phone,
+  rating: 4.8,
+  isFeatured: job.is_featured || job.pricingTier === 'diamond',
+  fullDescription: job.description,
+  isPositionFilled: job.status === 'expired',
+  contact: {
+    name: job.contact_info?.owner_name || 'Owner',
+    phone: job.contact_info?.phone || '',
+    email: job.contact_info?.email || ''
+  }
+});
+
+// Real Vietnamese listings from protected data
+const realVietnameseListings = vietnameseJobs.map(transformVietnameseJobToListing);
+const realExpiredListings = vietnameseExpiredJobs.map(transformVietnameseJobToListing);
+
+// Magic Nails Diamond listing (always first)
+export const magicNailsDiamondListing = realVietnameseListings.find(listing => 
+  listing.title.includes('Magic Nails')
+) || {
+  id: 'vietnamese-1',
+  title: 'Tuyển Thợ Nail Gấp – Magic Nails, Great Falls, MT',
   location: 'Great Falls, MT',
   salary: '$1,200–$1,500/tuần',
   tier: 'diamond' as const,
@@ -13,163 +47,52 @@ export const magicNailsDiamondListing = {
   phone: '(406) 770-3070',
   rating: 4.9,
   isFeatured: true,
-  fullDescription: 'Tìm Thợ Nails\n\nMagic Nails – Great Falls, MT\n\nMagic Nails cần thợ biết làm bột và tay chân nước.\n\nGreat Falls, MT\n\n(406) 770-3070\n\n$1,200–$1,500/tuần'
+  fullDescription: 'Magic Nails cần thợ biết làm bột và tay chân nước.',
+  contact: {
+    name: 'Magic Nails Owner',
+    phone: '(406) 770-3070',
+    email: ''
+  }
 };
 
-// Nail Industry Listings
+// NAIL INDUSTRY LISTINGS - Real authentic posts first, then additional slots
 export const nailListings = [
+  // Real Vietnamese listings (Diamond tier first)
   magicNailsDiamondListing,
-  // Additional Diamond listings (total 3 max)
-  {
-    id: 'diamond-nails-vegas',
-    title: 'Platinum Nails Palace – Las Vegas',
-    location: 'Las Vegas, NV',
-    salary: '$3,200–$4,500/week',
-    tier: 'diamond' as const,
-    summary: 'Luxury Vegas nail studio with VIP clientele and premium treatments.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png',
-    phone: '(702) 555-0199',
-    rating: 4.9,
-    isFeatured: true,
-    fullDescription: 'Exclusive Las Vegas nail palace seeking master technicians for our VIP clientele.',
-    isPositionFilled: false
-  },
+  ...realVietnameseListings.filter(listing => 
+    !listing.title.includes('Magic Nails') && listing.tier === 'diamond'
+  ).slice(0, 2), // Max 3 diamond total
   
-  // Premium listings (6-10 total)
+  // Real Vietnamese premium listings
+  ...realVietnameseListings.filter(listing => listing.tier === 'premium').slice(0, 6),
+  
+  // Real Vietnamese featured listings  
+  ...realVietnameseListings.filter(listing => listing.tier === 'featured').slice(0, 8),
+  
+  // House ads and additional slots if needed
   {
-    id: 'emvi-house-ad-1',
-    title: 'Premium Nail Tech Positions',
-    location: 'Nationwide',
-    salary: '$2,000–$3,500/week',
+    id: 'emvi-house-ad-nails-1',
+    title: 'Only 2 Diamond Spots Left This Month!',
+    location: 'Premium Markets',
+    salary: 'Up to $5,000/week',
     tier: 'premium' as const,
-    summary: 'Join EmviApp\'s exclusive network of top-tier nail salons.',
+    summary: 'EmviApp Diamond connects you with the highest-paying nail positions. Limited availability.',
     imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png',
     rating: 5.0,
-    fullDescription: 'Access to the most exclusive nail positions in luxury salons nationwide. EmviApp connects you with premium opportunities.',
-    isHouseAd: true
+    fullDescription: 'Diamond tier members get exclusive access to the highest-paying nail tech positions. Only 2 spots remaining this month.',
+    isHouseAd: true,
+    urgencyBadge: '2 Spots Left'
   },
-  {
-    id: 'luxury-nails-la',
-    title: 'Luxury Nails Studio – Beverly Hills',
-    location: 'Beverly Hills, CA',
-    salary: '$2,500–$4,000/week',
-    tier: 'premium' as const,
-    summary: 'High-end celebrity clientele, artistic nail designs, premium location.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png',
-    rating: 4.8,
-    fullDescription: 'Seeking master nail artists for our Beverly Hills location. Celebrity clientele, artistic freedom, exceptional compensation.',
-    urgencyBadge: 'Hiring Now'
-  },
-  {
-    id: 'manhattan-nail-bar',
-    title: 'Manhattan Nail Bar – NYC',
-    location: 'New York, NY', 
-    salary: '$2,800–$3,800/week',
-    tier: 'premium' as const,
-    summary: 'Upscale NYC nail bar, high-volume luxury clientele.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
-    rating: 4.7,
-    fullDescription: 'Premier Manhattan nail bar seeking experienced nail technicians for our luxury location.',
-    applicationDeadline: '2025-01-15'
-  },
-  {
-    id: 'chicago-nail-lounge',
-    title: 'Chicago Nail Lounge – IL',
-    location: 'Chicago, IL',
-    salary: '$2,200–$3,400/week',
-    tier: 'premium' as const,
-    summary: 'Modern nail lounge in downtown Chicago, artistic nail designs.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png',
-    rating: 4.6,
-    fullDescription: 'Contemporary nail lounge seeking creative nail artists for our Chicago location.'
-  },
-  {
-    id: 'miami-nails-spa',
-    title: 'Miami Beach Nails Spa – FL',
-    location: 'Miami Beach, FL',
-    salary: '$2,400–$3,600/week',
-    tier: 'premium' as const,
-    summary: 'Beachfront nail spa, resort clientele, tropical nail art.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png',
-    rating: 4.8,
-    fullDescription: 'Luxury beachfront nail spa seeking skilled technicians for our Miami Beach location.'
-  },
-  
-  // Featured listings (10-20 total)
-  {
-    id: 'downtown-nails-ny',
-    title: 'Downtown Nail Lounge – Manhattan',
-    location: 'New York, NY',
-    salary: '$2,200–$3,200/week',
-    tier: 'featured' as const,
-    summary: 'Upscale Manhattan salon, designer nails, affluent clients.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png',
-    rating: 4.7,
-    fullDescription: 'Premier nail salon in the heart of Manhattan seeking experienced nail technicians.'
-  },
-  {
-    id: 'seattle-nail-studio',
-    title: 'Seattle Nail Studio – WA',
-    location: 'Seattle, WA',
-    salary: '$1,800–$2,800/week',
-    tier: 'featured' as const,
-    summary: 'Pacific Northwest nail studio, natural nail care, eco-friendly.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png',
-    rating: 4.5,
-    fullDescription: 'Eco-friendly nail studio in Seattle seeking nail technicians passionate about natural nail care.'
-  },
-  {
-    id: 'austin-nail-collective',
-    title: 'Austin Nail Collective – TX',
-    location: 'Austin, TX',
-    salary: '$1,600–$2,400/week',
-    tier: 'featured' as const,
-    summary: 'Creative nail collective, artistic freedom, music city vibes.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png',
-    rating: 4.6,
-    fullDescription: 'Creative nail collective in Austin seeking artistic nail technicians.'
-  },
-  {
-    id: 'denver-nail-bar',
-    title: 'Denver Nail Bar – CO',
-    location: 'Denver, CO',
-    salary: '$1,700–$2,500/week',
-    tier: 'featured' as const,
-    summary: 'Mountain city nail bar, relaxed atmosphere, loyal clientele.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png',
-    rating: 4.4,
-    fullDescription: 'Friendly nail bar in Denver seeking reliable nail technicians.'
-  },
-  {
-    id: 'emvi-house-ad-2',
-    title: 'Diamond Tier Opportunities',
-    location: 'Select Markets',
-    salary: '$3,000–$5,000/week',
-    tier: 'featured' as const,
-    summary: 'Exclusive access to the highest-paying nail positions in the industry.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png',
-    rating: 5.0,
-    fullDescription: 'EmviApp Diamond members get first access to the most exclusive, highest-paying positions in luxury nail salons.',
-    isHouseAd: true
-  },
-  
-  // Free listings (1-2 total) - No images, smaller cards
-  {
-    id: 'basic-nail-salon-phoenix',
-    title: 'Nail Studio Phoenix – AZ',
-    location: 'Phoenix, AZ',
-    salary: '$1,200–$1,800/week',
-    tier: 'free' as const,
-    summary: 'Growing nail salon seeking part-time nail technician.',
-    rating: 4.2,
-    fullDescription: 'Small nail salon in Phoenix looking for a part-time nail technician to join our growing team. Flexible schedule available.',
-    contact: {
-      name: 'Maria Rodriguez',
-      phone: '(602) 555-0123',
-      email: 'maria@nailstudiophx.com'
-    }
-  }
+  // Free listings (minimal, text-only)
+  ...realVietnameseListings.filter(listing => listing.tier === 'free').slice(0, 2),
 ];
+
+// Expired Nails Listings - Real Vietnamese expired posts
+export const expiredNailListings = realExpiredListings.map(listing => ({
+  ...listing,
+  isPositionFilled: true,
+  fomoText: 'Position Filled - Check Back Daily!'
+}));
 
 // Hair Industry Listings
 export const hairListings = [
