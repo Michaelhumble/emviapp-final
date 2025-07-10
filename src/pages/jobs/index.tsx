@@ -196,13 +196,13 @@ const JobsPage = () => {
     return (
       <div className="w-full">
         {/* Ultra-Premium Hero Section */}
-        <section className="relative w-full bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-24 md:py-32 overflow-hidden">
-          {/* Custom Abstract Background */}
+        <section className="relative w-full bg-gradient-to-br from-slate-50 via-white to-[#F6F6F7] dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-24 md:py-32 overflow-hidden">
+          {/* Enhanced Background with Brand Colors */}
           <div className="absolute inset-0">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-100/30 via-white/60 to-slate-50/40 dark:from-slate-800/40 dark:via-slate-700/30 dark:to-gray-800/50"></div>
-            <div className="absolute top-1/4 right-1/5 w-96 h-96 bg-gradient-to-br from-blue-100/20 to-indigo-100/30 dark:from-blue-900/10 dark:to-indigo-900/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 left-1/5 w-80 h-80 bg-gradient-to-tr from-purple-100/20 to-pink-100/30 dark:from-purple-900/10 dark:to-pink-900/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-gray-100/15 to-slate-100/25 dark:from-gray-800/15 dark:to-slate-800/25 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-100/30 via-[#FDFDFD]/80 to-[#F6F6F7]/60 dark:from-slate-800/40 dark:via-slate-700/30 dark:to-gray-800/50"></div>
+            <div className="absolute top-1/4 right-1/5 w-96 h-96 bg-gradient-to-br from-[#9A7B69]/10 to-[#9A7B69]/20 dark:from-[#9A7B69]/5 dark:to-[#9A7B69]/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 left-1/5 w-80 h-80 bg-gradient-to-tr from-[#8A898C]/10 to-[#9A7B69]/15 dark:from-[#8A898C]/5 dark:to-[#9A7B69]/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-[#9A7B69]/8 to-slate-100/25 dark:from-[#9A7B69]/5 dark:to-slate-800/25 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           </div>
           
           <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
@@ -231,7 +231,7 @@ const JobsPage = () => {
                   <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center mb-8">
                     <button
                       onClick={() => navigate('/post-job')}
-                      className="group relative bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white text-white dark:text-gray-900 font-inter font-bold py-6 px-12 rounded-2xl text-lg shadow-2xl hover:shadow-3xl transition-all duration-500 min-w-[220px] overflow-hidden border border-gray-800 dark:border-gray-200 animate-pulse hover:animate-none"
+                      className="group relative bg-gradient-to-r from-[#9A7B69] via-[#8A898C] to-[#9A7B69] hover:from-[#9A7B69] hover:via-[#9A7B69] hover:to-[#8A898C] text-white font-inter font-bold py-6 px-12 rounded-2xl text-lg shadow-[0_20px_40px_rgba(154,123,105,0.3)] hover:shadow-[0_30px_60px_rgba(154,123,105,0.4)] transition-all duration-500 min-w-[220px] overflow-hidden border border-[#9A7B69]/50 animate-pulse hover:animate-none"
                     >
                       <span className="relative z-10 flex items-center gap-3">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,7 +239,7 @@ const JobsPage = () => {
                         </svg>
                         Post a Job
                       </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-gray-700 to-slate-800 dark:from-gray-200 dark:via-gray-50 dark:to-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#8A898C] via-[#9A7B69] to-[#8A898C] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                     </button>
                     <button
                       onClick={() => {
@@ -248,7 +248,7 @@ const JobsPage = () => {
                           jobsSection.scrollIntoView({ behavior: 'smooth' });
                         }
                       }}
-                      className="group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-gray-900 dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-lg shadow-xl hover:shadow-2xl transition-all duration-500 min-w-[220px] overflow-hidden border border-slate-300 dark:border-slate-600"
+                      className="group relative bg-white/90 hover:bg-[#F6F6F7] dark:bg-slate-800/80 backdrop-blur-sm text-[#9A7B69] dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-lg shadow-[0_15px_35px_rgba(154,123,105,0.15)] hover:shadow-[0_25px_50px_rgba(154,123,105,0.25)] transition-all duration-500 min-w-[220px] overflow-hidden border-2 border-[#9A7B69]/30 hover:border-[#9A7B69]/50"
                     >
                       <span className="relative z-10 flex items-center gap-3">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,7 +256,7 @@ const JobsPage = () => {
                         </svg>
                         Find My Dream Job
                       </span>
-                      <div className="absolute inset-0 bg-gray-50/90 dark:bg-slate-700/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#F6F6F7]/50 to-[#FDFDFD]/80 dark:from-slate-700/90 dark:to-slate-600/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                     </button>
                   </div>
                   
@@ -307,13 +307,15 @@ const JobsPage = () => {
 
         {/* Premium Testimonial Section */}
         <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-          <div className="relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-3xl shadow-2xl py-16 overflow-hidden">
-            {/* Subtle background glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-white/50 to-purple-50/30 dark:from-blue-900/10 dark:via-slate-800/30 dark:to-purple-900/10"></div>
+          <div className="relative bg-gradient-to-br from-[#F6F6F7]/90 via-white/95 to-[#FDFDFD]/90 dark:bg-gradient-to-br dark:from-slate-900/90 dark:via-slate-800/90 dark:to-gray-900/90 backdrop-blur-sm border border-[#9A7B69]/20 dark:border-slate-700/50 rounded-3xl shadow-[0_25px_50px_rgba(154,123,105,0.15)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.4)] py-16 overflow-hidden">
+            {/* Enhanced background glow with brand colors */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#9A7B69]/5 via-[#F6F6F7]/30 to-[#9A7B69]/8 dark:from-[#9A7B69]/5 dark:via-slate-800/30 dark:to-[#9A7B69]/8"></div>
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#9A7B69]/30 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#9A7B69]/30 to-transparent"></div>
             
             <div className="max-w-4xl mx-auto text-center relative z-10">
               <div className="animate-fade-in">
-                <div className="w-20 h-20 bg-gradient-to-br from-slate-500 to-slate-700 dark:from-slate-400 dark:to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-8 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#9A7B69] to-[#8A898C] rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-8 shadow-[0_15px_30px_rgba(154,123,105,0.3)]">
                   B
                 </div>
                 <blockquote className="text-3xl md:text-4xl lg:text-5xl font-playfair italic text-gray-900 dark:text-white mb-8 leading-tight">
@@ -321,7 +323,7 @@ const JobsPage = () => {
                 </blockquote>
                 <div className="text-center">
                   <p className="font-inter font-bold text-gray-900 dark:text-white text-xl mb-2">Bella R.</p>
-                  <p className="text-gray-600 dark:text-gray-400 font-inter text-lg">Salon Owner</p>
+                  <p className="text-[#8A898C] dark:text-gray-400 font-inter text-lg">Salon Owner</p>
                 </div>
               </div>
             </div>
@@ -412,68 +414,67 @@ const JobsPage = () => {
                     {/* Sophisticated Feature Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-20">
                       {/* Priority Placement */}
-                      <div className="group relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-none p-10 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
-                        <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-none flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                          <svg className="w-6 h-6 text-white dark:text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <div className="group relative bg-gradient-to-br from-white via-[#F6F6F7]/50 to-white dark:bg-gradient-to-br dark:from-slate-900/80 dark:via-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm rounded-2xl p-10 border border-[#9A7B69]/20 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(154,123,105,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(154,123,105,0.15)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#9A7B69] to-[#8A898C] rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 shadow-[0_8px_24px_rgba(154,123,105,0.25)]">
+                          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                           </svg>
                         </div>
-                        <h4 className="text-lg font-playfair font-medium text-slate-900 dark:text-white mb-4 tracking-wide">Priority Placement</h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-inter font-light leading-relaxed text-sm">Always at the top—seen first by top talent.</p>
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/0 via-slate-50/20 to-slate-100/0 dark:from-slate-800/0 dark:via-slate-700/20 dark:to-slate-800/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <h4 className="text-xl font-playfair font-semibold text-slate-900 dark:text-white mb-4 tracking-wide">Priority Placement</h4>
+                        <p className="text-[#8A898C] dark:text-slate-400 font-inter leading-relaxed">Always at the top—seen first by top talent.</p>
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/5 via-[#F6F6F7]/20 to-[#9A7B69]/5 dark:from-[#9A7B69]/5 dark:via-slate-700/20 dark:to-[#9A7B69]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
                       </div>
                       
                       {/* Instant Visibility */}
-                      <div className="group relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-none p-10 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
-                        <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-none flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                          <svg className="w-6 h-6 text-white dark:text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <div className="group relative bg-gradient-to-br from-white via-[#F6F6F7]/50 to-white dark:bg-gradient-to-br dark:from-slate-900/80 dark:via-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm rounded-2xl p-10 border border-[#9A7B69]/20 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(154,123,105,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(154,123,105,0.15)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#8A898C] to-[#9A7B69] rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 shadow-[0_8px_24px_rgba(138,137,140,0.25)]">
+                          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
                         </div>
-                        <h4 className="text-lg font-playfair font-medium text-slate-900 dark:text-white mb-4 tracking-wide">Instant Visibility</h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-inter font-light leading-relaxed text-sm">Featured in discovery alerts & searches.</p>
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/0 via-slate-50/20 to-slate-100/0 dark:from-slate-800/0 dark:via-slate-700/20 dark:to-slate-800/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <h4 className="text-xl font-playfair font-semibold text-slate-900 dark:text-white mb-4 tracking-wide">Instant Visibility</h4>
+                        <p className="text-[#8A898C] dark:text-slate-400 font-inter leading-relaxed">Featured in discovery alerts & searches.</p>
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/5 via-[#F6F6F7]/20 to-[#9A7B69]/5 dark:from-[#9A7B69]/5 dark:via-slate-700/20 dark:to-[#9A7B69]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
                       </div>
                       
                       {/* Prestige Badge */}
-                      <div className="group relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-none p-10 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
-                        <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-none flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                          <svg className="w-6 h-6 text-white dark:text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <div className="group relative bg-gradient-to-br from-white via-[#F6F6F7]/50 to-white dark:bg-gradient-to-br dark:from-slate-900/80 dark:via-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm rounded-2xl p-10 border border-[#9A7B69]/20 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(154,123,105,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(154,123,105,0.15)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#9A7B69] to-[#8A898C] rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 shadow-[0_8px_24px_rgba(154,123,105,0.25)]">
+                          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                           </svg>
                         </div>
-                        <h4 className="text-lg font-playfair font-medium text-slate-900 dark:text-white mb-4 tracking-wide">Prestige Badge</h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-inter font-light leading-relaxed text-sm">Build trust instantly with verified status.</p>
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/0 via-slate-50/20 to-slate-100/0 dark:from-slate-800/0 dark:via-slate-700/20 dark:to-slate-800/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <h4 className="text-xl font-playfair font-semibold text-slate-900 dark:text-white mb-4 tracking-wide">Prestige Badge</h4>
+                        <p className="text-[#8A898C] dark:text-slate-400 font-inter leading-relaxed">Build trust instantly with verified status.</p>
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/5 via-[#F6F6F7]/20 to-[#9A7B69]/5 dark:from-[#9A7B69]/5 dark:via-slate-700/20 dark:to-[#9A7B69]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
                       </div>
                       
                       {/* Advanced Analytics */}
-                      <div className="group relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-none p-10 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
-                        <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-none flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                          <svg className="w-6 h-6 text-white dark:text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <div className="group relative bg-gradient-to-br from-white via-[#F6F6F7]/50 to-white dark:bg-gradient-to-br dark:from-slate-900/80 dark:via-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm rounded-2xl p-10 border border-[#9A7B69]/20 dark:border-slate-700/50 shadow-[0_8px_32px_rgba(154,123,105,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_64px_rgba(154,123,105,0.15)] dark:hover:shadow-[0_16px_64px_rgba(0,0,0,0.4)] transition-all duration-700">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#8A898C] to-[#9A7B69] rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 shadow-[0_8px_24px_rgba(138,137,140,0.25)]">
+                          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                           </svg>
                         </div>
-                        <h4 className="text-lg font-playfair font-medium text-slate-900 dark:text-white mb-4 tracking-wide">Advanced Analytics</h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-inter font-light leading-relaxed text-sm">Track, measure, and optimize every hire.</p>
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/0 via-slate-50/20 to-slate-100/0 dark:from-slate-800/0 dark:via-slate-700/20 dark:to-slate-800/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <h4 className="text-xl font-playfair font-semibold text-slate-900 dark:text-white mb-4 tracking-wide">Advanced Analytics</h4>
+                        <p className="text-[#8A898C] dark:text-slate-400 font-inter leading-relaxed">Track, measure, and optimize every hire.</p>
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#9A7B69]/5 via-[#F6F6F7]/20 to-[#9A7B69]/5 dark:from-[#9A7B69]/5 dark:via-slate-700/20 dark:to-[#9A7B69]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
                       </div>
                     </div>
                     
-                    {/* Ultra-Premium CTA */}
                     <div className="text-center mb-20">
                       <button
                         onClick={() => navigate('/post-job')}
-                        className="group relative bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-inter font-light py-6 px-16 rounded-none text-lg shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(255,255,255,0.1)] hover:shadow-[0_30px_80px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_30px_80px_rgba(255,255,255,0.15)] transition-all duration-700 overflow-hidden border border-slate-800 dark:border-slate-200 uppercase tracking-[0.1em]"
+                        className="group relative bg-gradient-to-r from-[#9A7B69] via-[#8A898C] to-[#9A7B69] hover:from-[#8A898C] hover:via-[#9A7B69] hover:to-[#8A898C] text-white font-inter font-semibold py-6 px-16 rounded-2xl text-lg shadow-[0_25px_50px_rgba(154,123,105,0.25)] hover:shadow-[0_35px_70px_rgba(154,123,105,0.35)] transition-all duration-700 overflow-hidden border border-[#9A7B69]/30 uppercase tracking-[0.15em]"
                       >
                         <span className="relative z-10 flex items-center gap-4">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
                           Unlock Elite Access
                         </span>
-                        <div className="absolute inset-0 bg-slate-800 dark:bg-slate-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#8A898C] via-[#9A7B69] to-[#8A898C] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
                       </button>
                     </div>
                   </div>
