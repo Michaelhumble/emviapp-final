@@ -19,7 +19,6 @@ interface IndustryListingPageProps {
   headerSubtitle: string;
   gradientColors: string;
   metaDescription: string;
-  expiredListings?: IndustryListing[];
 }
 
 const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
@@ -29,8 +28,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   headerTitle,
   headerSubtitle,
   gradientColors,
-  metaDescription,
-  expiredListings
+  metaDescription
 }) => {
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
@@ -581,112 +579,11 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
           </motion.section>
         )}
 
-        {/* Expired Listings Section - Only for Nails */}
-        {industryName === 'nails' && expiredListings && expiredListings.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="mb-16 border-t border-gray-200 pt-16"
-          >
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-700 mb-4">
-                Recently Filled Positions
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-                These authentic Vietnamese nail job listings were recently filled. 
-                <span className="font-semibold text-purple-700"> Sign in to see new posts first.</span>
-              </p>
-              
-              {/* FOMO Alert */}
-              <div className="max-w-2xl mx-auto mb-8">
-                <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-4 shadow-sm">
-                  <p className="text-red-800 text-sm font-medium">
-                    🔥 <span className="font-bold">FOMO Alert:</span> These great Vietnamese nail jobs filled up fast! 
-                    Don't miss the next batch—check back daily for fresh opportunities.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Expired Listings Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {expiredListings.map((listing, index) => (
-                <motion.div
-                  key={listing.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative"
-                >
-                  <Card className="overflow-hidden bg-white opacity-75 hover:opacity-85 transition-opacity border border-gray-300">
-                    {/* Expired Overlay */}
-                    <div className="absolute inset-0 bg-gray-900/40 z-10 flex items-center justify-center">
-                      <div className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
-                        ❌ Position Filled
-                      </div>
-                    </div>
-                    
-                    <div className="relative aspect-video bg-gray-100 filter grayscale">
-                      <ImageWithFallback
-                        src={listing.imageUrl}
-                        alt={listing.title}
-                        className="w-full h-full object-cover filter grayscale"
-                        businessName={listing.title}
-                      />
-                    </div>
-                    
-                    <CardContent className="p-4 filter grayscale">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-700">
-                            {listing.title}
-                          </h3>
-                        </div>
-                        <Badge className="bg-gray-200 text-gray-600 text-xs">
-                          Filled
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex items-center text-gray-500 mb-2 font-inter text-sm">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {listing.location}
-                      </div>
-                      
-                      <div className="bg-gray-100 rounded p-2 mb-3">
-                        <div className="flex items-center text-gray-600 font-inter font-semibold text-sm">
-                          <DollarSign className="w-4 h-4 mr-1" />
-                          {listing.salary}
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                        {listing.summary}
-                      </p>
-                      
-                      <div className="text-xs text-gray-500">
-                        Position filled recently
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-            
-            <div className="text-center mt-8">
-              <p className="text-gray-500 text-sm">
-                Want to be first in line for new Vietnamese nail job opportunities? 
-                <span className="font-semibold text-purple-700 ml-1">Check back tomorrow for fresh job postings!</span>
-              </p>
-            </div>
-          </motion.section>
-        )}
-
         {/* CTA Section */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="text-center"
         >
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-8">
