@@ -416,16 +416,8 @@ const JobsPage = () => {
           </div>
         </div>
 
-        {/* Industry Navigation */}
+        {/* Jobs Section */}
         <div id="jobs-section" className="max-w-7xl mx-auto px-4 md:px-6 mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 dark:text-white mb-4">
-              Explore by Specialty
-            </h2>
-            <p className="text-xl font-inter text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Connect with the perfect opportunity in your area of expertise
-            </p>
-          </div>
           
           <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
             <div className="overflow-x-auto pb-4 mb-12">
