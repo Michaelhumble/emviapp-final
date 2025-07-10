@@ -217,7 +217,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                       <div className="absolute top-3 left-3">
                         {getTierBadge(listing.tier)}
                       </div>
-                      {listing.rating && (
+                      {/* Only show rating for nails industry */}
+                      {listing.rating && industryName === 'nails' && (
                         <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
                           <div className="flex items-center text-sm font-medium">
                             <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />
@@ -361,7 +362,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                       <div className="absolute top-3 left-3">
                         {getTierBadge(listing.tier)}
                       </div>
-                      {listing.rating && (
+                      {/* Only show rating for nails industry */}
+                      {listing.rating && industryName === 'nails' && (
                         <div className="absolute top-3 right-3 bg-white/90 rounded-full px-2 py-1">
                           <div className="flex items-center text-sm font-medium">
                             <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />
@@ -445,7 +447,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                       <div className="absolute top-2 left-2">
                         {getTierBadge(listing.tier)}
                       </div>
-                      {listing.rating && (
+                      {/* Only show rating for nails industry */}
+                      {listing.rating && industryName === 'nails' && (
                         <div className="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1">
                           <div className="flex items-center text-xs font-medium">
                             <Star className="w-3 h-3 text-yellow-500 mr-1 fill-current" />

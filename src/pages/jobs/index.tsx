@@ -784,16 +784,16 @@ const JobsPage = () => {
                                       <span>{job.employmentType}</span>
                                     </div>
                                   )}
-                                  
-                                  {/* Rating display - 1 decimal place only */}
-                                  {job.rating && (
-                                    <div className="flex items-center gap-1">
-                                      <span className="text-yellow-500">★</span>
-                                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {job.rating.toFixed(1)}
-                                      </span>
-                                    </div>
-                                  )}
+                                   
+                                   {/* Rating display - only show for nails industry */}
+                                   {job.rating && tab.id === 'nails' && (
+                                     <div className="flex items-center gap-1">
+                                       <span className="text-yellow-500">★</span>
+                                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                         {job.rating.toFixed(1)}
+                                       </span>
+                                     </div>
+                                   )}
                                   
                                   {job.isPositionFilled && (
                                     <div className="text-xs text-gray-400 border-t pt-3">
