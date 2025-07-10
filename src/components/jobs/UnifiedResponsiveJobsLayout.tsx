@@ -57,7 +57,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
       grouped[category].push(job);
     });
 
-    // Group expired jobs by category
+    // Group expired jobs by category (include Nails expired jobs)
     const expiredByCategory: Record<string, any[]> = {};
     expiredJobsData.forEach(job => {
       const category = job.category || 'Other';
