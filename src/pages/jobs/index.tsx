@@ -554,100 +554,591 @@ const JobsPage = () => {
                 {/* What You Missed Section - Show expired jobs */}
                 {tab.id === 'all' && <WhatYouMissedSection />}
                 
-                {/* Filtered Jobs for this industry */}
+                {/* Industry-Specific Premium Job Cards - Matching Nails Layout */}
                 {(() => {
-                  // Get industry-specific listings from our comprehensive data
-                   let industryListings = [];
-                   
-                   console.log(`🎯 [JOBS-PAGE] Loading listings for ${tab.id} industry...`);
-                   
-                   switch (tab.id) {
-                     case 'nails':
-                       industryListings = nailListings;
-                       console.log(`💅 [JOBS-PAGE] Nails listings loaded: ${industryListings.length} total`);
-                       break;
-                     case 'hair':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...hairListings.slice(0, 3), ...hairListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`✂️ [JOBS-PAGE] Hair listings loaded: ${industryListings.length} total for display`);
-                       break;
-                     case 'barber':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...barberListings.slice(0, 3), ...barberListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`💈 [JOBS-PAGE] Barber listings loaded: ${industryListings.length} total for display`);
-                       break;
-                     case 'massage':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...massageListings.slice(0, 3), ...massageListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`🤲 [JOBS-PAGE] Massage listings loaded: ${industryListings.length} total for display`);
-                       break;
-                     case 'skincare':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...facialListings.slice(0, 3), ...facialListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`🧴 [JOBS-PAGE] Skincare listings loaded: ${industryListings.length} total for display`);
-                       break;
-                     case 'makeup':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...makeupListings.slice(0, 3), ...makeupListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`💄 [JOBS-PAGE] Makeup listings loaded: ${industryListings.length} total for display`);
-                       break;
-                     case 'brows-lashes':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...browLashListings.slice(0, 3), ...browLashListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`👁️ [JOBS-PAGE] Brows & Lashes listings loaded: ${industryListings.length} total for display`);
-                       break;
-                     case 'tattoo':
-                       // Show 6 jobs: mix of active and expired
-                       industryListings = [...tattooListings.slice(0, 3), ...tattooListings.filter(l => l.isPositionFilled).slice(0, 3)];
-                       console.log(`🎨 [JOBS-PAGE] Tattoo listings loaded: ${industryListings.length} total for display`);
-                       break;
-                    case 'all':
-                    default:
-                      // For 'all' tab, combine user jobs with some industry listings
+                  // Only show premium demo listings for specific industry tabs (not 'all')
+                  if (tab.id === 'all') {
+                    // For 'all' tab, use existing JobsGrid with database jobs
+                    const allJobs = jobs;
+                    return (
+                      <div>
+                        <div className="text-center mb-8">
+                          <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white">
+                            Latest Beauty Industry Opportunities
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-400 mt-2">
+                            {allJobs.length} opportunities • Updated daily
+                          </p>
+                        </div>
+                        <JobsGrid
+                          jobs={allJobs}
+                          expirations={{}}
+                          onRenew={handleRenew}
+                          isRenewing={false}
+                          renewalJobId={null}
+                        />
+                      </div>
+                    );
+                  }
+
+                  // For specific industry tabs, show premium demo listings
+                  let industryListings: any[] = [];
+                  
+                  console.log(`🎯 [JOBS-PAGE] Loading premium listings for ${tab.id} industry...`);
+                  
+                  switch (tab.id) {
+                    case 'nails':
+                      // Nails section stays unchanged (protected)
+                      industryListings = nailListings.slice(0, 6);
+                      break;
+                    case 'hair':
+                      // Premium Hair listings with mix of active and expired
                       industryListings = [
-                        ...nailListings.slice(0, 5),
-                        ...hairListings.slice(0, 3),
-                        ...barberListings.slice(0, 3),
-                        ...massageListings.slice(0, 2),
-                        ...facialListings.slice(0, 2),
-                        ...makeupListings.slice(0, 2),
-                        ...browLashListings.slice(0, 2),
-                        ...tattooListings.slice(0, 2)
+                        {
+                          id: 'hair-premium-1',
+                          title: 'Senior Hair Stylist - Beverly Hills Salon',
+                          location: 'Beverly Hills, CA',
+                          salary: '$2,800–$4,200/week',
+                          tier: 'premium',
+                          summary: 'Luxury salon seeking experienced stylist for celebrity clientele.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png',
+                          rating: 4.8,
+                          fullDescription: 'High-end Beverly Hills salon looking for master stylists.'
+                        },
+                        {
+                          id: 'hair-gold-1',
+                          title: 'Master Colorist - Manhattan Studio',
+                          location: 'New York, NY',
+                          salary: '$3,200–$4,800/week',
+                          tier: 'gold',
+                          summary: 'NYC studio needs expert colorist with 5+ years experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png',
+                          rating: 4.9,
+                          fullDescription: 'Premier Manhattan hair studio seeking master colorist.'
+                        },
+                        {
+                          id: 'hair-diamond-1',
+                          title: 'Celebrity Hair Stylist - Exclusive Salon',
+                          location: 'Los Angeles, CA',
+                          salary: '$4,500–$6,000/week',
+                          tier: 'diamond',
+                          summary: 'Elite salon with A-list clientele. Portfolio required.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png',
+                          rating: 5.0,
+                          fullDescription: 'Exclusive opportunity for celebrity hair stylists.'
+                        },
+                        {
+                          id: 'hair-expired-1',
+                          title: 'Hair Stylist - Downtown Salon',
+                          location: 'Chicago, IL',
+                          salary: '$2,200–$3,200/week',
+                          tier: 'featured',
+                          summary: 'Full-time stylist position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png',
+                          rating: 4.6,
+                          isPositionFilled: true,
+                          fullDescription: 'This hair stylist position has been filled.'
+                        },
+                        {
+                          id: 'hair-expired-2',
+                          title: 'Senior Stylist - Luxury Spa',
+                          location: 'Miami, FL',
+                          salary: '$2,600–$3,600/week',
+                          tier: 'premium',
+                          summary: 'Spa stylist position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated.png',
+                          rating: 4.7,
+                          isPositionFilled: true,
+                          fullDescription: 'This senior stylist position has been filled.'
+                        }
                       ];
                       break;
+                    case 'barber':
+                      // Premium Barber listings
+                      industryListings = [
+                        {
+                          id: 'barber-premium-1',
+                          title: 'Master Barber - Elite Men\'s Grooming',
+                          location: 'New York, NY',
+                          salary: '$2,400–$3,800/week',
+                          tier: 'premium',
+                          summary: 'Upscale barbershop needs master barber with straight razor skills.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png',
+                          rating: 4.8,
+                          fullDescription: 'Elite men\'s grooming salon seeking master barber.'
+                        },
+                        {
+                          id: 'barber-gold-1',
+                          title: 'Celebrity Barber - Hollywood Studio',
+                          location: 'Los Angeles, CA',
+                          salary: '$3,500–$5,000/week',
+                          tier: 'gold',
+                          summary: 'Hollywood studio seeking experienced celebrity barber.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(2).png',
+                          rating: 4.9,
+                          fullDescription: 'Exclusive Hollywood barbershop for celebrity clients.'
+                        },
+                        {
+                          id: 'barber-diamond-1',
+                          title: 'Executive Barber - Private Club',
+                          location: 'Manhattan, NY',
+                          salary: '$4,000–$6,500/week',
+                          tier: 'diamond',
+                          summary: 'Private gentleman\'s club needs executive barber.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(3).png',
+                          rating: 5.0,
+                          fullDescription: 'Exclusive private club barbering opportunity.'
+                        },
+                        {
+                          id: 'barber-expired-1',
+                          title: 'Barber - Traditional Shop',
+                          location: 'Chicago, IL',
+                          salary: '$1,800–$2,800/week',
+                          tier: 'featured',
+                          summary: 'Traditional barbershop position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(4).png',
+                          rating: 4.5,
+                          isPositionFilled: true,
+                          fullDescription: 'This barber position has been filled.'
+                        },
+                        {
+                          id: 'barber-expired-2',
+                          title: 'Senior Barber - Men\'s Salon',
+                          location: 'San Francisco, CA',
+                          salary: '$2,200–$3,200/week',
+                          tier: 'premium',
+                          summary: 'Men\'s salon barber position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(6).png',
+                          rating: 4.6,
+                          isPositionFilled: true,
+                          fullDescription: 'This senior barber position has been filled.'
+                        }
+                      ];
+                      break;
+                    case 'massage':
+                      // Premium Massage listings
+                      industryListings = [
+                        {
+                          id: 'massage-premium-1',
+                          title: 'Licensed Massage Therapist - Luxury Spa',
+                          location: 'Scottsdale, AZ',
+                          salary: '$2,200–$3,400/week',
+                          tier: 'premium',
+                          summary: 'Resort spa seeking licensed massage therapist with hot stone experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png',
+                          rating: 4.8,
+                          fullDescription: 'Luxury resort spa massage therapist opportunity.'
+                        },
+                        {
+                          id: 'massage-gold-1',
+                          title: 'Senior Therapist - Medical Spa',
+                          location: 'Beverly Hills, CA',
+                          salary: '$2,800–$4,200/week',
+                          tier: 'gold',
+                          summary: 'Medical spa needs senior massage therapist with rehabilitation experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(2).png',
+                          rating: 4.9,
+                          fullDescription: 'High-end medical spa massage therapy position.'
+                        },
+                        {
+                          id: 'massage-diamond-1',
+                          title: 'Master Therapist - Elite Wellness Center',
+                          location: 'Aspen, CO',
+                          salary: '$3,500–$5,200/week',
+                          tier: 'diamond',
+                          summary: 'Exclusive wellness center for high-net-worth clients.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(3).png',
+                          rating: 5.0,
+                          fullDescription: 'Elite wellness center master therapist role.'
+                        },
+                        {
+                          id: 'massage-expired-1',
+                          title: 'Massage Therapist - Day Spa',
+                          location: 'Austin, TX',
+                          salary: '$1,600–$2,400/week',
+                          tier: 'featured',
+                          summary: 'Day spa massage position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated.png',
+                          rating: 4.4,
+                          isPositionFilled: true,
+                          fullDescription: 'This massage therapist position has been filled.'
+                        }
+                      ];
+                      break;
+                    case 'skincare':
+                      // Premium Skincare listings
+                      industryListings = [
+                        {
+                          id: 'skincare-premium-1',
+                          title: 'Licensed Esthetician - Medical Spa',
+                          location: 'Newport Beach, CA',
+                          salary: '$2,400–$3,600/week',
+                          tier: 'premium',
+                          summary: 'Medical spa seeking licensed esthetician with advanced treatments experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png',
+                          rating: 4.8,
+                          fullDescription: 'Premium medical spa esthetician opportunity.'
+                        },
+                        {
+                          id: 'skincare-gold-1',
+                          title: 'Senior Esthetician - Luxury Resort',
+                          location: 'Napa Valley, CA',
+                          salary: '$2,800–$4,200/week',
+                          tier: 'gold',
+                          summary: 'Resort spa needs senior esthetician with organic skincare expertise.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png',
+                          rating: 4.9,
+                          fullDescription: 'Luxury resort spa esthetician position.'
+                        },
+                        {
+                          id: 'skincare-diamond-1',
+                          title: 'Master Esthetician - Elite Dermatology',
+                          location: 'Manhattan, NY',
+                          salary: '$3,800–$5,500/week',
+                          tier: 'diamond',
+                          summary: 'Elite dermatology practice seeking master esthetician.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(3).png',
+                          rating: 5.0,
+                          fullDescription: 'Premium dermatology practice esthetician role.'
+                        },
+                        {
+                          id: 'skincare-expired-1',
+                          title: 'Esthetician - Day Spa',
+                          location: 'Phoenix, AZ',
+                          salary: '$1,800–$2,600/week',
+                          tier: 'featured',
+                          summary: 'Day spa esthetician position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(4).png',
+                          rating: 4.5,
+                          isPositionFilled: true,
+                          fullDescription: 'This esthetician position has been filled.'
+                        }
+                      ];
+                      break;
+                    case 'makeup':
+                      // Premium Makeup listings
+                      industryListings = [
+                        {
+                          id: 'makeup-premium-1',
+                          title: 'Professional Makeup Artist - Bridal Studio',
+                          location: 'Santa Barbara, CA',
+                          salary: '$2,200–$3,400/week',
+                          tier: 'premium',
+                          summary: 'Upscale bridal studio seeking makeup artist with airbrush experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png',
+                          rating: 4.8,
+                          fullDescription: 'Premier bridal makeup artist opportunity.'
+                        },
+                        {
+                          id: 'makeup-gold-1',
+                          title: 'Senior Makeup Artist - Fashion Studio',
+                          location: 'New York, NY',
+                          salary: '$3,000–$4,500/week',
+                          tier: 'gold',
+                          summary: 'Fashion studio needs makeup artist with editorial experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-46.png',
+                          rating: 4.9,
+                          fullDescription: 'High-fashion makeup artist position.'
+                        },
+                        {
+                          id: 'makeup-diamond-1',
+                          title: 'Celebrity Makeup Artist - Entertainment',
+                          location: 'Los Angeles, CA',
+                          salary: '$4,200–$6,800/week',
+                          tier: 'diamond',
+                          summary: 'Entertainment industry makeup artist for film and TV.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-47.png',
+                          rating: 5.0,
+                          fullDescription: 'Elite entertainment makeup artist role.'
+                        },
+                        {
+                          id: 'makeup-expired-1',
+                          title: 'Makeup Artist - Beauty Counter',
+                          location: 'Las Vegas, NV',
+                          salary: '$1,600–$2,400/week',
+                          tier: 'featured',
+                          summary: 'Beauty counter makeup position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-48.png',
+                          rating: 4.4,
+                          isPositionFilled: true,
+                          fullDescription: 'This makeup artist position has been filled.'
+                        }
+                      ];
+                      break;
+                    case 'brows-lashes':
+                      // Premium Brows & Lashes listings
+                      industryListings = [
+                        {
+                          id: 'brows-premium-1',
+                          title: 'Certified Lash Extension Specialist',
+                          location: 'Miami, FL',
+                          salary: '$2,000–$3,200/week',
+                          tier: 'premium',
+                          summary: 'High-end studio seeking certified lash extension specialist.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png',
+                          rating: 4.8,
+                          fullDescription: 'Premium lash extension specialist opportunity.'
+                        },
+                        {
+                          id: 'brows-gold-1',
+                          title: 'Master Brow Artist - Luxury Salon',
+                          location: 'Beverly Hills, CA',
+                          salary: '$2,600–$3,800/week',
+                          tier: 'gold',
+                          summary: 'Luxury salon needs master brow artist with microblading certification.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-12.png',
+                          rating: 4.9,
+                          fullDescription: 'Elite brow artist with microblading position.'
+                        },
+                        {
+                          id: 'brows-diamond-1',
+                          title: 'Celebrity Brow & Lash Specialist',
+                          location: 'West Hollywood, CA',
+                          salary: '$3,500–$5,200/week',
+                          tier: 'diamond',
+                          summary: 'Celebrity clientele brow and lash specialist needed.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-13.png',
+                          rating: 5.0,
+                          fullDescription: 'Exclusive celebrity brow and lash specialist role.'
+                        },
+                        {
+                          id: 'brows-expired-1',
+                          title: 'Lash Technician - Beauty Bar',
+                          location: 'Seattle, WA',
+                          salary: '$1,400–$2,200/week',
+                          tier: 'featured',
+                          summary: 'Beauty bar lash tech position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-14.png',
+                          rating: 4.3,
+                          isPositionFilled: true,
+                          fullDescription: 'This lash technician position has been filled.'
+                        }
+                      ];
+                      break;
+                    case 'tattoo':
+                      // Premium Tattoo listings
+                      industryListings = [
+                        {
+                          id: 'tattoo-premium-1',
+                          title: 'Professional Tattoo Artist - Custom Studio',
+                          location: 'Austin, TX',
+                          salary: '$2,400–$3,800/week',
+                          tier: 'premium',
+                          summary: 'Custom tattoo studio seeking artist with 3+ years experience.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png',
+                          rating: 4.8,
+                          fullDescription: 'Premium custom tattoo studio artist position.'
+                        },
+                        {
+                          id: 'tattoo-gold-1',
+                          title: 'Master Tattoo Artist - Award-Winning Shop',
+                          location: 'San Francisco, CA',
+                          salary: '$3,200–$4,800/week',
+                          tier: 'gold',
+                          summary: 'Award-winning shop needs master artist with portfolio.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(2).png',
+                          rating: 4.9,
+                          fullDescription: 'Elite award-winning tattoo shop position.'
+                        },
+                        {
+                          id: 'tattoo-diamond-1',
+                          title: 'Celebrity Tattoo Artist - Exclusive Studio',
+                          location: 'Miami Beach, FL',
+                          salary: '$4,500–$7,000/week',
+                          tier: 'diamond',
+                          summary: 'Exclusive studio for celebrity and high-profile clients.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(3).png',
+                          rating: 5.0,
+                          fullDescription: 'Celebrity tattoo artist exclusive opportunity.'
+                        },
+                        {
+                          id: 'tattoo-expired-1',
+                          title: 'Tattoo Artist - Traditional Shop',
+                          location: 'Portland, OR',
+                          salary: '$1,800–$2,800/week',
+                          tier: 'featured',
+                          summary: 'Traditional tattoo shop position filled.',
+                          imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(4).png',
+                          rating: 4.5,
+                          isPositionFilled: true,
+                          fullDescription: 'This tattoo artist position has been filled.'
+                        }
+                      ];
+                      break;
+                    default:
+                      industryListings = [];
                   }
-                  
-                  // Convert industry listings to Job format for JobsGrid with proper rating display
-                  const convertedJobs: Job[] = industryListings.map(listing => ({
-                    id: listing.id,
-                    title: listing.title,
-                    location: listing.location,
-                    description: listing.summary || listing.fullDescription,
-                    category: tab.id === 'all' ? 'various' : tab.id,
-                    pricing_tier: listing.tier,
-                    salary_range: listing.salary,
-                    status: listing.isPositionFilled ? 'expired' : 'active',
-                    created_at: new Date().toISOString(),
-                    imageUrl: listing.imageUrl,
-                    contact_info: listing.phone ? { phone: listing.phone } : undefined,
-                    type: 'job',
-                    // Format rating to 2 decimal places max
-                    rating: listing.rating ? Number(listing.rating.toFixed(1)) : undefined,
-                    isPositionFilled: listing.isPositionFilled || false,
-                    fomoText: listing.fomoText,
-                    urgencyBadge: listing.urgencyBadge
-                  }));
-                  
-                  // Also include user-submitted jobs for this category
-                  const userJobs = tab.id === 'all' 
-                    ? jobs 
-                    : jobs.filter(job => job.category?.toLowerCase().includes(tab.id) || 
-                                        job.title?.toLowerCase().includes(tab.id.replace('-', ' ')));
-                  
-                  // Combine and sort (industry listings first, then user jobs)
-                  const allJobs = [...convertedJobs, ...userJobs];
-                  
-                  if (allJobs.length === 0) {
+
+                  console.log(`✅ [JOBS-PAGE] ${tab.label} listings loaded: ${industryListings.length} premium jobs`);
+
+                  if (industryListings.length === 0) {
+                    return (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No premium jobs available for this industry.</p>
+                      </div>
+                    );
+                  }
+
+                  // Render premium job cards matching Nails layout exactly
+                  return (
+                    <div className="space-y-8">
+                      {/* Industry Section Header */}
+                      <div className="text-center">
+                        <h3 className="text-2xl font-playfair font-bold text-gray-900 dark:text-white mb-2">
+                          Premium {tab.label} Opportunities
+                        </h3>
+                        <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <span className="inline-flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            {(() => {
+                              switch (tab.id) {
+                                case 'hair': return hairListings.length;
+                                case 'barber': return barberListings.length;
+                                case 'massage': return massageListings.length;
+                                case 'skincare': return facialListings.length;
+                                case 'makeup': return makeupListings.length;
+                                case 'brows-lashes': return browLashListings.length;
+                                case 'tattoo': return tattooListings.length;
+                                default: return 0;
+                              }
+                            })()} jobs
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Job Cards Grid - matching Nails layout exactly */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {industryListings.slice(0, 6).map((job, index) => (
+                          <div
+                            key={job.id}
+                            className={`group bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 relative ${
+                              job.isPositionFilled ? 'opacity-60' : ''
+                            }`}
+                          >
+                            {/* Expired overlay - matching Nails style */}
+                            {job.isPositionFilled && (
+                              <div className="absolute top-4 left-4 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold z-10">
+                                Position Filled
+                              </div>
+                            )}
+                            
+                            {/* Tier badge for active jobs - matching Nails style */}
+                            {!job.isPositionFilled && job.tier && job.tier !== 'free' && (
+                              <div className={`absolute top-4 left-4 text-white text-xs px-3 py-1 rounded-full font-bold z-10 ${
+                                job.tier === 'premium' ? 'bg-[#8A53F8]' :
+                                job.tier === 'gold' ? 'bg-yellow-500' :
+                                job.tier === 'diamond' ? 'bg-blue-600' :
+                                'bg-gray-500'
+                              }`}>
+                                {job.tier === 'premium' ? 'Premium' :
+                                 job.tier === 'gold' ? 'Gold' :
+                                 job.tier === 'diamond' ? 'Diamond' :
+                                 job.tier?.charAt(0).toUpperCase() + job.tier?.slice(1)}
+                              </div>
+                            )}
+                            
+                            {/* Job image - use industry-specific images */}
+                            {job.imageUrl ? (
+                              <div className="w-full h-40 mb-4 rounded-lg overflow-hidden">
+                                <img 
+                                  src={job.imageUrl} 
+                                  alt={job.title}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-full h-40 mb-4 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                                <tab.icon className="w-12 h-12 text-gray-400" />
+                              </div>
+                            )}
+                            
+                            <div className="space-y-3">
+                              <h4 className="font-playfair font-bold text-lg text-gray-900 dark:text-white line-clamp-2">
+                                {job.title}
+                              </h4>
+                              
+                              <p className="text-sm text-gray-600 dark:text-gray-400 font-inter">
+                                {job.company || job.businessName || 
+                                 (tab.id === 'hair' ? 'Hair Salon' :
+                                  tab.id === 'barber' ? 'Barber Shop' :
+                                  tab.id === 'massage' ? 'Spa & Wellness' :
+                                  tab.id === 'skincare' ? 'Spa & Skincare' :
+                                  tab.id === 'makeup' ? 'Beauty Studio' :
+                                  tab.id === 'brows-lashes' ? 'Brow & Lash Studio' :
+                                  tab.id === 'tattoo' ? 'Tattoo Studio' :
+                                  'Beauty Business')}
+                              </p>
+                              
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>{job.location}</span>
+                              </div>
+                              
+                              {job.salary && (
+                                <div className="text-[#8A53F8] font-bold text-lg">
+                                  {job.salary}
+                                </div>
+                              )}
+                              
+                              {/* Rating display - 1 decimal place only */}
+                              {job.rating && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-yellow-500">★</span>
+                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {job.rating.toFixed(1)}
+                                  </span>
+                                </div>
+                              )}
+                              
+                              {job.isPositionFilled && (
+                                <div className="text-xs text-gray-400 border-t pt-3">
+                                  Position Filled • {new Date().toLocaleDateString()}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* View all link - matching Nails style */}
+                      <div className="text-center pt-6">
+                        <button
+                          onClick={() => navigate(getIndustryRoute(tab.label))}
+                          className="inline-flex items-center gap-2 text-[#8A53F8] hover:text-[#8A53F8]/80 font-inter font-semibold text-lg transition-colors duration-300 group"
+                        >
+                          <span>View all {(() => {
+                            switch (tab.id) {
+                              case 'hair': return hairListings.length;
+                              case 'barber': return barberListings.length;
+                              case 'massage': return massageListings.length;
+                              case 'skincare': return facialListings.length;
+                              case 'makeup': return makeupListings.length;
+                              case 'brows-lashes': return browLashListings.length;
+                              case 'tattoo': return tattooListings.length;
+                              default: return 0;
+                            }
+                          })()} jobs in {tab.label}</span>
+                          <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+
+        {/* Industry-specific CTA */}
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
                     return (
                       <div className="text-center py-16">
                         <div className="max-w-md mx-auto">
