@@ -1,0 +1,32 @@
+export interface IndustryListing {
+  id: string;
+  title: string;
+  location: string;
+  salary: string;
+  tier: 'diamond' | 'premium' | 'featured' | 'free';
+  summary: string;
+  imageUrl?: string;
+  phone?: string;
+  rating?: number;
+  isFeatured?: boolean;
+  fullDescription?: string;
+  isPositionFilled?: boolean;
+  fomoText?: string;
+  isHouseAd?: boolean;
+  urgencyBadge?: string;
+  applicationDeadline?: string;
+  contact?: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+}
+
+export interface IndustryConfig {
+  name: string;
+  displayName: string;
+  listings: IndustryListing[];
+  routePath: string;
+  gradientColors: string;
+  icon: string;
+}

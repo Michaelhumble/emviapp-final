@@ -1,3 +1,5 @@
+import { IndustryListing, IndustryConfig } from '@/types/industryListing';
+
 // Premium industry listings with Michael's brother's Diamond listing always first
 
 export const magicNailsDiamondListing = {
@@ -17,6 +19,23 @@ export const magicNailsDiamondListing = {
 // Nail Industry Listings
 export const nailListings = [
   magicNailsDiamondListing,
+  // Additional Diamond listings (total 3 max)
+  {
+    id: 'diamond-nails-vegas',
+    title: 'Platinum Nails Palace – Las Vegas',
+    location: 'Las Vegas, NV',
+    salary: '$3,200–$4,500/week',
+    tier: 'diamond' as const,
+    summary: 'Luxury Vegas nail studio with VIP clientele and premium treatments.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-11.png',
+    phone: '(702) 555-0199',
+    rating: 4.9,
+    isFeatured: true,
+    fullDescription: 'Exclusive Las Vegas nail palace seeking master technicians for our VIP clientele.',
+    isPositionFilled: false
+  },
+  
+  // Premium listings (6-10 total)
   {
     id: 'emvi-house-ad-1',
     title: 'Premium Nail Tech Positions',
@@ -26,7 +45,8 @@ export const nailListings = [
     summary: 'Join EmviApp\'s exclusive network of top-tier nail salons.',
     imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png',
     rating: 5.0,
-    fullDescription: 'Access to the most exclusive nail positions in luxury salons nationwide. EmviApp connects you with premium opportunities.'
+    fullDescription: 'Access to the most exclusive nail positions in luxury salons nationwide. EmviApp connects you with premium opportunities.',
+    isHouseAd: true
   },
   {
     id: 'luxury-nails-la',
@@ -37,8 +57,45 @@ export const nailListings = [
     summary: 'High-end celebrity clientele, artistic nail designs, premium location.',
     imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png',
     rating: 4.8,
-    fullDescription: 'Seeking master nail artists for our Beverly Hills location. Celebrity clientele, artistic freedom, exceptional compensation.'
+    fullDescription: 'Seeking master nail artists for our Beverly Hills location. Celebrity clientele, artistic freedom, exceptional compensation.',
+    urgencyBadge: 'Hiring Now'
   },
+  {
+    id: 'manhattan-nail-bar',
+    title: 'Manhattan Nail Bar – NYC',
+    location: 'New York, NY', 
+    salary: '$2,800–$3,800/week',
+    tier: 'premium' as const,
+    summary: 'Upscale NYC nail bar, high-volume luxury clientele.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-14.png',
+    rating: 4.7,
+    fullDescription: 'Premier Manhattan nail bar seeking experienced nail technicians for our luxury location.',
+    applicationDeadline: '2025-01-15'
+  },
+  {
+    id: 'chicago-nail-lounge',
+    title: 'Chicago Nail Lounge – IL',
+    location: 'Chicago, IL',
+    salary: '$2,200–$3,400/week',
+    tier: 'premium' as const,
+    summary: 'Modern nail lounge in downtown Chicago, artistic nail designs.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-15.png',
+    rating: 4.6,
+    fullDescription: 'Contemporary nail lounge seeking creative nail artists for our Chicago location.'
+  },
+  {
+    id: 'miami-nails-spa',
+    title: 'Miami Beach Nails Spa – FL',
+    location: 'Miami Beach, FL',
+    salary: '$2,400–$3,600/week',
+    tier: 'premium' as const,
+    summary: 'Beachfront nail spa, resort clientele, tropical nail art.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-16.png',
+    rating: 4.8,
+    fullDescription: 'Luxury beachfront nail spa seeking skilled technicians for our Miami Beach location.'
+  },
+  
+  // Featured listings (10-20 total)
   {
     id: 'downtown-nails-ny',
     title: 'Downtown Nail Lounge – Manhattan',
@@ -51,6 +108,39 @@ export const nailListings = [
     fullDescription: 'Premier nail salon in the heart of Manhattan seeking experienced nail technicians.'
   },
   {
+    id: 'seattle-nail-studio',
+    title: 'Seattle Nail Studio – WA',
+    location: 'Seattle, WA',
+    salary: '$1,800–$2,800/week',
+    tier: 'featured' as const,
+    summary: 'Pacific Northwest nail studio, natural nail care, eco-friendly.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-7.png',
+    rating: 4.5,
+    fullDescription: 'Eco-friendly nail studio in Seattle seeking nail technicians passionate about natural nail care.'
+  },
+  {
+    id: 'austin-nail-collective',
+    title: 'Austin Nail Collective – TX',
+    location: 'Austin, TX',
+    salary: '$1,600–$2,400/week',
+    tier: 'featured' as const,
+    summary: 'Creative nail collective, artistic freedom, music city vibes.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-8.png',
+    rating: 4.6,
+    fullDescription: 'Creative nail collective in Austin seeking artistic nail technicians.'
+  },
+  {
+    id: 'denver-nail-bar',
+    title: 'Denver Nail Bar – CO',
+    location: 'Denver, CO',
+    salary: '$1,700–$2,500/week',
+    tier: 'featured' as const,
+    summary: 'Mountain city nail bar, relaxed atmosphere, loyal clientele.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-9.png',
+    rating: 4.4,
+    fullDescription: 'Friendly nail bar in Denver seeking reliable nail technicians.'
+  },
+  {
     id: 'emvi-house-ad-2',
     title: 'Diamond Tier Opportunities',
     location: 'Select Markets',
@@ -59,7 +149,25 @@ export const nailListings = [
     summary: 'Exclusive access to the highest-paying nail positions in the industry.',
     imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
     rating: 5.0,
-    fullDescription: 'EmviApp Diamond members get first access to the most exclusive, highest-paying positions in luxury nail salons.'
+    fullDescription: 'EmviApp Diamond members get first access to the most exclusive, highest-paying positions in luxury nail salons.',
+    isHouseAd: true
+  },
+  
+  // Free listings (1-2 total) - No images, smaller cards
+  {
+    id: 'basic-nail-salon-phoenix',
+    title: 'Nail Studio Phoenix – AZ',
+    location: 'Phoenix, AZ',
+    salary: '$1,200–$1,800/week',
+    tier: 'free' as const,
+    summary: 'Growing nail salon seeking part-time nail technician.',
+    rating: 4.2,
+    fullDescription: 'Small nail salon in Phoenix looking for a part-time nail technician to join our growing team. Flexible schedule available.',
+    contact: {
+      name: 'Maria Rodriguez',
+      phone: '(602) 555-0123',
+      email: 'maria@nailstudiophx.com'
+    }
   }
 ];
 
@@ -79,27 +187,94 @@ export const hairListings = [
     fullDescription: 'Elite hair salon in Great Falls seeking experienced stylists for our luxury location.'
   },
   {
+    id: 'beverly-hair-diamond',
+    title: 'Beverly Hills Hair Atelier – CA',
+    location: 'Beverly Hills, CA',
+    salary: '$4,000–$6,000/week',
+    tier: 'diamond' as const,
+    summary: 'Ultra-luxury hair atelier serving A-list celebrities and elite clientele.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png',
+    phone: '(310) 555-0199',
+    rating: 5.0,
+    isFeatured: true,
+    fullDescription: 'Exclusive Beverly Hills hair atelier seeking master colorists and stylists for celebrity clientele.'
+  },
+  {
+    id: 'nyc-hair-diamond',
+    title: 'Manhattan Hair Elite – NYC',
+    location: 'New York, NY',
+    salary: '$3,500–$5,500/week',
+    tier: 'diamond' as const,
+    summary: 'Premier Manhattan hair studio, fashion week stylists, editorial work.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png',
+    phone: '(212) 555-0199',
+    rating: 4.9,
+    isFeatured: true,
+    fullDescription: 'Elite Manhattan hair studio seeking top-tier stylists for fashion and editorial work.',
+    isPositionFilled: true,
+    fomoText: 'Position Filled - Waitlist Available'
+  },
+  
+  // Premium listings
+  {
     id: 'emvi-hair-house-1',
     title: 'Elite Hair Stylist Network',
     location: 'Major Cities',
     salary: '$2,500–$4,000/week',
     tier: 'premium' as const,
     summary: 'Connect with the most prestigious hair salons nationwide.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(4).png',
     rating: 5.0,
-    fullDescription: 'EmviApp\'s exclusive network connects top hair stylists with luxury salon opportunities.'
+    fullDescription: 'EmviApp\'s exclusive network connects top hair stylists with luxury salon opportunities.',
+    isHouseAd: true
   },
   {
-    id: 'beverly-hair',
+    id: 'beverly-hair-gallery',
     title: 'Beverly Hills Hair Gallery',
     location: 'Beverly Hills, CA',
     salary: '$3,000–$5,000/week',
     tier: 'premium' as const,
     summary: 'Celebrity stylists needed for A-list clientele. Color specialists preferred.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png',
     rating: 4.8,
-    fullDescription: 'Seeking master hair stylists for our Beverly Hills location serving celebrity clients.'
+    fullDescription: 'Seeking master hair stylists for our Beverly Hills location serving celebrity clients.',
+    urgencyBadge: 'Urgent Hiring'
   },
+  {
+    id: 'miami-hair-studio',
+    title: 'Miami Hair Studio – FL',
+    location: 'Miami Beach, FL',
+    salary: '$2,800–$4,200/week',
+    tier: 'premium' as const,
+    summary: 'Beachfront hair studio, resort clients, balayage specialists.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(6).png',
+    rating: 4.7,
+    fullDescription: 'Luxury Miami Beach hair studio seeking color specialists and stylists.'
+  },
+  {
+    id: 'chicago-hair-collective',
+    title: 'Chicago Hair Collective – IL',
+    location: 'Chicago, IL',
+    salary: '$2,400–$3,800/week',
+    tier: 'premium' as const,
+    summary: 'Modern hair collective in downtown Chicago, trendsetting styles.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(7).png',
+    rating: 4.6,
+    fullDescription: 'Contemporary hair collective seeking innovative stylists in downtown Chicago.'
+  },
+  {
+    id: 'seattle-hair-lounge',
+    title: 'Seattle Hair Lounge – WA',
+    location: 'Seattle, WA',
+    salary: '$2,200–$3,400/week',
+    tier: 'premium' as const,
+    summary: 'Pacific Northwest hair lounge, organic color, sustainable practices.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(8).png',
+    rating: 4.5,
+    fullDescription: 'Eco-conscious hair lounge in Seattle seeking sustainable-minded stylists.'
+  },
+  
+  // Featured listings
   {
     id: 'soho-salon',
     title: 'SoHo Hair Collective – NYC',
@@ -107,9 +282,31 @@ export const hairListings = [
     salary: '$2,800–$3,800/week',
     tier: 'featured' as const,
     summary: 'Trendy SoHo salon, cutting-edge styles, fashion-forward clients.',
-    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(9).png',
     rating: 4.7,
     fullDescription: 'Innovative hair salon in SoHo seeking creative stylists for fashion-forward clientele.'
+  },
+  {
+    id: 'austin-hair-studio',
+    title: 'Austin Hair Studio – TX',
+    location: 'Austin, TX',
+    salary: '$1,800–$2,800/week',
+    tier: 'featured' as const,
+    summary: 'Creative hair studio in music city, artistic freedom.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(10).png',
+    rating: 4.5,
+    fullDescription: 'Creative hair studio in Austin seeking artistic stylists with passion for music culture.'
+  },
+  {
+    id: 'denver-hair-bar',
+    title: 'Denver Hair Bar – CO',
+    location: 'Denver, CO',
+    salary: '$1,900–$2,700/week',
+    tier: 'featured' as const,
+    summary: 'Mountain city hair bar, outdoor enthusiast clientele.',
+    imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(11).png',
+    rating: 4.4,
+    fullDescription: 'Hair bar in Denver seeking stylists who understand the active mountain lifestyle.'
   },
   {
     id: 'emvi-hair-house-2',
@@ -120,7 +317,25 @@ export const hairListings = [
     summary: 'Exclusive positions for master stylists in the most prestigious salons.',
     imageUrl: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated.png',
     rating: 5.0,
-    fullDescription: 'EmviApp Platinum members access the highest-tier hair stylist positions available.'
+    fullDescription: 'EmviApp Platinum members access the highest-tier hair stylist positions available.',
+    isHouseAd: true
+  },
+  
+  // Free listings
+  {
+    id: 'community-hair-salon-phoenix',
+    title: 'Community Hair Salon – Phoenix',
+    location: 'Phoenix, AZ',
+    salary: '$1,400–$2,000/week',
+    tier: 'free' as const,
+    summary: 'Neighborhood hair salon seeking reliable stylist for busy location.',
+    rating: 4.1,
+    fullDescription: 'Established neighborhood salon in Phoenix looking for a dedicated hair stylist to join our team.',
+    contact: {
+      name: 'Jennifer Martinez',
+      phone: '(602) 555-0145',
+      email: 'jen@communityhairphx.com'
+    }
   }
 ];
 

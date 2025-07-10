@@ -8,6 +8,7 @@ import { ArrowRight, MapPin, DollarSign, Crown, Star, Phone, LockIcon, Sparkles,
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
+import { IndustryListing } from '@/types/industryListing';
 
 // Icon mapping for professional icons
 const iconMap = {
@@ -30,18 +31,6 @@ const IndustryIcon: React.FC<IndustryIconProps> = ({ iconName, className }) => {
   return <IconComponent className={className} />;
 };
 
-interface IndustryListing {
-  id: string;
-  title: string;
-  location: string;
-  salary: string;
-  tier: 'diamond' | 'premium' | 'featured';
-  summary: string;
-  imageUrl: string;
-  phone?: string;
-  rating?: number;
-  isFeatured?: boolean;
-}
 
 interface PremiumIndustryShowcaseProps {
   industryName: string;

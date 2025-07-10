@@ -9,20 +9,7 @@ import { useAuth } from '@/context/auth';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-
-interface IndustryListing {
-  id: string;
-  title: string;
-  location: string;
-  salary: string;
-  tier: 'diamond' | 'premium' | 'featured';
-  summary: string;
-  imageUrl: string;
-  phone?: string;
-  rating?: number;
-  isFeatured?: boolean;
-  fullDescription?: string;
-}
+import { IndustryListing } from '@/types/industryListing';
 
 interface IndustryListingPageProps {
   industryName: string;
@@ -93,6 +80,12 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             Featured
           </Badge>
         );
+      case 'free':
+        return (
+          <Badge className="bg-gray-100 text-gray-700 border border-gray-300 font-medium px-2 py-1 text-xs">
+            Free Post
+          </Badge>
+        );
       default:
         return null;
     }
@@ -106,6 +99,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
         return 'border border-purple-200 shadow-xl shadow-purple-100/50 bg-gradient-to-br from-purple-50 to-indigo-50';
       case 'featured':
         return 'border border-blue-200 shadow-lg shadow-blue-100/50 bg-gradient-to-br from-blue-50 to-cyan-50';
+      case 'free':
+        return 'border border-gray-200 shadow-sm bg-white';
       default:
         return 'border border-gray-200 shadow-md';
     }
@@ -122,6 +117,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   const diamondListings = listings.filter(l => l.tier === 'diamond');
   const premiumListings = listings.filter(l => l.tier === 'premium');
   const featuredListings = listings.filter(l => l.tier === 'featured');
+  const freeListings = listings.filter(l => l.tier === 'free');
 
   return (
     <div className="min-h-screen bg-background">
@@ -497,11 +493,97 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
           </motion.section>
         )}
 
+        {/* Free Listings Section */}
+        {freeListings.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mb-16"
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-playfair font-bold text-foreground mb-2">Free Listings</h2>
+              <p className="text-lg text-muted-foreground font-inter">
+                Basic opportunities to get started in {industryName.toLowerCase()}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              {freeListings.map((listing, index) => (
+                <motion.div
+                  key={listing.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -2 }}
+                >
+                  <Card className={`h-full ${getTierCardClass(listing.tier)} overflow-hidden`}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-playfair font-bold text-foreground">
+                          {listing.title}
+                        </h3>
+                        {getTierBadge(listing.tier)}
+                      </div>
+
+                      <div className="flex items-center text-muted-foreground mb-2 font-inter text-sm">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {listing.location}
+                      </div>
+
+                      <div className="bg-green-50 rounded p-2 mb-3">
+                        <div className="flex items-center text-green-700 font-inter font-semibold text-sm">
+                          <DollarSign className="w-4 h-4 mr-1" />
+                          {listing.salary}
+                        </div>
+                      </div>
+
+                      <p className="text-muted-foreground font-inter text-sm mb-3 line-clamp-2">
+                        {listing.summary}
+                      </p>
+
+                      {/* Contact Info for Free Listings */}
+                      {isSignedIn && listing.contact ? (
+                        <div className="bg-gray-50 rounded p-3 mb-3 text-sm">
+                          <div className="font-medium text-gray-900">{listing.contact.name}</div>
+                          <div className="text-gray-600">{listing.contact.phone}</div>
+                          <div className="text-gray-600">{listing.contact.email}</div>
+                        </div>
+                      ) : (
+                        <AuthAction
+                          customTitle="Sign in to see contact details"
+                          onAction={() => true}
+                          fallbackContent={
+                            <div className="text-sm text-muted-foreground italic flex items-center gap-2 font-inter mb-3">
+                              <LockIcon className="w-4 h-4" />
+                              <span>Sign in to see contact details</span>
+                            </div>
+                          }
+                        />
+                      )}
+
+                      <Button
+                        onClick={() => handleViewDetails(listing)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full font-inter text-sm"
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
         {/* CTA Section */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="text-center"
         >
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-8">
