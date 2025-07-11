@@ -326,9 +326,9 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     
     setFormData(data);
     
-    // If editing a paid job, update directly without repayment
-    if (editJobId && editJobData?.pricing_tier === 'paid') {
-      submitFreeNailJob(data); // Use the same update logic
+    // If editing ANY existing job (free or paid), update directly without pricing flow
+    if (editJobId) {
+      submitFreeNailJob(data); // Use the same update logic for both free and paid jobs
       return;
     }
     
@@ -445,14 +445,8 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           return;
         }
 
-        toast.success('Nail tech job updated successfully!');
-        navigate('/nails-job-success', { 
-          state: { 
-            jobId: updateData[0].id,
-            jobData: updateData[0],
-            isEdit: true
-          }
-        });
+        toast.success('Job updated successfully!');
+        navigate('/jobs'); // Navigate directly to jobs page for edits
       } else {
         // Create new job
         const { data: insertData, error } = await supabase
