@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import ConsolidatedJobTemplateSelector from '@/components/job-posting-new/ConsolidatedJobTemplateSelector';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
@@ -8,14 +9,33 @@ import JobPostingFlow from '@/components/posting/job/JobPostingFlow';
 import { getJobPrefillByIndustry } from '@/utils/beautyIndustryPrefills';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CreditCard, CheckCircle } from 'lucide-react';
+import NailJobPostForm from '@/components/nails/NailJobPostForm';
 
 type PostingStep = 'template' | 'form' | 'pricing';
 
 const EnhancedPostJob = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<PostingStep>('template');
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [jobFormData, setJobFormData] = useState<any>(null);
   const [formInitialValues, setFormInitialValues] = useState<any>(null);
+  const [isNailsCategory, setIsNailsCategory] = useState(false);
+
+  // Check if this is a nails-specific route or category
+  useEffect(() => {
+    const isNailsRoute = location.pathname.includes('/nails') || 
+                        location.pathname === '/post-job/nails';
+    setIsNailsCategory(isNailsRoute);
+    
+    // If coming from /post-job/nails, auto-select nails template
+    if (isNailsRoute) {
+      setSelectedTemplate({ id: 'nails', title: 'Nail Technician' });
+      const prefillData = getJobPrefillByIndustry('nails');
+      setFormInitialValues(prefillData);
+      setCurrentStep('form');
+    }
+  }, [location.pathname]);
 
   const handleTemplateSelect = (template: any) => {
     console.log('🎯 Template selected in handleTemplateSelect:', template);
@@ -24,34 +44,17 @@ const EnhancedPostJob = () => {
     const templateId = typeof template === 'string' ? template : (template.id || template.title || '');
     console.log('🔍 Template ID extracted:', templateId);
     
+    // Check if this is a nails template
+    const isNails = templateId.toLowerCase().includes('nail') || templateId === 'nails';
+    setIsNailsCategory(isNails);
+    
     // Get prefill data based on template selection
     const prefillData = getJobPrefillByIndustry(templateId);
     console.log('📋 Prefill data retrieved:', prefillData);
-    console.log('📋 Prefill data keys:', Object.keys(prefillData));
-    console.log('🏷️ Title field:', prefillData.title);
-    console.log('🏢 Company field:', prefillData.company);
-    console.log('📝 Description field preview:', prefillData.description.substring(0, 100) + '...');
-    console.log('📋 Requirements array length:', prefillData.requirements?.length || 0);
-    console.log('🎁 Benefits array length:', prefillData.benefits?.length || 0);
-    console.log('💰 Salary field:', prefillData.salary);
-    console.log('📍 Location field:', prefillData.location);
     
     // Store the selected template and prefill data
     setSelectedTemplate(template);
     setFormInitialValues(prefillData);
-    
-    // Additional verification logs
-    console.log('✅ formInitialValues will be set to:', prefillData);
-    console.log('✅ Moving to form step with prefill data');
-    console.log('🚀 About to render EnhancedJobForm with initialValues:', {
-      hasTitle: !!prefillData.title,
-      hasCompany: !!prefillData.company,
-      hasDescription: !!prefillData.description,
-      requirementsCount: prefillData.requirements?.length || 0,
-      benefitsCount: prefillData.benefits?.length || 0,
-      hasSalary: !!prefillData.salary,
-      hasLocation: !!prefillData.location
-    });
     
     setCurrentStep('form');
   };
@@ -95,19 +98,25 @@ const EnhancedPostJob = () => {
         
         {currentStep === 'form' && selectedTemplate && (
           <div className="container mx-auto py-8">
-            <div className="mb-6">
-              <button
-                onClick={handleBackToTemplate}
-                className="text-purple-600 hover:text-purple-700 font-medium"
-              >
-                ← Back to Templates
-              </button>
-            </div>
+            {!location.pathname.includes('/nails') && (
+              <div className="mb-6">
+                <button
+                  onClick={handleBackToTemplate}
+                  className="text-purple-600 hover:text-purple-700 font-medium"
+                >
+                  ← Back to Templates
+                </button>
+              </div>
+            )}
             
-            <EnhancedJobForm 
-              initialValues={formInitialValues}
-              onSubmit={handleFormSubmit}
-            />
+            {isNailsCategory ? (
+              <NailJobPostForm onSubmit={handleFormSubmit} />
+            ) : (
+              <EnhancedJobForm 
+                initialValues={formInitialValues}
+                onSubmit={handleFormSubmit}
+              />
+            )}
           </div>
         )}
         

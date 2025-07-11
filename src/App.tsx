@@ -34,7 +34,7 @@ import PostSalon from "@/pages/PostSalon";
 import SalonListingSuccessPage from "@/pages/salon-listing-success";
 import CustomerProfilePage from "@/pages/customer/ProfilePage";
 import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
-import NailJobPostForm from "@/components/nails/NailJobPostForm";
+
 import NailJobSuccessPage from "@/pages/nails-job-success";
 
 // Industry Pages
@@ -79,7 +79,7 @@ function App() {
                     
                     {/* Job posting routes - USE ENHANCED VERSION */}
                     <Route path="/post-job" element={<EnhancedPostJob />} />
-                    <Route path="/post-job/nails" element={<Layout><NailJobPostForm /></Layout>} />
+                    <Route path="/post-job/nails" element={<EnhancedPostJob />} />
                     <Route path="/post-job-billion" element={<PostJobBillion />} />
                     <Route path="/post-job-experimental" element={<PostJobExperimental />} />
                     

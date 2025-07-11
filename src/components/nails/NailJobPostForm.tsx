@@ -150,10 +150,20 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
     toast.success('Vietnamese translation generated!');
   };
 
-  // Format salary with /tuần suffix
+  // Format salary with /tuần suffix (only add once)
   const formatSalaryForNails = (salary: string) => {
     if (!salary) return '';
-    return salary.includes('/tuần') ? salary : `${salary}/tuần`;
+    const trimmedSalary = salary.trim();
+    if (trimmedSalary.endsWith('/tuần')) return trimmedSalary;
+    return `${trimmedSalary}/tuần`;
+  };
+
+  // Handle salary input with auto-formatting on blur
+  const handleSalaryBlur = (field: any) => {
+    const currentValue = field.value;
+    if (currentValue && !currentValue.includes('/tuần')) {
+      field.onChange(formatSalaryForNails(currentValue));
+    }
   };
 
   const handleFormSubmit = (data: NailJobFormValues) => {
@@ -499,32 +509,27 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
                       )}
                     />
 
-                    {/* Salary Range */}
-                    <FormField
-                      control={form.control}
-                      name="salaryRange"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Salary Range *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="e.g., $1,500–$2,200" 
-                              {...field}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                // Auto-format with /tuần if not present
-                                const formattedValue = formatSalaryForNails(value);
-                                field.onChange(formattedValue);
-                              }}
-                            />
-                          </FormControl>
-                          <p className="text-xs text-gray-500">
-                            Will automatically add "/tuần" for nail jobs
-                          </p>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     {/* Salary Range */}
+                     <FormField
+                       control={form.control}
+                       name="salaryRange"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Salary Range *</FormLabel>
+                           <FormControl>
+                             <Input 
+                               placeholder="e.g., $1,500–$2,200" 
+                               {...field}
+                               onBlur={() => handleSalaryBlur(field)}
+                             />
+                           </FormControl>
+                           <p className="text-xs text-gray-500">
+                             Will automatically add "/tuần" when you finish typing
+                           </p>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
 
                     {/* Job Description */}
                     <FormField
