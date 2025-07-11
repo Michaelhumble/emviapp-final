@@ -395,99 +395,103 @@ const NailJobs = () => {
           </div>
         )}
         
-        {/* Job Details Modal - Updated to Match Reference Layout */}
+        {/* Job Details Modal - Premium Layout to Match Reference */}
         <Dialog open={!!selectedJob} onOpenChange={closeJobDetails}>
           {selectedJob && (
-            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-serif">
+            <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader className="space-y-3">
+                <DialogTitle className="text-2xl font-serif text-center">
                   {selectedJob.title}
-                  <span className="block text-base text-gray-600 italic font-normal mt-1">
-                    {selectedJob.titleVn}
-                  </span>
                 </DialogTitle>
-                <DialogDescription className="text-base text-gray-700 font-medium">{selectedJob.salon}</DialogDescription>
+                <div className="text-center">
+                  <p className="text-lg text-gray-600 italic">{selectedJob.titleVn}</p>
+                  <p className="text-lg font-semibold text-gray-800">{selectedJob.salon}</p>
+                </div>
               </DialogHeader>
               
-              {/* Photo Gallery */}
-              <div className="w-full">
+              {/* Photo Gallery at the Top */}
+              <div className="w-full mb-6">
                 <img 
                   src={selectedJob.image} 
                   alt={selectedJob.salon} 
-                  className="w-full h-64 object-cover rounded-md"
+                  className="w-full h-80 object-cover rounded-lg"
                 />
               </div>
 
-              {/* Salary and Location - EXACT Reference Layout */}
+              {/* Salary and Location in Colored Boxes */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {/* Weekly Salary */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center mb-2">
-                    <DollarSign className="h-5 w-5 text-green-600 mr-2" />
-                    <h3 className="font-semibold text-green-800">Weekly Salary</h3>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-300 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <DollarSign className="h-6 w-6 text-green-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-green-800">Weekly Salary</h3>
                   </div>
                   <p className="text-2xl font-bold text-green-700">{selectedJob.salary}</p>
                 </div>
 
-                {/* Location */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-center mb-2">
-                    <MapPin className="h-5 w-5 text-blue-600 mr-2" />
-                    <h3 className="font-semibold text-blue-800">Location</h3>
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-300 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <MapPin className="h-6 w-6 text-blue-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-blue-800">Location</h3>
                   </div>
                   <p className="text-2xl font-bold text-blue-700">{selectedJob.location}</p>
                 </div>
               </div>
 
-              {/* Contact Information - EXACT Reference Position */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <div className="flex items-center mb-3">
-                  <Phone className="h-5 w-5 text-green-600 mr-2" />
-                  <h3 className="font-semibold text-green-800">Contact Information</h3>
+              {/* Contact Information Block - Enhanced Design */}
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-300 rounded-lg p-6 mb-6">
+                <div className="flex items-center justify-center mb-4">
+                  <Phone className="h-6 w-6 text-purple-600 mr-3" />
+                  <h3 className="text-xl font-semibold text-purple-800">Contact Information</h3>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-lg font-semibold text-green-800">{selectedJob.phone}</span>
+                <div className="space-y-4 text-center">
+                  <div className="bg-white/70 rounded-lg p-4">
+                    <div className="flex items-center justify-center mb-2">
+                      <Phone className="h-5 w-5 text-purple-600 mr-2" />
+                      <span className="text-sm font-medium text-purple-700">Phone Number</span>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-800">{selectedJob.phone}</p>
                   </div>
-                  <div className="flex items-center">
-                    <Building className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="font-medium text-green-800">{selectedJob.salon}</span>
+                  <div className="bg-white/70 rounded-lg p-4">
+                    <div className="flex items-center justify-center mb-2">
+                      <Building className="h-5 w-5 text-purple-600 mr-2" />
+                      <span className="text-sm font-medium text-purple-700">Salon Name</span>
+                    </div>
+                    <p className="text-xl font-semibold text-purple-800">{selectedJob.salon}</p>
                   </div>
-                  <div className="flex items-center mt-3 text-green-700">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span className="text-sm font-medium">Contact details unlocked! Call now to apply.</span>
+                  <div className="flex items-center justify-center bg-green-100 rounded-lg p-3">
+                    <span className="text-green-600 mr-2 text-lg">✓</span>
+                    <span className="text-green-800 font-semibold">Contact details available! Call now to apply.</span>
                   </div>
                 </div>
               </div>
 
-              {/* Job Description - EXACT Reference Position */}
-              <div className="border-t pt-6 mb-6">
-                <div className="flex items-center mb-4">
-                  <FileText className="h-5 w-5 text-gray-600 mr-2" />
-                  <h3 className="text-lg font-semibold">Job Description</h3>
+              {/* Job Description Section */}
+              <div className="mb-6">
+                <div className="flex items-center mb-4 pb-2 border-b border-gray-200">
+                  <FileText className="h-6 w-6 text-gray-600 mr-3" />
+                  <h3 className="text-xl font-semibold text-gray-800">Job Description</h3>
                 </div>
-                <div className="prose max-w-none">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedJob.description}</p>
-                </div>
-              </div>
-
-              {/* Additional Job Details */}
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-600">
-                  <Clock className="h-4 w-4 mr-2" /> 
-                  <span>{selectedJob.isFullTime ? "Full-time" : "Part-time"}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Briefcase className="h-4 w-4 mr-2" /> 
-                  <span>{selectedJob.providesTraining ? "Training provided" : "Experience required"}</span>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{selectedJob.description}</p>
                 </div>
               </div>
 
-              {/* Apply Now Button */}
-              <div className="pt-4">
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-lg font-semibold">
-                  Apply Now
+              {/* Additional Job Details in Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-50 rounded-lg p-4 text-center">
+                  <Clock className="h-6 w-6 text-gray-600 mx-auto mb-2" />
+                  <p className="font-medium text-gray-800">{selectedJob.isFullTime ? "Full-time Position" : "Part-time Position"}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4 text-center">
+                  <Briefcase className="h-6 w-6 text-gray-600 mx-auto mb-2" />
+                  <p className="font-medium text-gray-800">{selectedJob.providesTraining ? "Training Provided" : "Experience Required"}</p>
+                </div>
+              </div>
+
+              {/* Apply Now Button - Premium Style */}
+              <div className="pt-4 border-t border-gray-200">
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 text-xl font-semibold rounded-lg shadow-lg transform transition hover:scale-105">
+                  Apply Now - Call {selectedJob.phone}
                 </Button>
               </div>
             </DialogContent>
