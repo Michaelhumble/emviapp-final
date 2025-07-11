@@ -188,12 +188,14 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         </div>
       )}
 
-      {/* Description Preview - Vietnamese first for Nail Tech category */}
+      {/* Description Preview - Show Vietnamese content for nail jobs */}
       {(job.vietnamese_description || job.description) && (
         <div className="text-gray-600 text-sm line-clamp-2 mb-4">
-          {job.category === 'Nail Tech' && job.vietnamese_description ? (
+          {/* Check if this is a nail-related job and prioritize Vietnamese content */}
+          {(job.category?.toLowerCase().includes('nail') || 
+            job.title?.toLowerCase().includes('nail')) && job.vietnamese_description ? (
             <div>
-              <p className="mb-1">{job.vietnamese_description}</p>
+              <p className="mb-1 text-gray-800">{job.vietnamese_description}</p>
               {job.description && (
                 <p className="text-gray-500 text-xs">{job.description}</p>
               )}

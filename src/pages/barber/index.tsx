@@ -13,10 +13,14 @@ const BarberPage = () => {
     
     return jobs
       .filter(job => {
-        const isBarberJob = job.category?.toLowerCase().includes('barber') || 
-                           job.title?.toLowerCase().includes('barber') ||
-                           job.description?.toLowerCase().includes('barber') ||
-                           job.category?.toLowerCase() === 'general';
+        // STRICT filtering for barber industry only
+        const isBarberJob = 
+          job.category?.toLowerCase() === 'barber' ||
+          job.category?.toLowerCase() === 'barbershop' ||
+          job.category?.toLowerCase() === 'men\'s grooming' ||
+          (job.category?.toLowerCase() === 'general' && 
+           (job.title?.toLowerCase().includes('barber') ||
+            job.description?.toLowerCase().includes('barber')));
         return isBarberJob && job.status === 'active';
       })
       .map((job: Job): IndustryListing => {
@@ -35,7 +39,7 @@ const BarberPage = () => {
           imageUrl: job.image_url || job.imageUrl || undefined,
           rating: 4.5,
           fullDescription: job.description || '',
-          contact: job.contact_info ? {
+          contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',

@@ -14,11 +14,16 @@ const HairPage = () => {
     
     return jobs
       .filter(job => {
-        const isHairJob = job.category?.toLowerCase().includes('hair') || 
-                         job.title?.toLowerCase().includes('hair') ||
-                         job.title?.toLowerCase().includes('stylist') ||
-                         job.description?.toLowerCase().includes('hair') ||
-                         job.category?.toLowerCase() === 'general';
+        // STRICT filtering for hair industry only
+        const isHairJob = 
+          job.category?.toLowerCase() === 'hair' ||
+          job.category?.toLowerCase() === 'hair stylist' ||
+          job.category?.toLowerCase() === 'hairstylist' ||
+          job.category?.toLowerCase() === 'cosmetology' ||
+          (job.category?.toLowerCase() === 'general' && 
+           (job.title?.toLowerCase().includes('hair') || 
+            job.title?.toLowerCase().includes('stylist') ||
+            job.description?.toLowerCase().includes('hair')));
         return isHairJob && job.status === 'active';
       })
       .map((job: Job): IndustryListing => {
@@ -37,7 +42,7 @@ const HairPage = () => {
           imageUrl: job.image_url || job.imageUrl || undefined,
           rating: 4.5,
           fullDescription: job.description || '',
-          contact: job.contact_info ? {
+          contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',

@@ -14,11 +14,16 @@ const MassagePage = () => {
     
     return jobs
       .filter(job => {
-        const isMassageJob = job.category?.toLowerCase().includes('massage') || 
-                           job.title?.toLowerCase().includes('massage') ||
-                           job.title?.toLowerCase().includes('therapy') ||
-                           job.description?.toLowerCase().includes('massage') ||
-                           job.category?.toLowerCase() === 'general';
+        // STRICT filtering for massage industry only
+        const isMassageJob = 
+          job.category?.toLowerCase() === 'massage' ||
+          job.category?.toLowerCase() === 'massage therapy' ||
+          job.category?.toLowerCase() === 'spa' ||
+          job.category?.toLowerCase() === 'wellness' ||
+          (job.category?.toLowerCase() === 'general' && 
+           (job.title?.toLowerCase().includes('massage') || 
+            job.title?.toLowerCase().includes('therapy') ||
+            job.description?.toLowerCase().includes('massage')));
         return isMassageJob && job.status === 'active';
       })
       .map((job: Job): IndustryListing => {
@@ -37,7 +42,7 @@ const MassagePage = () => {
           imageUrl: job.image_url || job.imageUrl || undefined,
           rating: 4.5,
           fullDescription: job.description || '',
-          contact: job.contact_info ? {
+          contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',

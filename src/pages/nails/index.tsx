@@ -8,17 +8,21 @@ import { IndustryListing } from '@/types/industryListing';
 const NailsPage = () => {
   const { jobs, loading } = useJobsData();
 
-  // Convert real Supabase jobs to IndustryListing format and filter for nail-related jobs
+  // Convert real Supabase jobs to IndustryListing format and filter STRICTLY for nail jobs
   const realNailJobs: IndustryListing[] = useMemo(() => {
     if (!jobs || !Array.isArray(jobs)) return [];
     
     return jobs
       .filter(job => {
-        // Filter for nail-related jobs (by category or keywords in title)
-        const isNailJob = job.category?.toLowerCase().includes('nail') || 
-                         job.title?.toLowerCase().includes('nail') ||
-                         job.description?.toLowerCase().includes('nail') ||
-                         job.category?.toLowerCase() === 'general'; // Include general category as it might contain nail jobs
+        // STRICT filtering for nail industry only
+        const isNailJob = 
+          job.category?.toLowerCase() === 'nails' ||
+          job.category?.toLowerCase() === 'nail' ||
+          job.category?.toLowerCase() === 'nail tech' ||
+          job.category?.toLowerCase() === 'nail technician' ||
+          (job.category?.toLowerCase() === 'general' && 
+           (job.title?.toLowerCase().includes('nail') || 
+            job.description?.toLowerCase().includes('nail')));
         return isNailJob && job.status === 'active';
       })
       .map((job: Job): IndustryListing => {
@@ -39,11 +43,12 @@ const NailsPage = () => {
           location: job.location || 'Location TBD',
           salary: job.compensation_details || 'Competitive Pay',
           tier,
-          summary: job.description?.substring(0, 150) + '...' || 'Great opportunity to join our nail team.',
+          summary: job.description?.substring(0, 150) + '...' || 
+                  'Great opportunity to join our nail team.',
           imageUrl: job.image_url || job.imageUrl || undefined,
-          rating: 4.5, // Default rating for real jobs
+          rating: 4.5,
           fullDescription: job.description || '',
-          contact: job.contact_info ? {
+          contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',
