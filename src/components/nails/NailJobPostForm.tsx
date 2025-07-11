@@ -353,6 +353,11 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         pricing_tier: 'free'
       };
 
+      // DEBUG: Log the exact payload being sent to Supabase
+      console.log("🔍 [DEBUG] Job Payload being sent to Supabase:", payload);
+      console.log("🔍 [DEBUG] Vietnamese Title:", data.vietnameseTitle);
+      console.log("🔍 [DEBUG] Vietnamese Description:", data.vietnameseDescription);
+
       if (editJobId) {
         // Update existing job
         const { data: updateData, error } = await supabase
