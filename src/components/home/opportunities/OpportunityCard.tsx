@@ -19,8 +19,29 @@ interface OpportunityCardProps {
 }
 
 const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
-  // Format simple date display
-  const formatDate = (dateString: string) => {
+  // Add comprehensive defensive checks for listing object
+  if (!listing || typeof listing !== 'object') {
+    console.warn('⚠️ [OPPORTUNITY-CARD] Invalid listing object:', listing);
+    return (
+      <div className="border border-gray-200 rounded-lg p-6">
+        <p className="text-gray-500">Invalid listing data</p>
+      </div>
+    );
+  }
+
+  // Ensure listing has minimum required fields
+  if (!listing.id) {
+    console.warn('⚠️ [OPPORTUNITY-CARD] Listing missing ID:', listing);
+    return (
+      <div className="border border-gray-200 rounded-lg p-6">
+        <p className="text-gray-500">Listing data missing ID</p>
+      </div>
+    );
+  }
+
+  // Format simple date display with null safety
+  const formatDate = (dateString: string | undefined | null) => {
+    if (!dateString || typeof dateString !== 'string') return 'Recently added';
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
@@ -67,21 +88,24 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
         
         <CardContent className="p-5 flex flex-col flex-grow">
           <h3 className="text-lg font-semibold mb-1">
-            {listing.title || listing.company || "Untitled Opportunity"}
+            {(listing.title && typeof listing.title === 'string' ? listing.title : '') ||
+             (listing.company && typeof listing.company === 'string' ? listing.company : '') || 
+             "Untitled Opportunity"}
           </h3>
           
           <p className="text-sm text-gray-600 mb-2">
-            {listing.location || "Location not specified"}
+            {(listing.location && typeof listing.location === 'string' ? listing.location : '') || "Location not specified"}
           </p>
           
-          {listing.price && (
+          {listing.price && typeof listing.price === 'string' && (
             <p className="text-sm text-orange-600 font-medium mb-2">
               {listing.price}
             </p>
           )}
           
           <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-            {listing.descriptionPreview || listing.description || 
+            {(listing.descriptionPreview && typeof listing.descriptionPreview === 'string' ? listing.descriptionPreview : '') ||
+             (listing.description && typeof listing.description === 'string' ? listing.description : '') || 
              "This opportunity is waiting to be discovered. Contact for more details."}
           </p>
           

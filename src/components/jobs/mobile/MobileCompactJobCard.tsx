@@ -16,9 +16,28 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
   isExpanded,
   isExpired = false
 }) => {
-  // Get industry icon based on category
-  const getCategoryIcon = (category: string) => {
-    const cat = category?.toLowerCase() || '';
+  // Add comprehensive defensive checks for job object
+  if (!job || typeof job !== 'object') {
+    console.warn('⚠️ [MOBILE-COMPACT-JOB-CARD] Invalid job object:', job);
+    return (
+      <div className="border border-gray-200 rounded-lg p-3">
+        <p className="text-gray-500 text-sm">Invalid job data</p>
+      </div>
+    );
+  }
+
+  // Ensure job has minimum required fields
+  if (!job.id) {
+    console.warn('⚠️ [MOBILE-COMPACT-JOB-CARD] Job missing ID:', job);
+    return (
+      <div className="border border-gray-200 rounded-lg p-3">
+        <p className="text-gray-500 text-sm">Job data missing ID</p>
+      </div>
+    );
+  }
+  // Get industry icon based on category with null safety
+  const getCategoryIcon = (category: string | undefined | null) => {
+    const cat = (category && typeof category === 'string' ? category.toLowerCase() : '');
     if (cat.includes('nail')) return <Sparkles className="h-4 w-4 text-purple-600" />;
     if (cat.includes('hair')) return <Scissors className="h-4 w-4 text-indigo-600" />;
     if (cat.includes('barber')) return <Zap className="h-4 w-4 text-blue-600" />;
@@ -30,10 +49,10 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
     return <Brush className="h-4 w-4 text-gray-800" />;
   };
 
-  // Format salary display
+  // Format salary display with null safety
   const getSalary = () => {
-    if (job.salary) return job.salary;
-    if (job.compensation_details) return job.compensation_details;
+    if (job.salary && typeof job.salary === 'string') return job.salary;
+    if (job.compensation_details && typeof job.compensation_details === 'string') return job.compensation_details;
     return 'Contact for details';
   };
 
@@ -59,10 +78,11 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
               <div className="flex items-center justify-between">
                 <div className="min-w-0 flex-1">
                   <h4 className="text-sm font-bold text-gray-900 truncate">
-                    {job.company || 'Company Name'}
+                    {(job.company && typeof job.company === 'string' ? job.company : '') || 'Company Name'}
                   </h4>
                   <p className="text-xs font-medium text-gray-800 truncate">
-                    {job.vietnamese_title || job.title || 'Job Title'}
+                    {(job.vietnamese_title && typeof job.vietnamese_title === 'string' ? job.vietnamese_title : '') ||
+                     (job.title && typeof job.title === 'string' ? job.title : '') || 'Job Title'}
                   </p>
                 </div>
                 
@@ -72,7 +92,7 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
                   </div>
                   <div className="flex items-center text-xs font-medium text-gray-800">
                     <MapPin className="h-3 w-3 mr-1 text-gray-600" />
-                    {job.location?.split(',')[0] || 'TBD'} {/* Just city */}
+                    {(job.location && typeof job.location === 'string' ? job.location.split(',')[0] : '') || 'TBD'} {/* Just city */}
                   </div>
                 </div>
               </div>

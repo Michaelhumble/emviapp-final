@@ -26,8 +26,8 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  // Add defensive checks for job object
-  if (!job || !job.id) {
+  // Add comprehensive defensive checks for job object
+  if (!job || typeof job !== 'object') {
     console.warn('⚠️ [BILINGUAL-JOB-CARD] Invalid job object:', job);
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -35,14 +35,24 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       </div>
     );
   }
+
+  // Ensure job has minimum required fields
+  if (!job.id) {
+    console.warn('⚠️ [BILINGUAL-JOB-CARD] Job missing ID:', job);
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <p className="text-gray-500">Job data missing ID</p>
+      </div>
+    );
+  }
   
   const isOwner = user?.id === job.user_id;
   const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false;
   
-  // Safe image and paid job logic
-  const isPaidJob = job.pricing_tier && job.pricing_tier !== 'free';
+  // Safe image and paid job logic with null checks
+  const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && job.pricing_tier !== 'free';
   const imageUrl = job.image_url || job.imageUrl || job.image || null;
-  const hasImage = !!(imageUrl && imageUrl.trim() && imageUrl !== '');
+  const hasImage = !!(imageUrl && typeof imageUrl === 'string' && imageUrl.trim() && imageUrl !== '');
   
   const renderJobImage = () => {
     if (hasImage && imageUrl) {
@@ -82,12 +92,12 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     navigate(`/jobs/edit/${job.id}`);
   };
 
-  // Format salary/compensation display
+  // Format salary/compensation display with null safety
   const formatCompensation = () => {
-    if (job.compensation_details) {
+    if (job.compensation_details && typeof job.compensation_details === 'string') {
       return job.compensation_details;
     }
-    if (job.employment_type) {
+    if (job.employment_type && typeof job.employment_type === 'string') {
       return job.employment_type;
     }
     return 'Contact for details';

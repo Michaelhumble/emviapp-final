@@ -51,9 +51,15 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
     
     const grouped: Record<string, Job[]> = {};
     
-    // Group active jobs by category
+    // Group active jobs by category with defensive null checks
     jobs.forEach(job => {
-      const category = job.category || 'Other';
+      // Add comprehensive defensive checks
+      if (!job || typeof job !== 'object' || !job.id) {
+        console.warn('⚠️ [UNIFIED-LAYOUT] Skipping invalid job:', job);
+        return;
+      }
+      
+      const category = (job.category && typeof job.category === 'string' ? job.category : 'Other');
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -149,14 +155,18 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
     // Maintain the tier sorting when combining with expired jobs
     const allJobs = [...activeJobs, ...expiredJobs]; // Active jobs (sorted) first, then expired
     
-    // Filter jobs based on search query - preserving tier order
+    // Filter jobs based on search query - preserving tier order with null safety
     const filteredJobs = searchQuery 
-      ? allJobs.filter(job =>
-          job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.company?.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+      ? allJobs.filter(job => {
+          if (!job || typeof job !== 'object') return false;
+          const query = searchQuery.toLowerCase();
+          return (
+            (job.title && typeof job.title === 'string' && job.title.toLowerCase().includes(query)) ||
+            (job.description && typeof job.description === 'string' && job.description.toLowerCase().includes(query)) ||
+            (job.location && typeof job.location === 'string' && job.location.toLowerCase().includes(query)) ||
+            (job.company && typeof job.company === 'string' && job.company.toLowerCase().includes(query))
+          );
+        })
       : allJobs;
 
     if (filteredJobs.length === 0) return null;

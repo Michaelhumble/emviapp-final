@@ -26,8 +26,27 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   onEditJob,
   showEditButton = false
 }) => {
+  // Add comprehensive defensive checks for job object
+  if (!job || typeof job !== 'object') {
+    console.warn('⚠️ [MOBILE-JOB-CARD] Invalid job object:', job);
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <p className="text-gray-500">Invalid job data</p>
+      </div>
+    );
+  }
+
+  // Ensure job has minimum required fields
+  if (!job.id) {
+    console.warn('⚠️ [MOBILE-JOB-CARD] Job missing ID:', job);
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <p className="text-gray-500">Job data missing ID</p>
+      </div>
+    );
+  }
   const getPricingTierDisplay = () => {
-    const tier = job.pricing_tier?.toLowerCase() || 'free';
+    const tier = (job.pricing_tier && typeof job.pricing_tier === 'string' ? job.pricing_tier.toLowerCase() : 'free');
     switch (tier) {
       case 'premium':
         return { 
@@ -64,29 +83,29 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   const { user } = useAuth();
   const isOwner = user?.id === job.user_id;
 
-  // Format salary display
+  // Format salary display with null safety
   const getSalary = () => {
-    if (job.salary) return job.salary;
-    if (job.compensation_details) return job.compensation_details;
+    if (job.salary && typeof job.salary === 'string') return job.salary;
+    if (job.compensation_details && typeof job.compensation_details === 'string') return job.compensation_details;
     return 'Contact for details';
   };
 
   // Safe job image handling - only show fallbacks for paid jobs
   const getJobImage = () => {
-    // Check for actual uploaded image first
+    // Check for actual uploaded image first with null safety
     const uploadedImage = job.image_url || job.imageUrl || job.image;
-    if (uploadedImage && uploadedImage.trim() && uploadedImage !== '') {
+    if (uploadedImage && typeof uploadedImage === 'string' && uploadedImage.trim() && uploadedImage !== '') {
       return uploadedImage;
     }
     
     // Only show fallback images for paid jobs (premium, gold, diamond)
-    const isPaidJob = job.pricing_tier && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
+    const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
     if (!isPaidJob) {
       return null; // Free jobs get no fallback image
     }
     
-    // Fallback to category-based default for paid jobs only
-    const category = job.category?.toLowerCase() || '';
+    // Fallback to category-based default for paid jobs only with null safety
+    const category = (job.category && typeof job.category === 'string' ? job.category.toLowerCase() : '');
     if (category.includes('nail')) {
       return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png';
     }
@@ -117,7 +136,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   };
 
   const jobImage = getJobImage();
-  const isPaidJob = job.pricing_tier && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
+  const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
 
   return (
     <div 
@@ -178,10 +197,11 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         {/* Title and Company */}
         <div className="mb-4">
           <h3 className={`font-playfair font-black text-foreground mb-2 ${expanded ? 'text-xl' : 'text-lg'} line-clamp-2 leading-tight`}>
-            {job.vietnamese_title || job.title || 'Untitled Job'}
+            {(job.vietnamese_title && typeof job.vietnamese_title === 'string' ? job.vietnamese_title : '') || 
+             (job.title && typeof job.title === 'string' ? job.title : '') || 'Untitled Job'}
           </h3>
           <p className={`font-inter font-bold text-muted-foreground ${expanded ? 'text-base' : 'text-sm'}`}>
-            {job.company || 'Company Name'}
+            {(job.company && typeof job.company === 'string' ? job.company : '') || 'Company Name'}
           </p>
         </div>
 
@@ -189,7 +209,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         <div className="space-y-3 mb-6">
           <div className="flex items-center">
             <MapPin className="h-5 w-5 mr-3 text-muted-foreground" />
-            <span className="text-sm font-inter font-bold text-foreground">{job.location || 'Location TBD'}</span>
+            <span className="text-sm font-inter font-bold text-foreground">{(job.location && typeof job.location === 'string' ? job.location : '') || 'Location TBD'}</span>
           </div>
           
           <div className="flex items-center">
@@ -197,7 +217,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
             <span className="text-sm font-inter font-black text-emerald-600">{getSalary()}</span>
           </div>
           
-          {job.employment_type && (
+          {job.employment_type && typeof job.employment_type === 'string' && (
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-3 text-muted-foreground" />
               <span className="text-sm font-inter font-bold text-foreground">{job.employment_type}</span>
@@ -209,7 +229,9 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
         {expanded && (
           <div className="mb-6">
             <p className="text-base font-inter text-muted-foreground line-clamp-3 leading-relaxed">
-              {job.vietnamese_description || job.description || 'Job description not available.'}
+              {(job.vietnamese_description && typeof job.vietnamese_description === 'string' ? job.vietnamese_description : '') ||
+               (job.description && typeof job.description === 'string' ? job.description : '') || 
+               'Job description not available.'}
             </p>
           </div>
         )}
