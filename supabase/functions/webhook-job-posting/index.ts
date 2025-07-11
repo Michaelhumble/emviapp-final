@@ -147,19 +147,76 @@ serve(async (req) => {
         });
       }
 
-      // Update job status from draft to active
+      // CRITICAL FIX: Extract and preserve photos from draft job before updating
+      console.log('🔍 [WEBHOOK-JOB] Analyzing existing job for photos...');
+      let validUrls: string[] = [];
+      
+      // PRIORITY 1: Check existing database fields (from draft creation)
+      if (existingJob.image_urls && Array.isArray(existingJob.image_urls)) {
+        validUrls = existingJob.image_urls.filter((url: string) => 
+          url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+        );
+        console.log('🔍 [WEBHOOK-JOB] Found photos in image_urls field:', validUrls);
+      }
+      
+      // PRIORITY 2: Check photos field if image_urls is empty
+      if (validUrls.length === 0 && existingJob.photos && Array.isArray(existingJob.photos)) {
+        validUrls = existingJob.photos.filter((url: string) => 
+          url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+        );
+        console.log('🔍 [WEBHOOK-JOB] Found photos in photos field:', validUrls);
+      }
+      
+      // PRIORITY 3: Check metadata as fallback
+      if (validUrls.length === 0 && existingJob.metadata) {
+        if (existingJob.metadata.image_urls && Array.isArray(existingJob.metadata.image_urls)) {
+          validUrls = existingJob.metadata.image_urls.filter((url: string) => 
+            url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+          );
+          console.log('🔍 [WEBHOOK-JOB] Found photos in metadata.image_urls:', validUrls);
+        }
+        
+        if (validUrls.length === 0 && existingJob.metadata.photos && Array.isArray(existingJob.metadata.photos)) {
+          validUrls = existingJob.metadata.photos.filter((url: string) => 
+            url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+          );
+          console.log('🔍 [WEBHOOK-JOB] Found photos in metadata.photos:', validUrls);
+        }
+      }
+
+      // Build update payload with preserved photos
+      const updateData: any = { 
+        status: 'active',
+        payment_status: 'completed',
+        updated_at: new Date().toISOString()
+      };
+
+      // CRITICAL: Always preserve existing photos if found
+      if (validUrls.length > 0) {
+        console.log('✅ [WEBHOOK-JOB] Preserving photo URLs:', validUrls);
+        updateData.image_url = validUrls[0];
+        updateData.image_urls = validUrls;
+        updateData.photos = validUrls;
+        
+        // Update metadata to be consistent
+        updateData.metadata = {
+          ...existingJob.metadata,
+          photos: validUrls,
+          image_urls: validUrls
+        };
+      } else {
+        console.log('⚠️ [WEBHOOK-JOB] No valid photos found - job will be active without images');
+      }
+
       console.log('🔄 [WEBHOOK-JOB] Updating job status from draft to active...');
       console.log('🔄 [WEBHOOK-JOB] Current job status before update:', existingJob.status);
       console.log('🔄 [WEBHOOK-JOB] Current job payment_status before update:', existingJob.payment_status);
+      console.log('🔍 [WEBHOOK-JOB] Update payload with photos:', updateData);
       
-      // Also update payment_status to ensure consistency
+      // Update job with preserved photos
       const { data, error } = await supabase
         .from('jobs')
-        .update({ 
-          status: 'active',
-          payment_status: 'completed',
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', jobId)
         .eq('status', 'draft') // Only update if currently draft
         .select();
