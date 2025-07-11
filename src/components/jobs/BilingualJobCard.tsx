@@ -148,43 +148,51 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   
   const renderJobImage = () => {
     if (hasImages) {
-      // For multiple photos, show a preview with the first photo and indicators
+      // For multiple photos, show main photo + thumbnail row underneath
       if (jobImages.length > 1) {
+        const additionalPhotos = jobImages.slice(1, 4); // Show up to 3 additional (total 4)
+        const remainingCount = jobImages.length - 4;
+        
         return (
-          <div className="mb-4 -mx-6 -mt-6 relative">
-            <img
-              src={jobImages[0]}
-              alt={job.title || 'Job image'}
-              className="w-full h-48 object-cover"
-              onError={(e) => {
-                console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-            
-            {/* Photo count indicator */}
-            <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium">
-              📸 {jobImages.length} photos
+          <div className="mb-4 -mx-6 -mt-6">
+            {/* Main photo */}
+            <div className="relative">
+              <img
+                src={jobImages[0]}
+                alt={job.title || 'Job image'}
+                className="w-full h-48 object-cover"
+                onError={(e) => {
+                  console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              
+              {/* Photo count badge */}
+              <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium">
+                📸 {jobImages.length} photos
+              </div>
             </div>
             
-            {/* Photo thumbnails preview at bottom */}
-            <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
-              {jobImages.slice(0, 4).map((imageUrl, index) => (
+            {/* Thumbnail row underneath */}
+            <div className="px-6 py-2 bg-gray-50 flex gap-2">
+              {additionalPhotos.map((imageUrl, index) => (
                 <div 
                   key={index}
-                  className="w-8 h-8 rounded border-2 border-white/80 overflow-hidden bg-white/20 backdrop-blur-sm"
+                  className="relative w-12 h-12 rounded border overflow-hidden bg-white shadow-sm"
                 >
                   <img
                     src={imageUrl}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-full object-cover opacity-90"
+                    alt={`Preview ${index + 2}`}
+                    className="w-full h-full object-cover"
                     onError={(e) => e.currentTarget.style.display = 'none'}
                   />
                 </div>
               ))}
-              {jobImages.length > 4 && (
-                <div className="w-8 h-8 rounded border-2 border-white/80 bg-black/50 flex items-center justify-center">
-                  <span className="text-white text-xs font-medium">+{jobImages.length - 4}</span>
+              
+              {/* +X more thumbnail if there are more than 4 photos */}
+              {remainingCount > 0 && (
+                <div className="w-12 h-12 rounded border bg-gray-200 flex items-center justify-center shadow-sm">
+                  <span className="text-gray-600 text-xs font-medium">+{remainingCount}</span>
                 </div>
               )}
             </div>
