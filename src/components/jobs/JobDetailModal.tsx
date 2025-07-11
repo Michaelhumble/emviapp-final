@@ -56,8 +56,27 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
     console.log('🔍 [JOB-DETAIL-MODAL] Getting job images from:', {
       image_urls: job.image_urls,
       photos: job.photos,
-      image_url: job.image_url
+      image_url: job.image_url,
+      metadata: job.metadata
     });
+
+    // Check metadata for photos first (webhook processed jobs)
+    if (job.metadata?.photos && Array.isArray(job.metadata.photos)) {
+      const validUrls = job.metadata.photos.filter(url => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🔍 [JOB-DETAIL-MODAL] Found metadata photos:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
+
+    // Check metadata for image_urls (webhook processed jobs)
+    if (job.metadata?.image_urls && Array.isArray(job.metadata.image_urls)) {
+      const validUrls = job.metadata.image_urls.filter(url => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🔍 [JOB-DETAIL-MODAL] Found metadata image_urls:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
 
     // Check for multiple uploaded images first (new format)
     if (job.image_urls && Array.isArray(job.image_urls) && job.image_urls.length > 0) {
@@ -76,9 +95,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
     // Check for single uploaded image (backwards compatibility)
     const uploadedImage = job.image_url || job.imageUrl || job.image;
     if (uploadedImage && typeof uploadedImage === 'string' && uploadedImage.trim()) {
+      console.log('🔍 [JOB-DETAIL-MODAL] Found single image:', uploadedImage);
       return [uploadedImage];
     }
     
+    console.log('🔍 [JOB-DETAIL-MODAL] No valid images found');
     return [];
   };
 
@@ -250,10 +271,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                 <div className="border-t pt-6 mb-6">
                   <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
                   
-                  <PremiumContactGate 
-                    contactName={job.contact_info?.owner_name}
-                    contactPhone={job.contact_info?.phone}
-                    contactEmail={job.contact_info?.email}
+                   <PremiumContactGate 
+                    contactName={job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name}
+                    contactPhone={job.metadata?.contact_info?.phone || job.contact_info?.phone}
+                    contactEmail={job.metadata?.contact_info?.email || job.contact_info?.email}
                   />
                 </div>
                 

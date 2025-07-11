@@ -59,8 +59,24 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           const jobAny = job as any;
           let jobImages: string[] = [];
 
+          // Check metadata for photos first (webhook processed jobs)
+          if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
+            const validUrls = jobAny.metadata.photos.filter((url: any) => 
+              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+            );
+            if (validUrls.length > 0) jobImages = validUrls;
+          }
+
+          // Check metadata for image_urls (webhook processed jobs)
+          if (jobImages.length === 0 && jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
+            const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
+              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+            );
+            if (validUrls.length > 0) jobImages = validUrls;
+          }
+
           // Check for multiple uploaded images first (new format)
-          if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
+          if (jobImages.length === 0 && jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
             const validUrls = jobAny.image_urls.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
             if (validUrls.length > 0) jobImages = validUrls;
           }
@@ -276,24 +292,24 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
               <CardContent>
                 {isSignedIn ? (
                   <div className="space-y-3">
-                    {job.contact_info?.owner_name && (
-                      <div>
-                        <span className="font-medium">Contact Person:</span>
-                        <p className="text-gray-700">{job.contact_info.owner_name}</p>
-                      </div>
-                    )}
-                    {job.contact_info?.phone && (
-                      <div>
-                        <span className="font-medium">Phone:</span>
-                        <p className="text-gray-700">{job.contact_info.phone}</p>
-                      </div>
-                    )}
-                    {job.contact_info?.email && (
-                      <div>
-                        <span className="font-medium">Email:</span>
-                        <p className="text-gray-700">{job.contact_info.email}</p>
-                      </div>
-                    )}
+                     {((job as any).metadata?.contact_info?.owner_name || job.contact_info?.owner_name) && (
+                       <div>
+                         <span className="font-medium">Contact Person:</span>
+                         <p className="text-gray-700">{(job as any).metadata?.contact_info?.owner_name || job.contact_info?.owner_name}</p>
+                       </div>
+                     )}
+                     {((job as any).metadata?.contact_info?.phone || job.contact_info?.phone) && (
+                       <div>
+                         <span className="font-medium">Phone:</span>
+                         <p className="text-gray-700">{(job as any).metadata?.contact_info?.phone || job.contact_info?.phone}</p>
+                       </div>
+                     )}
+                     {((job as any).metadata?.contact_info?.email || job.contact_info?.email) && (
+                       <div>
+                         <span className="font-medium">Email:</span>
+                         <p className="text-gray-700">{(job as any).metadata?.contact_info?.email || job.contact_info?.email}</p>
+                       </div>
+                     )}
                   </div>
                 ) : (
                   <AuthAction
