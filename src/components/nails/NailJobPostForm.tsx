@@ -23,13 +23,13 @@ const nailJobFormSchema = z.object({
   planType: z.enum(['free', 'paid'], { 
     required_error: "Please select a plan type" 
   }),
-  title: z.string().min(1, "Job title is required"),
-  vietnameseTitle: z.string().optional(),
+  title: z.string().optional(), // English title is optional
+  vietnameseTitle: z.string().min(1, "Vietnamese title is required"),
   englishOnly: z.boolean().default(false),
   salonName: z.string().min(1, "Salon name is required"),
   location: z.string().min(1, "Location is required"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  vietnameseDescription: z.string().optional(),
+  description: z.string().optional(), // English description is optional
+  vietnameseDescription: z.string().min(10, "Vietnamese description must be at least 10 characters"),
   salaryRange: z.string().min(1, "Salary range is required"),
   contactName: z.string().optional(),
   contactPhone: z.string().optional(),
@@ -59,6 +59,50 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
   const [isLoadingFreeJobStatus, setIsLoadingFreeJobStatus] = useState(true);
   const [isGeneratingTranslation, setIsGeneratingTranslation] = useState(false);
 
+  // Vietnamese job templates
+  const vietnameseJobTemplates = [
+    {
+      id: 1,
+      vietnameseTitle: "Thợ nail tại Magic Nails",
+      title: "Nail Technician at Magic Nails",
+      vietnameseDescription: "Tuyển thợ nail có kinh nghiệm làm việc tại salon cao cấp. Lương thỏa thuận từ $1,500-$2,200/tuần. Có kinh nghiệm gel, acrylic, nail art. Môi trường làm việc thân thiện, được training đầy đủ. Hỗ trợ visa.",
+      description: "Seeking experienced nail technician for upscale salon. Competitive pay $1,500-$2,200/week. Experience in gel, acrylic, nail art required. Friendly work environment, full training provided. Visa assistance available.",
+      salaryRange: "$1,500-$2,200"
+    },
+    {
+      id: 2,
+      vietnameseTitle: "Thợ nail part-time cuối tuần",
+      title: "Part-time Weekend Nail Tech",
+      vietnameseDescription: "Tuyển thợ nail làm part-time cuối tuần. Lương $180-$250/ngày. Phù hợp cho người mới hoặc có kinh nghiệm. Được training kỹ thuật mới. Tip cao, khách quen nhiều. Không yêu cầu kinh nghiệm.",
+      description: "Part-time weekend nail technician position. $180-$250/day. Perfect for beginners or experienced techs. New technique training provided. High tips, regular clientele. No experience required.",
+      salaryRange: "$180-$250"
+    },
+    {
+      id: 3,
+      vietnameseTitle: "Thợ nail chuyên nghiệp - lương cao",
+      title: "Professional Nail Tech - High Pay",
+      vietnameseDescription: "Salon busy tuyển thợ nail giỏi. Lương $2,000-$2,800/tuần. Yêu cầu có kinh nghiệm 2+ năm, làm được nail art, dip powder. Commission cao, bonus tháng. Cần bằng license. Location Houston, TX.",
+      description: "Busy salon hiring skilled nail technician. $2,000-$2,800/week. 2+ years experience required, nail art and dip powder skills. High commission, monthly bonus. License required. Located in Houston, TX.",
+      salaryRange: "$2,000-$2,800"
+    },
+    {
+      id: 4,
+      vietnameseTitle: "Tuyển thợ nail - có nhà ở",
+      title: "Nail Tech Wanted - Housing Provided",
+      vietnameseDescription: "Salon ở vùng có nhiều người Việt tuyển thợ nail. Lương $1,600-$2,000/tuần + có nhà ở miễn phí. Được training full, không cần kinh nghiệm. Môi trường làm việc vui vẻ. Ăn trưa miễn phí.",
+      description: "Salon in Vietnamese community hiring nail techs. $1,600-$2,000/week + free housing. Full training provided, no experience needed. Fun work environment. Free lunch included.",
+      salaryRange: "$1,600-$2,000"
+    },
+    {
+      id: 5,
+      vietnameseTitle: "Thợ nail senior - quản lý ca",
+      title: "Senior Nail Tech - Shift Supervisor",
+      vietnameseDescription: "Cần thợ nail senior làm shift supervisor. Lương $2,200-$2,600/tuần + bonus quản lý. Yêu cầu 3+ năm kinh nghiệm, biết train người mới. Có benefits, vacation pay. Cơ hội thăng tiến cao.",
+      description: "Senior nail technician needed for shift supervisor role. $2,200-$2,600/week + management bonus. 3+ years experience required, training skills needed. Benefits included, vacation pay. High advancement opportunities.",
+      salaryRange: "$2,200-$2,600"
+    }
+  ];
+
   const form = useForm<NailJobFormValues>({
     resolver: zodResolver(nailJobFormSchema),
     defaultValues: {
@@ -82,6 +126,14 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
   const englishOnly = form.watch('englishOnly');
   const currentTitle = form.watch('title');
   const currentDescription = form.watch('description');
+  const currentVietnameseTitle = form.watch('vietnameseTitle');
+  const currentVietnameseDescription = form.watch('vietnameseDescription');
+  const currentSalaryRange = form.watch('salaryRange');
+  const currentSalonName = form.watch('salonName');
+  const currentLocation = form.watch('location');
+  const currentContactName = form.watch('contactName');
+  const currentContactPhone = form.watch('contactPhone');
+  const currentContactEmail = form.watch('contactEmail');
 
   // Check if user has already posted a free job
   useEffect(() => {
@@ -154,31 +206,53 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
   const formatSalaryForNails = (salary: string) => {
     if (!salary) return '';
     const trimmedSalary = salary.trim();
-    if (trimmedSalary.endsWith('/tuần')) return trimmedSalary;
+    if (trimmedSalary.endsWith('/tuần') || trimmedSalary.endsWith('/ngày')) return trimmedSalary;
+    
+    // Check if it already has a frequency indicator
+    if (trimmedSalary.includes('/')) return trimmedSalary;
+    
     return `${trimmedSalary}/tuần`;
   };
 
   // Handle salary input with auto-formatting on blur
   const handleSalaryBlur = (field: any) => {
     const currentValue = field.value;
-    if (currentValue && !currentValue.includes('/tuần')) {
+    if (currentValue && !currentValue.includes('/tuần') && !currentValue.includes('/ngày') && !currentValue.includes('/')) {
       field.onChange(formatSalaryForNails(currentValue));
     }
+  };
+
+  // Apply template to form
+  const applyTemplate = (template: typeof vietnameseJobTemplates[0]) => {
+    form.setValue('vietnameseTitle', template.vietnameseTitle);
+    form.setValue('title', template.title);
+    form.setValue('vietnameseDescription', template.vietnameseDescription);
+    form.setValue('description', template.description);
+    form.setValue('salaryRange', template.salaryRange);
+    toast.success('Template applied successfully!');
   };
 
   const handleFormSubmit = (data: NailJobFormValues) => {
     console.log('Nail job form submitted:', data);
     
-    // Validate Vietnamese fields if not English only
-    if (!data.englishOnly) {
-      if (!data.vietnameseTitle?.trim()) {
-        toast.error('Vietnamese title is required (or select "English Only")');
-        return;
-      }
-      if (!data.vietnameseDescription?.trim()) {
-        toast.error('Vietnamese description is required (or select "English Only")');
-        return;
-      }
+    // Validate required Vietnamese fields
+    if (!data.vietnameseTitle?.trim()) {
+      toast.error('Vietnamese title is required');
+      return;
+    }
+    if (!data.vietnameseDescription?.trim()) {
+      toast.error('Vietnamese description is required');
+      return;
+    }
+    
+    // If "Post in English also" is checked, validate English fields
+    if (!data.englishOnly && data.title && !data.title.trim()) {
+      toast.error('English title is required when "Post in English also" is checked');
+      return;
+    }
+    if (!data.englishOnly && data.description && !data.description.trim()) {
+      toast.error('English description is required when "Post in English also" is checked');
+      return;
     }
     
     setFormData(data);
@@ -201,12 +275,12 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
 
     try {
       const payload = {
-        title: data.title.trim(),
+        title: data.title?.trim() || data.vietnameseTitle?.trim() || '',
         category: 'Nails',
         location: data.location.trim(),
-        description: data.description.trim(),
-        vietnamese_title: data.englishOnly ? null : data.vietnameseTitle?.trim(),
-        vietnamese_description: data.englishOnly ? null : data.vietnameseDescription?.trim(),
+        description: data.description?.trim() || data.vietnameseDescription?.trim() || '',
+        vietnamese_title: data.vietnameseTitle?.trim(),
+        vietnamese_description: data.vietnameseDescription?.trim(),
         compensation_details: formatSalaryForNails(data.salaryRange),
         contact_info: {
           owner_name: data.contactName?.trim() || '',
@@ -269,8 +343,8 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
             ...formData,
             category: 'Nails',
             compensation_details: formatSalaryForNails(formData.salaryRange),
-            vietnamese_title: formData.englishOnly ? null : formData.vietnameseTitle,
-            vietnamese_description: formData.englishOnly ? null : formData.vietnameseDescription,
+            vietnamese_title: formData.vietnameseTitle,
+            vietnamese_description: formData.vietnameseDescription,
           }
         }
       });
@@ -396,82 +470,114 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
                       )}
                     />
 
-                    {/* Language Settings */}
-                    <FormField
-                      control={form.control}
-                      name="englishOnly"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                          <div className="space-y-0.5">
-                            <FormLabel className="text-base">English Only</FormLabel>
-                            <p className="text-sm text-gray-500">
-                              Check this if you only want to post in English
-                            </p>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                     {/* Language Settings */}
+                     <FormField
+                       control={form.control}
+                       name="englishOnly"
+                       render={({ field }) => (
+                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                           <div className="space-y-0.5">
+                             <FormLabel className="text-base">Post in English also</FormLabel>
+                             <p className="text-sm text-gray-500">
+                               Check this to include English title and description
+                             </p>
+                           </div>
+                           <FormControl>
+                             <Switch
+                               checked={field.value}
+                               onCheckedChange={field.onChange}
+                             />
+                           </FormControl>
+                         </FormItem>
+                       )}
+                     />
 
-                    {/* Job Title */}
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Job Title (English) *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="e.g., Nail Technician" 
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     {/* Template Selector */}
+                     <div className="space-y-4">
+                       <div className="flex items-center justify-between">
+                         <h3 className="text-lg font-semibold text-gray-900">Choose Template</h3>
+                         <p className="text-sm text-gray-500">Click to apply a pre-written job template</p>
+                       </div>
+                       <div className="grid grid-cols-1 gap-3">
+                         {vietnameseJobTemplates.map((template) => (
+                           <Card 
+                             key={template.id} 
+                             className="cursor-pointer hover:bg-purple-50 transition-colors border-purple-200"
+                             onClick={() => applyTemplate(template)}
+                           >
+                             <CardContent className="p-4">
+                               <div className="flex justify-between items-start">
+                                 <div className="flex-1">
+                                   <h4 className="font-medium text-gray-900 text-sm">{template.vietnameseTitle}</h4>
+                                   <p className="text-xs text-gray-600 mt-1 line-clamp-2">{template.vietnameseDescription.substring(0, 100)}...</p>
+                                   <div className="flex items-center gap-2 mt-2">
+                                     <Badge variant="outline" className="text-xs">{template.salaryRange}/tuần</Badge>
+                                   </div>
+                                 </div>
+                                 <Button variant="ghost" size="sm" className="ml-2">
+                                   Apply
+                                 </Button>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         ))}
+                       </div>
+                     </div>
 
-                    {/* Vietnamese Title */}
-                    {!englishOnly && (
-                      <FormField
-                        control={form.control}
-                        name="vietnameseTitle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Job Title (Vietnamese) *</FormLabel>
-                            <div className="flex gap-2">
-                              <FormControl>
-                                <Input 
-                                  placeholder="e.g., Thợ nail" 
-                                  {...field}
-                                />
-                              </FormControl>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={generateVietnameseTranslation}
-                                disabled={isGeneratingTranslation || !currentTitle}
-                                className="whitespace-nowrap"
-                              >
-                                {isGeneratingTranslation ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Wand2 className="h-4 w-4" />
-                                )}
-                                AI Translate
-                              </Button>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
+                     {/* Vietnamese Title - Required */}
+                     <FormField
+                       control={form.control}
+                       name="vietnameseTitle"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Job Title (Vietnamese) *</FormLabel>
+                           <div className="flex gap-2">
+                             <FormControl>
+                               <Input 
+                                 placeholder="e.g., Thợ nail" 
+                                 {...field}
+                               />
+                             </FormControl>
+                             <Button
+                               type="button"
+                               variant="outline"
+                               size="sm"
+                               onClick={generateVietnameseTranslation}
+                               disabled={isGeneratingTranslation || !currentTitle}
+                               className="whitespace-nowrap"
+                             >
+                               {isGeneratingTranslation ? (
+                                 <Loader2 className="h-4 w-4 animate-spin" />
+                               ) : (
+                                 <Wand2 className="h-4 w-4" />
+                               )}
+                               AI Translate
+                             </Button>
+                           </div>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
+
+                     {/* English Title - Optional */}
+                     {englishOnly && (
+                       <FormField
+                         control={form.control}
+                         name="title"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel>Job Title (English)</FormLabel>
+                             <FormControl>
+                               <Input 
+                                 placeholder="e.g., Nail Technician" 
+                                 {...field}
+                               />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         )}
+                       />
+                     )}
 
                     {/* Salon Name */}
                     <FormField
@@ -531,45 +637,45 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
                        )}
                      />
 
-                    {/* Job Description */}
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Job Description (English) *</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describe the job requirements, responsibilities, and benefits..."
-                              className="min-h-[100px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     {/* Vietnamese Description - Required */}
+                     <FormField
+                       control={form.control}
+                       name="vietnameseDescription"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Job Description (Vietnamese) *</FormLabel>
+                           <FormControl>
+                             <Textarea 
+                               placeholder="Mô tả công việc, yêu cầu và quyền lợi..."
+                               className="min-h-[100px]"
+                               {...field}
+                             />
+                           </FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
 
-                    {/* Vietnamese Description */}
-                    {!englishOnly && (
-                      <FormField
-                        control={form.control}
-                        name="vietnameseDescription"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Job Description (Vietnamese) *</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="Mô tả công việc, yêu cầu và quyền lợi..."
-                                className="min-h-[100px]"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
+                     {/* English Description - Optional */}
+                     {englishOnly && (
+                       <FormField
+                         control={form.control}
+                         name="description"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel>Job Description (English)</FormLabel>
+                             <FormControl>
+                               <Textarea 
+                                 placeholder="Describe the job requirements, responsibilities, and benefits..."
+                                 className="min-h-[100px]"
+                                 {...field}
+                               />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         )}
+                       />
+                     )}
 
                     {/* Contact Information */}
                     <div className="space-y-4">
@@ -650,17 +756,20 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <NailJobPreviewCard
-                    title={form.watch('title')}
-                    vietnameseTitle={!englishOnly ? form.watch('vietnameseTitle') : ''}
-                    salonName={form.watch('salonName')}
-                    location={form.watch('location')}
-                    description={form.watch('description')}
-                    vietnameseDescription={!englishOnly ? form.watch('vietnameseDescription') : ''}
-                    salaryRange={formatSalaryForNails(form.watch('salaryRange'))}
-                    planType={form.watch('planType')}
-                    englishOnly={englishOnly}
-                  />
+                   <NailJobPreviewCard
+                     title={currentTitle}
+                     vietnameseTitle={currentVietnameseTitle}
+                     salonName={currentSalonName}
+                     location={currentLocation}
+                     description={currentDescription}
+                     vietnameseDescription={currentVietnameseDescription}
+                     salaryRange={currentSalaryRange}
+                     planType={selectedPlan}
+                     englishOnly={englishOnly}
+                     contactName={currentContactName}
+                     contactPhone={currentContactPhone}
+                     contactEmail={currentContactEmail}
+                   />
                 </CardContent>
               </Card>
 

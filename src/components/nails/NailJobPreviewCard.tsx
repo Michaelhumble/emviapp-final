@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Building, DollarSign } from 'lucide-react';
+import { MapPin, Building, DollarSign, Phone, Mail, User } from 'lucide-react';
+import { useAuth } from '@/context/auth';
 
 interface NailJobPreviewCardProps {
   title?: string;
@@ -13,6 +14,9 @@ interface NailJobPreviewCardProps {
   salaryRange?: string;
   planType?: 'free' | 'paid';
   englishOnly?: boolean;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
 }
 
 const NailJobPreviewCard: React.FC<NailJobPreviewCardProps> = ({
@@ -24,10 +28,19 @@ const NailJobPreviewCard: React.FC<NailJobPreviewCardProps> = ({
   vietnameseDescription = '',
   salaryRange = '',
   planType = 'free',
-  englishOnly = false
+  englishOnly = false,
+  contactName = '',
+  contactPhone = '',
+  contactEmail = ''
 }) => {
-  const displayTitle = !englishOnly && vietnameseTitle ? vietnameseTitle : title;
-  const displayDescription = !englishOnly && vietnameseDescription ? vietnameseDescription : description;
+  const { isSignedIn } = useAuth();
+  
+  // For nails jobs, always display Vietnamese first if available
+  const displayTitle = vietnameseTitle || title;
+  const displayDescription = vietnameseDescription || description;
+  
+  // Show contact info if user is signed in and job is paid
+  const showContactInfo = isSignedIn && planType === 'paid';
   
   return (
     <Card className="border-2 border-pink-200 shadow-md">
@@ -37,7 +50,7 @@ const NailJobPreviewCard: React.FC<NailJobPreviewCardProps> = ({
             <h3 className="text-lg font-semibold text-gray-900 mb-1">
               {displayTitle || 'Job Title'}
             </h3>
-            {!englishOnly && title && vietnameseTitle && vietnameseTitle !== title && (
+            {vietnameseTitle && title && vietnameseTitle !== title && (
               <p className="text-sm text-gray-600 italic">
                 {title}
               </p>
@@ -92,7 +105,7 @@ const NailJobPreviewCard: React.FC<NailJobPreviewCardProps> = ({
                 : displayDescription
               }
             </p>
-            {!englishOnly && description && vietnameseDescription && vietnameseDescription !== description && (
+            {vietnameseDescription && description && vietnameseDescription !== description && (
               <p className="text-gray-600 text-xs mt-2 italic">
                 {description.length > 100 
                   ? `${description.substring(0, 100)}...` 
@@ -103,7 +116,34 @@ const NailJobPreviewCard: React.FC<NailJobPreviewCardProps> = ({
           </div>
         )}
         
-        {(!title && !description) && (
+        {/* Contact Information for Paid Jobs */}
+        {showContactInfo && (contactName || contactPhone || contactEmail) && (
+          <div className="pt-3 border-t border-gray-200">
+            <h4 className="text-sm font-medium text-gray-900 mb-2">Contact Information</h4>
+            <div className="space-y-1 text-sm text-gray-600">
+              {contactName && (
+                <div className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  <span>{contactName}</span>
+                </div>
+              )}
+              {contactPhone && (
+                <div className="flex items-center gap-1">
+                  <Phone className="h-3 w-3" />
+                  <span>{contactPhone}</span>
+                </div>
+              )}
+              {contactEmail && (
+                <div className="flex items-center gap-1">
+                  <Mail className="h-3 w-3" />
+                  <span>{contactEmail}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {(!displayTitle && !displayDescription) && (
           <div className="text-center py-8 text-gray-400">
             <p className="text-sm">Fill out the form to see your job preview</p>
           </div>
