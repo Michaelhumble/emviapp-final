@@ -1,7 +1,8 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Job } from '@/types/job';
 import { supabase } from '@/integrations/supabase/client';
+import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 
 export const useJobsData = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -117,8 +118,16 @@ export const useJobsData = () => {
     hasJobs: jobs.length > 0
   });
 
+  // Apply mandatory tier sorting to jobs before returning
+  const sortedJobs = useMemo(() => {
+    if (!jobs || !Array.isArray(jobs)) return [];
+    
+    console.log('🎯 [JOBS-DATA] Applying final tier sorting to all jobs');
+    return sortJobsByTierAndDate(jobs);
+  }, [jobs]);
+
   return {
-    jobs,
+    jobs: sortedJobs,
     loading,
     error,
     refreshJobs

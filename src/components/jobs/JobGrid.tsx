@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import BilingualJobCard from "@/components/jobs/BilingualJobCard";
 import { Job } from "@/types/job";
 import { JobDetailModal } from "@/components/jobs/JobDetailModal";
+import { sortJobsByTierAndDate } from "@/utils/jobSorting";
 
 interface JobGridProps {
   jobs: Job[];
@@ -20,6 +21,17 @@ const JobGrid = ({
   renewalJobId
 }: JobGridProps) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+
+  // Apply mandatory tier sorting: Diamond > Premium > Gold > Free
+  const sortedJobs = useMemo(() => {
+    if (!jobs || !Array.isArray(jobs)) {
+      console.warn('⚠️ [JOB-GRID] Invalid jobs array:', jobs);
+      return [];
+    }
+    
+    console.log('🎯 [JOB-GRID] Applying tier sorting to job grid');
+    return sortJobsByTierAndDate(jobs);
+  }, [jobs]);
 
   // Add defensive checks
   if (!jobs || !Array.isArray(jobs)) {
@@ -43,7 +55,7 @@ const JobGrid = ({
     return (
       <>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {jobs
+          {sortedJobs
             .filter(job => job && job.id) // Filter out invalid jobs
             .map((job) => (
               <BilingualJobCard 

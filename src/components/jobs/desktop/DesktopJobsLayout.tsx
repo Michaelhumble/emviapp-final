@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Job } from '@/types/job';
+import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -79,9 +80,11 @@ const DesktopJobsLayout: React.FC<DesktopJobsLayoutProps> = ({
     'Booth Rental'
   ];
 
-  // Filter jobs based on search and filters
+  // Filter jobs based on search and filters, then apply mandatory tier sorting
   const filteredJobs = useMemo(() => {
-    return jobs.filter(job => {
+    console.log('🎯 [DESKTOP-LAYOUT] Applying filters and tier sorting');
+    
+    const filtered = jobs.filter(job => {
       const matchesSearch = !searchQuery || 
         job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -96,6 +99,13 @@ const DesktopJobsLayout: React.FC<DesktopJobsLayoutProps> = ({
 
       return matchesSearch && matchesCategory && matchesLocation && matchesSalary;
     });
+    
+    // CRITICAL: Apply tier sorting after filtering
+    // Diamond > Premium > Gold > Free, newest first within each tier
+    const sorted = sortJobsByTierAndDate(filtered);
+    console.log(`🎯 [DESKTOP-LAYOUT] Filtered and sorted: ${jobs.length} → ${filtered.length} → ${sorted.length} jobs`);
+    
+    return sorted;
   }, [jobs, searchQuery, selectedCategory, selectedLocation, selectedSalary]);
 
   const handleJobClick = (job: Job) => {

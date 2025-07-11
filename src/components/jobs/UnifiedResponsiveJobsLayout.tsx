@@ -3,6 +3,7 @@ import { Job } from '@/types/job';
 import { expiredJobsData } from '@/data/expiredJobsData';
 import MobileJobCard from './mobile/MobileJobCard';
 import MobileCompactJobCard from './mobile/MobileCompactJobCard';
+import { sortJobsWithinCategory, validateJobTierOrder } from '@/utils/jobSorting';
 import { 
   ChevronRight, 
   Sparkles, 
@@ -44,8 +45,10 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  // Group jobs by industry/category
+  // Group jobs by industry/category and apply MANDATORY tier sorting
   const jobsByIndustry = useMemo(() => {
+    console.log('🎯 [UNIFIED-LAYOUT] Applying mandatory tier sorting to jobs');
+    
     const grouped: Record<string, Job[]> = {};
     
     // Group active jobs by category
@@ -57,7 +60,24 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
       grouped[category].push(job);
     });
 
-    // Group expired jobs by category
+    // CRITICAL: Apply tier sorting within each category
+    // Diamond > Premium > Gold > Free, newest first within each tier
+    Object.keys(grouped).forEach(category => {
+      console.log(`🎯 [UNIFIED-LAYOUT] Sorting ${category} jobs by tier priority`);
+      
+      const originalJobs = [...grouped[category]];
+      grouped[category] = sortJobsWithinCategory(grouped[category]);
+      
+      // Verify the sorting worked correctly
+      const isValid = validateJobTierOrder(grouped[category]);
+      if (!isValid) {
+        console.error(`❌ [UNIFIED-LAYOUT] Tier sorting failed for ${category}`);
+      }
+      
+      console.log(`✅ [UNIFIED-LAYOUT] ${category} jobs sorted: ${originalJobs.length} → ${grouped[category].length}`);
+    });
+
+    // Group expired jobs by category (no tier sorting needed for expired jobs)
     const expiredByCategory: Record<string, any[]> = {};
     expiredJobsData.forEach(job => {
       const category = job.category || 'Other';
@@ -125,9 +145,11 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
   };
 
   const renderJobSection = (category: string, activeJobs: Job[], expiredJobs: any[]) => {
-    const allJobs = [...activeJobs, ...expiredJobs];
+    // CRITICAL: activeJobs are already sorted by tier priority from jobsByIndustry
+    // Maintain the tier sorting when combining with expired jobs
+    const allJobs = [...activeJobs, ...expiredJobs]; // Active jobs (sorted) first, then expired
     
-    // Filter jobs based on search query
+    // Filter jobs based on search query - preserving tier order
     const filteredJobs = searchQuery 
       ? allJobs.filter(job =>
           job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -139,8 +161,16 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
 
     if (filteredJobs.length === 0) return null;
 
-    const displayJobs = filteredJobs.slice(0, 12); // First 12 as full cards
-    const compactJobs = filteredJobs.slice(12); // Rest as compact
+    // Apply additional sorting to filtered results to maintain tier priority
+    const sortedFilteredJobs = searchQuery 
+      ? sortJobsWithinCategory(filteredJobs.filter(job => 'pricing_tier' in job) as Job[])
+          .concat(filteredJobs.filter(job => !('pricing_tier' in job))) // Add expired jobs at end
+      : filteredJobs;
+
+    const displayJobs = sortedFilteredJobs.slice(0, 12); // First 12 as full cards
+    const compactJobs = sortedFilteredJobs.slice(12); // Rest as compact
+    
+    console.log(`🎯 [RENDER-SECTION] ${category}: ${activeJobs.length} active, ${expiredJobs.length} expired, displaying ${displayJobs.length} primary cards`);
 
     return (
       <div key={category} className="mb-12">
