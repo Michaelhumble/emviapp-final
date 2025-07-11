@@ -176,8 +176,10 @@ serve(async (req) => {
               if (validUrls.length > 0) {
                 console.log('🔍 [STRIPE-WEBHOOK] Setting image URLs:', validUrls);
                 updateData.image_url = validUrls[0]; // Primary image
+                updateData.image_urls = validUrls; // Array field
+                updateData.photos = validUrls; // Also set photos field
                 
-                // Update metadata to include photos in multiple fields for compatibility
+                // Keep metadata updated too for frontend compatibility
                 updateData.metadata = {
                   ...existingJob.metadata,
                   photos: validUrls,

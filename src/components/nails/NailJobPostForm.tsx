@@ -394,10 +394,21 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         user_id: user.id,
         status: 'active',
         pricing_tier: 'free',
-        // Store images in multiple formats for compatibility
+         // Store images in multiple formats for compatibility
         image_url: imageUrls.length > 0 ? imageUrls[0] : null,
         image_urls: imageUrls,
-        photos: imageUrls
+        photos: imageUrls,
+        metadata: {
+          image_urls: imageUrls,
+          photos: imageUrls,
+          contact_info: {
+            owner_name: data.contactName?.trim() || '',
+            phone: data.contactPhone?.trim() || '',
+            email: data.contactEmail?.trim() || '',
+            notes: data.contactNotes?.trim() || '',
+            salon_name: data.salonName?.trim() || ''
+          }
+        }
       };
 
       // DEBUG: Log the exact payload being sent to Supabase
@@ -536,12 +547,24 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
               owner_name: formData.contactName?.trim() || '',
               phone: formData.contactPhone?.trim() || '',
               email: formData.contactEmail?.trim() || '',
-              notes: formData.contactNotes?.trim() || ''
+              notes: formData.contactNotes?.trim() || '',
+              salon_name: formData.salonName?.trim() || ''
             },
             // FIXED: Include actual uploaded image URLs
             image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Primary image
             image_urls: uploadedImageUrls, // All uploaded images
-            photos: uploadedImageUrls // Backup field name for compatibility
+            photos: uploadedImageUrls, // Backup field name for compatibility
+            metadata: {
+              image_urls: uploadedImageUrls,
+              photos: uploadedImageUrls,
+              contact_info: {
+                owner_name: formData.contactName?.trim() || '',
+                phone: formData.contactPhone?.trim() || '',
+                email: formData.contactEmail?.trim() || '',
+                notes: formData.contactNotes?.trim() || '',
+                salon_name: formData.salonName?.trim() || ''
+              }
+            }
           }
         }
       });

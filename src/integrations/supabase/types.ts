@@ -997,8 +997,11 @@ export type Database = {
           expires_at: string | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           location: string | null
+          metadata: Json | null
           payment_status: string | null
+          photos: string[] | null
           pricing_tier: string | null
           requirements: string | null
           status: string
@@ -1018,8 +1021,11 @@ export type Database = {
           expires_at?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           location?: string | null
+          metadata?: Json | null
           payment_status?: string | null
+          photos?: string[] | null
           pricing_tier?: string | null
           requirements?: string | null
           status?: string
@@ -1039,8 +1045,11 @@ export type Database = {
           expires_at?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           location?: string | null
+          metadata?: Json | null
           payment_status?: string | null
+          photos?: string[] | null
           pricing_tier?: string | null
           requirements?: string | null
           status?: string
