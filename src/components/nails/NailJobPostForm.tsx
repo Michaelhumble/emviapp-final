@@ -423,7 +423,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             console.log('📸 [EDIT-JOB-PHOTO-UPLOAD] Uploading:', fileName);
             
             const { data: uploadData, error: uploadError } = await supabase.storage
-              .from('Job Photos')
+              .from('job-photos')
               .upload(fileName, file);
 
             if (uploadError) {
@@ -432,7 +432,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             }
 
             const { data: { publicUrl } } = supabase.storage
-              .from('Job Photos')
+              .from('job-photos')
               .getPublicUrl(fileName);
 
             console.log('✅ [EDIT-JOB-PHOTO-UPLOAD] Success:', publicUrl);
@@ -661,7 +661,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             console.log(`📸 [PAID-JOB-PHOTO-UPLOAD] Uploading:`, fileName);
 
             const { data: uploadData, error: uploadError } = await supabase.storage
-              .from('Job Photos')
+              .from('job-photos')
               .upload(fileName, file);
 
             if (uploadError) {
@@ -670,7 +670,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             }
 
             const { data: { publicUrl } } = supabase.storage
-              .from('Job Photos')
+              .from('job-photos')
               .getPublicUrl(fileName);
 
             console.log(`✅ [PAID-JOB-PHOTO-UPLOAD] Success:`, publicUrl);
