@@ -56,11 +56,14 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // FIXED: Enhanced image detection with metadata support
   const getJobImages = () => {
     const jobAny = job as any; // Type assertion to access potentially new fields
-    console.log('🔍 [BILINGUAL-JOB-CARD] Getting job images for job ID:', job.id, {
+    console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Getting job images for job ID:', job.id, {
       image_urls: jobAny.image_urls,
       photos: jobAny.photos,
       image_url: job.image_url,
-      metadata: jobAny.metadata
+      'metadata.photos': jobAny.metadata?.photos,
+      'metadata.image_urls': jobAny.metadata?.image_urls,
+      pricing_tier: job.pricing_tier,
+      isPaidJob
     });
 
     // Check metadata for photos first (webhook processed jobs)
@@ -68,7 +71,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.metadata.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found metadata photos:', validUrls);
+      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found metadata photos:', validUrls);
       if (validUrls.length > 0) return validUrls;
     }
 
@@ -77,7 +80,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found metadata image_urls:', validUrls);
+      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found metadata image_urls:', validUrls);
       if (validUrls.length > 0) return validUrls;
     }
 
@@ -86,7 +89,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found direct image_urls:', validUrls);
+      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found direct image_urls:', validUrls);
       if (validUrls.length > 0) return validUrls;
     }
     
@@ -95,18 +98,18 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found direct photos:', validUrls);
+      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found direct photos:', validUrls);
       if (validUrls.length > 0) return validUrls;
     }
     
     // Check for single uploaded image (backwards compatibility)
     const singleImage = job.image_url || jobAny.imageUrl || jobAny.image || null;
     if (singleImage && typeof singleImage === 'string' && singleImage.trim() && singleImage !== 'photos-uploaded') {
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found single image:', singleImage);
+      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found single image:', singleImage);
       return [singleImage];
     }
     
-    console.log('🔍 [BILINGUAL-JOB-CARD] No valid images found');
+    console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] No valid images found for paid job');
     return [];
   };
 
@@ -331,12 +334,12 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         // Check metadata for contact_info (webhook processed jobs)
         if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
           contactInfo = jobAny.metadata.contact_info;
-          console.log('🔍 [BILINGUAL-JOB-CARD] Using metadata contact_info:', contactInfo);
+          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Using metadata contact_info:', contactInfo);
         }
         // Check for direct contact_info in job object
         else if (job.contact_info && typeof job.contact_info === 'object') {
           contactInfo = job.contact_info;
-          console.log('🔍 [BILINGUAL-JOB-CARD] Using direct contact_info:', contactInfo);
+          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Using direct contact_info:', contactInfo);
         }
         // Check for legacy contact fields
         else if (jobAny.contactPhone || jobAny.contactName || jobAny.contactEmail) {
@@ -346,11 +349,11 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             email: jobAny.contactEmail,
             notes: jobAny.contactNotes
           };
-          console.log('🔍 [BILINGUAL-JOB-CARD] Using legacy contact fields:', contactInfo);
+          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Using legacy contact fields:', contactInfo);
         }
 
         if (!contactInfo) {
-          console.log('🔍 [BILINGUAL-JOB-CARD] No contact info found for paid job');
+          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] No contact info found for paid job');
           return null;
         }
 

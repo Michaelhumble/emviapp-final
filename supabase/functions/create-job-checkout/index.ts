@@ -150,13 +150,16 @@ serve(async (req) => {
     
     // CRITICAL FIX: Properly store photos in multiple database fields
     const photoUrls = jobData.image_urls || jobData.photos || [];
-    const validPhotoUrls = Array.isArray(photoUrls) ? photoUrls.filter(url => url && url.trim() && url !== 'photos-uploaded') : [];
+    const validPhotoUrls = Array.isArray(photoUrls) ? photoUrls.filter(url => url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')) : [];
     
-    console.log('🔍 [PHOTO-DEBUG] Photo URLs from frontend:', {
+    console.log('🔍 [EDGE-FUNCTION-PHOTO-DEBUG] Photo URLs from frontend:', {
       'jobData.image_urls': jobData.image_urls,
       'jobData.photos': jobData.photos,
       'jobData.image_url': jobData.image_url,
-      'validPhotoUrls': validPhotoUrls
+      'jobData.metadata.photos': jobData.metadata?.photos,
+      'jobData.metadata.image_urls': jobData.metadata?.image_urls,
+      'validPhotoUrls': validPhotoUrls,
+      'photoUrlsCount': validPhotoUrls.length
     });
 
     const draftJobPayload = {
@@ -179,7 +182,8 @@ serve(async (req) => {
           owner_name: jobData.contactName || "",
           phone: jobData.contactPhone || "",
           email: jobData.contactEmail || "",
-          notes: jobData.contactNotes || ""
+          notes: jobData.contactNotes || "",
+          salon_name: jobData.salonName || ""
         }
       },
       compensation_type: jobData.compensationType || null,
@@ -189,7 +193,8 @@ serve(async (req) => {
         owner_name: jobData.contactName || "",
         phone: jobData.contactPhone || "",
         email: jobData.contactEmail || "",
-        notes: jobData.contactNotes || ""
+        notes: jobData.contactNotes || "",
+        salon_name: jobData.salonName || ""
       },
       user_id: user.id,
       status: "draft", // Important: Create as draft first
@@ -197,7 +202,17 @@ serve(async (req) => {
       payment_status: "pending"
     };
     
-    console.log('🔍 [JOB-PAYLOAD-DEBUG] Final job payload being saved:', draftJobPayload);
+    console.log('🔍 [EDGE-FUNCTION-JOB-PAYLOAD-DEBUG] Final job payload being saved to database:', {
+      ...draftJobPayload,
+      photoDebug: {
+        image_url: draftJobPayload.image_url,
+        image_urls: draftJobPayload.image_urls,
+        photos: draftJobPayload.photos,
+        'metadata.photos': draftJobPayload.metadata?.photos,
+        'metadata.image_urls': draftJobPayload.metadata?.image_urls,
+        'metadata.contact_info': draftJobPayload.metadata?.contact_info
+      }
+    });
 
     const { data: draftJobData, error: draftJobError } = await supabaseServiceClient
       .from("jobs")

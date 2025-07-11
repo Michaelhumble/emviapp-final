@@ -516,18 +516,21 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           const results = await Promise.all(uploadPromises);
           uploadedImageUrls = results.filter(url => url !== null) as string[];
           
-           console.log(`🔍 [PAID-JOB-UPLOAD] Successfully uploaded ${uploadedImageUrls.length}/${photoUploads.length} photos:`, uploadedImageUrls);
+           console.log(`🔍 [PAID-JOB-UPLOAD-COMPLETE] Successfully uploaded ${uploadedImageUrls.length}/${photoUploads.length} photos:`, {
+             totalPhotos: uploadedImageUrls.length,
+             photoUrls: uploadedImageUrls
+           });
 
            if (uploadedImageUrls.length === 0) {
-             console.warn('⚠️ [PAID-JOB-UPLOAD] No photos were uploaded successfully');
-             toast.error('Failed to upload photos. Job will be posted without images.');
-           } else if (uploadedImageUrls.length < photoUploads.length) {
-             console.warn(`⚠️ [PAID-JOB-UPLOAD] Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded`);
-             toast.warning(`Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded successfully.`);
-           } else {
-             console.log(`✅ [PAID-JOB-UPLOAD] All ${uploadedImageUrls.length} photos uploaded successfully!`);
-             toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
-           }
+              console.warn('⚠️ [PAID-JOB-UPLOAD] No photos were uploaded successfully');
+              toast.error('Failed to upload photos. Job will be posted without images.');
+            } else if (uploadedImageUrls.length < photoUploads.length) {
+              console.warn(`⚠️ [PAID-JOB-UPLOAD] Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded`);
+              toast.warning(`Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded successfully.`);
+            } else {
+              console.log(`✅ [PAID-JOB-UPLOAD] All ${uploadedImageUrls.length} photos uploaded successfully!`);
+              toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
+            }
         } catch (uploadError) {
           console.error('❌ Batch photo upload error:', uploadError);
           toast.error('Failed to upload photos. Continuing without images.');
@@ -535,43 +538,42 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       }
 
       // CRITICAL DEBUG: Log job data being sent to edge function
+      const contactInfo = {
+        owner_name: formData.contactName?.trim() || '',
+        phone: formData.contactPhone?.trim() || '',
+        email: formData.contactEmail?.trim() || '',
+        notes: formData.contactNotes?.trim() || '',
+        salon_name: formData.salonName?.trim() || ''
+      };
+
       const jobDataPayload = {
         ...formData,
         category: 'Nails',
         compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
         vietnamese_title: formData.vietnameseTitle,
         vietnamese_description: formData.vietnameseDescription,
-        contact_info: {
-          owner_name: formData.contactName?.trim() || '',
-          phone: formData.contactPhone?.trim() || '',
-          email: formData.contactEmail?.trim() || '',
-          notes: formData.contactNotes?.trim() || '',
-          salon_name: formData.salonName?.trim() || ''
-        },
-        // CRITICAL: Include actual uploaded image URLs
+        contact_info: contactInfo,
+        // CRITICAL: Include actual uploaded image URLs in ALL fields for redundancy
         image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Primary image
         image_urls: uploadedImageUrls, // All uploaded images
         photos: uploadedImageUrls, // Backup field name for compatibility
         metadata: {
           image_urls: uploadedImageUrls,
           photos: uploadedImageUrls,
-          contact_info: {
-            owner_name: formData.contactName?.trim() || '',
-            phone: formData.contactPhone?.trim() || '',
-            email: formData.contactEmail?.trim() || '',
-            notes: formData.contactNotes?.trim() || '',
-            salon_name: formData.salonName?.trim() || ''
-          }
+          contact_info: contactInfo
         }
       };
       
-      console.log('🔍 [EDGE-FUNCTION-PAYLOAD] Job data being sent to create-job-checkout:', {
+      console.log('🔍 [EDGE-FUNCTION-PAYLOAD-DEBUG] Complete job data being sent to create-job-checkout:', {
+        totalPhotos: uploadedImageUrls.length,
         uploadedImageUrls,
+        'jobData.image_url': jobDataPayload.image_url,
         'jobData.image_urls': jobDataPayload.image_urls,
         'jobData.photos': jobDataPayload.photos,
-        'jobData.image_url': jobDataPayload.image_url,
         'jobData.contact_info': jobDataPayload.contact_info,
-        'jobData.metadata': jobDataPayload.metadata
+        'jobData.metadata.photos': jobDataPayload.metadata.photos,
+        'jobData.metadata.image_urls': jobDataPayload.metadata.image_urls,
+        'jobData.metadata.contact_info': jobDataPayload.metadata.contact_info
       });
 
       // Create Stripe checkout session for paid nail job
