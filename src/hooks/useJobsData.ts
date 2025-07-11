@@ -77,9 +77,10 @@ export const useJobsData = () => {
           requirements: job.requirements || '',
           pricing_tier: job.pricing_tier || 'free',
           category: job.category || "Other",
-          // Add image support
-          imageUrl: job.image_url || '',
-          image: job.image_url || '' // For backward compatibility
+          // Safe image handling - only set if actually exists
+          imageUrl: job.image_url || null,
+          image_url: job.image_url || null,
+          image: job.image_url || null // For backward compatibility
         };
       });
 

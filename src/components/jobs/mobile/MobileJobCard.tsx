@@ -71,80 +71,107 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     return 'Contact for details';
   };
 
-  // Get job image - use correct bucket based on category
+  // Safe job image handling - only show fallbacks for paid jobs
   const getJobImage = () => {
-    if (job.image) return job.image;
+    // Check for actual uploaded image first
+    const uploadedImage = job.image_url || job.imageUrl || job.image;
+    if (uploadedImage && uploadedImage.trim() && uploadedImage !== '') {
+      return uploadedImage;
+    }
     
-    // Fallback to category-based default
+    // Only show fallback images for paid jobs (premium, gold, diamond)
+    const isPaidJob = job.pricing_tier && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
+    if (!isPaidJob) {
+      return null; // Free jobs get no fallback image
+    }
+    
+    // Fallback to category-based default for paid jobs only
     const category = job.category?.toLowerCase() || '';
     if (category.includes('nail')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png';
     }
     if (category.includes('hair')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/modern-hair-salon-1.png';
     }
     if (category.includes('barber')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/premium-barbershop-1.png';
     }
     if (category.includes('massage')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/luxury-spa-1.png';
     }
     if (category.includes('makeup')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/makeup-studio-1.png';
     }
     if (category.includes('lash') || category.includes('brow')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated-11.png';
     }
     if (category.includes('tattoo')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo/tattoo-studio-1.png';
     }
     if (category.includes('esthetic') || category.includes('skin')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png';
+      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/premium-facial-spa-1.png';
     }
     
-    return '/placeholder-salon.jpg'; // Final fallback
+    // Fallback for paid jobs without specific category
+    return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png';
   };
+
+  const jobImage = getJobImage();
+  const isPaidJob = job.pricing_tier && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
 
   return (
     <div className={`card-luxury bg-white rounded-2xl overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}>
-      {/* Image Section */}
-      <div className="relative">
-        <img 
-          src={getJobImage()}
-          alt={job.title || job.company}
-          className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder-salon.jpg';
-          }}
-        />
-        
-        {/* Expired overlay */}
-        {isExpired && (
-          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-            <div className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-inter font-bold shadow-lg">
-              Position Filled
+      {/* Image Section - Only show if image exists */}
+      {jobImage && (
+        <div className="relative">
+          <img 
+            src={jobImage}
+            alt={job.title || job.company || 'Job image'}
+            className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
+            onError={(e) => {
+              console.log('Mobile card image failed to load:', jobImage);
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+          
+          {/* Expired overlay */}
+          {isExpired && (
+            <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+              <div className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-inter font-bold shadow-lg">
+                Position Filled
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Premium Pricing tier badge */}
-        {!isExpired && (
-          <div className="absolute top-3 right-3">
-            <Badge className={`${pricingDisplay.color} ${pricingDisplay.glow} flex items-center gap-2 text-sm font-inter font-bold px-3 py-1 rounded-full`}>
-              {pricingDisplay.icon}
-              {pricingDisplay.text}
-            </Badge>
-          </div>
-        )}
+          {/* Premium Pricing tier badge */}
+          {!isExpired && (
+            <div className="absolute top-3 right-3">
+              <Badge className={`${pricingDisplay.color} ${pricingDisplay.glow} flex items-center gap-2 text-sm font-inter font-bold px-3 py-1 rounded-full`}>
+                {pricingDisplay.icon}
+                {pricingDisplay.text}
+              </Badge>
+            </div>
+          )}
 
-        {/* Premium sparkle effect for paid tiers */}
-        {!isExpired && job.pricing_tier !== 'free' && (
-          <div className="absolute top-3 left-3 text-2xl sparkle-animation">✨</div>
-        )}
-      </div>
+          {/* Premium sparkle effect for paid tiers */}
+          {!isExpired && isPaidJob && (
+            <div className="absolute top-3 left-3 text-2xl sparkle-animation">✨</div>
+          )}
+        </div>
+      )}
+      
+      {/* No Image Placeholder for Free Jobs */}
+      {!jobImage && !isPaidJob && (
+        <div className="px-6 pt-4">
+          <Badge className={`${pricingDisplay.color} ${pricingDisplay.glow} flex items-center gap-2 text-sm font-inter font-bold px-3 py-1 rounded-full w-fit`}>
+            {pricingDisplay.icon}
+            {pricingDisplay.text}
+          </Badge>
+        </div>
+      )}
 
       {/* Content Section */}
-      <div className="p-6">
+      <div className={`p-6 ${!jobImage ? 'pt-4' : ''}`}>
         {/* Title and Company */}
         <div className="mb-4">
           <h3 className={`font-playfair font-black text-foreground mb-2 ${expanded ? 'text-xl' : 'text-lg'} line-clamp-2 leading-tight`}>

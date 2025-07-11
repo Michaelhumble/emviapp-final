@@ -44,16 +44,16 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     >
       <Card className="overflow-hidden h-full flex flex-col">
         <div className="relative aspect-video bg-gray-100">
-          {listing.image ? (
+          {(listing.image_url || listing.imageUrl || listing.image) ? (
             <ImageWithFallback 
-              src={listing.image} 
+              src={listing.image_url || listing.imageUrl || listing.image} 
               alt={listing.title || listing.company || "Beauty opportunity"} 
               className="w-full h-full object-cover"
               businessName={listing.title || listing.company}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              <span className="text-gray-400 text-xl">No Image</span>
+              <span className="text-gray-400 text-xl">No Image Available</span>
             </div>
           )}
           

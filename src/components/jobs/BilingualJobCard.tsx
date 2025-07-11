@@ -39,21 +39,21 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   const isOwner = user?.id === job.user_id;
   const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false;
   
-  // Image and paid job logic
+  // Safe image and paid job logic
   const isPaidJob = job.pricing_tier && job.pricing_tier !== 'free';
-  const hasImage = !!(job.image || job.imageUrl);
+  const imageUrl = job.image_url || job.imageUrl || job.image || null;
+  const hasImage = !!(imageUrl && imageUrl.trim() && imageUrl !== '');
   
   const renderJobImage = () => {
-    const imageUrl = job.image || job.imageUrl;
-    
-    if (imageUrl) {
+    if (hasImage && imageUrl) {
       return (
         <div className="mb-4 -mx-6 -mt-6">
           <img
             src={imageUrl}
-            alt={job.title}
+            alt={job.title || 'Job image'}
             className="w-full h-48 object-cover"
             onError={(e) => {
+              console.log('Image failed to load:', imageUrl);
               e.currentTarget.style.display = 'none';
             }}
           />
@@ -74,6 +74,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       );
     }
     
+    // For free jobs without images, return null (no image section)
     return null;
   };
 
