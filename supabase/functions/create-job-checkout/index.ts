@@ -148,6 +148,17 @@ serve(async (req) => {
       photos: jobData.photos
     });
     
+    // CRITICAL FIX: Properly store photos in multiple database fields
+    const photoUrls = jobData.image_urls || jobData.photos || [];
+    const validPhotoUrls = Array.isArray(photoUrls) ? photoUrls.filter(url => url && url.trim() && url !== 'photos-uploaded') : [];
+    
+    console.log('🔍 [PHOTO-DEBUG] Photo URLs from frontend:', {
+      'jobData.image_urls': jobData.image_urls,
+      'jobData.photos': jobData.photos,
+      'jobData.image_url': jobData.image_url,
+      'validPhotoUrls': validPhotoUrls
+    });
+
     const draftJobPayload = {
       title: jobData.title,
       category: jobData.category,
@@ -156,12 +167,14 @@ serve(async (req) => {
       // FIXED: Add Vietnamese fields for nail jobs
       vietnamese_title: jobData.vietnamese_title || null,
       vietnamese_description: jobData.vietnamese_description || null,
-      // FIXED: Add ALL photo fields for paid jobs with photo upload
-      image_url: jobData.image_url || null,
+      // CRITICAL FIX: Store photos in ALL database fields immediately
+      image_url: validPhotoUrls.length > 0 ? validPhotoUrls[0] : null,
+      image_urls: validPhotoUrls.length > 0 ? validPhotoUrls : null,
+      photos: validPhotoUrls.length > 0 ? validPhotoUrls : null,
       // CRITICAL: Add metadata field to store additional photo URLs and contact info
       metadata: {
-        image_urls: jobData.image_urls || [],
-        photos: jobData.photos || [],
+        image_urls: validPhotoUrls,
+        photos: validPhotoUrls,
         contact_info: jobData.contact_info || {
           owner_name: jobData.contactName || "",
           phone: jobData.contactPhone || "",

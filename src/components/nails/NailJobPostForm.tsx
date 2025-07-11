@@ -516,20 +516,63 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           const results = await Promise.all(uploadPromises);
           uploadedImageUrls = results.filter(url => url !== null) as string[];
           
-          console.log(`🔍 [PAID-JOB-UPLOAD] Successfully uploaded ${uploadedImageUrls.length}/${photoUploads.length} photos:`, uploadedImageUrls);
+           console.log(`🔍 [PAID-JOB-UPLOAD] Successfully uploaded ${uploadedImageUrls.length}/${photoUploads.length} photos:`, uploadedImageUrls);
 
-          if (uploadedImageUrls.length === 0) {
-            toast.error('Failed to upload photos. Continuing without images.');
-          } else if (uploadedImageUrls.length < photoUploads.length) {
-            toast.warning(`Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded successfully.`);
-          } else {
-            toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
-          }
+           if (uploadedImageUrls.length === 0) {
+             console.warn('⚠️ [PAID-JOB-UPLOAD] No photos were uploaded successfully');
+             toast.error('Failed to upload photos. Job will be posted without images.');
+           } else if (uploadedImageUrls.length < photoUploads.length) {
+             console.warn(`⚠️ [PAID-JOB-UPLOAD] Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded`);
+             toast.warning(`Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded successfully.`);
+           } else {
+             console.log(`✅ [PAID-JOB-UPLOAD] All ${uploadedImageUrls.length} photos uploaded successfully!`);
+             toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
+           }
         } catch (uploadError) {
           console.error('❌ Batch photo upload error:', uploadError);
           toast.error('Failed to upload photos. Continuing without images.');
         }
       }
+
+      // CRITICAL DEBUG: Log job data being sent to edge function
+      const jobDataPayload = {
+        ...formData,
+        category: 'Nails',
+        compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
+        vietnamese_title: formData.vietnameseTitle,
+        vietnamese_description: formData.vietnameseDescription,
+        contact_info: {
+          owner_name: formData.contactName?.trim() || '',
+          phone: formData.contactPhone?.trim() || '',
+          email: formData.contactEmail?.trim() || '',
+          notes: formData.contactNotes?.trim() || '',
+          salon_name: formData.salonName?.trim() || ''
+        },
+        // CRITICAL: Include actual uploaded image URLs
+        image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Primary image
+        image_urls: uploadedImageUrls, // All uploaded images
+        photos: uploadedImageUrls, // Backup field name for compatibility
+        metadata: {
+          image_urls: uploadedImageUrls,
+          photos: uploadedImageUrls,
+          contact_info: {
+            owner_name: formData.contactName?.trim() || '',
+            phone: formData.contactPhone?.trim() || '',
+            email: formData.contactEmail?.trim() || '',
+            notes: formData.contactNotes?.trim() || '',
+            salon_name: formData.salonName?.trim() || ''
+          }
+        }
+      };
+      
+      console.log('🔍 [EDGE-FUNCTION-PAYLOAD] Job data being sent to create-job-checkout:', {
+        uploadedImageUrls,
+        'jobData.image_urls': jobDataPayload.image_urls,
+        'jobData.photos': jobDataPayload.photos,
+        'jobData.image_url': jobDataPayload.image_url,
+        'jobData.contact_info': jobDataPayload.contact_info,
+        'jobData.metadata': jobDataPayload.metadata
+      });
 
       // Create Stripe checkout session for paid nail job
       const { data, error } = await supabase.functions.invoke('create-job-checkout', {
@@ -537,35 +580,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           tier,
           finalPrice,
           durationMonths,
-          jobData: {
-            ...formData,
-            category: 'Nails',
-            compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
-            vietnamese_title: formData.vietnameseTitle,
-            vietnamese_description: formData.vietnameseDescription,
-            contact_info: {
-              owner_name: formData.contactName?.trim() || '',
-              phone: formData.contactPhone?.trim() || '',
-              email: formData.contactEmail?.trim() || '',
-              notes: formData.contactNotes?.trim() || '',
-              salon_name: formData.salonName?.trim() || ''
-            },
-            // FIXED: Include actual uploaded image URLs
-            image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Primary image
-            image_urls: uploadedImageUrls, // All uploaded images
-            photos: uploadedImageUrls, // Backup field name for compatibility
-            metadata: {
-              image_urls: uploadedImageUrls,
-              photos: uploadedImageUrls,
-              contact_info: {
-                owner_name: formData.contactName?.trim() || '',
-                phone: formData.contactPhone?.trim() || '',
-                email: formData.contactEmail?.trim() || '',
-                notes: formData.contactNotes?.trim() || '',
-                salon_name: formData.salonName?.trim() || ''
-              }
-            }
-          }
+          jobData: jobDataPayload
         }
       });
 
@@ -580,10 +595,15 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         console.log('🔍 [PAYMENT-REDIRECT] Redirecting to Stripe checkout:', data.url);
         toast.success('Redirecting to secure payment...');
         
-        // FIXED: Use direct navigation to prevent session loss and crashes
+        // CRITICAL FIX: Use safer navigation to prevent browser crashes
         try {
-          console.log('🔄 [PAYMENT-REDIRECT] Redirecting to Stripe checkout in same tab...');
-          window.location.href = data.url;
+          console.log('🔄 [PAYMENT-REDIRECT] Redirecting to Stripe checkout...');
+          
+          // Add small delay to ensure state is saved before navigation
+          setTimeout(() => {
+            window.location.replace(data.url);
+          }, 100);
+          
         } catch (redirectError) {
           console.error('❌ [PAYMENT-REDIRECT] Error during redirect:', redirectError);
           toast.error('Failed to redirect to payment page. Please try again.');
