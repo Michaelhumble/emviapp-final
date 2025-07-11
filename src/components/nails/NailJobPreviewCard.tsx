@@ -39,8 +39,8 @@ const NailJobPreviewCard: React.FC<NailJobPreviewCardProps> = ({
   const displayTitle = vietnameseTitle || title;
   const displayDescription = vietnameseDescription || description;
   
-  // Show contact info if user is signed in and job is paid
-  const showContactInfo = isSignedIn && planType === 'paid';
+  // For nails jobs, show contact info if user is signed in (regardless of plan type)
+  const showContactInfo = isSignedIn;
   
   return (
     <Card className="border-2 border-pink-200 shadow-md">

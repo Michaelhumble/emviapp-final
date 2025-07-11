@@ -4,9 +4,11 @@ import { nailListings } from '@/data/industryListings';
 import { useJobsData } from '@/hooks/useJobsData';
 import { Job } from '@/types/job';
 import { IndustryListing } from '@/types/industryListing';
+import { useAuth } from '@/context/auth';
 
 const NailsPage = () => {
   const { jobs, loading } = useJobsData();
+  const { user } = useAuth();
 
   // Convert real Supabase jobs to IndustryListing format and filter STRICTLY for nail jobs
   const realNailJobs: IndustryListing[] = useMemo(() => {
@@ -66,13 +68,16 @@ const NailsPage = () => {
           imageUrl: job.image_url || job.imageUrl || undefined,
           rating: 4.5,
           fullDescription: displayDescription,
-          contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
+          contact: job.contact_info ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',
           } : undefined,
           vietnamese_title: job.vietnamese_title,
-          vietnamese_description: job.vietnamese_description
+          vietnamese_description: job.vietnamese_description,
+          // Add user ownership info for edit functionality
+          isOwner: user?.id === job.user_id,
+          originalJobData: job
         };
       })
       .sort((a, b) => {

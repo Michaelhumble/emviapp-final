@@ -22,6 +22,9 @@ export interface IndustryListing {
   };
   vietnamese_title?: string;
   vietnamese_description?: string;
+  // Add edit functionality fields
+  isOwner?: boolean;
+  originalJobData?: any;
 }
 
 export interface IndustryConfig {

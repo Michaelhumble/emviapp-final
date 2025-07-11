@@ -41,14 +41,16 @@ type NailJobFormValues = z.infer<typeof nailJobFormSchema>;
 
 interface NailJobPostFormProps {
   onSubmit?: (data: NailJobFormValues) => void;
+  editJobId?: string;
+  editJobData?: any;
 }
 
-const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
+const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, editJobData }) => {
   const navigate = useNavigate();
   const { user, isSignedIn } = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'form' | 'pricing' | 'processing'>('form');
+  const [currentStep, setCurrentStep] = useState<'templates' | 'form' | 'pricing' | 'processing'>('templates');
   const [formData, setFormData] = useState<NailJobFormValues | null>(null);
   const [selectedPricing, setSelectedPricing] = useState<{
     tier: string;
@@ -58,6 +60,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
   const [hasPostedFreeJob, setHasPostedFreeJob] = useState(false);
   const [isLoadingFreeJobStatus, setIsLoadingFreeJobStatus] = useState(true);
   const [isGeneratingTranslation, setIsGeneratingTranslation] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(!editJobId);
 
   // Vietnamese job templates
   const vietnameseJobTemplates = [
@@ -106,21 +109,29 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
   const form = useForm<NailJobFormValues>({
     resolver: zodResolver(nailJobFormSchema),
     defaultValues: {
-      planType: 'free',
-      title: '',
-      vietnameseTitle: '',
+      planType: editJobData?.pricing_tier || 'free',
+      title: editJobData?.title || '',
+      vietnameseTitle: editJobData?.vietnamese_title || '',
       englishOnly: false,
-      salonName: '',
-      location: '',
-      description: '',
-      vietnameseDescription: '',
-      salaryRange: '',
-      contactName: '',
-      contactPhone: '',
-      contactEmail: '',
-      contactNotes: '',
+      salonName: editJobData?.contact_info?.salon_name || '',
+      location: editJobData?.location || '',
+      description: editJobData?.description || '',
+      vietnameseDescription: editJobData?.vietnamese_description || '',
+      salaryRange: editJobData?.compensation_details || '',
+      contactName: editJobData?.contact_info?.owner_name || '',
+      contactPhone: editJobData?.contact_info?.phone || '',
+      contactEmail: editJobData?.contact_info?.email || '',
+      contactNotes: editJobData?.contact_info?.notes || '',
     }
   });
+
+  // If editing, skip templates and go to form
+  useEffect(() => {
+    if (editJobId && editJobData) {
+      setCurrentStep('form');
+      setShowTemplates(false);
+    }
+  }, [editJobId, editJobData]);
 
   const selectedPlan = form.watch('planType');
   const englishOnly = form.watch('englishOnly');
@@ -229,7 +240,13 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
     form.setValue('vietnameseDescription', template.vietnameseDescription);
     form.setValue('description', template.description);
     form.setValue('salaryRange', template.salaryRange);
+    setCurrentStep('form');
     toast.success('Template applied successfully!');
+  };
+
+  // Skip templates and start from blank form
+  const startFromBlank = () => {
+    setCurrentStep('form');
   };
 
   const handleFormSubmit = (data: NailJobFormValues) => {
@@ -290,35 +307,62 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
           owner_name: data.contactName?.trim() || '',
           phone: data.contactPhone?.trim() || '',
           email: data.contactEmail?.trim() || '',
-          notes: data.contactNotes?.trim() || ''
+          notes: data.contactNotes?.trim() || '',
+          salon_name: data.salonName?.trim() || ''
         },
         user_id: user.id,
         status: 'active',
         pricing_tier: 'free'
       };
 
-      const { data: insertData, error } = await supabase
-        .from('jobs')
-        .insert([payload])
-        .select();
+      if (editJobId) {
+        // Update existing job
+        const { data: updateData, error } = await supabase
+          .from('jobs')
+          .update(payload)
+          .eq('id', editJobId)
+          .eq('user_id', user.id)
+          .select();
 
-      if (error) {
-        console.error('Error creating nail job:', error);
-        toast.error(`Failed to create job: ${error.message}`);
-        return;
+        if (error) {
+          console.error('Error updating nail job:', error);
+          toast.error(`Failed to update job: ${error.message}`);
+          return;
+        }
+
+        toast.success('Nail tech job updated successfully!');
+        navigate('/nails-job-success', { 
+          state: { 
+            jobId: updateData[0].id,
+            jobData: updateData[0],
+            isEdit: true
+          }
+        });
+      } else {
+        // Create new job
+        const { data: insertData, error } = await supabase
+          .from('jobs')
+          .insert([payload])
+          .select();
+
+        if (error) {
+          console.error('Error creating nail job:', error);
+          toast.error(`Failed to create job: ${error.message}`);
+          return;
+        }
+
+        toast.success('Nail tech job posted successfully!');
+        navigate('/nails-job-success', { 
+          state: { 
+            jobId: insertData[0].id,
+            jobData: insertData[0]
+          }
+        });
       }
 
-      toast.success('Nail tech job posted successfully!');
-      navigate('/nails-job-success', { 
-        state: { 
-          jobId: insertData[0].id,
-          jobData: insertData[0]
-        }
-      });
-
     } catch (error) {
-      console.error('Unexpected error creating nail job:', error);
-      toast.error('Failed to create job posting');
+      console.error('Unexpected error with nail job:', error);
+      toast.error('Failed to save job posting');
     } finally {
       setIsSubmitting(false);
     }
@@ -394,6 +438,59 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
             Redirecting to secure payment...
           </p>
           <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Template Selection Step
+  if (currentStep === 'templates' && showTemplates) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50/30 to-indigo-50/20">
+        <div className="container mx-auto py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Choose a Job Template</h1>
+              <p className="text-gray-600">Select a pre-written template or start from scratch</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {vietnameseJobTemplates.map((template) => (
+                <Card 
+                  key={template.id} 
+                  className="cursor-pointer hover:bg-purple-50 transition-colors border-purple-200 hover:border-purple-300"
+                  onClick={() => applyTemplate(template)}
+                >
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">{template.vietnameseTitle}</h3>
+                        <p className="text-sm text-gray-600 italic">{template.title}</p>
+                      </div>
+                      <p className="text-gray-700 text-sm line-clamp-3">{template.vietnameseDescription}</p>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline" className="bg-green-50 text-green-700">{template.salaryRange}/tuần</Badge>
+                        <Button variant="outline" size="sm">
+                          Use Template
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Button 
+                onClick={startFromBlank}
+                variant="outline"
+                size="lg"
+                className="border-gray-300"
+              >
+                Start from Blank Form
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -496,37 +593,19 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
                        )}
                      />
 
-                     {/* Template Selector */}
-                     <div className="space-y-4">
-                       <div className="flex items-center justify-between">
-                         <h3 className="text-lg font-semibold text-gray-900">Choose Template</h3>
-                         <p className="text-sm text-gray-500">Click to apply a pre-written job template</p>
-                       </div>
-                       <div className="grid grid-cols-1 gap-3">
-                         {vietnameseJobTemplates.map((template) => (
-                           <Card 
-                             key={template.id} 
-                             className="cursor-pointer hover:bg-purple-50 transition-colors border-purple-200"
-                             onClick={() => applyTemplate(template)}
-                           >
-                             <CardContent className="p-4">
-                               <div className="flex justify-between items-start">
-                                 <div className="flex-1">
-                                   <h4 className="font-medium text-gray-900 text-sm">{template.vietnameseTitle}</h4>
-                                   <p className="text-xs text-gray-600 mt-1 line-clamp-2">{template.vietnameseDescription.substring(0, 100)}...</p>
-                                   <div className="flex items-center gap-2 mt-2">
-                                     <Badge variant="outline" className="text-xs">{template.salaryRange}/tuần</Badge>
-                                   </div>
-                                 </div>
-                                 <Button variant="ghost" size="sm" className="ml-2">
-                                   Apply
-                                 </Button>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         ))}
-                       </div>
-                     </div>
+                      {/* Back to Templates */}
+                      {!editJobId && (
+                        <div className="text-center">
+                          <Button 
+                            type="button"
+                            variant="outline"
+                            onClick={() => setCurrentStep('templates')}
+                            className="text-purple-600 border-purple-200"
+                          >
+                            ← Back to Templates
+                          </Button>
+                        </div>
+                      )}
 
                      {/* Vietnamese Title - Required */}
                      <FormField

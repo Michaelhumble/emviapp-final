@@ -21,6 +21,9 @@ const EnhancedPostJob = () => {
   const [jobFormData, setJobFormData] = useState<any>(null);
   const [formInitialValues, setFormInitialValues] = useState<any>(null);
   const [isNailsCategory, setIsNailsCategory] = useState(false);
+  
+  // Check for edit state
+  const editState = location.state as { editJobId?: string; editJobData?: any } | null;
 
   // Check if this is a nails-specific route or category
   useEffect(() => {
@@ -110,7 +113,11 @@ const EnhancedPostJob = () => {
             )}
             
             {isNailsCategory ? (
-              <NailJobPostForm onSubmit={handleFormSubmit} />
+              <NailJobPostForm 
+                onSubmit={handleFormSubmit}
+                editJobId={editState?.editJobId}
+                editJobData={editState?.editJobData}
+              />
             ) : (
               <EnhancedJobForm 
                 initialValues={formInitialValues}

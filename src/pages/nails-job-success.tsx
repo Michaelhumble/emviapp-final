@@ -10,15 +10,19 @@ import { CheckCircle, Eye, Edit, ArrowRight } from 'lucide-react';
 const NailJobSuccessPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { jobId, jobData } = location.state || {};
+  const { jobId, jobData, isEdit } = location.state || {};
 
   const handleViewPost = () => {
     navigate('/nails');
   };
 
   const handleEditPost = () => {
-    // Navigate to edit form (would need to be implemented)
-    console.log('Edit post:', jobId);
+    navigate('/post-job/nails', { 
+      state: { 
+        editJobId: jobId,
+        editJobData: jobData
+      }
+    });
   };
 
   if (!jobData) {
@@ -54,10 +58,13 @@ const NailJobSuccessPage = () => {
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Your Nail Job Is Live!
+                {isEdit ? 'Your Nail Job Updated!' : 'Your Nail Job Is Live!'}
               </h1>
               <p className="text-gray-600">
-                Your job posting has been successfully created and is now visible to nail technicians.
+                {isEdit 
+                  ? 'Your job posting has been successfully updated and the changes are now visible to nail technicians.'
+                  : 'Your job posting has been successfully created and is now visible to nail technicians.'
+                }
               </p>
             </div>
 

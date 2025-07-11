@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon, ArrowLeft, Home, Plus } from 'lucide-react';
+import { Crown, Star, Eye, MapPin, DollarSign, Phone, LockIcon, ArrowLeft, Home, Plus, Edit } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthAction from '@/components/common/AuthAction';
@@ -114,6 +114,17 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
       return;
     }
     setSelectedListing(listing);
+  };
+
+  const handleEditJob = (listing: IndustryListing) => {
+    if (listing.isOwner && listing.originalJobData) {
+      navigate('/post-job/nails', {
+        state: {
+          editJobId: listing.id,
+          editJobData: listing.originalJobData
+        }
+      });
+    }
   };
 
   const diamondListings = listings.filter(l => l.tier === 'diamond');
@@ -275,14 +286,27 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                         {listing.summary}
                       </p>
 
-                      <Button
-                        onClick={() => handleViewDetails(listing)}
-                        variant="outline"
-                        className="w-full font-inter"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
-                      </Button>
+                      <div className="space-y-2">
+                        <Button
+                          onClick={() => handleViewDetails(listing)}
+                          variant="outline"
+                          className="w-full font-inter"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </Button>
+                        {listing.isOwner && industryName === 'nails' && (
+                          <Button
+                            onClick={() => handleEditJob(listing)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit Job
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -360,15 +384,28 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                         {listing.summary}
                       </p>
 
-                      <Button
-                        onClick={() => handleViewDetails(listing)}
-                        variant="outline"
-                        size="sm"
-                        className="w-full font-inter"
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        View Details
-                      </Button>
+                      <div className="space-y-2">
+                        <Button
+                          onClick={() => handleViewDetails(listing)}
+                          variant="outline"
+                          size="sm"
+                          className="w-full font-inter"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View Details
+                        </Button>
+                        {listing.isOwner && industryName === 'nails' && (
+                          <Button
+                            onClick={() => handleEditJob(listing)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit Job
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -469,15 +506,28 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                         />
                       )}
 
-                      <Button
-                        onClick={() => handleViewDetails(listing)}
-                        variant="outline"
-                        size="sm"
-                        className="w-full font-inter text-sm"
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        View Details
-                      </Button>
+                      <div className="space-y-2">
+                        <Button
+                          onClick={() => handleViewDetails(listing)}
+                          variant="outline"
+                          size="sm"
+                          className="w-full font-inter text-sm"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View Details
+                        </Button>
+                        {listing.isOwner && industryName === 'nails' && (
+                          <Button
+                            onClick={() => handleEditJob(listing)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 text-sm"
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit Job
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
