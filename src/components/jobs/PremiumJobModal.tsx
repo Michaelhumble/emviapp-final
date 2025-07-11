@@ -291,7 +291,7 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
               {job.vietnamese_description && (
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
                   <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
-                    🇻🇳 Tiếng Việt
+                    📝 Tiếng Việt
                   </h4>
                   <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {job.vietnamese_description}
@@ -303,7 +303,7 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
               {job.description && job.description !== job.vietnamese_description && (
                 <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
                   <h4 className="font-semibold text-green-800 mb-3 flex items-center">
-                    🇺🇸 English
+                    📄 English
                   </h4>
                   <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {job.description}
@@ -315,7 +315,7 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
               {job.vietnamese_description && (!job.description || job.description === job.vietnamese_description) && (
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-4">
                   <h4 className="font-semibold text-gray-600 mb-3 flex items-center">
-                    🇺🇸 English
+                    📄 English
                   </h4>
                   <p className="text-gray-500 italic">Not provided</p>
                 </div>
