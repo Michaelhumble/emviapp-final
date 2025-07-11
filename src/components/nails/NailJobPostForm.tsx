@@ -612,14 +612,10 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           // Show success message and reset form state
           toast.success('Payment opened in new tab. Complete payment and return here.');
           
-          // Wait a moment, then navigate to success page to show payment status
-          setTimeout(() => {
-            navigate('/nails?payment=initiated', { 
-              state: { 
-                message: 'Payment initiated. Complete in the new tab and refresh this page.' 
-              }
-            });
-          }, 1000);
+          // DO NOT navigate immediately - let user complete payment in new tab
+          // Reset form to allow for new submissions if needed
+          setCurrentStep('form');
+          setIsSubmitting(false);
           
         } catch (redirectError) {
           console.error('❌ [PAYMENT-REDIRECT] Error opening payment:', redirectError);
