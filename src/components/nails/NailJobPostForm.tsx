@@ -62,47 +62,77 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
   const [isGeneratingTranslation, setIsGeneratingTranslation] = useState(false);
   const [showTemplates, setShowTemplates] = useState(!editJobId);
 
-  // Vietnamese job templates
+  // Vietnamese job templates (real Facebook-style job ads)
   const vietnameseJobTemplates = [
     {
       id: 1,
-      vietnameseTitle: "Thợ nail tại Magic Nails",
-      title: "Nail Technician at Magic Nails",
-      vietnameseDescription: "Tuyển thợ nail có kinh nghiệm làm việc tại salon cao cấp. Lương thỏa thuận từ $1,500-$2,200/tuần. Có kinh nghiệm gel, acrylic, nail art. Môi trường làm việc thân thiện, được training đầy đủ. Hỗ trợ visa.",
-      description: "Seeking experienced nail technician for upscale salon. Competitive pay $1,500-$2,200/week. Experience in gel, acrylic, nail art required. Friendly work environment, full training provided. Visa assistance available.",
-      salaryRange: "$1,500-$2,200"
+      vietnameseTitle: "Cần Thợ Nail",
+      title: "Nail Technician Needed",
+      vietnameseDescription: "Tiệm đông khách, cần thợ biết làm bột hoặc tay chân nước.\nLàm việc full/part-time, chia turn công bằng, tip hậu.\nKhông khí vui vẻ, không drama, bao lương theo tay nghề.\nCó chỗ ở cho thợ ở xa.",
+      description: "Busy salon looking for techs who know powder or pedicure/manicure.\nFull/part-time available, fair turn sharing, good tips.\nFun atmosphere, no drama, guaranteed salary based on skills.\nHousing available for out-of-town workers."
     },
     {
       id: 2,
-      vietnameseTitle: "Thợ nail part-time cuối tuần",
-      title: "Part-time Weekend Nail Tech",
-      vietnameseDescription: "Tuyển thợ nail làm part-time cuối tuần. Lương $180-$250/ngày. Phù hợp cho người mới hoặc có kinh nghiệm. Được training kỹ thuật mới. Tip cao, khách quen nhiều. Không yêu cầu kinh nghiệm.",
-      description: "Part-time weekend nail technician position. $180-$250/day. Perfect for beginners or experienced techs. New technique training provided. High tips, regular clientele. No experience required.",
-      salaryRange: "$180-$250"
+      vietnameseTitle: "Tuyển Thợ Bột",
+      title: "Powder Technician Wanted",
+      vietnameseDescription: "Cần thợ bột, biết design càng tốt.\nKhách sang, tip cao, lương tuần ổn định.\nTiệm hỗ trợ supply, không trừ tiền clean-up.\nMôi trường làm việc hòa đồng, chủ dễ thương.",
+      description: "Need powder tech, design skills preferred.\nUpscale clients, high tips, stable weekly pay.\nShop provides supplies, no cleanup fees.\nHarmonious work environment, friendly owner."
     },
     {
       id: 3,
-      vietnameseTitle: "Thợ nail chuyên nghiệp - lương cao",
-      title: "Professional Nail Tech - High Pay",
-      vietnameseDescription: "Salon busy tuyển thợ nail giỏi. Lương $2,000-$2,800/tuần. Yêu cầu có kinh nghiệm 2+ năm, làm được nail art, dip powder. Commission cao, bonus tháng. Cần bằng license. Location Houston, TX.",
-      description: "Busy salon hiring skilled nail technician. $2,000-$2,800/week. 2+ years experience required, nail art and dip powder skills. High commission, monthly bonus. License required. Located in Houston, TX.",
-      salaryRange: "$2,000-$2,800"
+      vietnameseTitle: "Tuyển Thợ Nail Làm Mọi Thứ",
+      title: "All-Service Nail Technician",
+      vietnameseDescription: "Tiệm cần thợ biết làm bột, dip, tay chân nước, wax càng tốt.\nThu nhập cao mùa hè, tip hậu, khách Mỹ trắng lịch sự.\nCó manager chia turn công bằng, không tranh giành.\nCó chỗ ở nếu cần, thu nhập ổn định quanh năm.",
+      description: "Shop needs tech for powder, dip, mani/pedi, wax preferred.\nHigh summer income, great tips, polite American clients.\nManager ensures fair turn sharing, no competition.\nHousing available if needed, stable year-round income."
     },
     {
       id: 4,
-      vietnameseTitle: "Tuyển thợ nail - có nhà ở",
-      title: "Nail Tech Wanted - Housing Provided",
-      vietnameseDescription: "Salon ở vùng có nhiều người Việt tuyển thợ nail. Lương $1,600-$2,000/tuần + có nhà ở miễn phí. Được training full, không cần kinh nghiệm. Môi trường làm việc vui vẻ. Ăn trưa miễn phí.",
-      description: "Salon in Vietnamese community hiring nail techs. $1,600-$2,000/week + free housing. Full training provided, no experience needed. Fun work environment. Free lunch included.",
-      salaryRange: "$1,600-$2,000"
+      vietnameseTitle: "Cần Gấp Thợ Tay Chân Nước",
+      title: "Urgently Need Mani/Pedi Tech",
+      vietnameseDescription: "Cần thợ tay chân nước, làm part/full-time đều được.\nKhông cần kinh nghiệm nhiều, miễn vui vẻ, siêng năng.\nTiệm nhỏ, không cạnh tranh, chủ dễ chịu.\nKhông khí làm việc thân thiện, tip ổn định.",
+      description: "Need mani/pedi tech, part/full-time available.\nDon't need much experience, just be cheerful and hardworking.\nSmall shop, no competition, easy-going owner.\nFriendly work atmosphere, steady tips."
     },
     {
       id: 5,
-      vietnameseTitle: "Thợ nail senior - quản lý ca",
-      title: "Senior Nail Tech - Shift Supervisor",
-      vietnameseDescription: "Cần thợ nail senior làm shift supervisor. Lương $2,200-$2,600/tuần + bonus quản lý. Yêu cầu 3+ năm kinh nghiệm, biết train người mới. Có benefits, vacation pay. Cơ hội thăng tiến cao.",
-      description: "Senior nail technician needed for shift supervisor role. $2,200-$2,600/week + management bonus. 3+ years experience required, training skills needed. Benefits included, vacation pay. High advancement opportunities.",
-      salaryRange: "$2,200-$2,600"
+      vietnameseTitle: "Cần Thợ Nail Biết Design",
+      title: "Nail Artist with Design Skills",
+      vietnameseDescription: "Tiệm chuyên design, khách chịu chơi, tip cao.\nCần thợ biết design, acrylic, gel, dipping càng tốt.\nBao lương, hỗ trợ học thêm nếu cần, không trừ supply.\nKhông drama, chia turn rõ ràng.",
+      description: "Design-focused salon, generous clients, high tips.\nNeed tech who knows design, acrylic, gel, dipping preferred.\nGuaranteed salary, training support if needed, no supply deductions.\nNo drama, clear turn scheduling."
+    },
+    {
+      id: 6,
+      vietnameseTitle: "Tuyển Thợ Nail Kinh Nghiệm",
+      title: "Experienced Nail Technician",
+      vietnameseDescription: "Cần thợ có tay nghề, ưu tiên biết vẽ, lấy shape chuẩn.\nKhách sang, tiệm sạch sẽ, thu nhập ổn định.\nTiệm hòa đồng, không drama, không trừ supply.\nCó phòng riêng tư cho thợ ở xa.",
+      description: "Need skilled tech, drawing and shaping skills preferred.\nUpscale clients, clean salon, stable income.\nHarmonious shop, no drama, no supply deductions.\nPrivate room available for out-of-town workers."
+    },
+    {
+      id: 7,
+      vietnameseTitle: "Tuyển Thợ Nail Làm Full/Part Time",
+      title: "Full/Part Time Nail Tech",
+      vietnameseDescription: "Cần thợ nam/nữ, không yêu cầu tuổi tác, làm full hoặc part-time.\nTiệm nhỏ, không khí vui vẻ, không cạnh tranh.\nTip hậu, lương chia theo tay nghề, bao lương nếu cần.\nChủ hỗ trợ chỗ ở, môi trường thân thiện.",
+      description: "Need male/female tech, no age requirement, full or part-time.\nSmall shop, fun atmosphere, no competition.\nGood tips, pay based on skills, salary guarantee available.\nOwner provides housing support, friendly environment."
+    },
+    {
+      id: 8,
+      vietnameseTitle: "Cần Thợ Làm Dip Powder",
+      title: "Dip Powder Specialist",
+      vietnameseDescription: "Tiệm đông khách, ưu tiên thợ biết dip powder, bột, design đơn giản.\nKhách ổn định, tip cao, lương tuần hấp dẫn.\nKhông trừ supply, chủ vui vẻ, sẵn sàng hướng dẫn thêm.\nThu nhập ổn định quanh năm.",
+      description: "Busy salon, prefer tech who knows dip powder, acrylic, simple design.\nSteady clients, high tips, attractive weekly pay.\nNo supply deductions, cheerful owner, willing to provide additional training.\nStable year-round income."
+    },
+    {
+      id: 9,
+      vietnameseTitle: "Tìm Người Làm Nail Chuyên Nghiệp",
+      title: "Professional Nail Tech Wanted",
+      vietnameseDescription: "Cần thợ biết làm everything, vẽ, design càng tốt.\nTiệm khu Mỹ trắng, khách dễ thương, tip hậu.\nKhông tranh giành, chia turn công bằng, không trừ supply.\nChủ thân thiện, hỗ trợ chỗ ở nếu cần.",
+      description: "Need tech who does everything, drawing and design skills preferred.\nShop in American area, nice clients, great tips.\nNo competition, fair turn sharing, no supply deductions.\nFriendly owner, housing support available if needed."
+    },
+    {
+      id: 10,
+      vietnameseTitle: "Tuyển Thợ Nail Đi Làm Ngay",
+      title: "Nail Tech - Start Immediately",
+      vietnameseDescription: "Tiệm cần gấp thợ nail, có kinh nghiệm càng tốt.\nKhách ổn định, môi trường thoải mái, không áp lực.\nChủ dễ thương, đồng nghiệp thân thiện.\nThu nhập ổn định, có bonus hàng tuần.",
+      description: "Shop urgently needs nail tech, experience preferred.\nSteady clients, comfortable environment, no pressure.\nSweet owner, friendly coworkers.\nStable income with weekly bonuses."
     }
   ];
 
@@ -239,7 +269,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     form.setValue('title', template.title);
     form.setValue('vietnameseDescription', template.vietnameseDescription);
     form.setValue('description', template.description);
-    form.setValue('salaryRange', template.salaryRange);
+    // Templates don't include salary - user must fill this manually
     setCurrentStep('form');
     toast.success('Template applied successfully!');
   };
@@ -469,7 +499,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
                       </div>
                       <p className="text-gray-700 text-sm line-clamp-3">{template.vietnameseDescription}</p>
                       <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="bg-green-50 text-green-700">{template.salaryRange}/tuần</Badge>
+                        <Badge variant="outline" className="bg-purple-50 text-purple-700">Template #{template.id}</Badge>
                         <Button variant="outline" size="sm">
                           Use Template
                         </Button>
