@@ -163,36 +163,59 @@ serve(async (req) => {
             updated_at: new Date().toISOString()
           };
 
-          // FIXED: Extract and set photos and contact info properly from metadata
+          // CRITICAL FIX: Extract and set photos and contact info properly from metadata
           if (existingJob.metadata) {
             console.log('🔍 [STRIPE-WEBHOOK] Job has metadata:', existingJob.metadata);
             
-            // Extract photos from metadata and set in job fields
+            // FIXED: Extract photos from ALL possible metadata locations
+            let validUrls: string[] = [];
+            
+            // Check metadata.image_urls first (primary)
             if (existingJob.metadata.image_urls && Array.isArray(existingJob.metadata.image_urls)) {
-              const validUrls = existingJob.metadata.image_urls.filter((url: string) => 
+              validUrls = existingJob.metadata.image_urls.filter((url: string) => 
                 url && url.trim() && url !== 'photos-uploaded'
               );
-              
-              if (validUrls.length > 0) {
-                console.log('🔍 [STRIPE-WEBHOOK] Setting image URLs:', validUrls);
-                updateData.image_url = validUrls[0]; // Primary image
-                updateData.image_urls = validUrls; // Array field
-                updateData.photos = validUrls; // Also set photos field
-                
-                // Keep metadata updated too for frontend compatibility
-                updateData.metadata = {
-                  ...existingJob.metadata,
-                  photos: validUrls,
-                  image_urls: validUrls
-                };
-              }
             }
             
-            // Extract contact info from metadata and set in contact_info field
+            // Check metadata.photos as fallback
+            if (validUrls.length === 0 && existingJob.metadata.photos && Array.isArray(existingJob.metadata.photos)) {
+              validUrls = existingJob.metadata.photos.filter((url: string) => 
+                url && url.trim() && url !== 'photos-uploaded'
+              );
+            }
+            
+            // CRITICAL: Write photos to ALL database fields
+            if (validUrls.length > 0) {
+              console.log('🔍 [STRIPE-WEBHOOK] Setting image URLs:', validUrls);
+              updateData.image_url = validUrls[0]; // Primary image for backwards compatibility
+              updateData.image_urls = validUrls; // New array field
+              updateData.photos = validUrls; // Also set photos field
+              
+              // Keep metadata updated too for frontend compatibility
+              updateData.metadata = {
+                ...existingJob.metadata,
+                photos: validUrls,
+                image_urls: validUrls
+              };
+            } else {
+              console.log('⚠️ [STRIPE-WEBHOOK] No valid photos found in metadata');
+            }
+            
+            // CRITICAL: Extract contact info from metadata and set in contact_info field
             if (existingJob.metadata.contact_info) {
               console.log('🔍 [STRIPE-WEBHOOK] Setting contact info:', existingJob.metadata.contact_info);
               updateData.contact_info = existingJob.metadata.contact_info;
+              
+              // Also update metadata to include contact_info for consistency
+              updateData.metadata = {
+                ...updateData.metadata,
+                contact_info: existingJob.metadata.contact_info
+              };
+            } else {
+              console.log('⚠️ [STRIPE-WEBHOOK] No contact info found in metadata');
             }
+          } else {
+            console.log('⚠️ [STRIPE-WEBHOOK] Job has no metadata');
           }
 
           const { data: updatedJob, error: updateError } = await supabase

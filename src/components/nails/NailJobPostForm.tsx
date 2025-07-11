@@ -599,10 +599,28 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         try {
           console.log('🔄 [PAYMENT-REDIRECT] Redirecting to Stripe checkout...');
           
-          // Add small delay to ensure state is saved before navigation
+          // Save current state before navigation
+          sessionStorage.setItem('pendingJobSubmission', JSON.stringify({
+            jobData: jobDataPayload,
+            pricing: { tier, finalPrice, durationMonths },
+            timestamp: Date.now()
+          }));
+          
+          // Use safer redirect method to prevent crashes
           setTimeout(() => {
-            window.location.replace(data.url);
-          }, 100);
+            try {
+              // Try window.open first (safer for some browsers)
+              const newWindow = window.open(data.url, '_self');
+              if (!newWindow) {
+                // Fallback to location.href
+                window.location.href = data.url;
+              }
+            } catch (innerError) {
+              console.error('❌ Inner redirect error:', innerError);
+              // Last resort fallback
+              window.location.replace(data.url);
+            }
+          }, 200); // Slightly longer delay for stability
           
         } catch (redirectError) {
           console.error('❌ [PAYMENT-REDIRECT] Error during redirect:', redirectError);
