@@ -90,12 +90,17 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     return 'Contact for details';
   };
 
-  // Safe job image handling - only show fallbacks for paid jobs
-  const getJobImage = () => {
-    // Check for actual uploaded image first with null safety
+  // Enhanced job image handling - support for multiple photos
+  const getJobImages = () => {
+    // Check for multiple uploaded images first (new array format)
+    if (job.image_urls && Array.isArray(job.image_urls) && job.image_urls.length > 0) {
+      return job.image_urls.filter(url => url && typeof url === 'string' && url.trim());
+    }
+    
+    // Check for single uploaded image (backwards compatibility)
     const uploadedImage = job.image_url || job.imageUrl || job.image;
     if (uploadedImage && typeof uploadedImage === 'string' && uploadedImage.trim() && uploadedImage !== '') {
-      return uploadedImage;
+      return [uploadedImage];
     }
     
     // Only show fallback images for paid jobs (premium, gold, diamond)
@@ -107,35 +112,35 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     // Fallback to category-based default for paid jobs only with null safety
     const category = (job.category && typeof job.category === 'string' ? job.category.toLowerCase() : '');
     if (category.includes('nail')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png'];
     }
     if (category.includes('hair')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/modern-hair-salon-1.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/modern-hair-salon-1.png'];
     }
     if (category.includes('barber')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/premium-barbershop-1.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/premium-barbershop-1.png'];
     }
     if (category.includes('massage')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/luxury-spa-1.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/luxury-spa-1.png'];
     }
     if (category.includes('makeup')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/makeup-studio-1.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/makeup-studio-1.png'];
     }
     if (category.includes('lash') || category.includes('brow')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated-11.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated-11.png'];
     }
     if (category.includes('tattoo')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo/tattoo-studio-1.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo/tattoo-studio-1.png'];
     }
     if (category.includes('esthetic') || category.includes('skin')) {
-      return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/premium-facial-spa-1.png';
+      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/premium-facial-spa-1.png'];
     }
     
     // Fallback for paid jobs without specific category
-    return 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png';
+    return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png'];
   };
 
-  const jobImage = getJobImage();
+  const jobImages = getJobImages();
   const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
 
   return (
@@ -143,18 +148,38 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
       data-job-id={job.id}
       className={`card-luxury bg-white rounded-2xl overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}
     >
-      {/* Image Section - Only show if image exists */}
-      {jobImage && (
+      {/* Enhanced Image Section - Support for multiple photos */}
+      {jobImages && jobImages.length > 0 && (
         <div className="relative">
-          <img 
-            src={jobImage}
-            alt={job.title || job.company || 'Job image'}
-            className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
-            onError={(e) => {
-              console.log('Mobile card image failed to load:', jobImage);
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          {jobImages.length === 1 ? (
+            // Single image display
+            <img 
+              src={jobImages[0]}
+              alt={job.title || job.company || 'Job image'}
+              className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
+              onError={(e) => {
+                console.log('Mobile card image failed to load:', jobImages[0]);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            // Multiple images carousel/grid display
+            <div className="relative">
+              <img 
+                src={jobImages[0]}
+                alt={job.title || job.company || 'Primary job image'}
+                className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
+                onError={(e) => {
+                  console.log('Mobile card primary image failed to load:', jobImages[0]);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              {/* Photo count indicator */}
+              <div className="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs font-bold">
+                📸 {jobImages.length} photos
+              </div>
+            </div>
+          )}
           
           {/* Expired overlay */}
           {isExpired && (
@@ -183,7 +208,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
       )}
       
       {/* No Image Placeholder for Free Jobs */}
-      {!jobImage && !isPaidJob && (
+      {(!jobImages || jobImages.length === 0) && !isPaidJob && (
         <div className="px-6 pt-4">
           <Badge className={`${pricingDisplay.color} ${pricingDisplay.glow} flex items-center gap-2 text-sm font-inter font-bold px-3 py-1 rounded-full w-fit`}>
             {pricingDisplay.icon}
@@ -193,7 +218,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
       )}
 
       {/* Content Section */}
-      <div className={`p-6 ${!jobImage ? 'pt-4' : ''}`}>
+      <div className={`p-6 ${(!jobImages || jobImages.length === 0) ? 'pt-4' : ''}`}>
         {/* Title and Company */}
         <div className="mb-4">
           <h3 className={`font-playfair font-black text-foreground mb-2 ${expanded ? 'text-xl' : 'text-lg'} line-clamp-2 leading-tight`}>

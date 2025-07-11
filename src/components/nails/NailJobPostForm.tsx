@@ -64,7 +64,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
   const [isLoadingFreeJobStatus, setIsLoadingFreeJobStatus] = useState(true);
   const [isGeneratingTranslation, setIsGeneratingTranslation] = useState(false);
   const [showTemplates, setShowTemplates] = useState(!editJobId);
-  // FIXED: Add photo upload state for paid jobs
+  // FIXED: Add photo upload state for paid jobs (up to 5 photos)
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
 
   // Vietnamese job templates (real Facebook-style job ads)
