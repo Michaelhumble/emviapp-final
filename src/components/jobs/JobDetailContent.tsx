@@ -53,16 +53,78 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           </div>
         </div>
 
-        {/* Image Section */}
-        {job.image && (
-          <div className="mb-8">
-            <img
-              src={job.image}
-              alt={job.title}
-              className="w-full h-64 object-cover rounded-lg shadow-md"
-            />
-          </div>
-        )}
+        {/* Enhanced Image Gallery Section */}
+        {(() => {
+          // Get job images with priority order
+          const jobAny = job as any;
+          let jobImages: string[] = [];
+
+          // Check for multiple uploaded images first (new format)
+          if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
+            const validUrls = jobAny.image_urls.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
+            if (validUrls.length > 0) jobImages = validUrls;
+          }
+          
+          // Check photos field (backup format)
+          if (jobImages.length === 0 && jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
+            const validUrls = jobAny.photos.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
+            if (validUrls.length > 0) jobImages = validUrls;
+          }
+          
+          // Check for single uploaded image (backwards compatibility)
+          if (jobImages.length === 0) {
+            const singleImage = job.image_url || jobAny.imageUrl || job.image;
+            if (singleImage && typeof singleImage === 'string' && singleImage.trim()) {
+              jobImages = [singleImage];
+            }
+          }
+
+          console.log('🔍 [JOB-DETAIL-CONTENT] Found images:', jobImages);
+
+          if (jobImages.length === 0) return null;
+
+          return (
+            <div className="mb-8">
+              {jobImages.length === 1 ? (
+                // Single image display
+                <img
+                  src={jobImages[0]}
+                  alt={job.title}
+                  className="w-full h-64 object-cover rounded-lg shadow-md"
+                  onError={(e) => {
+                    console.error('❌ [JOB-DETAIL-CONTENT] Image failed to load:', jobImages[0]);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                // Multiple images gallery
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {jobImages.map((imageUrl, index) => (
+                    <img
+                      key={index}
+                      src={imageUrl}
+                      alt={`${job.title} - Image ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-75 transition-opacity"
+                      onError={(e) => {
+                        console.error('❌ [JOB-DETAIL-CONTENT] Image failed to load:', imageUrl);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onClick={() => {
+                        // Open image in modal or new tab for better viewing
+                        window.open(imageUrl, '_blank');
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+              {jobImages.length > 1 && (
+                <p className="text-sm text-gray-500 mt-2 text-center">
+                  📸 {jobImages.length} photos - Click to view full size
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
