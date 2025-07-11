@@ -57,6 +57,8 @@ export const useJobsData = () => {
         console.log('🔍 [JOBS-DATA] Transforming job:', {
           id: job.id,
           title: job.title,
+          vietnamese_title: job.vietnamese_title,
+          vietnamese_description: job.vietnamese_description,
           user_id: job.user_id,
           status: job.status,
           created_at: job.created_at
@@ -78,6 +80,9 @@ export const useJobsData = () => {
           requirements: job.requirements || '',
           pricing_tier: job.pricing_tier || 'free',
           category: job.category || "Other",
+          // FIXED: Include Vietnamese fields for nail jobs
+          vietnamese_title: job.vietnamese_title || null,
+          vietnamese_description: job.vietnamese_description || null,
           // Safe image handling - only set if actually exists
           imageUrl: job.image_url || null,
           image_url: job.image_url || null,
