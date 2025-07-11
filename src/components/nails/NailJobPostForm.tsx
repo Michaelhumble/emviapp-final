@@ -31,10 +31,11 @@ const nailJobFormSchema = z.object({
   description: z.string().optional(), // English description is optional
   vietnameseDescription: z.string().min(10, "Vietnamese description must be at least 10 characters"),
   salaryRange: z.string().min(1, "Salary range is required"),
-  contactName: z.string().optional(),
-  contactPhone: z.string().optional(),
-  contactEmail: z.string().optional(),
-  contactNotes: z.string().optional(),
+      weeklyPay: z.boolean().default(true), // Default to weekly pay for nail jobs
+      contactName: z.string().optional(),
+      contactPhone: z.string().optional(),
+      contactEmail: z.string().optional(),
+      contactNotes: z.string().optional(),
 });
 
 type NailJobFormValues = z.infer<typeof nailJobFormSchema>;
@@ -148,6 +149,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       description: editJobData?.description || '',
       vietnameseDescription: editJobData?.vietnamese_description || '',
       salaryRange: editJobData?.compensation_details || '',
+      weeklyPay: editJobData?.compensation_details?.includes('/tuần') !== false, // Default to true for nail jobs
       contactName: editJobData?.contact_info?.owner_name || '',
       contactPhone: editJobData?.contact_info?.phone || '',
       contactEmail: editJobData?.contact_info?.email || '',
@@ -175,6 +177,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
   const currentContactName = form.watch('contactName');
   const currentContactPhone = form.watch('contactPhone');
   const currentContactEmail = form.watch('contactEmail');
+  const weeklyPay = form.watch('weeklyPay');
 
   // Check if user has already posted a free job
   useEffect(() => {
@@ -243,23 +246,28 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     toast.success('Vietnamese translation generated!');
   };
 
-  // Format salary with /tuần suffix (only add once)
-  const formatSalaryForNails = (salary: string) => {
+  // Format salary with /tuần suffix based on weeklyPay toggle
+  const formatSalaryForNails = (salary: string, isWeekly: boolean = true) => {
     if (!salary) return '';
     const trimmedSalary = salary.trim();
-    if (trimmedSalary.endsWith('/tuần') || trimmedSalary.endsWith('/ngày')) return trimmedSalary;
+    
+    // Remove existing frequency indicators first
+    let cleanSalary = trimmedSalary.replace(/\/(tuần|ngày|week|day|hour|giờ)$/i, '');
     
     // Check if it already has a frequency indicator
-    if (trimmedSalary.includes('/')) return trimmedSalary;
+    if (trimmedSalary.includes('/')) {
+      return trimmedSalary; // Keep as is if already has frequency
+    }
     
-    return `${trimmedSalary}/tuần`;
+    // Add frequency based on toggle
+    return isWeekly ? `${cleanSalary}/tuần` : cleanSalary;
   };
 
   // Handle salary input with auto-formatting on blur
   const handleSalaryBlur = (field: any) => {
     const currentValue = field.value;
     if (currentValue && !currentValue.includes('/tuần') && !currentValue.includes('/ngày') && !currentValue.includes('/')) {
-      field.onChange(formatSalaryForNails(currentValue));
+      field.onChange(formatSalaryForNails(currentValue, weeklyPay));
     }
   };
 
@@ -332,7 +340,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         description: data.description?.trim() || data.vietnameseDescription?.trim() || '',
         vietnamese_title: data.vietnameseTitle?.trim(),
         vietnamese_description: data.vietnameseDescription?.trim(),
-        compensation_details: formatSalaryForNails(data.salaryRange),
+        compensation_details: formatSalaryForNails(data.salaryRange, data.weeklyPay),
         contact_info: {
           owner_name: data.contactName?.trim() || '',
           phone: data.contactPhone?.trim() || '',
@@ -420,7 +428,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           jobData: {
             ...formData,
             category: 'Nails',
-            compensation_details: formatSalaryForNails(formData.salaryRange),
+            compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
             vietnamese_title: formData.vietnameseTitle,
             vietnamese_description: formData.vietnameseDescription,
           }
@@ -743,9 +751,31 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
                              />
                            </FormControl>
                            <p className="text-xs text-gray-500">
-                             Will automatically add "/tuần" when you finish typing
+                             {weeklyPay ? 'Will automatically add "/tuần" when you finish typing' : 'Enter salary amount (no frequency will be added)'}
                            </p>
                            <FormMessage />
+                         </FormItem>
+                       )}
+                     />
+
+                     {/* Weekly Pay Toggle */}
+                     <FormField
+                       control={form.control}
+                       name="weeklyPay"
+                       render={({ field }) => (
+                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                           <div className="space-y-0.5">
+                             <FormLabel className="text-base">Weekly Pay</FormLabel>
+                             <p className="text-sm text-gray-500">
+                               Add "/tuần" suffix to indicate weekly payment
+                             </p>
+                           </div>
+                           <FormControl>
+                             <Switch
+                               checked={field.value}
+                               onCheckedChange={field.onChange}
+                             />
+                           </FormControl>
                          </FormItem>
                        )}
                      />
