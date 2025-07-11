@@ -350,22 +350,67 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     setIsSubmitting(true);
 
     try {
-      // CRITICAL FIX: Handle photo merging for edit mode
+      // COMPREHENSIVE PHOTO MERGING: Handle ALL photo sources and merge properly
       let finalImageUrls: string[] = [];
       
-      // Step 1: Get existing photos if editing
+      // Step 1: Get existing photos from ALL sources if editing
       if (editJobId && editJobData) {
-        const existingPhotos = editJobData.photos || editJobData.image_urls || [];
-        if (Array.isArray(existingPhotos)) {
-          finalImageUrls = existingPhotos.filter(url => url && url.trim() && url.startsWith('http'));
-          console.log('🔍 [EDIT-MODE-PHOTOS] Existing photos found:', finalImageUrls);
+        console.log('📸 [EDIT-MODE-PHOTOS] Analyzing existing job data for photos:', {
+          photos: editJobData.photos,
+          image_urls: editJobData.image_urls,
+          image_url: editJobData.image_url,
+          'metadata.photos': editJobData.metadata?.photos,
+          'metadata.image_urls': editJobData.metadata?.image_urls
+        });
+        
+        // PRIORITY 1: Check metadata fields (webhook processed jobs)
+        if (editJobData.metadata?.photos && Array.isArray(editJobData.metadata.photos)) {
+          finalImageUrls = editJobData.metadata.photos.filter(url => 
+            url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+          );
+          console.log('📸 [EDIT-MODE-PHOTOS] Found existing photos in metadata.photos:', finalImageUrls);
         }
+        
+        // PRIORITY 2: Check metadata.image_urls
+        if (finalImageUrls.length === 0 && editJobData.metadata?.image_urls && Array.isArray(editJobData.metadata.image_urls)) {
+          finalImageUrls = editJobData.metadata.image_urls.filter(url => 
+            url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+          );
+          console.log('📸 [EDIT-MODE-PHOTOS] Found existing photos in metadata.image_urls:', finalImageUrls);
+        }
+        
+        // PRIORITY 3: Check direct photos field
+        if (finalImageUrls.length === 0 && editJobData.photos && Array.isArray(editJobData.photos)) {
+          finalImageUrls = editJobData.photos.filter(url => 
+            url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+          );
+          console.log('📸 [EDIT-MODE-PHOTOS] Found existing photos in photos field:', finalImageUrls);
+        }
+        
+        // PRIORITY 4: Check direct image_urls field
+        if (finalImageUrls.length === 0 && editJobData.image_urls && Array.isArray(editJobData.image_urls)) {
+          finalImageUrls = editJobData.image_urls.filter(url => 
+            url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+          );
+          console.log('📸 [EDIT-MODE-PHOTOS] Found existing photos in image_urls field:', finalImageUrls);
+        }
+        
+        // PRIORITY 5: Check single image_url (fallback)
+        if (finalImageUrls.length === 0 && editJobData.image_url) {
+          const singleUrl = editJobData.image_url.trim();
+          if (singleUrl && singleUrl !== 'photos-uploaded' && singleUrl.startsWith('http')) {
+            finalImageUrls = [singleUrl];
+            console.log('📸 [EDIT-MODE-PHOTOS] Found existing photo in image_url field:', finalImageUrls);
+          }
+        }
+        
+        console.log('📸 [EDIT-MODE-PHOTOS] FINAL existing photos found:', finalImageUrls);
       }
       
       // Step 2: Upload new photos if any
       let newlyUploadedUrls: string[] = [];
       if (photoUploads.length > 0) {
-        console.log('🔍 [EDIT-JOB-PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'new photos');
+        console.log('📸 [EDIT-JOB-PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'new photos to merge with', finalImageUrls.length, 'existing photos');
         
         try {
           const uploadPromises = photoUploads.map(async (file, index) => {
@@ -437,7 +482,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         user_id: user.id,
         status: 'active',
         pricing_tier: editJobId ? (editJobData?.pricing_tier || 'free') : 'free', // Preserve original pricing tier when editing
-        // Store images in multiple formats exactly like working free jobs
+        // COMPREHENSIVE: Store photos in ALL possible fields for maximum compatibility
         image_url: finalImageUrls.length > 0 ? finalImageUrls[0] : null,
         image_urls: finalImageUrls,
         photos: finalImageUrls,
@@ -454,6 +499,19 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         }
       };
 
+      // COMPREHENSIVE DEBUG: Log all photo fields in payload
+      console.log('📸 [COMPREHENSIVE-SAVE] Complete payload with ALL photo fields:', {
+        editMode: !!editJobId,
+        jobId: editJobId,
+        totalPhotos: finalImageUrls.length,
+        'payload.image_url': payload.image_url,
+        'payload.image_urls': payload.image_urls,
+        'payload.photos': payload.photos,
+        'payload.metadata.image_urls': payload.metadata.image_urls,
+        'payload.metadata.photos': payload.metadata.photos,
+        photoUrls: finalImageUrls
+      });
+
       // DEBUG: Log the exact payload being sent to Supabase
       console.log("🔍 [FORM-SUBMIT] Job Payload being sent to Supabase:", payload);
       console.log("🔍 [FORM-SUBMIT] Contact Info:", payload.contact_info);
@@ -469,12 +527,24 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           .select();
 
         if (error) {
-          console.error('Error updating nail job:', error);
+          console.error('❌ [JOB-EDIT] Error updating nail job:', error);
           toast.error(`Failed to update job: ${error.message}`);
           return;
         }
 
-        toast.success('Job updated successfully!');
+        // VERIFICATION: Log the final saved job data
+        console.log('✅ [JOB-EDIT] Job updated successfully with comprehensive photos:', {
+          jobId: editJobId,
+          updatedData: updateData?.[0],
+          'saved.image_url': updateData?.[0]?.image_url,
+          'saved.image_urls': updateData?.[0]?.image_urls,
+          'saved.photos': updateData?.[0]?.photos,
+          'saved.metadata.photos': (updateData?.[0]?.metadata as any)?.photos,
+          'saved.metadata.image_urls': (updateData?.[0]?.metadata as any)?.image_urls,
+          totalPhotosInPayload: finalImageUrls.length
+        });
+
+        toast.success(`Job updated successfully with ${finalImageUrls.length} photos!`);
         navigate('/jobs'); // Navigate directly to jobs page for edits
       } else {
         // Create new job
@@ -484,12 +554,24 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           .select();
 
         if (error) {
-          console.error('Error creating nail job:', error);
+          console.error('❌ [FREE-JOB] Error creating nail job:', error);
           toast.error(`Failed to create job: ${error.message}`);
           return;
         }
 
-        toast.success('Nail tech job posted successfully!');
+        // VERIFICATION: Log the final saved job data
+        console.log('✅ [FREE-JOB] Job created successfully with comprehensive photos:', {
+          jobId: insertData[0].id,
+          createdData: insertData[0],
+          'saved.image_url': insertData[0]?.image_url,
+          'saved.image_urls': insertData[0]?.image_urls,
+          'saved.photos': insertData[0]?.photos,
+          'saved.metadata.photos': (insertData[0]?.metadata as any)?.photos,
+          'saved.metadata.image_urls': (insertData[0]?.metadata as any)?.image_urls,
+          totalPhotosInPayload: finalImageUrls.length
+        });
+
+        toast.success(`Nail tech job posted successfully with ${finalImageUrls.length} photos!`);
         navigate('/nails-job-success', { 
           state: { 
             jobId: insertData[0].id,
@@ -579,7 +661,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         vietnamese_description: formData.vietnameseDescription?.trim(),
         compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
         contact_info: contactInfo,
-        // Store images using exact same structure as free jobs
+        // COMPREHENSIVE: Store photos in ALL possible fields for webhook processing
         image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null,
         image_urls: uploadedImageUrls,
         photos: uploadedImageUrls,
@@ -590,10 +672,17 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         }
       };
       
-      console.log('🔍 [PAID-JOB-CHECKOUT-DEBUG] Job data payload:', {
+      // COMPREHENSIVE DEBUG: Log all photo fields for paid job
+      console.log('📸 [PAID-JOB-CHECKOUT-DEBUG] Complete draft job payload with ALL photo fields:', {
         photoCount: uploadedImageUrls.length,
+        'payload.image_url': jobDataPayload.image_url,
+        'payload.image_urls': jobDataPayload.image_urls,
+        'payload.photos': jobDataPayload.photos,
+        'payload.metadata.image_urls': jobDataPayload.metadata.image_urls,
+        'payload.metadata.photos': jobDataPayload.metadata.photos,
         contactInfo,
-        hasImages: uploadedImageUrls.length > 0
+        hasImages: uploadedImageUrls.length > 0,
+        allPhotoUrls: uploadedImageUrls
       });
 
       // Create Stripe checkout session

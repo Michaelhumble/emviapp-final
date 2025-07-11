@@ -256,7 +256,7 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           const jobAny = job as any;
           let jobImages: string[] = [];
 
-          // Collect all valid photo URLs from multiple sources
+          // COMPREHENSIVE: Collect all valid photo URLs from ALL possible sources
           const photoSources = [
             jobAny.metadata?.photos,
             jobAny.metadata?.image_urls, 
@@ -265,23 +265,52 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
             job.image_url ? [job.image_url] : null
           ];
 
-          // Filter and combine all valid URLs
+          // Filter and combine all valid URLs with comprehensive logging
           for (const source of photoSources) {
             if (Array.isArray(source)) {
               const validUrls = source.filter((url: any) => 
                 url && typeof url === 'string' && url.trim() && 
                 url !== 'photos-uploaded' && url.startsWith('http')
               );
-              jobImages.push(...validUrls);
+              if (validUrls.length > 0) {
+                console.log('📸 [JOB-DETAIL] Found valid photos in source:', validUrls);
+                jobImages.push(...validUrls);
+              }
             }
           }
 
           // Remove duplicates
           jobImages = [...new Set(jobImages)];
+          
+          // COMPREHENSIVE DEBUG: Log final photo analysis
+          console.log('📸 [JOB-DETAIL] COMPREHENSIVE photo analysis for job', job.id, ':', {
+            'metadata.photos': jobAny.metadata?.photos,
+            'metadata.image_urls': jobAny.metadata?.image_urls,
+            'image_urls': jobAny.image_urls,
+            'photos': jobAny.photos,
+            'image_url': job.image_url,
+            'finalJobImages': jobImages,
+            'totalPhotos': jobImages.length,
+            'pricingTier': job.pricing_tier,
+            'isPaidJob': job.pricing_tier && job.pricing_tier !== 'free'
+          });
 
-          // Only show fallback if NO real photos were uploaded
+          // COMPREHENSIVE PHOTO DISPLAY: Show real photos or clear fallback message
           if (jobImages.length === 0) {
-            return null; // No fallback - only show real photos
+            // Show clear message for paid jobs with no photos
+            if (job.pricing_tier && job.pricing_tier !== 'free') {
+              return (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-4">📸 Job Photos</h3>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                    <div className="text-gray-400 mb-2">📸</div>
+                    <p className="text-gray-500 text-sm font-medium">No photos uploaded</p>
+                    <p className="text-gray-400 text-xs mt-1">Contact employer for more details</p>
+                  </div>
+                </div>
+              );
+            }
+            return null; // No photo section for free jobs without photos
           }
 
           return (
