@@ -90,17 +90,73 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     return 'Contact for details';
   };
 
-  // Enhanced job image handling - support for multiple photos
+  // Enhanced job image handling - support for multiple photos (similar to BilingualJobCard)
   const getJobImages = () => {
-    // Check for multiple uploaded images first (new array format)
-    if (job.image_urls && Array.isArray(job.image_urls) && job.image_urls.length > 0) {
-      return job.image_urls.filter(url => url && typeof url === 'string' && url.trim());
+    const jobAny = job as any; // Type assertion to access potentially new fields
+    console.log('🚨 [DEBUG-MOBILE-CARD] ===== MOBILE CARD PHOTO ANALYSIS =====');
+    console.log('📸 [DEBUG-MOBILE-CARD] Full job object for ID:', job.id, jobAny);
+
+    let allFoundImages: string[] = [];
+
+    // Check metadata for photos first (webhook processed jobs)
+    if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
+      const validUrls = jobAny.metadata.photos.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🚨 [DEBUG-MOBILE-CARD] Found metadata photos:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using metadata.photos (highest priority)');
+        return validUrls;
+      }
+    }
+
+    // Check metadata for image_urls (webhook processed jobs)
+    if (jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
+      const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🚨 [DEBUG-MOBILE-CARD] Found metadata image_urls:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using metadata.image_urls');
+        return validUrls;
+      }
+    }
+
+    // Check direct image_urls field (direct upload)
+    if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
+      const validUrls = jobAny.image_urls.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🚨 [DEBUG-MOBILE-CARD] Found direct image_urls:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using direct image_urls');
+        return validUrls;
+      }
+    }
+    
+    // Check direct photos field (direct upload)
+    if (jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
+      const validUrls = jobAny.photos.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🚨 [DEBUG-MOBILE-CARD] Found direct photos:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using direct photos');
+        return validUrls;
+      }
     }
     
     // Check for single uploaded image (backwards compatibility)
-    const uploadedImage = job.image_url || job.imageUrl || job.image;
-    if (uploadedImage && typeof uploadedImage === 'string' && uploadedImage.trim() && uploadedImage !== '') {
-      return [uploadedImage];
+    const singleImage = job.image_url || jobAny.imageUrl || jobAny.image || null;
+    if (singleImage && typeof singleImage === 'string' && singleImage.trim() && singleImage !== 'photos-uploaded') {
+      console.log('🚨 [DEBUG-MOBILE-CARD] Found single image:', singleImage);
+      allFoundImages = [singleImage];
+      console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using single image fallback');
+      return [singleImage];
     }
     
     // Only show fallback images for paid jobs (premium, gold, diamond)
@@ -148,7 +204,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
       data-job-id={job.id}
       className={`card-luxury bg-white rounded-2xl overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}
     >
-      {/* Enhanced Image Section - Support for multiple photos */}
+      {/* Enhanced Image Section - Support for multiple photos with thumbnails */}
       {jobImages && jobImages.length > 0 && (
         <div className="relative">
           {jobImages.length === 1 ? (
@@ -163,20 +219,47 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
               }}
             />
           ) : (
-            // Multiple images carousel/grid display
-            <div className="relative">
-              <img 
-                src={jobImages[0]}
-                alt={job.title || job.company || 'Primary job image'}
-                className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
-                onError={(e) => {
-                  console.log('Mobile card primary image failed to load:', jobImages[0]);
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-              {/* Photo count indicator */}
-              <div className="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs font-bold">
-                📸 {jobImages.length} photos
+            // Multiple images with main photo + thumbnail row
+            <div>
+              {/* Main photo */}
+              <div className="relative">
+                <img 
+                  src={jobImages[0]}
+                  alt={job.title || job.company || 'Primary job image'}
+                  className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
+                  onError={(e) => {
+                    console.log('Mobile card primary image failed to load:', jobImages[0]);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                {/* Photo count badge */}
+                <div className="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium">
+                  📸 {jobImages.length} photos
+                </div>
+              </div>
+              
+              {/* Thumbnail row underneath */}
+              <div className="px-4 py-2 bg-gray-50 flex gap-2">
+                {jobImages.slice(1, 4).map((imageUrl, index) => (
+                  <div 
+                    key={index}
+                    className="relative w-10 h-10 rounded border overflow-hidden bg-white shadow-sm"
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`Preview ${index + 2}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => e.currentTarget.style.display = 'none'}
+                    />
+                  </div>
+                ))}
+                
+                {/* +X more thumbnail if there are more than 4 photos */}
+                {jobImages.length > 4 && (
+                  <div className="w-10 h-10 rounded border bg-gray-200 flex items-center justify-center shadow-sm">
+                    <span className="text-gray-600 text-xs font-medium">+{jobImages.length - 4}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
