@@ -114,6 +114,14 @@ export const useJobsData = () => {
   useEffect(() => {
     console.log('🔍 [JOBS-DATA] useEffect triggered, calling fetchJobs');
     fetchJobs();
+    
+    // Set up periodic refresh to handle expiration updates
+    const interval = setInterval(() => {
+      console.log('🔄 [JOBS-DATA] Periodic refresh for expiration check');
+      fetchJobs();
+    }, 5 * 60 * 1000); // Refresh every 5 minutes
+    
+    return () => clearInterval(interval);
   }, []);
 
   console.log('🔍 [JOBS-DATA] Hook returning:', {

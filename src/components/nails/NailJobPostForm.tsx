@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import NailJobPreviewCard from './NailJobPreviewCard';
 import JobPricingTable from '@/components/posting/job/JobPricingTable';
 import PhotoUploader from '@/components/posting/PhotoUploader';
+import MultiPhotoUploader from '@/components/posting/MultiPhotoUploader';
 
 const nailJobFormSchema = z.object({
   planType: z.enum(['free', 'paid'], { 
@@ -468,8 +469,9 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
             vietnamese_title: formData.vietnameseTitle,
             vietnamese_description: formData.vietnameseDescription,
-            // FIXED: Include uploaded image URL for paid jobs
-            image_url: imageUrl,
+            // FIXED: Include multiple image URLs for paid jobs
+            image_url: photoUploads.length > 0 ? 'photos-uploaded' : '', // Primary image marker
+            image_urls: [], // Will be populated after upload
           }
         }
       });
@@ -859,21 +861,23 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
                        />
                      )}
 
-                     {/* Photo Upload for Paid Jobs */}
-                     {selectedPlan === 'paid' && (
-                       <div className="space-y-4">
-                         <h3 className="text-lg font-semibold text-gray-900">Job Photo (Optional)</h3>
-                         <p className="text-sm text-gray-600">
-                           Add a photo to make your paid job stand out more to candidates.
-                         </p>
-                         <PhotoUploader
-                           files={photoUploads}
-                           onChange={setPhotoUploads}
-                           maxFiles={1}
-                           accept="image/*"
-                         />
-                       </div>
-                     )}
+                      {/* ENHANCED: Multi-Photo Upload for Paid Jobs */}
+                      {selectedPlan === 'paid' && (
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">📸 Job Photos</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Upload up to 5 photos to showcase your salon and attract top talent. 
+                            Drag photos to reorder them - the first photo will be your main display image.
+                          </p>
+                          <MultiPhotoUploader
+                            files={photoUploads}
+                            onChange={setPhotoUploads}
+                            maxFiles={5}
+                            maxSize={5 * 1024 * 1024} // 5MB
+                            accept={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
+                          />
+                        </div>
+                      )}
 
                      {/* Contact Information */}
                      <div className="space-y-4">
