@@ -422,26 +422,26 @@ const NailJobs = () => {
                         <MapPin className="h-4 w-4 mr-2" /> 
                         <span>{selectedJob.location}</span>
                       </div>
-                      <div className="flex items-center text-gray-600 mb-2">
+                      <div className="flex items-center text-gray-600 mb-4">
                         <DollarSign className="h-4 w-4 mr-2" /> 
                         <span>{selectedJob.salary}</span>
                       </div>
-                    </div>
-
-                    {/* Contact Information - Moved up below salary */}
-                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                      <h4 className="font-medium mb-3 flex items-center">
-                        <Building className="h-4 w-4 mr-2 text-blue-600" />
-                        Contact Information
-                      </h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center">
-                          <Building className="h-4 w-4 mr-2 text-gray-600" />
-                          <span className="font-medium text-gray-900">{selectedJob.salon}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Phone className="h-4 w-4 mr-2 text-gray-600" />
-                          <span className="text-gray-900">{selectedJob.phone}</span>
+                      
+                      {/* Contact Information Section - Positioned directly after salary/location */}
+                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-4">
+                        <h4 className="font-medium mb-3 flex items-center">
+                          <Building className="h-4 w-4 mr-2 text-blue-600" />
+                          Contact Information
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center">
+                            <Building className="h-4 w-4 mr-2 text-gray-600" />
+                            <span className="font-medium text-gray-900">{selectedJob.salon}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Phone className="h-4 w-4 mr-2 text-gray-600" />
+                            <span className="text-gray-900">{selectedJob.phone}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
