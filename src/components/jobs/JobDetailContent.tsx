@@ -175,6 +175,140 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           );
         })()}
 
+        {/* Contact Information - FIRST (Top Priority for Paid Jobs) */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Phone className="h-5 w-5 mr-2" />
+              Contact Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isSignedIn ? (
+              (() => {
+                const jobAny = job as any;
+                let contactInfo = null;
+
+                console.log('🔍 [JOB-DETAIL-MODAL] Checking contact info for paid job:', {
+                  pricing_tier: job.pricing_tier,
+                  'metadata.contact_info': jobAny.metadata?.contact_info,
+                  'contact_info': job.contact_info
+                });
+
+                // Priority 1: Check metadata.contact_info (webhook processed)
+                if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
+                  contactInfo = jobAny.metadata.contact_info;
+                  console.log('🔍 [JOB-DETAIL-MODAL] Using metadata contact info:', contactInfo);
+                }
+                // Priority 2: Check direct contact_info field
+                else if (job.contact_info && typeof job.contact_info === 'object') {
+                  contactInfo = job.contact_info;
+                  console.log('🔍 [JOB-DETAIL-MODAL] Using direct contact info:', contactInfo);
+                }
+
+                if (!contactInfo) {
+                  console.log('⚠️ [JOB-DETAIL-MODAL] No contact info found');
+                  return (
+                    <div className="text-center py-4">
+                      <p className="text-gray-500 text-sm">Contact information not available</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="space-y-3">
+                    {contactInfo.salon_name && (
+                      <div>
+                        <span className="font-medium text-gray-600">Salon:</span>
+                        <p className="text-gray-900 font-medium">{contactInfo.salon_name}</p>
+                      </div>
+                    )}
+                    {contactInfo.owner_name && (
+                      <div>
+                        <span className="font-medium text-gray-600">Contact Person:</span>
+                        <p className="text-gray-900">{contactInfo.owner_name}</p>
+                      </div>
+                    )}
+                    {contactInfo.phone && (
+                      <div>
+                        <span className="font-medium text-gray-600">Phone:</span>
+                        <p className="text-gray-900">
+                          <a href={`tel:${contactInfo.phone}`} className="hover:text-blue-600 transition-colors">
+                            {contactInfo.phone}
+                          </a>
+                        </p>
+                      </div>
+                    )}
+                    {contactInfo.email && (
+                      <div>
+                        <span className="font-medium text-gray-600">Email:</span>
+                        <p className="text-gray-900">
+                          <a href={`mailto:${contactInfo.email}`} className="hover:text-blue-600 transition-colors">
+                            {contactInfo.email}
+                          </a>
+                        </p>
+                      </div>
+                    )}
+                    {contactInfo.notes && (
+                      <div>
+                        <span className="font-medium text-gray-600">Notes:</span>
+                        <p className="text-gray-700 text-sm">{contactInfo.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()
+            ) : (
+              <AuthAction
+                customTitle="Sign in to see contact details"
+                onAction={() => true}
+                fallbackContent={
+                  <div className="text-center py-4">
+                    <LockIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                    <p className="text-gray-500 text-sm">
+                      Sign in to view contact information
+                    </p>
+                  </div>
+                }
+              />
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Salary/Location Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {/* Compensation */}
+          {(job.salary_range || job.compensation_details || job.price) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <DollarSign className="h-5 w-5 mr-2" />
+                  Compensation
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold text-green-600">
+                  {job.salary_range || job.compensation_details || job.price}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Employment Type */}
+          {job.employment_type && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Employment Type</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Badge variant="outline" className="capitalize">
+                  {job.employment_type.replace('-', ' ')}
+                </Badge>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -283,130 +417,6 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Compensation */}
-            {(job.salary_range || job.compensation_details || job.price) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <DollarSign className="h-5 w-5 mr-2" />
-                    Compensation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-lg font-semibold text-green-600">
-                    {job.salary_range || job.compensation_details || job.price}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Employment Type */}
-            {job.employment_type && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Employment Type</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="outline" className="capitalize">
-                    {job.employment_type.replace('-', ' ')}
-                  </Badge>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Contact Information - Gated */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Phone className="h-5 w-5 mr-2" />
-                  Contact Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                 {isSignedIn ? (
-                  (() => {
-                    const jobAny = job as any;
-                    let contactInfo = null;
-
-                    // Priority 1: Check metadata.contact_info (webhook processed)
-                    if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
-                      contactInfo = jobAny.metadata.contact_info;
-                      console.log('🔍 [JOB-DETAIL-MODAL] Using metadata contact info:', contactInfo);
-                    }
-                    // Priority 2: Check direct contact_info field
-                    else if (job.contact_info && typeof job.contact_info === 'object') {
-                      contactInfo = job.contact_info;
-                      console.log('🔍 [JOB-DETAIL-MODAL] Using direct contact info:', contactInfo);
-                    }
-
-                    if (!contactInfo) {
-                      console.log('⚠️ [JOB-DETAIL-MODAL] No contact info found');
-                      return (
-                        <div className="text-center py-4">
-                          <p className="text-gray-500 text-sm">Contact information not available</p>
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div className="space-y-3">
-                        {contactInfo.salon_name && (
-                          <div>
-                            <span className="font-medium text-gray-600">Salon:</span>
-                            <p className="text-gray-900 font-medium">{contactInfo.salon_name}</p>
-                          </div>
-                        )}
-                        {contactInfo.owner_name && (
-                          <div>
-                            <span className="font-medium text-gray-600">Contact Person:</span>
-                            <p className="text-gray-900">{contactInfo.owner_name}</p>
-                          </div>
-                        )}
-                        {contactInfo.phone && (
-                          <div>
-                            <span className="font-medium text-gray-600">Phone:</span>
-                            <p className="text-gray-900">
-                              <a href={`tel:${contactInfo.phone}`} className="hover:text-blue-600 transition-colors">
-                                {contactInfo.phone}
-                              </a>
-                            </p>
-                          </div>
-                        )}
-                        {contactInfo.email && (
-                          <div>
-                            <span className="font-medium text-gray-600">Email:</span>
-                            <p className="text-gray-900">
-                              <a href={`mailto:${contactInfo.email}`} className="hover:text-blue-600 transition-colors">
-                                {contactInfo.email}
-                              </a>
-                            </p>
-                          </div>
-                        )}
-                        {contactInfo.notes && (
-                          <div>
-                            <span className="font-medium text-gray-600">Notes:</span>
-                            <p className="text-gray-700 text-sm">{contactInfo.notes}</p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()
-                ) : (
-                  <AuthAction
-                    customTitle="Sign in to see contact details"
-                    onAction={() => true}
-                    fallbackContent={
-                      <div className="text-center py-4">
-                        <LockIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                        <p className="text-gray-500 text-sm">
-                          Sign in to view contact information
-                        </p>
-                      </div>
-                    }
-                  />
-                )}
-              </CardContent>
-            </Card>
 
             {/* Featured Badge */}
             {(job.is_featured || job.featured) && (
