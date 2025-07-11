@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Phone, MapPin, DollarSign, Clock, Star, Building2 } from 'lucide-react';
+import { X, Phone, MapPin, DollarSign, Clock, Star, Building2, FileText } from 'lucide-react';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface FOMOJob {
@@ -72,42 +72,46 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
             </Badge>
           </div>
 
-          {/* Key Details */}
+          {/* Salary and Location - EXACT Reference Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Salary */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+            {/* Weekly Salary */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center mb-2">
                 <DollarSign className="w-5 h-5 text-green-600 mr-2" />
-                <h3 className="font-bold text-green-800">Weekly Salary</h3>
+                <h3 className="font-semibold text-green-800">Weekly Salary</h3>
               </div>
-              <p className="text-2xl font-bold text-green-600">{job.salary}</p>
+              <p className="text-2xl font-bold text-green-700">{job.salary}</p>
             </div>
 
             {/* Location */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center mb-2">
                 <MapPin className="w-5 h-5 text-blue-600 mr-2" />
-                <h3 className="font-bold text-blue-800">Location</h3>
+                <h3 className="font-semibold text-blue-800">Location</h3>
               </div>
-              <p className="text-lg font-semibold text-blue-600">{job.location}</p>
+              <p className="text-2xl font-bold text-blue-700">{job.location}</p>
             </div>
           </div>
 
-          {/* Contact Information */}
-          <div className={`border rounded-xl p-6 ${isSignedIn ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+          {/* Contact Information - EXACT Reference Position */}
+          <div className={`rounded-lg p-4 ${isSignedIn ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-center mb-3">
               <Phone className={`w-5 h-5 mr-2 ${isSignedIn ? 'text-green-600' : 'text-red-600'}`} />
-              <h3 className={`font-bold ${isSignedIn ? 'text-green-800' : 'text-red-800'}`}>
+              <h3 className={`font-semibold ${isSignedIn ? 'text-green-800' : 'text-red-800'}`}>
                 Contact Information
               </h3>
             </div>
             
             {isSignedIn ? (
-              <div className="space-y-2">
-                <p className="text-lg font-bold text-green-600">📞 {job.phone}</p>
-                <p className="text-sm text-green-700">
-                  ✅ Contact details unlocked! Call now to apply.
-                </p>
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 text-green-600 mr-2" />
+                  <span className="text-lg font-semibold text-green-800">{job.phone}</span>
+                </div>
+                <div className="flex items-center mt-3 text-green-700">
+                  <span className="text-green-600 mr-2">✓</span>
+                  <span className="text-sm font-medium">Contact details unlocked! Call now to apply.</span>
+                </div>
               </div>
             ) : (
               <div className="space-y-3">
@@ -122,15 +126,17 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
             )}
           </div>
 
-          {/* Job Description */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center mb-3">
-              <Building2 className="w-5 h-5 text-gray-600 mr-2" />
-              <h3 className="font-bold text-gray-800">Job Description</h3>
+          {/* Job Description - EXACT Reference Position */}
+          <div className="border-t pt-6 mb-6">
+            <div className="flex items-center mb-4">
+              <FileText className="h-5 w-5 text-gray-600 mr-2" />
+              <h3 className="text-lg font-semibold">Job Description</h3>
             </div>
-            <p className="text-gray-700 font-medium leading-relaxed">
-              {job.description}
-            </p>
+            <div className="prose max-w-none">
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {job.description}
+              </p>
+            </div>
           </div>
 
 

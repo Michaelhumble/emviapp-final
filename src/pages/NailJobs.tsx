@@ -10,7 +10,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Phone, DollarSign, Clock, Building, Briefcase, Star, MessageSquare, Heart, TrendingUp } from "lucide-react";
+import { MapPin, Phone, DollarSign, Clock, Building, Briefcase, Star, MessageSquare, Heart, TrendingUp, FileText } from "lucide-react";
 
 // Mock data for jobs
 const jobListings = [
@@ -418,41 +418,58 @@ const NailJobs = () => {
                 />
               </div>
 
-              {/* Weekly Salary - Green Box */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center mb-2">
-                  <DollarSign className="h-5 w-5 text-green-600 mr-2" />
-                  <h3 className="font-semibold text-green-800">Weekly Salary & Location</h3>
+              {/* Salary and Location - EXACT Reference Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Weekly Salary */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center mb-2">
+                    <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+                    <h3 className="font-semibold text-green-800">Weekly Salary</h3>
+                  </div>
+                  <p className="text-2xl font-bold text-green-700">{selectedJob.salary}</p>
                 </div>
-                <p className="text-2xl font-bold text-green-700">{selectedJob.salary}</p>
-                <div className="flex items-center mt-2">
-                  <MapPin className="h-4 w-4 text-green-600 mr-1" />
-                  <span className="text-green-700">{selectedJob.location}</span>
+
+                {/* Location */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center mb-2">
+                    <MapPin className="h-5 w-5 text-blue-600 mr-2" />
+                    <h3 className="font-semibold text-blue-800">Location</h3>
+                  </div>
+                  <p className="text-2xl font-bold text-blue-700">{selectedJob.location}</p>
                 </div>
               </div>
 
-              {/* Contact Information - Right after salary as requested */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
-                  <Building className="h-4 w-4 mr-2 text-blue-600" />
-                  Contact Information
-                </h4>
-                <div className="space-y-2">
+              {/* Contact Information - EXACT Reference Position */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center mb-3">
+                  <Phone className="h-5 w-5 text-green-600 mr-2" />
+                  <h3 className="font-semibold text-green-800">Contact Information</h3>
+                </div>
+                <div className="space-y-3">
                   <div className="flex items-center">
-                    <Building className="h-4 w-4 mr-2 text-gray-600" />
-                    <span className="font-medium text-gray-900">{selectedJob.salon}</span>
+                    <Phone className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-lg font-semibold text-green-800">{selectedJob.phone}</span>
                   </div>
                   <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 text-gray-600" />
-                    <span className="text-gray-900">{selectedJob.phone}</span>
+                    <Building className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="font-medium text-green-800">{selectedJob.salon}</span>
+                  </div>
+                  <div className="flex items-center mt-3 text-green-700">
+                    <span className="text-green-600 mr-2">✓</span>
+                    <span className="text-sm font-medium">Contact details unlocked! Call now to apply.</span>
                   </div>
                 </div>
               </div>
 
-              {/* Job Description */}
-              <div>
-                <h4 className="font-medium mb-3">Job Description</h4>
-                <p className="text-gray-600 leading-relaxed">{selectedJob.description}</p>
+              {/* Job Description - EXACT Reference Position */}
+              <div className="border-t pt-6 mb-6">
+                <div className="flex items-center mb-4">
+                  <FileText className="h-5 w-5 text-gray-600 mr-2" />
+                  <h3 className="text-lg font-semibold">Job Description</h3>
+                </div>
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedJob.description}</p>
+                </div>
               </div>
 
               {/* Additional Job Details */}

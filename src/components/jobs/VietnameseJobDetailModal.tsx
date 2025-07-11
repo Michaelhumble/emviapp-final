@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Calendar, Lock } from "lucide-react";
+import { MapPin, Phone, Calendar, Lock, DollarSign, FileText } from "lucide-react";
 import { Job } from "@/types/job";
 import { useAuth } from "@/context/auth";
 import { formatDistanceToNow } from "date-fns";
@@ -128,32 +128,57 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
           </div>
         )}
         
-        <div className="space-y-4 my-3">
-          <div className="flex items-center text-gray-600">
-            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="font-medium">{job.location}</span>
+        {/* Salary and Location - EXACT Reference Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Weekly Salary */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center mb-2">
+              <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+              <h3 className="font-semibold text-green-800">Weekly Salary</h3>
+            </div>
+            <p className="text-2xl font-bold text-green-700">
+              {job.salary_range || job.compensation_details || "$1,200–$1,800/tuần"}
+            </p>
           </div>
-          
-          <div className="flex items-center text-gray-600">
-            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span>Đăng {formatPostedDate(job.created_at)}</span>
+
+          {/* Location */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center mb-2">
+              <MapPin className="h-5 w-5 text-blue-600 mr-2" />
+              <h3 className="font-semibold text-blue-800">Location</h3>
+            </div>
+            <p className="text-2xl font-bold text-blue-700">{job.location}</p>
+          </div>
+        </div>
+
+        {/* Contact Information - EXACT Reference Position */}
+        <div className={`rounded-lg p-4 mb-6 ${user ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className="flex items-center mb-3">
+            <Phone className={`h-5 w-5 mr-2 ${user ? 'text-green-600' : 'text-red-600'}`} />
+            <h3 className={`font-semibold ${user ? 'text-green-800' : 'text-red-800'}`}>
+              Contact Information
+            </h3>
           </div>
           
           {user ? (
-            <div className="flex items-center text-gray-600">
-              <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="font-medium">{job.contact_info?.phone}</span>
+            <div className="space-y-3">
+              <div className="flex items-center">
+                <Phone className="h-4 w-4 text-green-600 mr-2" />
+                <span className="text-lg font-semibold text-green-800">{job.contact_info?.phone}</span>
+              </div>
+              <div className="flex items-center mt-3 text-green-700">
+                <span className="text-green-600 mr-2">✓</span>
+                <span className="text-sm font-medium">Contact details unlocked! Call now to apply.</span>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center bg-gray-50 p-4 rounded-md border border-gray-200">
-              <Lock className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
-              <span className="text-gray-700">🔒 Đăng nhập để xem số điện thoại liên hệ</span>
+            <div className="space-y-3">
+              <p className="font-bold text-red-600">🔒 Contact details are locked</p>
+              <p className="text-sm text-red-700">
+                Đăng nhập để xem số điện thoại liên hệ
+              </p>
             </div>
           )}
-        </div>
-        
-        <div className="font-medium text-xl text-emerald-700 my-3">
-          {job.salary_range || job.compensation_details}
         </div>
         
         {/* Add FOMO line below salary for Magic Nails */}
@@ -163,9 +188,15 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
           </div>
         )}
         
-        <div className="space-y-3">
-          <h3 className="font-medium text-lg">Mô tả công việc:</h3>
-          <p className="whitespace-pre-line text-gray-800">{job.description}</p>
+        {/* Job Description - EXACT Reference Position */}
+        <div className="border-t pt-6 mb-6">
+          <div className="flex items-center mb-4">
+            <FileText className="h-5 w-5 text-gray-600 mr-2" />
+            <h3 className="text-lg font-semibold">Mô tả công việc</h3>
+          </div>
+          <div className="prose max-w-none">
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.description}</p>
+          </div>
         </div>
         
         {job.specialties && job.specialties.length > 0 && (

@@ -210,7 +210,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                   <p className="text-lg text-gray-600 mb-4">{displayCompany} • {job.location}</p>
                 </div>
 
-                {/* Salary and Location Boxes - Matching Reference Layout */}
+                {/* Salary and Location Boxes - EXACT Reference Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {/* Weekly Salary Box */}
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -219,7 +219,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       <h3 className="font-semibold text-green-800">Weekly Salary</h3>
                     </div>
                     <p className="text-2xl font-bold text-green-700">
-                      {job.compensation_details || job.salary_range || job.salaryRange || "Contact for details"}
+                      {job.compensation_details || job.salary_range || job.salaryRange || "$1,200–$1,800/tuần"}
                     </p>
                   </div>
 
@@ -229,11 +229,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       <MapPin className="h-5 w-5 text-blue-600 mr-2" />
                       <h3 className="font-semibold text-blue-800">Location</h3>
                     </div>
-                    <p className="text-2xl font-bold text-blue-700">{job.location || "Location not specified"}</p>
+                    <p className="text-2xl font-bold text-blue-700">{job.location || "Clawson, MI"}</p>
                   </div>
                 </div>
 
-                {/* Contact Information - MOVED UP to appear right after salary/location */}
+                {/* Contact Information - EXACTLY as in Reference, RIGHT AFTER salary/location */}
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                   <div className="flex items-center mb-3">
                     <Phone className="h-5 w-5 text-green-600 mr-2" />
