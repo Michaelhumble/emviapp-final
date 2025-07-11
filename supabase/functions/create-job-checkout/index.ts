@@ -115,10 +115,17 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Get selected plan details and pricing
-    const selectedPlan = jobData.selectedPlan || 'premium';
-    const selectedPrice = jobData.selectedPrice || 39.99;
-    const selectedDuration = jobData.selectedDuration || 1;
+    // Get selected plan details and pricing from request body
+    console.log('🔍 [PRICE-DEBUG] Request body structure:', {
+      tier: requestBody.tier,
+      finalPrice: requestBody.finalPrice,
+      durationMonths: requestBody.durationMonths,
+      jobDataKeys: Object.keys(jobData || {})
+    });
+    
+    const selectedPlan = requestBody.tier || jobData.selectedPlan || 'premium';
+    const selectedPrice = requestBody.finalPrice || jobData.selectedPrice || 39.99;
+    const selectedDuration = requestBody.durationMonths || jobData.selectedDuration || 1;
     
     // Convert price to cents for Stripe
     const priceInCents = Math.round(selectedPrice * 100);
@@ -137,8 +144,13 @@ serve(async (req) => {
       category: jobData.category,
       location: jobData.location || null,
       description: jobData.description,
+      // FIXED: Add Vietnamese fields for nail jobs
+      vietnamese_title: jobData.vietnamese_title || null,
+      vietnamese_description: jobData.vietnamese_description || null,
+      // FIXED: Add image URL for paid jobs with photo upload
+      image_url: jobData.image_url || null,
       compensation_type: jobData.compensationType || null,
-      compensation_details: jobData.compensationDetails || null,
+      compensation_details: jobData.compensationDetails || jobData.compensation_details || null,
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements.join("\n") : jobData.requirements || null,
       contact_info: {
         owner_name: jobData.contactName || "",

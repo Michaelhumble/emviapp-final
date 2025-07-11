@@ -18,6 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import NailJobPreviewCard from './NailJobPreviewCard';
 import JobPricingTable from '@/components/posting/job/JobPricingTable';
+import PhotoUploader from '@/components/posting/PhotoUploader';
 
 const nailJobFormSchema = z.object({
   planType: z.enum(['free', 'paid'], { 
@@ -62,6 +63,8 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
   const [isLoadingFreeJobStatus, setIsLoadingFreeJobStatus] = useState(true);
   const [isGeneratingTranslation, setIsGeneratingTranslation] = useState(false);
   const [showTemplates, setShowTemplates] = useState(!editJobId);
+  // FIXED: Add photo upload state for paid jobs
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
 
   // Vietnamese job templates (real Facebook-style job ads)
   const vietnameseJobTemplates = [
@@ -424,6 +427,35 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         return;
       }
 
+      // FIXED: Upload photo first if provided for paid jobs
+      let imageUrl = null;
+      if (photoUploads.length > 0) {
+        try {
+          const file = photoUploads[0];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `job-photos/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('job-photos')
+            .upload(filePath, file);
+
+          if (uploadError) {
+            console.error('Error uploading photo:', uploadError);
+            toast.error('Failed to upload photo. Continuing without image.');
+          } else {
+            const { data: publicUrlData } = supabase.storage
+              .from('job-photos')
+              .getPublicUrl(filePath);
+            imageUrl = publicUrlData.publicUrl;
+            console.log('✅ Photo uploaded successfully:', imageUrl);
+          }
+        } catch (uploadError) {
+          console.error('Photo upload error:', uploadError);
+          toast.error('Failed to upload photo. Continuing without image.');
+        }
+      }
+
       // Create Stripe checkout session for paid nail job
       const { data, error } = await supabase.functions.invoke('create-job-checkout', {
         body: {
@@ -436,6 +468,8 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
             vietnamese_title: formData.vietnameseTitle,
             vietnamese_description: formData.vietnameseDescription,
+            // FIXED: Include uploaded image URL for paid jobs
+            image_url: imageUrl,
           }
         }
       });
@@ -825,9 +859,25 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
                        />
                      )}
 
-                    {/* Contact Information */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+                     {/* Photo Upload for Paid Jobs */}
+                     {selectedPlan === 'paid' && (
+                       <div className="space-y-4">
+                         <h3 className="text-lg font-semibold text-gray-900">Job Photo (Optional)</h3>
+                         <p className="text-sm text-gray-600">
+                           Add a photo to make your paid job stand out more to candidates.
+                         </p>
+                         <PhotoUploader
+                           files={photoUploads}
+                           onChange={setPhotoUploads}
+                           maxFiles={1}
+                           accept="image/*"
+                         />
+                       </div>
+                     )}
+
+                     {/* Contact Information */}
+                     <div className="space-y-4">
+                       <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
                       
                       <FormField
                         control={form.control}
