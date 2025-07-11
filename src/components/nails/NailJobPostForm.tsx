@@ -245,13 +245,17 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit }) => {
       return;
     }
     
-    // If "Post in English also" is checked, validate English fields
-    if (!data.englishOnly && data.title && !data.title.trim()) {
-      toast.error('English title is required when "Post in English also" is checked');
+    // Validate required basic fields
+    if (!data.salonName?.trim()) {
+      toast.error('Salon name is required');
       return;
     }
-    if (!data.englishOnly && data.description && !data.description.trim()) {
-      toast.error('English description is required when "Post in English also" is checked');
+    if (!data.location?.trim()) {
+      toast.error('Location is required');
+      return;
+    }
+    if (!data.salaryRange?.trim()) {
+      toast.error('Salary range is required');
       return;
     }
     
