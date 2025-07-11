@@ -254,8 +254,8 @@ serve(async (req) => {
         selected_duration: selectedDuration.toString(),
         pricing_tier: 'paid'
       },
-      success_url: `${req.headers.get("origin")}/jobs?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/post-job?payment=canceled`,
+      success_url: `${req.headers.get("origin")}/nails?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/nails?payment=canceled`,
     });
 
     console.log("✅ Stripe checkout session created:", session.id);

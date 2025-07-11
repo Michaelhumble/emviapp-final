@@ -53,90 +53,123 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           </div>
         </div>
 
-        {/* Enhanced Image Gallery Section */}
+            {/* ENHANCED Image Gallery Section - ALL paid job photos display */}
         {(() => {
-          // Get job images with priority order
           const jobAny = job as any;
           let jobImages: string[] = [];
 
-          // Check metadata for photos first (webhook processed jobs)
+          console.log('🔍 [JOB-DETAIL-MODAL] Analyzing job for photos:', {
+            jobId: job.id,
+            pricing_tier: job.pricing_tier,
+            'metadata.photos': jobAny.metadata?.photos,
+            'metadata.image_urls': jobAny.metadata?.image_urls,
+            'image_urls': jobAny.image_urls,
+            'photos': jobAny.photos,
+            'image_url': job.image_url
+          });
+
+          // PRIORITY 1: Check metadata.photos (webhook processed jobs)
           if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
             const validUrls = jobAny.metadata.photos.filter((url: any) => 
-              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
             );
-            if (validUrls.length > 0) jobImages = validUrls;
-          }
-
-          // Check metadata for image_urls (webhook processed jobs)
-          if (jobImages.length === 0 && jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
-            const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
-              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
-            );
-            if (validUrls.length > 0) jobImages = validUrls;
-          }
-
-          // Check for multiple uploaded images first (new format)
-          if (jobImages.length === 0 && jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
-            const validUrls = jobAny.image_urls.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
-            if (validUrls.length > 0) jobImages = validUrls;
-          }
-          
-          // Check photos field (backup format)
-          if (jobImages.length === 0 && jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
-            const validUrls = jobAny.photos.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
-            if (validUrls.length > 0) jobImages = validUrls;
-          }
-          
-          // Check for single uploaded image (backwards compatibility)
-          if (jobImages.length === 0) {
-            const singleImage = job.image_url || jobAny.imageUrl || job.image;
-            if (singleImage && typeof singleImage === 'string' && singleImage.trim()) {
-              jobImages = [singleImage];
+            if (validUrls.length > 0) {
+              jobImages = validUrls;
+              console.log('🔍 [JOB-DETAIL-MODAL] Using metadata.photos:', jobImages.length, 'images');
             }
           }
 
-          console.log('🔍 [JOB-DETAIL-CONTENT] Found images:', jobImages);
+          // PRIORITY 2: Check metadata.image_urls (webhook processed jobs)
+          if (jobImages.length === 0 && jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
+            const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
+              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+            );
+            if (validUrls.length > 0) {
+              jobImages = validUrls;
+              console.log('🔍 [JOB-DETAIL-MODAL] Using metadata.image_urls:', jobImages.length, 'images');
+            }
+          }
 
-          if (jobImages.length === 0) return null;
+          // PRIORITY 3: Check direct image_urls field
+          if (jobImages.length === 0 && jobAny.image_urls && Array.isArray(jobAny.image_urls)) {
+            const validUrls = jobAny.image_urls.filter((url: any) => 
+              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+            );
+            if (validUrls.length > 0) {
+              jobImages = validUrls;
+              console.log('🔍 [JOB-DETAIL-MODAL] Using direct image_urls:', jobImages.length, 'images');
+            }
+          }
+          
+          // PRIORITY 4: Check direct photos field 
+          if (jobImages.length === 0 && jobAny.photos && Array.isArray(jobAny.photos)) {
+            const validUrls = jobAny.photos.filter((url: any) => 
+              url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
+            );
+            if (validUrls.length > 0) {
+              jobImages = validUrls;
+              console.log('🔍 [JOB-DETAIL-MODAL] Using direct photos:', jobImages.length, 'images');
+            }
+          }
+          
+          // PRIORITY 5: Check single image_url (backwards compatibility)
+          if (jobImages.length === 0 && job.image_url && typeof job.image_url === 'string' && job.image_url.trim() && job.image_url.startsWith('http')) {
+            jobImages = [job.image_url];
+            console.log('🔍 [JOB-DETAIL-MODAL] Using single image_url:', jobImages[0]);
+          }
+
+          console.log('🔍 [JOB-DETAIL-MODAL] Final images array:', jobImages);
+
+          if (jobImages.length === 0) {
+            console.log('⚠️ [JOB-DETAIL-MODAL] No valid images found for display');
+            return null;
+          }
 
           return (
             <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">📸 Job Photos ({jobImages.length})</h3>
               {jobImages.length === 1 ? (
                 // Single image display
-                <img
-                  src={jobImages[0]}
-                  alt={job.title}
-                  className="w-full h-64 object-cover rounded-lg shadow-md"
-                  onError={(e) => {
-                    console.error('❌ [JOB-DETAIL-CONTENT] Image failed to load:', jobImages[0]);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : (
-                // Multiple images gallery
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {jobImages.map((imageUrl, index) => (
-                    <img
-                      key={index}
-                      src={imageUrl}
-                      alt={`${job.title} - Image ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-75 transition-opacity"
-                      onError={(e) => {
-                        console.error('❌ [JOB-DETAIL-CONTENT] Image failed to load:', imageUrl);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                      onClick={() => {
-                        // Open image in modal or new tab for better viewing
-                        window.open(imageUrl, '_blank');
-                      }}
-                    />
-                  ))}
+                <div className="text-center">
+                  <img
+                    src={jobImages[0]}
+                    alt={job.title}
+                    className="w-full max-w-2xl h-64 object-cover rounded-lg shadow-md mx-auto"
+                    onError={(e) => {
+                      console.error('❌ [JOB-DETAIL-MODAL] Image failed to load:', jobImages[0]);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
                 </div>
-              )}
-              {jobImages.length > 1 && (
-                <p className="text-sm text-gray-500 mt-2 text-center">
-                  📸 {jobImages.length} photos - Click to view full size
-                </p>
+              ) : (
+                // Multiple images gallery with improved layout
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {jobImages.map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={imageUrl}
+                          alt={`${job.title} - Photo ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-all duration-200 group-hover:shadow-lg"
+                          onError={(e) => {
+                            console.error('❌ [JOB-DETAIL-MODAL] Gallery image failed to load:', imageUrl);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          onClick={() => {
+                            // Open image in new tab for full-size viewing
+                            window.open(imageUrl, '_blank');
+                          }}
+                        />
+                        <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-sm">
+                          {index + 1} of {jobImages.length}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-500 text-center">
+                    💡 Click any photo to view full size
+                  </p>
+                </div>
               )}
             </div>
           );
@@ -290,27 +323,74 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {isSignedIn ? (
-                  <div className="space-y-3">
-                     {((job as any).metadata?.contact_info?.owner_name || job.contact_info?.owner_name) && (
-                       <div>
-                         <span className="font-medium">Contact Person:</span>
-                         <p className="text-gray-700">{(job as any).metadata?.contact_info?.owner_name || job.contact_info?.owner_name}</p>
-                       </div>
-                     )}
-                     {((job as any).metadata?.contact_info?.phone || job.contact_info?.phone) && (
-                       <div>
-                         <span className="font-medium">Phone:</span>
-                         <p className="text-gray-700">{(job as any).metadata?.contact_info?.phone || job.contact_info?.phone}</p>
-                       </div>
-                     )}
-                     {((job as any).metadata?.contact_info?.email || job.contact_info?.email) && (
-                       <div>
-                         <span className="font-medium">Email:</span>
-                         <p className="text-gray-700">{(job as any).metadata?.contact_info?.email || job.contact_info?.email}</p>
-                       </div>
-                     )}
-                  </div>
+                 {isSignedIn ? (
+                  (() => {
+                    const jobAny = job as any;
+                    let contactInfo = null;
+
+                    // Priority 1: Check metadata.contact_info (webhook processed)
+                    if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
+                      contactInfo = jobAny.metadata.contact_info;
+                      console.log('🔍 [JOB-DETAIL-MODAL] Using metadata contact info:', contactInfo);
+                    }
+                    // Priority 2: Check direct contact_info field
+                    else if (job.contact_info && typeof job.contact_info === 'object') {
+                      contactInfo = job.contact_info;
+                      console.log('🔍 [JOB-DETAIL-MODAL] Using direct contact info:', contactInfo);
+                    }
+
+                    if (!contactInfo) {
+                      console.log('⚠️ [JOB-DETAIL-MODAL] No contact info found');
+                      return (
+                        <div className="text-center py-4">
+                          <p className="text-gray-500 text-sm">Contact information not available</p>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="space-y-3">
+                        {contactInfo.salon_name && (
+                          <div>
+                            <span className="font-medium text-gray-600">Salon:</span>
+                            <p className="text-gray-900 font-medium">{contactInfo.salon_name}</p>
+                          </div>
+                        )}
+                        {contactInfo.owner_name && (
+                          <div>
+                            <span className="font-medium text-gray-600">Contact Person:</span>
+                            <p className="text-gray-900">{contactInfo.owner_name}</p>
+                          </div>
+                        )}
+                        {contactInfo.phone && (
+                          <div>
+                            <span className="font-medium text-gray-600">Phone:</span>
+                            <p className="text-gray-900">
+                              <a href={`tel:${contactInfo.phone}`} className="hover:text-blue-600 transition-colors">
+                                {contactInfo.phone}
+                              </a>
+                            </p>
+                          </div>
+                        )}
+                        {contactInfo.email && (
+                          <div>
+                            <span className="font-medium text-gray-600">Email:</span>
+                            <p className="text-gray-900">
+                              <a href={`mailto:${contactInfo.email}`} className="hover:text-blue-600 transition-colors">
+                                {contactInfo.email}
+                              </a>
+                            </p>
+                          </div>
+                        )}
+                        {contactInfo.notes && (
+                          <div>
+                            <span className="font-medium text-gray-600">Notes:</span>
+                            <p className="text-gray-700 text-sm">{contactInfo.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()
                 ) : (
                   <AuthAction
                     customTitle="Sign in to see contact details"

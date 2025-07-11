@@ -594,34 +594,36 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       }
 
       if (data?.url) {
-        console.log('🔍 [PAYMENT-REDIRECT] Redirecting to Stripe checkout:', data.url);
-        toast.success('Redirecting to secure payment...');
+        console.log('🔍 [PAYMENT-REDIRECT] Opening Stripe checkout in new tab:', data.url);
+        toast.success('Opening secure payment in new tab...');
         
-        // CRITICAL FIX: Use safer navigation to prevent browser crashes
+        // CRITICAL FIX: Use Lovable-safe navigation - open in new tab
         try {
-          console.log('🔄 [PAYMENT-REDIRECT] Redirecting to Stripe checkout...');
-          
-          // Save current state before navigation
+          // Save current state for recovery
           sessionStorage.setItem('pendingJobSubmission', JSON.stringify({
             jobData: jobDataPayload,
             pricing: { tier, finalPrice, durationMonths },
             timestamp: Date.now()
           }));
           
-          // CRITICAL FIX: Use the safest redirect method to prevent browser crashes
+          // SAFE: Open Stripe checkout in a new tab to prevent browser locker violations
+          window.open(data.url, '_blank');
+          
+          // Show success message and reset form state
+          toast.success('Payment opened in new tab. Complete payment and return here.');
+          
+          // Wait a moment, then navigate to success page to show payment status
           setTimeout(() => {
-            try {
-              console.log('🔄 [PAYMENT-REDIRECT] Using window.location.replace for safe redirect');
-              window.location.replace(data.url);
-            } catch (innerError) {
-              console.error('❌ Inner redirect error, trying href:', innerError);
-              window.location.href = data.url;
-            }
-          }, 500); // Longer delay for stability
+            navigate('/nails?payment=initiated', { 
+              state: { 
+                message: 'Payment initiated. Complete in the new tab and refresh this page.' 
+              }
+            });
+          }, 1000);
           
         } catch (redirectError) {
-          console.error('❌ [PAYMENT-REDIRECT] Error during redirect:', redirectError);
-          toast.error('Failed to redirect to payment page. Please try again.');
+          console.error('❌ [PAYMENT-REDIRECT] Error opening payment:', redirectError);
+          toast.error('Failed to open payment page. Please try again.');
           setCurrentStep('pricing');
         }
       } else {
