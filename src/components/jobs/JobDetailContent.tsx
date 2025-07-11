@@ -53,80 +53,42 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           </div>
         </div>
 
-        {/* Photo Gallery Section - Display ALL uploaded photos */}
-        {(() => {
-          const jobAny = job as any;
-          let jobImages: string[] = [];
+        {/* Salary/Location Row - Moved up for better visibility */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Compensation */}
+          {(job.salary_range || job.compensation_details || job.price) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <DollarSign className="h-5 w-5 mr-2" />
+                  Compensation
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold text-green-600">
+                  {job.salary_range || job.compensation_details || job.price}
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
-          // Collect all valid photo URLs from multiple sources
-          const photoSources = [
-            jobAny.metadata?.photos,
-            jobAny.metadata?.image_urls, 
-            jobAny.image_urls,
-            jobAny.photos,
-            job.image_url ? [job.image_url] : null
-          ];
+          {/* Employment Type */}
+          {job.employment_type && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Employment Type</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Badge variant="outline" className="capitalize">
+                  {job.employment_type.replace('-', ' ')}
+                </Badge>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-          // Filter and combine all valid URLs
-          for (const source of photoSources) {
-            if (Array.isArray(source)) {
-              const validUrls = source.filter((url: any) => 
-                url && typeof url === 'string' && url.trim() && 
-                url !== 'photos-uploaded' && url.startsWith('http')
-              );
-              jobImages.push(...validUrls);
-            }
-          }
-
-          // Remove duplicates
-          jobImages = [...new Set(jobImages)];
-
-          // Only show fallback if NO real photos were uploaded
-          if (jobImages.length === 0) {
-            return null; // No fallback - only show real photos
-          }
-
-          return (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold mb-4">📸 Job Photos ({jobImages.length})</h3>
-              {jobImages.length === 1 ? (
-                <div className="text-center">
-                  <img
-                    src={jobImages[0]}
-                    alt={job.title}
-                    className="w-full max-w-2xl h-64 object-cover rounded-lg shadow-md mx-auto"
-                    onError={(e) => e.currentTarget.style.display = 'none'}
-                  />
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {jobImages.map((imageUrl, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={imageUrl}
-                          alt={`${job.title} - Photo ${index + 1}`}
-                          className="w-full h-48 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-all duration-200 group-hover:shadow-lg"
-                          onError={(e) => e.currentTarget.style.display = 'none'}
-                          onClick={() => window.open(imageUrl, '_blank')}
-                        />
-                        <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-sm">
-                          {index + 1} of {jobImages.length}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-sm text-gray-500 text-center">
-                    💡 Click any photo to view full size
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })()}
-
-        {/* Contact Information - FIRST (Top Priority for Paid Jobs) */}
-        <Card className="mb-8">
+        {/* Contact Information - Moved directly below salary/location */}
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Phone className="h-5 w-5 mr-2" />
@@ -214,39 +176,82 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
           </CardContent>
         </Card>
 
-        {/* Salary/Location Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {/* Compensation */}
-          {(job.salary_range || job.compensation_details || job.price) && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <DollarSign className="h-5 w-5 mr-2" />
-                  Compensation
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-lg font-semibold text-green-600">
-                  {job.salary_range || job.compensation_details || job.price}
-                </p>
-              </CardContent>
-            </Card>
-          )}
+        {/* Photo Gallery Section - Moved below contact info with compact height */}
+        {(() => {
+          const jobAny = job as any;
+          let jobImages: string[] = [];
 
-          {/* Employment Type */}
-          {job.employment_type && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Employment Type</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Badge variant="outline" className="capitalize">
-                  {job.employment_type.replace('-', ' ')}
-                </Badge>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+          // Collect all valid photo URLs from multiple sources
+          const photoSources = [
+            jobAny.metadata?.photos,
+            jobAny.metadata?.image_urls, 
+            jobAny.image_urls,
+            jobAny.photos,
+            job.image_url ? [job.image_url] : null
+          ];
+
+          // Filter and combine all valid URLs
+          for (const source of photoSources) {
+            if (Array.isArray(source)) {
+              const validUrls = source.filter((url: any) => 
+                url && typeof url === 'string' && url.trim() && 
+                url !== 'photos-uploaded' && url.startsWith('http')
+              );
+              jobImages.push(...validUrls);
+            }
+          }
+
+          // Remove duplicates
+          jobImages = [...new Set(jobImages)];
+
+          // Only show fallback if NO real photos were uploaded
+          if (jobImages.length === 0) {
+            return null; // No fallback - only show real photos
+          }
+
+          return (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-4">📸 Job Photos ({jobImages.length})</h3>
+              {jobImages.length === 1 ? (
+                <div className="text-center">
+                  <img
+                    src={jobImages[0]}
+                    alt={job.title}
+                    className="w-full max-w-md h-40 object-cover rounded-lg shadow-md mx-auto"
+                    onError={(e) => e.currentTarget.style.display = 'none'}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {jobImages.slice(0, 6).map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={imageUrl}
+                          alt={`${job.title} - Photo ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-all duration-200 group-hover:shadow-lg"
+                          onError={(e) => e.currentTarget.style.display = 'none'}
+                          onClick={() => window.open(imageUrl, '_blank')}
+                        />
+                        <div className="absolute top-1 right-1 bg-black/60 text-white px-1.5 py-0.5 rounded text-xs">
+                          {index + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {jobImages.length > 6 && (
+                    <p className="text-sm text-gray-500 text-center">
+                      Showing 6 of {jobImages.length} photos - Click to view full size
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500 text-center">
+                    💡 Click any photo to view full size
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
