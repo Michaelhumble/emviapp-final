@@ -18,8 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import NailJobPreviewCard from './NailJobPreviewCard';
 import JobPricingTable from '@/components/posting/job/JobPricingTable';
-import PhotoUploader from '@/components/posting/PhotoUploader';
-import MultiPhotoUploader from '@/components/posting/MultiPhotoUploader';
+import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
 
 const nailJobFormSchema = z.object({
   planType: z.enum(['free', 'paid'], { 
@@ -328,6 +327,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     }
   };
 
+  // REBUILT: Free job submission using proven logic from EnhancedJobForm
   const submitFreeNailJob = async (data: NailJobFormValues) => {
     if (!isSignedIn || !user) {
       toast.error('You must be logged in to post a job');
@@ -337,24 +337,24 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     setIsSubmitting(true);
 
     try {
-      // Upload photos if any
+      // Upload photos using the same logic as free jobs
       let imageUrls: string[] = [];
       if (photoUploads.length > 0) {
-        console.log('🔍 [PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'photos');
+        console.log('🔍 [FREE-JOB-PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'photos');
         
         try {
           const uploadPromises = photoUploads.map(async (file, index) => {
             const fileExt = file.name.split('.').pop();
             const fileName = `${user.id}-${Date.now()}-${index}.${fileExt}`;
             
-            console.log('📸 [PHOTO-UPLOAD] Uploading:', fileName);
+            console.log('📸 [FREE-JOB-PHOTO-UPLOAD] Uploading:', fileName);
             
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('Job Photos')
               .upload(fileName, file);
 
             if (uploadError) {
-              console.error('❌ [PHOTO-UPLOAD] Error:', uploadError);
+              console.error('❌ [FREE-JOB-PHOTO-UPLOAD] Error:', uploadError);
               throw uploadError;
             }
 
@@ -362,20 +362,21 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
               .from('Job Photos')
               .getPublicUrl(fileName);
 
-            console.log('✅ [PHOTO-UPLOAD] Success:', publicUrl);
+            console.log('✅ [FREE-JOB-PHOTO-UPLOAD] Success:', publicUrl);
             return publicUrl;
           });
 
           imageUrls = await Promise.all(uploadPromises);
-          console.log('🔍 [PHOTO-UPLOAD] All photos uploaded:', imageUrls);
+          console.log('🔍 [FREE-JOB-PHOTO-UPLOAD] All photos uploaded:', imageUrls);
         } catch (uploadError) {
-          console.error('❌ [PHOTO-UPLOAD] Failed to upload photos:', uploadError);
+          console.error('❌ [FREE-JOB-PHOTO-UPLOAD] Failed to upload photos:', uploadError);
           toast.error('Failed to upload photos. Please try again.');
           setIsSubmitting(false);
           return;
         }
       }
 
+      // REBUILT: Use same payload structure as working free jobs
       const payload = {
         title: data.title?.trim() || data.vietnameseTitle?.trim() || '',
         category: 'Nails',
@@ -394,7 +395,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         user_id: user.id,
         status: 'active',
         pricing_tier: 'free',
-         // Store images in multiple formats for compatibility
+        // Store images in multiple formats exactly like working free jobs
         image_url: imageUrls.length > 0 ? imageUrls[0] : null,
         image_urls: imageUrls,
         photos: imageUrls,
@@ -469,6 +470,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     }
   };
 
+  // REBUILT: Paid job processing using proven photo upload logic
   const handlePricingSelect = async (tier: string, finalPrice: number, durationMonths: number) => {
     if (!formData) return;
 
@@ -482,62 +484,48 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         return;
       }
 
-      // FIXED: Upload ALL photos for paid jobs (up to 5)
+      // REBUILT: Upload photos using same logic as free jobs
       let uploadedImageUrls: string[] = [];
       if (photoUploads.length > 0) {
-        console.log(`🔍 [PAID-JOB-UPLOAD] Starting upload of ${photoUploads.length} photos...`);
+        console.log(`🔍 [PAID-JOB-PHOTO-UPLOAD] Starting upload of ${photoUploads.length} photos using free job logic...`);
         
         try {
-          // Upload all photos in parallel
           const uploadPromises = photoUploads.map(async (file, index) => {
             const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}_${Date.now()}_${index}.${fileExt}`;
-            const filePath = `nail-jobs/${fileName}`;
+            const fileName = `${user.id}-${Date.now()}-${index}.${fileExt}`;
 
-            console.log(`🔍 [PHOTO-UPLOAD] Uploading ${file.name} to ${filePath}...`);
+            console.log(`📸 [PAID-JOB-PHOTO-UPLOAD] Uploading:`, fileName);
 
-            const { error: uploadError } = await supabase.storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
               .from('Job Photos')
-              .upload(filePath, file);
+              .upload(fileName, file);
 
             if (uploadError) {
-              console.error(`❌ Error uploading ${file.name}:`, uploadError);
-              return null;
+              console.error(`❌ [PAID-JOB-PHOTO-UPLOAD] Error:`, uploadError);
+              throw uploadError;
             }
 
-            const { data: publicUrlData } = supabase.storage
+            const { data: { publicUrl } } = supabase.storage
               .from('Job Photos')
-              .getPublicUrl(filePath);
+              .getPublicUrl(fileName);
 
-            console.log(`✅ Photo ${index + 1} uploaded successfully:`, publicUrlData.publicUrl);
-            return publicUrlData.publicUrl;
+            console.log(`✅ [PAID-JOB-PHOTO-UPLOAD] Success:`, publicUrl);
+            return publicUrl;
           });
 
-          const results = await Promise.all(uploadPromises);
-          uploadedImageUrls = results.filter(url => url !== null) as string[];
-          
-           console.log(`🔍 [PAID-JOB-UPLOAD-COMPLETE] Successfully uploaded ${uploadedImageUrls.length}/${photoUploads.length} photos:`, {
-             totalPhotos: uploadedImageUrls.length,
-             photoUrls: uploadedImageUrls
-           });
+          uploadedImageUrls = await Promise.all(uploadPromises);
+          console.log(`🔍 [PAID-JOB-PHOTO-UPLOAD] All photos uploaded:`, uploadedImageUrls);
 
-           if (uploadedImageUrls.length === 0) {
-              console.warn('⚠️ [PAID-JOB-UPLOAD] No photos were uploaded successfully');
-              toast.error('Failed to upload photos. Job will be posted without images.');
-            } else if (uploadedImageUrls.length < photoUploads.length) {
-              console.warn(`⚠️ [PAID-JOB-UPLOAD] Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded`);
-              toast.warning(`Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded successfully.`);
-            } else {
-              console.log(`✅ [PAID-JOB-UPLOAD] All ${uploadedImageUrls.length} photos uploaded successfully!`);
-              toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
-            }
+          if (uploadedImageUrls.length > 0) {
+            toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
+          }
         } catch (uploadError) {
-          console.error('❌ Batch photo upload error:', uploadError);
+          console.error('❌ [PAID-JOB-PHOTO-UPLOAD] Failed to upload photos:', uploadError);
           toast.error('Failed to upload photos. Continuing without images.');
         }
       }
 
-      // CRITICAL DEBUG: Log job data being sent to edge function
+      // REBUILT: Use same payload structure as working free jobs
       const contactInfo = {
         owner_name: formData.contactName?.trim() || '',
         phone: formData.contactPhone?.trim() || '',
@@ -547,16 +535,18 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       };
 
       const jobDataPayload = {
-        ...formData,
+        title: formData.title?.trim() || formData.vietnameseTitle?.trim() || '',
         category: 'Nails',
+        location: formData.location?.trim() || '',
+        description: formData.description?.trim() || formData.vietnameseDescription?.trim() || '',
+        vietnamese_title: formData.vietnameseTitle?.trim(),
+        vietnamese_description: formData.vietnameseDescription?.trim(),
         compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
-        vietnamese_title: formData.vietnameseTitle,
-        vietnamese_description: formData.vietnameseDescription,
         contact_info: contactInfo,
-        // CRITICAL: Include actual uploaded image URLs in ALL fields for redundancy
-        image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Primary image
-        image_urls: uploadedImageUrls, // All uploaded images
-        photos: uploadedImageUrls, // Backup field name for compatibility
+        // Store images using exact same structure as free jobs
+        image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null,
+        image_urls: uploadedImageUrls,
+        photos: uploadedImageUrls,
         metadata: {
           image_urls: uploadedImageUrls,
           photos: uploadedImageUrls,
@@ -564,19 +554,13 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         }
       };
       
-      console.log('🔍 [EDGE-FUNCTION-PAYLOAD-DEBUG] Complete job data being sent to create-job-checkout:', {
-        totalPhotos: uploadedImageUrls.length,
-        uploadedImageUrls,
-        'jobData.image_url': jobDataPayload.image_url,
-        'jobData.image_urls': jobDataPayload.image_urls,
-        'jobData.photos': jobDataPayload.photos,
-        'jobData.contact_info': jobDataPayload.contact_info,
-        'jobData.metadata.photos': jobDataPayload.metadata.photos,
-        'jobData.metadata.image_urls': jobDataPayload.metadata.image_urls,
-        'jobData.metadata.contact_info': jobDataPayload.metadata.contact_info
+      console.log('🔍 [PAID-JOB-CHECKOUT-DEBUG] Job data payload:', {
+        photoCount: uploadedImageUrls.length,
+        contactInfo,
+        hasImages: uploadedImageUrls.length > 0
       });
 
-      // Create Stripe checkout session for paid nail job
+      // Create Stripe checkout session
       const { data, error } = await supabase.functions.invoke('create-job-checkout', {
         body: {
           tier,
@@ -587,50 +571,41 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       });
 
       if (error) {
-        console.error('Stripe checkout error:', error);
+        console.error('❌ [STRIPE-CHECKOUT] Error:', error);
         toast.error('Failed to create payment session');
         setCurrentStep('pricing');
         return;
       }
 
       if (data?.url) {
-        console.log('🔍 [PAYMENT-REDIRECT] Opening Stripe checkout in new tab:', data.url);
-        toast.success('Opening secure payment in new tab...');
+        console.log('🔍 [PAYMENT-REDIRECT] Opening Stripe checkout:', data.url);
+        toast.success('Opening secure payment...');
         
-        // CRITICAL FIX: Use Lovable-safe navigation - open in new tab
+        // FIXED: Safe payment redirect
         try {
-          // Save current state for recovery
-          sessionStorage.setItem('pendingJobSubmission', JSON.stringify({
-            jobData: jobDataPayload,
-            pricing: { tier, finalPrice, durationMonths },
-            timestamp: Date.now()
-          }));
-          
-          // SAFE: Open Stripe checkout in a new tab to prevent browser locker violations
+          // Open Stripe checkout in new tab (browser locker safe)
           window.open(data.url, '_blank');
           
-          // Show success message and reset form state
           toast.success('Payment opened in new tab. Complete payment and return here.');
-          
-          // DO NOT navigate immediately - let user complete payment in new tab
-          // Reset form to allow for new submissions if needed
           setCurrentStep('form');
           setIsSubmitting(false);
           
         } catch (redirectError) {
-          console.error('❌ [PAYMENT-REDIRECT] Error opening payment:', redirectError);
+          console.error('❌ [PAYMENT-REDIRECT] Error:', redirectError);
           toast.error('Failed to open payment page. Please try again.');
           setCurrentStep('pricing');
         }
       } else {
-        console.error('❌ [PAYMENT-REDIRECT] No checkout URL received:', data);
+        console.error('❌ [PAYMENT-REDIRECT] No checkout URL received');
         toast.error('No checkout URL received');
         setCurrentStep('pricing');
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('❌ [PAID-JOB-PROCESSING] Error:', error);
       toast.error('Payment processing failed');
       setCurrentStep('pricing');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -998,20 +973,13 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
                        />
                      )}
 
-                      {/* ENHANCED: Multi-Photo Upload for Paid Jobs */}
+                      {/* REBUILT: Photo Upload Section using proven free job logic */}
                       {selectedPlan === 'paid' && (
                         <div className="space-y-4">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">📸 Job Photos</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Upload up to 5 photos to showcase your salon and attract top talent. 
-                            Drag photos to reorder them - the first photo will be your main display image.
-                          </p>
-                          <MultiPhotoUploader
-                            files={photoUploads}
-                            onChange={setPhotoUploads}
-                            maxFiles={5}
-                            maxSize={5 * 1024 * 1024} // 5MB
-                            accept={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
+                          <PhotoUploadSection
+                            photoUploads={photoUploads}
+                            setPhotoUploads={setPhotoUploads}
+                            maxPhotos={5}
                           />
                         </div>
                       )}
