@@ -132,7 +132,7 @@ const PaidJobTestForm: React.FC<PaidJobTestFormProps> = ({
       // Otherwise, create a new paid test job
       console.log('🧪 [PAID-TEST-CREATE-MODE] Creating new paid test job');
       
-      // Prepare payload with paid pricing tier
+      // Prepare payload with image_url field
       const payload = {
         title: formData.title.trim(),
         category: formData.category.trim(),
@@ -144,7 +144,8 @@ const PaidJobTestForm: React.FC<PaidJobTestFormProps> = ({
         contact_info: formData.contact_info,
         user_id: user.id,
         status: 'active', // Active immediately for testing
-        pricing_tier: 'paid' // This is the key difference from free jobs
+        pricing_tier: 'paid', // This is the key difference from free jobs
+        image_url: null // Test form doesn't handle images, but include field
       };
 
       console.log('📋 [PAID-TEST-PAYLOAD] Prepared payload for Supabase:', payload);

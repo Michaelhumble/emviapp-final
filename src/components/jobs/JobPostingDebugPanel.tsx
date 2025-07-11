@@ -48,7 +48,8 @@ const JobPostingDebugPanel = () => {
           user_id: user.id,
           status: 'active',
           pricing_tier: 'free',
-          contact_info: { test: true }
+          contact_info: { test: true },
+          image_url: null // Include image_url field for consistency
         };
 
         const { data: insertTest, error: insertError } = await supabase

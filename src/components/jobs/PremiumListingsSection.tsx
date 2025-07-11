@@ -15,7 +15,7 @@ const premiumJobs: Job[] = [
     location: "Los Angeles, CA",
     created_at: new Date().toISOString(),
     description: "Exclusive nail salon seeking talented artist for celebrity and VIP clientele. Exceptional compensation.",
-    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    image_url: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
     pricingTier: "premium",
     category: "Nail Tech"
   },
@@ -26,7 +26,7 @@ const premiumJobs: Job[] = [
     location: "New York, NY", 
     created_at: new Date().toISOString(),
     description: "Prestigious hair studio seeking senior stylist with extensive fashion and editorial experience.",
-    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    image_url: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
     pricingTier: "premium",
     category: "Hair Stylist"
   },
@@ -37,7 +37,7 @@ const premiumJobs: Job[] = [
     location: "San Francisco, CA",
     created_at: new Date().toISOString(),
     description: "Luxury lash studio seeking master technician specializing in advanced lash techniques.",
-    image: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
+    image_url: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
     pricingTier: "premium",
     category: "Lash Tech"
   }

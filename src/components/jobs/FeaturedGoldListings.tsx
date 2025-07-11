@@ -15,7 +15,7 @@ const goldJobs: Job[] = [
     location: "Beverly Hills, CA",
     created_at: new Date().toISOString(),
     description: "Premium nail salon seeking experienced technician for high-end clientele. Advanced nail art skills required.",
-    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+    image_url: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
     pricingTier: "gold",
     category: "Nail Tech"
   },
@@ -26,7 +26,7 @@ const goldJobs: Job[] = [
     location: "Manhattan, NY",
     created_at: new Date().toISOString(),
     description: "Seeking master colorist for upscale salon. Celebrity clientele, high compensation package.",
-    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    image_url: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
     pricingTier: "gold",
     category: "Hair Stylist"
   },
@@ -37,7 +37,7 @@ const goldJobs: Job[] = [
     location: "Miami Beach, FL", 
     created_at: new Date().toISOString(),
     description: "Expert lash artist needed for luxury lash studio. Russian volume technique required.",
-    image: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
+    image_url: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png",
     pricingTier: "gold",
     category: "Lash Tech"
   }

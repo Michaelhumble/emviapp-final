@@ -151,7 +151,8 @@ const FreeJobPostingForm: React.FC<FreeJobPostingFormProps> = ({
         contact_info: formData.contact_info,
         user_id: user.id,
         status: 'active',
-        pricing_tier: window.location.pathname === '/post-job-paid-test' ? 'paid' : 'free'
+        pricing_tier: window.location.pathname === '/post-job-paid-test' ? 'paid' : 'free',
+        image_url: null // Free jobs don't require images, but include field for consistency
       };
 
       console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);

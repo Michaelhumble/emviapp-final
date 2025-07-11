@@ -12,7 +12,7 @@ interface ExpiredJob {
   vietnamese_description?: string;
   category: string;
   employment_type: string;
-  image: string;
+  image_url: string;
   created_at: string;
   expired_at: string;
   filled_date: string;
@@ -48,10 +48,10 @@ const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
         <p className="text-gray-600 text-sm font-semibold mb-2">{job.salary}</p>
         
         {/* Job Image */}
-        {job.image && (
+        {job.image_url && (
           <div className="mt-3 mb-3">
             <img
-              src={job.image}
+              src={job.image_url}
               alt={job.title}
               className="w-full h-32 object-cover rounded filter grayscale"
               onError={(e) => {

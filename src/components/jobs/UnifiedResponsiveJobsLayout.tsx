@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Job } from '@/types/job';
-import { expiredJobsData } from '@/data/expiredJobsData';
+import { expiredJobsData } from '@/data/expiredJobsDataFixed';
 import MobileJobCard from './mobile/MobileJobCard';
 import MobileCompactJobCard from './mobile/MobileCompactJobCard';
 import { sortJobsWithinCategory, validateJobTierOrder } from '@/utils/jobSorting';

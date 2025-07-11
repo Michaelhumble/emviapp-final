@@ -138,7 +138,7 @@ const PaidJobTestFormExact: React.FC<PaidJobTestFormExactProps> = ({
       // Otherwise, create a new job (original flow with paid pricing_tier)
       console.log('🟢 [PAID-CREATE-MODE] Creating new paid job');
       
-      // Prepare payload - EXACTLY like free job except pricing_tier
+      // Prepare payload with image_url field - EXACTLY like free job except pricing_tier and image_url
       const payload = {
         title: formData.title.trim(),
         category: formData.category.trim(),
@@ -150,7 +150,8 @@ const PaidJobTestFormExact: React.FC<PaidJobTestFormExactProps> = ({
         contact_info: formData.contact_info,
         user_id: user.id,
         status: 'active',
-        pricing_tier: 'paid' // ONLY difference from free job
+        pricing_tier: 'paid', // ONLY difference from free job
+        image_url: null // Test form doesn't handle images, but include field
       };
 
       console.log('📋 [PAID-PAYLOAD] Prepared payload for Supabase:', payload);
