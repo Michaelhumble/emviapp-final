@@ -350,24 +350,36 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     setIsSubmitting(true);
 
     try {
-      // Upload photos using the same logic as free jobs
-      let imageUrls: string[] = [];
+      // CRITICAL FIX: Handle photo merging for edit mode
+      let finalImageUrls: string[] = [];
+      
+      // Step 1: Get existing photos if editing
+      if (editJobId && editJobData) {
+        const existingPhotos = editJobData.photos || editJobData.image_urls || [];
+        if (Array.isArray(existingPhotos)) {
+          finalImageUrls = existingPhotos.filter(url => url && url.trim() && url.startsWith('http'));
+          console.log('🔍 [EDIT-MODE-PHOTOS] Existing photos found:', finalImageUrls);
+        }
+      }
+      
+      // Step 2: Upload new photos if any
+      let newlyUploadedUrls: string[] = [];
       if (photoUploads.length > 0) {
-        console.log('🔍 [FREE-JOB-PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'photos');
+        console.log('🔍 [EDIT-JOB-PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'new photos');
         
         try {
           const uploadPromises = photoUploads.map(async (file, index) => {
             const fileExt = file.name.split('.').pop();
             const fileName = `${user.id}-${Date.now()}-${index}.${fileExt}`;
             
-            console.log('📸 [FREE-JOB-PHOTO-UPLOAD] Uploading:', fileName);
+            console.log('📸 [EDIT-JOB-PHOTO-UPLOAD] Uploading:', fileName);
             
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('Job Photos')
               .upload(fileName, file);
 
             if (uploadError) {
-              console.error('❌ [FREE-JOB-PHOTO-UPLOAD] Error:', uploadError);
+              console.error('❌ [EDIT-JOB-PHOTO-UPLOAD] Error:', uploadError);
               throw uploadError;
             }
 
@@ -375,24 +387,35 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
               .from('Job Photos')
               .getPublicUrl(fileName);
 
-            console.log('✅ [FREE-JOB-PHOTO-UPLOAD] Success:', publicUrl);
+            console.log('✅ [EDIT-JOB-PHOTO-UPLOAD] Success:', publicUrl);
             return publicUrl;
           });
 
-          imageUrls = await Promise.all(uploadPromises);
-          console.log('🔍 [FREE-JOB-PHOTO-UPLOAD] All photos uploaded:', imageUrls);
+          newlyUploadedUrls = await Promise.all(uploadPromises);
+          console.log('🔍 [EDIT-JOB-PHOTO-UPLOAD] All new photos uploaded:', newlyUploadedUrls);
         } catch (uploadError) {
-          console.error('❌ [FREE-JOB-PHOTO-UPLOAD] Failed to upload photos:', uploadError);
-          // For edits, continue saving without photos if upload fails
+          console.error('❌ [EDIT-JOB-PHOTO-UPLOAD] Failed to upload photos:', uploadError);
+          // For edits, continue saving without new photos if upload fails
           if (editJobId) {
-            toast.error('Failed to upload photos, but continuing to save job changes.');
-            imageUrls = []; // Continue with empty photo array
+            toast.error('Failed to upload new photos, but continuing to save job changes.');
+            newlyUploadedUrls = []; // Continue with empty new photo array
           } else {
             toast.error('Failed to upload photos. Please try again.');
             setIsSubmitting(false);
             return;
           }
         }
+      }
+      
+      // Step 3: Merge existing + new photos for final array
+      if (editJobId) {
+        // For edits: Combine existing + newly uploaded photos
+        finalImageUrls = [...finalImageUrls, ...newlyUploadedUrls];
+        console.log('🔍 [EDIT-MODE-MERGE] Final merged photo array:', finalImageUrls);
+      } else {
+        // For new jobs: Use only newly uploaded photos
+        finalImageUrls = newlyUploadedUrls;
+        console.log('🔍 [NEW-JOB] Using newly uploaded photos:', finalImageUrls);
       }
 
       // REBUILT: Use same payload structure as working free jobs
@@ -415,12 +438,12 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         status: 'active',
         pricing_tier: editJobId ? (editJobData?.pricing_tier || 'free') : 'free', // Preserve original pricing tier when editing
         // Store images in multiple formats exactly like working free jobs
-        image_url: imageUrls.length > 0 ? imageUrls[0] : null,
-        image_urls: imageUrls,
-        photos: imageUrls,
+        image_url: finalImageUrls.length > 0 ? finalImageUrls[0] : null,
+        image_urls: finalImageUrls,
+        photos: finalImageUrls,
         metadata: {
-          image_urls: imageUrls,
-          photos: imageUrls,
+          image_urls: finalImageUrls,
+          photos: finalImageUrls,
           contact_info: {
             owner_name: data.contactName?.trim() || '',
             phone: data.contactPhone?.trim() || '',
@@ -434,7 +457,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       // DEBUG: Log the exact payload being sent to Supabase
       console.log("🔍 [FORM-SUBMIT] Job Payload being sent to Supabase:", payload);
       console.log("🔍 [FORM-SUBMIT] Contact Info:", payload.contact_info);
-      console.log("🔍 [FORM-SUBMIT] Photo URLs:", imageUrls);
+      console.log("🔍 [FORM-SUBMIT] Photo URLs:", finalImageUrls);
 
       if (editJobId) {
         // Update existing job
