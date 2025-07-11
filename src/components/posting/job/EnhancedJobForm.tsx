@@ -309,7 +309,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       status: 'active',
       pricing_tier: 'free',
       // Store first uploaded image URL (will be implemented with image upload)
-      image: photoUploads.length > 0 ? null : null // Placeholder for image upload implementation
+      image_url: photoUploads.length > 0 ? null : null // Placeholder for image upload implementation
     };
 
     console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
