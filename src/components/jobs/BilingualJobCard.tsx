@@ -53,26 +53,35 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // Safe image and paid job logic with null checks
   const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && job.pricing_tier !== 'free';
   
-  // FIXED: Enhanced image detection with metadata support
+  // COMPREHENSIVE DEBUGGING: Enhanced image detection with metadata support
   const getJobImages = () => {
     const jobAny = job as any; // Type assertion to access potentially new fields
-    console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Getting job images for job ID:', job.id, {
-      image_urls: jobAny.image_urls,
-      photos: jobAny.photos,
-      image_url: job.image_url,
-      'metadata.photos': jobAny.metadata?.photos,
-      'metadata.image_urls': jobAny.metadata?.image_urls,
+    console.log('🚨 [DEBUG-JOB-CARD] ===== JOB CARD PHOTO ANALYSIS =====');
+    console.log('📸 [DEBUG-JOB-CARD] Full job object for ID:', job.id, jobAny);
+    console.log('📸 [DEBUG-JOB-CARD] Photo field analysis:', {
+      'job.image_urls': jobAny.image_urls,
+      'job.photos': jobAny.photos,
+      'job.image_url': job.image_url,
+      'job.metadata': jobAny.metadata,
+      'job.metadata.photos': jobAny.metadata?.photos,
+      'job.metadata.image_urls': jobAny.metadata?.image_urls,
       pricing_tier: job.pricing_tier,
       isPaidJob
     });
+
+    let allFoundImages: string[] = [];
 
     // Check metadata for photos first (webhook processed jobs)
     if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
       const validUrls = jobAny.metadata.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found metadata photos:', validUrls);
-      if (validUrls.length > 0) return validUrls;
+      console.log('🚨 [DEBUG-JOB-CARD] Found metadata photos:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using metadata.photos (highest priority)');
+        return validUrls;
+      }
     }
 
     // Check metadata for image_urls (webhook processed jobs)
@@ -80,8 +89,12 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found metadata image_urls:', validUrls);
-      if (validUrls.length > 0) return validUrls;
+      console.log('🚨 [DEBUG-JOB-CARD] Found metadata image_urls:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using metadata.image_urls');
+        return validUrls;
+      }
     }
 
     // Check direct image_urls field (direct upload)
@@ -89,8 +102,12 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found direct image_urls:', validUrls);
-      if (validUrls.length > 0) return validUrls;
+      console.log('🚨 [DEBUG-JOB-CARD] Found direct image_urls:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct image_urls');
+        return validUrls;
+      }
     }
     
     // Check direct photos field (direct upload)
@@ -98,18 +115,31 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       const validUrls = jobAny.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found direct photos:', validUrls);
-      if (validUrls.length > 0) return validUrls;
+      console.log('🚨 [DEBUG-JOB-CARD] Found direct photos:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct photos');
+        return validUrls;
+      }
     }
     
     // Check for single uploaded image (backwards compatibility)
     const singleImage = job.image_url || jobAny.imageUrl || jobAny.image || null;
     if (singleImage && typeof singleImage === 'string' && singleImage.trim() && singleImage !== 'photos-uploaded') {
-      console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Found single image:', singleImage);
+      console.log('🚨 [DEBUG-JOB-CARD] Found single image:', singleImage);
+      allFoundImages = [singleImage];
+      console.log('🚨 [DEBUG-JOB-CARD] ✅ Using single image fallback');
       return [singleImage];
     }
     
-    console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] No valid images found for paid job');
+    console.log('🚨 [DEBUG-JOB-CARD] ❌ NO VALID IMAGES FOUND');
+    console.log('🚨 [DEBUG-JOB-CARD] Final analysis summary:', {
+      jobId: job.id,
+      isPaidJob,
+      foundAnyImages: allFoundImages.length > 0,
+      checkedFields: ['metadata.photos', 'metadata.image_urls', 'image_urls', 'photos', 'image_url'],
+      allFieldsChecked: true
+    });
     return [];
   };
 

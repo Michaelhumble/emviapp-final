@@ -410,7 +410,10 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       // Step 2: Upload new photos if any
       let newlyUploadedUrls: string[] = [];
       if (photoUploads.length > 0) {
-        console.log('📸 [EDIT-JOB-PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'new photos to merge with', finalImageUrls.length, 'existing photos');
+        console.log('🚨 [DEBUG-PHOTO-UPLOAD] ===== STARTING PHOTO UPLOAD PROCESS =====');
+        console.log('📸 [DEBUG-PHOTO-UPLOAD] Files to upload:', photoUploads.length);
+        console.log('📸 [DEBUG-PHOTO-UPLOAD] File details:', photoUploads.map(f => ({ name: f.name, size: f.size, type: f.type })));
+        console.log('📸 [DEBUG-PHOTO-UPLOAD] Existing photos to merge with:', finalImageUrls.length, finalImageUrls);
         
         try {
           const uploadPromises = photoUploads.map(async (file, index) => {
@@ -456,11 +459,23 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       if (editJobId) {
         // For edits: Combine existing + newly uploaded photos
         finalImageUrls = [...finalImageUrls, ...newlyUploadedUrls];
-        console.log('🔍 [EDIT-MODE-MERGE] Final merged photo array:', finalImageUrls);
+        console.log('🚨 [DEBUG-PHOTO-MERGE] ===== PHOTO MERGE FOR EDIT =====');
+        console.log('📸 [DEBUG-PHOTO-MERGE] Edit mode merge results:', {
+          existingPhotosCount: finalImageUrls.length - newlyUploadedUrls.length,
+          newPhotosCount: newlyUploadedUrls.length,
+          finalTotalCount: finalImageUrls.length,
+          existingUrls: finalImageUrls.slice(0, finalImageUrls.length - newlyUploadedUrls.length),
+          newUrls: newlyUploadedUrls,
+          finalMergedArray: finalImageUrls
+        });
       } else {
         // For new jobs: Use only newly uploaded photos
         finalImageUrls = newlyUploadedUrls;
-        console.log('🔍 [NEW-JOB] Using newly uploaded photos:', finalImageUrls);
+        console.log('🚨 [DEBUG-PHOTO-MERGE] ===== PHOTO ASSIGNMENT FOR NEW JOB =====');
+        console.log('📸 [DEBUG-PHOTO-MERGE] New job photo assignment:', {
+          newPhotosCount: newlyUploadedUrls.length,
+          finalUrls: finalImageUrls
+        });
       }
 
       // REBUILT: Use same payload structure as working free jobs
@@ -500,7 +515,8 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       };
 
       // COMPREHENSIVE DEBUG: Log all photo fields in payload
-      console.log('📸 [COMPREHENSIVE-SAVE] Complete payload with ALL photo fields:', {
+      console.log('🚨 [DEBUG-DB-WRITE] ===== DATABASE WRITE PREPARATION =====');
+      console.log('📸 [DEBUG-DB-WRITE] Complete payload photo analysis:', {
         editMode: !!editJobId,
         jobId: editJobId,
         totalPhotos: finalImageUrls.length,
@@ -509,15 +525,17 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         'payload.photos': payload.photos,
         'payload.metadata.image_urls': payload.metadata.image_urls,
         'payload.metadata.photos': payload.metadata.photos,
-        photoUrls: finalImageUrls
+        photoUrls: finalImageUrls,
+        allFieldsMatch: (
+          payload.image_urls.length === finalImageUrls.length &&
+          payload.photos.length === finalImageUrls.length &&
+          payload.metadata.image_urls.length === finalImageUrls.length &&
+          payload.metadata.photos.length === finalImageUrls.length
+        )
       });
 
-      // DEBUG: Log the exact payload being sent to Supabase
-      console.log("🔍 [FORM-SUBMIT] Job Payload being sent to Supabase:", payload);
-      console.log("🔍 [FORM-SUBMIT] Contact Info:", payload.contact_info);
-      console.log("🔍 [FORM-SUBMIT] Photo URLs:", finalImageUrls);
-
       if (editJobId) {
+        console.log('🚨 [DEBUG-DB-WRITE] ===== UPDATING EXISTING JOB =====');
         // Update existing job
         const { data: updateData, error } = await supabase
           .from('jobs')
@@ -527,26 +545,40 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           .select();
 
         if (error) {
-          console.error('❌ [JOB-EDIT] Error updating nail job:', error);
+          console.error('🚨 [DEBUG-DB-WRITE] ❌ UPDATE FAILED:', {
+            error: error.message,
+            fullError: error,
+            jobId: editJobId,
+            userId: user.id
+          });
           toast.error(`Failed to update job: ${error.message}`);
           return;
         }
 
-        // VERIFICATION: Log the final saved job data
-        console.log('✅ [JOB-EDIT] Job updated successfully with comprehensive photos:', {
+        // COMPREHENSIVE DB VERIFICATION: Log exactly what was saved
+        console.log('🚨 [DEBUG-DB-WRITE] ✅ UPDATE SUCCESS - VERIFICATION:');
+        const savedJob = updateData?.[0];
+        console.log('📸 [DEBUG-DB-WRITE] Saved job photo fields verification:', {
           jobId: editJobId,
-          updatedData: updateData?.[0],
-          'saved.image_url': updateData?.[0]?.image_url,
-          'saved.image_urls': updateData?.[0]?.image_urls,
-          'saved.photos': updateData?.[0]?.photos,
-          'saved.metadata.photos': (updateData?.[0]?.metadata as any)?.photos,
-          'saved.metadata.image_urls': (updateData?.[0]?.metadata as any)?.image_urls,
-          totalPhotosInPayload: finalImageUrls.length
+          'saved.image_url': savedJob?.image_url,
+          'saved.image_urls': savedJob?.image_urls,
+          'saved.photos': savedJob?.photos,
+          'saved.metadata': savedJob?.metadata,
+          'saved.metadata.photos': (savedJob?.metadata as any)?.photos,
+          'saved.metadata.image_urls': (savedJob?.metadata as any)?.image_urls,
+          savedJobComplete: savedJob,
+          photoCountsMatch: {
+            image_urls: savedJob?.image_urls?.length === finalImageUrls.length,
+            photos: savedJob?.photos?.length === finalImageUrls.length,
+            metadataPhotos: (savedJob?.metadata as any)?.photos?.length === finalImageUrls.length,
+            metadataImageUrls: (savedJob?.metadata as any)?.image_urls?.length === finalImageUrls.length
+          }
         });
 
-        toast.success(`Job updated successfully with ${finalImageUrls.length} photos!`);
+        toast.success(`✅ Job updated with ${finalImageUrls.length} photos!`);
         navigate('/jobs'); // Navigate directly to jobs page for edits
       } else {
+        console.log('🚨 [DEBUG-DB-WRITE] ===== CREATING NEW JOB =====');
         // Create new job
         const { data: insertData, error } = await supabase
           .from('jobs')
@@ -554,24 +586,36 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           .select();
 
         if (error) {
-          console.error('❌ [FREE-JOB] Error creating nail job:', error);
+          console.error('🚨 [DEBUG-DB-WRITE] ❌ INSERT FAILED:', {
+            error: error.message,
+            fullError: error,
+            userId: user.id
+          });
           toast.error(`Failed to create job: ${error.message}`);
           return;
         }
 
-        // VERIFICATION: Log the final saved job data
-        console.log('✅ [FREE-JOB] Job created successfully with comprehensive photos:', {
-          jobId: insertData[0].id,
-          createdData: insertData[0],
-          'saved.image_url': insertData[0]?.image_url,
-          'saved.image_urls': insertData[0]?.image_urls,
-          'saved.photos': insertData[0]?.photos,
-          'saved.metadata.photos': (insertData[0]?.metadata as any)?.photos,
-          'saved.metadata.image_urls': (insertData[0]?.metadata as any)?.image_urls,
-          totalPhotosInPayload: finalImageUrls.length
+        // COMPREHENSIVE DB VERIFICATION: Log exactly what was saved
+        console.log('🚨 [DEBUG-DB-WRITE] ✅ INSERT SUCCESS - VERIFICATION:');
+        const savedJob = insertData[0];
+        console.log('📸 [DEBUG-DB-WRITE] Saved job photo fields verification:', {
+          jobId: savedJob.id,
+          'saved.image_url': savedJob?.image_url,
+          'saved.image_urls': savedJob?.image_urls,
+          'saved.photos': savedJob?.photos,
+          'saved.metadata': savedJob?.metadata,
+          'saved.metadata.photos': (savedJob?.metadata as any)?.photos,
+          'saved.metadata.image_urls': (savedJob?.metadata as any)?.image_urls,
+          savedJobComplete: savedJob,
+          photoCountsMatch: {
+            image_urls: savedJob?.image_urls?.length === finalImageUrls.length,
+            photos: savedJob?.photos?.length === finalImageUrls.length,
+            metadataPhotos: (savedJob?.metadata as any)?.photos?.length === finalImageUrls.length,
+            metadataImageUrls: (savedJob?.metadata as any)?.image_urls?.length === finalImageUrls.length
+          }
         });
 
-        toast.success(`Nail tech job posted successfully with ${finalImageUrls.length} photos!`);
+        toast.success(`✅ Job created with ${finalImageUrls.length} photos!`);
         navigate('/nails-job-success', { 
           state: { 
             jobId: insertData[0].id,
@@ -602,10 +646,12 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         return;
       }
 
-      // REBUILT: Upload photos using same logic as free jobs
+      // COMPREHENSIVE: Upload photos using exact same logic as free jobs with detailed debugging
       let uploadedImageUrls: string[] = [];
       if (photoUploads.length > 0) {
-        console.log(`🔍 [PAID-JOB-PHOTO-UPLOAD] Starting upload of ${photoUploads.length} photos using free job logic...`);
+        console.log('🚨 [DEBUG-PAID-PHOTO-UPLOAD] ===== PAID JOB PHOTO UPLOAD PROCESS =====');
+        console.log('📸 [DEBUG-PAID-PHOTO-UPLOAD] Files to upload:', photoUploads.length);
+        console.log('📸 [DEBUG-PAID-PHOTO-UPLOAD] File details:', photoUploads.map(f => ({ name: f.name, size: f.size, type: f.type })));
         
         try {
           const uploadPromises = photoUploads.map(async (file, index) => {
@@ -673,7 +719,8 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       };
       
       // COMPREHENSIVE DEBUG: Log all photo fields for paid job
-      console.log('📸 [PAID-JOB-CHECKOUT-DEBUG] Complete draft job payload with ALL photo fields:', {
+      console.log('🚨 [DEBUG-PAID-JOB-DRAFT] ===== PAID JOB DRAFT CREATION =====');
+      console.log('📸 [DEBUG-PAID-JOB-DRAFT] Complete draft job payload with ALL photo fields:', {
         photoCount: uploadedImageUrls.length,
         'payload.image_url': jobDataPayload.image_url,
         'payload.image_urls': jobDataPayload.image_urls,
@@ -682,7 +729,13 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         'payload.metadata.photos': jobDataPayload.metadata.photos,
         contactInfo,
         hasImages: uploadedImageUrls.length > 0,
-        allPhotoUrls: uploadedImageUrls
+        allPhotoUrls: uploadedImageUrls,
+        allFieldsMatch: (
+          jobDataPayload.image_urls.length === uploadedImageUrls.length &&
+          jobDataPayload.photos.length === uploadedImageUrls.length &&
+          jobDataPayload.metadata.image_urls.length === uploadedImageUrls.length &&
+          jobDataPayload.metadata.photos.length === uploadedImageUrls.length
+        )
       });
 
       // Create Stripe checkout session

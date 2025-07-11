@@ -35,39 +35,62 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
 
   if (!job) return null;
 
-  // Helper function to get job photos with fallback system
+  // COMPREHENSIVE DEBUG: Helper function to get job photos with extensive logging
   const getJobPhotos = (job: Job): string[] => {
+    console.log('🚨 [DEBUG-PREMIUM-MODAL] ===== PREMIUM MODAL PHOTO ANALYSIS =====');
+    console.log('📸 [DEBUG-PREMIUM-MODAL] Full job object for modal:', job);
+    
     const allPhotos: string[] = [];
-
-    // Collect photos from all possible sources
     const photoSources = [
-      job.metadata?.photos,
-      job.metadata?.image_urls,
-      job.image_urls,
-      job.photos,
-      job.image_url ? [job.image_url] : null
+      { name: 'metadata.photos', value: job.metadata?.photos },
+      { name: 'metadata.image_urls', value: job.metadata?.image_urls },
+      { name: 'image_urls', value: job.image_urls },
+      { name: 'photos', value: job.photos },
+      { name: 'image_url', value: job.image_url ? [job.image_url] : null }
     ];
 
+    console.log('📸 [DEBUG-PREMIUM-MODAL] Checking photo sources:', photoSources);
+
+    // Collect photos from all possible sources with detailed logging
     for (const source of photoSources) {
-      if (Array.isArray(source)) {
-        const validUrls = source.filter((url: any) => 
+      console.log(`📸 [DEBUG-PREMIUM-MODAL] Checking source "${source.name}":`, source.value);
+      
+      if (Array.isArray(source.value)) {
+        const validUrls = source.value.filter((url: any) => 
           url && typeof url === 'string' && url.trim() && 
           url !== 'photos-uploaded' && url.startsWith('http')
         );
-        allPhotos.push(...validUrls);
+        
+        console.log(`📸 [DEBUG-PREMIUM-MODAL] Valid URLs from "${source.name}":`, validUrls);
+        
+        if (validUrls.length > 0) {
+          allPhotos.push(...validUrls);
+          console.log(`📸 [DEBUG-PREMIUM-MODAL] ✅ Added ${validUrls.length} photos from "${source.name}"`);
+        }
       }
     }
 
     // Remove duplicates
     const uniquePhotos = [...new Set(allPhotos)];
+    
+    console.log('📸 [DEBUG-PREMIUM-MODAL] Final photo analysis:', {
+      totalPhotosFound: allPhotos.length,
+      uniquePhotos: uniquePhotos.length,
+      finalPhotoArray: uniquePhotos,
+      jobId: job.id,
+      pricingTier: job.pricing_tier,
+      isPaidJob: job.pricing_tier && job.pricing_tier !== 'free'
+    });
 
-    // FIXED: Only use fallback for paid jobs that have NO real photos
-    // Don't show mockup images if real user photos exist
+    // FALLBACK: Only use fallback for paid jobs that have NO real photos
     if (uniquePhotos.length === 0 && job.pricing_tier && job.pricing_tier !== 'free') {
       const fallbackImage = getIndustryFallbackImage(job.category);
+      console.log('📸 [DEBUG-PREMIUM-MODAL] ⚠️ Using fallback image for paid job with no photos:', fallbackImage);
       return [fallbackImage];
     }
 
+    console.log('📸 [DEBUG-PREMIUM-MODAL] ===== FINAL RESULT =====');
+    console.log(`📸 [DEBUG-PREMIUM-MODAL] Returning ${uniquePhotos.length} photos for display`);
     return uniquePhotos;
   };
 
@@ -111,8 +134,22 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
     return null;
   };
 
-  const photos = getJobPhotos(job);
+  
+  // COMPREHENSIVE DEBUG: Get job photos with extensive debugging
+  const jobPhotos = getJobPhotos(job);
   const contactInfo = getContactInfo(job);
+
+  // DEBUG PANEL: Show comprehensive debug info (remove in production)
+  const debugInfo = {
+    jobId: job.id,
+    pricingTier: job.pricing_tier,
+    photosFound: jobPhotos.length,
+    photoUrls: jobPhotos,
+    'raw.metadata': job.metadata,
+    'raw.image_urls': job.image_urls,
+    'raw.photos': job.photos,
+    'raw.image_url': job.image_url
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -132,12 +169,30 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
           </DialogHeader>
 
           <div className="px-6 pb-6 space-y-6">
+            {/* DEBUG PANEL - Comprehensive photo debugging (temporary) */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <details className="cursor-pointer">
+                  <summary className="font-medium text-red-800 mb-2">🚨 DEBUG: Premium Modal Photo Analysis</summary>
+                  <div className="text-xs space-y-2 text-red-700">
+                    <div><strong>Job ID:</strong> {debugInfo.jobId}</div>
+                    <div><strong>Pricing Tier:</strong> {debugInfo.pricingTier}</div>
+                    <div><strong>Photos Found:</strong> {debugInfo.photosFound}</div>
+                    <div><strong>Photo URLs:</strong> {JSON.stringify(debugInfo.photoUrls, null, 2)}</div>
+                    <div><strong>Raw image_urls:</strong> {JSON.stringify(debugInfo['raw.image_urls'], null, 2)}</div>
+                    <div><strong>Raw photos:</strong> {JSON.stringify(debugInfo['raw.photos'], null, 2)}</div>
+                    <div><strong>Raw image_url:</strong> {debugInfo['raw.image_url']}</div>
+                    <div><strong>Raw metadata:</strong> {JSON.stringify(debugInfo['raw.metadata'], null, 2)}</div>
+                  </div>
+                </details>
+              </div>
+            )}
             {/* Photo Gallery at the Top */}
-            {photos.length > 0 && (
+            {jobPhotos.length > 0 && (
               <div className="w-full">
-                {photos.length === 1 ? (
+                {jobPhotos.length === 1 ? (
                   <img 
-                    src={photos[0]} 
+                    src={jobPhotos[0]} 
                     alt={job.title} 
                     className="w-full h-80 object-cover rounded-lg"
                     onError={(e) => {
@@ -148,13 +203,13 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
                 ) : (
                   <div className="space-y-4">
                     <img 
-                      src={photos[0]} 
+                    src={jobPhotos[0]}
                       alt={job.title} 
                       className="w-full h-80 object-cover rounded-lg"
                     />
-                    {photos.length > 1 && (
+                    {jobPhotos.length > 1 && (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {photos.slice(1, 5).map((photo, index) => (
+                        {jobPhotos.slice(1, 5).map((photo, index) => (
                           <img 
                             key={index}
                             src={photo} 
@@ -165,9 +220,9 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
                         ))}
                       </div>
                     )}
-                    {photos.length > 5 && (
+                    {jobPhotos.length > 5 && (
                       <p className="text-sm text-gray-500 text-center">
-                        +{photos.length - 5} more photos - Click to view
+                        +{jobPhotos.length - 5} more photos - Click to view
                       </p>
                     )}
                   </div>
