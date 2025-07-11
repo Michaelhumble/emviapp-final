@@ -283,30 +283,45 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
               )}
             </div>
 
-            {/* Job Description */}
+            {/* Job Description - Bilingual Support */}
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-gray-900">Job Description</h3>
               
+              {/* Vietnamese Description - Always show if available */}
               {job.vietnamese_description && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Tiếng Việt:</h4>
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
+                    🇻🇳 Tiếng Việt
+                  </h4>
                   <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {job.vietnamese_description}
                   </p>
                 </div>
               )}
               
-              {job.description && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  {job.vietnamese_description && (
-                    <h4 className="font-medium text-gray-900 mb-2">English:</h4>
-                  )}
+              {/* English Description - Only show if different from Vietnamese */}
+              {job.description && job.description !== job.vietnamese_description && (
+                <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-green-800 mb-3 flex items-center">
+                    🇺🇸 English
+                  </h4>
                   <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {job.description}
                   </p>
                 </div>
               )}
 
+              {/* Show "Not provided" only if English is missing and Vietnamese exists */}
+              {job.vietnamese_description && (!job.description || job.description === job.vietnamese_description) && (
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-600 mb-3 flex items-center">
+                    🇺🇸 English
+                  </h4>
+                  <p className="text-gray-500 italic">Not provided</p>
+                </div>
+              )}
+
+              {/* Fallback for no descriptions */}
               {!job.description && !job.vietnamese_description && (
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-gray-500 italic">No detailed description provided.</p>
