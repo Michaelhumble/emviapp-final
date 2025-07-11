@@ -82,9 +82,33 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
 
       // For free tier, create job posting directly without payment
       if (finalPrice === 0) {
-        console.log('🆓 [DEBUG] Free job - navigating directly to success page');
+        console.log('🆓 [DEBUG] Free job - creating job directly and showing success');
+        
+        // Create free job posting
+        const { data: insertData, error } = await supabase
+          .from('jobs')
+          .insert([{
+            ...jobFormData,
+            user_id: user.id,
+            status: 'active',
+            pricing_tier: 'free'
+          }])
+          .select();
+
+        if (error) {
+          console.error('🆓 [DEBUG] Error creating free job:', error);
+          toast.error('Failed to create job posting');
+          setIsProcessing(false);
+          return;
+        }
+
         toast.success('Free job posting created successfully!');
-        navigate('/post-success');
+        navigate('/job-posted-success', { 
+          state: { 
+            jobId: insertData[0].id,
+            jobData: insertData[0]
+          }
+        });
         return;
       }
 

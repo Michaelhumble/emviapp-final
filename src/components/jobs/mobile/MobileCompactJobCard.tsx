@@ -38,7 +38,10 @@ const MobileCompactJobCard: React.FC<MobileCompactJobCardProps> = ({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
+    <div 
+      data-job-id={job.id}
+      className="border border-gray-200 rounded-lg overflow-hidden"
+    >
       {/* Compact header - always visible */}
       <div 
         className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${isExpired ? 'opacity-70' : ''}`}

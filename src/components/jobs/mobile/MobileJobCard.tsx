@@ -120,7 +120,10 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   const isPaidJob = job.pricing_tier && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
 
   return (
-    <div className={`card-luxury bg-white rounded-2xl overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}>
+    <div 
+      data-job-id={job.id}
+      className={`card-luxury bg-white rounded-2xl overflow-hidden ${isExpired ? 'opacity-75' : ''} ${expanded ? 'w-full' : 'w-full max-w-sm'}`}
+    >
       {/* Image Section - Only show if image exists */}
       {jobImage && (
         <div className="relative">

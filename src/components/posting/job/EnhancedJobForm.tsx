@@ -346,11 +346,16 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       console.log('✅ [SUPABASE-SUCCESS] Job created successfully:', insertData[0]);
       setFreeJobSuccess(true);
 
-      // Navigate to jobs page after a short delay
+      // Navigate to success page with job data
       setTimeout(() => {
-        console.log('🔄 [NAVIGATION] Redirecting to /jobs');
-        navigate('/jobs');
-      }, 2000);
+        console.log('🔄 [NAVIGATION] Redirecting to job success page');
+        navigate('/job-posted-success', { 
+          state: { 
+            jobId: insertData[0].id,
+            jobData: insertData[0]
+          }
+        });
+      }, 1500);
 
     } catch (error) {
       console.log('💥 [CATCH-ERROR] Unexpected error:', error);

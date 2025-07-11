@@ -33,6 +33,7 @@ import SellSalonPage from "@/pages/sell-salon";
 import PostSalon from "@/pages/PostSalon";
 import SalonListingSuccessPage from "@/pages/salon-listing-success";
 import CustomerProfilePage from "@/pages/customer/ProfilePage";
+import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
 
 // Industry Pages
 import NailsPage from "@/pages/nails";
@@ -90,6 +91,9 @@ function App() {
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     <Route path="/post-success" element={<PostSuccess />} />
                     <Route path="/post-canceled" element={<PostCanceled />} />
+                    
+                    {/* Job posting success route */}
+                    <Route path="/job-posted-success" element={<JobPostingSuccessPage />} />
                     
                     {/* Other pages */}
                     <Route path="/salons" element={<Layout><StableSalonPage /></Layout>} />

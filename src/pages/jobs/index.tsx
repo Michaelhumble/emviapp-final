@@ -6,7 +6,7 @@ import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
@@ -40,6 +40,7 @@ const JobsPage = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Industry navigation state
   const industryParam = searchParams.get('industry');
@@ -80,6 +81,33 @@ const JobsPage = () => {
       }
     }
   }, [industryParam, listingParam]);
+
+  // Handle highlighting newly posted jobs
+  useEffect(() => {
+    const highlightJobId = location.state?.highlightJobId;
+    if (highlightJobId && jobs.length > 0) {
+      // Show success toast
+      toast({
+        title: "Job Posted Successfully!",
+        description: "Your job is now live and highlighted below.",
+      });
+
+      setTimeout(() => {
+        const jobElement = document.querySelector(`[data-job-id="${highlightJobId}"]`);
+        if (jobElement) {
+          jobElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Add temporary highlight with green color for new posts
+          jobElement.classList.add('ring-4', 'ring-green-500', 'ring-opacity-75', 'bg-green-50');
+          setTimeout(() => {
+            jobElement.classList.remove('ring-4', 'ring-green-500', 'ring-opacity-75', 'bg-green-50');
+          }, 5000);
+        }
+      }, 1000);
+
+      // Clear the navigation state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [jobs, location.state, toast, navigate, location.pathname]);
 
   // Check for payment success
   useEffect(() => {
