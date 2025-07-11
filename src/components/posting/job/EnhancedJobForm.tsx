@@ -295,7 +295,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       category: 'General', // Fixed category since UI no longer shows selection
       location: data.location.trim() || null,
       description: data.description.trim(),
-      vietnamese_description: data.vietnameseDescription?.trim() || null,
+      // vietnamese_description field removed - not in database schema
       compensation_type: data.compensationType.trim() || null,
       compensation_details: data.compensationDetails?.trim() || null,
       requirements: data.requirements.join('\n') || null,
@@ -428,7 +428,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               category: 'General', // Fixed category since UI no longer shows selection
               location: data.location.trim() || '',
               description: data.description.trim(),
-              vietnamese_description: data.vietnameseDescription?.trim() || '',
+              // vietnamese_description field removed - not in database schema
               compensationType: data.compensationType.trim() || '',
               compensationDetails: data.compensationDetails?.trim() || '',
               requirements: data.requirements || [],
