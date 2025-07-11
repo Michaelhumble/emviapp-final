@@ -53,28 +53,49 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // Safe image and paid job logic with null checks
   const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && job.pricing_tier !== 'free';
   
-  // FIXED: Get all job images (support for multiple photos)
+  // FIXED: Enhanced image detection with metadata support
   const getJobImages = () => {
     const jobAny = job as any; // Type assertion to access potentially new fields
     console.log('🔍 [BILINGUAL-JOB-CARD] Getting job images for job ID:', job.id, {
       image_urls: jobAny.image_urls,
       photos: jobAny.photos,
       image_url: job.image_url,
-      imageUrl: jobAny.imageUrl,
-      image: jobAny.image
+      metadata: jobAny.metadata
     });
 
-    // Check for multiple uploaded images first (new format)
+    // Check metadata for photos first (webhook processed jobs)
+    if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
+      const validUrls = jobAny.metadata.photos.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found metadata photos:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
+
+    // Check metadata for image_urls (webhook processed jobs)
+    if (jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
+      const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found metadata image_urls:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
+
+    // Check direct image_urls field (direct upload)
     if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
-      const validUrls = jobAny.image_urls.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found image_urls:', validUrls);
+      const validUrls = jobAny.image_urls.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found direct image_urls:', validUrls);
       if (validUrls.length > 0) return validUrls;
     }
     
-    // Check photos field (backup format)
+    // Check direct photos field (direct upload)
     if (jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
-      const validUrls = jobAny.photos.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
-      console.log('🔍 [BILINGUAL-JOB-CARD] Found photos:', validUrls);
+      const validUrls = jobAny.photos.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found direct photos:', validUrls);
       if (validUrls.length > 0) return validUrls;
     }
     
@@ -300,17 +321,50 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         </p>
       )}
 
-      {/* Contact Info for Paid Jobs */}
-      {isPaidJob && job.contact_info && (
-        <div className="border-t border-gray-100 pt-3 mb-4">
-          <PremiumContactGate
-            contactName={job.contact_info.owner_name}
-            contactPhone={job.contact_info.phone}
-            contactEmail={job.contact_info.email}
-            className="text-sm"
-          />
-        </div>
-      )}
+      {/* FIXED: Contact Info for Paid Jobs - Enhanced with metadata support */}
+      {(() => {
+        if (!isPaidJob) return null;
+
+        const jobAny = job as any;
+        let contactInfo = null;
+
+        // Check metadata for contact_info (webhook processed jobs)
+        if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
+          contactInfo = jobAny.metadata.contact_info;
+          console.log('🔍 [BILINGUAL-JOB-CARD] Using metadata contact_info:', contactInfo);
+        }
+        // Check for direct contact_info in job object
+        else if (job.contact_info && typeof job.contact_info === 'object') {
+          contactInfo = job.contact_info;
+          console.log('🔍 [BILINGUAL-JOB-CARD] Using direct contact_info:', contactInfo);
+        }
+        // Check for legacy contact fields
+        else if (jobAny.contactPhone || jobAny.contactName || jobAny.contactEmail) {
+          contactInfo = {
+            phone: jobAny.contactPhone,
+            owner_name: jobAny.contactName,
+            email: jobAny.contactEmail,
+            notes: jobAny.contactNotes
+          };
+          console.log('🔍 [BILINGUAL-JOB-CARD] Using legacy contact fields:', contactInfo);
+        }
+
+        if (!contactInfo) {
+          console.log('🔍 [BILINGUAL-JOB-CARD] No contact info found for paid job');
+          return null;
+        }
+
+        return (
+          <div className="border-t border-gray-100 pt-3 mb-4">
+            <PremiumContactGate
+              contactName={contactInfo.owner_name}
+              contactPhone={contactInfo.phone}
+              contactEmail={contactInfo.email}
+              className="text-sm"
+            />
+          </div>
+        );
+      })()}
 
       {/* Action Buttons */}
       <div className="flex gap-2 pt-4 border-t border-gray-100">

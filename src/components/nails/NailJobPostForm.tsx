@@ -557,18 +557,14 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         console.log('🔍 [PAYMENT-REDIRECT] Redirecting to Stripe checkout:', data.url);
         toast.success('Redirecting to secure payment...');
         
-        // FIXED: Add error handling to prevent crashes during redirect
+        // FIXED: Use direct navigation to prevent session loss and crashes
         try {
-          // Use window.open instead of window.location.href to prevent crashes
-          const stripeWindow = window.open(data.url, '_blank');
-          if (!stripeWindow) {
-            // Fallback if popup is blocked
-            window.location.href = data.url;
-          }
+          console.log('🔄 [PAYMENT-REDIRECT] Redirecting to Stripe checkout in same tab...');
+          window.location.href = data.url;
         } catch (redirectError) {
           console.error('❌ [PAYMENT-REDIRECT] Error during redirect:', redirectError);
-          // Fallback to direct navigation
-          window.location.href = data.url;
+          toast.error('Failed to redirect to payment page. Please try again.');
+          setCurrentStep('pricing');
         }
       } else {
         console.error('❌ [PAYMENT-REDIRECT] No checkout URL received:', data);

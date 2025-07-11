@@ -163,18 +163,33 @@ serve(async (req) => {
             updated_at: new Date().toISOString()
           };
 
-          // If the job has metadata with photos, extract and set them properly
+          // FIXED: Extract and set photos and contact info properly from metadata
           if (existingJob.metadata) {
             console.log('🔍 [STRIPE-WEBHOOK] Job has metadata:', existingJob.metadata);
             
-            // Extract photos from metadata
+            // Extract photos from metadata and set in job fields
             if (existingJob.metadata.image_urls && Array.isArray(existingJob.metadata.image_urls)) {
-              updateData.image_url = existingJob.metadata.image_urls[0] || null;
-              // Store photos in metadata for compatibility
-              updateData.metadata = {
-                ...existingJob.metadata,
-                photos: existingJob.metadata.image_urls
-              };
+              const validUrls = existingJob.metadata.image_urls.filter((url: string) => 
+                url && url.trim() && url !== 'photos-uploaded'
+              );
+              
+              if (validUrls.length > 0) {
+                console.log('🔍 [STRIPE-WEBHOOK] Setting image URLs:', validUrls);
+                updateData.image_url = validUrls[0]; // Primary image
+                
+                // Update metadata to include photos in multiple fields for compatibility
+                updateData.metadata = {
+                  ...existingJob.metadata,
+                  photos: validUrls,
+                  image_urls: validUrls
+                };
+              }
+            }
+            
+            // Extract contact info from metadata and set in contact_info field
+            if (existingJob.metadata.contact_info) {
+              console.log('🔍 [STRIPE-WEBHOOK] Setting contact info:', existingJob.metadata.contact_info);
+              updateData.contact_info = existingJob.metadata.contact_info;
             }
           }
 
