@@ -11,10 +11,11 @@ import { toast } from "sonner";
 
 interface SalonPaymentStepProps {
   form: UseFormReturn<SalonFormValues>;
+  photoUploads?: File[];
   onPaymentComplete?: () => void;
 }
 
-export const SalonPaymentStep = ({ form, onPaymentComplete }: SalonPaymentStepProps) => {
+export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete }: SalonPaymentStepProps) => {
   const { isLoading, initiatePayment } = useStripe();
   
   const selectedOptions: SalonPricingOptions = {
@@ -39,7 +40,7 @@ export const SalonPaymentStep = ({ form, onPaymentComplete }: SalonPaymentStepPr
     const formData = form.getValues();
     
     try {
-      const success = await initiatePayment(selectedOptions, formData);
+      const success = await initiatePayment(selectedOptions, formData, photoUploads);
       if (success && onPaymentComplete) {
         onPaymentComplete();
       }

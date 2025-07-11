@@ -55,10 +55,20 @@ serve(async (req) => {
       // Get metadata from the session
       const userId = session.metadata?.user_id;
       const pricingTier = session.metadata?.pricing_tier;
-      const salonName = session.metadata?.salon_name;
       const featuredAddon = session.metadata?.featured_addon === 'true';
       
+      // Parse the full form data from metadata
+      let formData = {};
+      try {
+        formData = JSON.parse(session.metadata?.form_data || '{}');
+      } catch (e) {
+        console.error('Error parsing form data from session metadata:', e);
+      }
+      
+      const salonName = formData.salonName || session.metadata?.salon_name || '';
+      
       console.log(`Processing successful salon payment for user ${userId}: ${pricingTier} tier, featured: ${featuredAddon}`);
+      console.log('Form data received:', formData);
       
       if (userId && pricingTier && salonName) {
         // Calculate expiration date (30 days for basic, 90 days for premium/gold, 365 days for annual)
@@ -75,35 +85,118 @@ serve(async (req) => {
         const featuredUntil = featuredAddon ? new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)) : null; // 30 days
         
         try {
+          // Build the description using bilingual content
+          let fullDescription = '';
+          if (formData.englishDescription) {
+            fullDescription += formData.englishDescription;
+          }
+          if (formData.vietnameseDescription) {
+            if (fullDescription) fullDescription += '\n\n--- Tiếng Việt ---\n\n';
+            fullDescription += formData.vietnameseDescription;
+          }
+          
+          // Build contact info from form data
+          const contactInfo = {
+            owner_name: formData.contactName || '',
+            phone: formData.contactPhone || '',
+            email: formData.contactEmail || '',
+            facebook: formData.contactFacebook || '',
+            zalo: formData.contactZalo || '',
+            notes: formData.contactNotes || ''
+          };
+          
+          // Build location string
+          const fullLocation = [
+            formData.address,
+            formData.city,
+            formData.state,
+            formData.zipCode
+          ].filter(Boolean).join(', ');
+          
           // Create the salon listing in the salon_listings table
           const { data: salonData, error: salonError } = await supabase
             .from('salon_listings')
             .insert({
               user_id: userId,
               salon_name: salonName,
-              description: session.metadata?.description || '',
-              location: session.metadata?.location || '',
-              address: session.metadata?.address || '',
-              phone: session.metadata?.phone || '',
-              email: session.metadata?.email || '',
-              website: session.metadata?.website || '',
-              instagram: session.metadata?.instagram || '',
+              description: fullDescription || formData.reasonForSelling || 'Premium salon for sale',
+              location: fullLocation || formData.city || '',
+              address: formData.address || '',
+              phone: formData.contactPhone || '',
+              email: formData.contactEmail || '',
+              website: formData.virtualTourUrl || '',
               pricing_tier: pricingTier,
               status: 'active',
               expires_at: expiresAt.toISOString(),
               is_featured: featuredAddon,
               featured_until: featuredUntil?.toISOString(),
-              contact_info: {
-                phone: session.metadata?.phone || '',
-                email: session.metadata?.email || '',
-                owner_name: session.metadata?.owner_name || '',
+              contact_info: contactInfo,
+              // Store complete form data in a structured way
+              business_hours: {
+                business_type: formData.businessType || '',
+                established_year: formData.establishedYear || '',
+                asking_price: formData.askingPrice || '',
+                monthly_rent: formData.monthlyRent || '',
+                monthly_revenue: formData.monthlyRevenue || '',
+                monthly_profit: formData.monthlyProfit || '',
+                number_of_staff: formData.numberOfStaff || '',
+                number_of_tables: formData.numberOfTables || '',
+                number_of_chairs: formData.numberOfChairs || '',
+                square_feet: formData.squareFeet || '',
+                // Include photos in business hours since it's a JSON field
+                photos: formData.photoUrls || formData.photos || []
               },
-              services: JSON.parse(session.metadata?.services || '[]'),
-              business_hours: JSON.parse(session.metadata?.business_hours || '{}'),
-              specialties: JSON.parse(session.metadata?.specialties || '[]')
+              services: {
+                features: {
+                  will_train: formData.willTrain || false,
+                  has_housing: formData.hasHousing || false,
+                  has_wax_room: formData.hasWaxRoom || false,
+                  has_dining_room: formData.hasDiningRoom || false,
+                  has_laundry: formData.hasLaundry || false,
+                  has_parking: formData.hasParking || false,
+                  equipment_included: formData.equipmentIncluded || false,
+                  lease_transferable: formData.leaseTransferable || false,
+                  seller_financing: formData.sellerFinancing || false,
+                  help_with_transition: formData.helpWithTransition || false
+                },
+                descriptions: {
+                  english: formData.englishDescription || '',
+                  vietnamese: formData.vietnameseDescription || '',
+                  reason_for_selling: formData.reasonForSelling || '',
+                  other_notes: formData.otherNotes || ''
+                },
+                // Also store photos in services for redundancy  
+                photos: formData.photoUrls || formData.photos || []
+              }
             })
             .select()
             .single();
+            
+          // If salon listing was created successfully, also create salon_photos records
+          if (salonData && !salonError && (formData.photoUrls || formData.photos)) {
+            const photoUrls = formData.photoUrls || formData.photos || [];
+            
+            if (photoUrls.length > 0) {
+              console.log(`Creating ${photoUrls.length} salon photo records for salon ${salonData.id}`);
+              
+              const photoRecords = photoUrls.map((url, index) => ({
+                salon_id: salonData.id,
+                photo_url: url,
+                order_number: index + 1
+              }));
+              
+              const { error: photoError } = await supabase
+                .from('salon_photos')
+                .insert(photoRecords);
+                
+              if (photoError) {
+                console.error('Error creating salon photo records:', photoError);
+                // Don't fail the whole process, just log the error
+              } else {
+                console.log(`Successfully created ${photoUrls.length} salon photo records`);
+              }
+            }
+          }
             
           if (salonError) {
             console.error('Error creating salon listing:', salonError);

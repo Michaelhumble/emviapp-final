@@ -6,11 +6,11 @@ import { SalonPhotosSection } from "./SalonPhotosSection";
 
 export interface SalonPostPhotoUploadProps {
   form: UseFormReturn<SalonFormValues>;
+  photoUploads: File[];
+  setPhotoUploads: (photos: File[]) => void;
 }
 
-export const SalonPostPhotoUpload = ({ form }: SalonPostPhotoUploadProps) => {
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-
+export const SalonPostPhotoUpload = ({ form, photoUploads, setPhotoUploads }: SalonPostPhotoUploadProps) => {
   return (
     <SalonPhotosSection 
       photoUploads={photoUploads}

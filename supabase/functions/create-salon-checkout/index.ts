@@ -110,7 +110,7 @@ serve(async (req) => {
     const totalAmount = lineItems.reduce((sum, item) => sum + item.price_data.unit_amount, 0)
     console.log('Total amount to charge:', totalAmount, 'cents')
 
-    // Create checkout session
+    // Create checkout session with full form data
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: lineItems,
@@ -121,8 +121,8 @@ serve(async (req) => {
         user_id: user.id,
         pricing_tier: pricingOptions.selectedPricingTier,
         featured_addon: pricingOptions.featuredAddon ? 'true' : 'false',
-        salon_name: formData?.salonName || '',
-        asking_price: formData?.askingPrice || '',
+        // Store all form data as JSON string to preserve it
+        form_data: JSON.stringify(formData || {}),
         total_amount: totalAmount.toString()
       }
     })

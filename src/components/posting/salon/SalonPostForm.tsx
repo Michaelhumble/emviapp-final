@@ -10,6 +10,7 @@ import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
 
 const SalonPostForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
@@ -82,7 +83,11 @@ const SalonPostForm = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <SalonPostPhotoUpload form={form} />
+              <SalonPostPhotoUpload 
+                form={form} 
+                photoUploads={photoUploads}
+                setPhotoUploads={setPhotoUploads}
+              />
               
               <Button 
                 type="submit" 

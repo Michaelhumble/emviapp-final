@@ -107,7 +107,7 @@ const SalonListingWizard = () => {
       case 7:
         return <SalonPreviewStep form={form} photoUploads={photoUploads} />;
       case 8:
-        return <SalonPaymentStep form={form} onPaymentComplete={handlePaymentComplete} />;
+        return <SalonPaymentStep form={form} photoUploads={photoUploads} onPaymentComplete={handlePaymentComplete} />;
       default:
         return <SalonIdentitySection form={form} />;
     }

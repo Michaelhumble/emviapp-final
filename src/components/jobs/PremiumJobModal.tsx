@@ -61,7 +61,8 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
     // Remove duplicates
     const uniquePhotos = [...new Set(allPhotos)];
 
-    // For paid jobs: if no real photos, use industry-specific mockups
+    // FIXED: Only use fallback for paid jobs that have NO real photos
+    // Don't show mockup images if real user photos exist
     if (uniquePhotos.length === 0 && job.pricing_tier && job.pricing_tier !== 'free') {
       const fallbackImage = getIndustryFallbackImage(job.category);
       return [fallbackImage];
