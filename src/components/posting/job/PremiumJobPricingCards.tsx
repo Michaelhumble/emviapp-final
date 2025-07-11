@@ -79,7 +79,7 @@ const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({
       id: 'gold',
       name: 'Gold Featured',
       description: 'Stand out from the crowd',
-      basePrice: 19.99,
+      basePrice: 18.99, // FIXED: Correct Gold Featured monthly price to $18.99
       features: [
         { icon: Award, text: 'Featured placement' },
         { icon: Star, text: 'Gold badge' },

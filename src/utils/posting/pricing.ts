@@ -49,7 +49,7 @@ export const calculatePricing = (
   if (selectedPricingTier === 'free') {
     basePrice = 0;
   } else if (selectedPricingTier === 'gold') {
-    basePrice = 19.99; // EXACT Gold Featured monthly price
+    basePrice = 18.99; // FIXED: Correct Gold Featured monthly price to match user expectation
   } else if (selectedPricingTier === 'premium') {
     basePrice = 39.99;
   } else {
