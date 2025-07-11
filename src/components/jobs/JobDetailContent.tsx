@@ -99,16 +99,66 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
             {isSignedIn ? (
               (() => {
                 const jobAny = job as any;
-                let contactInfo = null;
+                let contactInfo: any = null;
 
-                // Support both metadata.contact_info and root contact_info fields
+                // Enhanced backward compatibility - check ALL possible sources
+                // Priority 1: metadata.contact_info (new format)
                 if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
                   contactInfo = jobAny.metadata.contact_info;
-                } else if (job.contact_info && typeof job.contact_info === 'object') {
+                }
+                // Priority 2: root contact_info field
+                else if (job.contact_info && typeof job.contact_info === 'object') {
                   contactInfo = job.contact_info;
                 }
+                // Priority 3: Build from root fields (fallback for old jobs)
+                else {
+                  const fallbackContact: any = {};
+                  
+                  // Check various possible root field names
+                  if (jobAny.phone) fallbackContact.phone = jobAny.phone;
+                  if (jobAny.email) fallbackContact.email = jobAny.email;
+                  if (jobAny.salon_name) fallbackContact.salon_name = jobAny.salon_name;
+                  if (jobAny.owner_name) fallbackContact.owner_name = jobAny.owner_name;
+                  if (jobAny.contact_name) fallbackContact.owner_name = jobAny.contact_name;
+                  if (jobAny.company) fallbackContact.salon_name = jobAny.company;
+                  if (jobAny.business_name) fallbackContact.salon_name = jobAny.business_name;
+                  if (jobAny.contact_phone) fallbackContact.phone = jobAny.contact_phone;
+                  if (jobAny.contact_email) fallbackContact.email = jobAny.contact_email;
+                  
+                  // Also check metadata for individual fields
+                  if (jobAny.metadata?.phone) fallbackContact.phone = jobAny.metadata.phone;
+                  if (jobAny.metadata?.email) fallbackContact.email = jobAny.metadata.email;
+                  if (jobAny.metadata?.salon_name) fallbackContact.salon_name = jobAny.metadata.salon_name;
+                  if (jobAny.metadata?.owner_name) fallbackContact.owner_name = jobAny.metadata.owner_name;
+                  
+                  // Use fallback if we found any contact fields
+                  if (Object.keys(fallbackContact).length > 0) {
+                    contactInfo = fallbackContact;
+                  }
+                }
 
+                // Log for debugging if no contact info found
                 if (!contactInfo) {
+                  console.log('🔍 [CONTACT-DEBUG] No contact info found for job:', {
+                    jobId: job.id,
+                    jobTitle: job.title,
+                    availableFields: Object.keys(jobAny),
+                    metadata: jobAny.metadata,
+                    pricingTier: jobAny.pricing_tier
+                  });
+                  
+                  // Show a message for paid jobs missing contact info
+                  if (jobAny.pricing_tier && jobAny.pricing_tier !== 'free') {
+                    return (
+                      <div className="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                        <p className="text-yellow-700 text-sm font-medium">
+                          ⚠️ Contact information may be available - please contact support if you need assistance reaching this employer.
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  // For free jobs, show standard message
                   return (
                     <div className="text-center py-4">
                       <p className="text-gray-500 text-sm">Contact information not available</p>
@@ -154,6 +204,16 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
                       <div>
                         <span className="font-medium text-gray-600">Notes:</span>
                         <p className="text-gray-700 text-sm">{contactInfo.notes}</p>
+                      </div>
+                    )}
+                    
+                    {/* Debug info for paid jobs (remove in production) */}
+                    {process.env.NODE_ENV === 'development' && (jobAny.pricing_tier && jobAny.pricing_tier !== 'free') && (
+                      <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
+                        <strong>Debug:</strong> Contact source: {
+                          jobAny.metadata?.contact_info ? 'metadata.contact_info' :
+                          job.contact_info ? 'root.contact_info' : 'fallback fields'
+                        }
                       </div>
                     )}
                   </div>
