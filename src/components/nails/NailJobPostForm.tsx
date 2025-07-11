@@ -606,21 +606,16 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             timestamp: Date.now()
           }));
           
-          // Use safer redirect method to prevent crashes
+          // CRITICAL FIX: Use the safest redirect method to prevent browser crashes
           setTimeout(() => {
             try {
-              // Try window.open first (safer for some browsers)
-              const newWindow = window.open(data.url, '_self');
-              if (!newWindow) {
-                // Fallback to location.href
-                window.location.href = data.url;
-              }
-            } catch (innerError) {
-              console.error('❌ Inner redirect error:', innerError);
-              // Last resort fallback
+              console.log('🔄 [PAYMENT-REDIRECT] Using window.location.replace for safe redirect');
               window.location.replace(data.url);
+            } catch (innerError) {
+              console.error('❌ Inner redirect error, trying href:', innerError);
+              window.location.href = data.url;
             }
-          }, 200); // Slightly longer delay for stability
+          }, 500); // Longer delay for stability
           
         } catch (redirectError) {
           console.error('❌ [PAYMENT-REDIRECT] Error during redirect:', redirectError);

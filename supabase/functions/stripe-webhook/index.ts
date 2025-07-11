@@ -177,7 +177,7 @@ serve(async (req) => {
           // PRIORITY 1: Check existing database fields first (from draft creation)
           if (existingJob.image_urls && Array.isArray(existingJob.image_urls)) {
             validUrls = existingJob.image_urls.filter((url: string) => 
-              url && url.trim() && url !== 'photos-uploaded'
+              url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
             );
             console.log('🔍 [STRIPE-WEBHOOK] Found photos in image_urls field:', validUrls);
           }
@@ -185,7 +185,7 @@ serve(async (req) => {
           // PRIORITY 2: Check photos field if image_urls is empty
           if (validUrls.length === 0 && existingJob.photos && Array.isArray(existingJob.photos)) {
             validUrls = existingJob.photos.filter((url: string) => 
-              url && url.trim() && url !== 'photos-uploaded'
+              url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
             );
             console.log('🔍 [STRIPE-WEBHOOK] Found photos in photos field:', validUrls);
           }
@@ -194,14 +194,14 @@ serve(async (req) => {
           if (validUrls.length === 0 && existingJob.metadata) {
             if (existingJob.metadata.image_urls && Array.isArray(existingJob.metadata.image_urls)) {
               validUrls = existingJob.metadata.image_urls.filter((url: string) => 
-                url && url.trim() && url !== 'photos-uploaded'
+                url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
               );
               console.log('🔍 [STRIPE-WEBHOOK] Found photos in metadata.image_urls:', validUrls);
             }
             
             if (validUrls.length === 0 && existingJob.metadata.photos && Array.isArray(existingJob.metadata.photos)) {
               validUrls = existingJob.metadata.photos.filter((url: string) => 
-                url && url.trim() && url !== 'photos-uploaded'
+                url && url.trim() && url !== 'photos-uploaded' && url.startsWith('http')
               );
               console.log('🔍 [STRIPE-WEBHOOK] Found photos in metadata.photos:', validUrls);
             }
