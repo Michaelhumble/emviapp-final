@@ -337,6 +337,45 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     setIsSubmitting(true);
 
     try {
+      // Upload photos if any
+      let imageUrls: string[] = [];
+      if (photoUploads.length > 0) {
+        console.log('🔍 [PHOTO-UPLOAD] Starting upload of', photoUploads.length, 'photos');
+        
+        try {
+          const uploadPromises = photoUploads.map(async (file, index) => {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Date.now()}-${index}.${fileExt}`;
+            
+            console.log('📸 [PHOTO-UPLOAD] Uploading:', fileName);
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from('Job Photos')
+              .upload(fileName, file);
+
+            if (uploadError) {
+              console.error('❌ [PHOTO-UPLOAD] Error:', uploadError);
+              throw uploadError;
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+              .from('Job Photos')
+              .getPublicUrl(fileName);
+
+            console.log('✅ [PHOTO-UPLOAD] Success:', publicUrl);
+            return publicUrl;
+          });
+
+          imageUrls = await Promise.all(uploadPromises);
+          console.log('🔍 [PHOTO-UPLOAD] All photos uploaded:', imageUrls);
+        } catch (uploadError) {
+          console.error('❌ [PHOTO-UPLOAD] Failed to upload photos:', uploadError);
+          toast.error('Failed to upload photos. Please try again.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const payload = {
         title: data.title?.trim() || data.vietnameseTitle?.trim() || '',
         category: 'Nails',
@@ -354,13 +393,17 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         },
         user_id: user.id,
         status: 'active',
-        pricing_tier: 'free'
+        pricing_tier: 'free',
+        // Store images in multiple formats for compatibility
+        image_url: imageUrls.length > 0 ? imageUrls[0] : null,
+        image_urls: imageUrls,
+        photos: imageUrls
       };
 
       // DEBUG: Log the exact payload being sent to Supabase
-      console.log("🔍 [DEBUG] Job Payload being sent to Supabase:", payload);
-      console.log("🔍 [DEBUG] Vietnamese Title:", data.vietnameseTitle);
-      console.log("🔍 [DEBUG] Vietnamese Description:", data.vietnameseDescription);
+      console.log("🔍 [FORM-SUBMIT] Job Payload being sent to Supabase:", payload);
+      console.log("🔍 [FORM-SUBMIT] Contact Info:", payload.contact_info);
+      console.log("🔍 [FORM-SUBMIT] Photo URLs:", imageUrls);
 
       if (editJobId) {
         // Update existing job

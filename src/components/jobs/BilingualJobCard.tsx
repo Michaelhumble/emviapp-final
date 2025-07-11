@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
+import PremiumContactGate from '@/components/common/PremiumContactGate';
 
 interface BilingualJobCardProps {
   job: Job;
@@ -253,6 +254,18 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         <p className="text-gray-500 text-xs mb-4 line-clamp-1">
           Requirements: {job.requirements}
         </p>
+      )}
+
+      {/* Contact Info for Paid Jobs */}
+      {isPaidJob && job.contact_info && (
+        <div className="border-t border-gray-100 pt-3 mb-4">
+          <PremiumContactGate
+            contactName={job.contact_info.owner_name}
+            contactPhone={job.contact_info.phone}
+            contactEmail={job.contact_info.email}
+            className="text-sm"
+          />
+        </div>
       )}
 
       {/* Action Buttons */}
