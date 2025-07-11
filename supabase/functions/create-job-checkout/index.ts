@@ -139,6 +139,15 @@ serve(async (req) => {
 
     // Step 1: Create a draft job in the database first
     console.log('📝 Creating draft job first...');
+    console.log('🔍 [JOB-PAYLOAD-DEBUG] Job data received for processing:', {
+      title: jobData.title,
+      vietnamese_title: jobData.vietnamese_title,
+      contact_info: jobData.contact_info,
+      image_url: jobData.image_url,
+      image_urls: jobData.image_urls,
+      photos: jobData.photos
+    });
+    
     const draftJobPayload = {
       title: jobData.title,
       category: jobData.category,
@@ -147,12 +156,23 @@ serve(async (req) => {
       // FIXED: Add Vietnamese fields for nail jobs
       vietnamese_title: jobData.vietnamese_title || null,
       vietnamese_description: jobData.vietnamese_description || null,
-      // FIXED: Add image URL for paid jobs with photo upload
+      // FIXED: Add ALL photo fields for paid jobs with photo upload
       image_url: jobData.image_url || null,
+      // CRITICAL: Add metadata field to store additional photo URLs and contact info
+      metadata: {
+        image_urls: jobData.image_urls || [],
+        photos: jobData.photos || [],
+        contact_info: jobData.contact_info || {
+          owner_name: jobData.contactName || "",
+          phone: jobData.contactPhone || "",
+          email: jobData.contactEmail || "",
+          notes: jobData.contactNotes || ""
+        }
+      },
       compensation_type: jobData.compensationType || null,
       compensation_details: jobData.compensationDetails || jobData.compensation_details || null,
       requirements: Array.isArray(jobData.requirements) ? jobData.requirements.join("\n") : jobData.requirements || null,
-      contact_info: {
+      contact_info: jobData.contact_info || {
         owner_name: jobData.contactName || "",
         phone: jobData.contactPhone || "",
         email: jobData.contactEmail || "",
@@ -163,6 +183,8 @@ serve(async (req) => {
       pricing_tier: selectedPlan,
       payment_status: "pending"
     };
+    
+    console.log('🔍 [JOB-PAYLOAD-DEBUG] Final job payload being saved:', draftJobPayload);
 
     const { data: draftJobData, error: draftJobError } = await supabaseServiceClient
       .from("jobs")

@@ -52,22 +52,66 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   
   // Safe image and paid job logic with null checks
   const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && job.pricing_tier !== 'free';
-  const imageUrl = job.image_url || job.imageUrl || job.image || null;
-  const hasImage = !!(imageUrl && typeof imageUrl === 'string' && imageUrl.trim() && imageUrl !== '');
+  
+  // FIXED: Get all job images (support for multiple photos)
+  const getJobImages = () => {
+    const jobAny = job as any; // Type assertion to access potentially new fields
+    console.log('🔍 [BILINGUAL-JOB-CARD] Getting job images for job ID:', job.id, {
+      image_urls: jobAny.image_urls,
+      photos: jobAny.photos,
+      image_url: job.image_url,
+      imageUrl: jobAny.imageUrl,
+      image: jobAny.image
+    });
+
+    // Check for multiple uploaded images first (new format)
+    if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
+      const validUrls = jobAny.image_urls.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found image_urls:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
+    
+    // Check photos field (backup format)
+    if (jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
+      const validUrls = jobAny.photos.filter((url: any) => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found photos:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
+    
+    // Check for single uploaded image (backwards compatibility)
+    const singleImage = job.image_url || jobAny.imageUrl || jobAny.image || null;
+    if (singleImage && typeof singleImage === 'string' && singleImage.trim() && singleImage !== 'photos-uploaded') {
+      console.log('🔍 [BILINGUAL-JOB-CARD] Found single image:', singleImage);
+      return [singleImage];
+    }
+    
+    console.log('🔍 [BILINGUAL-JOB-CARD] No valid images found');
+    return [];
+  };
+
+  const jobImages = getJobImages();
+  const hasImages = jobImages.length > 0;
   
   const renderJobImage = () => {
-    if (hasImage && imageUrl) {
+    if (hasImages) {
       return (
-        <div className="mb-4 -mx-6 -mt-6">
+        <div className="mb-4 -mx-6 -mt-6 relative">
           <img
-            src={imageUrl}
+            src={jobImages[0]}
             alt={job.title || 'Job image'}
             className="w-full h-48 object-cover"
             onError={(e) => {
-              console.log('Image failed to load:', imageUrl);
+              console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
               e.currentTarget.style.display = 'none';
             }}
           />
+          
+          {/* Photo count indicator for multiple photos */}
+          {jobImages.length > 1 && (
+            <div className="absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded-md text-xs font-medium">
+              📸 {jobImages.length} photos
+            </div>
+          )}
         </div>
       );
     }
@@ -218,7 +262,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       {renderJobImage()}
 
       {/* FOMO message for paid jobs without images */}
-      {isPaidJob && !hasImage && (
+      {isPaidJob && !hasImages && (
         <div className="mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-3">
           <p className="text-xs text-amber-700 font-medium text-center">
             ⚠️ Premium listing missing photos - Contact salon directly for visual details

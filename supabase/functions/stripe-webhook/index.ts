@@ -156,14 +156,31 @@ serve(async (req) => {
             pricing_tier: existingJob.pricing_tier
           });
 
-          // Update job status from draft to active
+          // FIXED: Update job status from draft to active and handle metadata
+          const updateData: any = { 
+            status: 'active',
+            payment_status: 'completed',
+            updated_at: new Date().toISOString()
+          };
+
+          // If the job has metadata with photos, extract and set them properly
+          if (existingJob.metadata) {
+            console.log('🔍 [STRIPE-WEBHOOK] Job has metadata:', existingJob.metadata);
+            
+            // Extract photos from metadata
+            if (existingJob.metadata.image_urls && Array.isArray(existingJob.metadata.image_urls)) {
+              updateData.image_url = existingJob.metadata.image_urls[0] || null;
+              // Store photos in metadata for compatibility
+              updateData.metadata = {
+                ...existingJob.metadata,
+                photos: existingJob.metadata.image_urls
+              };
+            }
+          }
+
           const { data: updatedJob, error: updateError } = await supabase
             .from('jobs')
-            .update({ 
-              status: 'active',
-              payment_status: 'completed',
-              updated_at: new Date().toISOString()
-            })
+            .update(updateData)
             .eq('id', jobId)
             .eq('status', 'draft')
             .select();
