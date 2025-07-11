@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Phone, Mail, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Phone, Mail, Calendar, ChevronLeft, ChevronRight, DollarSign, MapPin, Building, User, FileText } from 'lucide-react';
 import { JobSummary } from './card-sections/JobSummary';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
@@ -208,43 +208,143 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                 <div className="mb-6">
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">{displayTitle}</h2>
                   <p className="text-lg text-gray-600 mb-4">{displayCompany} • {job.location}</p>
-                  
-                  <JobSummary 
-                    employmentType={job.employmentType || job.employment_type || "Full-time"}
-                    salaryRange={job.compensation_details || job.salaryRange || "Contact for details"}
-                    createdAt={job.created_at || new Date()}
-                    pricingTier={job.pricing_tier || job.pricingTier}
-                  />
+                </div>
 
-                  {/* Expiration Status */}
-                  {job.expires_at && (
-                    <div className="mt-4 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      {expired ? (
-                        <span className="text-sm text-red-600 font-medium">
-                          ❌ Expired on {new Date(job.expires_at).toLocaleDateString()}
-                        </span>
-                      ) : daysUntilExpiration !== null ? (
-                        <span className={`text-sm font-medium ${
-                          daysUntilExpiration <= 3 ? 'text-red-600' : 
-                          daysUntilExpiration <= 7 ? 'text-orange-600' : 'text-green-600'
-                        }`}>
-                          {daysUntilExpiration === 0 ? 'Expires today' : 
-                           daysUntilExpiration === 1 ? 'Expires tomorrow' :
-                           `Expires in ${daysUntilExpiration} days`}
-                        </span>
-                      ) : (
-                        <span className="text-sm text-gray-600">
-                          Expires on {new Date(job.expires_at).toLocaleDateString()}
-                        </span>
-                      )}
+                {/* Salary and Location Boxes - Matching Reference Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {/* Weekly Salary Box */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center mb-2">
+                      <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+                      <h3 className="font-semibold text-green-800">Weekly Salary</h3>
                     </div>
+                    <p className="text-2xl font-bold text-green-700">
+                      {job.compensation_details || job.salary_range || job.salaryRange || "Contact for details"}
+                    </p>
+                  </div>
+
+                  {/* Location Box */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center mb-2">
+                      <MapPin className="h-5 w-5 text-blue-600 mr-2" />
+                      <h3 className="font-semibold text-blue-800">Location</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-700">{job.location || "Location not specified"}</p>
+                  </div>
+                </div>
+
+                {/* Contact Information - MOVED UP to appear right after salary/location */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center mb-3">
+                    <Phone className="h-5 w-5 text-green-600 mr-2" />
+                    <h3 className="font-semibold text-green-800">Contact Information</h3>
+                  </div>
+                  
+                  {isSignedIn ? (
+                    (() => {
+                      // Enhanced contact info extraction with extensive fallbacks
+                      const jobAny = job as any;
+                      let contactInfo: any = null;
+
+                      // Priority 1: metadata.contact_info (new format)
+                      if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
+                        contactInfo = jobAny.metadata.contact_info;
+                      }
+                      // Priority 2: root contact_info field
+                      else if (job.contact_info && typeof job.contact_info === 'object') {
+                        contactInfo = job.contact_info;
+                      }
+                      // Priority 3: Build from root fields (fallback for old jobs)
+                      else {
+                        const fallbackContact: any = {};
+                        
+                        // Check various possible root field names
+                        if (jobAny.phone) fallbackContact.phone = jobAny.phone;
+                        if (jobAny.email) fallbackContact.email = jobAny.email;
+                        if (jobAny.salon_name) fallbackContact.salon_name = jobAny.salon_name;
+                        if (jobAny.owner_name) fallbackContact.owner_name = jobAny.owner_name;
+                        if (jobAny.contact_name) fallbackContact.owner_name = jobAny.contact_name;
+                        if (jobAny.company) fallbackContact.salon_name = jobAny.company;
+                        if (jobAny.business_name) fallbackContact.salon_name = jobAny.business_name;
+                        if (jobAny.contact_phone) fallbackContact.phone = jobAny.contact_phone;
+                        if (jobAny.contact_email) fallbackContact.email = jobAny.contact_email;
+                        
+                        // Also check metadata for individual fields
+                        if (jobAny.metadata?.phone) fallbackContact.phone = jobAny.metadata.phone;
+                        if (jobAny.metadata?.email) fallbackContact.email = jobAny.metadata.email;
+                        if (jobAny.metadata?.salon_name) fallbackContact.salon_name = jobAny.metadata.salon_name;
+                        if (jobAny.metadata?.owner_name) fallbackContact.owner_name = jobAny.metadata.owner_name;
+                        
+                        // Use fallback if we found any contact fields
+                        if (Object.keys(fallbackContact).length > 0) {
+                          contactInfo = fallbackContact;
+                        }
+                      }
+
+                      if (!contactInfo) {
+                        return (
+                          <div className="text-center py-4">
+                            <p className="text-gray-500 text-sm">Contact information not available</p>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="space-y-3">
+                          {contactInfo.phone && (
+                            <div className="flex items-center">
+                              <Phone className="h-4 w-4 text-green-600 mr-2" />
+                              <span className="text-lg font-semibold text-green-800">
+                                {contactInfo.phone}
+                              </span>
+                            </div>
+                          )}
+                          {contactInfo.email && (
+                            <div className="flex items-center">
+                              <Mail className="h-4 w-4 text-green-600 mr-2" />
+                              <span className="text-green-800">
+                                <a href={`mailto:${contactInfo.email}`} className="hover:underline">
+                                  {contactInfo.email}
+                                </a>
+                              </span>
+                            </div>
+                          )}
+                          {contactInfo.salon_name && (
+                            <div className="flex items-center">
+                              <Building className="h-4 w-4 text-green-600 mr-2" />
+                              <span className="font-medium text-green-800">{contactInfo.salon_name}</span>
+                            </div>
+                          )}
+                          {contactInfo.owner_name && (
+                            <div className="flex items-center">
+                              <User className="h-4 w-4 text-green-600 mr-2" />
+                              <span className="text-green-800">{contactInfo.owner_name}</span>
+                            </div>
+                          )}
+                          
+                          {/* Success message matching reference */}
+                          <div className="flex items-center mt-3 text-green-700">
+                            <span className="text-green-600 mr-2">✓</span>
+                            <span className="text-sm font-medium">Contact details unlocked! Call now to apply.</span>
+                          </div>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <PremiumContactGate 
+                      contactName={job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name}
+                      contactPhone={job.metadata?.contact_info?.phone || job.contact_info?.phone}
+                      contactEmail={job.metadata?.contact_info?.email || job.contact_info?.email}
+                    />
                   )}
                 </div>
-                
-                {/* Job Description */}
+
+                {/* Job Description - Now appears AFTER contact info */}
                 <div className="border-t pt-6 mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Job Description</h3>
+                  <div className="flex items-center mb-4">
+                    <FileText className="h-5 w-5 text-gray-600 mr-2" />
+                    <h3 className="text-lg font-semibold">Job Description</h3>
+                  </div>
                   <div className="prose max-w-none">
                     <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                       {displayDescription}
@@ -266,17 +366,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                     </ul>
                   </div>
                 )}
-                
-                {/* Enhanced Contact Information with Premium Gating */}
-                <div className="border-t pt-6 mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
-                  
-                   <PremiumContactGate 
-                    contactName={job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name}
-                    contactPhone={job.metadata?.contact_info?.phone || job.contact_info?.phone}
-                    contactEmail={job.metadata?.contact_info?.email || job.contact_info?.email}
-                  />
-                </div>
                 
                 {/* Action Buttons */}
                 <div className="border-t pt-6 flex justify-end space-x-3">
