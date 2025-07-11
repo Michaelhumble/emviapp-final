@@ -11,10 +11,10 @@ export interface NavigationItem {
 
 export const mainNavigationItems: NavigationItem[] = [
   {
-    title: "Home",
-    path: "/",
-    icon: Home,
-    vietnameseTitle: "Trang chủ"
+    title: "Jobs",
+    path: "/jobs",
+    icon: Briefcase,
+    vietnameseTitle: "Công việc"
   },
   {
     title: "Artists",
@@ -29,10 +29,10 @@ export const mainNavigationItems: NavigationItem[] = [
     vietnameseTitle: "Tiệm Nail"
   },
   {
-    title: "Jobs",
-    path: "/jobs",
-    icon: Briefcase,
-    vietnameseTitle: "Công việc"
+    title: "Home",
+    path: "/home",
+    icon: Home,
+    vietnameseTitle: "Trang chủ"
   },
   {
     title: "Community",

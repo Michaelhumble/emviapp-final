@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
@@ -68,6 +68,9 @@ function App() {
                 <RouteLogger />
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
+                    {/* Root route redirect to jobs */}
+                    <Route path="/" element={<Navigate to="/jobs" replace />} />
+                    
                     {/* Auth routes - USE NEW SIGN UP */}
                     <Route path="/login" element={<SignIn />} />
                     <Route path="/sign-in" element={<SignIn />} />

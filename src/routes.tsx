@@ -81,7 +81,7 @@ const routes = [
     element: <AuthRedirect />,
   },
   {
-    path: '/',
+    path: '/home',
     element: <Index />,
   },
   {
