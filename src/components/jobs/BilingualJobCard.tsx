@@ -148,6 +148,51 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   
   const renderJobImage = () => {
     if (hasImages) {
+      // For multiple photos, show a preview with the first photo and indicators
+      if (jobImages.length > 1) {
+        return (
+          <div className="mb-4 -mx-6 -mt-6 relative">
+            <img
+              src={jobImages[0]}
+              alt={job.title || 'Job image'}
+              className="w-full h-48 object-cover"
+              onError={(e) => {
+                console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            
+            {/* Photo count indicator */}
+            <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium">
+              📸 {jobImages.length} photos
+            </div>
+            
+            {/* Photo thumbnails preview at bottom */}
+            <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
+              {jobImages.slice(0, 4).map((imageUrl, index) => (
+                <div 
+                  key={index}
+                  className="w-8 h-8 rounded border-2 border-white/80 overflow-hidden bg-white/20 backdrop-blur-sm"
+                >
+                  <img
+                    src={imageUrl}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-full object-cover opacity-90"
+                    onError={(e) => e.currentTarget.style.display = 'none'}
+                  />
+                </div>
+              ))}
+              {jobImages.length > 4 && (
+                <div className="w-8 h-8 rounded border-2 border-white/80 bg-black/50 flex items-center justify-center">
+                  <span className="text-white text-xs font-medium">+{jobImages.length - 4}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+      
+      // For single photo, show as before
       return (
         <div className="mb-4 -mx-6 -mt-6 relative">
           <img
@@ -159,13 +204,6 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
               e.currentTarget.style.display = 'none';
             }}
           />
-          
-          {/* Photo count indicator for multiple photos */}
-          {jobImages.length > 1 && (
-            <div className="absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded-md text-xs font-medium">
-              📸 {jobImages.length} photos
-            </div>
-          )}
         </div>
       );
     }
