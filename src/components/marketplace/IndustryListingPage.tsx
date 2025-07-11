@@ -390,6 +390,29 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               <p className="text-lg text-muted-foreground font-inter">
                 Basic opportunities to get started in {industryName.toLowerCase()}
               </p>
+              
+              {/* Check for newly posted real jobs and show success banner */}
+              {(() => {
+                const realFreeJobs = freeListings.filter((listing: any) => listing.isUserSubmitted);
+                if (realFreeJobs.length > 0) {
+                  return (
+                    <div className="mt-4 max-w-md mx-auto">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center justify-center gap-2 text-green-700">
+                          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="font-inter font-medium">
+                            {realFreeJobs.length} live job{realFreeJobs.length > 1 ? 's' : ''} from real employers!
+                          </span>
+                        </div>
+                        <p className="text-sm text-green-600 mt-1 font-inter">
+                          These listings are submitted by actual employers looking to hire now.
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
