@@ -503,9 +503,9 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             <Button 
               size="lg" 
               className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
-              onClick={() => navigate('/post-job')}
+              onClick={() => navigate(industryName === 'nails' ? '/post-job/nails' : '/post-job')}
             >
-              Post Your Job Now
+              Post Your {displayName} Job Now
             </Button>
           </div>
         </motion.section>
@@ -591,10 +591,10 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
         <Button
           size="lg"
           className="bg-purple-600 hover:bg-purple-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 rounded-full px-6 py-4 font-inter font-bold"
-          onClick={() => navigate('/post-job')}
+          onClick={() => navigate(industryName === 'nails' ? '/post-job/nails' : '/post-job')}
         >
           <Plus className="w-5 h-5 mr-2" />
-          Post Job
+          Post {displayName} Job
         </Button>
       </div>
     </div>
