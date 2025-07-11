@@ -395,10 +395,10 @@ const NailJobs = () => {
           </div>
         )}
         
-        {/* Job Details Modal */}
+        {/* Job Details Modal - Updated to Match Reference Layout */}
         <Dialog open={!!selectedJob} onOpenChange={closeJobDetails}>
           {selectedJob && (
-            <DialogContent className="sm:max-w-4xl">
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-serif">
                   {selectedJob.title}
@@ -408,110 +408,70 @@ const NailJobs = () => {
                 </DialogTitle>
                 <DialogDescription className="text-base text-gray-700 font-medium">{selectedJob.salon}</DialogDescription>
               </DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <img 
-                    src={selectedJob.image} 
-                    alt={selectedJob.salon} 
-                    className="w-full h-48 object-cover rounded-md mb-4"
-                  />
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2">Job Details</h4>
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <MapPin className="h-4 w-4 mr-2" /> 
-                        <span>{selectedJob.location}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600 mb-4">
-                        <DollarSign className="h-4 w-4 mr-2" /> 
-                        <span>{selectedJob.salary}</span>
-                      </div>
-                      
-                      {/* Contact Information Section - Positioned directly after salary/location */}
-                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-4">
-                        <h4 className="font-medium mb-3 flex items-center">
-                          <Building className="h-4 w-4 mr-2 text-blue-600" />
-                          Contact Information
-                        </h4>
-                        <div className="space-y-2">
-                          <div className="flex items-center">
-                            <Building className="h-4 w-4 mr-2 text-gray-600" />
-                            <span className="font-medium text-gray-900">{selectedJob.salon}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 mr-2 text-gray-600" />
-                            <span className="text-gray-900">{selectedJob.phone}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              
+              {/* Photo Gallery */}
+              <div className="w-full">
+                <img 
+                  src={selectedJob.image} 
+                  alt={selectedJob.salon} 
+                  className="w-full h-64 object-cover rounded-md"
+                />
+              </div>
 
-                    <div>
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <Clock className="h-4 w-4 mr-2" /> 
-                        <span>{selectedJob.isFullTime ? "Full-time" : "Part-time"}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Briefcase className="h-4 w-4 mr-2" /> 
-                        <span>{selectedJob.providesTraining ? "Training provided" : "Experience required"}</span>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium mb-2">Description</h4>
-                      <p className="text-gray-600">{selectedJob.description}</p>
-                    </div>
+              {/* Weekly Salary - Green Box */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+                  <h3 className="font-semibold text-green-800">Weekly Salary & Location</h3>
+                </div>
+                <p className="text-2xl font-bold text-green-700">{selectedJob.salary}</p>
+                <div className="flex items-center mt-2">
+                  <MapPin className="h-4 w-4 text-green-600 mr-1" />
+                  <span className="text-green-700">{selectedJob.location}</span>
+                </div>
+              </div>
+
+              {/* Contact Information - Right after salary as requested */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
+                  <Building className="h-4 w-4 mr-2 text-blue-600" />
+                  Contact Information
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <Building className="h-4 w-4 mr-2 text-gray-600" />
+                    <span className="font-medium text-gray-900">{selectedJob.salon}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Phone className="h-4 w-4 mr-2 text-gray-600" />
+                    <span className="text-gray-900">{selectedJob.phone}</span>
                   </div>
                 </div>
-                
-                <div>
-                  <div className="bg-purple-50 rounded-lg p-4 mb-6">
-                    <h4 className="font-medium mb-2 flex items-center">
-                      <TrendingUp className="h-4 w-4 mr-2 text-purple-600" />
-                      AI Job Insights
-                    </h4>
-                    <p className="text-gray-700">{selectedJob.insights}</p>
-                    <div className="mt-3 flex items-center">
-                      <div className="mr-3">
-                        <div className="text-xs text-gray-600">Match Score</div>
-                        <div className="text-lg font-bold text-purple-700">{selectedJob.matchScore}%</div>
-                      </div>
-                      <div className="flex-grow bg-gray-200 rounded-full h-2.5">
-                        <div 
-                          className="bg-purple-600 h-2.5 rounded-full" 
-                          style={{ width: `${selectedJob.matchScore}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                 
-                  <div className="flex gap-3 mb-6">
-                    <Button className="flex-1">
-                      <Phone className="h-4 w-4 mr-2" /> Call Now
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      <MessageSquare className="h-4 w-4 mr-2" /> Message
-                    </Button>
-                  </div>
-                  
-                  <div className="mt-6 border rounded-md p-4">
-                    <h4 className="font-medium mb-3">Location</h4>
-                    <div className="bg-gray-200 h-[150px] flex items-center justify-center rounded">
-                      <p className="text-gray-500 text-sm">Map will be displayed here</p>
-                    </div>
-                  </div>
+              </div>
 
-                  <div className="mt-6 p-4 bg-primary/5 rounded-md">
-                    <div className="flex items-center mb-2">
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      <Star className="h-4 w-4 text-gray-300 mr-1" />
-                    </div>
-                    <p className="text-sm text-gray-600">Rated 4.0/5 by EmviApp job seekers</p>
-                  </div>
+              {/* Job Description */}
+              <div>
+                <h4 className="font-medium mb-3">Job Description</h4>
+                <p className="text-gray-600 leading-relaxed">{selectedJob.description}</p>
+              </div>
+
+              {/* Additional Job Details */}
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-600">
+                  <Clock className="h-4 w-4 mr-2" /> 
+                  <span>{selectedJob.isFullTime ? "Full-time" : "Part-time"}</span>
                 </div>
+                <div className="flex items-center text-gray-600">
+                  <Briefcase className="h-4 w-4 mr-2" /> 
+                  <span>{selectedJob.providesTraining ? "Training provided" : "Experience required"}</span>
+                </div>
+              </div>
+
+              {/* Apply Now Button */}
+              <div className="pt-4">
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-lg font-semibold">
+                  Apply Now
+                </Button>
               </div>
             </DialogContent>
           )}
