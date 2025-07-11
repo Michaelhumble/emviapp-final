@@ -37,22 +37,42 @@ const NailsPage = () => {
         
         const tier = tierMapping[job.pricing_tier || 'free'] || 'free';
         
+        // Format salary for nail jobs with Vietnamese "/tuần" suffix
+        const formatNailSalary = (compensation: string | null) => {
+          if (!compensation) return 'Competitive Pay';
+          
+          // If it already has /tuần, return as is
+          if (compensation.includes('/tuần')) return compensation;
+          
+          // If it looks like a salary range ($X-$Y), add /tuần
+          if (compensation.match(/\$[\d,]+-?\$?[\d,]*/) || compensation.match(/\$[\d,]+/)) {
+            return `${compensation}/tuần`;
+          }
+          
+          return compensation;
+        };
+
+        // Use Vietnamese title and description first for nail jobs
+        const displayTitle = job.vietnamese_title || job.title || 'Nail Technician Position';
+        const displayDescription = job.vietnamese_description || job.description || 'Great opportunity to join our nail team.';
+        
         return {
           id: job.id,
-          title: job.title || 'Nail Technician Position',
+          title: displayTitle,
           location: job.location || 'Location TBD',
-          salary: job.compensation_details || 'Competitive Pay',
+          salary: formatNailSalary(job.compensation_details),
           tier,
-          summary: job.description?.substring(0, 150) + '...' || 
-                  'Great opportunity to join our nail team.',
+          summary: displayDescription.substring(0, 150) + (displayDescription.length > 150 ? '...' : ''),
           imageUrl: job.image_url || job.imageUrl || undefined,
           rating: 4.5,
-          fullDescription: job.description || '',
+          fullDescription: displayDescription,
           contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',
-          } : undefined
+          } : undefined,
+          vietnamese_title: job.vietnamese_title,
+          vietnamese_description: job.vietnamese_description
         };
       })
       .sort((a, b) => {

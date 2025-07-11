@@ -20,6 +20,8 @@ export interface IndustryListing {
     phone: string;
     email: string;
   };
+  vietnamese_title?: string;
+  vietnamese_description?: string;
 }
 
 export interface IndustryConfig {

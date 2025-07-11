@@ -34,6 +34,7 @@ export interface Job {
   posted_at?: string;
   employment_type?: string;
   image?: string;
+  vietnamese_title?: string;
   vietnamese_description?: string;
   preferred_languages?: string[];
   benefits?: string[];

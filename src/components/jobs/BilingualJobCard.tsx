@@ -92,15 +92,33 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     navigate(`/jobs/edit/${job.id}`);
   };
 
-  // Format salary/compensation display with null safety
+  // Format salary/compensation display with null safety and Vietnamese formatting for nail jobs
   const formatCompensation = () => {
+    let compensation = '';
+    
     if (job.compensation_details && typeof job.compensation_details === 'string') {
-      return job.compensation_details;
+      compensation = job.compensation_details;
+    } else if (job.employment_type && typeof job.employment_type === 'string') {
+      compensation = job.employment_type;
+    } else {
+      compensation = 'Contact for details';
     }
-    if (job.employment_type && typeof job.employment_type === 'string') {
-      return job.employment_type;
+    
+    // For nail jobs, format salary with /tuần if not already present
+    const isNailJob = job.category?.toLowerCase().includes('nail') || 
+                      job.title?.toLowerCase().includes('nail');
+    
+    if (isNailJob && compensation !== 'Contact for details') {
+      // If it already has /tuần, return as is
+      if (compensation.includes('/tuần')) return compensation;
+      
+      // If it looks like a salary range ($X-$Y), add /tuần
+      if (compensation.match(/\$[\d,]+-?\$?[\d,]*/) || compensation.match(/\$[\d,]+/)) {
+        return `${compensation}/tuần`;
+      }
     }
-    return 'Contact for details';
+    
+    return compensation;
   };
 
   // Get pricing tier badge color and icon
@@ -136,7 +154,26 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       {/* Header Section with Premium Badge */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.title || 'Untitled Job'}</h3>
+          {/* For nail jobs, show Vietnamese title first if available */}
+          {(() => {
+            const isNailJob = job.category?.toLowerCase().includes('nail') || 
+                              job.title?.toLowerCase().includes('nail');
+            
+            if (isNailJob && job.vietnamese_title) {
+              return (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.vietnamese_title}</h3>
+                  {job.title && job.title !== job.vietnamese_title && (
+                    <p className="text-sm text-gray-500 mb-1">{job.title}</p>
+                  )}
+                </div>
+              );
+            } else {
+              return (
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.title || 'Untitled Job'}</h3>
+              );
+            }
+          })()}
           <p className="text-sm text-gray-600">{job.company || job.title || 'Company Name'}</p>
         </div>
         
