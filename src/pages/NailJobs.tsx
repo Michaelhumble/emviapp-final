@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -11,129 +11,48 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Phone, DollarSign, Clock, Building, Briefcase, Star, MessageSquare, Heart, TrendingUp, FileText } from "lucide-react";
-
-// Mock data for jobs
-const jobListings = [
-  {
-    id: 1,
-    title: "Senior Nail Technician",
-    titleVn: "Cần thợ gấp",
-    salon: "Glamour Nail & Spa",
-    location: "New York, NY",
-    salary: "$25-35/hr + tips",
-    description: "We're looking for an experienced nail technician to join our team. Must have at least 3 years of experience and a portfolio of work.",
-    image: "https://images.unsplash.com/photo-1604654894610-df63bc536371",
-    isFullTime: true,
-    hasWeeklyPay: true,
-    providesTraining: false,
-    phone: "(212) 555-1234",
-    urgentLabel: "Weekly Pay",
-    urgentLabelVn: "Trả Lương Hàng Tuần",
-    matchScore: 95,
-    insights: "High-paying position with good benefits. Location has high demand for skilled technicians."
-  },
-  {
-    id: 2,
-    title: "Hair Stylist",
-    titleVn: "Thợ làm tóc",
-    salon: "Chic Styles",
-    location: "Los Angeles, CA",
-    salary: "$30-40/hr + tips",
-    description: "Looking for talented hair stylists to join our growing team. Great opportunity for both experienced stylists and those early in their career.",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035",
-    isFullTime: true,
-    hasWeeklyPay: true,
-    providesTraining: true,
-    phone: "(310) 555-6789",
-    urgentLabel: "Bao Luong Neu Can",
-    urgentLabelVn: "Bao Lương Nếu Cần",
-    matchScore: 87,
-    insights: "Employer has positive reviews for work environment and advancement opportunities."
-  },
-  {
-    id: 3,
-    title: "Massage Therapist",
-    titleVn: "Thợ massage",
-    salon: "Tranquility Spa",
-    location: "Chicago, IL",
-    salary: "Call for salary",
-    description: "Seeking licensed massage therapists with a passion for wellness. Flexible scheduling and great benefits package included.",
-    image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35",
-    isFullTime: false,
-    hasWeeklyPay: false,
-    providesTraining: true,
-    phone: "(312) 555-2468",
-    urgentLabel: "",
-    urgentLabelVn: "",
-    matchScore: 76,
-    insights: "Part-time flexibility with potential for full-time. Specialized training available."
-  },
-  {
-    id: 4,
-    title: "Esthetician",
-    titleVn: "Chuyên viên thẩm mỹ",
-    salon: "Beauty & Beyond",
-    location: "Miami, FL",
-    salary: "$22-30/hr + tips",
-    description: "Join our team of beauty professionals. Looking for certified estheticians with skincare expertise. Training provided for the right candidate.",
-    image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881",
-    isFullTime: true,
-    hasWeeklyPay: false,
-    providesTraining: true,
-    phone: "(305) 555-1357",
-    urgentLabel: "Owner Will Train",
-    urgentLabelVn: "Chủ Sẽ Đào Tạo",
-    matchScore: 92,
-    insights: "Growing business with excellent client retention. Owner provides ongoing education."
-  },
-  {
-    id: 5,
-    title: "Part-time Nail Artist",
-    titleVn: "Thợ nail bán thời gian",
-    salon: "Polish Perfect",
-    location: "Dallas, TX",
-    salary: "$18-25/hr + commission",
-    description: "Weekend positions available for nail artists. Great opportunity to build your clientele with our established salon.",
-    image: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b",
-    isFullTime: false,
-    hasWeeklyPay: true,
-    providesTraining: false,
-    phone: "(214) 555-7890",
-    urgentLabel: "Weekly Pay",
-    urgentLabelVn: "Trả Lương Hàng Tuần",
-    matchScore: 84,
-    insights: "Good opportunity for beginners or those seeking part-time work. Commission structure rewards productivity."
-  },
-  {
-    id: 6,
-    title: "Nail Technician",
-    titleVn: "Cần thợ nail",
-    salon: "Luxe Nails",
-    location: "Houston, TX",
-    salary: "$25-32/hr + tips",
-    description: "Looking for experienced nail technicians. Full-time positions with benefits available. Join our friendly team!",
-    image: "https://images.unsplash.com/photo-1610992003924-38fb62a3e5c0",
-    isFullTime: true,
-    hasWeeklyPay: true,
-    providesTraining: false,
-    phone: "(713) 555-4321",
-    urgentLabel: "Tips",
-    urgentLabelVn: "Có Tip Cao",
-    matchScore: 89,
-    insights: "High client volume and excellent tips. Steady clientele throughout the year."
-  }
-];
+import { supabase } from "@/integrations/supabase/client";
 
 const NailJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     weeklyPay: false,
     ownerWillTrain: false,
     employmentType: "all", // 'all', 'fullTime', 'partTime'
-    sortBy: "matchScore", // 'matchScore', 'salary', 'location'
+    sortBy: "created_at", // 'created_at', 'compensation_details', 'location'
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  // Fetch jobs from database
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('category', 'nails')
+          .eq('status', 'active')
+          .eq('pricing_tier', 'premium') // Only show paid/premium jobs
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching jobs:', error);
+          return;
+        }
+
+        setJobs(data || []);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
   
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
@@ -143,17 +62,13 @@ const NailJobs = () => {
     setCurrentPage(1); // Reset to first page when filters change
   };
   
-  const filteredJobs = jobListings.filter(job => {
-    if (filters.weeklyPay && !job.hasWeeklyPay) return false;
-    if (filters.ownerWillTrain && !job.providesTraining) return false;
-    if (filters.employmentType === "fullTime" && !job.isFullTime) return false;
-    if (filters.employmentType === "partTime" && job.isFullTime) return false;
-    return true;
+  const filteredJobs = jobs.filter(job => {
+    // Add your filter logic here based on job properties
+    return true; // For now, show all jobs
   }).sort((a, b) => {
-    if (filters.sortBy === "matchScore") {
-      return b.matchScore - a.matchScore;
+    if (filters.sortBy === "created_at") {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     }
-    // Other sorting options can be implemented here
     return 0;
   });
 
@@ -170,6 +85,32 @@ const NailJobs = () => {
   const closeJobDetails = () => {
     setSelectedJob(null);
   };
+
+  // Helper function to get contact information
+  const getContactInfo = (job) => {
+    if (job.metadata?.contact_info) {
+      return job.metadata.contact_info;
+    }
+    if (job.contact_info) {
+      return job.contact_info;
+    }
+    return null;
+  };
+
+  // Helper function to get job photos
+  const getJobPhotos = (job) => {
+    if (job.photos && job.photos.length > 0) {
+      return job.photos;
+    }
+    if (job.image_urls && job.image_urls.length > 0) {
+      return job.image_urls;
+    }
+    if (job.image_url) {
+      return [job.image_url];
+    }
+    // Fallback image for nail jobs
+    return ["https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=300&fit=crop"];
+  };
   
   const container = {
     hidden: { opacity: 0 },
@@ -185,6 +126,19 @@ const NailJobs = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading nail jobs...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -289,59 +243,70 @@ const NailJobs = () => {
           initial="hidden"
           animate="show"
         >
-          {currentItems.map((job) => (
-            <motion.div key={job.id} variants={item}>
-              <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-48 overflow-hidden rounded-t-lg">
-                  <img 
-                    src={job.image} 
-                    alt={job.salon} 
-                    className="w-full h-full object-cover"
-                  />
-                  {job.urgentLabel && (
-                    <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      {job.urgentLabel}
+          {currentItems.map((job) => {
+            const photos = getJobPhotos(job);
+            const contactInfo = getContactInfo(job);
+            
+            return (
+              <motion.div key={job.id} variants={item}>
+                <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
+                  <div className="relative h-48 overflow-hidden rounded-t-lg">
+                    <img 
+                      src={photos[0]} 
+                      alt={job.title} 
+                      className="w-full h-full object-cover"
+                    />
+                    {job.pricing_tier === 'premium' && (
+                      <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Premium Job
+                      </div>
+                    )}
+                    <div className="absolute top-4 left-4 bg-white/90 text-primary px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+                      <Star className="h-3 w-3 mr-1 fill-yellow-400 stroke-yellow-400" />
+                      <span>Premium</span>
                     </div>
-                  )}
-                  <div className="absolute top-4 left-4 bg-white/90 text-primary px-3 py-1 rounded-full text-xs font-semibold flex items-center">
-                    <Star className="h-3 w-3 mr-1 fill-yellow-400 stroke-yellow-400" />
-                    <span>{job.matchScore}% Match</span>
                   </div>
-                </div>
-                <CardHeader className="pb-2">
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-serif font-semibold">{job.title}</h3>
-                    <p className="text-sm text-gray-600 italic">{job.titleVn}</p>
-                  </div>
-                  <p className="text-gray-700 font-medium">{job.salon}</p>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <MapPin className="h-4 w-4 mr-1" /> 
-                    <span className="text-sm">{job.location}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <DollarSign className="h-4 w-4 mr-1" /> 
-                    <span className="text-sm">{job.salary}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Phone className="h-4 w-4 mr-1" /> 
-                    <span className="text-sm">{job.phone}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="pt-2 flex flex-col gap-3">
-                  <div className="flex items-center justify-between w-full">
-                    <Button onClick={() => openJobDetails(job)}>
-                      View Details
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
+                  <CardHeader className="pb-2">
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-serif font-semibold">{job.title}</h3>
+                      {job.vietnamese_title && (
+                        <p className="text-sm text-gray-600 italic">{job.vietnamese_title}</p>
+                      )}
+                    </div>
+                    {contactInfo?.company_name && (
+                      <p className="text-gray-700 font-medium">{contactInfo.company_name}</p>
+                    )}
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <MapPin className="h-4 w-4 mr-1" /> 
+                      <span className="text-sm">{job.location || 'Location not specified'}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <DollarSign className="h-4 w-4 mr-1" /> 
+                      <span className="text-sm">{job.compensation_details || 'Salary negotiable'}</span>
+                    </div>
+                    {contactInfo?.phone && (
+                      <div className="flex items-center text-gray-600">
+                        <Phone className="h-4 w-4 mr-1" /> 
+                        <span className="text-sm">{contactInfo.phone}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="pt-2 flex flex-col gap-3">
+                    <div className="flex items-center justify-between w-full">
+                      <Button onClick={() => openJobDetails(job)}>
+                        Xem Chi Tiết
+                      </Button>
+                      <Button variant="outline" size="icon">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            );
+          })}
         </motion.div>
         
         {/* Pagination */}
@@ -404,16 +369,20 @@ const NailJobs = () => {
                   {selectedJob.title}
                 </DialogTitle>
                 <div className="text-center">
-                  <p className="text-lg text-gray-600 italic">{selectedJob.titleVn}</p>
-                  <p className="text-lg font-semibold text-gray-800">{selectedJob.salon}</p>
+                  {selectedJob.vietnamese_title && (
+                    <p className="text-lg text-gray-600 italic">{selectedJob.vietnamese_title}</p>
+                  )}
+                  {getContactInfo(selectedJob)?.company_name && (
+                    <p className="text-lg font-semibold text-gray-800">{getContactInfo(selectedJob).company_name}</p>
+                  )}
                 </div>
               </DialogHeader>
               
               {/* Photo Gallery at the Top */}
               <div className="w-full mb-6">
                 <img 
-                  src={selectedJob.image} 
-                  alt={selectedJob.salon} 
+                  src={getJobPhotos(selectedJob)[0]} 
+                  alt={selectedJob.title} 
                   className="w-full h-80 object-cover rounded-lg"
                 />
               </div>
@@ -423,9 +392,9 @@ const NailJobs = () => {
                 <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-300 rounded-lg p-4 text-center">
                   <div className="flex items-center justify-center mb-2">
                     <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-green-800">Weekly Salary</h3>
+                    <h3 className="text-lg font-semibold text-green-800">Compensation</h3>
                   </div>
-                  <p className="text-2xl font-bold text-green-700">{selectedJob.salary}</p>
+                  <p className="text-2xl font-bold text-green-700">{selectedJob.compensation_details || 'Negotiable'}</p>
                 </div>
 
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-300 rounded-lg p-4 text-center">
@@ -433,7 +402,7 @@ const NailJobs = () => {
                     <MapPin className="h-6 w-6 text-blue-600 mr-2" />
                     <h3 className="text-lg font-semibold text-blue-800">Location</h3>
                   </div>
-                  <p className="text-2xl font-bold text-blue-700">{selectedJob.location}</p>
+                  <p className="text-2xl font-bold text-blue-700">{selectedJob.location || 'Not specified'}</p>
                 </div>
               </div>
 
@@ -444,20 +413,33 @@ const NailJobs = () => {
                   <h3 className="text-xl font-semibold text-purple-800">Contact Information</h3>
                 </div>
                 <div className="space-y-4 text-center">
-                  <div className="bg-white/70 rounded-lg p-4">
-                    <div className="flex items-center justify-center mb-2">
-                      <Phone className="h-5 w-5 text-purple-600 mr-2" />
-                      <span className="text-sm font-medium text-purple-700">Phone Number</span>
+                  {getContactInfo(selectedJob)?.phone && (
+                    <div className="bg-white/70 rounded-lg p-4">
+                      <div className="flex items-center justify-center mb-2">
+                        <Phone className="h-5 w-5 text-purple-600 mr-2" />
+                        <span className="text-sm font-medium text-purple-700">Phone Number</span>
+                      </div>
+                      <p className="text-2xl font-bold text-purple-800">{getContactInfo(selectedJob).phone}</p>
                     </div>
-                    <p className="text-2xl font-bold text-purple-800">{selectedJob.phone}</p>
-                  </div>
-                  <div className="bg-white/70 rounded-lg p-4">
-                    <div className="flex items-center justify-center mb-2">
-                      <Building className="h-5 w-5 text-purple-600 mr-2" />
-                      <span className="text-sm font-medium text-purple-700">Salon Name</span>
+                  )}
+                  {getContactInfo(selectedJob)?.email && (
+                    <div className="bg-white/70 rounded-lg p-4">
+                      <div className="flex items-center justify-center mb-2">
+                        <Building className="h-5 w-5 text-purple-600 mr-2" />
+                        <span className="text-sm font-medium text-purple-700">Email</span>
+                      </div>
+                      <p className="text-xl font-semibold text-purple-800">{getContactInfo(selectedJob).email}</p>
                     </div>
-                    <p className="text-xl font-semibold text-purple-800">{selectedJob.salon}</p>
-                  </div>
+                  )}
+                  {getContactInfo(selectedJob)?.company_name && (
+                    <div className="bg-white/70 rounded-lg p-4">
+                      <div className="flex items-center justify-center mb-2">
+                        <Building className="h-5 w-5 text-purple-600 mr-2" />
+                        <span className="text-sm font-medium text-purple-700">Company</span>
+                      </div>
+                      <p className="text-xl font-semibold text-purple-800">{getContactInfo(selectedJob).company_name}</p>
+                    </div>
+                  )}
                   <div className="flex items-center justify-center bg-green-100 rounded-lg p-3">
                     <span className="text-green-600 mr-2 text-lg">✓</span>
                     <span className="text-green-800 font-semibold">Contact details available! Call now to apply.</span>
@@ -472,7 +454,9 @@ const NailJobs = () => {
                   <h3 className="text-xl font-semibold text-gray-800">Job Description</h3>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{selectedJob.description}</p>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">
+                    {selectedJob.description || selectedJob.vietnamese_description || 'No description available'}
+                  </p>
                 </div>
               </div>
 
@@ -480,18 +464,18 @@ const NailJobs = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-gray-50 rounded-lg p-4 text-center">
                   <Clock className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-800">{selectedJob.isFullTime ? "Full-time Position" : "Part-time Position"}</p>
+                  <p className="font-medium text-gray-800">Premium Job Position</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4 text-center">
                   <Briefcase className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-800">{selectedJob.providesTraining ? "Training Provided" : "Experience Required"}</p>
+                  <p className="font-medium text-gray-800">{selectedJob.requirements || 'Requirements available'}</p>
                 </div>
               </div>
 
               {/* Apply Now Button - Premium Style */}
               <div className="pt-4 border-t border-gray-200">
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 text-xl font-semibold rounded-lg shadow-lg transform transition hover:scale-105">
-                  Apply Now - Call {selectedJob.phone}
+                  Apply Now {getContactInfo(selectedJob)?.phone ? `- Call ${getContactInfo(selectedJob).phone}` : ''}
                 </Button>
               </div>
             </DialogContent>
