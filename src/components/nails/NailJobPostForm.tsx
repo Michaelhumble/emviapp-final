@@ -160,11 +160,18 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     }
   });
 
-  // If editing, skip templates and go to form
+  // If editing, skip templates and pricing - go straight to form
   useEffect(() => {
     if (editJobId && editJobData) {
       setCurrentStep('form');
       setShowTemplates(false);
+      
+      // Load existing photos if editing
+      if (editJobData.photos && Array.isArray(editJobData.photos)) {
+        // Convert URLs back to File objects is not possible, so we'll handle this differently
+        // For editing, we'll show existing photos and allow adding new ones
+        console.log('🔍 [EDIT-MODE] Existing photos found:', editJobData.photos);
+      }
     }
   }, [editJobId, editJobData]);
 
@@ -318,6 +325,12 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
     }
     
     setFormData(data);
+    
+    // If editing a paid job, update directly without repayment
+    if (editJobId && editJobData?.pricing_tier === 'paid') {
+      submitFreeNailJob(data); // Use the same update logic
+      return;
+    }
     
     if (data.planType === 'paid') {
       setCurrentStep('pricing');

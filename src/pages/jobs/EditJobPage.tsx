@@ -22,12 +22,21 @@ const EditJobPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
+    vietnamese_title: '',
     description: '',
+    vietnamese_description: '',
     location: '',
     category: '',
     compensation_details: '',
     requirements: '',
-    compensation_type: ''
+    compensation_type: '',
+    contact_info: {
+      salon_name: '',
+      owner_name: '',
+      phone: '',
+      email: '',
+      notes: ''
+    }
   });
 
   useEffect(() => {
@@ -74,12 +83,21 @@ const EditJobPage: React.FC = () => {
       // Initialize form with job data
       setFormData({
         title: data.title || '',
+        vietnamese_title: data.vietnamese_title || '',
         description: data.description || '',
+        vietnamese_description: data.vietnamese_description || '',
         location: data.location || '',
         category: data.category || '',
         compensation_details: data.compensation_details || '',
         requirements: data.requirements || '',
-        compensation_type: data.compensation_type || ''
+        compensation_type: data.compensation_type || '',
+        contact_info: {
+          salon_name: (data.contact_info as any)?.salon_name || (data.metadata as any)?.contact_info?.salon_name || '',
+          owner_name: (data.contact_info as any)?.owner_name || (data.metadata as any)?.contact_info?.owner_name || '',
+          phone: (data.contact_info as any)?.phone || (data.metadata as any)?.contact_info?.phone || '',
+          email: (data.contact_info as any)?.email || (data.metadata as any)?.contact_info?.email || '',
+          notes: (data.contact_info as any)?.notes || (data.metadata as any)?.contact_info?.notes || ''
+        }
       });
       
       setLoading(false);
@@ -92,10 +110,21 @@ const EditJobPage: React.FC = () => {
   };
 
   const handleFormChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    if (field.startsWith('contact_info.')) {
+      const contactField = field.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        contact_info: {
+          ...prev.contact_info,
+          [contactField]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
   };
 
   const handleJobUpdate = async (e: React.FormEvent) => {
@@ -109,12 +138,19 @@ const EditJobPage: React.FC = () => {
         .from('jobs')
         .update({
           title: formData.title,
+          vietnamese_title: formData.vietnamese_title,
           description: formData.description,
+          vietnamese_description: formData.vietnamese_description,
           location: formData.location,
           category: formData.category,
           compensation_details: formData.compensation_details,
           requirements: formData.requirements,
           compensation_type: formData.compensation_type,
+          contact_info: formData.contact_info,
+          metadata: {
+            ...jobData.metadata,
+            contact_info: formData.contact_info
+          },
           updated_at: new Date().toISOString()
         })
         .eq('id', jobId)
@@ -233,15 +269,26 @@ const EditJobPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleJobUpdate} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Job Title *</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => handleFormChange('title', e.target.value)}
-                      placeholder="e.g., Nail Technician"
-                      required
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">English Title</Label>
+                      <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => handleFormChange('title', e.target.value)}
+                        placeholder="e.g., Nail Technician"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="vietnamese_title">Vietnamese Title *</Label>
+                      <Input
+                        id="vietnamese_title"
+                        value={formData.vietnamese_title}
+                        onChange={(e) => handleFormChange('vietnamese_title', e.target.value)}
+                        placeholder="e.g., Cần Thợ Nail"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -306,15 +353,28 @@ const EditJobPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Job Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => handleFormChange('description', e.target.value)}
-                      placeholder="Describe the position, responsibilities, and work environment..."
-                      rows={4}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="description">English Description</Label>
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => handleFormChange('description', e.target.value)}
+                        placeholder="Describe the position, responsibilities, and work environment..."
+                        rows={4}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="vietnamese_description">Vietnamese Description *</Label>
+                      <Textarea
+                        id="vietnamese_description"
+                        value={formData.vietnamese_description}
+                        onChange={(e) => handleFormChange('vietnamese_description', e.target.value)}
+                        placeholder="Mô tả công việc, trách nhiệm và môi trường làm việc..."
+                        rows={4}
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -326,6 +386,61 @@ const EditJobPage: React.FC = () => {
                       placeholder="List required qualifications, experience, and skills..."
                       rows={3}
                     />
+                  </div>
+
+                  {/* Contact Information Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="salon_name">Salon Name *</Label>
+                        <Input
+                          id="salon_name"
+                          value={formData.contact_info.salon_name}
+                          onChange={(e) => handleFormChange('contact_info.salon_name', e.target.value)}
+                          placeholder="Your salon name"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="owner_name">Contact Person</Label>
+                        <Input
+                          id="owner_name"
+                          value={formData.contact_info.owner_name}
+                          onChange={(e) => handleFormChange('contact_info.owner_name', e.target.value)}
+                          placeholder="Contact person name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input
+                          id="phone"
+                          value={formData.contact_info.phone}
+                          onChange={(e) => handleFormChange('contact_info.phone', e.target.value)}
+                          placeholder="(555) 123-4567"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.contact_info.email}
+                          onChange={(e) => handleFormChange('contact_info.email', e.target.value)}
+                          placeholder="salon@example.com"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="notes">Additional Notes</Label>
+                      <Textarea
+                        id="notes"
+                        value={formData.contact_info.notes}
+                        onChange={(e) => handleFormChange('contact_info.notes', e.target.value)}
+                        placeholder="Any additional information for applicants..."
+                        rows={2}
+                      />
+                    </div>
                   </div>
 
                   <div className="flex gap-4 pt-4">
