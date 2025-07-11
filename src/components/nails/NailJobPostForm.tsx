@@ -1053,8 +1053,10 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
                       {isSubmitting ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Posting Job...
+                          {editJobId ? 'Updating Job...' : 'Posting Job...'}
                         </>
+                      ) : editJobId ? (
+                        'Save Changes'
                       ) : selectedPlan === 'paid' ? (
                         'Continue to Pricing'
                       ) : (
