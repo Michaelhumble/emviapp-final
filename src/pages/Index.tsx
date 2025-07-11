@@ -22,6 +22,11 @@ import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import EmviQASection from "@/components/home/EmviQASection";
 
+// Jobs-related components
+import JobsCallToAction from "@/components/home/JobsCallToAction";
+import FeaturedJobsPreview from "@/components/home/FeaturedJobsPreview";
+import JobsFooterCTA from "@/components/home/JobsFooterCTA";
+
 // Premium Industry Showcase
 import PremiumIndustryShowcase from "@/components/home/PremiumIndustryShowcase";
 import { industryConfig } from "@/data/industryListings";
@@ -53,6 +58,9 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
+      {/* 1.5. Jobs Call to Action - Above the fold */}
+      <JobsCallToAction />
+      
       {/* 2. Premium Industry Showcases - Diamond listings first */}
       {Object.values(industryConfig).map((industry) => (
         <PremiumIndustryShowcase
@@ -72,6 +80,9 @@ const Index = () => {
       {/* 4. Meet Your AI Matchmaker - NEW PREMIUM SECTION */}
       <AIMatchmakerSection />
       
+      {/* 4.5. Featured Jobs Preview */}
+      <FeaturedJobsPreview />
+      
       {/* 5. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
@@ -89,6 +100,9 @@ const Index = () => {
       
       {/* 10. EmviApp Community Q&A - NEW SECTION */}
       <EmviQASection />
+      
+      {/* 10.5. Jobs Footer CTA - Final jobs promotion */}
+      <JobsFooterCTA />
       
       {user && userId && (
         <RoleSelectionModal 
