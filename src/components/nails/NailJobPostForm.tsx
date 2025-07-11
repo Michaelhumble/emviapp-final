@@ -383,9 +383,15 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
           console.log('🔍 [FREE-JOB-PHOTO-UPLOAD] All photos uploaded:', imageUrls);
         } catch (uploadError) {
           console.error('❌ [FREE-JOB-PHOTO-UPLOAD] Failed to upload photos:', uploadError);
-          toast.error('Failed to upload photos. Please try again.');
-          setIsSubmitting(false);
-          return;
+          // For edits, continue saving without photos if upload fails
+          if (editJobId) {
+            toast.error('Failed to upload photos, but continuing to save job changes.');
+            imageUrls = []; // Continue with empty photo array
+          } else {
+            toast.error('Failed to upload photos. Please try again.');
+            setIsSubmitting(false);
+            return;
+          }
         }
       }
 
@@ -407,7 +413,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         },
         user_id: user.id,
         status: 'active',
-        pricing_tier: 'free',
+        pricing_tier: editJobId ? (editJobData?.pricing_tier || 'free') : 'free', // Preserve original pricing tier when editing
         // Store images in multiple formats exactly like working free jobs
         image_url: imageUrls.length > 0 ? imageUrls[0] : null,
         image_urls: imageUrls,
