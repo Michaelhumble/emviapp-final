@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Job } from '@/types/job';
+import PremiumJobModal from './PremiumJobModal';
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,7 @@ interface JobDetailContentProps {
 
 const JobDetailContent = ({ job }: JobDetailContentProps) => {
   const { isSignedIn } = useAuth();
-
+  
   if (!job) {
     return (
       <div className="container mx-auto py-12">
@@ -25,6 +26,20 @@ const JobDetailContent = ({ job }: JobDetailContentProps) => {
     );
   }
 
+  // For paid jobs, use the universal premium modal in a full-page context
+  if (job.pricing_tier && job.pricing_tier !== 'free') {
+    return (
+      <div className="min-h-screen">
+        <PremiumJobModal 
+          job={job}
+          open={true}
+          onOpenChange={() => window.history.back()}
+        />
+      </div>
+    );
+  }
+
+  // For free jobs, keep the existing layout
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto">

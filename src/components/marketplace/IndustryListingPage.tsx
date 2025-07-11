@@ -12,6 +12,7 @@ import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { IndustryListing } from '@/types/industryListing';
 import DiamondFOMOCard from './DiamondFOMOCard';
 import MagicNailsDiamondCard from './MagicNailsDiamondCard';
+import PremiumJobModal from '@/components/jobs/PremiumJobModal';
 
 interface IndustryListingPageProps {
   industryName: string;
@@ -109,10 +110,6 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   };
 
   const handleViewDetails = (listing: IndustryListing) => {
-    if (!isSignedIn) {
-      // Show sign-in prompt
-      return;
-    }
     setSelectedListing(listing);
   };
 
@@ -561,8 +558,40 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
         </motion.section>
       </div>
 
-      {/* Detail Modal */}
-      {selectedListing && (
+      {/* Universal Premium Modal for paid jobs */}
+      {selectedListing && (selectedListing.tier === 'premium' || selectedListing.tier === 'diamond' || selectedListing.tier === 'featured') ? (
+        <PremiumJobModal 
+          job={{
+            id: selectedListing.id,
+            title: selectedListing.title,
+            vietnamese_title: selectedListing.vietnamese_title,
+            description: selectedListing.fullDescription || selectedListing.summary,
+            vietnamese_description: selectedListing.vietnamese_description,
+            location: selectedListing.location,
+            compensation_details: selectedListing.salary,
+            category: industryName,
+            pricing_tier: selectedListing.tier,
+            image_url: selectedListing.imageUrl,
+            contact_info: selectedListing.contact ? {
+              salon_name: (selectedListing.contact as any).businessName,
+              owner_name: selectedListing.contact.name,
+              phone: selectedListing.contact.phone,
+              email: selectedListing.contact.email
+            } : undefined,
+            metadata: {
+              contact_info: selectedListing.contact ? {
+                salon_name: (selectedListing.contact as any).businessName,
+                owner_name: selectedListing.contact.name,
+                phone: selectedListing.contact.phone,
+                email: selectedListing.contact.email
+              } : undefined
+            }
+          }}
+          open={!!selectedListing}
+          onOpenChange={() => setSelectedListing(null)}
+        />
+      ) : selectedListing ? (
+        // Fallback modal for free listings
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -609,15 +638,6 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                   </div>
                 </div>
 
-                {selectedListing.phone && (
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="flex items-center text-blue-800 font-semibold">
-                      <Phone className="w-5 h-5 mr-2" />
-                      {selectedListing.phone}
-                    </div>
-                  </div>
-                )}
-
                 <div className="prose max-w-none">
                   <p className="text-foreground font-inter whitespace-pre-line">
                     {selectedListing.fullDescription || selectedListing.summary}
@@ -633,8 +653,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               </div>
             </div>
           </motion.div>
-          </motion.div>
-        )}
+        </motion.div>
+      ) : null}
       
       {/* Floating Post Job Button */}
       <div className="fixed bottom-6 right-6 z-40">

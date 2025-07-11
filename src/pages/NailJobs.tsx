@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import PremiumJobModal from "@/components/jobs/PremiumJobModal";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -360,127 +360,12 @@ const NailJobs = () => {
           </div>
         )}
         
-        {/* Job Details Modal - Premium Layout to Match Reference */}
-        <Dialog open={!!selectedJob} onOpenChange={closeJobDetails}>
-          {selectedJob && (
-            <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader className="space-y-3">
-                <DialogTitle className="text-2xl font-serif text-center">
-                  {selectedJob.title}
-                </DialogTitle>
-                <div className="text-center">
-                  {selectedJob.vietnamese_title && (
-                    <p className="text-lg text-gray-600 italic">{selectedJob.vietnamese_title}</p>
-                  )}
-                  {getContactInfo(selectedJob)?.company_name && (
-                    <p className="text-lg font-semibold text-gray-800">{getContactInfo(selectedJob).company_name}</p>
-                  )}
-                </div>
-              </DialogHeader>
-              
-              {/* Photo Gallery at the Top */}
-              <div className="w-full mb-6">
-                <img 
-                  src={getJobPhotos(selectedJob)[0]} 
-                  alt={selectedJob.title} 
-                  className="w-full h-80 object-cover rounded-lg"
-                />
-              </div>
-
-              {/* Salary and Location in Colored Boxes */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-300 rounded-lg p-4 text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-green-800">Compensation</h3>
-                  </div>
-                  <p className="text-2xl font-bold text-green-700">{selectedJob.compensation_details || 'Negotiable'}</p>
-                </div>
-
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-300 rounded-lg p-4 text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <MapPin className="h-6 w-6 text-blue-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-blue-800">Location</h3>
-                  </div>
-                  <p className="text-2xl font-bold text-blue-700">{selectedJob.location || 'Not specified'}</p>
-                </div>
-              </div>
-
-              {/* Contact Information Block - Enhanced Design */}
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-300 rounded-lg p-6 mb-6">
-                <div className="flex items-center justify-center mb-4">
-                  <Phone className="h-6 w-6 text-purple-600 mr-3" />
-                  <h3 className="text-xl font-semibold text-purple-800">Contact Information</h3>
-                </div>
-                <div className="space-y-4 text-center">
-                  {getContactInfo(selectedJob)?.phone && (
-                    <div className="bg-white/70 rounded-lg p-4">
-                      <div className="flex items-center justify-center mb-2">
-                        <Phone className="h-5 w-5 text-purple-600 mr-2" />
-                        <span className="text-sm font-medium text-purple-700">Phone Number</span>
-                      </div>
-                      <p className="text-2xl font-bold text-purple-800">{getContactInfo(selectedJob).phone}</p>
-                    </div>
-                  )}
-                  {getContactInfo(selectedJob)?.email && (
-                    <div className="bg-white/70 rounded-lg p-4">
-                      <div className="flex items-center justify-center mb-2">
-                        <Building className="h-5 w-5 text-purple-600 mr-2" />
-                        <span className="text-sm font-medium text-purple-700">Email</span>
-                      </div>
-                      <p className="text-xl font-semibold text-purple-800">{getContactInfo(selectedJob).email}</p>
-                    </div>
-                  )}
-                  {getContactInfo(selectedJob)?.company_name && (
-                    <div className="bg-white/70 rounded-lg p-4">
-                      <div className="flex items-center justify-center mb-2">
-                        <Building className="h-5 w-5 text-purple-600 mr-2" />
-                        <span className="text-sm font-medium text-purple-700">Company</span>
-                      </div>
-                      <p className="text-xl font-semibold text-purple-800">{getContactInfo(selectedJob).company_name}</p>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-center bg-green-100 rounded-lg p-3">
-                    <span className="text-green-600 mr-2 text-lg">✓</span>
-                    <span className="text-green-800 font-semibold">Contact details available! Call now to apply.</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Job Description Section */}
-              <div className="mb-6">
-                <div className="flex items-center mb-4 pb-2 border-b border-gray-200">
-                  <FileText className="h-6 w-6 text-gray-600 mr-3" />
-                  <h3 className="text-xl font-semibold text-gray-800">Job Description</h3>
-                </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">
-                    {selectedJob.description || selectedJob.vietnamese_description || 'No description available'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Additional Job Details in Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <Clock className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-800">Premium Job Position</p>
-                </div>
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <Briefcase className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                  <p className="font-medium text-gray-800">{selectedJob.requirements || 'Requirements available'}</p>
-                </div>
-              </div>
-
-              {/* Apply Now Button - Premium Style */}
-              <div className="pt-4 border-t border-gray-200">
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 text-xl font-semibold rounded-lg shadow-lg transform transition hover:scale-105">
-                  Apply Now {getContactInfo(selectedJob)?.phone ? `- Call ${getContactInfo(selectedJob).phone}` : ''}
-                </Button>
-              </div>
-            </DialogContent>
-          )}
-        </Dialog>
+        {/* Universal Premium Job Modal */}
+        <PremiumJobModal 
+          job={selectedJob}
+          open={!!selectedJob}
+          onOpenChange={closeJobDetails}
+        />
       </div>
     </Layout>
   );
