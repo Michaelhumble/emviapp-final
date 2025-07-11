@@ -36,16 +36,41 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
     contact_info: job.contact_info,
     image_url: job.image_url,
     image_urls: job.image_urls,
+    photos: job.photos,
     expires_at: job.expires_at,
     pricing_tier: job.pricing_tier,
     created_at: job.created_at
   });
 
+  // 🔍 DEBUG: Specifically log contact info extraction
+  console.log('🔍 [JOB-DETAIL-MODAL] Contact info breakdown:', {
+    rawContactInfo: job.contact_info,
+    ownerName: job.contact_info?.owner_name,
+    phone: job.contact_info?.phone,
+    email: job.contact_info?.email,
+    typeof: typeof job.contact_info
+  });
+
   // Get job images (support for multiple photos)
   const getJobImages = () => {
-    // Check for multiple uploaded images first
+    console.log('🔍 [JOB-DETAIL-MODAL] Getting job images from:', {
+      image_urls: job.image_urls,
+      photos: job.photos,
+      image_url: job.image_url
+    });
+
+    // Check for multiple uploaded images first (new format)
     if (job.image_urls && Array.isArray(job.image_urls) && job.image_urls.length > 0) {
-      return job.image_urls.filter(url => url && typeof url === 'string' && url.trim());
+      const validUrls = job.image_urls.filter(url => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
+      console.log('🔍 [JOB-DETAIL-MODAL] Found image_urls:', validUrls);
+      if (validUrls.length > 0) return validUrls;
+    }
+    
+    // Check photos field (backup format)
+    if (job.photos && Array.isArray(job.photos) && job.photos.length > 0) {
+      const validUrls = job.photos.filter(url => url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded');
+      console.log('🔍 [JOB-DETAIL-MODAL] Found photos:', validUrls);
+      if (validUrls.length > 0) return validUrls;
     }
     
     // Check for single uploaded image (backwards compatibility)

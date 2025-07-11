@@ -21,6 +21,15 @@ const PremiumContactGate: React.FC<PremiumContactGateProps> = ({
 }) => {
   const { isSignedIn } = useAuth();
 
+  // 🔍 DEBUG: Log contact info props to verify they're being passed
+  console.log('🔍 [PREMIUM-CONTACT-GATE] Props received:', {
+    isSignedIn,
+    contactName,
+    contactPhone, 
+    contactEmail,
+    hasChildren: !!children
+  });
+
   // If user is signed in, show contact info directly
   if (isSignedIn) {
     return (

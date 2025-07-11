@@ -428,32 +428,52 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         return;
       }
 
-      // FIXED: Upload photo first if provided for paid jobs
-      let imageUrl = null;
+      // FIXED: Upload ALL photos for paid jobs (up to 5)
+      let uploadedImageUrls: string[] = [];
       if (photoUploads.length > 0) {
+        console.log(`🔍 [PAID-JOB-UPLOAD] Starting upload of ${photoUploads.length} photos...`);
+        
         try {
-          const file = photoUploads[0];
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const filePath = `job-photos/${fileName}`;
+          // Upload all photos in parallel
+          const uploadPromises = photoUploads.map(async (file, index) => {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}_${Date.now()}_${index}.${fileExt}`;
+            const filePath = `nail-jobs/${fileName}`;
 
-          const { error: uploadError } = await supabase.storage
-            .from('job-photos')
-            .upload(filePath, file);
+            console.log(`🔍 [PHOTO-UPLOAD] Uploading ${file.name} to ${filePath}...`);
 
-          if (uploadError) {
-            console.error('Error uploading photo:', uploadError);
-            toast.error('Failed to upload photo. Continuing without image.');
-          } else {
+            const { error: uploadError } = await supabase.storage
+              .from('Job Photos')
+              .upload(filePath, file);
+
+            if (uploadError) {
+              console.error(`❌ Error uploading ${file.name}:`, uploadError);
+              return null;
+            }
+
             const { data: publicUrlData } = supabase.storage
-              .from('job-photos')
+              .from('Job Photos')
               .getPublicUrl(filePath);
-            imageUrl = publicUrlData.publicUrl;
-            console.log('✅ Photo uploaded successfully:', imageUrl);
+
+            console.log(`✅ Photo ${index + 1} uploaded successfully:`, publicUrlData.publicUrl);
+            return publicUrlData.publicUrl;
+          });
+
+          const results = await Promise.all(uploadPromises);
+          uploadedImageUrls = results.filter(url => url !== null) as string[];
+          
+          console.log(`🔍 [PAID-JOB-UPLOAD] Successfully uploaded ${uploadedImageUrls.length}/${photoUploads.length} photos:`, uploadedImageUrls);
+
+          if (uploadedImageUrls.length === 0) {
+            toast.error('Failed to upload photos. Continuing without images.');
+          } else if (uploadedImageUrls.length < photoUploads.length) {
+            toast.warning(`Only ${uploadedImageUrls.length}/${photoUploads.length} photos uploaded successfully.`);
+          } else {
+            toast.success(`All ${uploadedImageUrls.length} photos uploaded successfully!`);
           }
         } catch (uploadError) {
-          console.error('Photo upload error:', uploadError);
-          toast.error('Failed to upload photo. Continuing without image.');
+          console.error('❌ Batch photo upload error:', uploadError);
+          toast.error('Failed to upload photos. Continuing without images.');
         }
       }
 
@@ -469,9 +489,16 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             compensation_details: formatSalaryForNails(formData.salaryRange, formData.weeklyPay),
             vietnamese_title: formData.vietnameseTitle,
             vietnamese_description: formData.vietnameseDescription,
-            // FIXED: Include multiple image URLs for paid jobs
-            image_url: photoUploads.length > 0 ? 'photos-uploaded' : '', // Primary image marker
-            image_urls: [], // Will be populated after upload
+            contact_info: {
+              owner_name: formData.contactName?.trim() || '',
+              phone: formData.contactPhone?.trim() || '',
+              email: formData.contactEmail?.trim() || '',
+              notes: formData.contactNotes?.trim() || ''
+            },
+            // FIXED: Include actual uploaded image URLs
+            image_url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Primary image
+            image_urls: uploadedImageUrls, // All uploaded images
+            photos: uploadedImageUrls // Backup field name for compatibility
           }
         }
       });
