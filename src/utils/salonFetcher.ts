@@ -28,7 +28,7 @@ export async function fetchSalonById(id: string): Promise<{
         title: 'Magic Nails - Premium Nail Salon',
         category: 'Nail Salon',
         company: 'Magic Nails',
-        location: '123 Main St, San Jose, CA',
+        location: '123 Main St, Milpitas, CA',
         created_at: '2024-01-01T00:00:00.000Z',
         description: 'Premier nail salon offering luxury manicure and pedicure services. Walk-ins welcome!',
         price: '$25-85',

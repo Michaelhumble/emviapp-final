@@ -6,7 +6,7 @@ export const bilingualJobs: Job[] = [
     id: 'bilingual-1',
     title: 'Nail Technician - Thợ Làm Nail',
     category: 'Nail Technician',
-    location: 'San Jose, CA',
+    location: 'Milpitas, CA',
     description: 'Looking for experienced nail technician. Weekly pay $800-1200. Cần thợ làm nail có kinh nghiệm. Lương tuần $800-1200.',
     compensation_type: 'Weekly',
     compensation_details: '$800-1200/week',
