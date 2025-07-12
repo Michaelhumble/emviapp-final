@@ -160,6 +160,10 @@ const UrgencyBoosters = ({ jobs }: UrgencyBoostersProps) => {
             </button>
           </div>
         </div>
+        
+        <p className="text-sm text-muted-foreground text-center mt-6">
+          Sample positions shown for illustration. Sign in to see live, real opportunities now.
+        </p>
       </div>
     </section>
   );

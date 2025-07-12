@@ -134,7 +134,10 @@ const TeaserLocked = () => {
                 <Lock className="w-8 h-8 mx-auto mb-3" />
                 <h4 className="font-bold text-lg mb-2">Sign In to Unlock</h4>
                 <p className="text-sm mb-4 opacity-90">
-                  Get instant access to salary details, contact information, and apply directly
+                  Sign in to view direct contact info and apply instantly. All listings are real and privacy-protected.
+                </p>
+                <p className="text-xs mb-4 opacity-75">
+                  EmviApp only allows direct connection between verified members. No spam. No fakes.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex-1">
@@ -165,6 +168,10 @@ const TeaserLocked = () => {
           <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl">
             Sign Up Free - View All Jobs
           </button>
+          
+          <p className="text-sm text-gray-500 mt-4">
+            Sample positions shown for illustration. Sign in to see live, real opportunities now.
+          </p>
         </div>
       </div>
     </section>

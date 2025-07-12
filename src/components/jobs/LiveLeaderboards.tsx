@@ -6,17 +6,17 @@ import { Badge } from '@/components/ui/badge';
 const LiveLeaderboards = () => {
   // Mock data for top hiring salons
   const topSalons = [
-    { name: "Elite Nail Studio", hires: 23, badge: "gold", trending: true },
-    { name: "Luxury Beauty Lounge", hires: 19, badge: "silver", trending: false },
-    { name: "Premium Nail Bar", hires: 15, badge: "bronze", trending: true },
-    { name: "Artisan Beauty Co.", hires: 12, badge: null, trending: false },
-    { name: "Signature Salon", hires: 10, badge: null, trending: true },
+    { name: "Luxe Nail Studio", hires: 23, badge: "gold", trending: true },
+    { name: "Signature Salon", hires: 19, badge: "silver", trending: false },
+    { name: "Modern Beauty Lounge", hires: 15, badge: "bronze", trending: true },
+    { name: "Glamour Nails Spa", hires: 12, badge: null, trending: false },
+    { name: "Artisan Beauty Bar", hires: 10, badge: null, trending: true },
   ];
 
   // Mock data for most popular jobs
   const popularJobs = [
     { title: "Senior Nail Technician", applications: 47, location: "Beverly Hills", trending: true },
-    { title: "Hair Stylist - Top Salon", applications: 42, location: "Manhattan", trending: false },
+    { title: "Hair Stylist - Premium Salon", applications: 42, location: "Manhattan", trending: false },
     { title: "Master Colorist", applications: 38, location: "Miami Beach", trending: true },
     { title: "Nail Artist - Luxury Spa", applications: 35, location: "Chicago", trending: false },
     { title: "Lash Extension Specialist", applications: 31, location: "Austin", trending: true },
@@ -121,6 +121,10 @@ const LiveLeaderboards = () => {
           </CardContent>
         </Card>
       </div>
+      
+      <p className="text-sm text-muted-foreground text-center mt-8">
+        Live activity data shown for illustration.
+      </p>
     </section>
   );
 };

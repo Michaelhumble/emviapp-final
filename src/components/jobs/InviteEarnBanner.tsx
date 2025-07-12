@@ -137,7 +137,10 @@ const InviteEarnBanner = () => {
             {/* Success Stories */}
             <div className="mt-8 text-center">
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                💫 <strong>Success Story:</strong> "I earned $500 in credits just by sharing EmviApp with my salon team!" - Sarah M.
+                💫 <strong>Success Story:</strong> "I earned $500 in credits just by sharing EmviApp with my salon team!" - S.M., Nail Tech
+              </p>
+              <p className="text-xs text-gray-500 mt-2">
+                Platform credits and rewards are for illustration. Terms apply.
               </p>
               
               <div className="flex justify-center items-center gap-6 text-sm text-gray-500">

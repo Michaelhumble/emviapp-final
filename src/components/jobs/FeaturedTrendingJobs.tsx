@@ -111,6 +111,10 @@ const FeaturedTrendingJobs = ({ jobs }: FeaturedTrendingJobsProps) => {
         <button className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl">
           View All Hot Jobs →
         </button>
+        
+        <p className="text-sm text-muted-foreground mt-6">
+          Sample listings shown for illustration. All live jobs are verified for privacy.
+        </p>
       </div>
     </section>
   );

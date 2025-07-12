@@ -158,6 +158,10 @@ const SuccessStoriesCarousel = () => {
             />
           ))}
         </div>
+        
+        <p className="text-sm text-muted-foreground text-center mt-6">
+          Testimonials are representative examples.
+        </p>
       </div>
     </section>
   );

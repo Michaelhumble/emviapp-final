@@ -11,11 +11,11 @@ const RealTimeActivity = () => {
   });
 
   const [activityFeed, setActivityFeed] = useState([
-    "Sarah M. just applied to Senior Nail Tech position",
-    "Elite Salon posted a new Hair Stylist job",
-    "Mike R. just viewed Massage Therapist role",
-    "Luxury Spa received 5 new applications",
-    "Jessica L. just applied to Lash Artist position"
+    "New hire in Dallas just now!",
+    "S.M. just applied to Senior Nail Tech position",
+    "Premium salon posted 3 new jobs in Beverly Hills",
+    "M.R. was hired as Lead Technician",
+    "2 new salons joined EmviApp in the last hour"
   ]);
 
   const [currentActivity, setCurrentActivity] = useState(0);
