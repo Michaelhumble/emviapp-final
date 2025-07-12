@@ -1,6 +1,6 @@
 import { Job } from '@/types/job';
 
-// Nail salon images from Supabase storage
+// All salon images organized by category
 const nailImages = [
   "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png",
   "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png",
@@ -15,6 +15,51 @@ const nailImages2 = [
   "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png",
   "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png",
   "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png"
+];
+
+// Tattoo salon images from Supabase storage
+const tattooImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(2).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(3).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(4).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated.png"
+];
+
+// Barber salon images from Supabase storage
+const barberImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(2).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(3).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(4).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(6).png"
+];
+
+// Massage salon images from Supabase storage
+const massageImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(2).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(3).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png" // filler
+];
+
+// Makeup salon images from Supabase storage
+const makeupImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-46.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-47.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-48.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-49.png"
+];
+
+// Brow-lashes salon images from Supabase storage
+const browLashesImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-12.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-13.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-14.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-15.png"
 ];
 
 // Real-life Vietnamese salon listings converted to English & Vietnamese
@@ -226,5 +271,131 @@ export const featuredRealSalons: Job[] = [
     square_feet: "2200", 
     monthly_rent: "12000",
     fomo_message: "🎬 Celebrity Stylists - Social Media Famous!"
+  },
+
+  // Additional diverse salon listings
+  {
+    id: "featured-real-4",
+    title: "Ink Dynasty Tattoo Studio", 
+    company: "Ink Dynasty Tattoo Studio",
+    location: "Austin, TX",
+    description: "Premium 1,800 sqft tattoo studio with 6 private rooms and custom art gallery. Featured in Tattoo Magazine, celebrity artist portfolio. High-end clientele, booking 3 months out.",
+    price: "$320,000",
+    created_at: "2024-01-19T09:00:00Z",
+    type: "salon",
+    category: "tattoo-studio", 
+    pricing_tier: "featured",
+    status: "active",
+    contact_info: {
+      owner_name: "Contact via EmviApp",
+      phone: "Hidden - Sign in to view",
+      email: "inquiries@emviapp.com"
+    },
+    salon_features: ["6 Private Rooms", "Custom Art Gallery", "Celebrity Artists", "3-Month Booking", "Magazine Featured"],
+    image_url: tattooImages[0],
+    image_urls: tattooImages,
+    square_feet: "1800", 
+    monthly_rent: "8500",
+    fomo_message: "🎨 Celebrity Artists - Booked 3 Months Out!"
+  },
+
+  {
+    id: "featured-real-5",
+    title: "Classic Cuts Barbershop", 
+    company: "Classic Cuts Barbershop",
+    location: "Brooklyn, NY",
+    description: "Traditional 1,200 sqft barbershop with 8 vintage chairs and straight razor service. Established 1985, loyal multigenerational clientele. Prime location in trendy neighborhood.",
+    price: "$225,000",
+    created_at: "2024-01-18T14:00:00Z",
+    type: "salon",
+    category: "barbershop", 
+    pricing_tier: "featured",
+    status: "active",
+    contact_info: {
+      owner_name: "Contact via EmviApp",
+      phone: "Hidden - Sign in to view",
+      email: "inquiries@emviapp.com"
+    },
+    salon_features: ["8 Vintage Chairs", "Straight Razor Service", "Est. 1985", "Loyal Clientele", "Trendy Location"],
+    image_url: barberImages[0],
+    image_urls: barberImages,
+    square_feet: "1200", 
+    monthly_rent: "6500",
+    fomo_message: "✂️ Established 1985 - Loyal Clientele!"
+  },
+
+  {
+    id: "featured-real-6",
+    title: "Zen Massage & Wellness", 
+    company: "Zen Massage & Wellness",
+    location: "Scottsdale, AZ",
+    description: "Luxury 2,000 sqft wellness center with 4 massage rooms, sauna, and meditation space. High-end resort area clientele. Spa packages $200-400. Fully licensed and equipped.",
+    price: "$395,000",
+    created_at: "2024-01-17T11:30:00Z",
+    type: "salon",
+    category: "massage-spa", 
+    pricing_tier: "diamond",
+    status: "active",
+    contact_info: {
+      owner_name: "Contact via EmviApp",
+      phone: "Hidden - Sign in to view",
+      email: "inquiries@emviapp.com"
+    },
+    salon_features: ["4 Massage Rooms", "Sauna & Meditation", "Resort Clientele", "$200-400 Packages", "Fully Licensed"],
+    image_url: massageImages[0],
+    image_urls: massageImages,
+    square_feet: "2000", 
+    monthly_rent: "9500",
+    fomo_message: "🧘 Resort Area - Premium Spa Packages!"
+  },
+
+  {
+    id: "featured-real-7",
+    title: "Glam Beauty Studio", 
+    company: "Glam Beauty Studio",
+    location: "Nashville, TN",
+    description: "Modern 1,400 sqft makeup and beauty studio with professional lighting, photo booth, and bridal suite. Popular with influencers and brides. Booking 6 weeks out for events.",
+    price: "$180,000",
+    created_at: "2024-01-16T13:15:00Z",
+    type: "salon",
+    category: "makeup-studio", 
+    pricing_tier: "featured",
+    status: "active",
+    contact_info: {
+      owner_name: "Contact via EmviApp",
+      phone: "Hidden - Sign in to view",
+      email: "inquiries@emviapp.com"
+    },
+    salon_features: ["Professional Lighting", "Photo Booth", "Bridal Suite", "Influencer Clients", "6-Week Booking"],
+    image_url: makeupImages[0],
+    image_urls: makeupImages,
+    square_feet: "1400", 
+    monthly_rent: "5200",
+    fomo_message: "💄 Influencer Favorite - Booked 6 Weeks Out!"
+  },
+
+  {
+    id: "featured-real-8",
+    title: "Perfect Brow & Lash Bar", 
+    company: "Perfect Brow & Lash Bar",
+    location: "Orange County, CA",
+    description: "Boutique 900 sqft brow and lash studio with 6 treatment beds. Microblading, lash extensions, and brow lamination. High-end clientele, social media following 25K+.",
+    price: "$155,000",
+    created_at: "2024-01-15T16:45:00Z",
+    type: "salon",
+    category: "brow-lash", 
+    pricing_tier: "featured",
+    status: "active",
+    contact_info: {
+      owner_name: "Contact via EmviApp",
+      phone: "Hidden - Sign in to view",
+      email: "inquiries@emviapp.com"
+    },
+    salon_features: ["6 Treatment Beds", "Microblading Expert", "Lash Extensions", "25K Social Media", "High-End Clientele"],
+    image_url: browLashesImages[0],
+    image_urls: browLashesImages,
+    square_feet: "900", 
+    monthly_rent: "4800",
+    fomo_message: "👁️ 25K Followers - Microblading Expert!"
   }
 ];

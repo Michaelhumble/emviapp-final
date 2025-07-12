@@ -125,60 +125,145 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
         </div>
       )}
 
-      {/* Image Gallery Section - Always on top */}
-      <div className="relative h-56 overflow-hidden">
+      {/* Responsive Image Gallery Section - Always on top, Jobs card style */}
+      <div className="relative overflow-hidden">
         {hasImages ? (
           <>
-            {/* Main Image */}
-            <img
-              src={galleryImages[currentImageIndex]}
-              alt={salon.title || salon.company || 'Salon'}
-              className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
-            />
+            {/* Main Gallery Image - Responsive height */}
+            <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
+              <img
+                src={galleryImages[currentImageIndex]}
+                alt={salon.title || salon.company || 'Salon'}
+                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
+              />
+              
+              {/* Desktop Gallery Navigation */}
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/60 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/80 z-20"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/60 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/80 z-20"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </>
+              )}
+              
+              {/* Photo count badge */}
+              <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium z-10">
+                📸 {galleryImages.length} photos
+              </div>
+            </div>
             
-            {/* Gallery Navigation */}
+            {/* Responsive Thumbnail Row - Jobs card style */}
             {galleryImages.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-                
-                {/* Image Dots */}
-                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
-                  {galleryImages.slice(0, 5).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                      }`}
-                    />
-                  ))}
+              <div className="px-3 sm:px-4 py-2 bg-gray-50 border-t">
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                  {/* Desktop: Show 5 thumbnails */}
+                  <div className="hidden lg:flex gap-2 flex-shrink-0">
+                    {galleryImages.slice(0, 5).map((imageUrl, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
+                        className={`relative w-12 h-12 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
+                          index === currentImageIndex ? 'border-purple-500' : 'border-gray-200'
+                        }`}
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => e.currentTarget.style.display = 'none'}
+                        />
+                        {index === currentImageIndex && (
+                          <div className="absolute inset-0 bg-purple-500/20"></div>
+                        )}
+                      </button>
+                    ))}
+                    {galleryImages.length > 5 && (
+                      <div className="w-12 h-12 rounded border-2 border-gray-200 bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-gray-600 text-xs font-medium">+{galleryImages.length - 5}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Tablet: Show 3 thumbnails */}
+                  <div className="hidden md:flex lg:hidden gap-2 flex-shrink-0">
+                    {galleryImages.slice(0, 3).map((imageUrl, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
+                        className={`relative w-16 h-16 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
+                          index === currentImageIndex ? 'border-purple-500' : 'border-gray-200'
+                        }`}
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => e.currentTarget.style.display = 'none'}
+                        />
+                        {index === currentImageIndex && (
+                          <div className="absolute inset-0 bg-purple-500/20"></div>
+                        )}
+                      </button>
+                    ))}
+                    {galleryImages.length > 3 && (
+                      <div className="w-16 h-16 rounded border-2 border-gray-200 bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-gray-600 text-xs font-medium">+{galleryImages.length - 3}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Mobile: Show 2 thumbnails, swipeable */}
+                  <div className="flex md:hidden gap-2 overflow-x-auto flex-shrink-0">
+                    {galleryImages.slice(0, 2).map((imageUrl, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
+                        className={`relative w-16 h-16 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
+                          index === currentImageIndex ? 'border-purple-500' : 'border-gray-200'
+                        }`}
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => e.currentTarget.style.display = 'none'}
+                        />
+                        {index === currentImageIndex && (
+                          <div className="absolute inset-0 bg-purple-500/20"></div>
+                        )}
+                      </button>
+                    ))}
+                    {galleryImages.length > 2 && (
+                      <div className="w-16 h-16 rounded border-2 border-gray-200 bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-gray-600 text-xs font-medium">+{galleryImages.length - 2}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </>
+              </div>
             )}
           </>
         ) : (
-          // Placeholder when no images
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+          // Responsive placeholder when no images
+          <div className="h-48 sm:h-56 lg:h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             <div className="text-center text-gray-500">
-              <div className="text-4xl mb-2">📷</div>
+              <div className="text-3xl sm:text-4xl mb-2">📷</div>
               <div className="text-sm font-medium">Photos Coming Soon</div>
               <div className="text-xs">Owner will add gallery</div>
             </div>
           </div>
         )}
         
-        {/* Tier Badge */}
+        {/* Tier Badge - Responsive positioning */}
         <div className="absolute top-3 left-3 z-10">
           <Badge className={`${pricingDisplay.color} flex items-center gap-1 font-semibold px-2 py-1 text-xs shadow-md`}>
             {pricingDisplay.icon}
@@ -187,34 +272,25 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
           </Badge>
         </div>
 
-        {/* Price Badge */}
+        {/* Price Badge - Responsive sizing */}
         <div className="absolute top-3 right-3 z-10">
-          <Badge className="bg-white text-gray-900 font-bold text-sm px-3 py-1 shadow-md">
+          <Badge className="bg-white text-gray-900 font-bold text-xs sm:text-sm px-2 sm:px-3 py-1 shadow-md">
             {formatPrice(salon.price)}
           </Badge>
         </div>
 
-        {/* Gallery Count Indicator */}
-        {galleryImages.length > 0 && (
-          <div className="absolute bottom-3 right-3 z-10">
-            <Badge className="bg-black/60 text-white px-2 py-1 text-xs">
-              📷 {galleryImages.length}
-            </Badge>
-          </div>
-        )}
-
         {/* Expired Overlay */}
         {isExpired && (
           <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-10">
-            <div className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold text-xl shadow-2xl transform rotate-12">
+            <div className="bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold text-lg sm:text-xl shadow-2xl transform rotate-12">
               SOLD
             </div>
           </div>
         )}
 
-        {/* FOMO Message Overlay */}
+        {/* FOMO Message Overlay - Responsive */}
         {salon.fomo_message && !isExpired && (
-          <div className="absolute bottom-3 left-3 right-12 z-10">
+          <div className="absolute bottom-3 left-3 right-16 sm:right-20 z-10">
             <div className="bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold text-center shadow-lg">
               {salon.fomo_message}
             </div>
