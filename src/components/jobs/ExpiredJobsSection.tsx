@@ -1,5 +1,5 @@
 import React from 'react';
-import { getExpiredJobsByCategory, ExpiredJob } from '@/data/expiredJobsByIndustry';
+import { expiredJobsByCategory, ExpiredJob } from '@/data/expiredJobsByIndustry';
 
 interface ExpiredJobsSectionProps {
   category?: string;

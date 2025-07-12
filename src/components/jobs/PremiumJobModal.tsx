@@ -35,10 +35,10 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
 
   if (!job) return null;
 
-  // COMPREHENSIVE DEBUG: Helper function to get job photos with extensive logging
+  // Helper function to get job photos
   const getJobPhotos = (job: Job): string[] => {
-    console.log('🚨 [DEBUG-PREMIUM-MODAL] ===== PREMIUM MODAL PHOTO ANALYSIS =====');
-    console.log('📸 [DEBUG-PREMIUM-MODAL] Full job object for modal:', job);
+    // console.log('🚨 [DEBUG-PREMIUM-MODAL] ===== PREMIUM MODAL PHOTO ANALYSIS =====');
+    // console.log('📸 [DEBUG-PREMIUM-MODAL] Full job object for modal:', job);
     
     const allPhotos: string[] = [];
     const photoSources = [
@@ -49,11 +49,11 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
       { name: 'image_url', value: job.image_url ? [job.image_url] : null }
     ];
 
-    console.log('📸 [DEBUG-PREMIUM-MODAL] Checking photo sources:', photoSources);
+    // console.log('📸 [DEBUG-PREMIUM-MODAL] Checking photo sources:', photoSources);
 
-    // Collect photos from all possible sources with detailed logging
+    // Collect photos from all possible sources
     for (const source of photoSources) {
-      console.log(`📸 [DEBUG-PREMIUM-MODAL] Checking source "${source.name}":`, source.value);
+      // console.log(`📸 [DEBUG-PREMIUM-MODAL] Checking source "${source.name}":`, source.value);
       
       if (Array.isArray(source.value)) {
         const validUrls = source.value.filter((url: any) => 
@@ -61,11 +61,11 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
           url !== 'photos-uploaded' && url.startsWith('http')
         );
         
-        console.log(`📸 [DEBUG-PREMIUM-MODAL] Valid URLs from "${source.name}":`, validUrls);
+        // console.log(`📸 [DEBUG-PREMIUM-MODAL] Valid URLs from "${source.name}":`, validUrls);
         
         if (validUrls.length > 0) {
           allPhotos.push(...validUrls);
-          console.log(`📸 [DEBUG-PREMIUM-MODAL] ✅ Added ${validUrls.length} photos from "${source.name}"`);
+          // console.log(`📸 [DEBUG-PREMIUM-MODAL] ✅ Added ${validUrls.length} photos from "${source.name}"`);
         }
       }
     }
@@ -73,24 +73,24 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
     // Remove duplicates
     const uniquePhotos = [...new Set(allPhotos)];
     
-    console.log('📸 [DEBUG-PREMIUM-MODAL] Final photo analysis:', {
-      totalPhotosFound: allPhotos.length,
-      uniquePhotos: uniquePhotos.length,
-      finalPhotoArray: uniquePhotos,
-      jobId: job.id,
-      pricingTier: job.pricing_tier,
-      isPaidJob: job.pricing_tier && job.pricing_tier !== 'free'
-    });
+    // console.log('📸 [DEBUG-PREMIUM-MODAL] Final photo analysis:', {
+    //   totalPhotosFound: allPhotos.length,
+    //   uniquePhotos: uniquePhotos.length,
+    //   finalPhotoArray: uniquePhotos,
+    //   jobId: job.id,
+    //   pricingTier: job.pricing_tier,
+    //   isPaidJob: job.pricing_tier && job.pricing_tier !== 'free'
+    // });
 
     // FALLBACK: Only use fallback for paid jobs that have NO real photos
     if (uniquePhotos.length === 0 && job.pricing_tier && job.pricing_tier !== 'free') {
       const fallbackImage = getIndustryFallbackImage(job.category);
-      console.log('📸 [DEBUG-PREMIUM-MODAL] ⚠️ Using fallback image for paid job with no photos:', fallbackImage);
+      // console.log('📸 [DEBUG-PREMIUM-MODAL] ⚠️ Using fallback image for paid job with no photos:', fallbackImage);
       return [fallbackImage];
     }
 
-    console.log('📸 [DEBUG-PREMIUM-MODAL] ===== FINAL RESULT =====');
-    console.log(`📸 [DEBUG-PREMIUM-MODAL] Returning ${uniquePhotos.length} photos for display`);
+    // console.log('📸 [DEBUG-PREMIUM-MODAL] ===== FINAL RESULT =====');
+    // console.log(`📸 [DEBUG-PREMIUM-MODAL] Returning ${uniquePhotos.length} photos for display`);
     return uniquePhotos;
   };
 
@@ -135,11 +135,11 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
   };
 
   
-  // COMPREHENSIVE DEBUG: Get job photos with extensive debugging
+  // Get job photos
   const jobPhotos = getJobPhotos(job);
   const contactInfo = getContactInfo(job);
 
-  // DEBUG PANEL: Show comprehensive debug info (remove in production)
+  // Debug info object (not displayed to users)
   const debugInfo = {
     jobId: job.id,
     pricingTier: job.pricing_tier,
@@ -169,8 +169,8 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
           </DialogHeader>
 
           <div className="px-6 pb-6 space-y-6">
-            {/* DEBUG PANEL - Comprehensive photo debugging (temporary) */}
-            {process.env.NODE_ENV === 'development' && (
+            {/* Debug panel removed for production */}
+            {/* {process.env.NODE_ENV === 'development' && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                 <details className="cursor-pointer">
                   <summary className="font-medium text-red-800 mb-2">🚨 DEBUG: Premium Modal Photo Analysis</summary>
@@ -186,7 +186,7 @@ const PremiumJobModal = ({ job, open, onOpenChange }: PremiumJobModalProps) => {
                   </div>
                 </details>
               </div>
-            )}
+            )} */}
             {/* Photo Gallery at the Top */}
             {jobPhotos.length > 0 && (
               <div className="w-full">
