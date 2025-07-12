@@ -1,20 +1,22 @@
 import { Job } from '@/types/job';
 
-// Industry-specific image arrays from Supabase storage buckets
+// PLACEHOLDER: Add your salon images here
+// Example format: const nailImages = ["url1", "url2", "url3", "url4", "url5"];
+
 const nailImages = [
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png", 
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png"
+  "", // PLACEHOLDER: Add nail salon image 1 URL here
+  "", // PLACEHOLDER: Add nail salon image 2 URL here
+  "", // PLACEHOLDER: Add nail salon image 3 URL here
+  "", // PLACEHOLDER: Add nail salon image 4 URL here
+  ""  // PLACEHOLDER: Add nail salon image 5 URL here
 ];
 
 const nailImages2 = [
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png"
+  "", // PLACEHOLDER: Add nail salon image 1 URL here
+  "", // PLACEHOLDER: Add nail salon image 2 URL here
+  "", // PLACEHOLDER: Add nail salon image 3 URL here
+  "", // PLACEHOLDER: Add nail salon image 4 URL here
+  ""  // PLACEHOLDER: Add nail salon image 5 URL here
 ];
 
 // Real-life Vietnamese salon listings converted to English & Vietnamese
@@ -133,21 +135,21 @@ export const realVietnameseSalons: Job[] = [
   }
 ];
 
-// Additional industry images for variety
+// Additional industry image placeholders
 const hairImages = [
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated.png"
+  "", // PLACEHOLDER: Add hair salon image 1 URL here
+  "", // PLACEHOLDER: Add hair salon image 2 URL here
+  "", // PLACEHOLDER: Add hair salon image 3 URL here
+  "", // PLACEHOLDER: Add hair salon image 4 URL here
+  ""  // PLACEHOLDER: Add hair salon image 5 URL here
 ];
 
 const facialImages = [
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(3).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(4).png",
-  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(5).png"
+  "", // PLACEHOLDER: Add facial/spa image 1 URL here
+  "", // PLACEHOLDER: Add facial/spa image 2 URL here
+  "", // PLACEHOLDER: Add facial/spa image 3 URL here
+  "", // PLACEHOLDER: Add facial/spa image 4 URL here
+  ""  // PLACEHOLDER: Add facial/spa image 5 URL here
 ];
 
 // Additional featured real listings for the top section

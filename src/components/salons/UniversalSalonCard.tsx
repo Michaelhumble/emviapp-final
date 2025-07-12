@@ -80,28 +80,9 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
     return price.startsWith('$') ? price : `$${price}`;
   };
 
-  // Get industry-specific fallback image
-  const getIndustryFallback = () => {
-    const category = salon.category?.toLowerCase() || 'nails';
-    const industryImages = {
-      'nail tech': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
-      'nails': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png',
-      'hair': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png',
-      'barber': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png',
-      'tattoo': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png',
-      'massage': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png',
-      'skincare': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png',
-      'facial': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png',
-      'makeup': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png',
-      'brows': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png',
-      'lashes': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-12.png'
-    };
-    
-    for (const [key, url] of Object.entries(industryImages)) {
-      if (category.includes(key)) return url;
-    }
-    
-    return industryImages['nails']; // Default to nails
+  // Check if salon has valid images
+  const hasValidImage = () => {
+    return salon.image_url && salon.image_url.trim() !== '';
   };
 
   return (
@@ -126,14 +107,22 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
 
       {/* Main Image */}
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={salon.image_url || salon.image || getIndustryFallback()}
-          alt={salon.title || salon.company || 'Salon'}
-          className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
-          onError={(e) => {
-            e.currentTarget.src = getIndustryFallback();
-          }}
-        />
+        {hasValidImage() ? (
+          <img
+            src={salon.image_url || salon.image}
+            alt={salon.title || salon.company || 'Salon'}
+            className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
+          />
+        ) : (
+          // PLACEHOLDER: Image placeholder when no image URL is provided
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <div className="text-4xl mb-2">📷</div>
+              <div className="text-sm font-medium">Add Photos</div>
+              <div className="text-xs">Photos pending</div>
+            </div>
+          </div>
+        )}
         
         {/* Tier Badge */}
         <div className="absolute top-3 left-3">
@@ -152,10 +141,10 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
         </div>
 
         {/* Gallery Indicator */}
-        {salon.image_urls && salon.image_urls.length > 1 && (
+        {salon.image_urls && salon.image_urls.filter(url => url && url.trim() !== '').length > 1 && (
           <div className="absolute bottom-3 right-3">
             <Badge className="bg-black/60 text-white px-2 py-1 text-xs">
-              📷 {salon.image_urls.length}
+              📷 {salon.image_urls.filter(url => url && url.trim() !== '').length}
             </Badge>
           </div>
         )}

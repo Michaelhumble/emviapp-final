@@ -23,77 +23,22 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
   const isExpired = salon.status === 'expired';
   const isVietnamese = salon.is_vietnamese_listing;
   
-  // Get industry-specific gallery images
-  const getIndustryImages = () => {
-    const category = salon.category?.toLowerCase() || 'nail tech';
-    const industryImageSets = {
-      'nail tech': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png'
-      ],
-      'nails': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png'
-      ],
-      'hair': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png'
-      ],
-      'barber': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(2).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(3).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(4).png'
-      ],
-      'tattoo': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(2).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(3).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(4).png'
-      ],
-      'massage': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(2).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(3).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated.png'
-      ],
-      'skincare': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(3).png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(4).png'
-      ],
-      'makeup': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-46.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-47.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-48.png'
-      ],
-      'brows': [
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-12.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-13.png',
-        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-14.png'
-      ]
-    };
-    
-    for (const [key, images] of Object.entries(industryImageSets)) {
-      if (category.includes(key)) return images;
-    }
-    
-    return industryImageSets['nail tech']; // Default to nail tech
+  // Check if salon has valid images
+  const hasValidImages = () => {
+    return salon.image_urls && salon.image_urls.some(url => url && url.trim() !== '');
   };
 
-  const galleryImages = [
-    salon.image_url || salon.image || getIndustryImages()[0],
-    ...getIndustryImages().slice(1)
-  ];
+  // Get valid gallery images or placeholders
+  const getGalleryImages = () => {
+    if (hasValidImages()) {
+      return salon.image_urls!.filter(url => url && url.trim() !== '');
+    }
+    
+    // Return empty placeholders if no valid images
+    return ['', '', '', '', ''];
+  };
+
+  const galleryImages = getGalleryImages();
 
   // Get pricing tier display
   const getPricingTierDisplay = () => {
@@ -166,11 +111,22 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
             <div className="mb-6">
               {/* Main Image */}
               <div className="relative aspect-video rounded-xl overflow-hidden mb-4 group">
-                <img 
-                  src={galleryImages[activeImageIndex]} 
-                  alt={salon.title || "Salon"} 
-                  className={`w-full h-full object-cover transition-all duration-300 ${isExpired ? 'grayscale' : ''}`}
-                />
+                {galleryImages[activeImageIndex] && galleryImages[activeImageIndex].trim() !== '' ? (
+                  <img 
+                    src={galleryImages[activeImageIndex]} 
+                    alt={salon.title || "Salon"} 
+                    className={`w-full h-full object-cover transition-all duration-300 ${isExpired ? 'grayscale' : ''}`}
+                  />
+                ) : (
+                  // PLACEHOLDER: Image placeholder when no image URL is provided
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <div className="text-center text-gray-500">
+                      <div className="text-6xl mb-4">📷</div>
+                      <div className="text-lg font-medium">Photos Coming Soon</div>
+                      <div className="text-sm">Images will be added by the owner</div>
+                    </div>
+                  </div>
+                )}
                 
                 {/* Expired Overlay */}
                 {isExpired && (
@@ -201,7 +157,17 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
                       activeImageIndex === index ? 'border-purple-500' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                    {img && img.trim() !== '' ? (
+                      <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      // PLACEHOLDER: Thumbnail placeholder
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <div className="text-gray-400 text-xs text-center">
+                          <div className="text-2xl mb-1">📷</div>
+                          <div>Photo {index + 1}</div>
+                        </div>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
