@@ -1,21 +1,8 @@
 import React from 'react';
-import { expiredJobsData } from '@/data/expiredJobsData';
+import { getExpiredJobsByCategory, ExpiredJob } from '@/data/expiredJobsByIndustry';
 
-interface ExpiredJob {
-  id: string;
-  title: string;
-  vietnamese_title?: string;
-  company: string;
-  location: string;
-  salary: string;
-  description: string;
-  vietnamese_description?: string;
-  category: string;
-  employment_type: string;
-  image_url: string;
-  created_at: string;
-  expired_at: string;
-  filled_date: string;
+interface ExpiredJobsSectionProps {
+  category?: string;
 }
 
 const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
@@ -32,11 +19,8 @@ const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
         <div className="flex justify-between items-start mb-2">
           <div>
             <h3 className="text-lg font-semibold text-gray-700">
-              {job.vietnamese_title || job.title}
+              {job.title}
             </h3>
-            {job.vietnamese_title && job.title !== job.vietnamese_title && (
-              <p className="text-sm text-gray-500">{job.title}</p>
-            )}
           </div>
           <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-full font-medium">
             {job.category}
@@ -63,11 +47,7 @@ const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
         
         {/* Description - truncated */}
         <div className="text-gray-600 text-sm line-clamp-2">
-          {job.category === 'Nail Tech' && job.vietnamese_description ? (
-            <p>{job.vietnamese_description}</p>
-          ) : (
-            <p>{job.description}</p>
-          )}
+          <p>{job.description}</p>
         </div>
         
         {/* Filled date and FOMO message */}
@@ -82,7 +62,8 @@ const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
   );
 };
 
-const ExpiredJobsSection: React.FC = () => {
+const ExpiredJobsSection: React.FC<ExpiredJobsSectionProps> = ({ category = 'all' }) => {
+  const expiredJobs = getExpiredJobsByCategory(category);
   return (
     <section className="w-full max-w-6xl mx-auto pt-12 pb-8 relative z-0">
       {/* Clear visual separator */}
@@ -133,7 +114,7 @@ const ExpiredJobsSection: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {expiredJobsData.map((job) => (
+        {expiredJobs.map((job) => (
           <ExpiredJobCard key={job.id} job={job} />
         ))}
       </div>
