@@ -205,7 +205,7 @@ const SalonsPageCompleteRedesign = () => {
         selectedTags={selectedTags}
         onTagToggle={handleTagToggle}
         onClearFilters={clearFilters}
-        isSticky={true}
+        isSticky={false}
       />
 
       {/* MAIN CONTENT */}
