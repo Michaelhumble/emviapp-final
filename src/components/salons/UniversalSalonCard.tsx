@@ -125,45 +125,54 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
       )}
 
       {/* Main Image */}
-      <div className="relative h-48 sm:h-56 md:h-64 lg:h-56 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         <img
           src={salon.image_url || salon.image || getIndustryFallback()}
           alt={salon.title || salon.company || 'Salon'}
-          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${isExpired ? 'grayscale' : ''}`}
+          className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
           onError={(e) => {
             e.currentTarget.src = getIndustryFallback();
           }}
         />
         
-        {/* Price Badge */}
-        <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-          <Badge className="bg-black/80 text-white border-none backdrop-blur-sm font-bold text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2 shadow-lg">
-            {formatPrice(salon.price)}
-          </Badge>
-        </div>
-
         {/* Tier Badge */}
-        <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-          <Badge className={`${pricingDisplay.color} flex items-center gap-1 backdrop-blur-sm font-bold px-2 sm:px-3 py-1 text-xs shadow-lg`}>
+        <div className="absolute top-3 left-3">
+          <Badge className={`${pricingDisplay.color} flex items-center gap-1 font-semibold px-2 py-1 text-xs shadow-md`}>
             {pricingDisplay.icon}
             <span className="hidden sm:inline">{pricingDisplay.text}</span>
             <span className="sm:hidden">{pricingDisplay.text.split(' ')[0]}</span>
           </Badge>
         </div>
 
+        {/* Price Badge */}
+        <div className="absolute top-3 right-3">
+          <Badge className="bg-white text-gray-900 font-bold text-sm px-3 py-1 shadow-md">
+            {formatPrice(salon.price)}
+          </Badge>
+        </div>
+
+        {/* Gallery Indicator */}
+        {salon.image_urls && salon.image_urls.length > 1 && (
+          <div className="absolute bottom-3 right-3">
+            <Badge className="bg-black/60 text-white px-2 py-1 text-xs">
+              📷 {salon.image_urls.length}
+            </Badge>
+          </div>
+        )}
+
         {/* Expired Overlay */}
         {isExpired && (
           <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
             <div className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold text-xl shadow-2xl transform rotate-12">
-              POSITION FILLED
+              SOLD
             </div>
           </div>
         )}
 
         {/* FOMO Message Overlay */}
         {salon.fomo_message && !isExpired && (
-          <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4">
-            <div className="bg-red-600 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-bold text-center shadow-lg animate-pulse">
+          <div className="absolute bottom-3 left-3 right-3">
+            <div className="bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold text-center shadow-lg">
               {salon.fomo_message}
             </div>
           </div>

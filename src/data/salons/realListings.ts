@@ -1,5 +1,22 @@
 import { Job } from '@/types/job';
 
+// Industry-specific image arrays from Supabase storage buckets
+const nailImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png", 
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png"
+];
+
+const nailImages2 = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png"
+];
+
 // Real-life Vietnamese salon listings converted to English & Vietnamese
 export const realVietnameseSalons: Job[] = [
   // Real listing 1: Cumming, GA
@@ -14,7 +31,7 @@ export const realVietnameseSalons: Job[] = [
     price: "$145,000",
     created_at: "2024-01-20T08:00:00Z",
     type: "salon",
-    category: "Nail Tech",
+    category: "nail-tech",
     pricing_tier: "featured",
     status: "active",
     contact_info: {
@@ -23,7 +40,8 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["9 Pedicure Chairs", "7 Manicure Tables", "Prime Location", "High Traffic", "Near Schools"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png",
+    image_url: nailImages[0],
+    image_urls: nailImages,
     square_feet: "1200",
     is_vietnamese_listing: true,
     fomo_message: "🔥 Act Fast - High Demand Location!"
@@ -41,7 +59,7 @@ export const realVietnameseSalons: Job[] = [
     price: "$285,000",
     created_at: "2024-01-19T14:30:00Z",
     type: "salon", 
-    category: "Nail Tech",
+    category: "nail-tech",
     pricing_tier: "featured",
     status: "active",
     contact_info: {
@@ -50,7 +68,8 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["8 Pedicure Chairs", "9 Manicure Tables", "Shopping Center", "High-End Clientele", "High Tips"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png",
+    image_url: nailImages[1],
+    image_urls: nailImages,
     square_feet: "2500",
     monthly_rent: "7500",
     is_vietnamese_listing: true,
@@ -69,7 +88,7 @@ export const realVietnameseSalons: Job[] = [
     price: "$140,000",
     created_at: "2024-01-18T11:15:00Z",
     type: "salon",
-    category: "Nail Tech", 
+    category: "nail-tech", 
     pricing_tier: "featured",
     status: "active",
     contact_info: {
@@ -78,7 +97,8 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["8 Tables & 8 Chairs", "Near Elementary School", "Stable Income", "High Tips", "Washer/Dryer Included"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png",
+    image_url: nailImages[2],
+    image_urls: nailImages,
     square_feet: "1400",
     is_vietnamese_listing: true,
     fomo_message: "🏫 Great School Location - Stable Income!"
@@ -96,7 +116,7 @@ export const realVietnameseSalons: Job[] = [
     price: "$195,000", 
     created_at: "2024-01-17T16:45:00Z",
     type: "salon",
-    category: "Nail Tech",
+    category: "nail-tech",
     pricing_tier: "featured", 
     status: "active",
     contact_info: {
@@ -105,11 +125,29 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"  
     },
     salon_features: ["Recently Remodeled", "8 Tables & 8 Chairs", "Near Major Stores", "Strong Walk-ins", "Top Google Ranking"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png",
+    image_url: nailImages[3],
+    image_urls: nailImages,
     square_feet: "1600",
     is_vietnamese_listing: true,
     fomo_message: "🛍️ Prime Shopping Area - Recently Remodeled!"
   }
+];
+
+// Additional industry images for variety
+const hairImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated.png"
+];
+
+const facialImages = [
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(3).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(4).png",
+  "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(5).png"
 ];
 
 // Additional featured real listings for the top section
@@ -123,7 +161,7 @@ export const featuredRealSalons: Job[] = [
     price: "$1,250,000",
     created_at: "2024-01-22T10:00:00Z",
     type: "salon",
-    category: "Ultra Luxury",
+    category: "nail-tech",
     pricing_tier: "diamond",
     status: "active", 
     contact_info: {
@@ -132,7 +170,8 @@ export const featuredRealSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["Celebrity Clientele", "Valet Parking", "Champagne Service", "VIP Suites", "Beverly Hills Location"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png",
+    image_url: nailImages2[0],
+    image_urls: nailImages2,
     square_feet: "3500",
     monthly_rent: "25000",
     fomo_message: "🌟 Celebrity Clientele - Ultra Exclusive!"
@@ -147,7 +186,7 @@ export const featuredRealSalons: Job[] = [
     price: "$685,000",
     created_at: "2024-01-21T15:30:00Z", 
     type: "salon",
-    category: "Oceanfront Spa",
+    category: "full-service",
     pricing_tier: "diamond",
     status: "active",
     contact_info: {
@@ -156,9 +195,35 @@ export const featuredRealSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["Ocean Views", "Tourist Clientele", "Instagram Famous", "Seasonal Revenue Spikes", "Premium Location"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png",
+    image_url: facialImages[0],
+    image_urls: facialImages,
     square_feet: "2800",
     monthly_rent: "18000",
     fomo_message: "🌊 Ocean Views - Instagram Famous Location!"
+  },
+
+  {
+    id: "featured-real-3",
+    title: "Westside Hair Lounge", 
+    company: "Westside Hair Lounge",
+    location: "West Hollywood, CA",
+    description: "Modern 2,200 sqft hair salon with 12 styling stations and color bar. Prime location in trendy West Hollywood. Celebrity stylists, high-end clientele, social media presence with 50K followers.",
+    price: "$485,000",
+    created_at: "2024-01-20T12:00:00Z",
+    type: "salon",
+    category: "hair-salon", 
+    pricing_tier: "featured",
+    status: "active",
+    contact_info: {
+      owner_name: "Contact via EmviApp",
+      phone: "Hidden - Sign in to view",
+      email: "inquiries@emviapp.com"
+    },
+    salon_features: ["12 Styling Stations", "Color Bar", "Celebrity Stylists", "50K Social Media", "Trendy Location"],
+    image_url: hairImages[0],
+    image_urls: hairImages,
+    square_feet: "2200", 
+    monthly_rent: "12000",
+    fomo_message: "🎬 Celebrity Stylists - Social Media Famous!"
   }
 ];

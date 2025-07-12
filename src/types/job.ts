@@ -59,6 +59,7 @@ export interface Job {
   name?: string;
   imageUrl?: string;
   image_url?: string; // Database field
+  image_urls?: string[]; // Array of images for gallery
   is_vietnamese_listing?: boolean;
   industry?: string;
   post_type?: string;
