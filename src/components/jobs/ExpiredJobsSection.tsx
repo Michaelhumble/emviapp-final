@@ -63,7 +63,7 @@ const ExpiredJobCard: React.FC<{ job: ExpiredJob }> = ({ job }) => {
 };
 
 const ExpiredJobsSection: React.FC<ExpiredJobsSectionProps> = ({ category = 'all' }) => {
-  const expiredJobs = getExpiredJobsByCategory(category);
+  const expiredJobs = expiredJobsByCategory[category as keyof typeof expiredJobsByCategory] || [];
   return (
     <section className="w-full max-w-6xl mx-auto pt-12 pb-8 relative z-0">
       {/* Clear visual separator */}
