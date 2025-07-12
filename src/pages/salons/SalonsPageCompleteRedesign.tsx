@@ -209,7 +209,7 @@ const SalonsPageCompleteRedesign = () => {
       />
 
       {/* MAIN CONTENT */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 md:py-12" id="listings">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 md:py-12 md:pt-4" id="listings">
         {/* Industry Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8 sm:mb-10 md:mb-12">
           <div className="flex justify-center mb-6 sm:mb-8">

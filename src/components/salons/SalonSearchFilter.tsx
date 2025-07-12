@@ -55,8 +55,8 @@ const SalonSearchFilter: React.FC<SalonSearchFilterProps> = ({
     selectedTags.length > 0;
 
   return (
-    <div className={`bg-white/95 backdrop-blur-sm border-b border-gray-200 ${isSticky ? 'sticky top-0 z-40 shadow-lg' : ''}`}>
-      <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className={`bg-white/95 backdrop-blur-sm border-b border-gray-200 ${isSticky ? 'md:sticky md:top-0 z-40 md:shadow-lg' : ''}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         {/* Main Search Bar */}
         <div className="flex flex-col lg:flex-row gap-4 mb-4">
           {/* Search Input */}
