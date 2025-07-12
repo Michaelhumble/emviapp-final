@@ -40,3 +40,55 @@ export const sampleSalonsForSale: Job[] = [
     category: "Nail Tech"
   }
 ];
+
+// Expired/Sold salon listings for FOMO showcase
+export const expiredSalonsForSale: Job[] = [
+  {
+    id: "expired-salon-1",
+    title: "Sunshine Nails Spa - POSITION FILLED",
+    company: "Sunshine Nails Spa",
+    location: "Cumming, GA",
+    description: "1,200 sqft with 9 pedicure chairs and 7 manicure tables. Prime location near schools, banks, and busy residential neighborhoods. High foot traffic area.",
+    price: "SOLD",
+    created_at: "2024-01-10T08:00:00Z",
+    type: "salon",
+    category: "Nail Tech",
+    status: "expired"
+  },
+  {
+    id: "expired-salon-2",
+    title: "Aurora Nail Lounge - POSITION FILLED", 
+    company: "Aurora Nail Lounge",
+    location: "Maumelle, AR",
+    description: "2,500 sqft luxury space with 8 chairs and 9 tables. Located in busy shopping center with high-end clientele and exceptional tip averages. Fully equipped.",
+    price: "SOLD",
+    created_at: "2024-01-08T15:30:00Z",
+    type: "salon",
+    category: "Nail Tech",
+    status: "expired"
+  },
+  {
+    id: "expired-salon-3",
+    title: "Blissful Tips Studio - POSITION FILLED",
+    company: "Blissful Tips Studio", 
+    location: "Jacksonville, FL",
+    description: "1,400 sqft with 8 tables and 8 chairs in shopping center across from elementary school. Stable income, high tips, washer/dryer included.",
+    price: "SOLD",
+    created_at: "2024-01-05T12:00:00Z",
+    type: "salon",
+    category: "Nail Tech",
+    status: "expired"
+  },
+  {
+    id: "expired-salon-4",
+    title: "Vivian Beauty Sanctuary - POSITION FILLED",
+    company: "Vivian Beauty Sanctuary",
+    location: "North Austin, TX",
+    description: "8 tables, 8 chairs, recently remodeled. Prime location near Costco, Whole Foods, Sam's Club. Stable client base, strong walk-ins, top Google ranking.",
+    price: "SOLD",
+    created_at: "2024-01-03T10:15:00Z",
+    type: "salon",
+    category: "Nail Tech",
+    status: "expired"
+  }
+];
