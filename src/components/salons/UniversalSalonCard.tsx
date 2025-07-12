@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Job } from '@/types/job';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, DollarSign, Home, Star, Crown, Sparkles, Eye, Clock, Users } from 'lucide-react';
+import { MapPin, DollarSign, Home, Star, Crown, Sparkles, Eye, Clock, ChevronLeft, ChevronRight, User, Phone, Mail } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 
 interface UniversalSalonCardProps {
@@ -28,6 +28,7 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
   onArchive
 }) => {
   const { isSignedIn } = useAuth();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Get pricing tier display configuration
   const getPricingTierDisplay = () => {
@@ -80,13 +81,32 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
     return price.startsWith('$') ? price : `$${price}`;
   };
 
-  // Check if salon has valid images
-  const hasValidImage = () => {
-    return salon.image_url && salon.image_url.trim() !== '';
+  // Get valid gallery images
+  const getGalleryImages = () => {
+    if (salon.image_urls && salon.image_urls.some(url => url && url.trim() !== '')) {
+      return salon.image_urls.filter(url => url && url.trim() !== '');
+    }
+    return [];
+  };
+
+  const galleryImages = getGalleryImages();
+  const hasImages = galleryImages.length > 0;
+
+  // Navigation functions for image gallery
+  const nextImage = () => {
+    if (galleryImages.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (galleryImages.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+    }
   };
 
   return (
-    <Card className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 ${pricingDisplay.glow} shadow-xl ${isExpired ? 'opacity-75' : ''} ${className} w-full max-w-sm mx-auto lg:max-w-none`}>
+    <Card className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 ${pricingDisplay.glow} shadow-xl border-0 bg-white ${isExpired ? 'opacity-75' : ''} ${className}`}>
       {/* Admin Controls */}
       {showAdmin && !isExpired && (
         <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -105,27 +125,61 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
         </div>
       )}
 
-      {/* Main Image */}
-      <div className="relative h-48 overflow-hidden">
-        {hasValidImage() ? (
-          <img
-            src={salon.image_url || salon.image}
-            alt={salon.title || salon.company || 'Salon'}
-            className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
-          />
+      {/* Image Gallery Section - Always on top */}
+      <div className="relative h-56 overflow-hidden">
+        {hasImages ? (
+          <>
+            {/* Main Image */}
+            <img
+              src={galleryImages[currentImageIndex]}
+              alt={salon.title || salon.company || 'Salon'}
+              className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
+            />
+            
+            {/* Gallery Navigation */}
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                
+                {/* Image Dots */}
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
+                  {galleryImages.slice(0, 5).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         ) : (
-          // PLACEHOLDER: Image placeholder when no image URL is provided
+          // Placeholder when no images
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
             <div className="text-center text-gray-500">
               <div className="text-4xl mb-2">📷</div>
-              <div className="text-sm font-medium">Add Photos</div>
-              <div className="text-xs">Photos pending</div>
+              <div className="text-sm font-medium">Photos Coming Soon</div>
+              <div className="text-xs">Owner will add gallery</div>
             </div>
           </div>
         )}
         
         {/* Tier Badge */}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 z-10">
           <Badge className={`${pricingDisplay.color} flex items-center gap-1 font-semibold px-2 py-1 text-xs shadow-md`}>
             {pricingDisplay.icon}
             <span className="hidden sm:inline">{pricingDisplay.text}</span>
@@ -134,24 +188,24 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
         </div>
 
         {/* Price Badge */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 z-10">
           <Badge className="bg-white text-gray-900 font-bold text-sm px-3 py-1 shadow-md">
             {formatPrice(salon.price)}
           </Badge>
         </div>
 
-        {/* Gallery Indicator */}
-        {salon.image_urls && salon.image_urls.filter(url => url && url.trim() !== '').length > 1 && (
-          <div className="absolute bottom-3 right-3">
+        {/* Gallery Count Indicator */}
+        {galleryImages.length > 0 && (
+          <div className="absolute bottom-3 right-3 z-10">
             <Badge className="bg-black/60 text-white px-2 py-1 text-xs">
-              📷 {salon.image_urls.filter(url => url && url.trim() !== '').length}
+              📷 {galleryImages.length}
             </Badge>
           </div>
         )}
 
         {/* Expired Overlay */}
         {isExpired && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-10">
             <div className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold text-xl shadow-2xl transform rotate-12">
               SOLD
             </div>
@@ -160,7 +214,7 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
 
         {/* FOMO Message Overlay */}
         {salon.fomo_message && !isExpired && (
-          <div className="absolute bottom-3 left-3 right-3">
+          <div className="absolute bottom-3 left-3 right-12 z-10">
             <div className="bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold text-center shadow-lg">
               {salon.fomo_message}
             </div>
@@ -187,7 +241,7 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
           <span className="text-sm font-medium">{salon.location || 'Premium Location'}</span>
         </div>
 
-        {/* Key Stats */}
+        {/* Key Stats - Jobs card style */}
         <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm">
           {salon.square_feet && (
             <div className="flex items-center gap-2">
@@ -218,7 +272,7 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
             : salon.description || 'Premium salon opportunity in excellent location with established clientele and growth potential.'}
         </p>
 
-        {/* Features */}
+        {/* Features Tags */}
         {salon.salon_features && salon.salon_features.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {salon.salon_features.slice(0, 3).map((feature, index) => (
@@ -231,6 +285,20 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
                 +{salon.salon_features.length - 3} more
               </Badge>
             )}
+          </div>
+        )}
+
+        {/* Contact Info Preview - Jobs card style */}
+        {isSignedIn && salon.contact_info && (
+          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+              <User className="h-3 w-3" />
+              <span>{salon.contact_info.owner_name || 'Owner'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <Phone className="h-3 w-3" />
+              <span>{salon.contact_info.phone || 'Available after inquiry'}</span>
+            </div>
           </div>
         )}
 
@@ -262,7 +330,7 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
           </div>
         )}
 
-        {/* View Details Button */}
+        {/* View Details Button - Jobs card style */}
         <Button 
           onClick={onViewDetails}
           className={`w-full ${isExpired ? 'opacity-50' : 'hover:bg-purple-700 bg-purple-600'} transition-all duration-300 font-medium`}
