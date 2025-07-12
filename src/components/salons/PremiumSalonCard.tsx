@@ -264,7 +264,7 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           </div>
         )}
 
-        {/* Contact Info Preview - Jobs card style */}
+        {/* Contact Info Preview - Auth Gated */}
         <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="text-xs text-gray-600 space-y-1">
             {salon.contact.name && (
@@ -274,14 +274,12 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
             )}
             <div className="flex items-center gap-2">
               <Phone className="h-3 w-3" />
-              <span>{salon.contact.phone || 'Contact via EmviApp'}</span>
+              <span className="font-medium text-purple-600">📞 Sign in to view contact info</span>
             </div>
-            {salon.contact.email && (
-              <div className="flex items-center gap-2">
-                <Mail className="h-3 w-3" />
-                <span className="truncate">{salon.contact.email}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <Mail className="h-3 w-3" />
+              <span className="font-medium text-purple-600">✉️ Sign in to view email</span>
+            </div>
           </div>
         </div>
 

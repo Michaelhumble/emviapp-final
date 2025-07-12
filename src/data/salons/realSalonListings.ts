@@ -111,21 +111,21 @@ const browLashesImages = [
 // These are real listings from real sellers
 
 export const realSalonListings: RealSalonListing[] = [
+  // REAL VIETNAMESE NAIL SALON LISTINGS
   // Real listing 1: Cumming, GA
   {
     id: "real-salon-1",
-    name: "Sunshine Nails Spa",
+    name: "CẦN SANG GẤP TIỆM NAIL TẠI CUMMING, GA",
     location: "Cumming, GA",
-    datePosted: "1/20/2024",
+    datePosted: "1/20/2024", 
     images: nailImages1,
     price: "$145,000",
     sqft: 1200,
-    description_en: "1,200 sqft luxury nail salon with 9 pedicure chairs and 7 manicure tables. Located in prime area near schools, banks, restaurants, and busy residential neighborhoods. High foot traffic location with excellent visibility.",
-    description_vi: "Tiệm nail 1,200 sqft với 9 ghế pedicure và 7 bàn manicure. Tọa lạc tại khu vực đẹp gần trường học, ngân hàng, nhà hàng và khu dân cư đông đúc. Vị trí đông khách, dễ nhìn thấy.",
-    features: ["9 Pedicure Chairs", "7 Manicure Tables", "Prime Location", "High Traffic", "Near Schools"],
+    description_en: "1,200 sqft nail salon with 9 pedicure chairs and 7 manicure tables. Beautiful location near schools, banks, restaurants & busy residential area. High foot traffic and excellent visibility.",
+    description_vi: "Diện tích: 1,200 sqft | 9 ghế, 7 bàn. Vị trí đẹp gần trường học, ngân hàng, nhà hàng & khu dân cư đông đúc. Cần sang gấp.",
+    features: ["9 Ghế Pedicure", "7 Bàn Manicure", "Vị trí đẹp", "Gần trường học", "Khu đông dân"],
     contact: {
       phone: "470-872-5779",
-      email: "henry@example.com",
       name: "Henry"
     },
     category: "nails",
@@ -133,25 +133,65 @@ export const realSalonListings: RealSalonListing[] = [
     urgent: true
   },
 
-  // Real listing 2: Maumelle, AR
+  // Real listing 2: Maumelle, AR  
   {
-    id: "real-salon-2", 
-    name: "Golden Lotus Nail Lounge",
+    id: "real-salon-2",
+    name: "Cần Sang Tiệm Nail In Maumelle, AR",
     location: "Maumelle, AR",
     datePosted: "1/19/2024",
     images: nailImages2,
-    price: "$285,000",
+    price: "$200,000",
     sqft: 2500,
-    description_en: "Luxury 2,500 sqft nail salon with 8 pedicure chairs and 9 manicure tables. Fully equipped in busy shopping center with high-end clientele and exceptional tip averages. Price negotiable for serious buyers.",
-    description_vi: "Tiệm nail sang trọng 2,500 sqft với 8 ghế pedicure và 9 bàn manicure. Trang bị đầy đủ trong shopping center đông khách với clientele cao cấp và tip trung bình cao. Có thể thương lượng giá.",
-    features: ["8 Pedicure Chairs", "9 Manicure Tables", "Shopping Center", "High-End Clientele", "High Tips"],
+    description_en: "2,500 sqft nail salon with 8 pedicure chairs and 9 manicure tables, fully equipped. Shopping center location with high-end white clientele, premium pricing, high tips.",
+    description_vi: "2,500 sqft, 8 ghế, 9 bàn, đầy đủ tiện nghi. Shopping center, khu Mỹ trắng, khách sang, giá cao, tip cao. Địa chỉ: 11751 Blvd N, Maumelle, AR 72113",
+    features: ["8 Ghế", "9 Bàn", "Shopping Center", "Khách Mỹ trắng", "Tip cao"],
     contact: {
-      phone: "Contact via EmviApp",
-      email: "inquiries@emviapp.com"
+      phone: "(501) 508-5581",
+      name: "Chủ tiệm"
+    },
+    category: "nails",
+    featured: true
+  },
+
+  // Real listing 3: Jacksonville, FL
+  {
+    id: "real-salon-3",
+    name: "Tiệm Nail Jacksonville, FL",
+    location: "Jacksonville, FL",
+    datePosted: "1/18/2024",
+    images: nailImages1,
+    price: "$140,000", 
+    sqft: 1400,
+    description_en: "1,400 sqft nail salon with 8 manicure tables and 8 pedicure chairs. Located across from Elementary School in St. John 32259 shopping center. Includes washer, dryer, and full supplies.",
+    description_vi: "St. John 32259, shopping center, đối diện trường Elementary School. 8 bàn, 8 ghế, 1,400 sqft, máy giặt, máy sấy, supply đầy. Giá $140k",
+    features: ["8 Bàn", "8 Ghế", "Máy giặt/sấy", "Supply đầy", "Đối diện trường"],
+    contact: {
+      phone: "(404) 543-8822",
+      name: "Chủ tiệm"
+    },
+    category: "nails",
+    featured: true
+  },
+
+  // Real listing 4: North Austin
+  {
+    id: "real-salon-4",
+    name: "NORTH AUSTIN - Tiệm Nail Premium",
+    location: "North Austin, TX",
+    datePosted: "1/17/2024",
+    images: nailImages2,
+    price: "$350,000",
+    sqft: 1800,
+    description_en: "Premium nail salon with 8 manicure tables and 8 pedicure chairs, recently remodeled. Located in central Austin near Domain, Whole Foods, Costco. Stable year-round clientele with many walk-ins, income $425k (2024), rent ~$5700/month.",
+    description_vi: "8 bàn, 8 ghế, vừa remodel, trung tâm Austin gần Domain, Whole Food, Costco. Khách ổn định quanh năm, walk-in nhiều, supply nhiều, income $425k (2024), rent ~$5700",
+    features: ["8 Bàn", "8 Ghế", "Vừa remodel", "Gần Domain", "Income $425K"],
+    contact: {
+      phone: "(720) 391-8939", 
+      name: "Dat"
     },
     category: "nails",
     featured: true,
-    monthlyRent: 7500
+    monthlyRent: 5700
   },
 
   // Premium tattoo studio
