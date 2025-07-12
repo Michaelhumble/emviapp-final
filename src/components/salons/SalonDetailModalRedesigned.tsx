@@ -23,18 +23,13 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
   const isExpired = salon.status === 'expired';
   const isVietnamese = salon.is_vietnamese_listing;
   
-  // Check if salon has valid images
-  const hasValidImages = () => {
-    return salon.image_urls && salon.image_urls.some(url => url && url.trim() !== '');
-  };
-
-  // Get valid gallery images or placeholders
+  // Get gallery images from salon data
   const getGalleryImages = () => {
-    if (hasValidImages()) {
-      return salon.image_urls!.filter(url => url && url.trim() !== '');
+    if (salon.image_urls && salon.image_urls.some(url => url && url.trim() !== '')) {
+      return salon.image_urls.filter(url => url && url.trim() !== '');
     }
     
-    // Return empty placeholders if no valid images
+    // If no images, return placeholders
     return ['', '', '', '', ''];
   };
 
