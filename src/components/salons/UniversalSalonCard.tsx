@@ -80,8 +80,32 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
     return price.startsWith('$') ? price : `$${price}`;
   };
 
+  // Get industry-specific fallback image
+  const getIndustryFallback = () => {
+    const category = salon.category?.toLowerCase() || 'nails';
+    const industryImages = {
+      'nail tech': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
+      'nails': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png',
+      'hair': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png',
+      'barber': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png',
+      'tattoo': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png',
+      'massage': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png',
+      'skincare': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png',
+      'facial': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png',
+      'makeup': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png',
+      'brows': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png',
+      'lashes': 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-12.png'
+    };
+    
+    for (const [key, url] of Object.entries(industryImages)) {
+      if (category.includes(key)) return url;
+    }
+    
+    return industryImages['nails']; // Default to nails
+  };
+
   return (
-    <Card className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 ${pricingDisplay.glow} shadow-xl ${isExpired ? 'opacity-75' : ''} ${className}`}>
+    <Card className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 ${pricingDisplay.glow} shadow-xl ${isExpired ? 'opacity-75' : ''} ${className} w-full max-w-sm mx-auto lg:max-w-none`}>
       {/* Admin Controls */}
       {showAdmin && !isExpired && (
         <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -101,28 +125,29 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
       )}
 
       {/* Main Image */}
-      <div className="relative h-56 overflow-hidden">
+      <div className="relative h-48 sm:h-56 md:h-64 lg:h-56 overflow-hidden">
         <img
-          src={salon.image_url || salon.image || 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/premium-nail-salon-1.jpg'}
+          src={salon.image_url || salon.image || getIndustryFallback()}
           alt={salon.title || salon.company || 'Salon'}
           className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${isExpired ? 'grayscale' : ''}`}
           onError={(e) => {
-            e.currentTarget.src = 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/premium-nail-salon-1.jpg';
+            e.currentTarget.src = getIndustryFallback();
           }}
         />
         
         {/* Price Badge */}
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-black/80 text-white border-none backdrop-blur-sm font-bold text-base px-4 py-2 shadow-lg">
+        <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
+          <Badge className="bg-black/80 text-white border-none backdrop-blur-sm font-bold text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2 shadow-lg">
             {formatPrice(salon.price)}
           </Badge>
         </div>
 
         {/* Tier Badge */}
-        <div className="absolute top-4 right-4">
-          <Badge className={`${pricingDisplay.color} flex items-center gap-1 backdrop-blur-sm font-bold px-3 py-1 text-xs shadow-lg`}>
+        <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
+          <Badge className={`${pricingDisplay.color} flex items-center gap-1 backdrop-blur-sm font-bold px-2 sm:px-3 py-1 text-xs shadow-lg`}>
             {pricingDisplay.icon}
-            {pricingDisplay.text}
+            <span className="hidden sm:inline">{pricingDisplay.text}</span>
+            <span className="sm:hidden">{pricingDisplay.text.split(' ')[0]}</span>
           </Badge>
         </div>
 
@@ -137,18 +162,18 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
 
         {/* FOMO Message Overlay */}
         {salon.fomo_message && !isExpired && (
-          <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold text-center shadow-lg animate-pulse">
+          <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4">
+            <div className="bg-red-600 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-bold text-center shadow-lg animate-pulse">
               {salon.fomo_message}
             </div>
           </div>
         )}
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         {/* Title and Company */}
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors">
             {salon.title || salon.company || 'Premium Salon Opportunity'}
           </h3>
           {salon.company && salon.title !== salon.company && (
@@ -165,7 +190,7 @@ const UniversalSalonCard: React.FC<UniversalSalonCardProps> = ({
         </div>
 
         {/* Key Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm">
           {salon.square_feet && (
             <div className="flex items-center gap-2">
               <Home className="h-4 w-4 text-blue-500" />

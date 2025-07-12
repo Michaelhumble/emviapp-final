@@ -23,7 +23,7 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["9 Pedicure Chairs", "7 Manicure Tables", "Prime Location", "High Traffic", "Near Schools"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/premium-nail-salon-1.jpg",
+    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png",
     square_feet: "1200",
     is_vietnamese_listing: true,
     fomo_message: "🔥 Act Fast - High Demand Location!"
@@ -50,7 +50,7 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["8 Pedicure Chairs", "9 Manicure Tables", "Shopping Center", "High-End Clientele", "High Tips"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/luxury-nail-salon-2.jpg",
+    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png",
     square_feet: "2500",
     monthly_rent: "7500",
     is_vietnamese_listing: true,
@@ -78,7 +78,7 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["8 Tables & 8 Chairs", "Near Elementary School", "Stable Income", "High Tips", "Washer/Dryer Included"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/modern-nail-salon-3.jpg",
+    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-13.png",
     square_feet: "1400",
     is_vietnamese_listing: true,
     fomo_message: "🏫 Great School Location - Stable Income!"
@@ -105,7 +105,7 @@ export const realVietnameseSalons: Job[] = [
       email: "inquiries@emviapp.com"  
     },
     salon_features: ["Recently Remodeled", "8 Tables & 8 Chairs", "Near Major Stores", "Strong Walk-ins", "Top Google Ranking"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/elegant-nail-salon-4.jpg",
+    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-6.png",
     square_feet: "1600",
     is_vietnamese_listing: true,
     fomo_message: "🛍️ Prime Shopping Area - Recently Remodeled!"
@@ -132,7 +132,7 @@ export const featuredRealSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["Celebrity Clientele", "Valet Parking", "Champagne Service", "VIP Suites", "Beverly Hills Location"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/luxury-nail-salon-5.jpg",
+    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png",
     square_feet: "3500",
     monthly_rent: "25000",
     fomo_message: "🌟 Celebrity Clientele - Ultra Exclusive!"
@@ -156,7 +156,7 @@ export const featuredRealSalons: Job[] = [
       email: "inquiries@emviapp.com"
     },
     salon_features: ["Ocean Views", "Tourist Clientele", "Instagram Famous", "Seasonal Revenue Spikes", "Premium Location"],
-    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/oceanview-nail-spa-6.jpg",
+    image_url: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png",
     square_feet: "2800",
     monthly_rent: "18000",
     fomo_message: "🌊 Ocean Views - Instagram Famous Location!"

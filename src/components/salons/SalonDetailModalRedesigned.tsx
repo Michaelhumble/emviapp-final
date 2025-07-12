@@ -23,12 +23,76 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
   const isExpired = salon.status === 'expired';
   const isVietnamese = salon.is_vietnamese_listing;
   
-  // Mock gallery images (in real app, these would come from salon.images array)
+  // Get industry-specific gallery images
+  const getIndustryImages = () => {
+    const category = salon.category?.toLowerCase() || 'nail tech';
+    const industryImageSets = {
+      'nail tech': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-10.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//_A%20long,%20luxurious%20nail%20salon-12.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(003).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(01).png'
+      ],
+      'nails': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated02.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(04).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated%20(1)0.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails//generated-26.png'
+      ],
+      'hair': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(1).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(2).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(3).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair//generated%20(5).png'
+      ],
+      'barber': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(1).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(2).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(3).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber//generated%20(4).png'
+      ],
+      'tattoo': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(1).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(2).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(3).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo//generated%20(4).png'
+      ],
+      'massage': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(1).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(2).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated%20(3).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage//generated.png'
+      ],
+      'skincare': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(1).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(2).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(3).png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare//generated%20(4).png'
+      ],
+      'makeup': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-45.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-46.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-47.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup//generated-48.png'
+      ],
+      'brows': [
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-11.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-12.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-13.png',
+        'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes//generated-14.png'
+      ]
+    };
+    
+    for (const [key, images] of Object.entries(industryImageSets)) {
+      if (category.includes(key)) return images;
+    }
+    
+    return industryImageSets['nail tech']; // Default to nail tech
+  };
+
   const galleryImages = [
-    salon.image_url || salon.image || 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/premium-nail-salon-1.jpg',
-    'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/luxury-nail-salon-2.jpg',
-    'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/modern-nail-salon-3.jpg',
-    'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/elegant-nail-salon-4.jpg'
+    salon.image_url || salon.image || getIndustryImages()[0],
+    ...getIndustryImages().slice(1)
   ];
 
   // Get pricing tier display
@@ -66,7 +130,7 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0 mx-4 my-4 sm:mx-6 sm:my-6">
         {/* Header with close and actions */}
         <div className="sticky top-0 z-10 bg-white border-b px-6 py-4 flex items-center justify-between">
           <div>
@@ -95,9 +159,9 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-0">
           {/* Left: Gallery & Description */}
-          <div className="lg:col-span-2 p-6">
+          <div className="lg:col-span-2 p-4 sm:p-6">
             {/* Image Gallery */}
             <div className="mb-6">
               {/* Main Image */}
@@ -128,7 +192,7 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
               </div>
               
               {/* Thumbnail Gallery */}
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {galleryImages.map((img, index) => (
                   <button
                     key={index}
@@ -145,10 +209,10 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
 
             {/* Tabbed Content */}
             <Tabs defaultValue="description" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="description">Description</TabsTrigger>
-                <TabsTrigger value="features">Features</TabsTrigger>
-                <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 sticky top-0 z-10 bg-white">
+                <TabsTrigger value="description" className="text-xs sm:text-sm">Description</TabsTrigger>
+                <TabsTrigger value="features" className="text-xs sm:text-sm">Features</TabsTrigger>
+                <TabsTrigger value="details" className="text-xs sm:text-sm">Details</TabsTrigger>
               </TabsList>
               
               <TabsContent value="description" className="mt-4">
@@ -234,8 +298,8 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
           </div>
           
           {/* Right: Pricing & Contact */}
-          <div className="lg:col-span-1 bg-gray-50 p-6">
-            <div className="sticky top-24">
+          <div className="lg:col-span-1 bg-gray-50 p-4 sm:p-6 order-first lg:order-last">
+            <div className="lg:sticky lg:top-24">
               {/* Price Section */}
               <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
                 <div className="text-center mb-4">

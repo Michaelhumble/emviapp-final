@@ -129,14 +129,14 @@ const SalonsPageCompleteRedesign = () => {
   return (
     <div className="w-full min-h-screen bg-gray-50">
       {/* WORLD-CLASS HERO SECTION */}
-      <section className="relative bg-gradient-to-br from-purple-50 via-white to-blue-50 py-24 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-purple-50 via-white to-blue-50 py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute top-20 right-20 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 left-20 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center relative z-10">
           {/* Trust Badge */}
           <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-sm border border-purple-200 rounded-full px-6 py-3 mb-8 shadow-lg">
             <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
@@ -144,23 +144,23 @@ const SalonsPageCompleteRedesign = () => {
           </div>
           
           {/* Hero Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
             <span className="block bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
               Premium Salon
             </span>
             <span className="block">Marketplace</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 sm:mb-10 md:mb-12 max-w-4xl mx-auto leading-relaxed px-4">
             Discover exclusive salon opportunities across America. Every listing is premium-verified with detailed financials, photo galleries, and direct owner contact.
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-10 sm:mb-12 md:mb-16 px-4">
             <Button 
               size="lg" 
               onClick={() => navigate('/salon-owners')} 
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-300"
+              className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 text-base sm:text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-300"
             >
               List Your Salon
             </Button>
@@ -168,14 +168,14 @@ const SalonsPageCompleteRedesign = () => {
               variant="outline" 
               size="lg" 
               onClick={() => document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-bold py-4 px-8 text-lg transition-all duration-300"
+              className="w-full sm:w-auto border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-bold py-3 sm:py-4 px-6 sm:px-8 text-base sm:text-lg transition-all duration-300"
             >
               Browse Premium Listings
             </Button>
           </div>
           
           {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
+          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-gray-500 px-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span className="font-medium">Over 3,200 salons sold</span>
@@ -209,22 +209,25 @@ const SalonsPageCompleteRedesign = () => {
       />
 
       {/* MAIN CONTENT */}
-      <div className="max-w-7xl mx-auto px-6 py-12" id="listings">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 md:py-12" id="listings">
         {/* Industry Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-12">
-          <div className="flex justify-center mb-8">
-            <TabsList className="grid grid-cols-4 lg:grid-cols-8 bg-white shadow-lg rounded-xl border-0 p-1">
-              {industryTabs.map(tab => (
-                <TabsTrigger 
-                  key={tab.id} 
-                  value={tab.id} 
-                  className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white rounded-lg py-3 px-4"
-                >
-                  <tab.icon className="h-4 w-4" />
-                  <span className="hidden lg:inline">{tab.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8 sm:mb-10 md:mb-12">
+          <div className="flex justify-center mb-6 sm:mb-8">
+            <div className="w-full max-w-4xl overflow-x-auto">
+              <TabsList className="grid grid-cols-4 lg:grid-cols-8 bg-white shadow-lg rounded-xl border-0 p-1 min-w-max lg:min-w-0">
+                {industryTabs.map(tab => (
+                  <TabsTrigger 
+                    key={tab.id} 
+                    value={tab.id} 
+                    className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white rounded-lg py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm whitespace-nowrap"
+                  >
+                    <tab.icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline lg:inline">{tab.label}</span>
+                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
           </div>
 
           <TabsContent value="all" className="space-y-16">
@@ -241,7 +244,7 @@ const SalonsPageCompleteRedesign = () => {
                 </Badge>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 {featuredSalons.slice(0, 8).map(salon => (
                   <UniversalSalonCard
                     key={salon.id}
@@ -276,7 +279,7 @@ const SalonsPageCompleteRedesign = () => {
                   </Badge>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {diamondSalons.map(salon => (
                     <UniversalSalonCard
                       key={salon.id}
@@ -303,7 +306,7 @@ const SalonsPageCompleteRedesign = () => {
                   </Badge>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {premiumSalons.map(salon => (
                     <UniversalSalonCard
                       key={salon.id}
@@ -333,7 +336,7 @@ const SalonsPageCompleteRedesign = () => {
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {filteredVietnamese.map(salon => (
                       <UniversalSalonCard
                         key={salon.id}
@@ -362,7 +365,7 @@ const SalonsPageCompleteRedesign = () => {
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {filteredExpired.map(salon => (
                       <UniversalSalonCard
                         key={salon.id}
