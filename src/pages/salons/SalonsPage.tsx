@@ -315,3 +315,6 @@ const SalonsPage = () => {
 };
 
 export default SalonsPage;
+
+// Re-export the redesigned version for testing
+export { default as SalonsPageRedesigned } from './SalonsPageRedesigned';
