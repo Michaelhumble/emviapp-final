@@ -12,6 +12,14 @@ import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
 import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
+import FeaturedTrendingJobs from '@/components/jobs/FeaturedTrendingJobs';
+import LiveLeaderboards from '@/components/jobs/LiveLeaderboards';
+import SuccessStoriesCarousel from '@/components/jobs/SuccessStoriesCarousel';
+import RealTimeActivity from '@/components/jobs/RealTimeActivity';
+import TeaserLocked from '@/components/jobs/TeaserLocked';
+import UrgencyBoosters from '@/components/jobs/UrgencyBoosters';
+import StickyMobileCTA from '@/components/jobs/StickyMobileCTA';
+import InviteEarnBanner from '@/components/jobs/InviteEarnBanner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { getIndustryRoute } from '@/utils/industryRouteMap';
@@ -913,6 +921,16 @@ const JobsPage = () => {
             ))}
           </Tabs>
         </div>
+
+        {/* NEW ENGAGEMENT SECTIONS BELOW TESTIMONIALS */}
+        <FeaturedTrendingJobs jobs={jobs} />
+        <LiveLeaderboards />
+        <SuccessStoriesCarousel />
+        <RealTimeActivity />
+        <TeaserLocked />
+        <UrgencyBoosters jobs={jobs} />
+        <InviteEarnBanner />
+        <StickyMobileCTA />
       </div>
     );
   } catch (renderError) {
