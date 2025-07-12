@@ -68,8 +68,6 @@ function App() {
                 <RouteLogger />
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
-                    {/* Root route redirect to jobs */}
-                    <Route path="/" element={<Navigate to="/jobs" replace />} />
                     
                     {/* Auth routes - USE NEW SIGN UP */}
                     <Route path="/login" element={<SignIn />} />

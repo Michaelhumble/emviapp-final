@@ -11,6 +11,12 @@ export interface NavigationItem {
 
 export const mainNavigationItems: NavigationItem[] = [
   {
+    title: "Home",
+    path: "/",
+    icon: Home,
+    vietnameseTitle: "Trang chủ"
+  },
+  {
     title: "Jobs",
     path: "/jobs",
     icon: Briefcase,
@@ -27,12 +33,6 @@ export const mainNavigationItems: NavigationItem[] = [
     path: "/salons",
     icon: Store,
     vietnameseTitle: "Tiệm Nail"
-  },
-  {
-    title: "Home",
-    path: "/home",
-    icon: Home,
-    vietnameseTitle: "Trang chủ"
   },
   {
     title: "Community",
