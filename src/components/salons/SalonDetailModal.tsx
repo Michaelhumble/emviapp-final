@@ -165,18 +165,48 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
             </div>
           </div>
 
-          {/* Descriptions */}
+          {/* Descriptions - Vietnamese-first for nails */}
           <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
-              <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
-            </div>
-            
-            {salon.description_vi && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Mô tả (Vietnamese)</h3>
-                <p className="text-gray-600 leading-relaxed">{salon.description_vi}</p>
-              </div>
+            {salon.category === 'nails' ? (
+              <>
+                {/* Vietnamese first for nails */}
+                {salon.description_vi ? (
+                  <>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Mô tả chi tiết</h3>
+                      <p className="text-gray-700 leading-relaxed font-medium">{salon.description_vi}</p>
+                    </div>
+                    <hr className="border-gray-200" />
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">English Description</h3>
+                      <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Description</h3>
+                    <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* English first for other categories */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Description</h3>
+                  <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
+                </div>
+                
+                {salon.description_vi && (
+                  <>
+                    <hr className="border-gray-200" />
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Mô tả (Vietnamese)</h3>
+                      <p className="text-gray-600 leading-relaxed">{salon.description_vi}</p>
+                    </div>
+                  </>
+                )}
+              </>
             )}
           </div>
 

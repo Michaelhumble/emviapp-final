@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Job } from "@/types/job";
+import { RealSalonListing } from "@/data/salons/realSalonListings";
 import SalonDetailsDialog from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
@@ -8,7 +8,7 @@ import EmptyState from "./EmptyState";
 import ValidatedSalonCard from "./ValidatedSalonCard";
 
 interface SalonListingsProps {
-  salonsForSale: Job[];
+  salonsForSale: RealSalonListing[];
 }
 
 export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
@@ -16,12 +16,12 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
   const [sizeRange, setSizeRange] = useState<[number, number]>([0, 5000]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
+  const [selectedSalon, setSelectedSalon] = useState<RealSalonListing | null>(null);
 
   // Check if a salon is expired (for demo purposes)
-  const isExpired = (salon: Job) => {
+  const isExpired = (salon: RealSalonListing) => {
     // In a real application, this would check the creation date against current date
-    if (salon.id === "104") return true; // Make one of the salons expired for demonstration
+    if (salon.id === "real-salon-1") return false; // Real salons are active
     return false;
   };
 
@@ -36,7 +36,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
-    const sizeValue = parseFloat(salon.square_feet?.toString()?.replace(/[^0-9.-]+/g, "") || "0");
+    const sizeValue = parseFloat(salon.sqft?.toString()?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesSize = sizeValue >= sizeRange[0] && sizeValue <= sizeRange[1];
     
     const matchesStatus = statusFilter === "all" || 
@@ -46,7 +46,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     return matchesLocation && matchesPrice && matchesSize && matchesStatus;
   });
   
-  const handleViewDetails = (salon: Job) => {
+  const handleViewDetails = (salon: RealSalonListing) => {
     setSelectedSalon(salon);
   };
   

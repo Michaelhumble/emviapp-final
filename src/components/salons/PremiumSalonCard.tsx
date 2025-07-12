@@ -236,15 +236,38 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           </div>
         </div>
 
-        {/* Description */}
+        {/* Description - Vietnamese-first for nails, English-first for others */}
         <div className="mb-4 flex-grow">
-          <p className="text-gray-600 text-sm line-clamp-3 mb-2 leading-relaxed">
-            {salon.description_en}
-          </p>
-          {salon.description_vi && (
-            <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
-              {salon.description_vi}
-            </p>
+          {salon.category === 'nails' ? (
+            <>
+              {/* Vietnamese first for nails */}
+              {salon.description_vi ? (
+                <>
+                  <p className="text-gray-700 text-sm line-clamp-3 mb-2 leading-relaxed font-medium">
+                    {salon.description_vi}
+                  </p>
+                  <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+                    {salon.description_en}
+                  </p>
+                </>
+              ) : (
+                <p className="text-gray-600 text-sm line-clamp-3 mb-2 leading-relaxed">
+                  {salon.description_en}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              {/* English first for other categories */}
+              <p className="text-gray-600 text-sm line-clamp-3 mb-2 leading-relaxed">
+                {salon.description_en}
+              </p>
+              {salon.description_vi && (
+                <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+                  {salon.description_vi}
+                </p>
+              )}
+            </>
           )}
         </div>
 
