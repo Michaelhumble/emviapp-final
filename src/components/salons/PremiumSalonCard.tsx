@@ -336,7 +336,10 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
 
         {/* View Details Button - Mobile optimized */}
         <Button 
-          onClick={onViewDetails}
+          onClick={() => {
+            console.log('🔥 View Details clicked for salon:', salon.name);
+            onViewDetails();
+          }}
           className="w-full hover:bg-purple-700 bg-purple-600 transition-all duration-300 font-medium text-sm sm:text-base py-2 sm:py-3"
           variant="default"
         >

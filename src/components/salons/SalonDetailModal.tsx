@@ -19,7 +19,18 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  if (!salon) return null;
+  // Debug logging
+  console.log('🔍 SalonDetailModal Debug:', {
+    salon: salon ? salon.name : 'null',
+    isOpen,
+    hasImages: salon?.images?.length || 0,
+    modalRendering: true
+  });
+
+  if (!salon) {
+    console.log('❌ No salon data - returning null');
+    return null;
+  }
 
   // Navigation functions for image gallery
   const nextImage = () => {
@@ -36,7 +47,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 relative">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 relative z-50">
         {/* Enhanced X button for mobile */}
         <button
           onClick={onClose}
