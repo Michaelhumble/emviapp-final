@@ -36,7 +36,14 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 relative">
+        {/* Enhanced X button for mobile */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 z-50 w-9 h-9 sm:w-6 sm:h-6 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200 transition-all"
+        >
+          <span className="text-gray-600 text-xl sm:text-base font-bold leading-none">×</span>
+        </button>
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             {salon.name}
@@ -281,6 +288,16 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               </div>
             )}
           </div>
+        </div>
+
+        {/* Mobile-only Close button at bottom */}
+        <div className="sm:hidden sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
+          <Button 
+            onClick={onClose}
+            className="w-full h-12 text-base font-medium bg-gray-900 hover:bg-gray-800 text-white rounded-lg"
+          >
+            Đóng (Close)
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
