@@ -39,13 +39,24 @@ export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete }:
 
     const formData = form.getValues();
     
+    // Validate required fields
+    const requiredFields = ['salonName', 'city', 'state', 'askingPrice', 'contactName', 'contactEmail', 'contactPhone'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+    
     try {
+      console.log('🔥 Starting payment with data:', { selectedOptions, formData: Object.keys(formData), photoCount: photoUploads.length });
+      
       const success = await initiatePayment(selectedOptions, formData, photoUploads);
       if (success && onPaymentComplete) {
         onPaymentComplete();
       }
     } catch (error) {
-      console.error('Payment initiation failed:', error);
+      console.error('❌ Payment initiation failed:', error);
       toast.error("Failed to initiate payment. Please try again.");
     }
   };
