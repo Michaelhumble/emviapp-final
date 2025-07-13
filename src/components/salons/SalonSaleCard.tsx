@@ -72,10 +72,15 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
     }).format(price);
   };
 
-  // Get description (prioritize Vietnamese if available, fallback to English or combined)
+  // Get description (prioritize Vietnamese for nail salons, English for others)
   const getDescription = () => {
-    if (salon.vietnamese_description) return salon.vietnamese_description;
+    const isNailSalon = salon.business_type?.toLowerCase().includes('nail');
+    
+    if (isNailSalon && salon.vietnamese_description) {
+      return salon.vietnamese_description;
+    }
     if (salon.english_description) return salon.english_description;
+    if (salon.vietnamese_description) return salon.vietnamese_description;
     if (salon.description_combined) return salon.description_combined;
     return salon.description || "Beautiful salon for sale";
   };
@@ -104,20 +109,20 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
           businessName={salon.salon_name}
         />
         
-        {/* Gallery Navigation */}
+        {/* Gallery Navigation - Mobile optimized */}
         {images.length > 1 && (
           <>
             <button
               onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white p-1.5 sm:p-1 rounded-full sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-manipulation"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white p-1.5 sm:p-1 rounded-full sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-manipulation"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </button>
             
             {/* Gallery Indicators */}
@@ -125,7 +130,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
               {images.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
+                  className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${
                     index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                   }`}
                 />
@@ -135,31 +140,31 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         )}
 
         {/* Badge */}
-        <Badge className={`absolute top-3 right-3 ${getBadgeStyle()}`}>
+        <Badge className={`absolute top-2 sm:top-3 right-2 sm:right-3 text-xs ${getBadgeStyle()}`}>
           {getBadgeText()}
         </Badge>
       </div>
 
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-playfair font-semibold text-xl text-foreground line-clamp-1">
+            <h3 className="font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0">
               {salon.salon_name}
             </h3>
-            <span className="font-inter font-bold text-lg text-primary whitespace-nowrap">
+            <span className="font-inter font-bold text-base sm:text-lg text-primary whitespace-nowrap flex-shrink-0">
               {formatPrice(salon.asking_price)}
             </span>
           </div>
           
           <div className="flex items-center text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="text-sm font-inter line-clamp-1">{getLocation()}</span>
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+            <span className="text-xs sm:text-sm font-inter line-clamp-1">{getLocation()}</span>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground font-inter line-clamp-2">
+        <p className="text-xs sm:text-sm text-muted-foreground font-inter line-clamp-2">
           {getDescription()}
         </p>
 
@@ -179,32 +184,32 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
           </div>
         )}
 
-        {/* Business Details */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        {/* Business Details - Mobile optimized */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
           {salon.business_type && (
-            <div className="flex items-center gap-2">
-              <Home className="h-4 w-4 text-muted-foreground" />
-              <span className="font-inter">{salon.business_type}</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <Home className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-inter truncate">{salon.business_type}</span>
             </div>
           )}
           
           {salon.monthly_rent && (
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="font-inter">${salon.monthly_rent}/mo</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-inter truncate">${salon.monthly_rent}/mo</span>
             </div>
           )}
           
           {salon.square_feet && (
-            <div className="flex items-center gap-2">
-              <Home className="h-4 w-4 text-muted-foreground" />
-              <span className="font-inter">{salon.square_feet} sq ft</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <Home className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-inter truncate">{salon.square_feet} sq ft</span>
             </div>
           )}
           
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="font-inter">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            <span className="font-inter truncate">
               {new Date(salon.created_at).toLocaleDateString()}
             </span>
           </div>
@@ -231,7 +236,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
           </div>
         ) : (
           <div className="bg-muted/50 rounded-lg p-3 text-center">
-            <p className="text-sm text-muted-foreground font-inter">
+            <p className="text-xs sm:text-sm text-muted-foreground font-inter">
               Sign in to view contact information
             </p>
           </div>
@@ -240,10 +245,10 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         {/* Action Button */}
         <Button 
           onClick={onViewDetails}
-          className="w-full"
+          className="w-full text-sm sm:text-base"
           variant="outline"
         >
-          <Eye className="h-4 w-4 mr-2" />
+          <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
           View Full Details
         </Button>
       </CardContent>

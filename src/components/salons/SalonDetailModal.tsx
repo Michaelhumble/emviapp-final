@@ -36,7 +36,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+      <DialogContent className="max-w-4xl max-h-[95vh] w-[95vw] sm:w-auto overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             {salon.name}
@@ -167,25 +167,29 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
           {/* Descriptions - Vietnamese-first for nails */}
           <div className="space-y-4">
-            {salon.category === 'nails' ? (
+            {salon.category === 'nails' || (salon as any)?.business_type?.toLowerCase().includes('nail') ? (
               <>
-                {/* Vietnamese first for nails */}
+                {/* Vietnamese first for nail salons */}
                 {salon.description_vi ? (
                   <>
                     <div>
                       <h3 className="text-base sm:text-lg font-semibold mb-2">Mô tả chi tiết</h3>
                       <p className="text-gray-700 leading-relaxed font-medium text-sm sm:text-base">{salon.description_vi}</p>
                     </div>
-                    <hr className="border-gray-200" />
-                    <div>
-                      <h3 className="text-base sm:text-lg font-semibold mb-2">English Description</h3>
-                      <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{salon.description_en}</p>
-                    </div>
+                    {salon.description_en && (
+                      <>
+                        <hr className="border-gray-200" />
+                        <div>
+                          <h3 className="text-base sm:text-lg font-semibold mb-2">English Description</h3>
+                          <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{salon.description_en}</p>
+                        </div>
+                      </>
+                    )}
                   </>
                 ) : (
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">Description</h3>
-                    <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
+                    <h3 className="text-base sm:text-lg font-semibold mb-2">Description</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{salon.description_en}</p>
                   </div>
                 )}
               </>
@@ -193,16 +197,16 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               <>
                 {/* English first for other categories */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">Description</h3>
+                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{salon.description_en}</p>
                 </div>
                 
                 {salon.description_vi && (
                   <>
                     <hr className="border-gray-200" />
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Mô tả (Vietnamese)</h3>
-                      <p className="text-gray-600 leading-relaxed">{salon.description_vi}</p>
+                      <h3 className="text-base sm:text-lg font-semibold mb-2">Mô tả (Vietnamese)</h3>
+                      <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{salon.description_vi}</p>
                     </div>
                   </>
                 )}
