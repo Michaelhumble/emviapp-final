@@ -184,6 +184,10 @@ serve(async (req) => {
 
           // ✅ Transfer pending salon to live salon_sales table
           console.log('💾 [STRIPE-WEBHOOK] Creating salon_sales entry...');
+          
+          // ✅ Handle pricing tier urgency logic
+          const isUrgent = metadata.pricing_tier === 'annual'; // "Until Sold" plan gets urgent badge
+          
           const { data: newSalon, error: salonError } = await supabase
             .from('salon_sales')
             .insert({
@@ -229,8 +233,9 @@ serve(async (req) => {
               help_with_transition: pendingSalon.help_with_transition,
               selected_pricing_tier: metadata.pricing_tier,
               featured_addon: metadata.featured_addon === 'true',
-              is_featured: metadata.featured_addon === 'true',
-              is_urgent: false,
+              is_featured: metadata.featured_addon === 'true' || metadata.pricing_tier === 'premium' || metadata.pricing_tier === 'gold',
+              is_urgent: isUrgent,
+              is_private: false, // Paid listings are public
               features: features,
               images: pendingSalon.images || [],
               payment_status: 'completed',

@@ -117,7 +117,9 @@ const routes = [
   // Removed test route - paid job test now integrated into main form
   {
     path: '/salons',
-    element: <SimpleSalonsPage />,
+    element: <React.Suspense fallback={<div>Loading...</div>}>
+      {React.createElement(React.lazy(() => import('./pages/salons/SalonsPageRedesigned')))}
+    </React.Suspense>,
   },
   {
     path: '/salons/:id',
@@ -355,6 +357,12 @@ const routes = [
   {
     path: '/payment-success',
     element: <PaymentSuccess />,
+  },
+  {
+    path: '/salon-success',
+    element: <React.Suspense fallback={<div>Loading...</div>}>
+      {React.createElement(React.lazy(() => import('./pages/SalonSuccess')))}
+    </React.Suspense>,
   },
   {
     path: '*',
