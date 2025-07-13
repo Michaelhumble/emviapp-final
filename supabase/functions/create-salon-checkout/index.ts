@@ -149,13 +149,13 @@ serve(async (req) => {
       console.log('ℹ️ [SALON-CHECKOUT] No existing customer found');
     }
 
-    // Calculate pricing based on tier
+    // Calculate pricing based on tier - MUST match frontend prices in salonPricing.ts
     let baseAmount = 0;
     let description = "Salon Listing";
 
     switch (pricingOptions.selectedPricingTier) {
       case 'basic':
-        baseAmount = 2999; // $29.99
+        baseAmount = 1999; // $19.99 - FIXED to match frontend
         description = "Basic Salon Listing";
         break;
       case 'gold':
@@ -167,7 +167,7 @@ serve(async (req) => {
         description = "Premium Salon Listing";
         break;
       case 'annual':
-        baseAmount = 29999; // $299.99
+        baseAmount = 14900; // $149.00 - FIXED to match frontend
         description = "Annual Salon Listing";
         break;
       default:
@@ -194,7 +194,7 @@ serve(async (req) => {
 
     // Add featured addon if selected
     if (pricingOptions.featuredAddon) {
-      const featuredAmount = 1999; // $19.99
+      const featuredAmount = 1000; // $10.00 - FIXED to match frontend
       totalAmount += featuredAmount;
       lineItems.push({
         price_data: {
