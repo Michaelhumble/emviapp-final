@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { Button } from '@/components/ui/button';
 import { MapPin, DollarSign, Clock, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -19,9 +19,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  if (!salon) {
-    return null;
-  }
+  if (!salon) return null;
 
   // Navigation functions for image gallery
   const nextImage = () => {
@@ -38,25 +36,11 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 relative z-50">
-        {/* Fixed Close Button - Always Visible on Mobile */}
-        <button
-          onClick={onClose}
-          className="fixed top-3 right-3 z-50 bg-black/70 hover:bg-black/90 text-white rounded-full p-2 transition-all shadow-lg sm:absolute sm:bg-gray-200 sm:hover:bg-gray-300 sm:text-gray-700"
-          aria-label="Close modal"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 pr-12">
+          <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             {salon.name}
           </DialogTitle>
-          <DialogDescription className="sr-only">
-            Salon details for {salon.name} including images, pricing, and contact information
-          </DialogDescription>
         </DialogHeader>
 
         {/* Full Image Gallery - Mobile optimized */}
@@ -272,9 +256,15 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
                   </div>
                 )}
 
-                <div className="flex justify-center pt-3">
-                  <Button className="bg-green-600 hover:bg-green-700 text-sm w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3">
+                  <Button className="bg-green-600 hover:bg-green-700 text-sm">
                     📞 Call Now
+                  </Button>
+                  <Button variant="outline" className="text-sm">
+                    ✉️ Send Message
+                  </Button>
+                  <Button variant="outline" className="text-sm">
+                    📅 Schedule Viewing
                   </Button>
                 </div>
               </div>
