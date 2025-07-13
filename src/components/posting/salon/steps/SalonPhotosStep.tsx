@@ -10,9 +10,11 @@ interface SalonPhotosStepProps {
   form: UseFormReturn<SalonFormValues>;
   photoUploads: File[];
   setPhotoUploads: (photos: File[]) => void;
+  photoUrls?: string[];
+  setPhotoUrls?: (urls: string[]) => void;
 }
 
-export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads }: SalonPhotosStepProps) => {
+export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls = [], setPhotoUrls }: SalonPhotosStepProps) => {
   const maxPhotos = 8;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

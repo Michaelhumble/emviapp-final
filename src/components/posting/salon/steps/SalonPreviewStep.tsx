@@ -9,10 +9,14 @@ import { MapPin, DollarSign, Users, Building2, Phone, Mail, User, Image, Star, S
 interface SalonPreviewStepProps {
   form: UseFormReturn<SalonFormValues>;
   photoUploads?: File[];
+  photoUrls?: string[];
 }
 
-export const SalonPreviewStep = ({ form, photoUploads = [] }: SalonPreviewStepProps) => {
+export const SalonPreviewStep = ({ form, photoUploads = [], photoUrls = [] }: SalonPreviewStepProps) => {
   const values = form.getValues();
+  
+  // Use uploaded URLs if available, otherwise fall back to local file previews
+  const displayPhotos = photoUrls.length > 0 ? photoUrls : photoUploads;
 
   return (
     <div className="space-y-10">
@@ -62,29 +66,32 @@ export const SalonPreviewStep = ({ form, photoUploads = [] }: SalonPreviewStepPr
         
         <CardContent className="p-8 space-y-8">
           {/* Photos Section */}
-          {photoUploads.length > 0 && (
+          {displayPhotos.length > 0 && (
             <div className="space-y-4">
               <h4 className="font-semibold text-xl mb-4 flex items-center gap-2">
                 <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg p-2">
                   <Image className="h-4 w-4 text-white" />
                 </div>
-                Stunning Gallery ({photoUploads.length} photos)
+                Stunning Gallery ({displayPhotos.length} photos)
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {photoUploads.slice(0, 4).map((photo, index) => (
-                  <div key={index} className="relative group overflow-hidden rounded-xl">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`Salon photo ${index + 1}`}
-                      className="w-full h-32 object-cover transition-all duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                  </div>
-                ))}
+                {displayPhotos.slice(0, 4).map((photo, index) => {
+                  const imageUrl = typeof photo === 'string' ? photo : URL.createObjectURL(photo);
+                  return (
+                    <div key={index} className="relative group overflow-hidden rounded-xl">
+                      <img
+                        src={imageUrl}
+                        alt={`Salon photo ${index + 1}`}
+                        className="w-full h-32 object-cover transition-all duration-300 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                    </div>
+                  );
+                })}
               </div>
-              {photoUploads.length > 4 && (
+              {displayPhotos.length > 4 && (
                 <p className="text-center text-gray-500 text-sm">
-                  +{photoUploads.length - 4} more stunning photos in full listing
+                  +{displayPhotos.length - 4} more stunning photos in full listing
                 </p>
               )}
             </div>

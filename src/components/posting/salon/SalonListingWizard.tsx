@@ -18,6 +18,7 @@ import PostWizardLayout from '../PostWizardLayout';
 const SalonListingWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const totalSteps = 8;
 
   const form = useForm<SalonFormValues>({
@@ -102,10 +103,12 @@ const SalonListingWizard = () => {
             form={form} 
             photoUploads={photoUploads}
             setPhotoUploads={setPhotoUploads}
+            photoUrls={photoUrls}
+            setPhotoUrls={setPhotoUrls}
           />
         );
       case 7:
-        return <SalonPreviewStep form={form} photoUploads={photoUploads} />;
+        return <SalonPreviewStep form={form} photoUploads={photoUploads} photoUrls={photoUrls} />;
       case 8:
         return <SalonPaymentStep form={form} photoUploads={photoUploads} onPaymentComplete={handlePaymentComplete} />;
       default:
