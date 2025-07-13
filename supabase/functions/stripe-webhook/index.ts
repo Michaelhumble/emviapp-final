@@ -183,6 +183,7 @@ serve(async (req) => {
           if (pendingSalon.help_with_transition) features.push('Help with Transition');
 
           // ✅ Transfer pending salon to live salon_sales table
+          console.log('💾 [STRIPE-WEBHOOK] Creating salon_sales entry...');
           const { data: newSalon, error: salonError } = await supabase
             .from('salon_sales')
             .insert({
@@ -241,17 +242,32 @@ serve(async (req) => {
 
           if (salonError) {
             console.error('❌ [STRIPE-WEBHOOK] SALON CREATION FAILED:', salonError);
+            console.error('❌ [STRIPE-WEBHOOK] Error details:', JSON.stringify(salonError, null, 2));
+            
+            // Still mark as completed to avoid infinite retries
+            await supabase
+              .from('pending_salons')
+              .update({ status: 'failed', other_notes: salonError.message })
+              .eq('id', pendingSalonId);
+              
           } else {
             console.log('✅ [STRIPE-WEBHOOK] SALON SUCCESSFULLY CREATED:', newSalon);
             console.log('✅ [STRIPE-WEBHOOK] PAID SALON NOW VISIBLE ON SALONS PAGE');
+            console.log('🏆 [STRIPE-WEBHOOK] SALON ID:', newSalon?.id);
+            console.log('🏆 [STRIPE-WEBHOOK] SALON NAME:', newSalon?.salon_name);
+            console.log('🏆 [STRIPE-WEBHOOK] PRICING TIER:', newSalon?.selected_pricing_tier);
             
             // ✅ Mark pending salon as completed
-            await supabase
+            const { error: updateError } = await supabase
               .from('pending_salons')
               .update({ status: 'completed' })
               .eq('id', pendingSalonId);
-            
-            console.log('✅ [STRIPE-WEBHOOK] Pending salon marked as completed');
+              
+            if (updateError) {
+              console.error('❌ [STRIPE-WEBHOOK] Failed to update pending salon status:', updateError);
+            } else {
+              console.log('✅ [STRIPE-WEBHOOK] Pending salon marked as completed');
+            }
           }
         } catch (salonError) {
           console.error('❌ [STRIPE-WEBHOOK] Error processing salon:', salonError);

@@ -84,12 +84,13 @@ function App() {
                     <Route path="/post-job-billion" element={<PostJobBillion />} />
                     <Route path="/post-job-experimental" element={<PostJobExperimental />} />
                     
-                    {/* Salon selling routes */}
-                    <Route path="/sell-salon" element={<SellSalonPage />} />
-                    <Route path="/posting/salon" element={<Layout><PostSalon /></Layout>} />
-                    
-                    {/* Salon listing success route */}
-                    <Route path="/salon-listing-success" element={<Layout><SalonListingSuccessPage /></Layout>} />
+                     {/* Salon selling routes */}
+                     <Route path="/sell-salon" element={<SellSalonPage />} />
+                     <Route path="/posting/salon" element={<Layout><PostSalon /></Layout>} />
+                     
+                     {/* Salon listing success routes */}
+                     <Route path="/salon-listing-success" element={<Layout><SalonListingSuccessPage /></Layout>} />
+                     <Route path="/salon-success" element={<Layout><SalonListingSuccessPage /></Layout>} />
                     
                     {/* Payment routes */}
                     <Route path="/checkout" element={<CheckoutFallback />} />

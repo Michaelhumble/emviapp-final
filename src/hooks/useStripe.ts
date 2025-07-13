@@ -10,9 +10,11 @@ export function useStripe() {
     setIsLoading(true);
     
     try {
-      console.log('Initiating Stripe payment with options:', pricingOptions);
-      console.log('Form data:', formData);
-      console.log('Photo uploads:', photoUploads?.length || 0, 'files');
+      console.log('🔥 [SALON-PAYMENT] === PAYMENT INITIATION STARTED ===');
+      console.log('🔥 [SALON-PAYMENT] Pricing options:', pricingOptions);
+      console.log('🔥 [SALON-PAYMENT] Form data keys:', Object.keys(formData || {}));
+      console.log('🔥 [SALON-PAYMENT] Photo uploads:', photoUploads?.length || 0, 'files');
+      console.log('🔥 [SALON-PAYMENT] Timestamp:', new Date().toISOString());
       
       // Upload photos first if they exist
       let uploadedPhotoUrls: string[] = [];
@@ -60,12 +62,21 @@ export function useStripe() {
         photos: uploadedPhotoUrls
       };
       
+      console.log('🚀 [SALON-PAYMENT] Calling create-salon-checkout edge function...');
+      console.log('🚀 [SALON-PAYMENT] Payload:', {
+        pricingOptions,
+        formDataKeys: Object.keys(formDataWithPhotos || {}),
+        photoCount: uploadedPhotoUrls.length
+      });
+      
       const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
         body: { 
           pricingOptions,
           formData: formDataWithPhotos
         }
       });
+      
+      console.log('📋 [SALON-PAYMENT] Edge function response:', { data, error });
       
       if (error) {
         console.error('Error creating checkout session:', error);
@@ -76,10 +87,23 @@ export function useStripe() {
       }
       
       if (data?.url) {
-        console.log('Redirecting to Stripe checkout:', data.url);
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-        return true;
+        console.log('✅ [PAYMENT] Stripe checkout URL received:', data.url);
+        toast.info("Redirecting to Stripe checkout...");
+        
+        // Enhanced redirect with debugging
+        try {
+          console.log('🌐 [PAYMENT] Opening Stripe checkout in new tab...');
+          window.open(data.url, '_blank');
+          console.log('✅ [PAYMENT] Stripe checkout opened successfully');
+          toast.success("Stripe checkout opened in new tab");
+          return true;
+        } catch (redirectError) {
+          console.error('❌ [PAYMENT] Failed to open Stripe checkout:', redirectError);
+          // Fallback to same window redirect
+          console.log('🔄 [PAYMENT] Fallback: redirecting in same window...');
+          window.location.href = data.url;
+          return true;
+        }
       } else {
         console.error('No checkout URL received:', data);
         toast.error("Payment Error", {
