@@ -27,7 +27,7 @@ export function useStripe() {
             console.log('📸 [SALON-PHOTO-UPLOAD] Uploading:', fileName);
             
             const { data: uploadData, error: uploadError } = await supabase.storage
-              .from('Salon Sale Photos')
+              .from('salon-sale-photos')
               .upload(fileName, file);
 
             if (uploadError) {
@@ -36,7 +36,7 @@ export function useStripe() {
             }
 
             const { data: { publicUrl } } = supabase.storage
-              .from('Salon Sale Photos')
+              .from('salon-sale-photos')
               .getPublicUrl(fileName);
 
             console.log('✅ [SALON-PHOTO-UPLOAD] Success:', publicUrl);
