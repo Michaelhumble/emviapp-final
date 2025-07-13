@@ -15,11 +15,15 @@ interface SalonDetailModalProps {
 }
 
 const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onClose }) => {
+  console.log('SalonDetailModal render:', { salon: salon?.name, isOpen, onClose });
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  if (!salon) return null;
+  if (!salon) {
+    console.log('SalonDetailModal: No salon provided, returning null');
+    return null;
+  }
 
   // Navigation functions for image gallery
   const nextImage = () => {
