@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { Button } from '@/components/ui/button';
 import { MapPin, DollarSign, Clock, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -15,13 +15,11 @@ interface SalonDetailModalProps {
 }
 
 const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onClose }) => {
-  console.log('SalonDetailModal render:', { salon: salon?.name, isOpen, onClose });
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!salon) {
-    console.log('SalonDetailModal: No salon provided, returning null');
     return null;
   }
 
@@ -40,7 +38,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 relative">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 relative z-50">
         {/* Fixed Close Button - Always Visible on Mobile */}
         <button
           onClick={onClose}
@@ -56,6 +54,9 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
           <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 pr-12">
             {salon.name}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Salon details for {salon.name} including images, pricing, and contact information
+          </DialogDescription>
         </DialogHeader>
 
         {/* Full Image Gallery - Mobile optimized */}
