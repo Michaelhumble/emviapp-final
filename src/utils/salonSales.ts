@@ -72,7 +72,7 @@ export async function createSalonSale(values: SalonSaleFormValues, userId: strin
           asking_price: parseFloat(values.asking_price),
           size: values.size,
           business_type: values.business_type,
-          description: values.description,
+          description_combined: values.description,
           is_urgent: values.is_urgent,
           is_private: values.is_private,
           status: 'active'
@@ -107,7 +107,7 @@ export async function updateSalonSale(id: string, values: Partial<SalonSaleFormV
         asking_price: values.asking_price ? parseFloat(values.asking_price) : undefined,
         size: values.size,
         business_type: values.business_type,
-        description: values.description,
+        description_combined: values.description,
         is_urgent: values.is_urgent,
         is_private: values.is_private
       })

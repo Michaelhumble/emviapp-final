@@ -99,8 +99,15 @@ const SellSalon = () => {
       const { data, error } = await supabase
         .from('salon_sales')
         .insert({
-          ...formData,
+          salon_name: formData.salon_name,
+          business_type: formData.business_type,
+          city: formData.city,
+          state: formData.state,
           asking_price,
+          size: formData.size,
+          description_combined: formData.description,
+          is_urgent: formData.is_urgent,
+          is_private: formData.is_private,
           user_id: user.id,
         })
         .select()

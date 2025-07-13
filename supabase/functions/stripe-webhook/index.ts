@@ -132,6 +132,124 @@ serve(async (req) => {
         paymentStatus: session.payment_status
       });
 
+      // Check if this is a salon posting payment
+      const salonFormData = metadata.form_data;
+      if (salonFormData && metadata.pricing_tier) {
+        console.log('🏪 [STRIPE-WEBHOOK] SALON PAYMENT DETECTED - Creating salon listing');
+        
+        try {
+          const parsedSalonData = JSON.parse(salonFormData);
+          console.log('📋 [STRIPE-WEBHOOK] Parsed salon data:', {
+            salonName: parsedSalonData.salonName,
+            askingPrice: parsedSalonData.askingPrice,
+            pricingTier: metadata.pricing_tier
+          });
+
+          // Calculate expiration date based on pricing tier
+          const expiresAt = new Date();
+          const tierDuration = {
+            basic: 30,
+            gold: 60,
+            premium: 90,
+            annual: 365
+          };
+          const duration = tierDuration[metadata.pricing_tier] || 30;
+          expiresAt.setDate(expiresAt.getDate() + duration);
+
+          // Create features array from boolean fields
+          const features = [];
+          if (parsedSalonData.willTrain) features.push('Will Train');
+          if (parsedSalonData.hasHousing) features.push('Housing Available');
+          if (parsedSalonData.hasWaxRoom) features.push('Wax Room');
+          if (parsedSalonData.hasDiningRoom) features.push('Dining Room');
+          if (parsedSalonData.hasLaundry) features.push('Laundry');
+          if (parsedSalonData.hasParking) features.push('Parking');
+          if (parsedSalonData.equipmentIncluded) features.push('Equipment Included');
+          if (parsedSalonData.leaseTransferable) features.push('Lease Transferable');
+          if (parsedSalonData.sellerFinancing) features.push('Seller Financing');
+          if (parsedSalonData.helpWithTransition) features.push('Help with Transition');
+
+          // Parse uploaded photos from the session metadata  
+          let photoUrls = [];
+          try {
+            if (parsedSalonData.uploadedPhotos && Array.isArray(parsedSalonData.uploadedPhotos)) {
+              photoUrls = parsedSalonData.uploadedPhotos;
+            }
+          } catch (photoError) {
+            console.log('⚠️ [STRIPE-WEBHOOK] No photos found in form data');
+          }
+
+          // Insert salon listing into database
+          const { data: newSalon, error: salonError } = await supabase
+            .from('salon_sales')
+            .insert({
+              user_id: metadata.user_id,
+              salon_name: parsedSalonData.salonName,
+              business_type: parsedSalonData.businessType,
+              established_year: parsedSalonData.establishedYear,
+              city: parsedSalonData.city,
+              state: parsedSalonData.state,
+              address: parsedSalonData.address,
+              zip_code: parsedSalonData.zipCode,
+              neighborhood: parsedSalonData.neighborhood,
+              hide_exact_address: parsedSalonData.hideExactAddress,
+              asking_price: parseFloat(parsedSalonData.askingPrice.replace(/[^0-9.]/g, '')),
+              monthly_rent: parsedSalonData.monthlyRent ? parseFloat(parsedSalonData.monthlyRent.replace(/[^0-9.]/g, '')) : null,
+              monthly_revenue: parsedSalonData.monthlyRevenue,
+              monthly_profit: parsedSalonData.monthlyProfit,
+              number_of_staff: parsedSalonData.numberOfStaff,
+              number_of_tables: parsedSalonData.numberOfTables,
+              number_of_chairs: parsedSalonData.numberOfChairs,
+              square_feet: parsedSalonData.squareFeet,
+              yearly_revenue: parsedSalonData.yearlyRevenue,
+              gross_revenue: parsedSalonData.grossRevenue,
+              net_profit: parsedSalonData.netProfit,
+              vietnamese_description: parsedSalonData.vietnameseDescription,
+              english_description: parsedSalonData.englishDescription,
+              reason_for_selling: parsedSalonData.reasonForSelling,
+              virtual_tour_url: parsedSalonData.virtualTourUrl,
+              other_notes: parsedSalonData.otherNotes,
+              contact_name: parsedSalonData.contactName,
+              contact_email: parsedSalonData.contactEmail,
+              contact_phone: parsedSalonData.contactPhone,
+              contact_facebook: parsedSalonData.contactFacebook,
+              contact_zalo: parsedSalonData.contactZalo,
+              contact_notes: parsedSalonData.contactNotes,
+              will_train: parsedSalonData.willTrain,
+              has_housing: parsedSalonData.hasHousing,
+              has_wax_room: parsedSalonData.hasWaxRoom,
+              has_dining_room: parsedSalonData.hasDiningRoom,
+              has_laundry: parsedSalonData.hasLaundry,
+              has_parking: parsedSalonData.hasParking,
+              equipment_included: parsedSalonData.equipmentIncluded,
+              lease_transferable: parsedSalonData.leaseTransferable,
+              seller_financing: parsedSalonData.sellerFinancing,
+              help_with_transition: parsedSalonData.helpWithTransition,
+              selected_pricing_tier: metadata.pricing_tier,
+              featured_addon: metadata.featured_addon === 'true',
+              is_featured: metadata.featured_addon === 'true',
+              is_urgent: false,
+              features: features,
+              images: photoUrls,
+              logo_url: parsedSalonData.logoUrl || null,
+              payment_status: 'completed',
+              status: 'active',
+              expires_at: expiresAt.toISOString()
+            })
+            .select()
+            .single();
+
+          if (salonError) {
+            console.error('❌ [STRIPE-WEBHOOK] SALON CREATION FAILED:', salonError);
+          } else {
+            console.log('✅ [STRIPE-WEBHOOK] SALON SUCCESSFULLY CREATED:', newSalon);
+            console.log('✅ [STRIPE-WEBHOOK] PAID SALON NOW VISIBLE ON SALONS PAGE');
+          }
+        } catch (parseError) {
+          console.error('❌ [STRIPE-WEBHOOK] Error parsing salon data:', parseError);
+        }
+      }
+
       // Check if this is a job posting payment
       const jobId = metadata.job_id;
       if (jobId) {

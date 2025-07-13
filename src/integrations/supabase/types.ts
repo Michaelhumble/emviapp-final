@@ -1974,58 +1974,184 @@ export type Database = {
       }
       salon_sales: {
         Row: {
+          address: string | null
           asking_price: number
           business_type: string | null
           city: string
+          contact_email: string | null
+          contact_facebook: string | null
+          contact_name: string | null
+          contact_notes: string | null
+          contact_phone: string | null
+          contact_zalo: string | null
           created_at: string
-          description: string
+          description_combined: string
+          english_description: string | null
+          equipment_included: boolean | null
+          established_year: string | null
+          expires_at: string | null
+          featured_addon: boolean | null
+          features: string[] | null
+          gross_revenue: string | null
+          has_dining_room: boolean | null
+          has_housing: boolean | null
+          has_laundry: boolean | null
+          has_parking: boolean | null
+          has_wax_room: boolean | null
+          help_with_transition: boolean | null
+          hide_exact_address: boolean | null
           id: string
+          images: string[] | null
           is_featured: boolean | null
           is_private: boolean | null
           is_urgent: boolean | null
+          lease_transferable: boolean | null
+          logo_url: string | null
+          monthly_profit: string | null
           monthly_rent: number | null
+          monthly_revenue: string | null
+          neighborhood: string | null
+          net_profit: string | null
+          number_of_chairs: string | null
+          number_of_staff: string | null
+          number_of_tables: string | null
+          other_notes: string | null
+          payment_status: string | null
+          reason_for_selling: string | null
           salon_name: string
+          selected_pricing_tier: string | null
+          seller_financing: boolean | null
           size: string | null
+          square_feet: string | null
           state: string
           status: string
           updated_at: string
           user_id: string
+          vietnamese_description: string | null
+          virtual_tour_url: string | null
+          will_train: boolean | null
+          yearly_revenue: string | null
+          zip_code: string | null
         }
         Insert: {
+          address?: string | null
           asking_price: number
           business_type?: string | null
           city: string
+          contact_email?: string | null
+          contact_facebook?: string | null
+          contact_name?: string | null
+          contact_notes?: string | null
+          contact_phone?: string | null
+          contact_zalo?: string | null
           created_at?: string
-          description: string
+          description_combined: string
+          english_description?: string | null
+          equipment_included?: boolean | null
+          established_year?: string | null
+          expires_at?: string | null
+          featured_addon?: boolean | null
+          features?: string[] | null
+          gross_revenue?: string | null
+          has_dining_room?: boolean | null
+          has_housing?: boolean | null
+          has_laundry?: boolean | null
+          has_parking?: boolean | null
+          has_wax_room?: boolean | null
+          help_with_transition?: boolean | null
+          hide_exact_address?: boolean | null
           id?: string
+          images?: string[] | null
           is_featured?: boolean | null
           is_private?: boolean | null
           is_urgent?: boolean | null
+          lease_transferable?: boolean | null
+          logo_url?: string | null
+          monthly_profit?: string | null
           monthly_rent?: number | null
+          monthly_revenue?: string | null
+          neighborhood?: string | null
+          net_profit?: string | null
+          number_of_chairs?: string | null
+          number_of_staff?: string | null
+          number_of_tables?: string | null
+          other_notes?: string | null
+          payment_status?: string | null
+          reason_for_selling?: string | null
           salon_name: string
+          selected_pricing_tier?: string | null
+          seller_financing?: boolean | null
           size?: string | null
+          square_feet?: string | null
           state: string
           status?: string
           updated_at?: string
           user_id: string
+          vietnamese_description?: string | null
+          virtual_tour_url?: string | null
+          will_train?: boolean | null
+          yearly_revenue?: string | null
+          zip_code?: string | null
         }
         Update: {
+          address?: string | null
           asking_price?: number
           business_type?: string | null
           city?: string
+          contact_email?: string | null
+          contact_facebook?: string | null
+          contact_name?: string | null
+          contact_notes?: string | null
+          contact_phone?: string | null
+          contact_zalo?: string | null
           created_at?: string
-          description?: string
+          description_combined?: string
+          english_description?: string | null
+          equipment_included?: boolean | null
+          established_year?: string | null
+          expires_at?: string | null
+          featured_addon?: boolean | null
+          features?: string[] | null
+          gross_revenue?: string | null
+          has_dining_room?: boolean | null
+          has_housing?: boolean | null
+          has_laundry?: boolean | null
+          has_parking?: boolean | null
+          has_wax_room?: boolean | null
+          help_with_transition?: boolean | null
+          hide_exact_address?: boolean | null
           id?: string
+          images?: string[] | null
           is_featured?: boolean | null
           is_private?: boolean | null
           is_urgent?: boolean | null
+          lease_transferable?: boolean | null
+          logo_url?: string | null
+          monthly_profit?: string | null
           monthly_rent?: number | null
+          monthly_revenue?: string | null
+          neighborhood?: string | null
+          net_profit?: string | null
+          number_of_chairs?: string | null
+          number_of_staff?: string | null
+          number_of_tables?: string | null
+          other_notes?: string | null
+          payment_status?: string | null
+          reason_for_selling?: string | null
           salon_name?: string
+          selected_pricing_tier?: string | null
+          seller_financing?: boolean | null
           size?: string | null
+          square_feet?: string | null
           state?: string
           status?: string
           updated_at?: string
           user_id?: string
+          vietnamese_description?: string | null
+          virtual_tour_url?: string | null
+          will_train?: boolean | null
+          yearly_revenue?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -6,11 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { realSalonListings, RealSalonListing, getFeaturedListings, getUrgentListings, getListingsByCategory, searchListings } from '@/data/salons/realSalonListings';
 import PremiumSalonCard from '@/components/salons/PremiumSalonCard';
+import SalonSaleCard from '@/components/salons/SalonSaleCard';
 import SalonDetailModal from '@/components/salons/SalonDetailModal';
 import { useNavigate } from 'react-router-dom';
 import { Star, Crown, Sparkles, Search, MapPin, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/integrations/supabase/client';
+import { SalonSale } from '@/types/salonSale';
 
 const SalonsPageRedesigned = () => {
   const { isSignedIn } = useAuth();
@@ -19,6 +22,10 @@ const SalonsPageRedesigned = () => {
   // Modal state
   const [selectedSalon, setSelectedSalon] = useState<RealSalonListing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Database salon sales state
+  const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,8 +51,81 @@ const SalonsPageRedesigned = () => {
     });
   };
 
+  // Fetch salon sales from database
+  useEffect(() => {
+    const fetchSalonSales = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('salon_sales')
+          .select(`
+            *,
+            salon_sale_photos(
+              id,
+              photo_url,
+              order_number
+            )
+          `)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching salon sales:', error);
+          return;
+        }
+
+        // Transform data to include photos in images array
+        const transformedSales = data.map(sale => ({
+          ...sale,
+          images: sale.salon_sale_photos 
+            ? sale.salon_sale_photos
+                .sort((a: any, b: any) => (a.order_number || 0) - (b.order_number || 0))
+                .map((photo: any) => photo.photo_url)
+            : (sale.images || []),
+          // Add backward compatibility for description
+          description: sale.description_combined || sale.vietnamese_description || sale.english_description || ''
+        }));
+
+        setSalonSales(transformedSales);
+      } catch (error) {
+        console.error('Error loading salon sales:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSalonSales();
+  }, []);
+
   const handleViewDetails = (salon: RealSalonListing) => {
     setSelectedSalon(salon);
+    setIsModalOpen(true);
+  };
+
+  const handleViewSalonSaleDetails = (salon: SalonSale) => {
+    // Convert SalonSale to RealSalonListing format for modal compatibility
+    const salonListing: RealSalonListing = {
+      id: salon.id,
+      name: salon.salon_name,
+      location: salon.city && salon.state ? `${salon.city}, ${salon.state}` : salon.city || '',
+      datePosted: new Date(salon.created_at).toLocaleDateString(),
+      images: salon.images || [],
+      price: `$${salon.asking_price.toLocaleString()}`,
+      sqft: salon.square_feet ? parseInt(salon.square_feet) : undefined,
+      description_en: salon.english_description || salon.description_combined || '',
+      description_vi: salon.vietnamese_description,
+      features: salon.features || [],
+      contact: {
+        phone: salon.contact_phone,
+        email: salon.contact_email,
+        name: salon.contact_name,
+      },
+      category: (salon.business_type?.toLowerCase() as any) || 'nails',
+      featured: salon.is_featured,
+      urgent: salon.is_urgent,
+      monthlyRent: salon.monthly_rent || undefined,
+    };
+    
+    setSelectedSalon(salonListing);
     setIsModalOpen(true);
   };
 
