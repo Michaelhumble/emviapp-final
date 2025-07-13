@@ -132,17 +132,30 @@ serve(async (req) => {
         paymentStatus: session.payment_status
       });
 
-      // Check if this is a salon posting payment
-      const salonFormData = metadata.form_data;
-      if (salonFormData && metadata.pricing_tier) {
-        console.log('🏪 [STRIPE-WEBHOOK] SALON PAYMENT DETECTED - Creating salon listing');
+      // ✅ NEW: Check if this is a salon posting payment via pending_salon_id
+      const pendingSalonId = metadata.pending_salon_id;
+      if (pendingSalonId && metadata.pricing_tier) {
+        console.log('🏪 [STRIPE-WEBHOOK] SALON PAYMENT DETECTED - Activating pending salon:', pendingSalonId);
         
         try {
-          const parsedSalonData = JSON.parse(salonFormData);
-          console.log('📋 [STRIPE-WEBHOOK] Parsed salon data:', {
-            salonName: parsedSalonData.salonName,
-            askingPrice: parsedSalonData.askingPrice,
-            pricingTier: metadata.pricing_tier
+          // Get the pending salon data from the database
+          const { data: pendingSalon, error: pendingError } = await supabase
+            .from('pending_salons')
+            .select('*')
+            .eq('id', pendingSalonId)
+            .eq('stripe_session_id', session.id)
+            .single();
+
+          if (pendingError || !pendingSalon) {
+            console.error('❌ [STRIPE-WEBHOOK] Failed to find pending salon:', pendingError);
+            throw new Error('Pending salon not found: ' + pendingError?.message);
+          }
+
+          console.log('📋 [STRIPE-WEBHOOK] Found pending salon data:', {
+            salonName: pendingSalon.salon_name,
+            askingPrice: pendingSalon.asking_price,
+            pricingTier: metadata.pricing_tier,
+            imageCount: pendingSalon.images?.length || 0
           });
 
           // Calculate expiration date based on pricing tier
@@ -158,80 +171,67 @@ serve(async (req) => {
 
           // Create features array from boolean fields
           const features = [];
-          if (parsedSalonData.willTrain) features.push('Will Train');
-          if (parsedSalonData.hasHousing) features.push('Housing Available');
-          if (parsedSalonData.hasWaxRoom) features.push('Wax Room');
-          if (parsedSalonData.hasDiningRoom) features.push('Dining Room');
-          if (parsedSalonData.hasLaundry) features.push('Laundry');
-          if (parsedSalonData.hasParking) features.push('Parking');
-          if (parsedSalonData.equipmentIncluded) features.push('Equipment Included');
-          if (parsedSalonData.leaseTransferable) features.push('Lease Transferable');
-          if (parsedSalonData.sellerFinancing) features.push('Seller Financing');
-          if (parsedSalonData.helpWithTransition) features.push('Help with Transition');
+          if (pendingSalon.will_train) features.push('Will Train');
+          if (pendingSalon.has_housing) features.push('Housing Available');
+          if (pendingSalon.has_wax_room) features.push('Wax Room');
+          if (pendingSalon.has_dining_room) features.push('Dining Room');
+          if (pendingSalon.has_laundry) features.push('Laundry');
+          if (pendingSalon.has_parking) features.push('Parking');
+          if (pendingSalon.equipment_included) features.push('Equipment Included');
+          if (pendingSalon.lease_transferable) features.push('Lease Transferable');
+          if (pendingSalon.seller_financing) features.push('Seller Financing');
+          if (pendingSalon.help_with_transition) features.push('Help with Transition');
 
-          // Parse uploaded photos from the session metadata  
-          let photoUrls = [];
-          try {
-            if (parsedSalonData.uploadedPhotos && Array.isArray(parsedSalonData.uploadedPhotos)) {
-              photoUrls = parsedSalonData.uploadedPhotos;
-            }
-          } catch (photoError) {
-            console.log('⚠️ [STRIPE-WEBHOOK] No photos found in form data');
-          }
-
-          // Insert salon listing into database
+          // ✅ Transfer pending salon to live salon_sales table
           const { data: newSalon, error: salonError } = await supabase
             .from('salon_sales')
             .insert({
-              user_id: metadata.user_id,
-              salon_name: parsedSalonData.salonName,
-              business_type: parsedSalonData.businessType,
-              established_year: parsedSalonData.establishedYear,
-              city: parsedSalonData.city,
-              state: parsedSalonData.state,
-              address: parsedSalonData.address,
-              zip_code: parsedSalonData.zipCode,
-              neighborhood: parsedSalonData.neighborhood,
-              hide_exact_address: parsedSalonData.hideExactAddress,
-              asking_price: parseFloat(parsedSalonData.askingPrice.replace(/[^0-9.]/g, '')),
-              monthly_rent: parsedSalonData.monthlyRent ? parseFloat(parsedSalonData.monthlyRent.replace(/[^0-9.]/g, '')) : null,
-              monthly_revenue: parsedSalonData.monthlyRevenue,
-              monthly_profit: parsedSalonData.monthlyProfit,
-              number_of_staff: parsedSalonData.numberOfStaff,
-              number_of_tables: parsedSalonData.numberOfTables,
-              number_of_chairs: parsedSalonData.numberOfChairs,
-              square_feet: parsedSalonData.squareFeet,
-              yearly_revenue: parsedSalonData.yearlyRevenue,
-              gross_revenue: parsedSalonData.grossRevenue,
-              net_profit: parsedSalonData.netProfit,
-              vietnamese_description: parsedSalonData.vietnameseDescription,
-              english_description: parsedSalonData.englishDescription,
-              reason_for_selling: parsedSalonData.reasonForSelling,
-              virtual_tour_url: parsedSalonData.virtualTourUrl,
-              other_notes: parsedSalonData.otherNotes,
-              contact_name: parsedSalonData.contactName,
-              contact_email: parsedSalonData.contactEmail,
-              contact_phone: parsedSalonData.contactPhone,
-              contact_facebook: parsedSalonData.contactFacebook,
-              contact_zalo: parsedSalonData.contactZalo,
-              contact_notes: parsedSalonData.contactNotes,
-              will_train: parsedSalonData.willTrain,
-              has_housing: parsedSalonData.hasHousing,
-              has_wax_room: parsedSalonData.hasWaxRoom,
-              has_dining_room: parsedSalonData.hasDiningRoom,
-              has_laundry: parsedSalonData.hasLaundry,
-              has_parking: parsedSalonData.hasParking,
-              equipment_included: parsedSalonData.equipmentIncluded,
-              lease_transferable: parsedSalonData.leaseTransferable,
-              seller_financing: parsedSalonData.sellerFinancing,
-              help_with_transition: parsedSalonData.helpWithTransition,
+              user_id: pendingSalon.user_id,
+              salon_name: pendingSalon.salon_name,
+              business_type: pendingSalon.business_type,
+              established_year: pendingSalon.established_year,
+              city: pendingSalon.city,
+              state: pendingSalon.state,
+              address: pendingSalon.address,
+              zip_code: pendingSalon.zip_code,
+              neighborhood: pendingSalon.neighborhood,
+              hide_exact_address: pendingSalon.hide_exact_address,
+              asking_price: pendingSalon.asking_price,
+              monthly_rent: pendingSalon.monthly_rent,
+              monthly_revenue: pendingSalon.monthly_revenue,
+              monthly_profit: pendingSalon.monthly_profit,
+              number_of_staff: pendingSalon.number_of_staff,
+              number_of_tables: pendingSalon.number_of_tables,
+              number_of_chairs: pendingSalon.number_of_chairs,
+              square_feet: pendingSalon.square_feet,
+              vietnamese_description: pendingSalon.vietnamese_description,
+              english_description: pendingSalon.english_description,
+              description_combined: pendingSalon.description_combined,
+              reason_for_selling: pendingSalon.reason_for_selling,
+              virtual_tour_url: pendingSalon.virtual_tour_url,
+              other_notes: pendingSalon.other_notes,
+              contact_name: pendingSalon.contact_name,
+              contact_email: pendingSalon.contact_email,
+              contact_phone: pendingSalon.contact_phone,
+              contact_facebook: pendingSalon.contact_facebook,
+              contact_zalo: pendingSalon.contact_zalo,
+              contact_notes: pendingSalon.contact_notes,
+              will_train: pendingSalon.will_train,
+              has_housing: pendingSalon.has_housing,
+              has_wax_room: pendingSalon.has_wax_room,
+              has_dining_room: pendingSalon.has_dining_room,
+              has_laundry: pendingSalon.has_laundry,
+              has_parking: pendingSalon.has_parking,
+              equipment_included: pendingSalon.equipment_included,
+              lease_transferable: pendingSalon.lease_transferable,
+              seller_financing: pendingSalon.seller_financing,
+              help_with_transition: pendingSalon.help_with_transition,
               selected_pricing_tier: metadata.pricing_tier,
               featured_addon: metadata.featured_addon === 'true',
               is_featured: metadata.featured_addon === 'true',
               is_urgent: false,
               features: features,
-              images: photoUrls,
-              logo_url: parsedSalonData.logoUrl || null,
+              images: pendingSalon.images || [],
               payment_status: 'completed',
               status: 'active',
               expires_at: expiresAt.toISOString()
@@ -244,9 +244,17 @@ serve(async (req) => {
           } else {
             console.log('✅ [STRIPE-WEBHOOK] SALON SUCCESSFULLY CREATED:', newSalon);
             console.log('✅ [STRIPE-WEBHOOK] PAID SALON NOW VISIBLE ON SALONS PAGE');
+            
+            // ✅ Mark pending salon as completed
+            await supabase
+              .from('pending_salons')
+              .update({ status: 'completed' })
+              .eq('id', pendingSalonId);
+            
+            console.log('✅ [STRIPE-WEBHOOK] Pending salon marked as completed');
           }
-        } catch (parseError) {
-          console.error('❌ [STRIPE-WEBHOOK] Error parsing salon data:', parseError);
+        } catch (salonError) {
+          console.error('❌ [STRIPE-WEBHOOK] Error processing salon:', salonError);
         }
       }
 
