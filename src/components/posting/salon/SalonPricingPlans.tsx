@@ -46,6 +46,14 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
 
   return (
     <div className="space-y-8">
+      {/* Early Access Banner */}
+      <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-3 rounded-lg shadow-lg">
+        <div className="flex items-center justify-center space-x-2">
+          <span className="font-bold">🔥 EARLY ACCESS PRICING</span>
+          <span className="bg-white text-red-600 px-2 py-1 rounded-full text-sm font-bold">LIMITED TIME</span>
+        </div>
+      </div>
+
       <div className="text-center space-y-4">
         <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
           Choose Your Listing Plan
@@ -58,9 +66,13 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {SALON_PRICING_PLANS.map((plan) => {
           const isSelected = selectedOptions.selectedPricingTier === plan.tier;
-          const isPopular = plan.tier === 'premium';
+          const isMostPopular = plan.tier === 'annual'; // "Until Sold" is most popular
+          const isBestValue = plan.tier === 'premium'; // "Fast Sale" is best value
           const gradient = getPlanGradient(plan.tier);
           const hasSavings = plan.originalPrice && plan.originalPrice > plan.price;
+          
+          // Special styling for "Until Sold" plan
+          const specialBorder = plan.tier === 'annual' ? 'border-2 border-gold-500 shadow-2xl ring-4 ring-gold-200' : '';
           
           return (
             <Card 
@@ -68,18 +80,27 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
               className={`relative transition-all duration-300 cursor-pointer transform hover:scale-105 hover:shadow-2xl ${
                 isSelected 
                   ? 'border-2 border-purple-500 shadow-2xl ring-4 ring-purple-200 scale-105' 
-                  : 'border border-gray-200 hover:border-purple-300 shadow-lg'
+                  : plan.tier === 'annual' 
+                    ? 'border-2 border-yellow-500 shadow-2xl ring-2 ring-yellow-200' 
+                    : 'border border-gray-200 hover:border-purple-300 shadow-lg'
               } backdrop-blur-sm bg-white/95`}
               onClick={() => onPlanSelect(plan.tier)}
             >
-              {isPopular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className={`bg-gradient-to-r ${gradient} text-white px-4 py-1 text-sm font-semibold shadow-lg`}>
-                    ⭐ Most Popular
+              {/* Top badges */}
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center space-y-1">
+                {isMostPopular && (
+                  <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 text-sm font-semibold shadow-lg">
+                    👑 Most Popular
                   </Badge>
-                </div>
-              )}
+                )}
+                {isBestValue && (
+                  <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1 text-sm font-semibold shadow-lg">
+                    💎 Best Value
+                  </Badge>
+                )}
+              </div>
 
+              {/* Savings badge */}
               {hasSavings && (
                 <div className="absolute -top-2 -right-2 z-10">
                   <Badge variant="destructive" className="text-xs font-bold animate-pulse">
@@ -95,28 +116,32 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
                 
                 <CardTitle className="text-xl font-bold text-gray-900">{plan.name}</CardTitle>
                 
-                <div className="mt-4">
-                  <div className="flex items-center justify-center flex-col">
-                    {hasSavings && (
-                      <div className="text-lg text-gray-500 line-through mb-1">
-                        ${plan.originalPrice}
-                      </div>
-                    )}
-                    <div className="flex items-baseline">
-                      <span className="text-4xl font-bold text-gray-900">
-                        ${plan.price}
-                      </span>
-                      <span className="text-gray-600 ml-2">
-                        /{plan.duration === 1 ? 'mo' : `${plan.duration}mo`}
-                      </span>
-                    </div>
-                  </div>
-                  {plan.tier === 'annual' && (
-                    <div className="text-sm text-green-600 font-semibold mt-1">
-                      Save $150 vs monthly!
-                    </div>
-                  )}
-                </div>
+                 <div className="mt-4">
+                   <div className="flex items-center justify-center flex-col">
+                     {hasSavings && (
+                       <div className="text-xl text-gray-500 line-through mb-1 font-semibold">
+                         ${plan.originalPrice}
+                       </div>
+                     )}
+                     <div className="flex items-baseline">
+                       <span className="text-4xl font-bold text-gray-900">
+                         ${plan.price}
+                       </span>
+                       <span className="text-gray-600 ml-2">
+                         {plan.duration === 0 ? '/until sold' : 
+                          plan.duration === 1 ? '/30 days' : 
+                          plan.duration === 2 ? '/60 days' :
+                          plan.duration === 3 ? '/90 days' : 
+                          `/${plan.duration}mo`}
+                       </span>
+                     </div>
+                   </div>
+                   {plan.tier === 'annual' && (
+                     <div className="text-sm text-green-600 font-semibold mt-1">
+                       No renewal needed!
+                     </div>
+                   )}
+                 </div>
                 
                 <p className="text-sm text-gray-600 mt-3 leading-relaxed">{plan.description}</p>
               </CardHeader>

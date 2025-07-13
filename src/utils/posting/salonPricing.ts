@@ -20,78 +20,81 @@ export interface SalonPricingPlan {
 
 export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
   {
-    id: 'basic',
-    tier: 'basic',
-    name: 'Basic Listing',
-    price: 19.99,
-    duration: 1,
-    description: 'Essential visibility for your salon listing',
+    id: 'annual',
+    tier: 'annual',
+    name: 'Until Sold',
+    price: 149.00,
+    originalPrice: 399.00,
+    duration: 0, // Until sold - unlimited
+    description: 'No renewal needed! Keep listing active until your salon sells',
+    savings: 'No Renewal Needed!',
     features: [
-      '30-day active listing',
-      'Basic search visibility',
-      'Photo gallery (up to 7 images)',
-      'Contact form integration',
-      'Mobile-optimized listing'
-    ]
-  },
-  {
-    id: 'gold',
-    tier: 'gold',
-    name: 'Gold Listing',
-    price: 59.99,
-    duration: 2,
-    description: 'Enhanced visibility with premium features',
-    features: [
-      '60-day active listing',
-      'Priority search placement',
-      'Photo gallery (up to 7 images)',
-      'Featured badge',
-      'Social media promotion',
-      'Email alerts to buyers',
-      'Mobile-optimized listing'
+      '+ Active until your salon sells',
+      '+ Top search placement',
+      '+ Homepage spotlight feature',
+      '+ Photo gallery (up to 7 images)',
+      '+ Premium featured badge',
+      '+ Social media promotion',
+      '+ Email alerts to buyers',
+      '+ VIP seller support',
+      '+ Performance analytics',
+      '+ Mobile-optimized listing'
     ]
   },
   {
     id: 'premium',
     tier: 'premium',
-    name: 'Premium Listing',
-    price: 99.99,
-    originalPrice: 149.99,
+    name: 'Fast Sale',
+    price: 39.99,
+    originalPrice: 119.99,
     duration: 3,
-    description: 'Maximum exposure with all premium features',
+    description: 'Best value for quick sales with premium features',
+    savings: 'Save $80!',
     features: [
-      '90-day active listing',
-      'Top search placement',
-      'Photo gallery (up to 7 images)',
-      'Premium featured badge',
-      'Social media promotion',
-      'Email alerts to buyers',
-      'Homepage spotlight',
-      'Dedicated listing manager',
-      'Mobile-optimized listing'
+      '+ 90-day active listing',
+      '+ Top search placement',
+      '+ Featured badge',
+      '+ Photo gallery (up to 7 images)',
+      '+ Social media promotion',
+      '+ Email alerts to buyers',
+      '+ FREE photo gallery',
+      '+ Priority customer support',
+      '+ Mobile-optimized listing'
     ]
   },
   {
-    id: 'annual',
-    tier: 'annual',
-    name: 'Annual Package',
-    price: 149.00,
-    originalPrice: 299.99,
-    duration: 12,
-    description: 'Best value for long-term listings',
-    savings: 'Save $150!',
+    id: 'gold',
+    tier: 'gold',
+    name: 'Standard',
+    price: 59.99,
+    originalPrice: 89.99,
+    duration: 2,
+    description: 'Enhanced visibility with priority features',
+    savings: 'Save $30',
     features: [
-      '12-month active listing',
-      'Top search placement',
-      'Photo gallery (up to 7 images)',
-      'Premium featured badge',
-      'Social media promotion',
-      'Email alerts to buyers',
-      'Homepage spotlight',
-      'Dedicated listing manager',
-      'Monthly listing refresh',
-      'Performance analytics',
-      'Mobile-optimized listing'
+      '+ 60-day active listing',
+      '+ Priority search placement',
+      '+ Photo gallery (up to 7 images)',
+      '+ Featured badge',
+      '+ Email alerts to buyers',
+      '+ Mobile-optimized listing'
+    ]
+  },
+  {
+    id: 'basic',
+    tier: 'basic',
+    name: 'Basic',
+    price: 19.99,
+    originalPrice: 39.99,
+    duration: 1,
+    description: 'Essential visibility for your salon listing',
+    savings: '50% OFF - Launch Special',
+    features: [
+      '+ 30-day active listing',
+      '+ Basic search visibility',
+      '+ Photo gallery (up to 7 images)',
+      '+ Contact form integration',
+      '+ Mobile-optimized listing'
     ]
   }
 ];
