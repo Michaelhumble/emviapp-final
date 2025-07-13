@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
+import { useAuth } from '@/context/auth';
 
 interface PremiumSalonCardProps {
   salon: RealSalonListing;
@@ -16,6 +17,7 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
   onViewDetails,
   className = ""
 }) => {
+  const { isSignedIn } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Navigation functions for image gallery
@@ -295,14 +297,40 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
                 <span className="font-medium">Contact: {salon.contact.name}</span>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <Phone className="h-3 w-3" />
-              <span className="font-medium text-purple-600">📞 Sign in to view contact info</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-3 w-3" />
-              <span className="font-medium text-purple-600">✉️ Sign in to view email</span>
-            </div>
+            
+            {isSignedIn ? (
+              <>
+                {salon.contact.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3 w-3 text-green-600" />
+                    <span className="font-medium text-green-600">{salon.contact.phone}</span>
+                  </div>
+                )}
+                {salon.contact.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-3 w-3 text-blue-600" />
+                    <span className="font-medium text-blue-600">{salon.contact.email}</span>
+                  </div>
+                )}
+                {!salon.contact.phone && !salon.contact.email && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3 w-3" />
+                    <span className="font-medium">Contact via EmviApp only</span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3" />
+                  <span className="font-medium text-purple-600">📞 Sign in to view contact info</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-3 w-3" />
+                  <span className="font-medium text-purple-600">✉️ Sign in to view email</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 

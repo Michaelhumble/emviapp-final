@@ -196,7 +196,7 @@ export const realSalonListings: RealSalonListing[] = [
 
   // Premium tattoo studio
   {
-    id: "real-salon-3",
+    id: "real-salon-5",
     name: "Ink Dynasty Tattoo Studio", 
     location: "Austin, TX",
     datePosted: "1/18/2024",
@@ -216,7 +216,7 @@ export const realSalonListings: RealSalonListing[] = [
 
   // Classic barbershop
   {
-    id: "real-salon-4",
+    id: "real-salon-6",
     name: "Classic Cuts Barbershop", 
     location: "Brooklyn, NY",
     datePosted: "1/17/2024",
@@ -236,7 +236,7 @@ export const realSalonListings: RealSalonListing[] = [
 
   // High-end hair salon
   {
-    id: "real-salon-5",
+    id: "real-salon-7",
     name: "Westside Hair Lounge", 
     location: "West Hollywood, CA",
     datePosted: "1/16/2024",
@@ -256,7 +256,7 @@ export const realSalonListings: RealSalonListing[] = [
 
   // Luxury spa
   {
-    id: "real-salon-6",
+    id: "real-salon-8",
     name: "Zen Massage & Wellness", 
     location: "Scottsdale, AZ",
     datePosted: "1/15/2024",
@@ -276,7 +276,7 @@ export const realSalonListings: RealSalonListing[] = [
 
   // Beauty studio
   {
-    id: "real-salon-7",
+    id: "real-salon-9",
     name: "Glam Beauty Studio", 
     location: "Nashville, TN",
     datePosted: "1/14/2024",
@@ -296,7 +296,7 @@ export const realSalonListings: RealSalonListing[] = [
 
   // Brow & lash bar
   {
-    id: "real-salon-8",
+    id: "real-salon-10",
     name: "Perfect Brow & Lash Bar", 
     location: "Orange County, CA",
     datePosted: "1/13/2024",

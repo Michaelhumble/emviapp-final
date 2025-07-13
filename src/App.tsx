@@ -12,7 +12,7 @@ import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
-import SalonsPageRebuilt from "@/pages/salons/SalonsPageRebuilt";
+import SalonsPageRedesigned from "@/pages/salons/SalonsPageRedesigned";
 import Layout from "@/components/layout/Layout";
 import Jobs from "@/pages/Jobs";
 import About from "@/pages/About"; 
@@ -101,7 +101,7 @@ function App() {
                     <Route path="/nails-job-success" element={<NailJobSuccessPage />} />
                     
                     {/* Other pages */}
-                    <Route path="/salons" element={<Layout><SalonsPageRebuilt /></Layout>} />
+                    <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
                     
                     {/* Industry Pages */}
