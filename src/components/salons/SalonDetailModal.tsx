@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { Button } from '@/components/ui/button';
 import { MapPin, DollarSign, Clock, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -48,6 +48,9 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
           <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             {salon.name}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Detailed information about {salon.name} salon listing including photos, pricing, and contact details.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Full Image Gallery - Mobile optimized */}
