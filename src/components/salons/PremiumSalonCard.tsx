@@ -56,8 +56,8 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
       <div className="relative overflow-hidden">
         {salon.images.length > 0 ? (
           <>
-            {/* Main Gallery Image - Responsive height */}
-            <div className="relative h-44 sm:h-48 md:h-52 overflow-hidden">
+            {/* Main Gallery Image - Mobile optimized height */}
+            <div className="relative h-32 sm:h-44 md:h-52 overflow-hidden">
               <img
                 src={salon.images[currentImageIndex]}
                 alt={salon.name}
@@ -82,15 +82,15 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
                 </>
               )}
               
-              {/* Photo count badge */}
-              <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium z-10">
+              {/* Photo count badge - Mobile optimized */}
+              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/70 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs font-medium z-10">
                 📸 {salon.images.length}
               </div>
             </div>
             
-            {/* Responsive Thumbnail Row - Jobs card style */}
+            {/* Responsive Thumbnail Row - Mobile optimized */}
             {salon.images.length > 1 && (
-              <div className="px-3 sm:px-4 py-2 bg-gray-50 border-t">
+              <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gray-50 border-t">
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide">
                   {/* Desktop: Show up to 5 thumbnails */}
                   <div className="hidden lg:flex gap-2 flex-shrink-0">
@@ -148,13 +148,13 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
                     )}
                   </div>
                   
-                  {/* Mobile: Show 2 thumbnails */}
-                  <div className="flex md:hidden gap-2 overflow-x-auto flex-shrink-0">
+                  {/* Mobile: Show 2 thumbnails - Smaller size */}
+                  <div className="flex md:hidden gap-1.5 overflow-x-auto flex-shrink-0">
                     {salon.images.slice(0, 2).map((imageUrl, index) => (
                       <button
                         key={index}
                         onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
-                        className={`relative w-16 h-12 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
+                        className={`relative w-12 h-8 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
                           index === currentImageIndex ? 'border-purple-500' : 'border-gray-200'
                         }`}
                       >
@@ -170,7 +170,7 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
                       </button>
                     ))}
                     {salon.images.length > 2 && (
-                      <div className="w-16 h-12 rounded border-2 border-gray-200 bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-8 rounded border-2 border-gray-200 bg-gray-100 flex items-center justify-center flex-shrink-0">
                         <span className="text-gray-600 text-xs font-medium">+{salon.images.length - 2}</span>
                       </div>
                     )}
@@ -180,8 +180,8 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
             )}
           </>
         ) : (
-          // Responsive placeholder when no images
-          <div className="h-44 sm:h-48 md:h-52 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+          // Mobile optimized placeholder when no images
+          <div className="h-32 sm:h-44 md:h-52 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             <div className="text-center text-gray-500">
               <div className="text-3xl sm:text-4xl mb-2">📷</div>
               <div className="text-sm font-medium">Photos Coming Soon</div>
@@ -190,70 +190,70 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           </div>
         )}
         
-        {/* Status Badge - Responsive positioning */}
-        <div className="absolute top-3 left-3 z-10">
-          <Badge className={`${getBadgeStyle()} flex items-center gap-1 font-semibold px-2 py-1 text-xs shadow-md`}>
+        {/* Status Badge - Mobile optimized positioning */}
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
+          <Badge className={`${getBadgeStyle()} flex items-center gap-1 font-semibold px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs shadow-md`}>
             {getBadgeText()}
           </Badge>
         </div>
 
-        {/* Price Badge - Responsive sizing */}
-        <div className="absolute top-3 right-14 z-10">
-          <Badge className="bg-white text-gray-900 font-bold text-xs sm:text-sm px-2 sm:px-3 py-1 shadow-md">
+        {/* Price Badge - Mobile optimized sizing */}
+        <div className="absolute top-2 right-12 sm:top-3 sm:right-14 z-10">
+          <Badge className="bg-white text-gray-900 font-bold text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-md">
             {salon.price}
           </Badge>
         </div>
       </div>
 
-      {/* Card Content */}
-      <CardContent className="p-4 sm:p-5 flex-grow flex flex-col">
-        {/* Title and Location */}
-        <div className="mb-3">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors">
+      {/* Card Content - Mobile optimized padding */}
+      <CardContent className="p-3 sm:p-4 md:p-5 flex-grow flex flex-col">
+        {/* Title and Location - Mobile optimized */}
+        <div className="mb-2 sm:mb-3">
+          <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors">
             {salon.name}
           </h3>
-          <div className="flex items-center gap-2 text-gray-600 text-sm">
-            <MapPin className="h-4 w-4 flex-shrink-0 text-purple-500" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-gray-600 text-xs sm:text-sm">
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-purple-500" />
             <span className="font-medium">{salon.location}</span>
           </div>
         </div>
 
-        {/* Key Stats - Jobs card style */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 text-xs sm:text-sm">
+        {/* Key Stats - Mobile optimized */}
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 text-xs">
           {salon.sqft && (
-            <div className="flex items-center gap-2">
-              <Home className="h-4 w-4 text-blue-500" />
-              <span className="font-medium">{salon.sqft.toLocaleString()} sqft</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Home className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+              <span className="font-medium text-xs sm:text-sm">{salon.sqft.toLocaleString()} sqft</span>
             </div>
           )}
           {salon.monthlyRent && (
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-green-500" />
-              <span className="font-medium">${salon.monthlyRent.toLocaleString()}/mo</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+              <span className="font-medium text-xs sm:text-sm">${salon.monthlyRent.toLocaleString()}/mo</span>
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
+          <div className="flex items-center gap-1 sm:gap-2 col-span-2">
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
             <span className="text-xs text-gray-500">{salon.datePosted}</span>
           </div>
         </div>
 
-        {/* Description - Vietnamese-first for nails, English-first for others */}
-        <div className="mb-4 flex-grow">
+        {/* Description - Mobile optimized, Vietnamese-first for nails */}
+        <div className="mb-3 sm:mb-4 flex-grow">
           {salon.category === 'nails' ? (
             <>
               {/* Vietnamese first for nails */}
               {salon.description_vi ? (
                 <>
-                  <p className="text-gray-700 text-sm line-clamp-3 mb-2 leading-relaxed font-medium">
+                  <p className="text-gray-700 text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 mb-1 sm:mb-2 leading-relaxed font-medium">
                     {salon.description_vi}
                   </p>
-                  <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+                  <p className="text-gray-500 text-xs line-clamp-1 sm:line-clamp-2 leading-relaxed">
                     {salon.description_en}
                   </p>
                 </>
               ) : (
-                <p className="text-gray-600 text-sm line-clamp-3 mb-2 leading-relaxed">
+                <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 mb-1 sm:mb-2 leading-relaxed">
                   {salon.description_en}
                 </p>
               )}
@@ -261,11 +261,11 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           ) : (
             <>
               {/* English first for other categories */}
-              <p className="text-gray-600 text-sm line-clamp-3 mb-2 leading-relaxed">
+              <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 mb-1 sm:mb-2 leading-relaxed">
                 {salon.description_en}
               </p>
               {salon.description_vi && (
-                <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+                <p className="text-gray-500 text-xs line-clamp-1 sm:line-clamp-2 leading-relaxed">
                   {salon.description_vi}
                 </p>
               )}
@@ -273,24 +273,24 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           )}
         </div>
 
-        {/* Features Tags */}
+        {/* Features Tags - Mobile optimized */}
         {salon.features && salon.features.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-4">
-            {salon.features.slice(0, 3).map((feature, index) => (
-              <Badge key={index} variant="secondary" className="text-xs px-2 py-1">
+          <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
+            {salon.features.slice(0, 2).map((feature, index) => (
+              <Badge key={index} variant="secondary" className="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1">
                 {feature}
               </Badge>
             ))}
-            {salon.features.length > 3 && (
-              <Badge variant="secondary" className="text-xs px-2 py-1">
-                +{salon.features.length - 3} more
+            {salon.features.length > 2 && (
+              <Badge variant="secondary" className="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1">
+                +{salon.features.length - 2} more
               </Badge>
             )}
           </div>
         )}
 
-        {/* Contact Info Preview - Auth Gated */}
-        <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+        {/* Contact Info Preview - Mobile optimized, Auth Gated */}
+        <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="text-xs text-gray-600 space-y-1">
             {salon.contact.name && (
               <div className="flex items-center gap-2">
@@ -334,13 +334,13 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           </div>
         </div>
 
-        {/* View Details Button - Jobs card style */}
+        {/* View Details Button - Mobile optimized */}
         <Button 
           onClick={onViewDetails}
-          className="w-full hover:bg-purple-700 bg-purple-600 transition-all duration-300 font-medium"
+          className="w-full hover:bg-purple-700 bg-purple-600 transition-all duration-300 font-medium text-sm sm:text-base py-2 sm:py-3"
           variant="default"
         >
-          <Eye className="h-4 w-4 mr-2" />
+          <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
           View Full Details
         </Button>
       </CardContent>
