@@ -45,11 +45,8 @@ const SalonsPageRedesigned = () => {
   };
 
   const handleViewDetails = (salon: RealSalonListing) => {
-    console.log('🚀 handleViewDetails called with salon:', salon.name);
-    console.log('🔧 Setting selectedSalon and opening modal...');
     setSelectedSalon(salon);
     setIsModalOpen(true);
-    console.log('✅ Modal state should now be open');
   };
 
   const clearFilters = () => {
