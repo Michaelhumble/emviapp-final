@@ -36,19 +36,19 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
+          <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             {salon.name}
           </DialogTitle>
         </DialogHeader>
 
-        {/* Full Image Gallery - Always on top */}
-        <div className="mb-6">
+        {/* Full Image Gallery - Mobile optimized */}
+        <div className="mb-4 sm:mb-6">
           {salon.images.length > 0 ? (
             <div className="relative">
-              {/* Main Image */}
-              <div className="relative h-64 md:h-80 overflow-hidden rounded-lg">
+              {/* Main Image - Mobile optimized height */}
+              <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden rounded-lg">
                 <img
                   src={salon.images[currentImageIndex]}
                   alt={salon.name}
@@ -60,33 +60,33 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-black/60 text-white rounded-full p-2 hover:bg-black/80 transition-all"
+                      className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 bg-black/60 text-white rounded-full p-1.5 sm:p-2 hover:bg-black/80 transition-all"
                     >
-                      <ChevronLeft className="h-5 w-5" />
+                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-black/60 text-white rounded-full p-2 hover:bg-black/80 transition-all"
+                      className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 bg-black/60 text-white rounded-full p-1.5 sm:p-2 hover:bg-black/80 transition-all"
                     >
-                      <ChevronRight className="h-5 w-5" />
+                      <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   </>
                 )}
 
-                {/* Image counter */}
-                <div className="absolute bottom-3 right-3 bg-black/70 text-white px-3 py-1 rounded-md text-sm">
+                {/* Image counter - Mobile optimized */}
+                <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 bg-black/70 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm">
                   {currentImageIndex + 1} / {salon.images.length}
                 </div>
               </div>
 
-              {/* Thumbnail strip */}
+              {/* Thumbnail strip - Mobile optimized */}
               {salon.images.length > 1 && (
-                <div className="flex gap-2 mt-3 overflow-x-auto">
+                <div className="flex gap-1.5 sm:gap-2 mt-2 sm:mt-3 overflow-x-auto">
                   {salon.images.map((imageUrl, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`relative w-16 h-16 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
+                      className={`relative w-12 h-12 sm:w-16 sm:h-16 rounded border-2 overflow-hidden bg-white shadow-sm flex-shrink-0 ${
                         index === currentImageIndex ? 'border-purple-500' : 'border-gray-200'
                       }`}
                     >
@@ -104,7 +104,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               )}
             </div>
           ) : (
-            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="h-48 sm:h-64 bg-gray-100 rounded-lg flex items-center justify-center">
               <div className="text-center text-gray-500">
                 <div className="text-4xl mb-2">📷</div>
                 <div className="font-medium">Photos Coming Soon</div>
@@ -113,54 +113,54 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
           )}
         </div>
 
-        {/* Salon Details */}
-        <div className="space-y-6">
-          {/* Price and Key Info */}
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="text-3xl font-bold text-purple-600">{salon.price}</div>
+        {/* Salon Details - Mobile optimized spacing */}
+        <div className="space-y-4 sm:space-y-6">
+          {/* Price and Key Info - Mobile optimized */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <div className="text-2xl sm:text-3xl font-bold text-purple-600">{salon.price}</div>
             {salon.urgent && (
-              <Badge className="bg-red-100 text-red-800">URGENT SALE</Badge>
+              <Badge className="bg-red-100 text-red-800 text-xs">URGENT SALE</Badge>
             )}
             {salon.featured && (
-              <Badge className="bg-purple-100 text-purple-800">FEATURED</Badge>
+              <Badge className="bg-purple-100 text-purple-800 text-xs">FEATURED</Badge>
             )}
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Stats Grid - Mobile optimized */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-purple-500" />
+              <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
               <div>
-                <div className="text-sm text-gray-500">Location</div>
-                <div className="font-medium">{salon.location}</div>
+                <div className="text-xs sm:text-sm text-gray-500">Location</div>
+                <div className="font-medium text-sm sm:text-base">{salon.location}</div>
               </div>
             </div>
             
             {salon.sqft && (
               <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-blue-500" />
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                 <div>
-                  <div className="text-sm text-gray-500">Size</div>
-                  <div className="font-medium">{salon.sqft.toLocaleString()} sqft</div>
+                  <div className="text-xs sm:text-sm text-gray-500">Size</div>
+                  <div className="font-medium text-sm sm:text-base">{salon.sqft.toLocaleString()} sqft</div>
                 </div>
               </div>
             )}
 
             {salon.monthlyRent && (
               <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-green-500" />
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                 <div>
-                  <div className="text-sm text-gray-500">Monthly Rent</div>
-                  <div className="font-medium">${salon.monthlyRent.toLocaleString()}</div>
+                  <div className="text-xs sm:text-sm text-gray-500">Monthly Rent</div>
+                  <div className="font-medium text-sm sm:text-base">${salon.monthlyRent.toLocaleString()}</div>
                 </div>
               </div>
             )}
 
             <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-gray-500" />
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-gray-500">Posted</div>
-                <div className="font-medium">{salon.datePosted}</div>
+                <div className="text-xs sm:text-sm text-gray-500">Posted</div>
+                <div className="font-medium text-sm sm:text-base">{salon.datePosted}</div>
               </div>
             </div>
           </div>
@@ -173,13 +173,13 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
                 {salon.description_vi ? (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Mô tả chi tiết</h3>
-                      <p className="text-gray-700 leading-relaxed font-medium">{salon.description_vi}</p>
+                      <h3 className="text-base sm:text-lg font-semibold mb-2">Mô tả chi tiết</h3>
+                      <p className="text-gray-700 leading-relaxed font-medium text-sm sm:text-base">{salon.description_vi}</p>
                     </div>
                     <hr className="border-gray-200" />
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">English Description</h3>
-                      <p className="text-gray-600 leading-relaxed">{salon.description_en}</p>
+                      <h3 className="text-base sm:text-lg font-semibold mb-2">English Description</h3>
+                      <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{salon.description_en}</p>
                     </div>
                   </>
                 ) : (
@@ -256,14 +256,14 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-3">
-                  <Button className="bg-green-600 hover:bg-green-700">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3">
+                  <Button className="bg-green-600 hover:bg-green-700 text-sm">
                     📞 Call Now
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" className="text-sm">
                     ✉️ Send Message
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" className="text-sm">
                     📅 Schedule Viewing
                   </Button>
                 </div>
