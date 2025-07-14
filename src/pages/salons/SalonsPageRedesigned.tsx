@@ -126,6 +126,28 @@ const SalonsPageRedesigned = () => {
   const urgentSalons = filteredSalons.filter(s => s.urgent);
   const vietnameseSalons = filteredSalons.filter(s => s.description_vi);
 
+  // ✅ FIXED: Categorize salon sales by pricing tier for correct section placement
+  const untilSoldSalons = salonSales.filter(salon => salon.selected_pricing_tier === 'annual');
+  const premiumSalons = salonSales.filter(salon => salon.selected_pricing_tier === 'premium');
+  const goldSalons = salonSales.filter(salon => salon.selected_pricing_tier === 'gold');
+  const basicSalons = salonSales.filter(salon => salon.selected_pricing_tier === 'basic');
+  
+  // Featured listings are those with featured addon OR premium/gold tiers
+  const featuredDbSalons = salonSales.filter(salon => 
+    salon.is_featured || salon.featured_addon || salon.selected_pricing_tier === 'premium' || salon.selected_pricing_tier === 'gold'
+  );
+  
+  // Get days remaining for any salon
+  const getDaysRemaining = (salon: SalonSale) => {
+    if (salon.selected_pricing_tier === 'annual') return 'Until Sold';
+    if (!salon.expires_at) return '';
+    const expiry = new Date(salon.expires_at);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? `${diffDays} days left` : 'Expired';
+  };
+
   return (
     <Layout>
       {/* Premium Hero Section */}
@@ -230,35 +252,120 @@ const SalonsPageRedesigned = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8" id="listings">
-        {/* Latest Salon Sales - Database Listings */}
-        {!loading && salonSales.length > 0 && (
+        
+        {/* Until Sold Listings - Annual Plan ($149) */}
+        {!loading && untilSoldSalons.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center gap-3 mb-6">
-              <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-2 rounded-lg">
-                <Crown className="h-6 w-6 text-purple-600" />
+              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 p-2 rounded-lg">
+                <Crown className="h-6 w-6 text-yellow-600" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">🔥 Latest Salon Sales</h2>
-              <Badge className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 border-purple-200">
-                New Listings
+              <h2 className="text-3xl font-bold text-gray-900">👑 Until Sold - Premium Unlimited</h2>
+              <Badge className="bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200">
+                No Expiration
               </Badge>
             </div>
-            <p className="text-gray-600 mb-6 text-lg">Fresh salon opportunities just posted by real owners</p>
+            <p className="text-gray-600 mb-6 text-lg">Premium salons staying listed until they sell - maximum exposure</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {salonSales.slice(0, 9).map(salon => (
-                <SalonSaleCard
-                  key={salon.id}
-                  salon={salon}
-                  onViewDetails={() => handleViewSalonSaleDetails(salon)}
-                />
+              {untilSoldSalons.map(salon => (
+                <div key={salon.id} className="relative">
+                  <SalonSaleCard
+                    salon={salon}
+                    onViewDetails={() => handleViewSalonSaleDetails(salon)}
+                  />
+                  <Badge className="absolute top-2 right-2 bg-yellow-500 text-white">
+                    Until Sold
+                  </Badge>
+                </div>
               ))}
             </div>
-            {salonSales.length > 9 && (
-              <div className="text-center mt-8">
-                <Button variant="outline" size="lg" className="bg-white border-purple-200 text-purple-700 hover:bg-purple-50">
-                  View All {salonSales.length} Salon Sales
-                </Button>
+          </section>
+        )}
+
+        {/* Premium Listings - Fast Sale Plan ($39.99) */}
+        {!loading && premiumSalons.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-2 rounded-lg">
+                <Crown className="h-6 w-6 text-purple-600" />
               </div>
-            )}
+              <h2 className="text-3xl font-bold text-gray-900">💎 Premium Listings (90 Days)</h2>
+              <Badge className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border-purple-200">
+                Fast Sale Plan
+              </Badge>
+            </div>
+            <p className="text-gray-600 mb-6 text-lg">Premium visibility with top search placement for quick sales</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {premiumSalons.map(salon => (
+                <div key={salon.id} className="relative">
+                  <SalonSaleCard
+                    salon={salon}
+                    onViewDetails={() => handleViewSalonSaleDetails(salon)}
+                  />
+                  <Badge className="absolute top-2 right-2 bg-purple-500 text-white">
+                    {getDaysRemaining(salon)}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Gold Listings - Standard Plan ($59.99) */}
+        {!loading && goldSalons.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 p-2 rounded-lg">
+                <Star className="h-6 w-6 text-yellow-600" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">⭐ Featured Listings (60 Days)</h2>
+              <Badge className="bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200">
+                Standard Plan
+              </Badge>
+            </div>
+            <p className="text-gray-600 mb-6 text-lg">Enhanced visibility with priority search placement</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {goldSalons.map(salon => (
+                <div key={salon.id} className="relative">
+                  <SalonSaleCard
+                    salon={salon}
+                    onViewDetails={() => handleViewSalonSaleDetails(salon)}
+                  />
+                  <Badge className="absolute top-2 right-2 bg-yellow-500 text-white">
+                    {getDaysRemaining(salon)}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Basic Listings - Basic Plan ($19.99) */}
+        {!loading && basicSalons.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-gradient-to-r from-blue-100 to-blue-100 p-2 rounded-lg">
+                <Sparkles className="h-6 w-6 text-blue-600" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">🔹 Standard Listings (30 Days)</h2>
+              <Badge className="bg-gradient-to-r from-blue-100 to-blue-100 text-blue-800 border-blue-200">
+                Basic Plan
+              </Badge>
+            </div>
+            <p className="text-gray-600 mb-6 text-lg">Essential visibility for your salon listing</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {basicSalons.map(salon => (
+                <div key={salon.id} className="relative">
+                  <SalonSaleCard
+                    salon={salon}
+                    onViewDetails={() => handleViewSalonSaleDetails(salon)}
+                  />
+                  <Badge className="absolute top-2 right-2 bg-blue-500 text-white">
+                    {getDaysRemaining(salon)}
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
