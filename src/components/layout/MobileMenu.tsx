@@ -76,113 +76,88 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               overflowY: 'hidden' // Let the inner scroll container handle scrolling
             }}
           >
-            {/* Header */}
+            {/* Header with Profile Integration */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
-              <div className="flex-1 flex justify-center">
+              <div className="flex items-center space-x-3 flex-1">
                 <Logo size="small" showText={true} />
+                {user && userProfile && (
+                  <div className="flex items-center space-x-2 ml-auto mr-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage 
+                        src={userProfile?.avatar_url || undefined} 
+                        alt={userProfile?.full_name || userProfile?.salon_name || 'Profile'} 
+                      />
+                      <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold">
+                        {(userProfile?.full_name || userProfile?.salon_name || 'U').charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="hidden sm:block">
+                      <p className="text-xs font-medium text-gray-900 truncate max-w-20">
+                        {userProfile?.full_name || userProfile?.salon_name || 'User'}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 hover:bg-gray-100"
+                className="h-8 w-8 hover:bg-gray-100 flex-shrink-0"
               >
                 <X className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* Profile Card - Show only when authenticated */}
-            {user && userProfile && (
-              <div className="p-4 border-b border-gray-100 flex-shrink-0">
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage 
-                      src={userProfile?.avatar_url || undefined} 
-                      alt={userProfile?.full_name || userProfile?.salon_name || 'Profile'} 
-                    />
-                    <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold">
-                      {(userProfile?.full_name || userProfile?.salon_name || 'U').charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
-                      {userProfile?.full_name || userProfile?.salon_name || 'User'}
-                    </h3>
-                    <p className="text-sm text-gray-500 truncate">
-                      {userProfile?.specialty || userRole || 'Member'}
-                    </p>
-                    <Link 
-                      to="/dashboard" 
-                      onClick={onClose}
-                      className="text-xs text-purple-600 hover:text-purple-700 font-medium"
-                    >
-                      View Dashboard →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Scrollable Content Area */}
-            <div className="flex-1 min-h-0 flex flex-col">
-              {/* Navigation Items */}
-              <div className="flex-1 overflow-y-auto p-4" style={{ WebkitOverflowScrolling: 'touch' }}>
-                <nav>
-                  <div className="space-y-1">
-                    {menuItems.map((item) => (
-                      <Link
-                        key={item.label}
-                        to={item.href}
-                        onClick={onClose}
-                        className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span className="font-medium">{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </nav>
-              </div>
-
-              {/* Action Buttons Section */}
-              <div className="px-4 pb-2 space-y-2 flex-shrink-0">
-                <Button
-                  asChild
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                >
-                  <Link to="/post-job" onClick={onClose}>
-                    Post a Job
-                  </Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="w-full border-gray-200 hover:bg-gray-50"
-                >
-                  <Link to="/sell-salon" onClick={onClose}>
-                    Post Your Salon
-                  </Link>
-                </Button>
-              </div>
+            {/* Action Buttons Section - Moved to top */}
+            <div className="p-4 space-y-2 flex-shrink-0">
+              <Button
+                asChild
+                size="sm"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+              >
+                <Link to="/post-job" onClick={onClose}>
+                  Post a Job
+                </Link>
+              </Button>
+              
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="w-full border-gray-200 hover:bg-gray-50"
+              >
+                <Link to="/sell-salon" onClick={onClose}>
+                  Post Your Salon
+                </Link>
+              </Button>
             </div>
 
-            {/* Authentication Section - ALWAYS VISIBLE */}
-            <div className="px-4 py-3 border-t-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 flex-shrink-0">
+            {/* Authentication Section - Moved to top */}
+            <div className="px-4 pb-4 flex-shrink-0">
               {user ? (
-                <Button
-                  onClick={() => handleAuthAction('signOut')}
-                  variant="outline"
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-                >
-                  Sign Out
-                </Button>
+                <div className="space-y-2">
+                  <Link 
+                    to="/dashboard" 
+                    onClick={onClose}
+                    className="block w-full text-center text-sm text-purple-600 hover:text-purple-700 font-medium py-1"
+                  >
+                    View Dashboard →
+                  </Link>
+                  <Button
+                    onClick={() => handleAuthAction('signOut')}
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
               ) : (
                 <div className="space-y-2">
                   <Button
                     onClick={() => handleAuthAction('signin')}
+                    size="sm"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     Sign In
@@ -190,12 +165,32 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   <Button
                     onClick={() => handleAuthAction('signup')}
                     variant="outline"
+                    size="sm"
                     className="w-full border-gray-200 hover:bg-gray-50"
                   >
                     Sign Up
                   </Button>
                 </div>
               )}
+            </div>
+
+            {/* Navigation Items - Now has more space */}
+            <div className="flex-1 overflow-y-auto border-t border-gray-100" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <nav className="p-4">
+                <div className="space-y-1">
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      onClick={onClose}
+                      className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </nav>
             </div>
           </motion.div>
         </>
