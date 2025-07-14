@@ -67,7 +67,7 @@ const CommunityHeader: React.FC<CommunityHeaderProps> = ({
 
   return (
     <div 
-      className={`sticky top-0 z-40 transition-all duration-300 ease-in-out ${
+      className={`sticky top-0 z-30 transition-all duration-300 ease-in-out ${
         isHidden ? '-translate-y-full' : 'translate-y-0'
       } ${
         isCompact 
