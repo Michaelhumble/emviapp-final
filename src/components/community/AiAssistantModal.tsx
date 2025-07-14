@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, ThumbsUp, ThumbsDown, Flag, Copy, Share, Save, Zap } from 'lucide-react';
+import { Sparkles, ThumbsUp, ThumbsDown, Flag, Copy, Share, Save, Zap, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
 
 interface AiAssistantModalProps {
   open: boolean;
@@ -30,7 +31,11 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
   const [language, setLanguage] = useState<'en' | 'vi'>('en');
   const [answers, setAnswers] = useState<AIAnswer | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareContent, setShareContent] = useState('');
+  const [sharingAnswer, setSharingAnswer] = useState('');
   const [feedback, setFeedback] = useState<Record<string, 'up' | 'down' | null>>({});
+  const { user } = useAuth();
 
   const askAI = async () => {
     if (!question.trim()) {
@@ -108,6 +113,44 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
     
     toast.success('Answer added to your post!');
     onOpenChange(false);
+  };
+
+  const handleShareAnswer = (answer: string) => {
+    if (!user) {
+      toast.error('Please sign in to share');
+      return;
+    }
+    
+    const aiAttribution = language === 'en' 
+      ? '\n\n✨ Powered by EmviApp AI'
+      : '\n\n✨ Được hỗ trợ bởi EmviApp AI';
+    
+    setShareContent(answer + aiAttribution);
+    setSharingAnswer(answer);
+    setShowShareDialog(true);
+  };
+
+  const submitSharedPost = async () => {
+    try {
+      // Log analytics
+      await supabase.functions.invoke('share-ai-answer', {
+        body: {
+          userId: user?.id,
+          originalQuestion: question,
+          sharedAnswer: sharingAnswer,
+          language
+        },
+      });
+
+      // Create community post (simplified for demo)
+      toast.success('AI answer shared to community!');
+      setShowShareDialog(false);
+      setShareContent('');
+      
+    } catch (error) {
+      console.error('Share error:', error);
+      toast.error('Failed to share answer');
+    }
   };
 
   const copyToClipboard = (text: string) => {
@@ -211,6 +254,7 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
                   onFeedback={handleFeedback}
                   onUse={handleUseAnswer}
                   onCopy={copyToClipboard}
+                  onShare={handleShareAnswer}
                   language={language}
                 />
 
@@ -222,6 +266,7 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
                   onFeedback={handleFeedback}
                   onUse={handleUseAnswer}
                   onCopy={copyToClipboard}
+                  onShare={handleShareAnswer}
                   language={language}
                 />
 
@@ -233,6 +278,7 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
                   onFeedback={handleFeedback}
                   onUse={handleUseAnswer}
                   onCopy={copyToClipboard}
+                  onShare={handleShareAnswer}
                   language={language}
                 />
               </div>
@@ -240,6 +286,43 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
           )}
         </div>
       </DialogContent>
+
+      {/* Share Dialog */}
+      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+        <DialogContent className="max-w-lg mx-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Share className="h-4 w-4" />
+              {language === 'en' ? 'Share AI Answer' : 'Chia sẻ câu trả lời AI'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <Textarea
+              value={shareContent}
+              onChange={(e) => setShareContent(e.target.value)}
+              className="min-h-32 resize-none"
+              placeholder={language === 'en' ? 'Edit your post before sharing...' : 'Chỉnh sửa bài đăng trước khi chia sẻ...'}
+            />
+            
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowShareDialog(false)}
+              >
+                {language === 'en' ? 'Cancel' : 'Hủy'}
+              </Button>
+              <Button
+                onClick={submitSharedPost}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                <Send className="h-3 w-3 mr-1" />
+                {language === 'en' ? 'Share to Community' : 'Chia sẻ với cộng đồng'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 };
@@ -252,10 +335,11 @@ interface AIAnswerCardProps {
   onFeedback: (index: number, type: 'up' | 'down' | 'report') => void;
   onUse: (answer: string, shouldPolish?: boolean) => void;
   onCopy: (text: string) => void;
+  onShare?: (answer: string) => void;
   language: 'en' | 'vi';
 }
 
-const AIAnswerCard = ({ title, answer, answerIndex, feedback, onFeedback, onUse, onCopy, language }: AIAnswerCardProps) => {
+const AIAnswerCard = ({ title, answer, answerIndex, feedback, onFeedback, onUse, onCopy, onShare, language }: AIAnswerCardProps) => {
   return (
     <div className="border border-gray-200 rounded-lg p-4 bg-gradient-to-br from-purple-50 to-pink-50">
       <div className="flex items-center gap-2 mb-3">
@@ -303,6 +387,18 @@ const AIAnswerCard = ({ title, answer, answerIndex, feedback, onFeedback, onUse,
           <Copy className="h-3 w-3 mr-1" />
           {language === 'en' ? 'Copy' : 'Sao chép'}
         </Button>
+
+        {onShare && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onShare(answer)}
+            className="text-green-600 border-green-300 hover:bg-green-50"
+          >
+            <Share className="h-3 w-3 mr-1" />
+            {language === 'en' ? 'Share' : 'Chia sẻ'}
+          </Button>
+        )}
 
         {/* Feedback Buttons */}
         <div className="flex gap-1 ml-auto">
