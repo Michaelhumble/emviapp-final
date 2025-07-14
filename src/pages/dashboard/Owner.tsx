@@ -21,9 +21,13 @@ import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromot
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
 import SalonTeamManagement from "@/components/dashboard/salon/team/SalonTeamManagement";
-import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
+import SalonTeamManager from "@/components/dashboard/salon/SalonTeamManager";
 import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
+import SalonPhotoManager from "@/components/dashboard/salon/SalonPhotoManager";
+import SalonJobManager from "@/components/dashboard/salon/SalonJobManager";
+import SalonAIFeatures from "@/components/dashboard/salon/SalonAIFeatures";
+import SalonSettings from "@/components/dashboard/salon/SalonSettings";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
 import { SalonProfileCompletionCard } from "@/components/salon/SalonProfileCompletionCard";
 import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
@@ -98,15 +102,28 @@ const OwnerDashboard = () => {
                 <SmartReminderBanner />
                 
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
-                  <TabsList className="grid grid-cols-7 mb-8">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Overview</TabsTrigger>
-                    <TabsTrigger value="bookings" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Bookings</TabsTrigger>
-                    <TabsTrigger value="clients" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Clients</TabsTrigger>
-                    <TabsTrigger value="team" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Team</TabsTrigger>
-                    <TabsTrigger value="services" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Services</TabsTrigger>
-                    <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Analytics</TabsTrigger>
-                    <TabsTrigger value="messages" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Messages</TabsTrigger>
-                    <TabsTrigger value="earnings" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Earnings</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-7 mb-8 h-auto p-1 bg-white/80 backdrop-blur-sm border shadow-lg">
+                    <TabsTrigger value="overview" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white flex items-center gap-2 py-3">
+                      Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="calendar" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white flex items-center gap-2 py-3">
+                      Calendar
+                    </TabsTrigger>
+                    <TabsTrigger value="photos" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white flex items-center gap-2 py-3">
+                      Photos
+                    </TabsTrigger>
+                    <TabsTrigger value="team" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-red-600 data-[state=active]:text-white flex items-center gap-2 py-3">
+                      Team & Recognition
+                    </TabsTrigger>
+                    <TabsTrigger value="jobs" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white flex items-center gap-2 py-3">
+                      Jobs/Hiring
+                    </TabsTrigger>
+                    <TabsTrigger value="ai-labs" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white flex items-center gap-2 py-3 relative">
+                      AI Labs
+                    </TabsTrigger>
+                    <TabsTrigger value="settings" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-600 data-[state=active]:to-slate-600 data-[state=active]:text-white flex items-center gap-2 py-3">
+                      Settings
+                    </TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="overview" className="space-y-8 pt-4">
@@ -145,66 +162,35 @@ const OwnerDashboard = () => {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="bookings" className="space-y-8">
-                    <SalonBookingsOverview />
-                    
-                    <SalonBookingFeed />
-                    
-                    <SalonBookingManager />
-                    
-                    <BookingAnalyticsCard />
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <div className="lg:col-span-1">
-                        <CreditUsageHistory />
-                      </div>
-                      
-                      <div className="lg:col-span-1">
-                        <MonthlyReportDownload />
-                      </div>
-                    </div>
-                    
+                  <TabsContent value="calendar" className="space-y-4 animate-fade-in">
                     <SalonBookingCalendar />
+                    <SalonBookingsOverview />
+                    <SalonBookingFeed />
                   </TabsContent>
                   
-                  <TabsContent value="clients" className="space-y-8">
-                    <SalonClientManagement />
+                  <TabsContent value="photos" className="space-y-4 animate-fade-in">
+                    <SalonPhotoManager />
                   </TabsContent>
                   
-                  <TabsContent value="team" className="space-y-8">
+                  <TabsContent value="team" className="space-y-4 animate-fade-in">
+                    <SalonTeamManager />
                     <SalonTeamSection />
                     <SalonTeamChat />
                   </TabsContent>
                   
-                  <TabsContent value="services" className="space-y-8">
-                    <SalonServiceManagement />
-                    <SalonServiceManager />
-                    <SalonCreditStatus />
-                  </TabsContent>
-                  
-                  <TabsContent value="analytics" className="space-y-8">
-                    <SalonAnalytics />
-                    
-                    <BookingAnalyticsCard />
-                    
-                    <CreditUsageHistory />
-                    
-                    <MonthlyReportDownload />
-                    
-                    <SalonAnalyticsCards />
-                    
-                    <SalonListingsManagement />
-                    
+                  <TabsContent value="jobs" className="space-y-4 animate-fade-in">
+                    <SalonJobManager />
                     <SalonPostedJobsSection />
                   </TabsContent>
                   
-                  <TabsContent value="messages" className="space-y-8">
-                    <SalonMessagingCenter />
-                    
-                    <SalonNotificationCenter />
+                  <TabsContent value="ai-labs" className="space-y-4 animate-fade-in">
+                    <SalonAIFeatures />
                   </TabsContent>
-                  <TabsContent value="earnings" className="space-y-8">
-                    <SalonEarningsSection />
+                  
+                  <TabsContent value="settings" className="space-y-4 animate-fade-in">
+                    <SalonSettings />
+                    <SalonServiceManagement />
+                    <SalonAnalytics />
                   </TabsContent>
                 </Tabs>
                 
