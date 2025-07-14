@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, MessageCircle, Share2, Bookmark, ThumbsUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { CommunityPost } from '@/hooks/useCommunityPosts';
+import ReportButton from './ReportButton';
 
 interface PostReactionsProps {
   post: CommunityPost;
@@ -88,14 +89,22 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostRea
           </Button>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBookmark}
-          className="text-gray-500 hover:text-yellow-500"
-        >
-          <Bookmark className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBookmark}
+            className="text-gray-500 hover:text-yellow-500"
+          >
+            <Bookmark className="h-4 w-4" />
+          </Button>
+          
+          <ReportButton 
+            contentType="post" 
+            contentId={post.id} 
+            compact={true}
+          />
+        </div>
       </div>
 
       {/* Quick Emoji Reactions */}

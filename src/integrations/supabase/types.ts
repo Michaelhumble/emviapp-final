@@ -41,6 +41,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_logs: {
+        Row: {
+          admin_action: string | null
+          admin_reviewed: boolean | null
+          created_at: string
+          flagged_reason: string | null
+          id: string
+          ip_address: string | null
+          prompt: string
+          prompt_hash: string
+          response: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_action?: string | null
+          admin_reviewed?: boolean | null
+          created_at?: string
+          flagged_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          prompt: string
+          prompt_hash: string
+          response?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_action?: string | null
+          admin_reviewed?: boolean | null
+          created_at?: string
+          flagged_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          prompt?: string
+          prompt_hash?: string
+          response?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           application_data: Json | null
@@ -970,6 +1018,48 @@ export type Database = {
           name?: string
           status?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      content_reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          report_details: string | null
+          report_reason: string
+          reported_content_id: string
+          reported_content_type: string
+          reporter_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          report_details?: string | null
+          report_reason: string
+          reported_content_id: string
+          reported_content_type: string
+          reporter_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          report_details?: string | null
+          report_reason?: string
+          reported_content_id?: string
+          reported_content_type?: string
+          reporter_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -3656,6 +3746,10 @@ export type Database = {
         Args: { p_user_id: string; p_post_type: string }
         Returns: boolean
       }
+      check_ai_rate_limit: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
       create_diamond_tier_waitlist_if_not_exists: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -3680,6 +3774,10 @@ export type Database = {
       decrement_post_likes: {
         Args: { post_id: string }
         Returns: undefined
+      }
+      detect_prompt_abuse: {
+        Args: { p_user_id: string; p_prompt: string; p_prompt_hash: string }
+        Returns: string
       }
       generate_team_invite_code: {
         Args: Record<PropertyKey, never>
