@@ -20,6 +20,7 @@ import PhotoUploader from '@/components/posting/PhotoUploader';
 import CommunityPostComposer from '@/components/community/CommunityPostComposer';
 import AiAssistantModal from '@/components/community/AiAssistantModal';
 import LeaderboardWidget from '@/components/community/LeaderboardWidget';
+import OnboardingModal from '@/components/community/OnboardingModal';
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,6 +34,7 @@ const Community = () => {
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [location, setLocation] = useState('');
   const [showAiAssistant, setShowAiAssistant] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { posts, isLoading, fetchPosts, createPost, toggleLike } = useCommunityPosts();
   const { user, isSignedIn } = useAuth();
 
@@ -113,9 +115,35 @@ const Community = () => {
     return `${days}d ago`;
   };
 
+  // Check for new users and show onboarding
+  useEffect(() => {
+    if (isSignedIn && user) {
+      const hasSeenOnboarding = localStorage.getItem(`onboarding_seen_${user.id}`);
+      const userCreatedAt = new Date(user.created_at);
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      
+      // Show onboarding for users created in the last 24 hours who haven't seen it
+      if (!hasSeenOnboarding && userCreatedAt > oneDayAgo) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [isSignedIn, user]);
+
   useEffect(() => {
     fetchPosts(activeFilter === 'all' ? undefined : activeFilter, searchQuery);
   }, [activeFilter, searchQuery]);
+
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+    if (user) {
+      localStorage.setItem(`onboarding_seen_${user.id}`, 'true');
+    }
+  };
+
+  const handleTryAI = () => {
+    setShowPostComposer(true);
+    setPostContent("@AI ");
+  };
 
   return (
     <Layout>
@@ -455,6 +483,19 @@ const Community = () => {
             setSearchQuery(query);
             setShowSearch(false);
           }}
+        />
+
+        {/* AI Assistant Modal */}
+        <AiAssistantModal 
+          open={showAiAssistant} 
+          onOpenChange={setShowAiAssistant} 
+        />
+
+        {/* Onboarding Modal */}
+        <OnboardingModal 
+          isOpen={showOnboarding} 
+          onClose={handleOnboardingClose}
+          onTryAI={handleTryAI}
         />
       </div>
     </Layout>
