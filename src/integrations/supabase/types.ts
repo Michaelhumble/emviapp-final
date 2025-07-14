@@ -1937,6 +1937,57 @@ export type Database = {
           },
         ]
       }
+      salon_bookings: {
+        Row: {
+          artist_id: string | null
+          booking_date: string
+          booking_time: string
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          salon_id: string
+          service_name: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          artist_id?: string | null
+          booking_date: string
+          booking_time: string
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          salon_id: string
+          service_name: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          artist_id?: string | null
+          booking_date?: string
+          booking_time?: string
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          salon_id?: string
+          service_name?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       salon_listings: {
         Row: {
           address: string | null
@@ -2017,25 +2068,34 @@ export type Database = {
           caption: string | null
           created_at: string | null
           id: string
+          is_primary: boolean | null
           order_number: number | null
           photo_url: string
           salon_id: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
           caption?: string | null
           created_at?: string | null
           id?: string
+          is_primary?: boolean | null
           order_number?: number | null
           photo_url: string
           salon_id?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
           caption?: string | null
           created_at?: string | null
           id?: string
+          is_primary?: boolean | null
           order_number?: number | null
           photo_url?: string
           salon_id?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -2434,6 +2494,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      salon_team_members: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          joined_date: string | null
+          name: string
+          role: string
+          salon_id: string
+          specialties: string[] | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          joined_date?: string | null
+          name: string
+          role: string
+          salon_id: string
+          specialties?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          joined_date?: string | null
+          name?: string
+          role?: string
+          salon_id?: string
+          specialties?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       salon_team_messages: {
         Row: {

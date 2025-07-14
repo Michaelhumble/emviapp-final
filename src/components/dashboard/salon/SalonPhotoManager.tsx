@@ -1,65 +1,52 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Upload, Image, Trash2, Edit, Move, Plus, ChevronUp, ChevronDown } from 'lucide-react';
-import { toast } from 'sonner';
+import { useSalonPhotos } from '@/hooks/useSalonPhotos';
 
 const SalonPhotoManager = () => {
-  const [photos, setPhotos] = useState([
-    {
-      id: 1,
-      url: '/api/placeholder/300/200',
-      title: 'Main Reception Area',
-      isPrimary: true
-    },
-    {
-      id: 2,
-      url: '/api/placeholder/300/200',
-      title: 'Treatment Room 1',
-      isPrimary: false
-    },
-    {
-      id: 3,
-      url: '/api/placeholder/300/200',
-      title: 'Luxury Spa Suite',
-      isPrimary: false
-    }
-  ]);
+  const { photos, loading, isUploading, uploadPhoto, deletePhoto, setPrimaryPhoto, reorderPhotos } = useSalonPhotos();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = () => {
-    toast.success("Photo uploaded successfully!", {
-      description: "Your new salon photo is now visible to potential clients."
-    });
+    fileInputRef.current?.click();
   };
 
-  const handleDelete = (photoId: number) => {
-    setPhotos(photos.filter(p => p.id !== photoId));
-    toast.success("Photo deleted successfully");
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    for (const file of files) {
+      await uploadPhoto(file);
+    }
+    
+    // Reset the input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  const handleSetPrimary = (photoId: number) => {
-    setPhotos(photos.map(p => ({
-      ...p,
-      isPrimary: p.id === photoId
-    })));
-    toast.success("Primary photo updated");
+  const handleDelete = async (photoId: string) => {
+    await deletePhoto(photoId);
   };
 
-  const handleMovePhoto = (photoId: number, direction: 'up' | 'down') => {
-    const currentIndex = photos.findIndex(p => p.id === photoId);
-    if (currentIndex === -1) return;
-    
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= photos.length) return;
-    
-    const newPhotos = [...photos];
-    [newPhotos[currentIndex], newPhotos[newIndex]] = [newPhotos[newIndex], newPhotos[currentIndex]];
-    
-    setPhotos(newPhotos);
-    toast.success("Photo order updated!");
+  const handleSetPrimary = async (photoId: string) => {
+    await setPrimaryPhoto(photoId);
   };
+
+  const handleMovePhoto = async (photoId: string, direction: 'up' | 'down') => {
+    await reorderPhotos(photoId, direction);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -76,10 +63,22 @@ const SalonPhotoManager = () => {
             <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Upload New Photos</h3>
             <p className="text-gray-500 mb-4">Drag and drop photos here, or click to browse</p>
-            <Button onClick={handleUpload} className="bg-purple-600 hover:bg-purple-700">
+            <Button 
+              onClick={handleUpload} 
+              disabled={isUploading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
               <Plus className="h-4 w-4 mr-2" />
-              Add Photos
+              {isUploading ? 'Uploading...' : 'Add Photos'}
             </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </div>
         </CardContent>
       </Card>
@@ -89,7 +88,7 @@ const SalonPhotoManager = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Current Gallery ({photos.length} photos)</span>
-            <Badge variant="outline">{photos.filter(p => p.isPrimary).length} Primary</Badge>
+            <Badge variant="outline">{photos.filter(p => p.is_primary).length} Primary</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
@@ -103,13 +102,13 @@ const SalonPhotoManager = () => {
               >
                 <div className="relative overflow-hidden rounded-lg border border-gray-200">
                   <img 
-                    src={photo.url} 
-                    alt={photo.title}
+                    src={photo.photo_url} 
+                    alt={photo.title || 'Salon photo'}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
                   />
                   
                   {/* Primary Badge */}
-                  {photo.isPrimary && (
+                  {photo.is_primary && (
                     <Badge className="absolute top-2 left-2 bg-emerald-500 text-white">
                       Primary
                     </Badge>
@@ -129,10 +128,9 @@ const SalonPhotoManager = () => {
                       <Button 
                         size="sm" 
                         variant="secondary"
-                        onClick={() => toast.info("Use the arrow buttons below the photo to reorder", {
-                          description: "Click the up/down arrows under each photo to change the order"
-                        })}
+                        onClick={() => {}}
                         className="text-xs"
+                        title="Use arrow buttons below to reorder"
                       >
                         <Move className="h-3 w-3" />
                       </Button>
@@ -149,10 +147,10 @@ const SalonPhotoManager = () => {
                 </div>
                 
                 <div className="mt-2">
-                  <p className="text-sm font-medium text-gray-700">{photo.title}</p>
+                  <p className="text-sm font-medium text-gray-700">{photo.title || 'Untitled'}</p>
                   <div className="flex gap-2 mt-1 items-center justify-between">
                     <div className="flex gap-2">
-                      {!photo.isPrimary && (
+                      {!photo.is_primary && (
                         <Button 
                           size="sm" 
                           variant="outline" 

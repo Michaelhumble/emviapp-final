@@ -6,8 +6,8 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus } from "lucid
 import { format } from "date-fns";
 import { WeeklyCalendar } from "./calendar/WeeklyCalendar";
 import { useAuth } from "@/context/auth";
-import { useAppointments } from "@/hooks/calendar/useAppointments";
 import { useCalendarNavigation } from "@/hooks/calendar/useCalendarNavigation";
+import { useSalonBookings } from "@/hooks/useSalonBookings";
 import {
   Dialog,
   DialogContent,
@@ -18,35 +18,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 
 const SalonBookingCalendar = () => {
   const { user } = useAuth();
   const { currentDate, weekDays, goToPreviousWeek, goToNextWeek, goToToday } = useCalendarNavigation();
-  const { appointments, isLoadingAppointments } = useAppointments(weekDays[0], weekDays[6]);
+  const { bookings, loading, createBooking } = useSalonBookings();
   const [isNewBookingOpen, setIsNewBookingOpen] = useState(false);
   const [bookingForm, setBookingForm] = useState({
-    clientName: "",
-    service: "",
-    date: "",
-    time: "",
-    duration: "60",
+    client_name: "",
+    service_name: "",
+    booking_date: "",
+    booking_time: "",
+    duration_minutes: 60,
     notes: ""
   });
 
-  const handleCreateBooking = () => {
-    toast.success("Booking created successfully!", {
-      description: `${bookingForm.clientName} scheduled for ${bookingForm.service} on ${bookingForm.date}`
+  const handleCreateBooking = async () => {
+    const success = await createBooking({
+      client_name: bookingForm.client_name,
+      service_name: bookingForm.service_name,
+      booking_date: bookingForm.booking_date,
+      booking_time: bookingForm.booking_time,
+      duration_minutes: bookingForm.duration_minutes,
+      notes: bookingForm.notes
     });
-    setIsNewBookingOpen(false);
-    setBookingForm({
-      clientName: "",
-      service: "",
-      date: "",
-      time: "",
-      duration: "60",
-      notes: ""
-    });
+    
+    if (success) {
+      setIsNewBookingOpen(false);
+      setBookingForm({
+        client_name: "",
+        service_name: "",
+        booking_date: "",
+        booking_time: "",
+        duration_minutes: 60,
+        notes: ""
+      });
+    }
   };
 
   return (

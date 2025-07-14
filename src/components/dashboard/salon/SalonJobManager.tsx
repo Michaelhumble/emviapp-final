@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Briefcase, Users, Eye, Edit, Trash2, Calendar, Clock, MapPin, DollarSign } from 'lucide-react';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useSalonJobs } from '@/hooks/useSalonJobs';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +25,7 @@ import {
 } from "@/components/ui/select";
 
 const SalonJobManager = () => {
-  const navigate = useNavigate();
+  const { jobs, applications, loading, updateJob, deleteJob, updateApplicationStatus } = useSalonJobs();
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
   const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
@@ -37,68 +36,24 @@ const SalonJobManager = () => {
     type: "interview",
     notes: ""
   });
-  const [activeJobs] = useState([
-    {
-      id: 1,
-      title: 'Senior Nail Technician',
-      type: 'Full-time',
-      location: 'San Francisco, CA',
-      postedDate: '2024-01-10',
-      applications: 12,
-      status: 'active'
-    },
-    {
-      id: 2,
-      title: 'Massage Therapist',
-      type: 'Part-time',
-      location: 'San Francisco, CA',
-      postedDate: '2024-01-08',
-      applications: 8,
-      status: 'active'
-    }
-  ]);
-
-  const [applications] = useState([
-    {
-      id: 1,
-      jobTitle: 'Senior Nail Technician',
-      applicantName: 'Sarah Johnson',
-      experience: '5 years',
-      appliedDate: '2024-01-12',
-      status: 'pending'
-    },
-    {
-      id: 2,
-      jobTitle: 'Senior Nail Technician',
-      applicantName: 'Maria Garcia',
-      experience: '3 years',
-      appliedDate: '2024-01-11',
-      status: 'reviewed'
-    },
-    {
-      id: 3,
-      jobTitle: 'Massage Therapist',
-      applicantName: 'Lisa Chen',
-      experience: '7 years',
-      appliedDate: '2024-01-10',
-      status: 'interview'
-    }
-  ]);
 
   const handlePostJob = () => {
-    navigate('/post-job');
+    // TODO: Navigate to job posting form or open modal
+    console.log('Navigate to job posting form');
   };
 
-  const handleEditJob = (jobId: number) => {
-    toast.success("Redirecting to job editor...");
+  const handleEditJob = async (jobId: string) => {
+    // TODO: Open edit modal or navigate to edit page
+    console.log('Edit job:', jobId);
   };
 
-  const handleDeleteJob = (jobId: number) => {
-    toast.success("Job posting deleted successfully");
+  const handleDeleteJob = async (jobId: string) => {
+    await deleteJob(jobId);
   };
 
-  const handleViewApplicant = (applicantId: number) => {
-    toast.success("Opening applicant profile...");
+  const handleViewApplicant = (applicantId: string) => {
+    // TODO: Open applicant profile modal
+    console.log('View applicant:', applicantId);
   };
 
   const handleViewJob = (job: any) => {
@@ -111,14 +66,21 @@ const SalonJobManager = () => {
     setIsScheduleDialogOpen(true);
   };
 
-  const handleSaveSchedule = () => {
-    toast.success(`${scheduleForm.type === 'interview' ? 'Interview' : 'Trial'} scheduled with ${selectedApplicant?.applicantName}!`, {
-      description: `Scheduled for ${scheduleForm.date} at ${scheduleForm.time}`
-    });
+  const handleSaveSchedule = async () => {
+    // TODO: Save schedule to database
+    await updateApplicationStatus(selectedApplicant.id, 'interview');
     setIsScheduleDialogOpen(false);
     setSelectedApplicant(null);
     setScheduleForm({ date: "", time: "", type: "interview", notes: "" });
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -156,7 +118,7 @@ const SalonJobManager = () => {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="jobs" className="flex items-center gap-2">
             <Briefcase className="h-4 w-4" />
-            My Job Posts ({activeJobs.length})
+            My Job Posts ({jobs.length})
           </TabsTrigger>
           <TabsTrigger value="applications" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -171,9 +133,9 @@ const SalonJobManager = () => {
               <CardTitle>Active Job Postings</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              {activeJobs.length > 0 ? (
+              {jobs.length > 0 ? (
                 <div className="space-y-4">
-                  {activeJobs.map((job) => (
+                  {jobs.map((job) => (
                     <motion.div
                       key={job.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -187,12 +149,12 @@ const SalonJobManager = () => {
                             <Badge className={getStatusColor(job.status)}>
                               {job.status}
                             </Badge>
-                            <Badge variant="outline">{job.type}</Badge>
+                            <Badge variant="outline">{job.category}</Badge>
                           </div>
-                          <p className="text-gray-600 text-sm mb-2">{job.location}</p>
+                          <p className="text-gray-600 text-sm mb-2">{job.location || 'Location not specified'}</p>
                           <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>Posted: {new Date(job.postedDate).toLocaleDateString()}</span>
-                            <span>{job.applications} applications</span>
+                            <span>Posted: {new Date(job.created_at).toLocaleDateString()}</span>
+                            <span>{applications.filter(app => app.job_id === job.id).length} applications</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -258,15 +220,14 @@ const SalonJobManager = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-800">{application.applicantName}</h3>
+                            <h3 className="text-lg font-semibold text-gray-800">Applicant #{application.applicant_id}</h3>
                             <Badge className={getStatusColor(application.status)}>
                               {application.status}
                             </Badge>
                           </div>
-                          <p className="text-gray-600 text-sm mb-1">Applied for: {application.jobTitle}</p>
+                          <p className="text-gray-600 text-sm mb-1">Job ID: {application.job_id}</p>
                           <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>Experience: {application.experience}</span>
-                            <span>Applied: {new Date(application.appliedDate).toLocaleDateString()}</span>
+                            <span>Applied: {new Date(application.created_at).toLocaleDateString()}</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">

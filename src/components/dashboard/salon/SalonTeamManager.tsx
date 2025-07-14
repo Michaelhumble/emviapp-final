@@ -42,9 +42,10 @@ import {
   Heart,
   UserPlus
 } from "lucide-react";
-import { toast } from "sonner";
+import { useSalonTeam } from '@/hooks/useSalonTeam';
 
 const SalonTeamManager = () => {
+  const { teamMembers, loading, addTeamMember, updateTeamMember, removeTeamMember, sendMessage } = useSalonTeam();
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
@@ -65,76 +66,29 @@ const SalonTeamManager = () => {
     specialty: ""
   });
 
-  // Mock team data - in real app, this would come from your backend
-  const teamMembers = [
-    {
-      id: 1,
-      name: "Maria Santos",
-      role: "Senior Stylist",
-      email: "maria@salon.com",
-      avatar: "",
-      rating: 4.9,
-      specialties: ["Hair Color", "Balayage"],
-      status: "active",
-      isEmployeeOfMonth: true,
-      joinedDate: "2023-01-15"
-    },
-    {
-      id: 2,
-      name: "Anna Chen",
-      role: "Nail Technician",
-      email: "anna@salon.com",
-      avatar: "",
-      rating: 4.8,
-      specialties: ["Gel Nails", "Nail Art"],
-      status: "active",
-      isEmployeeOfMonth: false,
-      joinedDate: "2023-03-20"
-    },
-    {
-      id: 3,
-      name: "Sophia Lee",
-      role: "Esthetician",
-      email: "sophia@salon.com",
-      avatar: "",
-      rating: 4.7,
-      specialties: ["Facials", "Skincare"],
-      status: "active",
-      isEmployeeOfMonth: false,
-      joinedDate: "2023-05-10"
-    },
-    {
-      id: 4,
-      name: "David Park",
-      role: "Massage Therapist",
-      email: "david@salon.com",
-      avatar: "",
-      rating: 4.9,
-      specialties: ["Deep Tissue", "Relaxation"],
-      status: "active",
-      isEmployeeOfMonth: false,
-      joinedDate: "2023-02-28"
+  const handleInviteMember = async () => {
+    const success = await addTeamMember({
+      name: inviteForm.name,
+      email: inviteForm.email,
+      role: inviteForm.role,
+      specialties: []
+    });
+    
+    if (success) {
+      setInviteForm({ name: "", email: "", role: "stylist" });
+      setIsInviteDialogOpen(false);
     }
-  ];
-
-  const handleInviteMember = () => {
-    // In real app, send invitation email
-    toast.success(`Invitation sent to ${inviteForm.email}!`);
-    setInviteForm({ name: "", email: "", role: "stylist" });
-    setIsInviteDialogOpen(false);
   };
 
   const handleWriteReview = () => {
-    // In real app, save review to backend
-    toast.success(`Review submitted for ${selectedMember?.name}!`);
+    // TODO: Implement review system
     setReviewForm({ rating: 5, comment: "" });
     setIsReviewDialogOpen(false);
     setSelectedMember(null);
   };
 
-  const handleRemoveMember = (member: any) => {
-    // In real app, remove member from backend
-    toast.success(`${member.name} has been removed from the team.`);
+  const handleRemoveMember = async (member: any) => {
+    await removeTeamMember(member.id, member.name);
   };
 
   const handleEditProfile = (member: any) => {
@@ -143,24 +97,38 @@ const SalonTeamManager = () => {
       name: member.name,
       role: member.role,
       email: member.email,
-      specialty: member.specialties.join(', ')
+      specialty: member.specialties ? member.specialties.join(', ') : ''
     });
     setIsEditProfileDialogOpen(true);
   };
 
-  const handleSaveProfile = () => {
-    // In real app, save to backend
-    toast.success(`${editForm.name}'s profile updated successfully!`);
-    setIsEditProfileDialogOpen(false);
-    setSelectedMember(null);
+  const handleSaveProfile = async () => {
+    if (!selectedMember) return;
+    
+    const success = await updateTeamMember(selectedMember.id, {
+      name: editForm.name,
+      role: editForm.role,
+      email: editForm.email,
+      specialties: editForm.specialty.split(',').map(s => s.trim()).filter(s => s)
+    });
+    
+    if (success) {
+      setIsEditProfileDialogOpen(false);
+      setSelectedMember(null);
+    }
   };
 
-  const handleSendMessage = (member: any) => {
-    // In real app, open chat or navigate to messaging
-    toast.info(`Direct messaging with ${member.name} will be available soon!`, {
-      description: "We're working on team chat functionality."
-    });
+  const handleSendMessage = async (member: any) => {
+    await sendMessage(member.id, member.name);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -331,42 +299,28 @@ const SalonTeamManager = () => {
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={member.avatar} />
-                        <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white font-bold">
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      {member.isEmployeeOfMonth && (
-                        <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-1">
-                          <Crown className="h-3 w-3 text-yellow-800" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                        {member.isEmployeeOfMonth && (
-                          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">
-                            Employee of the Month
-                          </Badge>
-                        )}
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src="" />
+                          <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white font-bold">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
                       </div>
-                      <p className="text-sm text-gray-600">{member.role}</p>
-                      <div className="flex items-center gap-3 mt-1">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          <span className="text-sm font-medium">{member.rating}</span>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-900">{member.name}</h3>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {member.specialties.join(', ')}
+                        <p className="text-sm text-gray-600">{member.role}</p>
+                        <div className="flex items-center gap-3 mt-1">
+                          <div className="text-sm text-gray-500">
+                            {member.specialties && member.specialties.length > 0 ? member.specialties.join(', ') : 'No specialties listed'}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   <div className="flex items-center gap-2">
                     <Button
