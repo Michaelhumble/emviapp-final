@@ -11,7 +11,7 @@ const Community = () => {
 
   return (
     <Layout>
-      {/* Community Header - Sticky at top, never hides */}
+      {/* Community Header - Sticky at top */}
       <CommunityHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -20,15 +20,18 @@ const Community = () => {
       />
       
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          {/* Post Composer - Always visible directly under search */}
-          <div data-post-composer className="mb-6">
-            <CommunityStories />
-          </div>
-          
-          {/* Trending Topics - Regular card, no sticky/floating behavior on mobile/iPad */}
-          <div className="mb-6 lg:hidden">
-            <TrendingTopics />
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          {/* Mobile/iPad optimized layout */}
+          <div className="space-y-4">
+            {/* Post Composer - Always first, fully accessible */}
+            <div data-post-composer>
+              <CommunityStories />
+            </div>
+            
+            {/* Trending Topics - Static card below composer */}
+            <div className="lg:hidden">
+              <TrendingTopics />
+            </div>
           </div>
         </div>
       </div>
