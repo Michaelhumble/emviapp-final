@@ -7,6 +7,7 @@ import { MapPin, DollarSign, Clock, User, Mail, Phone, ChevronLeft, ChevronRight
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface SalonDetailModalProps {
   salon: RealSalonListing | null;
@@ -45,14 +46,15 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
         {/* Full Image Gallery - Mobile optimized */}
         <div className="mb-4 sm:mb-6">
-          {salon.images && salon.images.length > 0 ? (
+          {salon.images && salon.images.length > 0 && salon.images.some(img => img && img.trim() && img !== 'null') ? (
             <div className="relative">
               {/* Main Image - Mobile optimized height */}
               <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden rounded-lg">
-                <img
+                <ImageWithFallback
                   src={salon.images[currentImageIndex]}
                   alt={salon.name}
                   className="w-full h-full object-cover"
+                  businessName={salon.name}
                 />
                 
                 {/* Navigation arrows */}
@@ -90,10 +92,11 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
                         index === currentImageIndex ? 'border-purple-500' : 'border-gray-200'
                       }`}
                     >
-                      <img
+                      <ImageWithFallback
                         src={imageUrl}
                         alt={`Preview ${index + 1}`}
                         className="w-full h-full object-cover"
+                        businessName={salon.name}
                       />
                       {index === currentImageIndex && (
                         <div className="absolute inset-0 bg-purple-500/20"></div>
