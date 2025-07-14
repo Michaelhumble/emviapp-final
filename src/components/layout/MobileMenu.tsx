@@ -45,17 +45,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 z-40 md:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] md:hidden"
             onClick={onClose}
           />
 
           {/* Menu Panel */}
           <motion.div
-            initial={{ x: '-100%' }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
+            exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col overflow-y-auto"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[70] flex flex-col overflow-y-auto"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
