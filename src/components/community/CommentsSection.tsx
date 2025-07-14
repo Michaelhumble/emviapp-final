@@ -41,12 +41,12 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ storyId }) => {
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
-              {comment.user?.full_name?.charAt(0) || '?'}
+              {comment.profiles?.full_name?.charAt(0) || '?'}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-medium text-sm text-gray-900">
-                  {comment.user?.full_name || 'Anonymous'}
+                  {comment.profiles?.full_name || 'Anonymous'}
                 </span>
                 <span className="text-xs text-gray-500">
                   {formatTimeAgo(comment.created_at)}
