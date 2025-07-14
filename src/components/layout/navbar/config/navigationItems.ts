@@ -36,7 +36,7 @@ export const mainNavigationItems: NavigationItem[] = [
   },
   {
     title: "Community",
-    path: "/freelancers",
+    path: "/community",
     icon: Users,
     vietnameseTitle: "Cộng đồng"
   },

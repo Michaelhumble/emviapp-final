@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
@@ -146,8 +147,12 @@ const routes = [
     element: <Suppliers />,
   },
   {
-    path: '/freelancers',
+    path: '/community',
     element: <Freelancers />,
+  },
+  {
+    path: '/freelancers',
+    element: <Navigate to="/community" replace />,
   },
   {
     path: '/dashboard',
