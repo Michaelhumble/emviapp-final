@@ -53,6 +53,8 @@ export const useComments = (storyId: string) => {
         // Create a consistent but diverse mapping based on comment content + index
         const nameIndex = (comment.content.length + index) % diverseNames.length;
         
+        console.log(`Comment ${index}: "${comment.content.substring(0, 20)}..." -> Name: ${diverseNames[nameIndex]}`);
+        
         return {
           ...comment,
           profiles: {
@@ -61,6 +63,8 @@ export const useComments = (storyId: string) => {
           }
         };
       });
+      
+      console.log(`Fetched ${commentsWithProfiles.length} comments for post ${storyId}`);
       
       setComments(commentsWithProfiles);
     } catch (error) {
