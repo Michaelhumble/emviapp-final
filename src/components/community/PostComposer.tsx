@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Camera, Video, Sparkles, Send, Image as ImageIcon, Eye, Hash, AtSign, X, Loader2 } from 'lucide-react';
+import { Camera, Video, Sparkles, Send, Image as ImageIcon, Eye, Hash, AtSign, X, Loader2, Star, Lightbulb, Palette, HelpCircle, Heart, Scissors, Crown, HandHeart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
@@ -13,21 +13,21 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
 const postTypes = [
-  { id: 'story', label: 'Story', emoji: '✨', description: 'Share your experience' },
-  { id: 'tip', label: 'Pro Tip', emoji: '💡', description: 'Professional advice' },
-  { id: 'showcase', label: 'Showcase', emoji: '🎨', description: 'Show your work' },
-  { id: 'question', label: 'Question', emoji: '❓', description: 'Ask the community' },
+  { id: 'story', label: 'Story', icon: Star, description: 'Share your experience' },
+  { id: 'tip', label: 'Pro Tip', icon: Lightbulb, description: 'Professional advice' },
+  { id: 'showcase', label: 'Showcase', icon: Palette, description: 'Show your work' },
+  { id: 'question', label: 'Question', icon: HelpCircle, description: 'Ask the community' },
 ];
 
 const categories = [
-  { id: 'nails', label: 'Nails', emoji: '💅' },
-  { id: 'hair', label: 'Hair', emoji: '💇‍♀️' },
-  { id: 'makeup', label: 'Makeup', emoji: '💄' },
-  { id: 'skincare', label: 'Skincare', emoji: '✨' },
-  { id: 'barber', label: 'Barber', emoji: '✂️' },
-  { id: 'brows', label: 'Brows & Lashes', emoji: '👁️' },
-  { id: 'massage', label: 'Massage', emoji: '💆‍♀️' },
-  { id: 'general', label: 'General', emoji: '🌟' },
+  { id: 'nails', label: 'Nails', icon: Heart },
+  { id: 'hair', label: 'Hair', icon: Scissors },
+  { id: 'makeup', label: 'Makeup', icon: Palette },
+  { id: 'skincare', label: 'Skincare', icon: Star },
+  { id: 'barber', label: 'Barber', icon: Scissors },
+  { id: 'brows', label: 'Brows & Lashes', icon: Eye },
+  { id: 'massage', label: 'Massage', icon: HandHeart },
+  { id: 'general', label: 'General', icon: Crown },
 ];
 
 const polishStyles = [
@@ -256,10 +256,10 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                         ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent'
                         : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'
                     }`}
-                    title={type.description}
-                  >
-                    <span className="block sm:inline">{type.emoji}</span>
-                    <span className="block sm:inline sm:ml-1">{type.label}</span>
+                     title={type.description}
+                   >
+                     <type.icon className="h-4 w-4 block sm:inline" />
+                     <span className="block sm:inline sm:ml-1">{type.label}</span>
                   </button>
                 ))}
               </div>
@@ -279,8 +279,8 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <span className="mr-1">{category.emoji}</span>
-                    <span className="text-center">{category.label}</span>
+                     <category.icon className="h-4 w-4 mr-1" />
+                     <span className="text-center">{category.label}</span>
                   </button>
                 ))}
               </div>
@@ -349,9 +349,9 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
               </div>
             )}
 
-            {/* Action Buttons - Mobile: Stack, Desktop: Side by side */}
+            {/* Action Buttons - Hidden on mobile, visible on desktop */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-100 gap-3">
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="hidden sm:flex flex-row gap-2">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -365,7 +365,7 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-purple-200 hover:bg-purple-50 min-h-[48px] w-full sm:w-auto"
+                  className="border-purple-200 hover:bg-purple-50 min-h-[48px]"
                 >
                   <Camera className="h-4 w-4 mr-2" />
                   Media
@@ -376,18 +376,18 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-purple-200 hover:bg-purple-50 min-h-[48px] w-full sm:w-auto"
+                      className="border-purple-200 hover:bg-purple-50 min-h-[48px]"
                       disabled={!content.trim()}
                     >
                       <Sparkles className="h-4 w-4 mr-2" />
                       Polish with AI
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="mx-4 sm:mx-auto max-w-md w-[calc(100%-2rem)] sm:w-full">
+                  <DialogContent className="mx-4 sm:mx-auto max-w-md w-[calc(100%-2rem)] sm:w-full max-h-[85vh] sm:max-h-[75vh]">
                     <DialogHeader>
                       <DialogTitle className="text-lg">Polish Your Post with AI ✨</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                    <div className="space-y-4 max-h-[60vh] sm:max-h-[50vh] overflow-y-auto">
                       <p className="text-sm text-gray-600">
                         AI Polish: Instantly rewrite your post in your chosen style (English/Vietnamese).
                       </p>
@@ -440,11 +440,33 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowPreview(!showPreview)}
-                  className="border-purple-200 hover:bg-purple-50 min-h-[48px] w-full sm:w-auto"
+                  className="hidden md:flex border-purple-200 hover:bg-purple-50 min-h-[48px] items-center"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
+              </div>
+              
+              {/* Mobile: Only show Media upload button (compact) */}
+              <div className="sm:hidden flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-purple-600 hover:bg-purple-50 min-h-[44px] px-6"
+                >
+                  <Camera className="h-5 w-5 mr-2" />
+                  Add Photo
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  id="image-upload-mobile"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                />
               </div>
 
               {/* Sticky Post Button - Always at bottom on mobile */}
@@ -487,12 +509,12 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="font-medium text-gray-900">You</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {postTypes.find(t => t.id === selectedPostType)?.emoji} {postTypes.find(t => t.id === selectedPostType)?.label}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    {categories.find(c => c.id === selectedCategory)?.emoji} {categories.find(c => c.id === selectedCategory)?.label}
-                  </Badge>
+                   <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                     {React.createElement(postTypes.find(t => t.id === selectedPostType)?.icon || Star, { className: "h-3 w-3" })} {postTypes.find(t => t.id === selectedPostType)?.label}
+                   </Badge>
+                   <Badge variant="outline" className="text-xs flex items-center gap-1">
+                     {React.createElement(categories.find(c => c.id === selectedCategory)?.icon || Crown, { className: "h-3 w-3" })} {categories.find(c => c.id === selectedCategory)?.label}
+                   </Badge>
                 </div>
                 <div className="text-gray-800 whitespace-pre-wrap">{content}</div>
                 {imagePreview.length > 0 && (
