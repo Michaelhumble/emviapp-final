@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Search, Sparkles, Camera, Video, Image, Plus, Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
+import { Search, Sparkles, Camera, Video, Plus, Heart, MessageCircle, Share2, Bookmark, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,95 +28,58 @@ const Community = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-        {/* Compact Header - Mobile Optimized */}
-        <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl border-b border-purple-100 shadow-sm">
+      <div className="min-h-screen bg-gray-50">
+        {/* Ultra-Minimal Header - Just Search */}
+        <div className="sticky top-0 z-30 bg-white border-b shadow-sm">
           <div className="px-4 py-3">
-            {/* Search Bar */}
-            <div className="relative mb-3">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
                 placeholder="Search posts, creators..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 rounded-full border-gray-200 focus:border-purple-400 focus:ring-purple-400 bg-gray-50"
+                className="pl-10 pr-4 rounded-lg border-gray-200 focus:border-purple-400"
               />
-            </div>
-
-            {/* Quick Filters - Horizontal Scroll */}
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {quickFilters.map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => setActiveFilter(filter.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                    activeFilter === filter.id
-                      ? `${filter.color} text-white shadow-lg`
-                      : 'bg-white text-gray-700 border border-gray-200'
-                  }`}
-                >
-                  <filter.icon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{filter.label}</span>
-                </button>
-              ))}
             </div>
           </div>
         </div>
 
-        <div className="px-4 py-4 space-y-4">
-          {/* Quick Post Composer */}
-          <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm">You</span>
-                </div>
-                <div className="flex-1">
-                  <button className="w-full text-left px-4 py-3 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100 transition-colors">
-                    Share your beauty story...
-                  </button>
-                </div>
-              </div>
-              
-              {/* Quick Action Buttons */}
-              <div className="flex justify-around">
-                <Button variant="ghost" size="sm" className="flex-1 text-purple-600 hover:bg-purple-50">
-                  <Camera className="h-4 w-4 mr-2" />
-                  Photo
-                </Button>
-                <Button variant="ghost" size="sm" className="flex-1 text-pink-600 hover:bg-pink-50">
-                  <Video className="h-4 w-4 mr-2" />
-                  Video
-                </Button>
-                <Button variant="ghost" size="sm" className="flex-1 text-orange-600 hover:bg-orange-50">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  AI Polish
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="px-4 py-4 space-y-3">
+          {/* Inline Filter Pills - More Space Efficient */}
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {quickFilters.map((filter) => (
+              <Badge
+                key={filter.id}
+                variant={activeFilter === filter.id ? "default" : "outline"}
+                className={`cursor-pointer whitespace-nowrap px-3 py-1 ${
+                  activeFilter === filter.id 
+                    ? 'bg-purple-500 hover:bg-purple-600' 
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveFilter(filter.id)}
+              >
+                {filter.label} {filter.id === 'all' ? '2.3k' : Math.floor(Math.random() * 500 + 100)}
+              </Badge>
+            ))}
+            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              Trending
+            </Badge>
+          </div>
 
-          {/* Trending Topics - Compact Card */}
-          <Card className="border-0 shadow-md bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-5 w-5" />
-                <h3 className="font-bold">Trending Now</h3>
-                <Badge className="bg-white/20 text-white border-0">Hot</Badge>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {trendingTopics.map((topic) => (
-                  <button
-                    key={topic.tag}
-                    className="flex items-center gap-2 p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
-                  >
-                    <span className="text-lg">{topic.emoji}</span>
-                    <div className="text-left">
-                      <p className="text-sm font-medium">#{topic.tag}</p>
-                      <p className="text-xs opacity-80">{topic.posts} posts</p>
-                    </div>
-                  </button>
-                ))}
+          {/* Quick Post Composer - Simplified */}
+          <Card className="shadow-sm border-0">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                  <span className="text-white font-semibold text-xs">You</span>
+                </div>
+                <button className="flex-1 text-left px-3 py-2 bg-gray-50 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors text-sm">
+                  Share your beauty moment...
+                </button>
+                <Button size="sm" className="bg-purple-500 hover:bg-purple-600 rounded-lg px-3">
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -216,15 +179,8 @@ const Community = () => {
             </Card>
           </div>
 
-          {/* Floating Action Button - Better positioned */}
-          <div className="fixed bottom-20 right-4 z-40">
-            <Button
-              size="lg"
-              className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-xl hover:shadow-2xl transition-all duration-200"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-          </div>
+          {/* Add some bottom padding for tab bar */}
+          <div className="h-20"></div>
         </div>
       </div>
     </Layout>
