@@ -66,12 +66,27 @@ export const useSalonProfileEditor = () => {
       
       // Handle logo upload if a new file was selected
       if (logoFile) {
+        // Validate file size (5MB limit)
+        if (logoFile.size > 5 * 1024 * 1024) {
+          throw new Error("Image file must be less than 5MB");
+        }
+        
+        // Validate file type
+        if (!logoFile.type.startsWith('image/')) {
+          throw new Error("Please select a valid image file");
+        }
+        
+        toast.success("Uploading salon logo...");
+        
         const fileExt = logoFile.name.split('.').pop();
-        const fileName = `salon-${user.id}-${Date.now()}.${fileExt}`;
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
         const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, logoFile);
+          .from('salon-logos')
+          .upload(fileName, logoFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
         
         if (uploadError) {
           console.error('Logo upload error:', uploadError);
@@ -80,10 +95,13 @@ export const useSalonProfileEditor = () => {
         
         if (uploadData) {
           const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
+            .from('salon-logos')
             .getPublicUrl(fileName);
           
           updatedLogoUrl = publicUrl;
+          setLogoUrl(publicUrl);
+          setLogoPreview(null); // Clear preview since we now have the real URL
+          setLogoFile(null); // Clear file since it's uploaded
         }
       }
       
@@ -110,10 +128,11 @@ export const useSalonProfileEditor = () => {
       // Refresh the context with updated profile
       await refreshUserProfile();
       
-      toast.success("Your profile has been updated.");
+      toast.success("Salon profile updated successfully!");
     } catch (error) {
       console.error("Error updating salon profile:", error);
-      toast.error("Failed to update profile. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
