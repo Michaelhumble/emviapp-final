@@ -54,16 +54,19 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
     }
   };
 
+  // Filter valid images
+  const validImages = salon.images?.filter(img => img && img.trim() && img !== 'null' && img !== 'undefined') || [];
+
   // Navigation functions for image gallery
   const nextImage = () => {
-    if (salon.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % salon.images.length);
+    if (validImages.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % validImages.length);
     }
   };
 
   const prevImage = () => {
-    if (salon.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + salon.images.length) % salon.images.length);
+    if (validImages.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + validImages.length) % validImages.length);
     }
   };
 
@@ -102,19 +105,19 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
         {/* Full Image Gallery - Mobile optimized */}
         <div className="mb-4 sm:mb-6">
-          {salon.images && salon.images.length > 0 && salon.images.some(img => img && img.trim() && img !== 'null') ? (
+          {validImages.length > 0 ? (
             <div className="relative">
               {/* Main Image - Mobile optimized height */}
               <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden rounded-lg">
                 <ImageWithFallback
-                  src={salon.images[currentImageIndex]}
+                  src={validImages[currentImageIndex]}
                   alt={salon.name}
                   className="w-full h-full object-cover"
                   businessName={salon.name}
                 />
                 
                 {/* Navigation arrows */}
-                {salon.images.length > 1 && (
+                {validImages.length > 1 && (
                   <>
                     <button
                       onClick={prevImage}
@@ -133,14 +136,14 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
                 {/* Image counter - Mobile optimized */}
                 <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 bg-black/70 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm">
-                  {currentImageIndex + 1} / {salon.images.length}
+                  {currentImageIndex + 1} / {validImages.length}
                 </div>
               </div>
 
               {/* Thumbnail strip - Mobile optimized */}
-              {salon.images.length > 1 && (
+              {validImages.length > 1 && (
                 <div className="flex gap-1.5 sm:gap-2 mt-2 sm:mt-3 overflow-x-auto">
-                  {salon.images.map((imageUrl, index) => (
+                  {validImages.map((imageUrl, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
@@ -167,7 +170,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               <div className="text-center text-gray-500">
                 <div className="text-4xl mb-2">📷</div>
                 <div className="font-medium">Photos Coming Soon</div>
-                <div className="text-xs mt-1">Available photos: {salon.images?.length || 0}</div>
+                <div className="text-xs mt-1">Available photos: {validImages.length}</div>
               </div>
             </div>
           )}

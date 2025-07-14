@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye, Edit, Trash2 } from 'lucide-react';
 import { SalonSale } from '@/types/salonSale';
 import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface SalonSaleCardProps {
@@ -18,8 +21,42 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
   onViewDetails,
   className = ""
 }) => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user, userRole } = useAuth();
+  const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Check if current user owns this listing
+  const isOwner = user && salon.user_id === user.id;
+  const isAdmin = userRole === 'admin';
+  const canEdit = isOwner || isAdmin;
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/salon-post?edit=${salon.id}`);
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!confirm('Are you sure you want to delete this listing?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('salon_sales')
+        .delete()
+        .eq('id', salon.id);
+        
+      if (error) throw error;
+      
+      toast.success('Listing deleted successfully');
+      // Auto-refresh will happen via the parent component
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      toast.error('Failed to delete listing');
+    }
+  };
 
   // Navigation functions for image gallery
   const nextImage = () => {
@@ -242,15 +279,37 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
           </div>
         )}
 
-        {/* Action Button */}
-        <Button 
-          onClick={onViewDetails}
-          className="w-full text-sm sm:text-base"
-          variant="outline"
-        >
-          <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-          View Full Details
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <Button 
+            onClick={onViewDetails}
+            className="flex-1 text-sm sm:text-base"
+            variant="outline"
+          >
+            <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+            View Details
+          </Button>
+          {canEdit && (
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleEdit}
+                className="px-3"
+              >
+                <Edit className="h-3 w-3" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleDelete}
+                className="px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
