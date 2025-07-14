@@ -62,7 +62,7 @@ const PostComposer = () => {
       // Upload images if any
       if (selectedImages.length > 0) {
         const uploadPromises = selectedImages.map(file => 
-          uploadImage(file, 'community-images')
+          uploadImage(file)
         );
         imageUrls = await Promise.all(uploadPromises);
       }

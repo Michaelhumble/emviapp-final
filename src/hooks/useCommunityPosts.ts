@@ -48,11 +48,7 @@ export const useCommunityPosts = () => {
       let query = supabase
         .from('community_posts')
         .select(`
-          *,
-          profiles:profiles!community_posts_user_id_fkey (
-            full_name,
-            avatar_url
-          )
+          *
         `)
         .order('created_at', { ascending: false });
 

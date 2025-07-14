@@ -3645,6 +3645,10 @@ export type Database = {
           expires_at: string
         }[]
       }
+      decrement_post_likes: {
+        Args: { post_id: string }
+        Returns: undefined
+      }
       generate_team_invite_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -3688,6 +3692,10 @@ export type Database = {
       has_posted_free_job: {
         Args: { p_user_id: string }
         Returns: boolean
+      }
+      increment_post_likes: {
+        Args: { post_id: string }
+        Returns: undefined
       }
       is_artist_available: {
         Args: {
