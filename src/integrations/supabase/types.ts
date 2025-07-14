@@ -2968,6 +2968,7 @@ export type Database = {
           referral_count: number | null
           referred_by: string | null
           role: string | null
+          salon_name: string | null
           specialty: string | null
           updated_at: string | null
           website: string | null
@@ -3000,6 +3001,7 @@ export type Database = {
           referral_count?: number | null
           referred_by?: string | null
           role?: string | null
+          salon_name?: string | null
           specialty?: string | null
           updated_at?: string | null
           website?: string | null
@@ -3032,6 +3034,7 @@ export type Database = {
           referral_count?: number | null
           referred_by?: string | null
           role?: string | null
+          salon_name?: string | null
           specialty?: string | null
           updated_at?: string | null
           website?: string | null

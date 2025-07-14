@@ -50,7 +50,7 @@ export const useSalonJobs = () => {
 
   // Fetch jobs
   const fetchJobs = async () => {
-    if (!currentSalon?.id || !user?.id) {
+    if (!user?.id) {
       setLoading(false);
       return;
     }
@@ -61,13 +61,18 @@ export const useSalonJobs = () => {
         .from('jobs')
         .select('*')
         .eq('user_id', user.id)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        throw error;
+      }
       setJobs(data || []);
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch jobs'));
+      toast.error('Failed to load jobs');
     } finally {
       setLoading(false);
     }
@@ -164,20 +169,28 @@ export const useSalonJobs = () => {
 
   // Delete job
   const deleteJob = async (jobId: string) => {
+    if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+      return false;
+    }
+
     try {
       const { error } = await supabase
         .from('jobs')
-        .update({ status: 'deleted' })
-        .eq('id', jobId);
+        .delete()
+        .eq('id', jobId)
+        .eq('user_id', user?.id); // Security check
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting job:', error);
+        throw error;
+      }
       
       await fetchJobs(); // Refresh the list
       toast.success('Job deleted successfully');
       return true;
     } catch (err) {
       console.error('Error deleting job:', err);
-      toast.error('Failed to delete job');
+      toast.error('Failed to delete job. Please try again.');
       return false;
     }
   };

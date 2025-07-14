@@ -73,7 +73,10 @@ export const useSalonProfileEditor = () => {
           .from('avatars')
           .upload(fileName, logoFile);
         
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Logo upload error:', uploadError);
+          throw new Error(`File upload failed: ${uploadError.message}`);
+        }
         
         if (uploadData) {
           const { data: { publicUrl } } = supabase.storage
@@ -99,7 +102,10 @@ export const useSalonProfileEditor = () => {
         })
         .eq('id', user.id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw new Error(`Database update failed: ${error.message}`);
+      }
       
       // Refresh the context with updated profile
       await refreshUserProfile();
