@@ -74,6 +74,10 @@ const CommunityHeader: React.FC<CommunityHeaderProps> = ({
           ? 'bg-white/85 backdrop-blur-lg shadow-md' 
           : 'bg-white/95 backdrop-blur-md shadow-sm'
       } border-b border-purple-100`}
+      style={{ 
+        zIndex: 30,
+        position: 'sticky' 
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       role="banner"

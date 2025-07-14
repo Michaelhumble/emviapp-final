@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2 } from 'lucide-react';
+import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Info, Phone } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
@@ -33,17 +33,21 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Community', href: '/freelancers' },
+    { icon: MessageSquare, label: 'Community', href: '/community' },
     { 
       icon: User, 
       label: userRole === 'artist' ? 'Artist Dashboard' : 'Dashboard', 
       href: '/dashboard' 
     },
+    { icon: Info, label: 'About', href: '/about' },
+    { icon: Phone, label: 'Contact', href: '/contact' },
   ] : [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Community', href: '/freelancers' },
+    { icon: MessageSquare, label: 'Community', href: '/community' },
+    { icon: Info, label: 'About', href: '/about' },
+    { icon: Phone, label: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -55,8 +59,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] md:hidden"
             onClick={onClose}
+            style={{ backdropFilter: 'blur(8px)' }}
           />
 
           {/* Menu Panel */}
@@ -65,7 +70,12 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[110] flex flex-col overflow-y-auto"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[10000] flex flex-col"
+            style={{ 
+              maxHeight: '100vh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch'
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
@@ -115,7 +125,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             )}
 
             {/* Navigation Items */}
-            <nav className="flex-1 p-4 overflow-y-auto">
+            <nav className="flex-1 p-4 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
               <div className="space-y-1">
                 {menuItems.map((item) => (
                   <Link
@@ -152,30 +162,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   Post Your Salon
                 </Link>
               </Button>
-
-              {/* Auth Buttons for non-authenticated users */}
-              {!user && (
-                <div className="space-y-2 pt-2 border-t border-gray-100">
-                  <Button
-                    onClick={() => handleAuthAction('signup')}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Sign Up
-                  </Button>
-                  <Button
-                    onClick={() => handleAuthAction('signin')}
-                    variant="outline"
-                    className="w-full border-gray-200 hover:bg-gray-50"
-                  >
-                    Sign In
-                  </Button>
-                </div>
-              )}
             </div>
 
-            {/* Sign Out Button - Fixed at bottom for authenticated users */}
-            {user && (
-              <div className="p-4 border-t border-gray-100 bg-gray-50 flex-shrink-0">
+            {/* Sign Out/Sign In Button - Fixed at bottom */}
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex-shrink-0 sticky bottom-0">
+              {user ? (
                 <Button
                   onClick={() => handleAuthAction('signOut')}
                   variant="outline"
@@ -183,8 +174,24 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 >
                   Sign Out
                 </Button>
-              </div>
-            )}
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => handleAuthAction('signin')}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => handleAuthAction('signup')}
+                    variant="outline"
+                    className="w-full border-gray-200 hover:bg-gray-50"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+            </div>
           </motion.div>
         </>
       )}
