@@ -188,60 +188,67 @@ serve(async (req) => {
           // ✅ Handle pricing tier urgency logic
           const isUrgent = metadata.pricing_tier === 'annual'; // "Until Sold" plan gets urgent badge
           
+          // ✅ Create complete salon data object
+          const salonData = {
+            user_id: pendingSalon.user_id,
+            salon_name: pendingSalon.salon_name,
+            business_type: pendingSalon.business_type,
+            established_year: pendingSalon.established_year,
+            city: pendingSalon.city,
+            state: pendingSalon.state,
+            address: pendingSalon.address,
+            zip_code: pendingSalon.zip_code,
+            neighborhood: pendingSalon.neighborhood,
+            hide_exact_address: pendingSalon.hide_exact_address,
+            asking_price: pendingSalon.asking_price,
+            size: pendingSalon.square_feet, // Map to size field as well
+            monthly_rent: pendingSalon.monthly_rent,
+            monthly_revenue: pendingSalon.monthly_revenue,
+            monthly_profit: pendingSalon.monthly_profit,
+            number_of_staff: pendingSalon.number_of_staff,
+            number_of_tables: pendingSalon.number_of_tables,
+            number_of_chairs: pendingSalon.number_of_chairs,
+            square_feet: pendingSalon.square_feet,
+            vietnamese_description: pendingSalon.vietnamese_description,
+            english_description: pendingSalon.english_description,
+            description_combined: pendingSalon.description_combined,
+            reason_for_selling: pendingSalon.reason_for_selling,
+            virtual_tour_url: pendingSalon.virtual_tour_url,
+            other_notes: pendingSalon.other_notes,
+            contact_name: pendingSalon.contact_name,
+            contact_email: pendingSalon.contact_email,
+            contact_phone: pendingSalon.contact_phone,
+            contact_facebook: pendingSalon.contact_facebook,
+            contact_zalo: pendingSalon.contact_zalo,
+            contact_notes: pendingSalon.contact_notes,
+            will_train: pendingSalon.will_train,
+            has_housing: pendingSalon.has_housing,
+            has_wax_room: pendingSalon.has_wax_room,
+            has_dining_room: pendingSalon.has_dining_room,
+            has_laundry: pendingSalon.has_laundry,
+            has_parking: pendingSalon.has_parking,
+            equipment_included: pendingSalon.equipment_included,
+            lease_transferable: pendingSalon.lease_transferable,
+            seller_financing: pendingSalon.seller_financing,
+            help_with_transition: pendingSalon.help_with_transition,
+            selected_pricing_tier: metadata.pricing_tier,
+            featured_addon: metadata.featured_addon === 'true',
+            is_featured: metadata.featured_addon === 'true' || metadata.pricing_tier === 'premium' || metadata.pricing_tier === 'gold',
+            is_urgent: isUrgent,
+            is_private: false, // Paid listings are public
+            features: features,
+            images: pendingSalon.images || [],
+            payment_status: 'completed',
+            status: 'active',
+            expires_at: expiresAt.toISOString()
+          };
+          
+          console.log('🔥 [STRIPE-WEBHOOK] Creating salon with data:', JSON.stringify(salonData, null, 2));
+          console.log('📸 [STRIPE-WEBHOOK] Images to transfer:', pendingSalon.images);
+          
           const { data: newSalon, error: salonError } = await supabase
             .from('salon_sales')
-            .insert({
-              user_id: pendingSalon.user_id,
-              salon_name: pendingSalon.salon_name,
-              business_type: pendingSalon.business_type,
-              established_year: pendingSalon.established_year,
-              city: pendingSalon.city,
-              state: pendingSalon.state,
-              address: pendingSalon.address,
-              zip_code: pendingSalon.zip_code,
-              neighborhood: pendingSalon.neighborhood,
-              hide_exact_address: pendingSalon.hide_exact_address,
-              asking_price: pendingSalon.asking_price,
-              monthly_rent: pendingSalon.monthly_rent,
-              monthly_revenue: pendingSalon.monthly_revenue,
-              monthly_profit: pendingSalon.monthly_profit,
-              number_of_staff: pendingSalon.number_of_staff,
-              number_of_tables: pendingSalon.number_of_tables,
-              number_of_chairs: pendingSalon.number_of_chairs,
-              square_feet: pendingSalon.square_feet,
-              vietnamese_description: pendingSalon.vietnamese_description,
-              english_description: pendingSalon.english_description,
-              description_combined: pendingSalon.description_combined,
-              reason_for_selling: pendingSalon.reason_for_selling,
-              virtual_tour_url: pendingSalon.virtual_tour_url,
-              other_notes: pendingSalon.other_notes,
-              contact_name: pendingSalon.contact_name,
-              contact_email: pendingSalon.contact_email,
-              contact_phone: pendingSalon.contact_phone,
-              contact_facebook: pendingSalon.contact_facebook,
-              contact_zalo: pendingSalon.contact_zalo,
-              contact_notes: pendingSalon.contact_notes,
-              will_train: pendingSalon.will_train,
-              has_housing: pendingSalon.has_housing,
-              has_wax_room: pendingSalon.has_wax_room,
-              has_dining_room: pendingSalon.has_dining_room,
-              has_laundry: pendingSalon.has_laundry,
-              has_parking: pendingSalon.has_parking,
-              equipment_included: pendingSalon.equipment_included,
-              lease_transferable: pendingSalon.lease_transferable,
-              seller_financing: pendingSalon.seller_financing,
-              help_with_transition: pendingSalon.help_with_transition,
-              selected_pricing_tier: metadata.pricing_tier,
-              featured_addon: metadata.featured_addon === 'true',
-              is_featured: metadata.featured_addon === 'true' || metadata.pricing_tier === 'premium' || metadata.pricing_tier === 'gold',
-              is_urgent: isUrgent,
-              is_private: false, // Paid listings are public
-              features: features,
-              images: pendingSalon.images || [],
-              payment_status: 'completed',
-              status: 'active',
-              expires_at: expiresAt.toISOString()
-            })
+            .insert(salonData)
             .select()
             .single();
 

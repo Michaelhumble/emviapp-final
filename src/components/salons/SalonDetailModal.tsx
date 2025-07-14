@@ -45,7 +45,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
         {/* Full Image Gallery - Mobile optimized */}
         <div className="mb-4 sm:mb-6">
-          {salon.images.length > 0 ? (
+          {salon.images && salon.images.length > 0 ? (
             <div className="relative">
               {/* Main Image - Mobile optimized height */}
               <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden rounded-lg">
@@ -108,6 +108,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               <div className="text-center text-gray-500">
                 <div className="text-4xl mb-2">📷</div>
                 <div className="font-medium">Photos Coming Soon</div>
+                <div className="text-xs mt-1">Available photos: {salon.images?.length || 0}</div>
               </div>
             </div>
           )}
