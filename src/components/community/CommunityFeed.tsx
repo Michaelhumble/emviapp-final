@@ -70,7 +70,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
   return (
     <div className={`space-y-6 ${className}`}>
       {posts.map((post, index) => (
-        <React.Fragment key={post.id}>
+        <div key={post.id}>
           <Card className="p-6 bg-white/90 backdrop-blur-sm border-purple-100 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl animate-fade-in">
             <div className="flex gap-4">
               {/* Enhanced User Avatar with Follow Button */}
@@ -198,7 +198,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
               <SuggestedForYou />
             </div>
           )}
-        </React.Fragment>
+        </div>
       ))}
 
       {posts.length === 0 && !isRefreshing && (
