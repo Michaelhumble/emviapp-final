@@ -228,69 +228,77 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
   return (
     <>
       <Card 
-        className={`p-6 mb-6 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg transition-all ${
+        className={`p-3 md:p-6 mb-4 md:mb-6 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg transition-all ${
           isDragging ? 'border-purple-400 bg-purple-50/50' : ''
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="flex gap-4">
+        {/* Mobile/Tablet: Stack vertically, Desktop: Keep horizontal */}
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           {/* User Avatar */}
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0 mx-auto sm:mx-0">
             {userInitial}
           </div>
 
-          <div className="flex-1 space-y-4">
-            {/* Post Type Selection */}
+          <div className="flex-1 space-y-3 md:space-y-4">
+            {/* Post Type Selection - Mobile: Stack, Tablet+: Wrap */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Post Type</label>
-              <div className="flex gap-2 flex-wrap">
+              <div className="grid grid-cols-2 sm:flex sm:gap-2 sm:flex-wrap gap-2">
                 {postTypes.map((type) => (
                   <button
                     key={type.id}
                     onClick={() => setSelectedPostType(type.id)}
-                    className={`px-3 py-2 rounded-lg text-sm transition-all border ${
+                    className={`px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm transition-all border min-h-[48px] flex items-center justify-center ${
                       selectedPostType === type.id
                         ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent'
                         : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'
                     }`}
                     title={type.description}
                   >
-                    {type.emoji} {type.label}
+                    <span className="block sm:inline">{type.emoji}</span>
+                    <span className="block sm:inline sm:ml-1">{type.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Category Selection */}
+            {/* Category Selection - Mobile: Stack in rows */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Category</label>
-              <div className="flex gap-2 flex-wrap">
+              <div className="grid grid-cols-2 sm:flex sm:gap-2 sm:flex-wrap gap-2">
                 {categories.map((category) => (
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
-                    className={`px-2 py-1 rounded-full text-xs transition-all ${
+                    className={`px-2 py-2 rounded-full text-xs transition-all min-h-[40px] flex items-center justify-center ${
                       selectedCategory === category.id
                         ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    {category.emoji} {category.label}
+                    <span className="mr-1">{category.emoji}</span>
+                    <span className="text-center">{category.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Content Input */}
+            {/* Content Input - Auto-resize */}
             <div className="space-y-2">
               <Textarea
                 ref={textareaRef}
                 placeholder="Share something beautiful with the community... ✨ Use #hashtags and @mentions"
                 value={content}
                 onChange={handleContentChange}
-                className="border-purple-200 focus:border-purple-400 focus:ring-purple-400 min-h-[120px] resize-none"
+                className="border-purple-200 focus:border-purple-400 focus:ring-purple-400 min-h-[100px] sm:min-h-[120px] resize-none text-base"
+                style={{ height: 'auto' }}
+                onInput={(e) => {
+                  e.currentTarget.style.height = 'auto';
+                  e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+                }}
               />
               
               {/* Hashtags and Mentions Preview */}
@@ -314,36 +322,36 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
 
             {/* Drag and Drop Zone */}
             {isDragging && (
-              <div className="border-2 border-dashed border-purple-400 rounded-lg p-8 text-center bg-purple-50/50">
-                <ImageIcon className="h-12 w-12 mx-auto text-purple-400 mb-2" />
-                <p className="text-purple-600">Drop your images here!</p>
+              <div className="border-2 border-dashed border-purple-400 rounded-lg p-6 sm:p-8 text-center bg-purple-50/50">
+                <ImageIcon className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-purple-400 mb-2" />
+                <p className="text-purple-600 text-sm sm:text-base">Drop your images here!</p>
               </div>
             )}
 
-            {/* Image Previews */}
+            {/* Image Previews - Mobile: Single column, Tablet+: Grid */}
             {imagePreview.length > 0 && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {imagePreview.map((src, index) => (
                   <div key={index} className="relative group">
                     <img 
                       src={src} 
                       alt={`Preview ${index + 1}`} 
-                      className="w-full h-32 object-cover rounded-lg"
+                      className="w-full h-24 sm:h-32 object-cover rounded-lg"
                     />
                     <button
                       onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 w-8 h-8 sm:w-6 sm:h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity touch-manipulation"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-4 w-4 sm:h-3 sm:w-3" />
                     </button>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-              <div className="flex gap-2">
+            {/* Action Buttons - Mobile: Stack, Desktop: Side by side */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-100 gap-3">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -357,7 +365,7 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-purple-200 hover:bg-purple-50"
+                  className="border-purple-200 hover:bg-purple-50 min-h-[48px] w-full sm:w-auto"
                 >
                   <Camera className="h-4 w-4 mr-2" />
                   Media
@@ -368,54 +376,59 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-purple-200 hover:bg-purple-50"
+                      className="border-purple-200 hover:bg-purple-50 min-h-[48px] w-full sm:w-auto"
                       disabled={!content.trim()}
                     >
                       <Sparkles className="h-4 w-4 mr-2" />
                       Polish with AI
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
+                  <DialogContent className="mx-4 sm:mx-auto max-w-md w-[calc(100%-2rem)] sm:w-full">
                     <DialogHeader>
-                      <DialogTitle>Polish Your Post with AI ✨</DialogTitle>
+                      <DialogTitle className="text-lg">Polish Your Post with AI ✨</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Style</label>
-                        <div className="grid grid-cols-1 gap-2">
-                          {polishStyles.map((style) => (
-                            <Button
-                              key={style.id}
-                              variant="outline"
-                              className="justify-start h-auto p-3"
-                              onClick={() => handleAIPolish(style.id, 'english')}
-                              disabled={isPolishing}
-                            >
-                              <div className="text-left">
-                                <div className="font-medium">{style.label}</div>
-                                <div className="text-xs text-gray-500">{style.description}</div>
-                              </div>
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
+                    <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                      <p className="text-sm text-gray-600">
+                        AI Polish: Instantly rewrite your post in your chosen style (English/Vietnamese).
+                      </p>
                       
                       <div>
-                        <label className="text-sm font-medium mb-2 block">Language</label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {languages.map((lang) => (
-                            <Button
-                              key={lang.id}
-                              variant="outline"
-                              onClick={() => handleAIPolish('casual', lang.id)}
-                              disabled={isPolishing}
-                            >
-                              {isPolishing ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                lang.label
-                              )}
-                            </Button>
+                        <label className="text-sm font-medium mb-3 block">Choose Your Style & Language</label>
+                        <div className="space-y-2">
+                          {polishStyles.map((style) => (
+                            <div key={style.id} className="space-y-2">
+                              <div className="grid grid-cols-2 gap-2">
+                                <Button
+                                  variant="outline"
+                                  className="justify-start h-auto p-3 min-h-[48px]"
+                                  onClick={() => handleAIPolish(style.id, 'english')}
+                                  disabled={isPolishing}
+                                >
+                                  {isPolishing ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  ) : null}
+                                  <div className="text-left">
+                                    <div className="font-medium text-sm">{style.label}</div>
+                                    <div className="text-xs text-gray-500">English</div>
+                                  </div>
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  className="justify-start h-auto p-3 min-h-[48px]"
+                                  onClick={() => handleAIPolish(style.id, 'vietnamese')}
+                                  disabled={isPolishing}
+                                >
+                                  {isPolishing ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  ) : null}
+                                  <div className="text-left">
+                                    <div className="font-medium text-sm">{style.label}</div>
+                                    <div className="text-xs text-gray-500">Tiếng Việt</div>
+                                  </div>
+                                </Button>
+                              </div>
+                              <p className="text-xs text-gray-400 px-1">{style.description}</p>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -427,17 +440,18 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowPreview(!showPreview)}
-                  className="border-purple-200 hover:bg-purple-50"
+                  className="border-purple-200 hover:bg-purple-50 min-h-[48px] w-full sm:w-auto"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
               </div>
 
+              {/* Sticky Post Button - Always at bottom on mobile */}
               <Button
                 onClick={handleSubmit}
                 disabled={isLoading || isUploading || !content.trim()}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white min-h-[48px] w-full sm:w-auto order-first sm:order-last"
               >
                 {isLoading || isUploading ? (
                   <>
