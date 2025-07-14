@@ -17,7 +17,8 @@ import {
   Target,
   TrendingUp,
   MessageSquare,
-  Award
+  Award,
+  Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import SalonStatsGrid from "./components/SalonStatsGrid";
@@ -85,187 +86,131 @@ const SalonDashboardOverview = () => {
         <SalonStatsGrid />
       </motion.div>
 
-      {/* Smart Review AI Card */}
+      {/* Today's Bookings */}
       <motion.div variants={itemVariants}>
-        <Card className="overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-          <CardHeader className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white pb-6">
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <Brain className="h-6 w-6" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl font-bold">Smart Review AI</CardTitle>
-                  <p className="text-amber-100 mt-1">AI-powered review management across all platforms</p>
-                </div>
-              </div>
-              <Badge className="bg-white/20 text-white border-white/30 px-3 py-1">
-                🔥 BETA
-              </Badge>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-blue-600" />
+                Today's Bookings
+              </CardTitle>
+              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Booking
+              </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            {/* Platform Logos */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="text-sm text-gray-600 font-medium">Connected Platforms:</div>
-              <div className="flex gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs">G</div>
-                <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xs">Y</div>
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xs">AI</div>
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs">F</div>
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white font-bold text-xs">T</div>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+              <div>
+                <p className="font-medium">Sarah Chen</p>
+                <p className="text-sm text-gray-600">Hair Color • Maria</p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">10:00 AM</p>
+                <Badge className="bg-green-100 text-green-800 border-green-300">
+                  confirmed
+                </Badge>
               </div>
             </div>
-
-            {/* AI Highlights Preview */}
-            <div className="bg-white rounded-lg p-4 mb-6 border border-orange-200">
-              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-orange-500" />
-                Recent AI Highlights
-              </h4>
-              <div className="space-y-2">
-                <div className="text-sm text-gray-600 bg-green-50 p-2 rounded border-l-4 border-green-400">
-                  "Amazing service! The staff was so professional..." - Google (5⭐)
-                </div>
-                <div className="text-sm text-gray-600 bg-blue-50 p-2 rounded border-l-4 border-blue-400">
-                  "Best nail salon in the area! Highly recommend..." - Yelp (5⭐)
-                </div>
-                <div className="text-sm text-gray-600 bg-purple-50 p-2 rounded border-l-4 border-purple-400">
-                  AI detected 15 positive sentiment mentions this week ↗️
-                </div>
+            
+            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div>
+                <p className="font-medium">Jessica Park</p>
+                <p className="text-sm text-gray-600">Manicure • Anna</p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">11:30 AM</p>
+                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                  pending
+                </Badge>
               </div>
             </div>
-
-            <Button 
-              onClick={() => handleNotifyMe("Smart Review AI")}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105"
-            >
-              <Bell className="h-4 w-4 mr-2" />
-              Notify Me When Available
-            </Button>
+            
+            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div>
+                <p className="font-medium">Emily Rodriguez</p>
+                <p className="text-sm text-gray-600">Facial • Sophia</p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">2:00 PM</p>
+                <Badge className="bg-blue-100 text-blue-800 border-blue-300">
+                  confirmed
+                </Badge>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Coming Soon Premium Cards */}
+      {/* Quick Actions */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* AI Analytics Pro */}
-          <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-50 to-cyan-50 hover:shadow-2xl transition-all duration-300 group">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  <CardTitle className="text-lg font-bold">AI Analytics Pro</CardTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-blue-500 rounded-lg">
+                  <MessageSquare className="h-6 w-6 text-white" />
                 </div>
-                <Badge className="bg-white/20 text-white border-white/30 text-xs">SOON</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <p className="text-gray-600 text-sm mb-4">
-                Advanced AI-powered analytics with predictive insights, customer behavior analysis, and revenue optimization.
-              </p>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  Predictive Revenue Forecasting
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                  Customer Lifetime Value Analysis
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  Peak Hours Optimization
+                <div>
+                  <h3 className="font-semibold text-blue-900">Messages</h3>
+                  <p className="text-sm text-blue-700">3 new messages</p>
                 </div>
               </div>
-              <Button 
-                onClick={() => handleNotifyMe("AI Analytics Pro")}
-                variant="outline" 
-                className="w-full border-blue-300 text-blue-600 hover:bg-blue-50 group-hover:bg-blue-100 transition-all duration-300"
-              >
-                <Bell className="h-3 w-3 mr-2" />
-                Notify Me
+              <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
+                Open Messages
               </Button>
             </CardContent>
           </Card>
 
-          {/* Smart Scheduling */}
-          <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50 hover:shadow-2xl transition-all duration-300 group">
-            <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  <CardTitle className="text-lg font-bold">Smart Scheduling</CardTitle>
+          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-purple-500 rounded-lg">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
-                <Badge className="bg-white/20 text-white border-white/30 text-xs">SOON</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <p className="text-gray-600 text-sm mb-4">
-                AI-powered scheduling that automatically optimizes appointments, reduces no-shows, and maximizes efficiency.
-              </p>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  Auto-Fill Cancellations
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                  Smart Reminder System
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  Peak Time Optimization
+                <div>
+                  <h3 className="font-semibold text-purple-900">Team</h3>
+                  <p className="text-sm text-purple-700">4 team members</p>
                 </div>
               </div>
-              <Button 
-                onClick={() => handleNotifyMe("Smart Scheduling")}
-                variant="outline" 
-                className="w-full border-green-300 text-green-600 hover:bg-green-50 group-hover:bg-green-100 transition-all duration-300"
-              >
-                <Bell className="h-3 w-3 mr-2" />
-                Notify Me
+              <Button className="w-full mt-4 bg-purple-600 hover:bg-purple-700">
+                Manage Team
               </Button>
             </CardContent>
           </Card>
 
-          {/* Marketing Autopilot */}
-          <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-50 to-violet-50 hover:shadow-2xl transition-all duration-300 group">
-            <CardHeader className="bg-gradient-to-r from-purple-500 to-violet-500 text-white pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  <CardTitle className="text-lg font-bold">Marketing Autopilot</CardTitle>
+          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-green-500 rounded-lg">
+                  <Award className="h-6 w-6 text-white" />
                 </div>
-                <Badge className="bg-white/20 text-white border-white/30 text-xs">SOON</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <p className="text-gray-600 text-sm mb-4">
-                Automated marketing campaigns, social media management, and customer retention strategies powered by AI.
-              </p>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  Auto Social Media Posts
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-violet-400 rounded-full"></div>
-                  Smart Email Campaigns
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                  Customer Win-Back System
+                <div>
+                  <h3 className="font-semibold text-green-900">Reviews</h3>
+                  <p className="text-sm text-green-700">4.9 average rating</p>
                 </div>
               </div>
-              <Button 
-                onClick={() => handleNotifyMe("Marketing Autopilot")}
-                variant="outline" 
-                className="w-full border-purple-300 text-purple-600 hover:bg-purple-50 group-hover:bg-purple-100 transition-all duration-300"
-              >
-                <Bell className="h-3 w-3 mr-2" />
-                Notify Me
+              <Button className="w-full mt-4 bg-green-600 hover:bg-green-700">
+                View Reviews
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-amber-500 rounded-lg">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-amber-900">AI Labs</h3>
+                  <p className="text-sm text-amber-700">New features</p>
+                </div>
+              </div>
+              <Button className="w-full mt-4 bg-amber-600 hover:bg-amber-700">
+                Explore AI
               </Button>
             </CardContent>
           </Card>
