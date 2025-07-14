@@ -100,8 +100,13 @@ const OwnerDashboard = () => {
                 </div>
                 
                 <SmartReminderBanner />
+
+                {/* DEBUG: Add a visible indicator */}
+                <div className="bg-red-100 p-4 rounded-lg border-2 border-red-500">
+                  <p className="text-red-800 font-bold">🚨 DEBUG: Tabs should appear below this line! Active tab: {activeTab}</p>
+                </div>
                 
-                <Tabs value={activeTab} onValueChange={handleTabChange}>
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                   <TabsList className="grid w-full grid-cols-7 mb-8 h-auto p-1 bg-white/80 backdrop-blur-sm border shadow-lg">
                     <TabsTrigger value="overview" className="font-inter data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white flex items-center gap-2 py-3">
                       Overview
