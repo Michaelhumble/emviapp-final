@@ -14,12 +14,13 @@ import { useNavigate } from "react-router-dom";
 interface SalonPaymentStepProps {
   form: UseFormReturn<SalonFormValues>;
   photoUploads?: File[];
+  photoUrls?: string[];
   onPaymentComplete?: () => void;
   isEditMode?: boolean;
   editId?: string | null;
 }
 
-export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete, isEditMode = false, editId }: SalonPaymentStepProps) => {
+export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPaymentComplete, isEditMode = false, editId }: SalonPaymentStepProps) => {
   const { isLoading, initiatePayment } = useStripe();
   const navigate = useNavigate();
   
@@ -40,6 +41,41 @@ export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete, i
     const formData = form.getValues();
     
     try {
+      // Upload new photos if any
+      let uploadedPhotoUrls: string[] = [];
+      if (photoUploads && photoUploads.length > 0) {
+        toast.info(`Uploading ${photoUploads.length} new photos...`);
+        
+        try {
+          const uploadPromises = photoUploads.map(async (file, index) => {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `salon-edit-${Date.now()}-${index}.${fileExt}`;
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from('salon_sale_photos')
+              .upload(fileName, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+              .from('salon_sale_photos')
+              .getPublicUrl(fileName);
+
+            return publicUrl;
+          });
+
+          uploadedPhotoUrls = await Promise.all(uploadPromises);
+          toast.success(`${uploadedPhotoUrls.length} new photos uploaded successfully!`);
+        } catch (uploadError) {
+          console.error('Failed to upload photos:', uploadError);
+          toast.error('Failed to upload photos. Please try again.');
+          return;
+        }
+      }
+
+      // Combine existing and new photo URLs
+      const allPhotoUrls = [...photoUrls, ...uploadedPhotoUrls];
+
       const { error } = await supabase
         .from('salon_sales')
         .update({
@@ -83,6 +119,7 @@ export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete, i
           help_with_transition: formData.helpWithTransition,
           selected_pricing_tier: formData.selectedPricingTier,
           featured_addon: formData.featuredAddon,
+          images: allPhotoUrls, // Include updated photo URLs
           updated_at: new Date().toISOString()
         })
         .eq('id', editId);

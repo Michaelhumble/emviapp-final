@@ -47,7 +47,7 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
       if (error) throw error;
       
       toast.success('Listing deleted successfully');
-      window.location.reload(); // Refresh the page to show updated listings
+      // Auto-refresh will happen via the parent component
     } catch (error) {
       console.error('Error deleting listing:', error);
       toast.error('Failed to delete listing');
@@ -64,6 +64,12 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
 
   // Get the image URL depending on salon type - ENHANCED to prioritize existing images
   const getImageUrl = () => {
+    // First check for images array (from salon_sales table)
+    if ('images' in salon && salon.images && Array.isArray(salon.images) && salon.images.length > 0) {
+      const validImage = salon.images.find(img => img && img.trim() && img !== 'null');
+      if (validImage) return validImage;
+    }
+    
     // Always prioritize existing valid images - NEVER overwrite them
     if ('image' in salon && salon.image && salon.image.includes('lovable-uploads')) 
       return salon.image;

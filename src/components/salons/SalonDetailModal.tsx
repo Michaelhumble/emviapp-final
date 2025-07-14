@@ -47,7 +47,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
       
       toast.success('Listing deleted successfully');
       onClose();
-      window.location.reload(); // Refresh the page to show updated listings
+      // Auto-refresh will happen via the parent component
     } catch (error) {
       console.error('Error deleting listing:', error);
       toast.error('Failed to delete listing');

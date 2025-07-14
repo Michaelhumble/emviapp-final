@@ -20,7 +20,8 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newFiles = Array.from(files).slice(0, maxPhotos - photoUploads.length);
+      const availableSlots = maxPhotos - photoUploads.length - photoUrls.length;
+      const newFiles = Array.from(files).slice(0, availableSlots);
       const updatedPhotos = [...photoUploads, ...newFiles];
       setPhotoUploads(updatedPhotos);
     }
@@ -31,6 +32,13 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
   const removePhoto = (index: number) => {
     const updatedPhotos = photoUploads.filter((_, i) => i !== index);
     setPhotoUploads(updatedPhotos);
+  };
+
+  const removeExistingPhoto = (index: number) => {
+    if (setPhotoUrls) {
+      const updatedUrls = photoUrls.filter((_, i) => i !== index);
+      setPhotoUrls(updatedUrls);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -44,7 +52,8 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
     
     const files = Array.from(e.dataTransfer.files);
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    const newFiles = imageFiles.slice(0, maxPhotos - photoUploads.length);
+    const availableSlots = maxPhotos - photoUploads.length - photoUrls.length;
+    const newFiles = imageFiles.slice(0, availableSlots);
     
     if (newFiles.length > 0) {
       const updatedPhotos = [...photoUploads, ...newFiles];
@@ -86,25 +95,64 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
               <Image className="h-5 w-5 text-white" />
             </div>
             <div>
-              <div>Upload Stunning Photos ({photoUploads.length}/{maxPhotos})</div>
+              <div>Upload Stunning Photos ({photoUploads.length + photoUrls.length}/{maxPhotos})</div>
               <div className="text-sm text-gray-500 font-normal mt-1">Tải lên hình ảnh đẹp nhất của tiệm</div>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 p-8">
+          {/* Existing Photos from Database */}
+          {photoUrls && photoUrls.length > 0 && (
+            <div className="space-y-4">
+              <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-blue-500" />
+                Current Photos ({photoUrls.length})
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {photoUrls.map((photoUrl, index) => (
+                  <div key={`existing-${index}`} className="relative group">
+                    <div className="relative overflow-hidden rounded-xl border-2 border-blue-200 bg-gray-50 aspect-square">
+                      <img
+                        src={photoUrl}
+                        alt={`Existing salon photo ${index + 1}`}
+                        className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
+                      {setPhotoUrls && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-red-500 hover:bg-red-600 shadow-lg"
+                          onClick={() => removeExistingPhoto(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <div className="absolute bottom-2 left-2 bg-blue-600/80 text-white text-xs px-2 py-1 rounded-full">
+                        Current #{index + 1}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* New Photos to Upload */}
           {photoUploads.length > 0 && (
             <div className="space-y-4">
               <h4 className="font-semibold text-gray-800 flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-purple-500" />
-                Your Beautiful Gallery
+                New Photos to Upload ({photoUploads.length})
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {photoUploads.map((photo, index) => (
                   <div key={`${photo.name}-${index}`} className="relative group">
-                    <div className="relative overflow-hidden rounded-xl border-2 border-gray-200 bg-gray-50 aspect-square">
+                    <div className="relative overflow-hidden rounded-xl border-2 border-purple-200 bg-gray-50 aspect-square">
                       <img
                         src={URL.createObjectURL(photo)}
-                        alt={`Salon photo ${index + 1}`}
+                        alt={`New salon photo ${index + 1}`}
                         className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
@@ -117,8 +165,8 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
                       >
                         <X className="h-4 w-4" />
                       </Button>
-                      <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                        #{index + 1}
+                      <div className="absolute bottom-2 left-2 bg-purple-600/80 text-white text-xs px-2 py-1 rounded-full">
+                        New #{index + 1}
                       </div>
                     </div>
                   </div>
@@ -127,7 +175,7 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
             </div>
           )}
           
-          {photoUploads.length < maxPhotos && (
+          {(photoUploads.length + photoUrls.length) < maxPhotos && (
             <div 
               className="border-3 border-dashed border-purple-300 rounded-2xl p-12 text-center bg-gradient-to-br from-purple-50/50 to-blue-50/50 hover:from-purple-100/50 hover:to-blue-100/50 transition-all duration-300 cursor-pointer group"
               onDragOver={handleDragOver}
@@ -172,7 +220,7 @@ export const SalonPhotosStep = ({ form, photoUploads, setPhotoUploads, photoUrls
             </div>
           )}
 
-          {photoUploads.length >= maxPhotos && (
+          {(photoUploads.length + photoUrls.length) >= maxPhotos && (
             <div className="text-center p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-green-200">
               <div className="flex items-center justify-center space-x-2 mb-2">
                 <div className="bg-green-500 rounded-full p-2">
