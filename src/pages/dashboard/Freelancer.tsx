@@ -5,10 +5,12 @@ import FreelancerServicesManagement from "@/components/dashboard/freelancer/widg
 import FreelancerShareProfile from "@/components/dashboard/freelancer/widgets/FreelancerShareProfile";
 import FreelancerAvailabilityEditor from "@/components/dashboard/freelancer/widgets/FreelancerAvailabilityEditor";
 import FreelancerClientMessages from "@/components/dashboard/freelancer/widgets/FreelancerClientMessages";
+import FreelancerForHire from "@/components/dashboard/freelancer/widgets/FreelancerForHire";
 
 export default function FreelancerDashboard() {
   return (
     <FreelancerDashboardLayout>
+      <FreelancerForHire />
       <FreelancerPerformanceOverview />
       <FreelancerServicesManagement />
       <FreelancerShareProfile />

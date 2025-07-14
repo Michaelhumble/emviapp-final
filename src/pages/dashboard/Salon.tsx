@@ -7,6 +7,8 @@ import Layout from "@/components/layout/Layout";
 import SalonDashboardOverview from "@/components/dashboard/salon/SalonDashboardOverview";
 import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
 import SalonSettings from "@/components/dashboard/salon/SalonSettings";
+import SalonPhotoManager from "@/components/dashboard/salon/SalonPhotoManager";
+import SalonJobManager from "@/components/dashboard/salon/SalonJobManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileCompletionBar from "@/components/profile/ProfileCompletionBar";
@@ -48,7 +50,7 @@ const SalonDashboardPage = () => {
               {/* Main Content */}
               <div className="md:col-span-3">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-3 mb-8">
+                  <TabsList className="grid w-full grid-cols-5 mb-8">
                     <TabsTrigger 
                       value="overview" 
                       className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
@@ -60,6 +62,18 @@ const SalonDashboardPage = () => {
                       className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
                     >
                       Booking Calendar
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="photos" 
+                      className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
+                    >
+                      Photos
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="jobs" 
+                      className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
+                    >
+                      Jobs
                     </TabsTrigger>
                     <TabsTrigger 
                       value="settings" 
@@ -75,6 +89,14 @@ const SalonDashboardPage = () => {
                   
                   <TabsContent value="calendar" className="space-y-4">
                     <SalonBookingCalendar />
+                  </TabsContent>
+                  
+                  <TabsContent value="photos" className="space-y-4">
+                    <SalonPhotoManager />
+                  </TabsContent>
+                  
+                  <TabsContent value="jobs" className="space-y-4">
+                    <SalonJobManager />
                   </TabsContent>
                   
                   <TabsContent value="settings" className="space-y-4">

@@ -10,6 +10,7 @@ import ArtistLeaderboard from './sections/ArtistLeaderboard';
 import ArtistViralShare from './sections/ArtistViralShare';
 import ArtistLiveActivity from './sections/ArtistLiveActivity';
 import ArtistFeatureVoting from './sections/ArtistFeatureVoting';
+import ArtistAvailableForHire from './sections/ArtistAvailableForHire';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -63,6 +64,10 @@ const PremiumArtistDashboard = () => {
               {/* Left Column - Main Content */}
               <div className="col-span-8 space-y-8">
                 <motion.div variants={itemVariants}>
+                  <ArtistAvailableForHire />
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
                   <ArtistPortfolioShowcase />
                 </motion.div>
                 
@@ -106,6 +111,10 @@ const PremiumArtistDashboard = () => {
 
             <motion.div variants={itemVariants}>
               <ArtistLiveActivity />
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <ArtistAvailableForHire />
             </motion.div>
 
             <motion.div variants={itemVariants}>
