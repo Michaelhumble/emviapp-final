@@ -39,13 +39,24 @@ export const useComments = (storyId: string) => {
 
       if (error) throw error;
       
-      // Add mock profile data to make it look like different users
+      // Add diverse profile data to make it look like different users
       const commentsWithProfiles = (data || []).map((comment, index) => {
-        const names = ['Emma R.', 'Jess P.', 'Taylor S.', 'Alex C.', 'Sofia K.', 'Jordan L.'];
+        const diverseNames = [
+          'Emma Rodriguez', 'Jessica Park', 'Taylor Smith', 'Alex Chen', 'Sofia Kim', 'Jordan Liu',
+          'Maya Patel', 'Chloe Johnson', 'Zara Ahmed', 'Luna Martinez', 'Ava Williams', 'Naia Brown',
+          'Isla Thompson', 'Mia Garcia', 'Lila Davis', 'Aria Wilson', 'Nova Jackson', 'Sage Anderson',
+          'Riley Cooper', 'Blake Martin', 'Casey Lee', 'Drew Carter', 'Hayden Moore', 'Kai Wright',
+          'Dani Foster', 'Ryan Bell', 'Sam Collins', 'Quinn Turner', 'Finley Hall', 'Rowan Price',
+          'Madison Chen', 'Brooklyn Reyes', 'Skyler Morales', 'Harley Reed', 'Phoenix Gray', 'River Stone'
+        ];
+        
+        // Create a consistent but diverse mapping based on comment content + index
+        const nameIndex = (comment.content.length + index) % diverseNames.length;
+        
         return {
           ...comment,
           profiles: {
-            full_name: names[index % names.length] || 'Beauty Pro',
+            full_name: diverseNames[nameIndex],
             avatar_url: null
           }
         };
