@@ -43,12 +43,18 @@ const languages = [
   { id: 'vietnamese', label: 'Tiếng Việt' },
 ];
 
-const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
+interface PostComposerProps {
+  onSuccess?: () => void;
+  prefilledContent?: string;
+  showAIBadge?: boolean;
+}
+
+const PostComposer = ({ onSuccess, prefilledContent, showAIBadge }: PostComposerProps) => {
   const { user } = useAuth();
   const { createPost, isLoading } = useCommunityPosts();
   const { uploadImage, isUploading } = useImageUpload();
   
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(prefilledContent || '');
   const [selectedPostType, setSelectedPostType] = useState('story');
   const [selectedCategory, setSelectedCategory] = useState('general');
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -300,6 +306,16 @@ const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
                   e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
                 }}
               />
+              
+              {/* AI Badge */}
+              {showAIBadge && (
+                <div className="flex justify-center mb-2">
+                  <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Powered by EmviApp AI
+                  </Badge>
+                </div>
+              )}
               
               {/* Hashtags and Mentions Preview */}
               {(hashtags.length > 0 || mentions.length > 0) && (

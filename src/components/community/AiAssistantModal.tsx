@@ -132,18 +132,36 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
 
   const submitSharedPost = async () => {
     try {
-      // Log analytics
-      await supabase.functions.invoke('share-ai-answer', {
-        body: {
-          userId: user?.id,
-          originalQuestion: question,
-          sharedAnswer: sharingAnswer,
-          language
-        },
-      });
+      // Create community post
+      const { data, error } = await supabase
+        .from('community_posts')
+        .insert({
+          content: shareContent,
+          user_id: user?.id,
+          post_type: 'tip',
+          category: 'general',
+          tags: ['AI', 'EmviApp'],
+          is_featured: false
+        });
 
-      // Create community post (simplified for demo)
-      toast.success('AI answer shared to community!');
+      if (error) throw error;
+
+      // Log analytics
+      try {
+        await supabase.functions.invoke('share-ai-answer', {
+          body: {
+            userId: user?.id,
+            originalQuestion: question,
+            sharedAnswer: sharingAnswer,
+            language
+          },
+        });
+      } catch (analyticsError) {
+        console.log('Analytics logging failed:', analyticsError);
+        // Don't fail the whole process for analytics
+      }
+
+      toast.success('AI answer shared to community! ✨');
       setShowShareDialog(false);
       setShareContent('');
       
@@ -391,12 +409,12 @@ const AIAnswerCard = ({ title, answer, answerIndex, feedback, onFeedback, onUse,
         {onShare && (
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             onClick={() => onShare(answer)}
-            className="text-green-600 border-green-300 hover:bg-green-50"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0"
           >
             <Share className="h-3 w-3 mr-1" />
-            {language === 'en' ? 'Share' : 'Chia sẻ'}
+            {language === 'en' ? 'Share This Answer' : 'Chia sẻ câu trả lời'}
           </Button>
         )}
 
