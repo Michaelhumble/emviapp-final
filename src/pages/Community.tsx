@@ -1,187 +1,464 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Search, Sparkles, Camera, Video, Plus, Heart, MessageCircle, Share2, Bookmark, TrendingUp } from 'lucide-react';
+import { Search, TrendingUp, Plus, MapPin, Clock, Users, Hash, Sparkles, Zap, BarChart3, Pin, Camera, Video, Smile, X, Check, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import CommunityStoryForm from '@/components/community/CommunityStoryForm';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useCommunityPosts } from '@/hooks/useCommunityPosts';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
+import PostReactions from '@/components/community/PostReactions';
+import CommunitySearch from '@/components/community/CommunitySearch';
+import ChallengeOfTheWeek from '@/components/community/ChallengeOfTheWeek';
+import TopCreators from '@/components/community/TopCreators';
+import PhotoUploader from '@/components/posting/PhotoUploader';
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [showPostComposer, setShowPostComposer] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [postContent, setPostContent] = useState('');
+  const [postType, setPostType] = useState('story');
+  const [category, setCategory] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [pollOptions, setPollOptions] = useState(['', '']);
+  const [location, setLocation] = useState('');
+  const { posts, isLoading, fetchPosts, createPost, toggleLike } = useCommunityPosts();
+  const { user, isSignedIn } = useAuth();
 
   const quickFilters = [
-    { id: 'all', label: 'All', icon: Sparkles, color: 'bg-purple-500' },
-    { id: 'nails', label: 'Nails', icon: Heart, color: 'bg-pink-500' },
-    { id: 'hair', label: 'Hair', icon: Camera, color: 'bg-blue-500' },
-    { id: 'makeup', label: 'Makeup', icon: Video, color: 'bg-orange-500' },
+    { id: 'all', label: 'For You', count: 2345 },
+    { id: 'nails', label: 'Nails', count: 892 },
+    { id: 'hair', label: 'Hair', count: 756 },
+    { id: 'makeup', label: 'Makeup', count: 543 },
+    { id: 'skincare', label: 'Skincare', count: 432 },
+    { id: 'lashes', label: 'Lashes', count: 321 },
+  ];
+
+  const postTypes = [
+    { value: 'story', label: '📸 Story', description: 'Share your work' },
+    { value: 'tip', label: '💡 Pro Tip', description: 'Share expertise' },
+    { value: 'showcase', label: '✨ Showcase', description: 'Highlight best work' },
+    { value: 'question', label: '❓ Question', description: 'Ask community' },
+    { value: 'poll', label: '📊 Poll', description: 'Get opinions' },
+  ];
+
+  const categories = [
+    'Nails', 'Hair', 'Makeup', 'Skincare', 'Lashes', 'Brows', 'Massage', 'Tattoo', 'Barber'
   ];
 
   const trendingTopics = [
-    { tag: 'nail-art-2024', posts: 234, emoji: '💅' },
-    { tag: 'lash-extensions', posts: 189, emoji: '👁️' },
-    { tag: 'hair-color', posts: 156, emoji: '🌈' },
-    { tag: 'skincare-tips', posts: 143, emoji: '✨' },
+    { tag: 'nail-art-2024', posts: 234, emoji: '💅', trending: true },
+    { tag: 'lash-extensions', posts: 189, emoji: '👁️', trending: true },
+    { tag: 'hair-color-trends', posts: 156, emoji: '🌈', trending: false },
+    { tag: 'skincare-routine', posts: 143, emoji: '✨', trending: false },
+    { tag: 'makeup-transformation', posts: 98, emoji: '💄', trending: true },
   ];
+
+  const handleCreatePost = async () => {
+    if (!isSignedIn) {
+      toast.error('Please sign in to post');
+      return;
+    }
+
+    if (!postContent.trim()) {
+      toast.error('Please add some content to your post');
+      return;
+    }
+
+    try {
+      const postData = {
+        content: postContent,
+        post_type: postType,
+        category: category || 'general',
+        tags: extractHashtags(postContent),
+        image_urls: [], // Will be handled by image upload
+      };
+
+      await createPost(postData);
+      setPostContent('');
+      setImageFiles([]);
+      setShowPostComposer(false);
+      toast.success('Post shared successfully!');
+    } catch (error) {
+      toast.error('Failed to create post');
+    }
+  };
+
+  const extractHashtags = (text: string) => {
+    const hashtags = text.match(/#[\w]+/g);
+    return hashtags ? hashtags.map(tag => tag.substring(1)) : [];
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+  };
+
+  useEffect(() => {
+    fetchPosts(activeFilter === 'all' ? undefined : activeFilter, searchQuery);
+  }, [activeFilter, searchQuery]);
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
-        {/* Ultra-Minimal Header - Just Search */}
-        <div className="sticky top-0 z-30 bg-white border-b shadow-sm">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        {/* Mobile-First Header - No Sticky Elements */}
+        <div className="bg-white/80 backdrop-blur-md border-b border-purple-100">
           <div className="px-4 py-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search posts, creators..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 rounded-lg border-gray-200 focus:border-purple-400"
-              />
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Community
+              </h1>
+              <div className="flex-1" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSearch(true)}
+                className="text-gray-600"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
 
-        <div className="px-4 py-4 space-y-3">
-          {/* Inline Filter Pills - More Space Efficient */}
+        {/* Content Container */}
+        <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+          {/* Challenge of the Week */}
+          <ChallengeOfTheWeek />
+
+          {/* Quick Filters */}
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {quickFilters.map((filter) => (
               <Badge
                 key={filter.id}
                 variant={activeFilter === filter.id ? "default" : "outline"}
-                className={`cursor-pointer whitespace-nowrap px-3 py-1 ${
+                className={`cursor-pointer whitespace-nowrap px-3 py-2 ${
                   activeFilter === filter.id 
-                    ? 'bg-purple-500 hover:bg-purple-600' 
-                    : 'hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                    : 'hover:bg-purple-50'
                 }`}
                 onClick={() => setActiveFilter(filter.id)}
               >
-                {filter.label} {filter.id === 'all' ? '2.3k' : Math.floor(Math.random() * 500 + 100)}
+                {filter.label} {filter.count > 99 ? '99+' : filter.count}
               </Badge>
             ))}
-            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              Trending
-            </Badge>
           </div>
 
-          {/* Quick Post Composer - Simplified */}
-          <Card className="shadow-sm border-0">
-            <CardContent className="p-3">
+          {/* Always-Visible Post Composer */}
+          <Card className="border-2 border-purple-100 bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                  <span className="text-white font-semibold text-xs">You</span>
-                </div>
-                <button className="flex-1 text-left px-3 py-2 bg-gray-50 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors text-sm">
-                  Share your beauty moment...
-                </button>
-                <Button size="sm" className="bg-purple-500 hover:bg-purple-600 rounded-lg px-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    {user?.user_metadata?.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  variant="outline"
+                  className="flex-1 justify-start text-gray-500 bg-gray-50/80 hover:bg-gray-100"
+                  onClick={() => setShowPostComposer(true)}
+                >
+                  What's inspiring you today?
+                </Button>
+                <Button
+                  size="icon"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  onClick={() => setShowPostComposer(true)}
+                >
                   <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="flex justify-around mt-3 pt-3 border-t border-gray-100">
+                <Button variant="ghost" size="sm" className="text-purple-600">
+                  <Camera className="h-4 w-4 mr-1" />
+                  Photo
+                </Button>
+                <Button variant="ghost" size="sm" className="text-pink-600">
+                  <Video className="h-4 w-4 mr-1" />
+                  Video
+                </Button>
+                <Button variant="ghost" size="sm" className="text-orange-600">
+                  <BarChart3 className="h-4 w-4 mr-1" />
+                  Poll
+                </Button>
+                <Button variant="ghost" size="sm" className="text-blue-600">
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  AI Polish
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Sample Posts Feed */}
-          <div className="space-y-4">
-            {/* Sample Post 1 */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">A</span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">Alex Chen</h4>
-                    <p className="text-sm text-gray-500">Nail Artist • 2h ago</p>
-                  </div>
-                  <Button variant="ghost" size="icon" className="text-gray-400">
-                    <Bookmark className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <p className="text-gray-800 mb-3">
-                  Just finished this stunning ombre design! The transition from purple to pink is everything 💜✨
-                </p>
-                
-                <div className="w-full h-48 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg mb-3 flex items-center justify-center">
-                  <span className="text-white font-medium">Beautiful Nail Art</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50">
-                      <Heart className="h-4 w-4 mr-1" />
-                      24
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-blue-500 hover:bg-blue-50">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      8
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-green-500 hover:bg-green-50">
-                      <Share2 className="h-4 w-4 mr-1" />
-                      3
-                    </Button>
-                  </div>
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                    #nail-art-2024
+          {/* Trending Topics - Non-Sticky */}
+          <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-4 w-4 text-orange-600" />
+                <span className="font-semibold text-orange-800">Trending Now</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {trendingTopics.map((topic) => (
+                  <Badge
+                    key={topic.tag}
+                    variant="outline"
+                    className={`cursor-pointer ${
+                      topic.trending 
+                        ? 'bg-orange-100 border-orange-300 text-orange-700' 
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    {topic.emoji} #{topic.tag} ({topic.posts})
                   </Badge>
-                </div>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Sample Post 2 */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">M</span>
+          {/* Top Creators */}
+          <TopCreators />
+
+          {/* Posts Feed */}
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <Card key={post.id} className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
+                <CardContent className="p-0">
+                  {/* Post Header */}
+                  <div className="p-4 pb-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={post.profiles?.avatar_url} />
+                          <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                            {post.profiles?.full_name?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-900">
+                              {post.profiles?.full_name || 'Community Member'}
+                            </h4>
+                            {post.is_featured && (
+                              <Badge className="bg-yellow-100 text-yellow-800 text-xs">
+                                <Pin className="h-3 w-3 mr-1" />
+                                Pinned
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span>{post.category}</span>
+                            <span>•</span>
+                            <span>{formatTimeAgo(post.created_at)}</span>
+                            {location && (
+                              <>
+                                <span>•</span>
+                                <MapPin className="h-3 w-3" />
+                                <span>{location}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" className="text-gray-400">
+                        <span className="text-lg">⋯</span>
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">Maya Rodriguez</h4>
-                    <p className="text-sm text-gray-500">Hair Stylist • 4h ago</p>
+
+                  {/* Post Content */}
+                  <div className="px-4 py-2">
+                    <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
+                    {post.tags?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {post.tags.map((tag) => (
+                          <span key={tag} className="text-purple-600 text-sm">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <Button variant="ghost" size="icon" className="text-gray-400">
-                    <Bookmark className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <p className="text-gray-800 mb-3">
-                  Client transformation day! From damaged hair to healthy, vibrant curls 🌟 Sometimes all it takes is the right care routine.
-                </p>
-                
-                <div className="w-full h-48 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg mb-3 flex items-center justify-center">
-                  <span className="text-white font-medium">Hair Transformation</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50">
-                      <Heart className="h-4 w-4 mr-1" />
-                      42
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-blue-500 hover:bg-blue-50">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      15
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-green-500 hover:bg-green-50">
-                      <Share2 className="h-4 w-4 mr-1" />
-                      7
-                    </Button>
+
+                  {/* Post Images */}
+                  {post.image_urls?.length > 0 && (
+                    <div className="px-4 py-2">
+                      <div className="grid grid-cols-1 gap-2 rounded-lg overflow-hidden">
+                        {post.image_urls.map((url, index) => (
+                          <img
+                            key={index}
+                            src={url}
+                            alt={`Post image ${index + 1}`}
+                            className="w-full h-64 object-cover rounded-lg"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Post Actions */}
+                  <div className="px-4 py-3 border-t border-gray-100">
+                    <PostReactions 
+                      post={post} 
+                      onLike={() => toggleLike(post.id)}
+                      onComment={() => {/* Handle comment */}}
+                      onShare={() => {/* Handle share */}}
+                      onBookmark={() => {/* Handle bookmark */}}
+                    />
                   </div>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                    #hair-transformation
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          {/* Add some bottom padding for tab bar */}
-          <div className="h-20"></div>
+          {/* Bottom Spacing for Tab Bar */}
+          <div className="h-20" />
         </div>
+
+        {/* Post Composer Modal */}
+        <Dialog open={showPostComposer} onOpenChange={setShowPostComposer}>
+          <DialogContent className="max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Post</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Post Type Selector */}
+              <div className="grid grid-cols-2 gap-2">
+                {postTypes.map((type) => (
+                  <Button
+                    key={type.value}
+                    variant={postType === type.value ? "default" : "outline"}
+                    onClick={() => setPostType(type.value)}
+                    className="text-left flex-col h-auto p-3"
+                  >
+                    <span className="font-medium">{type.label}</span>
+                    <span className="text-xs opacity-70">{type.description}</span>
+                  </Button>
+                ))}
+              </div>
+
+              {/* Category Selector */}
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat.toLowerCase()}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Post Content */}
+              <Textarea
+                placeholder="Share what's inspiring you today... Use #hashtags and @mentions"
+                value={postContent}
+                onChange={(e) => setPostContent(e.target.value)}
+                className="min-h-32 resize-none"
+              />
+
+              {/* Poll Options (if poll type) */}
+              {postType === 'poll' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Poll Options:</label>
+                  {pollOptions.map((option, index) => (
+                    <Input
+                      key={index}
+                      placeholder={`Option ${index + 1}`}
+                      value={option}
+                      onChange={(e) => {
+                        const newOptions = [...pollOptions];
+                        newOptions[index] = e.target.value;
+                        setPollOptions(newOptions);
+                      }}
+                    />
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPollOptions([...pollOptions, ''])}
+                  >
+                    Add Option
+                  </Button>
+                </div>
+              )}
+
+              {/* Image Upload */}
+              <PhotoUploader
+                files={imageFiles}
+                onChange={setImageFiles}
+                maxFiles={5}
+                className="border-2 border-dashed border-purple-200 rounded-lg p-4"
+              />
+
+              {/* Location */}
+              <Input
+                placeholder="Add location (optional)"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="flex-1"
+              />
+
+              {/* AI Polish Features */}
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="text-purple-600">
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  AI Polish
+                </Button>
+                <Button variant="outline" size="sm" className="text-blue-600">
+                  <Globe className="h-4 w-4 mr-1" />
+                  Translate
+                </Button>
+              </div>
+
+              {/* Submit */}
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowPostComposer(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleCreatePost}
+                  disabled={!postContent.trim() || isLoading}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500"
+                >
+                  {isLoading ? 'Posting...' : 'Share Post'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Search Modal */}
+        <CommunitySearch 
+          isOpen={showSearch}
+          onClose={() => setShowSearch(false)}
+          onSearch={(query) => {
+            setSearchQuery(query);
+            setShowSearch(false);
+          }}
+        />
       </div>
     </Layout>
   );
