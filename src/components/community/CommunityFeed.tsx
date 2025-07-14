@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart, MessageCircle, Share2, Clock, Sparkles, UserPlus, Bookmark } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCommunityPosts } from '@/hooks/useCommunityPosts';
 import { formatDistanceToNow } from 'date-fns';
 import SuggestedForYou from './SuggestedForYou';
+import CommentsSection from './CommentsSection';
 
 interface CommunityFeedProps {
   filter: string;
@@ -16,6 +17,7 @@ interface CommunityFeedProps {
 
 const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, className = '', showSuggestedAfterFirst = false }) => {
   const { posts, isRefreshing, fetchPosts, toggleLike } = useCommunityPosts();
+  const [expandedComments, setExpandedComments] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPosts(filter, searchQuery);
@@ -23,6 +25,10 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
 
   const handleLike = async (postId: string) => {
     await toggleLike(postId);
+  };
+
+  const toggleComments = (postId: string) => {
+    setExpandedComments(expandedComments === postId ? null : postId);
   };
 
   const getPostTypeEmoji = (type: string) => {
@@ -162,7 +168,12 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 rounded-full px-4 py-2 h-auto"
+                      onClick={() => toggleComments(post.id)}
+                      className={`${
+                        expandedComments === post.id 
+                          ? 'text-blue-500 bg-blue-50' 
+                          : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50'
+                      } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
                     >
                       <MessageCircle className="h-5 w-5 mr-2" />
                       <span className="font-medium">{post.comments_count}</span>
@@ -191,6 +202,13 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
               </div>
             </div>
           </Card>
+
+          {/* Comments Section */}
+          {expandedComments === post.id && (
+            <Card className="mt-4 p-4 bg-white/80 backdrop-blur-sm border-purple-100">
+              <CommentsSection storyId={post.id} />
+            </Card>
+          )}
 
           {/* Show Suggested For You after first post */}
           {showSuggestedAfterFirst && index === 0 && (
