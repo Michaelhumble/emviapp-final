@@ -11,18 +11,19 @@ export const useImageUpload = () => {
 
   const uploadImage = async (file: File): Promise<string | null> => {
     if (!user) {
-      toast.error('Please sign in to upload images');
+      toast.error('Please sign in to upload media');
       return null;
     }
 
     // Validate file
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file');
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      toast.error('Please select a valid image or video file');
       return null;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      toast.error('Image size must be less than 5MB');
+    const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 50MB for video, 10MB for images
+    if (file.size > maxSize) {
+      toast.error(`File size must be less than ${file.type.startsWith('video/') ? '50MB' : '10MB'}`);
       return null;
     }
 
@@ -47,11 +48,11 @@ export const useImageUpload = () => {
         .getPublicUrl(data.path);
 
       setUploadProgress(100);
-      toast.success('Image uploaded successfully!');
+      toast.success(`${file.type.startsWith('video/') ? 'Video' : 'Image'} uploaded successfully!`);
       return publicUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error('Failed to upload image. Please try again.');
+      toast.error('Failed to upload media. Please try again.');
       return null;
     } finally {
       setIsUploading(false);
