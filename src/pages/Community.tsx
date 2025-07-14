@@ -19,6 +19,7 @@ import TopCreators from '@/components/community/TopCreators';
 import PhotoUploader from '@/components/posting/PhotoUploader';
 import CommunityPostComposer from '@/components/community/CommunityPostComposer';
 import AiAssistantModal from '@/components/community/AiAssistantModal';
+import LeaderboardWidget from '@/components/community/LeaderboardWidget';
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -225,6 +226,9 @@ const Community = () => {
 
           {/* Top Creators */}
           <TopCreators />
+          
+          {/* Leaderboard Widget */}
+          <LeaderboardWidget />
 
           {/* Posts Feed */}
           <div className="space-y-4">

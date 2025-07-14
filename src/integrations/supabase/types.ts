@@ -3692,6 +3692,20 @@ export type Database = {
           review_count: number
         }[]
       }
+      get_community_leaderboard: {
+        Args: { period_start: string; limit_count?: number }
+        Returns: {
+          id: string
+          full_name: string
+          avatar_url: string
+          total_likes: number
+          total_posts: number
+          ai_posts: number
+          points: number
+          level: string
+          first_ai_user: boolean
+        }[]
+      }
       get_next_referral_milestone: {
         Args: { current_count: number }
         Returns: number
@@ -3710,6 +3724,13 @@ export type Database = {
       get_user_free_job_count: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      get_user_rank: {
+        Args: { target_user_id: string; period_start: string }
+        Returns: {
+          rank: number
+          points: number
+        }[]
       }
       get_user_referral_stats: {
         Args: { user_id: string }

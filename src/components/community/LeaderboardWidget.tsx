@@ -69,33 +69,59 @@ const LeaderboardWidget = () => {
         ? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
         : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-      const { data: aiAnswers } = await supabase
+      // Get top AI answers by joining with profiles
+      const { data: postsData } = await supabase
         .from('community_posts')
         .select(`
           id,
           content,
           user_id,
           likes_count,
-          created_at,
-          profiles:user_id (
-            full_name,
-            avatar_url
-          )
+          created_at
         `)
         .contains('tags', ['AI'])
         .gte('created_at', startDate)
         .order('likes_count', { ascending: false })
         .limit(5);
 
+      // Get profiles for the posts
+      let aiAnswersWithProfiles: AIAnswer[] = [];
+      if (postsData) {
+        const userIds = postsData.map(post => post.user_id);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds);
+
+        aiAnswersWithProfiles = postsData.map(post => ({
+          ...post,
+          profiles: profiles?.find(p => p.id === post.user_id) || { full_name: 'Anonymous' }
+        }));
+      }
+
       // Fetch community champions (most active users)
-      const { data: champions } = await supabase
+      const { data: championsData } = await supabase
         .rpc('get_community_leaderboard', { 
           period_start: startDate,
           limit_count: 10 
         });
 
-      setTopAIAnswers(aiAnswers || []);
-      setTopUsers(champions || []);
+      const champions: LeaderboardUser[] = Array.isArray(championsData) 
+        ? championsData.map((user: any) => ({
+            id: user.id,
+            full_name: user.full_name || 'Anonymous',
+            avatar_url: user.avatar_url,
+            total_likes: Number(user.total_likes),
+            total_posts: Number(user.total_posts),
+            ai_posts: Number(user.ai_posts),
+            points: user.points,
+            level: user.level,
+            first_ai_user: user.first_ai_user
+          }))
+        : [];
+
+      setTopAIAnswers(aiAnswersWithProfiles);
+      setTopUsers(champions);
     } catch (error) {
       console.error('Error fetching leaderboard data:', error);
     } finally {
@@ -117,7 +143,12 @@ const LeaderboardWidget = () => {
           period_start: startDate 
         });
 
-      setUserRank(data);
+      // The function returns an array, so take the first element
+      const rankData = Array.isArray(data) && data.length > 0 ? data[0] : null;
+      setUserRank(rankData ? { 
+        rank: Number(rankData.rank), 
+        points: rankData.points 
+      } : null);
     } catch (error) {
       console.error('Error fetching user rank:', error);
     }
