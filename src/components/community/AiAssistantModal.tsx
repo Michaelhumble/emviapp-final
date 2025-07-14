@@ -8,6 +8,7 @@ import { Sparkles, ThumbsUp, ThumbsDown, Flag, Copy, Share, Save, Zap, Send } fr
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
+import DiscoveryWidget from './DiscoveryWidget';
 
 interface AiAssistantModalProps {
   open: boolean;
@@ -300,6 +301,12 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
                   language={language}
                 />
               </div>
+              
+              {/* Discovery Widget - Show similar users after AI answers */}
+              <DiscoveryWidget 
+                userQuestion={question}
+                className="mt-4"
+              />
             </div>
           )}
         </div>
