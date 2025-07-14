@@ -72,9 +72,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[10000] flex flex-col"
             style={{ 
-              maxHeight: '100vh',
-              overflowY: 'auto',
-              WebkitOverflowScrolling: 'touch'
+              height: '100dvh', // Use dynamic viewport height for better mobile support
+              overflowY: 'hidden' // Let the inner scroll container handle scrolling
             }}
           >
             {/* Header */}
@@ -124,22 +123,24 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </div>
             )}
 
-            {/* Navigation Items */}
-            <nav className="flex-1 p-4 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
-              <div className="space-y-1">
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={item.href}
-                    onClick={onClose}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-            </nav>
+            {/* Navigation Items - Scrollable middle section */}
+            <div className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <nav className="p-4">
+                <div className="space-y-1">
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      onClick={onClose}
+                      className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            </div>
 
             {/* Action Buttons Section */}
             <div className="p-4 border-t border-gray-100 space-y-3 flex-shrink-0">
@@ -164,8 +165,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Button>
             </div>
 
-            {/* Sign Out/Sign In Button - Fixed at bottom */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex-shrink-0 sticky bottom-0">
+            {/* Authentication Section - Always visible at bottom */}
+            <div className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
               {user ? (
                 <Button
                   onClick={() => handleAuthAction('signOut')}
