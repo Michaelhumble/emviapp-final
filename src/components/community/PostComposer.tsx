@@ -43,7 +43,7 @@ const languages = [
   { id: 'vietnamese', label: 'Tiếng Việt' },
 ];
 
-const PostComposer = () => {
+const PostComposer = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { user } = useAuth();
   const { createPost, isLoading } = useCommunityPosts();
   const { uploadImage, isUploading } = useImageUpload();
@@ -172,6 +172,7 @@ const PostComposer = () => {
       setMentions([]);
       setShowPreview(false);
       
+      onSuccess?.(); // Call the success callback if provided
       toast.success('Your post has been shared with the community! ✨');
     } catch (error) {
       toast.error('Failed to share post. Please try again.');

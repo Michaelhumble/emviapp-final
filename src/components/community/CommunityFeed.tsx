@@ -1,17 +1,20 @@
 import React, { useEffect } from 'react';
-import { Heart, MessageCircle, Share2, Clock, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Clock, Sparkles, UserPlus, Bookmark } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCommunityPosts } from '@/hooks/useCommunityPosts';
 import { formatDistanceToNow } from 'date-fns';
+import SuggestedForYou from './SuggestedForYou';
 
 interface CommunityFeedProps {
   filter: string;
   searchQuery: string;
+  className?: string;
+  showSuggestedAfterFirst?: boolean;
 }
 
-const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery }) => {
+const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, className = '', showSuggestedAfterFirst = false }) => {
   const { posts, isRefreshing, fetchPosts, toggleLike } = useCommunityPosts();
 
   useEffect(() => {
@@ -65,97 +68,137 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery }) =>
   }
 
   return (
-    <div className="space-y-6">
-      {posts.map((post) => (
-        <Card key={post.id} className="p-6 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg hover:shadow-xl transition-all">
-          <div className="flex gap-4">
-            {/* User Avatar */}
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-              {post.user_id.charAt(0).toUpperCase()}
-            </div>
+    <div className={`space-y-6 ${className}`}>
+      {posts.map((post, index) => (
+        <React.Fragment key={post.id}>
+          <Card className="p-6 bg-white/90 backdrop-blur-sm border-purple-100 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl animate-fade-in">
+            <div className="flex gap-4">
+              {/* Enhanced User Avatar with Follow Button */}
+              <div className="flex-shrink-0">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-purple-100">
+                    {post.user_id.charAt(0).toUpperCase()}
+                  </div>
+                  <button
+                    className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                    aria-label="Follow user"
+                  >
+                    <UserPlus className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
 
-            <div className="flex-1 space-y-3">
-              {/* Header */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-900">
-                    {post.profiles?.full_name || 'Beauty Pro'}
-                  </span>
-                  <Badge className={getCategoryColor(post.category)}>
-                    {post.category}
-                  </Badge>
-                  {post.is_trending && (
-                    <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                      <Sparkles className="h-3 w-3 mr-1" />
-                      Trending
+              <div className="flex-1 space-y-3">
+                {/* Enhanced Header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-gray-900">
+                      {post.profiles?.full_name || 'Beauty Pro'}
+                    </span>
+                    <Badge className={getCategoryColor(post.category)}>
+                      {post.category}
                     </Badge>
-                  )}
+                    {post.is_trending && (
+                      <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white animate-pulse">
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        Trending
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    <span>{getPostTypeEmoji(post.post_type)}</span>
+                    <Clock className="h-4 w-4" />
+                    <span className="whitespace-nowrap">{formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
-                  <span>{getPostTypeEmoji(post.post_type)}</span>
-                  <Clock className="h-4 w-4" />
-                  <span>{formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</span>
+
+                {/* Enhanced Content */}
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-gray-900 leading-relaxed">{post.content}</p>
                 </div>
-              </div>
 
-              {/* Content */}
-              <div className="prose prose-sm max-w-none">
-                <p className="text-gray-900 leading-relaxed">{post.content}</p>
-              </div>
+                {/* Enhanced Images with better grid */}
+                {post.image_urls && post.image_urls.length > 0 && (
+                  <div className={`grid gap-3 ${
+                    post.image_urls.length === 1 ? 'grid-cols-1' :
+                    post.image_urls.length === 2 ? 'grid-cols-2' :
+                    post.image_urls.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
+                  }`}>
+                    {post.image_urls.slice(0, 4).map((url, imgIndex) => (
+                      <div key={imgIndex} className="relative group">
+                        <img
+                          src={url}
+                          alt={`Post image ${imgIndex + 1}`}
+                          className="w-full h-48 object-cover rounded-xl cursor-pointer hover:opacity-90 transition-all duration-300 group-hover:scale-105"
+                        />
+                        {imgIndex === 3 && post.image_urls.length > 4 && (
+                          <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center text-white font-semibold transition-all group-hover:bg-black/40">
+                            +{post.image_urls.length - 3} more
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Images */}
-              {post.image_urls && post.image_urls.length > 0 && (
-                <div className={`grid gap-2 ${
-                  post.image_urls.length === 1 ? 'grid-cols-1' :
-                  post.image_urls.length === 2 ? 'grid-cols-2' :
-                  post.image_urls.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
-                }`}>
-                  {post.image_urls.slice(0, 4).map((url, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={url}
-                        alt={`Post image ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                      />
-                      {index === 3 && post.image_urls.length > 4 && (
-                        <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center text-white font-semibold">
-                          +{post.image_urls.length - 3} more
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                {/* Enhanced Actions with bigger touch targets */}
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleLike(post.id)}
+                      className={`${
+                        post.user_has_liked 
+                          ? 'text-red-500 hover:text-red-600 bg-red-50' 
+                          : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
+                      } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
+                    >
+                      <Heart className={`h-5 w-5 mr-2 ${post.user_has_liked ? 'fill-current' : ''}`} />
+                      <span className="font-medium">{post.likes_count}</span>
+                    </Button>
+
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 rounded-full px-4 py-2 h-auto"
+                    >
+                      <MessageCircle className="h-5 w-5 mr-2" />
+                      <span className="font-medium">{post.comments_count}</span>
+                    </Button>
+
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all duration-200 rounded-full px-4 py-2 h-auto"
+                    >
+                      <Share2 className="h-5 w-5 mr-2" />
+                      <span className="font-medium">{post.shares_count}</span>
+                    </Button>
+                  </div>
+
+                  {/* Save Button */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full p-2"
+                    aria-label="Save post"
+                  >
+                    <Bookmark className="h-5 w-5" />
+                  </Button>
                 </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex items-center gap-6 pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleLike(post.id)}
-                  className={`${
-                    post.user_has_liked 
-                      ? 'text-red-500 hover:text-red-600' 
-                      : 'text-gray-500 hover:text-red-500'
-                  } transition-colors`}
-                >
-                  <Heart className={`h-5 w-5 mr-2 ${post.user_has_liked ? 'fill-current' : ''}`} />
-                  {post.likes_count}
-                </Button>
-
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
-                  <MessageCircle className="h-5 w-5 mr-2" />
-                  {post.comments_count}
-                </Button>
-
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-green-500">
-                  <Share2 className="h-5 w-5 mr-2" />
-                  {post.shares_count}
-                </Button>
               </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+
+          {/* Show Suggested For You after first post */}
+          {showSuggestedAfterFirst && index === 0 && (
+            <div className="my-8">
+              <SuggestedForYou />
+            </div>
+          )}
+        </React.Fragment>
       ))}
 
       {posts.length === 0 && !isRefreshing && (
