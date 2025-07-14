@@ -16,6 +16,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -40,6 +47,7 @@ import { toast } from "sonner";
 const SalonTeamManager = () => {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [inviteForm, setInviteForm] = useState({
     name: "",
@@ -49,6 +57,12 @@ const SalonTeamManager = () => {
   const [reviewForm, setReviewForm] = useState({
     rating: 5,
     comment: ""
+  });
+  const [editForm, setEditForm] = useState({
+    name: "",
+    role: "",
+    email: "",
+    specialty: ""
   });
 
   // Mock team data - in real app, this would come from your backend
@@ -121,6 +135,31 @@ const SalonTeamManager = () => {
   const handleRemoveMember = (member: any) => {
     // In real app, remove member from backend
     toast.success(`${member.name} has been removed from the team.`);
+  };
+
+  const handleEditProfile = (member: any) => {
+    setSelectedMember(member);
+    setEditForm({
+      name: member.name,
+      role: member.role,
+      email: member.email,
+      specialty: member.specialties.join(', ')
+    });
+    setIsEditProfileDialogOpen(true);
+  };
+
+  const handleSaveProfile = () => {
+    // In real app, save to backend
+    toast.success(`${editForm.name}'s profile updated successfully!`);
+    setIsEditProfileDialogOpen(false);
+    setSelectedMember(null);
+  };
+
+  const handleSendMessage = (member: any) => {
+    // In real app, open chat or navigate to messaging
+    toast.info(`Direct messaging with ${member.name} will be available soon!`, {
+      description: "We're working on team chat functionality."
+    });
   };
 
   const containerVariants = {
@@ -350,11 +389,11 @@ const SalonTeamManager = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditProfile(member)}>
                           <Edit3 className="h-4 w-4 mr-2" />
                           Edit Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSendMessage(member)}>
                           <MessageSquare className="h-4 w-4 mr-2" />
                           Send Message
                         </DropdownMenuItem>
@@ -419,6 +458,71 @@ const SalonTeamManager = () => {
               <Heart className="h-4 w-4 mr-2" />
               Submit Review
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={isEditProfileDialogOpen} onOpenChange={setIsEditProfileDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Team Member Profile</DialogTitle>
+            <DialogDescription>
+              Update {selectedMember?.name}'s profile information
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-name">Full Name</Label>
+              <Input
+                id="edit-name"
+                value={editForm.name}
+                onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter full name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-email">Email Address</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="Enter email address"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-role">Role</Label>
+              <Select value={editForm.role} onValueChange={(value) => setEditForm(prev => ({ ...prev, role: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Senior Stylist">Senior Stylist</SelectItem>
+                  <SelectItem value="Nail Technician">Nail Technician</SelectItem>
+                  <SelectItem value="Esthetician">Esthetician</SelectItem>
+                  <SelectItem value="Massage Therapist">Massage Therapist</SelectItem>
+                  <SelectItem value="Manager">Manager</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-specialty">Specialties</Label>
+              <Input
+                id="edit-specialty"
+                value={editForm.specialty}
+                onChange={(e) => setEditForm(prev => ({ ...prev, specialty: e.target.value }))}
+                placeholder="Enter specialties (comma separated)"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleSaveProfile} className="flex-1">
+                Save Changes
+              </Button>
+              <Button variant="outline" onClick={() => setIsEditProfileDialogOpen(false)} className="flex-1">
+                Cancel
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

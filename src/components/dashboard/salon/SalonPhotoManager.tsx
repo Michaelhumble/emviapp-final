@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Image, Trash2, Edit, Move, Plus } from 'lucide-react';
+import { Upload, Image, Trash2, Edit, Move, Plus, ChevronUp, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SalonPhotoManager = () => {
@@ -45,6 +45,20 @@ const SalonPhotoManager = () => {
       isPrimary: p.id === photoId
     })));
     toast.success("Primary photo updated");
+  };
+
+  const handleMovePhoto = (photoId: number, direction: 'up' | 'down') => {
+    const currentIndex = photos.findIndex(p => p.id === photoId);
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= photos.length) return;
+    
+    const newPhotos = [...photos];
+    [newPhotos[currentIndex], newPhotos[newIndex]] = [newPhotos[newIndex], newPhotos[currentIndex]];
+    
+    setPhotos(newPhotos);
+    toast.success("Photo order updated!");
   };
 
   return (
@@ -115,6 +129,9 @@ const SalonPhotoManager = () => {
                       <Button 
                         size="sm" 
                         variant="secondary"
+                        onClick={() => toast.info("Use the arrow buttons below the photo to reorder", {
+                          description: "Click the up/down arrows under each photo to change the order"
+                        })}
                         className="text-xs"
                       >
                         <Move className="h-3 w-3" />
@@ -133,17 +150,41 @@ const SalonPhotoManager = () => {
                 
                 <div className="mt-2">
                   <p className="text-sm font-medium text-gray-700">{photo.title}</p>
-                  <div className="flex gap-2 mt-1">
-                    {!photo.isPrimary && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleSetPrimary(photo.id)}
-                        className="text-xs"
+                  <div className="flex gap-2 mt-1 items-center justify-between">
+                    <div className="flex gap-2">
+                      {!photo.isPrimary && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleSetPrimary(photo.id)}
+                          className="text-xs"
+                        >
+                          Set as Primary
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {/* Photo reorder controls */}
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleMovePhoto(photo.id, 'up')}
+                        disabled={photos.findIndex(p => p.id === photo.id) === 0}
+                        className="h-6 w-6 p-0"
                       >
-                        Set as Primary
+                        <ChevronUp className="h-3 w-3" />
                       </Button>
-                    )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleMovePhoto(photo.id, 'down')}
+                        disabled={photos.findIndex(p => p.id === photo.id) === photos.length - 1}
+                        className="h-6 w-6 p-0"
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </motion.div>

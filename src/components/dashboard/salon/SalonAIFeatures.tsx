@@ -43,6 +43,12 @@ const SalonAIFeatures = () => {
     toast.success("Vote recorded! You'll be notified when this feature launches.");
   };
 
+  const handleRatingSubmit = (rating: number) => {
+    toast.success("Thanks for your feedback!", {
+      description: `You rated this ${rating} out of 5 stars. Your input helps us prioritize features.`
+    });
+  };
+
   const handleNotifyMe = (feature: string) => {
     toast.success(`You'll be notified when ${feature} is available!`, {
       description: "We'll send you an email as soon as this feature launches."
