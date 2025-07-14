@@ -29,7 +29,7 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/salon-post?edit=${salon.id}`);
+    navigate(`/posting/salon?edit=${salon.id}`);
   };
 
   const handleDelete = async (e: React.MouseEvent) => {

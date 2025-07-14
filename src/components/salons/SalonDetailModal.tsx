@@ -30,7 +30,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
   const canEdit = isOwner || isAdmin;
 
   const handleEdit = () => {
-    navigate(`/salon-post?edit=${salon.id}`);
+    navigate(`/posting/salon?edit=${salon.id}`);
     onClose();
   };
 
