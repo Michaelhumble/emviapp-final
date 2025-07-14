@@ -21,7 +21,7 @@ import JobPricingTable from '@/components/posting/job/JobPricingTable';
 import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
 
 const nailJobFormSchema = z.object({
-  planType: z.enum(['free', 'paid'], { 
+  planType: z.enum(['paid'], { 
     required_error: "Please select a plan type" 
   }),
   title: z.string().optional(), // English title is optional
@@ -143,7 +143,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
   const form = useForm<NailJobFormValues>({
     resolver: zodResolver(nailJobFormSchema),
     defaultValues: {
-      planType: editJobData?.pricing_tier || 'free',
+      planType: editJobData?.pricing_tier || 'paid',
       title: editJobData?.title || '',
       vietnameseTitle: editJobData?.vietnamese_title || '',
       englishOnly: false,
@@ -496,7 +496,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
         },
         user_id: user.id,
         status: 'active',
-        pricing_tier: editJobId ? (editJobData?.pricing_tier || 'free') : 'free', // Preserve original pricing tier when editing
+        pricing_tier: editJobId ? (editJobData?.pricing_tier || 'paid') : 'paid', // Force paid pricing tier
         // COMPREHENSIVE: Store photos in ALL possible fields for maximum compatibility
         image_url: finalImageUrls.length > 0 ? finalImageUrls[0] : null,
         image_urls: finalImageUrls,

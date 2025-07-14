@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Briefcase, Users, Eye, Edit, Trash2, Calendar, Clock, MapPin, DollarSign } from 'lucide-react';
+import { Plus, Briefcase, Users, Eye, Edit, Trash2, Calendar, ExternalLink, Lock, MapPin } from 'lucide-react';
 import { useSalonJobs } from '@/hooks/useSalonJobs';
-import SalonJobPostModal from './SalonJobPostModal';
 import {
   Dialog,
   DialogContent,
@@ -26,12 +26,12 @@ import {
 } from "@/components/ui/select";
 
 const SalonJobManager = () => {
+  const navigate = useNavigate();
   const { jobs, applications, loading, updateJob, deleteJob, updateApplicationStatus, refetch } = useSalonJobs();
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
   const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
-  const [isJobPostModalOpen, setIsJobPostModalOpen] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({
     date: "",
     time: "",
@@ -40,7 +40,8 @@ const SalonJobManager = () => {
   });
 
   const handlePostJob = () => {
-    setIsJobPostModalOpen(true);
+    // Redirect to the main paid job posting flow
+    navigate('/post-job');
   };
 
   const handleEditJob = async (jobId: string) => {
@@ -101,15 +102,24 @@ const SalonJobManager = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">Job Management Center</h2>
-              <p className="text-purple-100">Post jobs and manage applications from talented professionals</p>
+              <p className="text-purple-100">Manage existing jobs posted through our secure payment system</p>
             </div>
             <Button 
               onClick={handlePostJob}
               className="bg-white text-purple-600 hover:bg-gray-100 font-semibold"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <ExternalLink className="h-4 w-4 mr-2" />
               Post New Job
             </Button>
+          </div>
+          <div className="mt-4 p-3 bg-purple-500/20 rounded-lg border border-purple-400/30">
+            <div className="flex items-center gap-2 mb-1">
+              <Lock className="h-4 w-4" />
+              <span className="text-sm font-medium">Secure Job Posting</span>
+            </div>
+            <p className="text-xs text-purple-100">
+              To post a new job and reach top talent, please use our official Post a Job system with premium visibility and secure payment protection.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -191,9 +201,10 @@ const SalonJobManager = () => {
                 <div className="text-center py-12">
                   <Briefcase className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                   <h3 className="text-lg font-semibold text-gray-600 mb-2">No active job postings</h3>
-                  <p className="text-gray-500 mb-4">Start by posting your first job to attract talented professionals</p>
-                  <Button onClick={handlePostJob}>
-                    <Plus className="h-4 w-4 mr-2" />
+                  <p className="text-gray-500 mb-2">No active job postings. To post your first job, click below to use our secure posting system.</p>
+                  <p className="text-sm text-gray-400 mb-4">All job posts go through our premium platform with Stripe payment protection</p>
+                  <Button onClick={handlePostJob} className="bg-purple-600 hover:bg-purple-700">
+                    <ExternalLink className="h-4 w-4 mr-2" />
                     Post Your First Job
                   </Button>
                 </div>
@@ -399,13 +410,6 @@ const SalonJobManager = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Job Post Modal */}
-      <SalonJobPostModal
-        open={isJobPostModalOpen}
-        onOpenChange={setIsJobPostModalOpen}
-        onJobCreated={refetch}
-      />
     </div>
   );
 };

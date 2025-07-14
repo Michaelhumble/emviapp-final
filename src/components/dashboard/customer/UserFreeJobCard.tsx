@@ -89,13 +89,18 @@ const UserFreeJobCard = () => {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-lg">Your Free Job Post</CardTitle>
+          <CardTitle className="text-lg">Job Posting</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-6">
-            <p className="text-gray-600 mb-4">You haven't posted your free job yet.</p>
-            <Button onClick={() => navigate('/post-job')} className="bg-green-600 hover:bg-green-700">
-              Post Your Free Job
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <h4 className="font-semibold text-blue-800 mb-2">Premium Job Posting Available</h4>
+              <p className="text-blue-700 text-sm mb-3">
+                To post a job and reach top talent, please use our official Post a Job system with premium visibility and secure payment protection.
+              </p>
+            </div>
+            <Button onClick={() => navigate('/post-job')} className="bg-blue-600 hover:bg-blue-700">
+              Post a Job
             </Button>
           </div>
         </CardContent>
@@ -106,7 +111,7 @@ const UserFreeJobCard = () => {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg">Your Free Job Post</CardTitle>
+        <CardTitle className="text-lg">Your Job Post</CardTitle>
         <Badge variant="secondary" className="bg-green-100 text-green-700">
           FREE
         </Badge>

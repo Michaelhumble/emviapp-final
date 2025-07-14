@@ -211,7 +211,7 @@ const PostSuccessPage = () => {
 
   const handlePostAnother = () => {
     console.log('🔄 [POST-SUCCESS] Navigating to post another job...');
-    navigate('/post-job-free');
+    navigate('/post-job');
   };
 
   return (
