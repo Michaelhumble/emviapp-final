@@ -8,6 +8,7 @@ import { WeeklyCalendar } from "./calendar/WeeklyCalendar";
 import { useAuth } from "@/context/auth";
 import { useCalendarNavigation } from "@/hooks/calendar/useCalendarNavigation";
 import { useSalonBookings } from "@/hooks/useSalonBookings";
+import type { Appointment } from "@/hooks/calendar/useAppointments";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,23 @@ const SalonBookingCalendar = () => {
   const { user } = useAuth();
   const { currentDate, weekDays, goToPreviousWeek, goToNextWeek, goToToday } = useCalendarNavigation();
   const { bookings, loading, createBooking } = useSalonBookings();
+
+  // Transform bookings to appointments format
+  const appointments: Appointment[] = bookings.map(booking => ({
+    id: booking.id,
+    artist_id: booking.artist_id || user?.id || '',
+    customer_name: booking.client_name,
+    start_time: `${booking.booking_date}T${booking.booking_time}:00`,
+    end_time: `${booking.booking_date}T${new Date(`1970-01-01T${booking.booking_time}:00`).getTime() + (booking.duration_minutes * 60000) > 86400000 ? '23:59' : new Date(new Date(`1970-01-01T${booking.booking_time}:00`).getTime() + (booking.duration_minutes * 60000)).toTimeString().slice(0, 5)}:00`,
+    notes: booking.notes,
+    status: booking.status || 'confirmed',
+    created_at: booking.created_at || new Date().toISOString(),
+    updated_at: booking.updated_at || new Date().toISOString(),
+    duration_minutes: booking.duration_minutes,
+    services: {
+      title: booking.service_name
+    }
+  }));
   const [isNewBookingOpen, setIsNewBookingOpen] = useState(false);
   const [bookingForm, setBookingForm] = useState({
     client_name: "",
@@ -105,7 +123,7 @@ const SalonBookingCalendar = () => {
 
       <Card className="border-muted">
         <CardContent className="p-0">
-          {isLoadingAppointments ? (
+          {loading ? (
             <div className="flex justify-center items-center h-[600px]">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emvi-accent"></div>
             </div>
@@ -132,8 +150,8 @@ const SalonBookingCalendar = () => {
               <Label htmlFor="client-name">Client Name</Label>
               <Input
                 id="client-name"
-                value={bookingForm.clientName}
-                onChange={(e) => setBookingForm(prev => ({ ...prev, clientName: e.target.value }))}
+                value={bookingForm.client_name}
+                onChange={(e) => setBookingForm(prev => ({ ...prev, client_name: e.target.value }))}
                 placeholder="Enter client name"
               />
             </div>
@@ -141,8 +159,8 @@ const SalonBookingCalendar = () => {
               <Label htmlFor="service">Service</Label>
               <Input
                 id="service"
-                value={bookingForm.service}
-                onChange={(e) => setBookingForm(prev => ({ ...prev, service: e.target.value }))}
+                value={bookingForm.service_name}
+                onChange={(e) => setBookingForm(prev => ({ ...prev, service_name: e.target.value }))}
                 placeholder="Enter service type"
               />
             </div>
@@ -152,8 +170,8 @@ const SalonBookingCalendar = () => {
                 <Input
                   id="booking-date"
                   type="date"
-                  value={bookingForm.date}
-                  onChange={(e) => setBookingForm(prev => ({ ...prev, date: e.target.value }))}
+                  value={bookingForm.booking_date}
+                  onChange={(e) => setBookingForm(prev => ({ ...prev, booking_date: e.target.value }))}
                 />
               </div>
               <div>
@@ -161,8 +179,8 @@ const SalonBookingCalendar = () => {
                 <Input
                   id="booking-time"
                   type="time"
-                  value={bookingForm.time}
-                  onChange={(e) => setBookingForm(prev => ({ ...prev, time: e.target.value }))}
+                  value={bookingForm.booking_time}
+                  onChange={(e) => setBookingForm(prev => ({ ...prev, booking_time: e.target.value }))}
                 />
               </div>
             </div>
@@ -171,8 +189,8 @@ const SalonBookingCalendar = () => {
               <Input
                 id="duration"
                 type="number"
-                value={bookingForm.duration}
-                onChange={(e) => setBookingForm(prev => ({ ...prev, duration: e.target.value }))}
+                value={bookingForm.duration_minutes}
+                onChange={(e) => setBookingForm(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 60 }))}
                 placeholder="60"
               />
             </div>

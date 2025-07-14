@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Briefcase, Users, Eye, Edit, Trash2, Calendar, Clock, MapPin, DollarSign } from 'lucide-react';
 import { useSalonJobs } from '@/hooks/useSalonJobs';
+import SalonJobPostModal from './SalonJobPostModal';
 import {
   Dialog,
   DialogContent,
@@ -25,11 +26,12 @@ import {
 } from "@/components/ui/select";
 
 const SalonJobManager = () => {
-  const { jobs, applications, loading, updateJob, deleteJob, updateApplicationStatus } = useSalonJobs();
+  const { jobs, applications, loading, updateJob, deleteJob, updateApplicationStatus, refetch } = useSalonJobs();
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
   const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
+  const [isJobPostModalOpen, setIsJobPostModalOpen] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({
     date: "",
     time: "",
@@ -38,8 +40,7 @@ const SalonJobManager = () => {
   });
 
   const handlePostJob = () => {
-    // TODO: Navigate to job posting form or open modal
-    console.log('Navigate to job posting form');
+    setIsJobPostModalOpen(true);
   };
 
   const handleEditJob = async (jobId: string) => {
@@ -398,6 +399,13 @@ const SalonJobManager = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Job Post Modal */}
+      <SalonJobPostModal
+        open={isJobPostModalOpen}
+        onOpenChange={setIsJobPostModalOpen}
+        onJobCreated={refetch}
+      />
     </div>
   );
 };
