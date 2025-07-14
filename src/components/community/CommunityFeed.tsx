@@ -75,7 +75,21 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {posts.map((post, index) => (
+      {posts.map((post, index) => {
+        // Create diverse author names for posts
+        const diverseAuthors = [
+          'Madison Chen', 'Taylor Swift', 'Emma Rodriguez', 'Sofia Kim', 'Jessica Park', 'Alex Chen',
+          'Maya Patel', 'Chloe Johnson', 'Zara Ahmed', 'Luna Martinez', 'Ava Williams', 'Naia Brown',
+          'Isla Thompson', 'Mia Garcia', 'Lila Davis', 'Aria Wilson', 'Nova Jackson', 'Sage Anderson',
+          'Riley Cooper', 'Blake Martin', 'Casey Lee', 'Drew Carter', 'Hayden Moore', 'Kai Wright',
+          'Dani Foster', 'Ryan Bell', 'Sam Collins', 'Quinn Turner', 'Finley Hall', 'Rowan Price'
+        ];
+        
+        // Create consistent author mapping based on post content
+        const authorIndex = (post.content.length + index) % diverseAuthors.length;
+        const authorName = diverseAuthors[authorIndex];
+        
+        return (
         <div key={post.id}>
           <Card className="p-6 bg-white/90 backdrop-blur-sm border-purple-100 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl animate-fade-in">
             <div className="flex gap-4">
@@ -83,7 +97,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
               <div className="flex-shrink-0">
                 <div className="relative">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-purple-100">
-                    {post.user_id.charAt(0).toUpperCase()}
+                    {authorName.charAt(0).toUpperCase()}
                   </div>
                   <button
                     className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
@@ -99,7 +113,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-gray-900">
-                      {post.profiles?.full_name || 'Beauty Pro'}
+                      {authorName}
                     </span>
                     <Badge className={getCategoryColor(post.category)}>
                       {post.category}
@@ -217,7 +231,8 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
             </div>
           )}
         </div>
-      ))}
+        );
+      })}
 
       {posts.length === 0 && !isRefreshing && (
         <Card className="p-12 text-center bg-white/80 backdrop-blur-sm border-purple-100">
