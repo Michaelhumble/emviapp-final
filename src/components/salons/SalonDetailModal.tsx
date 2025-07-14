@@ -201,22 +201,26 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               </div>
             </div>
             
-            {salon.sqft && (
+            {(salon.sqft || (salon as any).square_feet) && (
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                 <div>
                   <div className="text-xs sm:text-sm text-gray-500">Size</div>
-                  <div className="font-medium text-sm sm:text-base">{salon.sqft.toLocaleString()} sqft</div>
+                  <div className="font-medium text-sm sm:text-base">
+                    {(salon.sqft || (salon as any).square_feet)?.toLocaleString()} sqft
+                  </div>
                 </div>
               </div>
             )}
 
-            {salon.monthlyRent && (
+            {(salon.monthlyRent || (salon as any).monthly_rent) && (
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                 <div>
                   <div className="text-xs sm:text-sm text-gray-500">Monthly Rent</div>
-                  <div className="font-medium text-sm sm:text-base">${salon.monthlyRent.toLocaleString()}</div>
+                  <div className="font-medium text-sm sm:text-base">
+                    ${(salon.monthlyRent || (salon as any).monthly_rent)?.toLocaleString()}
+                  </div>
                 </div>
               </div>
             )}
@@ -229,6 +233,74 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
               </div>
             </div>
           </div>
+
+          {/* Business Details Section */}
+          {((salon as any).number_of_staff || (salon as any).number_of_chairs || (salon as any).number_of_tables || (salon as any).monthly_revenue || (salon as any).monthly_profit) && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Business Details</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {(salon as any).number_of_staff && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">👥</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-gray-500">Staff</div>
+                      <div className="font-medium">{(salon as any).number_of_staff} Employees</div>
+                    </div>
+                  </div>
+                )}
+
+                {(salon as any).number_of_chairs && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">💺</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-gray-500">Chairs</div>
+                      <div className="font-medium">{(salon as any).number_of_chairs} Chairs</div>
+                    </div>
+                  </div>
+                )}
+
+                {(salon as any).number_of_tables && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🪑</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-gray-500">Tables</div>
+                      <div className="font-medium">{(salon as any).number_of_tables} Tables</div>
+                    </div>
+                  </div>
+                )}
+
+                {(salon as any).monthly_revenue && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📈</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-gray-500">Monthly Revenue</div>
+                      <div className="font-medium">${(salon as any).monthly_revenue}</div>
+                    </div>
+                  </div>
+                )}
+
+                {(salon as any).monthly_profit && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">💰</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-gray-500">Monthly Profit</div>
+                      <div className="font-medium">${(salon as any).monthly_profit}</div>
+                    </div>
+                  </div>
+                )}
+
+                {(salon as any).established_year && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📅</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-gray-500">Established</div>
+                      <div className="font-medium">{(salon as any).established_year}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Descriptions - Vietnamese-first for nails */}
           <div className="space-y-4">

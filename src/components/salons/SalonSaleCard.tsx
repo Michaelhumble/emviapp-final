@@ -244,6 +244,27 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
               <span className="font-inter truncate">{salon.square_feet} sq ft</span>
             </div>
           )}
+
+          {salon.number_of_staff && (
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-muted-foreground flex-shrink-0">👥</span>
+              <span className="font-inter truncate">{salon.number_of_staff} Staff</span>
+            </div>
+          )}
+
+          {salon.number_of_chairs && (
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-muted-foreground flex-shrink-0">💺</span>
+              <span className="font-inter truncate">{salon.number_of_chairs} Chairs</span>
+            </div>
+          )}
+
+          {salon.number_of_tables && (
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-muted-foreground flex-shrink-0">🪑</span>
+              <span className="font-inter truncate">{salon.number_of_tables} Tables</span>
+            </div>
+          )}
           
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
