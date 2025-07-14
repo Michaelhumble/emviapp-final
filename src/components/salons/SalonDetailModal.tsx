@@ -56,6 +56,8 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
 
   // Filter valid images
   const validImages = salon.images?.filter(img => img && img.trim() && img !== 'null' && img !== 'undefined') || [];
+  console.log('SalonDetailModal salon data:', salon);
+  console.log('SalonDetailModal validImages:', validImages);
 
   // Navigation functions for image gallery
   const nextImage = () => {

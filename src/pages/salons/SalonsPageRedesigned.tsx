@@ -57,14 +57,7 @@ const SalonsPageRedesigned = () => {
       try {
         const { data, error } = await supabase
           .from('salon_sales')
-          .select(`
-            *,
-            salon_sale_photos(
-              id,
-              photo_url,
-              order_number
-            )
-          `)
+          .select('*')
           .eq('status', 'active')
           .order('created_at', { ascending: false });
 
@@ -73,19 +66,11 @@ const SalonsPageRedesigned = () => {
           return;
         }
 
-        // Transform data to include photos in images array
-        const transformedSales = data.map(sale => ({
-          ...sale,
-          images: sale.salon_sale_photos 
-            ? sale.salon_sale_photos
-                .sort((a: any, b: any) => (a.order_number || 0) - (b.order_number || 0))
-                .map((photo: any) => photo.photo_url)
-            : (sale.images || []),
-          // Add backward compatibility for description
-          description: sale.description_combined || sale.vietnamese_description || sale.english_description || ''
-        }));
-
-        setSalonSales(transformedSales);
+        if (data) {
+          console.log('Fetched salon sales:', data);
+          console.log('Sample salon images:', data[0]?.images);
+          setSalonSales(data);
+        }
       } catch (error) {
         console.error('Error loading salon sales:', error);
       } finally {

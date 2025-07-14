@@ -134,6 +134,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
   };
 
   const images = salon.images || [];
+  console.log('SalonSaleCard salon:', salon.salon_name, 'images:', images);
 
   return (
     <Card className={`group overflow-hidden bg-card border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 ${className}`}>
