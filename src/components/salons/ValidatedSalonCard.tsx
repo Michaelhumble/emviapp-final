@@ -1,12 +1,16 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, DollarSign } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { MapPin, DollarSign, Edit, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ValidatedSalonCardProps {
   salon: Job | Salon;
@@ -14,6 +18,42 @@ interface ValidatedSalonCardProps {
 }
 
 const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingType }) => {
+  const { user, userRole } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if current user owns this listing
+  const isOwner = user && ('user_id' in salon) && salon.user_id === user.id;
+  const isAdmin = userRole === 'admin';
+  const canEdit = isOwner || isAdmin;
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/salon-post?edit=${salon.id}`);
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!confirm('Are you sure you want to delete this listing?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('salon_sales')
+        .delete()
+        .eq('id', salon.id);
+        
+      if (error) throw error;
+      
+      toast.success('Listing deleted successfully');
+      window.location.reload(); // Refresh the page to show updated listings
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      toast.error('Failed to delete listing');
+    }
+  };
+
   // Get the name/title depending on salon type
   const getName = () => {
     if ('name' in salon && salon.name) return salon.name;
@@ -146,12 +186,34 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
             <span>{getFormattedPrice()}</span>
           </div>
           
-          <Link 
-            to={`/${listingType}s/${salon.id}`} 
-            className="text-primary font-medium hover:underline text-sm"
-          >
-            View Details →
-          </Link>
+          <div className="flex items-center gap-2">
+            {canEdit && (
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleEdit}
+                  className="h-7 px-2 text-xs"
+                >
+                  <Edit className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleDelete}
+                  className="h-7 px-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+            <Link 
+              to={`/${listingType}s/${salon.id}`} 
+              className="text-primary font-medium hover:underline text-sm"
+            >
+              View Details →
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

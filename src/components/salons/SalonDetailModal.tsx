@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { Button } from '@/components/ui/button';
-import { MapPin, DollarSign, Clock, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, DollarSign, Clock, User, Mail, Phone, ChevronLeft, ChevronRight, Edit, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SalonDetailModalProps {
   salon: RealSalonListing | null;
@@ -16,11 +18,41 @@ interface SalonDetailModalProps {
 }
 
 const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onClose }) => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user, userRole } = useAuth();
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!salon) return null;
+
+  // Check if current user owns this listing
+  const isOwner = user && ('user_id' in salon) && salon.user_id === user.id;
+  const isAdmin = userRole === 'admin';
+  const canEdit = isOwner || isAdmin;
+
+  const handleEdit = () => {
+    navigate(`/salon-post?edit=${salon.id}`);
+    onClose();
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this listing?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('salon_sales')
+        .delete()
+        .eq('id', salon.id);
+        
+      if (error) throw error;
+      
+      toast.success('Listing deleted successfully');
+      onClose();
+      window.location.reload(); // Refresh the page to show updated listings
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      toast.error('Failed to delete listing');
+    }
+  };
 
   // Navigation functions for image gallery
   const nextImage = () => {
@@ -39,9 +71,33 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[95vh] w-[95vw] sm:w-auto overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-            {salon.name}
-          </DialogTitle>
+          <div className="flex justify-between items-start gap-4">
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+              {salon.name}
+            </DialogTitle>
+            {canEdit && (
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleEdit}
+                  className="h-8 px-3 text-xs"
+                >
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleDelete}
+                  className="h-8 px-3 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Delete
+                </Button>
+              </div>
+            )}
+          </div>
         </DialogHeader>
 
         {/* Full Image Gallery - Mobile optimized */}

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'react-router-dom';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
@@ -14,11 +15,18 @@ import SalonPhotosStep from './steps/SalonPhotosStep';
 import SalonPreviewStep from './steps/SalonPreviewStep';
 import SalonPaymentStep from './steps/SalonPaymentStep';
 import PostWizardLayout from '../PostWizardLayout';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const SalonListingWizard = () => {
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
+  const isEditMode = !!editId;
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const totalSteps = 8;
 
   const form = useForm<SalonFormValues>({
@@ -68,6 +76,85 @@ const SalonListingWizard = () => {
     },
   });
 
+  // Load existing data when in edit mode
+  useEffect(() => {
+    const loadSalonData = async () => {
+      if (!isEditMode || !editId) return;
+      
+      setLoading(true);
+      try {
+        const { data: salon, error } = await supabase
+          .from('salon_sales')
+          .select('*')
+          .eq('id', editId)
+          .single();
+          
+        if (error) throw error;
+        
+        if (salon) {
+          // Pre-fill form with existing data
+          form.reset({
+            salonName: salon.salon_name || '',
+            businessType: salon.business_type || '',
+            establishedYear: salon.established_year || '',
+            address: salon.address || '',
+            city: salon.city || '',
+            state: salon.state || '',
+            zipCode: salon.zip_code || '',
+            neighborhood: salon.neighborhood || '',
+            hideExactAddress: salon.hide_exact_address || false,
+            askingPrice: salon.asking_price?.toString() || '',
+            monthlyRent: salon.monthly_rent?.toString() || '',
+            monthlyRevenue: salon.monthly_revenue || '',
+            monthlyProfit: salon.monthly_profit || '',
+            numberOfStaff: salon.number_of_staff || '',
+            numberOfTables: salon.number_of_tables || '',
+            numberOfChairs: salon.number_of_chairs || '',
+            squareFeet: salon.square_feet || '',
+            vietnameseDescription: salon.vietnamese_description || '',
+            englishDescription: salon.english_description || '',
+            reasonForSelling: salon.reason_for_selling || '',
+            virtualTourUrl: salon.virtual_tour_url || '',
+            otherNotes: salon.other_notes || '',
+            contactName: salon.contact_name || '',
+            contactEmail: salon.contact_email || '',
+            contactPhone: salon.contact_phone || '',
+            contactFacebook: salon.contact_facebook || '',
+            contactZalo: salon.contact_zalo || '',
+            contactNotes: salon.contact_notes || '',
+            willTrain: salon.will_train || false,
+            hasHousing: salon.has_housing || false,
+            hasWaxRoom: salon.has_wax_room || false,
+            hasDiningRoom: salon.has_dining_room || false,
+            hasLaundry: salon.has_laundry || false,
+            hasParking: salon.has_parking || false,
+            equipmentIncluded: salon.equipment_included || false,
+            leaseTransferable: salon.lease_transferable || false,
+            sellerFinancing: salon.seller_financing || false,
+            helpWithTransition: salon.help_with_transition || false,
+            selectedPricingTier: (salon.selected_pricing_tier as 'basic' | 'gold' | 'premium' | 'annual') || 'basic',
+            featuredAddon: salon.featured_addon || false,
+            termsAccepted: true, // Already accepted since it's an existing listing
+          });
+          
+          // Load existing photos
+          if (salon.images && salon.images.length > 0) {
+            setPhotoUrls(salon.images);
+          }
+          
+          toast.success('Listing data loaded for editing');
+        }
+      } catch (error) {
+        console.error('Error loading salon data:', error);
+        toast.error('Failed to load listing data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadSalonData();
+  }, [isEditMode, editId, form]);
+
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
@@ -110,7 +197,7 @@ const SalonListingWizard = () => {
       case 7:
         return <SalonPreviewStep form={form} photoUploads={photoUploads} photoUrls={photoUrls} />;
       case 8:
-        return <SalonPaymentStep form={form} photoUploads={photoUploads} onPaymentComplete={handlePaymentComplete} />;
+        return <SalonPaymentStep form={form} photoUploads={photoUploads} onPaymentComplete={handlePaymentComplete} isEditMode={isEditMode} editId={editId} />;
       default:
         return <SalonIdentitySection form={form} />;
     }

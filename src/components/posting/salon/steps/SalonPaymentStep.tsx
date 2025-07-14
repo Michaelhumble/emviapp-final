@@ -8,15 +8,20 @@ import { Button } from "@/components/ui/button";
 import { useStripe } from "@/hooks/useStripe";
 import { CreditCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface SalonPaymentStepProps {
   form: UseFormReturn<SalonFormValues>;
   photoUploads?: File[];
   onPaymentComplete?: () => void;
+  isEditMode?: boolean;
+  editId?: string | null;
 }
 
-export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete }: SalonPaymentStepProps) => {
+export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete, isEditMode = false, editId }: SalonPaymentStepProps) => {
   const { isLoading, initiatePayment } = useStripe();
+  const navigate = useNavigate();
   
   const selectedOptions: SalonPricingOptions = {
     selectedPricingTier: form.watch("selectedPricingTier"),
@@ -29,6 +34,67 @@ export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete }:
 
   const handleFeaturedAddonChange = (featured: boolean) => {
     form.setValue("featuredAddon", featured);
+  };
+
+  const handleUpdateListing = async () => {
+    const formData = form.getValues();
+    
+    try {
+      const { error } = await supabase
+        .from('salon_sales')
+        .update({
+          salon_name: formData.salonName,
+          business_type: formData.businessType,
+          established_year: formData.establishedYear,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip_code: formData.zipCode,
+          neighborhood: formData.neighborhood,
+          hide_exact_address: formData.hideExactAddress,
+          asking_price: parseInt(formData.askingPrice),
+          monthly_rent: parseInt(formData.monthlyRent || '0'),
+          monthly_revenue: formData.monthlyRevenue,
+          monthly_profit: formData.monthlyProfit,
+          number_of_staff: formData.numberOfStaff,
+          number_of_tables: formData.numberOfTables,
+          number_of_chairs: formData.numberOfChairs,
+          square_feet: formData.squareFeet,
+          vietnamese_description: formData.vietnameseDescription,
+          english_description: formData.englishDescription,
+          reason_for_selling: formData.reasonForSelling,
+          virtual_tour_url: formData.virtualTourUrl,
+          other_notes: formData.otherNotes,
+          contact_name: formData.contactName,
+          contact_email: formData.contactEmail,
+          contact_phone: formData.contactPhone,
+          contact_facebook: formData.contactFacebook,
+          contact_zalo: formData.contactZalo,
+          contact_notes: formData.contactNotes,
+          will_train: formData.willTrain,
+          has_housing: formData.hasHousing,
+          has_wax_room: formData.hasWaxRoom,
+          has_dining_room: formData.hasDiningRoom,
+          has_laundry: formData.hasLaundry,
+          has_parking: formData.hasParking,
+          equipment_included: formData.equipmentIncluded,
+          lease_transferable: formData.leaseTransferable,
+          seller_financing: formData.sellerFinancing,
+          help_with_transition: formData.helpWithTransition,
+          selected_pricing_tier: formData.selectedPricingTier,
+          featured_addon: formData.featuredAddon,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', editId);
+
+      if (error) throw error;
+
+      toast.success('Listing updated successfully!');
+      navigate('/salons');
+    } catch (error) {
+      console.error('Error updating listing:', error);
+      toast.error('Failed to update listing');
+    }
   };
 
   const handleContinueToPayment = async () => {
@@ -73,7 +139,7 @@ export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete }:
       
       <div className="flex justify-center pt-6">
         <Button
-          onClick={handleContinueToPayment}
+          onClick={isEditMode ? handleUpdateListing : handleContinueToPayment}
           disabled={!isValidSelection || isLoading}
           size="lg"
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
@@ -86,7 +152,7 @@ export const SalonPaymentStep = ({ form, photoUploads = [], onPaymentComplete }:
           ) : (
             <>
               <CreditCard className="mr-2 h-5 w-5" />
-              Pay & Publish Listing
+              {isEditMode ? 'Update Listing' : 'Pay & Publish Listing'}
             </>
           )}
         </Button>
