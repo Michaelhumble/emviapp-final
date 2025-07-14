@@ -29,142 +29,38 @@ const CommunityHeader: React.FC<CommunityHeaderProps> = ({
 }) => {
   const [scrollY, setScrollY] = useState(0);
   const [isCompact, setIsCompact] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  const [isComposerFocused, setIsComposerFocused] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      // Determine compact state (scrolled past hero section)
+      // Only determine compact state based on scroll position
       setIsCompact(currentScrollY > 100);
-      
-      // Check if user is near post composer area
-      const postComposer = document.querySelector('[data-post-composer]');
-      const isNearComposer = postComposer && currentScrollY > (postComposer.getBoundingClientRect().top + window.scrollY - 200);
-      
-      // Determine hidden state - hide on mobile/iPad when:
-      // 1. Scrolling down past 300px AND not hovered
-      // 2. Keyboard is open
-      // 3. Composer is focused
-      // 4. Near composer area on mobile
-      const isMobile = window.innerWidth <= 1024;
-      
-      if (isMobile) {
-        if (isKeyboardOpen || isComposerFocused || isNearComposer) {
-          setIsHidden(true);
-        } else if (currentScrollY > 300) {
-          if (currentScrollY > lastScrollY && !isHovered) {
-            // Scrolling down - hide
-            setIsHidden(true);
-          } else if (currentScrollY < lastScrollY) {
-            // Scrolling up - show
-            setIsHidden(false);
-          }
-        } else {
-          // Near top - always show (unless keyboard/composer focused)
-          setIsHidden(false);
-        }
-      } else {
-        // Desktop - normal behavior
-        if (currentScrollY > 300) {
-          if (currentScrollY > lastScrollY && !isHovered) {
-            setIsHidden(true);
-          } else if (currentScrollY < lastScrollY) {
-            setIsHidden(false);
-          }
-        } else {
-          setIsHidden(false);
-        }
-      }
-      
       setScrollY(currentScrollY);
-      setLastScrollY(currentScrollY);
-    };
-
-    // Detect keyboard opening/closing on mobile
-    const handleResize = () => {
-      const currentHeight = window.innerHeight;
-      const heightDifference = viewportHeight - currentHeight;
-      
-      // If height decreased by more than 150px, likely keyboard opened
-      const keyboardOpen = heightDifference > 150;
-      setIsKeyboardOpen(keyboardOpen);
-      
-      if (!keyboardOpen) {
-        setViewportHeight(currentHeight);
-      }
-    };
-
-    // Listen for focus events on post composer
-    const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      const isComposerElement = target.closest('[data-post-composer]') || 
-                               target.closest('[role="dialog"]') || // Modal composer
-                               target.matches('textarea, input[type="text"], input[type="search"]');
-      
-      if (isComposerElement && window.innerWidth <= 1024) {
-        setIsComposerFocused(true);
-      }
-    };
-
-    const handleFocusOut = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      const relatedTarget = e.relatedTarget as HTMLElement;
-      
-      // Check if focus is moving outside composer area
-      const isLeavingComposer = !relatedTarget?.closest('[data-post-composer]') && 
-                               !relatedTarget?.closest('[role="dialog"]');
-      
-      if (isLeavingComposer) {
-        setIsComposerFocused(false);
-      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
-    document.addEventListener('focusin', handleFocusIn);
-    document.addEventListener('focusout', handleFocusOut);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
-      document.removeEventListener('focusin', handleFocusIn);
-      document.removeEventListener('focusout', handleFocusOut);
     };
-  }, [lastScrollY, isHovered, isKeyboardOpen, isComposerFocused, viewportHeight]);
+  }, []);
 
-  // Toggle mobile collapse
+  // Mobile collapse toggle for filters only
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(false);
 
   return (
     <div 
-      className={`sticky top-0 transition-all duration-500 ease-in-out ${
-        isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-      } ${
+      className={`sticky top-0 transition-all duration-300 ${
         isCompact 
-          ? 'bg-white/85 backdrop-blur-lg shadow-md' 
-          : 'bg-white/95 backdrop-blur-md shadow-sm'
-      } border-b border-purple-100`}
-      style={{ 
-        zIndex: 30,
-        position: 'sticky',
-        // Add extra margin on mobile when keyboard is open to prevent overlap
-        marginBottom: isKeyboardOpen && window.innerWidth <= 1024 ? '80px' : '0px'
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+          ? 'bg-white/95 backdrop-blur-lg shadow-md' 
+          : 'bg-white/98 backdrop-blur-md shadow-sm'
+      } border-b border-purple-100 z-30`}
       role="banner"
       aria-label="Community search and filters"
-      aria-hidden={isHidden}
     >
-      <div className={`container mx-auto px-4 transition-all duration-500 ${
-        isCompact ? 'py-2' : 'py-4'
-      } ${isHidden ? 'pointer-events-none' : 'pointer-events-auto'}`}>
+      <div className={`container mx-auto px-4 transition-all duration-300 ${
+        isCompact ? 'py-3' : 'py-6'
+      }`}>
         
         {/* Hero Section - Hidden when compact */}
         <div className={`text-center transition-all duration-300 overflow-hidden ${
@@ -178,16 +74,51 @@ const CommunityHeader: React.FC<CommunityHeaderProps> = ({
           </p>
         </div>
 
-        {/* Mobile Collapse Toggle - Hide when keyboard open or composer focused */}
-        <div className={`md:hidden mb-2 transition-all duration-300 ${
-          isKeyboardOpen || isComposerFocused ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-12'
+        {/* Search Bar - Always visible */}
+        <div className={`flex items-center gap-4 transition-all duration-300 ${
+          isCompact ? 'mb-3' : 'mb-4'
         }`}>
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Input
+              placeholder="Search posts, creators, or techniques..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`pl-10 pr-4 rounded-xl border-purple-200 focus:border-purple-400 focus:ring-purple-400 transition-all duration-200 ${
+                isCompact ? 'py-2 text-sm' : 'py-3'
+              }`}
+              aria-label="Search community posts and creators"
+            />
+          </div>
+          
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-xl border-purple-200 hover:bg-purple-50"
+              aria-label="Filter posts"
+            >
+              <Filter className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-xl border-purple-200 hover:bg-purple-50"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Filter Toggle */}
+        <div className="md:hidden mb-2">
           <button
             onClick={() => setIsMobileCollapsed(!isMobileCollapsed)}
             className="w-full flex items-center justify-center py-2 text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label={isMobileCollapsed ? "Expand search and filters" : "Collapse search and filters"}
+            aria-label={isMobileCollapsed ? "Show filters" : "Hide filters"}
             aria-expanded={!isMobileCollapsed}
-            tabIndex={isHidden ? -1 : 0}
           >
             <ChevronUp className={`h-4 w-4 transition-transform duration-200 ${
               isMobileCollapsed ? 'rotate-180' : ''
@@ -195,71 +126,11 @@ const CommunityHeader: React.FC<CommunityHeaderProps> = ({
           </button>
         </div>
 
-        {/* Search and Filter Content - Auto-hide on mobile when keyboard/composer active */}
-        <div className={`transition-all duration-500 overflow-hidden ${
+        {/* Filter Tabs */}
+        <div className={`transition-all duration-300 overflow-hidden ${
           isMobileCollapsed ? 'md:block hidden max-h-0' : 'block max-h-96'
-        } ${
-          (isKeyboardOpen || isComposerFocused) && window.innerWidth <= 1024 
-            ? 'lg:block hidden opacity-0 max-h-0' 
-            : 'opacity-100'
         }`}>
-          
-          {/* Search Bar - Disabled when hidden to prevent focus traps */}
-          <div className={`flex items-center gap-4 transition-all duration-500 ${
-            isCompact ? 'mb-2' : 'mb-4'
-          }`}>
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                placeholder="Search posts, creators, or techniques..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-10 pr-4 rounded-xl border-purple-200 focus:border-purple-400 focus:ring-purple-400 transition-all duration-200 ${
-                  isCompact ? 'py-2 text-sm' : 'py-3'
-                }`}
-                aria-label="Search community posts and creators"
-                tabIndex={isHidden ? -1 : 0}
-                disabled={isHidden}
-                onFocus={() => window.innerWidth <= 1024 && setIsComposerFocused(true)}
-                onBlur={() => setIsComposerFocused(false)}
-              />
-            </div>
-            
-            {/* Action buttons - hidden when compact unless hovered or when keyboard/composer active */}
-            <div className={`flex gap-2 transition-all duration-500 ${
-              (isCompact && !isHovered) || isKeyboardOpen || isComposerFocused 
-                ? 'opacity-0 w-0 overflow-hidden' 
-                : 'opacity-100'
-            }`}>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="rounded-xl border-purple-200 hover:bg-purple-50"
-                aria-label="Filter posts"
-                tabIndex={isHidden ? -1 : 0}
-                disabled={isHidden}
-              >
-                <Filter className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="rounded-xl border-purple-200 hover:bg-purple-50"
-                aria-label="Notifications"
-                tabIndex={isHidden ? -1 : 0}
-                disabled={isHidden}
-              >
-                <Bell className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Filter Tabs - Hidden on mobile when keyboard/composer active */}
-          <div className={`flex gap-2 overflow-x-auto pb-2 scrollbar-hide transition-all duration-500 ${
-            (isKeyboardOpen || isComposerFocused) && window.innerWidth <= 1024 
-              ? 'opacity-0 max-h-0 overflow-hidden lg:flex lg:opacity-100 lg:max-h-full' 
-              : 'opacity-100 max-h-full'
-          }`}>
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {filters.map((filter) => (
               <button
                 key={filter.id}
@@ -271,8 +142,6 @@ const CommunityHeader: React.FC<CommunityHeaderProps> = ({
                 } ${isCompact ? 'text-sm px-3 py-1.5' : ''}`}
                 aria-label={`Filter by ${filter.label} (${filter.count} posts)`}
                 aria-pressed={activeFilter === filter.id}
-                tabIndex={isHidden ? -1 : 0}
-                disabled={isHidden}
               >
                 {filter.icon && <filter.icon className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'}`} />}
                 <span className="font-medium">{filter.label}</span>
