@@ -365,7 +365,33 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
             </div>
           )}
 
-          {/* Contact Information - Auth Gated */}
+          {/* FOMO & Social Proof - Enhanced */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg mb-6">
+            <h3 className="text-sm font-semibold mb-3 text-gray-700">📊 Listing Activity</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="bg-white p-2 rounded border">
+                <div className="text-xs text-gray-500">Views (24h)</div>
+                <div className="font-bold text-purple-600">127</div>
+              </div>
+              <div className="bg-white p-2 rounded border">
+                <div className="text-xs text-gray-500">Bookmarked</div>
+                <div className="font-bold text-blue-600">18</div>
+              </div>
+              <div className="bg-white p-2 rounded border">
+                <div className="text-xs text-gray-500">Inquiries</div>
+                <div className="font-bold text-green-600">5</div>
+              </div>
+              <div className="bg-white p-2 rounded border">
+                <div className="text-xs text-gray-500">Tours Booked</div>
+                <div className="font-bold text-orange-600">3</div>
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-gray-600 text-center">
+              🔥 Popular listing - getting high interest!
+            </div>
+          </div>
+
+          {/* Contact Information - Auth Gated with Blur Effect */}
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg">
             <h3 className="text-lg font-semibold mb-4">Contact Seller</h3>
             
@@ -410,7 +436,19 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
                 </div>
               </div>
             ) : (
-              <div className="text-center py-6">
+              <div className="text-center py-6 relative">
+                {/* Blurred contact preview */}
+                <div className="filter blur-sm pointer-events-none mb-4 bg-white/50 p-4 rounded">
+                  <div className="flex items-center gap-3 justify-center">
+                    <Phone className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-400">(555) XXX-XXXX</span>
+                  </div>
+                  <div className="flex items-center gap-3 justify-center mt-2">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-400">salon@xxx.com</span>
+                  </div>
+                </div>
+                
                 <div className="text-gray-600 mb-4">
                   <Phone className="h-8 w-8 mx-auto mb-2 text-purple-500" />
                   <p className="font-medium">Sign in to view contact information</p>

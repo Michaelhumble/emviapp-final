@@ -98,6 +98,39 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     }
 
     // Check direct image_urls field (direct upload)
+    if (jobAny.image_urls && Array.isArray(jobAny.image_urls)) {
+      const validUrls = jobAny.image_urls.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🚨 [DEBUG-JOB-CARD] Found direct image_urls:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct image_urls');
+        return validUrls;
+      }
+    }
+
+    // Check photos field (direct upload)
+    if (jobAny.photos && Array.isArray(jobAny.photos)) {
+      const validUrls = jobAny.photos.filter((url: any) => 
+        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
+      );
+      console.log('🚨 [DEBUG-JOB-CARD] Found direct photos:', validUrls);
+      if (validUrls.length > 0) {
+        allFoundImages = validUrls;
+        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct photos');
+        return validUrls;
+      }
+    }
+
+    // Single image_url fallback
+    if (job.image_url && typeof job.image_url === 'string' && job.image_url.trim()) {
+      console.log('🚨 [DEBUG-JOB-CARD] ✅ Using single image_url');
+      return [job.image_url];
+    }
+
+    console.log('🚨 [DEBUG-JOB-CARD] ❌ No valid images found');
+    return [];
     if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
       const validUrls = jobAny.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'

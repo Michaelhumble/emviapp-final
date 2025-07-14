@@ -301,6 +301,50 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
           </div>
         )}
 
+        {/* FOMO & Social Proof Elements */}
+        <div className="space-y-2 mb-3">
+          {/* Views/Popularity indicator */}
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span>👀 Viewed 42 times</span>
+            <span>💾 8 saves</span>
+            <span>📅 3 scheduled visits</span>
+          </div>
+          
+          {/* Plan badge and days remaining */}
+          <div className="flex items-center justify-between">
+            <Badge 
+              className={`text-xs ${
+                salon.selected_pricing_tier === 'annual' ? 'bg-yellow-100 text-yellow-800' :
+                salon.selected_pricing_tier === 'premium' ? 'bg-purple-100 text-purple-800' :
+                salon.selected_pricing_tier === 'gold' ? 'bg-orange-100 text-orange-800' :
+                'bg-blue-100 text-blue-800'
+              }`}
+            >
+              {salon.selected_pricing_tier === 'annual' ? 'Annual Plan' :
+               salon.selected_pricing_tier === 'premium' ? 'Premium' :
+               salon.selected_pricing_tier === 'gold' ? 'Featured' : 'Standard'}
+            </Badge>
+            
+            {/* Days remaining logic */}
+            <span className="text-xs font-medium text-primary">
+              {salon.selected_pricing_tier === 'annual' ? (
+                <Badge className="bg-green-100 text-green-800">Until Sold</Badge>
+              ) : salon.expires_at ? (
+                (() => {
+                  const daysLeft = Math.ceil((new Date(salon.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                  return daysLeft <= 7 ? (
+                    <Badge className="bg-red-100 text-red-800">
+                      {daysLeft > 0 ? `${daysLeft} days left - ENDING SOON` : 'EXPIRED'}
+                    </Badge>
+                  ) : (
+                    <span>{daysLeft} days left</span>
+                  );
+                })()
+              ) : null}
+            </span>
+          </div>
+        </div>
+
         {/* Action Buttons */}
         <div className="flex gap-2">
           <Button 
@@ -317,7 +361,8 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
                 size="sm"
                 variant="outline"
                 onClick={handleEdit}
-                className="px-3"
+                className="px-3 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+                title="Edit Listing"
               >
                 <Edit className="h-3 w-3" />
               </Button>
@@ -326,6 +371,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
                 variant="outline"
                 onClick={handleDelete}
                 className="px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Delete Listing"
               >
                 <Trash2 className="h-3 w-3" />
               </Button>

@@ -8,6 +8,7 @@ import CustomerSocialProof from './CustomerSocialProof';
 import CustomerGameifiedProgress from './CustomerGameifiedProgress';
 import CustomerInstantActions from './CustomerInstantActions';
 import UserFreeJobCard from './UserFreeJobCard';
+import ListingManagement from '../common/ListingManagement';
 
 const CustomerDashboard = () => {
   return (
@@ -50,6 +51,16 @@ const CustomerDashboard = () => {
           className="mb-8"
         >
           <CustomerViralReferralCenter />
+        </motion.div>
+
+        {/* My Listings Management */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.25, ease: "easeOut" }}
+          className="mb-8"
+        >
+          <ListingManagement />
         </motion.div>
 
         {/* Free Job Post Section */}
