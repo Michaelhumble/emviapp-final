@@ -17,6 +17,8 @@ import CommunitySearch from '@/components/community/CommunitySearch';
 import ChallengeOfTheWeek from '@/components/community/ChallengeOfTheWeek';
 import TopCreators from '@/components/community/TopCreators';
 import PhotoUploader from '@/components/posting/PhotoUploader';
+import CommunityPostComposer from '@/components/community/CommunityPostComposer';
+import AiAssistantModal from '@/components/community/AiAssistantModal';
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,6 +31,7 @@ const Community = () => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [location, setLocation] = useState('');
+  const [showAiAssistant, setShowAiAssistant] = useState(false);
   const { posts, isLoading, fetchPosts, createPost, toggleLike } = useCommunityPosts();
   const { user, isSignedIn } = useAuth();
 
@@ -159,10 +162,10 @@ const Community = () => {
             ))}
           </div>
 
-          {/* Always-Visible Post Composer */}
+          {/* Always-Visible Post Composer with AI */}
           <Card className="border-2 border-purple-100 bg-white/90 backdrop-blur-sm">
             <CardContent className="p-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
                   <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
@@ -174,7 +177,7 @@ const Community = () => {
                   className="flex-1 justify-start text-gray-500 bg-gray-50/80 hover:bg-gray-100"
                   onClick={() => setShowPostComposer(true)}
                 >
-                  What's inspiring you today?
+                  What's inspiring you today? Try @AI for expert tips!
                 </Button>
                 <Button
                   size="icon"
@@ -185,24 +188,13 @@ const Community = () => {
                 </Button>
               </div>
               
-              <div className="flex justify-around mt-3 pt-3 border-t border-gray-100">
-                <Button variant="ghost" size="sm" className="text-purple-600">
-                  <Camera className="h-4 w-4 mr-1" />
-                  Photo
-                </Button>
-                <Button variant="ghost" size="sm" className="text-pink-600">
-                  <Video className="h-4 w-4 mr-1" />
-                  Video
-                </Button>
-                <Button variant="ghost" size="sm" className="text-orange-600">
-                  <BarChart3 className="h-4 w-4 mr-1" />
-                  Poll
-                </Button>
-                <Button variant="ghost" size="sm" className="text-blue-600">
-                  <Sparkles className="h-4 w-4 mr-1" />
-                  AI Polish
-                </Button>
-              </div>
+              <CommunityPostComposer
+                content={postContent}
+                onContentChange={setPostContent}
+                onSubmit={handleCreatePost}
+                placeholder="Share your beauty journey... Type @AI for instant expert advice!"
+                showActions={false}
+              />
             </CardContent>
           </Card>
 
@@ -367,12 +359,13 @@ const Community = () => {
                 </SelectContent>
               </Select>
 
-              {/* Post Content */}
-              <Textarea
-                placeholder="Share what's inspiring you today... Use #hashtags and @mentions"
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                className="min-h-32 resize-none"
+              {/* Post Content with AI */}
+              <CommunityPostComposer
+                content={postContent}
+                onContentChange={setPostContent}
+                onSubmit={() => {}} // Handled by modal submit
+                placeholder="Share what's inspiring you today... Type @AI for expert beauty advice!"
+                showActions={false}
               />
 
               {/* Poll Options (if poll type) */}

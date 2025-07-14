@@ -37,6 +37,9 @@ const RealtimeReactions = ({ postId, className = '' }: RealtimeReactionsProps) =
   const [animatingEmojis, setAnimatingEmojis] = useState<Array<{ id: string; emoji: string; x: number; y: number }>>([]);
   const { user } = useAuth();
 
+  // Temporarily disabled until types are updated
+  const isDisabled = true;
+
   // Fetch initial reactions
   useEffect(() => {
     fetchReactions();
@@ -77,21 +80,10 @@ const RealtimeReactions = ({ postId, className = '' }: RealtimeReactionsProps) =
   }, [postId, reactions]);
 
   const fetchReactions = async () => {
+    if (isDisabled) return;
     try {
-      const { data, error } = await supabase
-        .from('community_post_reactions')
-        .select('*')
-        .eq('post_id', postId);
-
-      if (error) throw error;
-
-      setReactions(data || []);
-      updateCounts(data || []);
-      
-      if (user) {
-        const userReactionEmojis = data?.filter(r => r.user_id === user.id).map(r => r.emoji) || [];
-        setUserReactions(new Set(userReactionEmojis));
-      }
+      // Temporarily disabled until types are updated
+      console.log('Reactions temporarily disabled');
     } catch (error) {
       console.error('Error fetching reactions:', error);
     }
@@ -106,49 +98,18 @@ const RealtimeReactions = ({ postId, className = '' }: RealtimeReactionsProps) =
   };
 
   const handleReaction = async (emoji: string) => {
+    if (isDisabled) {
+      toast.error('Reactions feature coming soon!');
+      return;
+    }
+    
     if (!user) {
       toast.error('Please sign in to react');
       return;
     }
 
-    try {
-      const existingReaction = reactions.find(r => r.user_id === user.id && r.emoji === emoji);
-
-      if (existingReaction) {
-        // Remove reaction
-        const { error } = await supabase
-          .from('community_post_reactions')
-          .delete()
-          .eq('id', existingReaction.id);
-
-        if (error) throw error;
-
-        setUserReactions(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(emoji);
-          return newSet;
-        });
-      } else {
-        // Add reaction
-        const { error } = await supabase
-          .from('community_post_reactions')
-          .insert({
-            post_id: postId,
-            user_id: user.id,
-            emoji
-          });
-
-        if (error) throw error;
-
-        setUserReactions(prev => new Set([...prev, emoji]));
-        triggerFloatingEmoji(emoji);
-      }
-
-      setShowEmojiPicker(false);
-    } catch (error) {
-      console.error('Error handling reaction:', error);
-      toast.error('Failed to update reaction');
-    }
+    // Temporarily disabled
+    toast.error('Reactions feature coming soon!');
   };
 
   const triggerFloatingEmoji = (emoji: string) => {
@@ -237,7 +198,7 @@ const RealtimeReactions = ({ postId, className = '' }: RealtimeReactionsProps) =
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes float-up {
           0% {
             opacity: 1;
