@@ -21,6 +21,7 @@ import CommunityPostComposer from '@/components/community/CommunityPostComposer'
 import AiAssistantModal from '@/components/community/AiAssistantModal';
 import LeaderboardWidget from '@/components/community/LeaderboardWidget';
 import OnboardingModal from '@/components/community/OnboardingModal';
+import VideoPlayer from '@/components/community/VideoPlayer';
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +32,8 @@ const Community = () => {
   const [postType, setPostType] = useState('story');
   const [category, setCategory] = useState('');
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoCaptions, setVideoCaptions] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [location, setLocation] = useState('');
   const [showAiAssistant, setShowAiAssistant] = useState(false);
@@ -90,6 +93,8 @@ const Community = () => {
       await createPost(postData);
       setPostContent('');
       setImageFiles([]);
+      setVideoFile(null);
+      setVideoCaptions('');
       setShowPostComposer(false);
       toast.success('Post shared successfully!');
     } catch (error) {
@@ -223,6 +228,10 @@ const Community = () => {
                 onSubmit={handleCreatePost}
                 placeholder="Share your beauty journey... Type @AI for instant expert advice!"
                 showActions={false}
+                videoFile={videoFile}
+                onVideoChange={setVideoFile}
+                videoCaptions={videoCaptions}
+                onVideoCaptionsChange={setVideoCaptions}
               />
             </CardContent>
           </Card>
@@ -319,6 +328,22 @@ const Community = () => {
                     )}
                   </div>
 
+                  {/* Post Videos */}
+                  {post.video_url && (
+                    <div className="px-4 py-2">
+                      <div className="aspect-[9/16] max-w-xs mx-auto">
+                        <VideoPlayer
+                          src={post.video_url}
+                          autoPlay={true}
+                          muted={true}
+                          loop={true}
+                          captions={(post as any).video_captions}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {/* Post Images */}
                   {post.image_urls?.length > 0 && (
                     <div className="px-4 py-2">
@@ -398,6 +423,10 @@ const Community = () => {
                 onSubmit={() => {}} // Handled by modal submit
                 placeholder="Share what's inspiring you today... Type @AI for expert beauty advice!"
                 showActions={false}
+                videoFile={videoFile}
+                onVideoChange={setVideoFile}
+                videoCaptions={videoCaptions}
+                onVideoCaptionsChange={setVideoCaptions}
               />
 
               {/* Poll Options (if poll type) */}
