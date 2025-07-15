@@ -5,20 +5,30 @@ import { Crown, Star, Bell, Settings, User, Camera } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const CustomerDashboardHeader = () => {
+interface CustomerDashboardHeaderProps {
+  onEditProfile?: () => void;
+}
+
+const CustomerDashboardHeader: React.FC<CustomerDashboardHeaderProps> = ({ onEditProfile }) => {
   const { userProfile } = useAuth();
-  const navigate = useNavigate();
   const firstName = userProfile?.full_name?.split(' ')[0] || 'Beauty Lover';
   
   const handleEditProfile = () => {
-    navigate("/profile/edit");
+    if (onEditProfile) {
+      onEditProfile();
+    } else {
+      toast.info("Profile editing feature available! Click your avatar to edit.");
+    }
   };
 
   const handleViewProfile = () => {
-    navigate("/profile");
+    if (onEditProfile) {
+      onEditProfile();
+    } else {
+      toast.info("Profile viewing feature available! Click your avatar to edit.");
+    }
   };
 
   const handleNotifications = () => {

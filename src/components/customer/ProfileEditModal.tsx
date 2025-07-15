@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Upload, X, Save, User, Camera } from 'lucide-react';
+import { Upload, X, Save, User, Camera, Crop, Filter, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,7 +29,17 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
   });
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string>('none');
   const [loading, setLoading] = useState(false);
+
+  const filters = [
+    { id: 'none', name: 'Original', style: 'filter: none' },
+    { id: 'glamour', name: 'Glamour', style: 'filter: contrast(1.1) saturate(1.2) brightness(1.05)' },
+    { id: 'soft', name: 'Soft', style: 'filter: brightness(1.1) contrast(0.9) blur(0.3px)' },
+    { id: 'vintage', name: 'Vintage', style: 'filter: sepia(0.3) contrast(1.1) brightness(0.95)' },
+    { id: 'beauty', name: 'Beauty', style: 'filter: saturate(1.3) brightness(1.1) contrast(1.05)' }
+  ];
 
   // Reset form when modal opens/closes or userProfile changes
   React.useEffect(() => {
@@ -53,14 +63,71 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Photo must be less than 10MB');
+        return;
+      }
+      
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setPreviewImage(result);
+        setShowCropModal(true);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const applyFilter = (imageData: string, filterStyle: string): string => {
+    // For demo purposes, we'll return the original image
+    // In a real implementation, you'd apply canvas filters
+    return imageData;
+  };
+
+  const processImageForUpload = async (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Set canvas size (optimize to max 1024x1024)
+        const maxSize = 1024;
+        let { width, height } = img;
+        
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          } else {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const optimizedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(optimizedFile);
+          } else {
+            resolve(file);
+          }
+        }, 'image/jpeg', 0.85); // 85% quality
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
   };
 
   const handleSave = async () => {
@@ -72,11 +139,15 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
       
       // Upload image if a new one was selected
       if (selectedFile) {
-        toast.loading('Uploading photo...', { id: 'upload' });
-        const uploadedUrl = await uploadImage(selectedFile);
+        toast.loading('Processing and uploading photo...', { id: 'upload' });
+        
+        // Process image for optimization
+        const processedFile = await processImageForUpload(selectedFile);
+        
+        const uploadedUrl = await uploadImage(processedFile);
         if (uploadedUrl) {
           avatarUrl = uploadedUrl;
-          toast.success('Photo uploaded successfully!', { id: 'upload' });
+          toast.success('Photo uploaded and optimized successfully! ✨', { id: 'upload' });
         } else {
           toast.error('Failed to upload photo', { id: 'upload' });
           return;
@@ -102,15 +173,35 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
         await refreshUserProfile();
       }
 
-      // Trigger celebration
+      // Calculate profile completion for celebration
+      const profileFields = [formData.full_name, avatarUrl, formData.location, formData.bio, formData.phone];
+      const completedFields = profileFields.filter(field => field && field.trim() !== '').length;
+      const completionPercentage = Math.round((completedFields / profileFields.length) * 100);
+      
+      // Trigger enhanced celebration based on completion
+      const isProfileComplete = completionPercentage === 100;
       confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: isProfileComplete ? 200 : 100,
+        spread: isProfileComplete ? 100 : 70,
         origin: { y: 0.6 },
-        colors: ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981']
+        colors: isProfileComplete 
+          ? ['#FFD700', '#FFA500', '#FF69B4', '#8A2BE2', '#00FF7F']
+          : ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981']
       });
       
-      toast.success('Profile updated successfully! ✨');
+      if (isProfileComplete) {
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.8 },
+            colors: ['#FFD700', '#FFA500']
+          });
+        }, 300);
+        toast.success('🏆 Profile 100% Complete! You\'re absolutely amazing! ✨');
+      } else {
+        toast.success(`Profile updated successfully! ${completionPercentage}% complete ✨`);
+      }
       
       // Reset form and close
       setPreviewImage(null);
@@ -128,6 +219,8 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
   const handleClose = () => {
     setPreviewImage(null);
     setSelectedFile(null);
+    setShowCropModal(false);
+    setSelectedFilter('none');
     onClose();
   };
 
@@ -174,15 +267,23 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
                 className="w-24 h-24 rounded-full overflow-hidden mx-auto bg-gradient-to-br from-purple-400 to-pink-400 p-1"
                 whileHover={{ scale: 1.05 }}
               >
-                <div className="w-full h-full rounded-full overflow-hidden bg-white">
+                <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
                   {previewImage || formData.avatar_url ? (
                     <img 
                       src={previewImage || formData.avatar_url} 
                       alt="Profile preview" 
                       className="w-full h-full object-cover"
+                      style={selectedFilter !== 'none' ? { 
+                        filter: filters.find(f => f.id === selectedFilter)?.style.split(': ')[1] 
+                      } : {}}
                     />
                   ) : (
                     <User className="w-full h-full p-4 text-gray-300" />
+                  )}
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="animate-spin h-6 w-6 border-t-2 border-white rounded-full" />
+                    </div>
                   )}
                 </div>
               </motion.div>
@@ -204,6 +305,57 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
               />
             </div>
             <p className="text-sm text-purple-200">Click to change your beautiful photo</p>
+            
+            {/* Photo Enhancement Options */}
+            {previewImage && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 space-y-3"
+              >
+                <h4 className="text-sm font-medium text-purple-200 flex items-center">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Photo Enhancements
+                </h4>
+                
+                {/* Filter Selection */}
+                <div className="grid grid-cols-3 gap-2">
+                  {filters.map(filter => (
+                    <button
+                      key={filter.id}
+                      onClick={() => setSelectedFilter(filter.id)}
+                      className={`p-2 rounded-lg text-xs transition-all ${
+                        selectedFilter === filter.id
+                          ? 'bg-purple-500 text-white'
+                          : 'bg-white/10 text-purple-200 hover:bg-white/20'
+                      }`}
+                    >
+                      {filter.name}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowCropModal(true)}
+                    className="border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
+                  >
+                    <Crop className="h-3 w-3 mr-1" />
+                    Adjust
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setSelectedFilter('none')}
+                    className="border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Form Fields */}

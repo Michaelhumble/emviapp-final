@@ -10,7 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Crown, Sparkles, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, 
   Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus,
-  Edit, User
+  Edit, User, Trophy, CheckCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -20,26 +20,39 @@ import VIPSystem from '@/components/ecosystem/VIPSystem';
 import SocialShareSystem from '@/components/ecosystem/SocialShareSystem';
 import ProfileEditModal from '@/components/customer/ProfileEditModal';
 import ShareWinModal from '@/components/customer/ShareWinModal';
+import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 
 const CustomerDashboard = () => {
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
+  const { stats, activities, bookings, favorites, loading } = useCustomerDashboard();
   const [celebrationActive, setCelebrationActive] = useState(false);
-  const [currentStreak, setCurrentStreak] = useState(7);
-  const [totalPoints, setTotalPoints] = useState(1247);
-  const [referralCount, setReferralCount] = useState(3);
-  const [completedBookings, setCompletedBookings] = useState(12);
-  const [reviewsGiven, setReviewsGiven] = useState(8);
-  const [level, setLevel] = useState("Level 7 Beauty Explorer");
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showShareWin, setShowShareWin] = useState(false);
+  const [newAchievements, setNewAchievements] = useState<string[]>([]);
 
-  const [recentActivities] = useState([
-    { type: 'booking', action: 'Booked at Luxe Nails', time: '2 hours ago', points: 25, icon: Heart },
-    { type: 'review', action: 'Reviewed Amazing Spa', time: '1 day ago', points: 15, icon: Star },
-    { type: 'referral', action: 'Friend joined via your link', time: '2 days ago', points: 50, icon: Users },
-    { type: 'share', action: 'Shared to Instagram', time: '3 days ago', points: 10, icon: Share2 }
-  ]);
+  // Check for new achievements and trigger celebrations
+  React.useEffect(() => {
+    const earnedAchievements = stats.achievements.filter(a => a.earned);
+    const previousEarned = JSON.parse(localStorage.getItem('earnedAchievements') || '[]');
+    const newlyEarned = earnedAchievements.filter(a => !previousEarned.includes(a.id));
+    
+    if (newlyEarned.length > 0) {
+      setNewAchievements(newlyEarned.map(a => a.id));
+      triggerAchievementCelebration();
+      localStorage.setItem('earnedAchievements', JSON.stringify(earnedAchievements.map(a => a.id)));
+    }
+  }, [stats.achievements]);
+
+  const triggerAchievementCelebration = () => {
+    confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 },
+      colors: ['#FFD700', '#FFA500', '#FF69B4', '#8A2BE2', '#00FF7F']
+    });
+    toast.success('🏆 Achievement Unlocked! Amazing progress!');
+  };
 
   const triggerCelebration = () => {
     setCelebrationActive(true);
@@ -60,7 +73,8 @@ const CustomerDashboard = () => {
   };
 
   const handleInviteFriends = () => {
-    navigator.clipboard.writeText('https://emvi.app/join?ref=EMVI879e69');
+    const referralCode = userProfile?.referral_code || 'EMVI879e69';
+    navigator.clipboard.writeText(`https://emvi.app/join?ref=${referralCode}`);
     triggerCelebration();
     toast.success('Referral link copied! Share and earn rewards! 🎉');
   };
@@ -70,7 +84,8 @@ const CustomerDashboard = () => {
   };
 
   const handleProgressClick = () => {
-    toast.info(`You're ${Math.round((totalPoints % 500) / 5)}% to your next level! Keep going! 🚀`);
+    const progress = Math.round(stats.profileCompletion);
+    toast.info(`Profile ${progress}% complete! ${progress < 100 ? 'Complete your profile to unlock more features! 🚀' : 'Profile complete! You\'re amazing! ✨'}`);
   };
 
   return (
@@ -105,12 +120,37 @@ const CustomerDashboard = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowProfileEdit(true)}
               >
-                <Avatar className="h-16 w-16 border-4 border-white/20 transition-all duration-300 group-hover:border-white/40">
-                  <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name} />
-                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xl font-bold">
-                    {userProfile?.full_name?.charAt(0) || 'B'}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-16 w-16 border-4 border-white/20 transition-all duration-300 group-hover:border-white/40">
+                    <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name} />
+                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xl font-bold">
+                      {userProfile?.full_name?.charAt(0) || 'B'}
+                    </AvatarFallback>
+                  </Avatar>
+                  {/* Profile completion ring */}
+                  <svg className="absolute inset-0 w-16 h-16 -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.1)"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="url(#gradient)"
+                      strokeWidth="2"
+                      strokeDasharray={`${stats.profileCompletion}, 100`}
+                      className="transition-all duration-1000 ease-out"
+                    />
+                    <defs>
+                      <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#10B981" />
+                        <stop offset="100%" stopColor="#059669" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
                 <motion.div
                   className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20"
                   whileHover={{ scale: 1.2, rotate: 15 }}
@@ -144,10 +184,13 @@ const CustomerDashboard = () => {
               <Crown className="h-4 w-4 mr-2" />
               VIP Diamond Member
             </Badge>
-            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4 mr-2" />
-              {level}
-            </Badge>
+              <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 text-sm font-semibold">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Level {Math.floor(stats.totalPoints / 500) + 1} Beauty Explorer
+              </Badge>
+              <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 text-xs">
+                {stats.profileCompletion}% Complete
+              </Badge>
           </motion.div>
         </motion.div>
 
@@ -164,7 +207,7 @@ const CustomerDashboard = () => {
                   onClick={triggerCelebration}>
               <CardContent className="p-4 text-center">
                 <Zap className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{currentStreak}</div>
+                <div className="text-2xl font-bold">{stats.currentStreak}</div>
                 <div className="text-xs opacity-90">Day Streak</div>
               </CardContent>
             </Card>
@@ -176,7 +219,7 @@ const CustomerDashboard = () => {
                   onClick={handleProgressClick}>
               <CardContent className="p-4 text-center">
                 <Star className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{totalPoints.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{stats.totalPoints.toLocaleString()}</div>
                 <div className="text-xs opacity-90">EmviPoints</div>
               </CardContent>
             </Card>
@@ -188,7 +231,7 @@ const CustomerDashboard = () => {
                   onClick={handleInviteFriends}>
               <CardContent className="p-4 text-center">
                 <Users className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{referralCount}</div>
+                <div className="text-2xl font-bold">{stats.referralCount}</div>
                 <div className="text-xs opacity-90">Friends</div>
               </CardContent>
             </Card>
@@ -200,7 +243,7 @@ const CustomerDashboard = () => {
                   onClick={() => handleNavigateTo('/bookings')}>
               <CardContent className="p-4 text-center">
                 <Heart className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{completedBookings}</div>
+                <div className="text-2xl font-bold">{stats.totalBookings}</div>
                 <div className="text-xs opacity-90">Bookings</div>
               </CardContent>
             </Card>
@@ -232,20 +275,20 @@ const CustomerDashboard = () => {
                     <Share2 className="h-4 w-4 mr-2" />
                     Share My Link
                   </Button>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div>
-                      <div className="text-lg font-bold">{referralCount}</div>
-                      <div className="text-xs opacity-75">Friends</div>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div>
+                        <div className="text-lg font-bold">{stats.referralCount}</div>
+                        <div className="text-xs opacity-75">Friends</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold">{stats.referralCount * 100}</div>
+                        <div className="text-xs opacity-75">Credits</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold">∞</div>
+                        <div className="text-xs opacity-75">Potential</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-lg font-bold">{referralCount * 50}</div>
-                      <div className="text-xs opacity-75">Credits</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold">∞</div>
-                      <div className="text-xs opacity-75">Potential</div>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -265,14 +308,14 @@ const CustomerDashboard = () => {
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Level Progress</span>
-                      <span>{Math.round((totalPoints % 500) / 5)}%</span>
+                      <span>Profile Completion</span>
+                      <span>{stats.profileCompletion}%</span>
                     </div>
                     <div className="w-full bg-white/20 rounded-full h-3 cursor-pointer" onClick={handleProgressClick}>
                       <motion.div 
-                        className="bg-gradient-to-r from-amber-400 to-orange-500 h-3 rounded-full"
+                        className="bg-gradient-to-r from-green-400 to-emerald-500 h-3 rounded-full"
                         initial={{ width: 0 }}
-                        animate={{ width: `${(totalPoints % 500) / 5}%` }}
+                        animate={{ width: `${stats.profileCompletion}%` }}
                         transition={{ duration: 1, delay: 0.5 }}
                         whileHover={{ scale: 1.02 }}
                       />
@@ -281,12 +324,43 @@ const CustomerDashboard = () => {
                   
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="bg-white/5 rounded-lg p-3">
-                      <div className="text-lg font-bold">{completedBookings}</div>
+                      <div className="text-lg font-bold">{stats.completedBookings}</div>
                       <div className="text-xs opacity-75">Completed</div>
                     </div>
                     <div className="bg-white/5 rounded-lg p-3">
-                      <div className="text-lg font-bold">{reviewsGiven}</div>
-                      <div className="text-xs opacity-75">Reviews</div>
+                      <div className="text-lg font-bold">{stats.achievements.filter(a => a.earned).length}</div>
+                      <div className="text-xs opacity-75">Achievements</div>
+                    </div>
+                  </div>
+                  
+                  {/* Achievements Section */}
+                  <div className="mt-4">
+                    <h4 className="text-sm font-semibold mb-3 flex items-center">
+                      <Trophy className="h-4 w-4 mr-2 text-yellow-400" />
+                      Recent Achievements
+                    </h4>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {stats.achievements.filter(a => a.earned).slice(0, 3).map(achievement => (
+                        <motion.div
+                          key={achievement.id}
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="flex items-center p-2 bg-white/5 rounded-lg"
+                        >
+                          <span className="text-lg mr-2">{achievement.icon}</span>
+                          <div className="flex-1">
+                            <div className="text-xs font-medium">{achievement.name}</div>
+                            <div className="text-xs opacity-75">{achievement.description}</div>
+                          </div>
+                          {newAchievements.includes(achievement.id) && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="w-2 h-2 bg-green-400 rounded-full"
+                            />
+                          )}
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -306,9 +380,9 @@ const CustomerDashboard = () => {
               <CardContent>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   <AnimatePresence>
-                    {recentActivities.map((activity, index) => (
+                    {activities.map((activity, index) => (
                       <motion.div
-                        key={index}
+                        key={activity.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
@@ -316,19 +390,30 @@ const CustomerDashboard = () => {
                         whileHover={{ scale: 1.02 }}
                       >
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-                            <activity.icon className="h-4 w-4" />
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-sm">
+                            {activity.icon}
                           </div>
                           <div>
-                            <div className="text-sm font-medium">{activity.action}</div>
-                            <div className="text-xs opacity-75">{activity.time}</div>
+                            <div className="text-sm font-medium">{activity.title}</div>
+                            <div className="text-xs opacity-75">{activity.description}</div>
+                            <div className="text-xs opacity-60">
+                              {new Date(activity.timestamp).toLocaleDateString()}
+                            </div>
                           </div>
                         </div>
-                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
-                          +{activity.points}
-                        </Badge>
+                        {activity.points && (
+                          <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                            +{activity.points}
+                          </Badge>
+                        )}
                       </motion.div>
                     ))}
+                    {activities.length === 0 && (
+                      <div className="text-center py-8 text-white/60">
+                        <Star className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p>Start your beauty journey to see activity here!</p>
+                      </div>
+                    )}
                   </AnimatePresence>
                 </div>
                 
