@@ -108,18 +108,20 @@ export const useCommunityPosts = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('community_posts')
         .insert({
           user_id: user.id,
           ...postData
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
       // Refresh posts to show the new one
       await fetchPosts();
-      return true;
+      return data;
     } catch (error) {
       console.error('Error creating post:', error);
       throw error;

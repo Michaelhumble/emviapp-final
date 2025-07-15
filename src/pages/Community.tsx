@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import PostReactions from '@/components/community/PostReactions';
 import CommunitySearch from '@/components/community/CommunitySearch';
 import ChallengeOfTheWeek from '@/components/community/ChallengeOfTheWeek';
+import { useChallenges } from '@/hooks/useChallenges';
 import TopCreators from '@/components/community/TopCreators';
 import PhotoUploader from '@/components/posting/PhotoUploader';
 import CommunityPostComposer from '@/components/community/CommunityPostComposer';
@@ -44,9 +45,11 @@ const Community = () => {
   // Edit mode state
   const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isSubmittingToChallenge, setIsSubmittingToChallenge] = useState(false);
   
   const { posts, isLoading, fetchPosts, createPost, updatePost, toggleLike } = useCommunityPosts();
   const { user, isSignedIn } = useAuth();
+  const { submitEntry } = useChallenges();
 
   const quickFilters = [
     { id: 'all', label: 'For You', count: 2345 },
@@ -157,6 +160,13 @@ const Community = () => {
         const success = await createPost(postData);
         if (success) {
           toast.success('Post created successfully!');
+          
+          // If submitting to challenge, also submit the entry
+          if (isSubmittingToChallenge && success && typeof success === 'object' && success.id) {
+            await submitEntry(success.id);
+            setIsSubmittingToChallenge(false);
+          }
+          
           resetForm();
           setShowPostComposer(false);
         }
@@ -215,6 +225,17 @@ const Community = () => {
     setPostContent("@AI ");
   };
 
+  const handleJoinChallenge = () => {
+    if (!isSignedIn) {
+      toast.error('Please sign in to join the challenge');
+      return;
+    }
+    setIsSubmittingToChallenge(true);
+    setShowPostComposer(true);
+    setPostContent(''); // Clear any existing content
+    toast.info('Create a post to enter the challenge!');
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
@@ -241,7 +262,7 @@ const Community = () => {
         {/* Content Container */}
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
           {/* Challenge of the Week */}
-          <ChallengeOfTheWeek />
+          <ChallengeOfTheWeek onJoinChallenge={handleJoinChallenge} />
 
           {/* Quick Filters */}
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -282,7 +303,9 @@ const Community = () => {
                     setShowPostComposer(true);
                   }}
                 >
-                  {isSignedIn ? "What's inspiring you today? Try @AI for expert tips!" : "Sign in to share your beauty journey!"}
+                  {isSignedIn ? 
+                    (isSubmittingToChallenge ? "Create your challenge entry!" : "What's inspiring you today? Try @AI for expert tips!") 
+                    : "Sign in to share your beauty journey!"}
                 </Button>
                 <Button
                   size="icon"
