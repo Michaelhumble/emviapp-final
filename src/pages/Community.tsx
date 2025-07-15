@@ -10,6 +10,10 @@ import WeeklyChallenge from '@/components/community/WeeklyChallenge';
 import LiveActivityFeed from '@/components/community/LiveActivityFeed';
 import InviteRewards from '@/components/community/InviteRewards';
 import ShareSuccessPopup from '@/components/community/ShareSuccessPopup';
+import AIContentEnhancer from '@/components/community/AIContentEnhancer';
+import ViralVideoGenerator from '@/components/community/ViralVideoGenerator';
+import CreatorMode from '@/components/community/CreatorMode';
+import FeaturedSpotlight from '@/components/community/FeaturedSpotlight';
 
 // Mock data for now - will connect to real data later
 const mockPosts = [
