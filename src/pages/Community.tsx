@@ -86,10 +86,22 @@ const Community = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState(mockPosts);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState<number | null>(null);
+  const [showShareModal, setShowShareModal] = useState<number | null>(null);
   const [currentStatsIndex, setCurrentStatsIndex] = useState(0);
   const [currentViralIndex, setCurrentViralIndex] = useState(0);
   const [showHeart, setShowHeart] = useState<number | null>(null);
   const [expandedPosts, setExpandedPosts] = useState<Set<number>>(new Set());
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState<{[key: number]: Array<{id: number, user: string, text: string, time: string}>}>({
+    1: [
+      { id: 1, user: 'Maya Chen', text: 'Congratulations! So inspiring! 🎉', time: '1h' },
+      { id: 2, user: 'Alex Rivera', text: 'This gives me hope for my own journey!', time: '45m' }
+    ],
+    2: [
+      { id: 3, user: 'Sofia Bella', text: 'Your salon looks absolutely gorgeous! 💎', time: '2h' }
+    ]
+  });
   const [animatedStats, setAnimatedStats] = useState({
     artistsOnline: 0,
     salonsActive: 0,
@@ -161,6 +173,57 @@ const Community = () => {
       }
       return newSet;
     });
+  };
+
+  // Add comment to post
+  const handleAddComment = (postId: number) => {
+    if (!newComment.trim()) return;
+    
+    const comment = {
+      id: Date.now(),
+      user: user?.email?.split('@')[0] || 'You',
+      text: newComment,
+      time: 'now'
+    };
+    
+    setComments(prev => ({
+      ...prev,
+      [postId]: [...(prev[postId] || []), comment]
+    }));
+    
+    // Update comment count in posts
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { ...post, comments: post.comments + 1 }
+        : post
+    ));
+    
+    setNewComment('');
+  };
+
+  // Share functionality
+  const handleShare = async (postId: number) => {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    const shareUrl = `${window.location.origin}/community/post/${postId}`;
+    const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨`;
+
+    // Check if native sharing is available
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'EmviApp Community Post',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    }
   };
 
   const handleLike = (postId: number) => {
@@ -576,6 +639,7 @@ const Community = () => {
                 <motion.button
                   whileTap={{ scale: 0.8 }}
                   whileHover={{ scale: 1.2 }}
+                  onClick={() => setShowCommentModal(post.id)}
                   className="flex items-center space-x-2"
                 >
                   <MessageCircle size={32} className="hover:text-blue-400 transition-colors" />
@@ -585,6 +649,7 @@ const Community = () => {
                 <motion.button
                   whileTap={{ scale: 0.8 }}
                   whileHover={{ scale: 1.2 }}
+                  onClick={() => setShowShareModal(post.id)}
                   className="flex items-center space-x-2"
                 >
                   <Share size={32} className="hover:text-green-400 transition-colors" />
@@ -814,6 +879,247 @@ const Community = () => {
                   <Plus size={24} />
                   <span>Upload from Gallery</span>
                 </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Comment Modal */}
+        {showCommentModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm"
+            onClick={() => setShowCommentModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              className="bg-background rounded-3xl w-full max-w-lg max-h-[80vh] border border-border/50 shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-border/50">
+                <h3 className="text-xl font-bold flex items-center space-x-2">
+                  <MessageCircle size={24} className="text-blue-500" />
+                  <span>Comments</span>
+                </h3>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowCommentModal(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ✕
+                </motion.button>
+              </div>
+
+              {/* Comments List */}
+              <div className="max-h-96 overflow-y-auto p-6 space-y-4">
+                {(comments[showCommentModal] || []).map((comment) => (
+                  <motion.div
+                    key={comment.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex space-x-3"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-primary/30 to-purple-400/30 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold">{comment.user[0]}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="bg-accent/50 rounded-2xl p-3">
+                        <p className="font-semibold text-sm text-primary">{comment.user}</p>
+                        <p className="text-sm">{comment.text}</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1 ml-3">{comment.time}</p>
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {(!comments[showCommentModal] || comments[showCommentModal].length === 0) && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
+                    <p>Be the first to comment! ✨</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Add Comment */}
+              <div className="p-6 border-t border-border/50">
+                <div className="flex space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">
+                      {user?.email?.[0]?.toUpperCase() || 'Y'}
+                    </span>
+                  </div>
+                  <div className="flex-1 flex space-x-2">
+                    <input
+                      type="text"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Add a comment..."
+                      className="flex-1 bg-accent/50 border border-border/50 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && showCommentModal) {
+                          handleAddComment(showCommentModal);
+                        }
+                      }}
+                    />
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => showCommentModal && handleAddComment(showCommentModal)}
+                      disabled={!newComment.trim()}
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-2xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Post
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Share Modal */}
+        {showShareModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm"
+            onClick={() => setShowShareModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              className="bg-background rounded-3xl w-full max-w-md border border-border/50 shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-border/50">
+                <h3 className="text-xl font-bold flex items-center space-x-2">
+                  <Share size={24} className="text-green-500" />
+                  <span>Share Post</span>
+                </h3>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowShareModal(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ✕
+                </motion.button>
+              </div>
+
+              {/* Share Options */}
+              <div className="p-6">
+                <div className="space-y-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={async () => {
+                      if (showShareModal) {
+                        await handleShare(showShareModal);
+                        setShowShareModal(null);
+                      }
+                    }}
+                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <Share size={20} className="text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold">Native Share</p>
+                      <p className="text-sm text-muted-foreground">Share via system menu</p>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={async () => {
+                      if (showShareModal) {
+                        const post = posts.find(p => p.id === showShareModal);
+                        if (post) {
+                          const shareUrl = `${window.location.origin}/community/post/${showShareModal}`;
+                          const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨ ${shareUrl}`;
+                          await navigator.clipboard.writeText(shareText);
+                        }
+                        setShowShareModal(null);
+                      }
+                    }}
+                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">📋</span>
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold">Copy Link</p>
+                      <p className="text-sm text-muted-foreground">Copy to clipboard</p>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      if (showShareModal) {
+                        const post = posts.find(p => p.id === showShareModal);
+                        if (post) {
+                          const shareUrl = `${window.location.origin}/community/post/${showShareModal}`;
+                          const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨`;
+                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+                        }
+                        setShowShareModal(null);
+                      }
+                    }}
+                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">f</span>
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold">Facebook</p>
+                      <p className="text-sm text-muted-foreground">Share on Facebook</p>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      if (showShareModal) {
+                        const post = posts.find(p => p.id === showShareModal);
+                        if (post) {
+                          const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨ ${window.location.origin}/community/post/${showShareModal}`;
+                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+                        }
+                        setShowShareModal(null);
+                      }
+                    }}
+                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">X</span>
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold">X (Twitter)</p>
+                      <p className="text-sm text-muted-foreground">Share on X</p>
+                    </div>
+                  </motion.button>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-border/50">
+                  <div className="flex items-center space-x-2 text-center">
+                    <div className="flex-1 h-px bg-border/50"></div>
+                    <p className="text-xs text-muted-foreground px-2">Powered by EmviApp ✨</p>
+                    <div className="flex-1 h-px bg-border/50"></div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
