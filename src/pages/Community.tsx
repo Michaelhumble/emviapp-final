@@ -422,7 +422,7 @@ const Community = () => {
                 onContentChange={setPostContent}
                 onSubmit={() => {}} // Handled by modal submit
                 placeholder="Share what's inspiring you today... Type @AI for expert beauty advice!"
-                showActions={false}
+                showActions={true}
                 videoFile={videoFile}
                 onVideoChange={setVideoFile}
                 videoCaptions={videoCaptions}
