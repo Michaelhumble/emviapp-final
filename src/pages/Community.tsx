@@ -23,6 +23,8 @@ import AiAssistantModal from '@/components/community/AiAssistantModal';
 import LeaderboardWidget from '@/components/community/LeaderboardWidget';
 import OnboardingModal from '@/components/community/OnboardingModal';
 import VideoPlayer from '@/components/community/VideoPlayer';
+import SharerLeaderboard from '@/components/community/SharerLeaderboard';
+import SEOMetaTags from '@/components/community/SEOMetaTags';
 import { formatPostTimestamp } from '@/utils/timeUtils';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -238,6 +240,13 @@ const Community = () => {
 
   return (
     <Layout>
+      <SEOMetaTags
+        title="Beauty Community - Share, Learn & Grow"
+        description="Join the most exclusive beauty community. Share your nail art, hair styling, makeup looks, and skincare tips. Connect with beauty professionals worldwide."
+        url="https://emviapp.com/community"
+        type="website"
+        tags={['beauty community', 'nail art', 'hair styling', 'makeup', 'skincare', 'beauty professionals']}
+      />
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
         {/* Mobile-First Header - No Sticky Elements */}
         <div className="bg-white/80 backdrop-blur-md border-b border-purple-100">
@@ -368,6 +377,9 @@ const Community = () => {
           
           {/* Leaderboard Widget */}
           <LeaderboardWidget />
+          
+          {/* External Sharer Leaderboard */}
+          <SharerLeaderboard />
 
           {/* Posts Feed */}
           <div className="space-y-4">

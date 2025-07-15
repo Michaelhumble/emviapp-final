@@ -7,6 +7,8 @@ import { useCommunityPosts } from '@/hooks/useCommunityPosts';
 import { formatDistanceToNow } from 'date-fns';
 import SuggestedForYou from './SuggestedForYou';
 import CommentsSection from './CommentsSection';
+import ExternalShareButtons from './ExternalShareButtons';
+import ContentWatermark from './ContentWatermark';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -149,7 +151,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                   <p className="text-gray-900 leading-relaxed">{post.content}</p>
                 </div>
 
-                {/* Enhanced Images with better grid */}
+                {/* Enhanced Images with watermark */}
                 {post.image_urls && post.image_urls.length > 0 && (
                   <div className={`grid gap-3 ${
                     post.image_urls.length === 1 ? 'grid-cols-1' :
@@ -157,7 +159,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                     post.image_urls.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
                   }`}>
                     {post.image_urls.slice(0, 4).map((url, imgIndex) => (
-                      <div key={imgIndex} className="relative group">
+                      <ContentWatermark key={imgIndex} className="relative group">
                         <img
                           src={url}
                           alt={`Post image ${imgIndex + 1}`}
@@ -169,63 +171,80 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      </div>
+                      </ContentWatermark>
                     ))}
                   </div>
                 )}
 
-                {/* Enhanced Actions with bigger touch targets */}
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleLike(post.id)}
-                      className={`${
-                        post.user_has_liked 
-                          ? 'text-red-500 hover:text-red-600 bg-red-50' 
-                          : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
-                      } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
-                    >
-                      <Heart className={`h-5 w-5 mr-2 ${post.user_has_liked ? 'fill-current' : ''}`} />
-                      <span className="font-medium">{post.likes_count}</span>
-                    </Button>
+                {/* Enhanced Actions with external sharing */}
+                <div className="space-y-3 pt-3 border-t border-gray-100">
+                  {/* Primary Actions */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleLike(post.id)}
+                        className={`${
+                          post.user_has_liked 
+                            ? 'text-red-500 hover:text-red-600 bg-red-50' 
+                            : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
+                        } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
+                      >
+                        <Heart className={`h-5 w-5 mr-2 ${post.user_has_liked ? 'fill-current' : ''}`} />
+                        <span className="font-medium">{post.likes_count}</span>
+                      </Button>
 
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => toggleComments(post.id)}
-                      className={`${
-                        expandedComments === post.id 
-                          ? 'text-blue-500 bg-blue-50' 
-                          : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50'
-                      } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
-                    >
-                      <MessageCircle className="h-5 w-5 mr-2" />
-                      <span className="font-medium">{post.comments_count}</span>
-                    </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => toggleComments(post.id)}
+                        className={`${
+                          expandedComments === post.id 
+                            ? 'text-blue-500 bg-blue-50' 
+                            : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50'
+                        } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
+                      >
+                        <MessageCircle className="h-5 w-5 mr-2" />
+                        <span className="font-medium">{post.comments_count}</span>
+                      </Button>
 
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all duration-200 rounded-full px-4 py-2 h-auto"
-                    >
-                      <Share2 className="h-5 w-5 mr-2" />
-                      <span className="font-medium">{post.shares_count}</span>
-                    </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all duration-200 rounded-full px-4 py-2 h-auto"
+                      >
+                        <Share2 className="h-5 w-5 mr-2" />
+                        <span className="font-medium">{post.shares_count}</span>
+                      </Button>
+                    </div>
+
+                    {/* Save Button - Only for signed in users */}
+                    {isSignedIn && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full p-2"
+                        aria-label="Save post"
+                      >
+                        <Bookmark className="h-5 w-5" />
+                      </Button>
+                    )}
                   </div>
 
-                  {/* Save Button - Only for signed in users */}
-                  {isSignedIn && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full p-2"
-                      aria-label="Save post"
-                    >
-                      <Bookmark className="h-5 w-5" />
-                    </Button>
-                  )}
+                  {/* External Sharing Row */}
+                  <div className="flex items-center justify-between bg-gray-50/50 rounded-xl p-2">
+                    <span className="text-xs text-gray-600 font-medium">Share Externally:</span>
+                    <ExternalShareButtons
+                      postId={post.id}
+                      content={post.content}
+                      images={post.image_urls || []}
+                      onShare={(platform) => {
+                        // Track external shares for leaderboard
+                        console.log(`Shared to ${platform}`);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
