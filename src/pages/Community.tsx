@@ -267,27 +267,41 @@ const Community = () => {
   };
 
   return (
-    <Layout>
-      <CommunityErrorBoundary context="community">
-        <SEOMetaTags
+    <>
+      <SEOMetaTags
         title="Beauty Community - Share, Learn & Grow"
         description="Join the most exclusive beauty community. Share your nail art, hair styling, makeup looks, and skincare tips. Connect with beauty professionals worldwide."
         url="https://emviapp.com/community"
         type="website"
         tags={['beauty community', 'nail art', 'hair styling', 'makeup', 'skincare', 'beauty professionals']}
       />
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        {/* 🎯 VISUAL PROOF: Facebook-Style Header Banner */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold">✨ Where Beauty Pros Connect & Thrive</h1>
-            <p className="text-purple-100 mt-1">Join thousands of beauty professionals sharing their journey</p>
-            <div className="flex items-center gap-4 mt-2">
-              <span className="text-sm bg-white/20 px-3 py-1 rounded-full">👥 2,847 active today</span>
-              <span className="text-sm bg-white/20 px-3 py-1 rounded-full">🔥 156 trending posts</span>
+      
+      {/* 🎯 IMMEDIATE VISUAL CHANGE: Facebook-Style Header Banner */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-6 px-4 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">✨ Where Beauty Pros Connect & Thrive</h1>
+              <p className="text-purple-100 mt-2 text-lg">Join thousands of beauty professionals sharing their journey, celebrating wins, and building the future of beauty together</p>
+            </div>
+            <div className="hidden md:flex items-center gap-4">
+              <span className="text-sm bg-white/20 px-4 py-2 rounded-full">👥 2,847 active today</span>
+              <span className="text-sm bg-white/20 px-4 py-2 rounded-full">🔥 156 trending posts</span>
+              <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-sm transition-colors">
+                Join VIP List
+              </button>
             </div>
           </div>
+          <div className="flex md:hidden items-center gap-2 mt-3">
+            <span className="text-xs bg-white/20 px-3 py-1 rounded-full">👥 2,847 active</span>
+            <span className="text-xs bg-white/20 px-3 py-1 rounded-full">🔥 156 trending</span>
+          </div>
         </div>
+      </div>
+
+      <Layout>
+        <CommunityErrorBoundary context="community">
+          <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
         {/* Sticky Search Bar */}
         <StickySearchBar 
           onSearch={handleSearch}
@@ -483,9 +497,10 @@ const Community = () => {
           onTriggerAI={() => setShowAiAssistant(true)}
           onOpenPostComposer={() => setShowPostComposer(true)}
         />
-        </div>
-      </CommunityErrorBoundary>
-    </Layout>
+          </div>
+        </CommunityErrorBoundary>
+      </Layout>
+    </>
   );
 };
 
