@@ -4448,6 +4448,10 @@ export type Database = {
         }
         Returns: string
       }
+      setup_salon_owner: {
+        Args: { p_salon_id: string; p_owner_id: string }
+        Returns: boolean
+      }
       spend_credits: {
         Args: {
           p_user_id: string
