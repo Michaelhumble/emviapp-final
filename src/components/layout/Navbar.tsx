@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
 import MobileHamburgerMenu from './MobileHamburgerMenu';
-import MainNavigation from './navbar/MainNavigation';
+import EcosystemNavigation from '../ecosystem/EcosystemNavigation';
 import AuthButtons from './navbar/AuthButtons';
+import VIPSystem from '../ecosystem/VIPSystem';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
@@ -20,9 +21,9 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <MainNavigation />
+          {/* Desktop Navigation - Now Ecosystem-Aware */}
+          <div className="hidden md:flex items-center space-x-4">
+            <EcosystemNavigation />
           </div>
 
           {/* Right side items */}
@@ -51,8 +52,9 @@ const Navbar = () => {
             {/* Language Toggle */}
             <LanguageToggle />
             
-            {/* Desktop Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
+            {/* VIP Status & Desktop Auth Buttons */}
+            <div className="hidden md:flex items-center space-x-3">
+              <VIPSystem variant="button" className="text-sm" />
               <AuthButtons />
             </div>
 
