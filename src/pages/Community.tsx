@@ -6,6 +6,10 @@ import { useAuth } from '@/context/auth';
 import ShareModal from '@/components/community/ShareModal';
 import TopSharersLeaderboard from '@/components/community/TopSharersLeaderboard';
 import RecentActivityPopup from '@/components/community/RecentActivityPopup';
+import WeeklyChallenge from '@/components/community/WeeklyChallenge';
+import LiveActivityFeed from '@/components/community/LiveActivityFeed';
+import InviteRewards from '@/components/community/InviteRewards';
+import ShareSuccessPopup from '@/components/community/ShareSuccessPopup';
 
 // Mock data for now - will connect to real data later
 const mockPosts = [
@@ -109,6 +113,12 @@ const Community = () => {
     artistsOnline: 0,
     salonsActive: 0,
     jobsFilled: 0
+  });
+  const [showShareSuccess, setShowShareSuccess] = useState(false);
+  const [shareSuccessData, setShareSuccessData] = useState({
+    points: 10,
+    newRank: 5,
+    bonusMessage: 'You\'re on fire! 🔥'
   });
 
   // Animate stats count up on load
@@ -225,12 +235,29 @@ const Community = () => {
           text: shareText,
           url: shareUrl,
         });
+        
+        // Show success popup after successful share
+        setShareSuccessData({
+          points: 10,
+          newRank: Math.floor(Math.random() * 10) + 1,
+          bonusMessage: Math.random() > 0.5 ? 'You\'re climbing fast! 🚀' : 'Sharing superstar! ⭐'
+        });
+        setShowShareSuccess(true);
+        
       } catch (err) {
         console.log('Error sharing:', err);
       }
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      
+      // Show success popup for copy action too
+      setShareSuccessData({
+        points: 5,
+        newRank: Math.floor(Math.random() * 10) + 1,
+        bonusMessage: 'Link copied! Share it everywhere! 📋'
+      });
+      setShowShareSuccess(true);
     }
   };
 
@@ -394,6 +421,11 @@ const Community = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Weekly Challenge */}
+      <div className="px-6 pt-8">
+        <WeeklyChallenge />
+      </div>
 
       {/* Spotlight Post of the Day with Glassmorphic Effect */}
       {posts.find(p => p.isSpotlight) && (
@@ -798,6 +830,18 @@ const Community = () => {
       
       {/* Recent Activity Popup */}
       <RecentActivityPopup />
+
+      {/* Live Activity Feed */}
+      <LiveActivityFeed />
+
+      {/* Share Success Popup */}
+      <ShareSuccessPopup 
+        isVisible={showShareSuccess}
+        onClose={() => setShowShareSuccess(false)}
+        points={shareSuccessData.points}
+        newRank={shareSuccessData.newRank}
+        bonusMessage={shareSuccessData.bonusMessage}
+      />
 
       {/* Share Modal */}
       <AnimatePresence>
