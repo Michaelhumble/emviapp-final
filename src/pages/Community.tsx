@@ -1,505 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '@/components/layout/Layout';
-import { Search, TrendingUp, Plus, MapPin, Clock, Users, Hash, Sparkles, Zap, BarChart3, Pin, Camera, Video, Smile, X, Check, Globe, Star } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCommunityPosts, CommunityPost } from '@/hooks/useCommunityPosts';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import PostReactions from '@/components/community/PostReactions';
-import CommunitySearch from '@/components/community/CommunitySearch';
-import ChallengeOfTheWeek from '@/components/community/ChallengeOfTheWeek';
-import { useChallenges } from '@/hooks/useChallenges';
-import TopCreators from '@/components/community/TopCreators';
-import PhotoUploader from '@/components/posting/PhotoUploader';
-import CommunityPostComposer from '@/components/community/CommunityPostComposer';
-import AiAssistantModal from '@/components/community/AiAssistantModal';
-import LeaderboardWidget from '@/components/community/LeaderboardWidget';
-import OnboardingModal from '@/components/community/OnboardingModal';
-import VideoPlayer from '@/components/community/VideoPlayer';
-import SharerLeaderboard from '@/components/community/SharerLeaderboard';
 import SEOMetaTags from '@/components/community/SEOMetaTags';
-import FloatingInspirationCTA from '@/components/community/FloatingInspirationCTA';
-import ContentModerationPanel from '@/components/community/ContentModerationPanel';
-import EnhancedCommunityFeed from '@/components/community/EnhancedCommunityFeed';
-import CommunityErrorBoundary from '@/components/community/CommunityErrorBoundary';
-import FloatingActionButton from '@/components/community/FloatingActionButton';
-import StickySearchBar from '@/components/community/StickySearchBar';
-import GamificationSystem from '@/components/community/GamificationSystem';
-import { formatPostTimestamp } from '@/utils/timeUtils';
-import { supabase } from '@/integrations/supabase/client';
+import ImmersiveFeed from '@/components/community/ImmersiveFeed';
+import MobileBottomNav from '@/components/community/MobileBottomNav';
+import FullScreenPostModal from '@/components/community/FullScreenPostModal';
 
 const Community = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [showPostComposer, setShowPostComposer] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [postContent, setPostContent] = useState('');
-  const [postType, setPostType] = useState('story');
-  const [category, setCategory] = useState('');
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [videoCaptions, setVideoCaptions] = useState('');
-  const [pollOptions, setPollOptions] = useState(['', '']);
-  const [location, setLocation] = useState('');
-  const [showAiAssistant, setShowAiAssistant] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showModeration, setShowModeration] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [hasMore, setHasMore] = useState(true);
-  const [totalPosts, setTotalPosts] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
+  const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
   
-  // Edit mode state
-  const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isSubmittingToChallenge, setIsSubmittingToChallenge] = useState(false);
-  
-  const { posts, isLoading, fetchPosts, createPost, updatePost, toggleLike } = useCommunityPosts();
+  const { posts, isLoading, fetchPosts, toggleLike } = useCommunityPosts();
   const { user, isSignedIn } = useAuth();
-  const { submitEntry } = useChallenges();
-
-  const quickFilters = [
-    { id: 'all', label: 'For You', count: 2345 },
-    { id: 'nails', label: 'Nails', count: 892 },
-    { id: 'hair', label: 'Hair', count: 756 },
-    { id: 'makeup', label: 'Makeup', count: 543 },
-    { id: 'skincare', label: 'Skincare', count: 432 },
-    { id: 'lashes', label: 'Lashes', count: 321 },
-  ];
-
-  const postTypes = [
-    { value: 'story', icon: Camera, label: 'Story', description: 'Share your work', color: 'from-blue-500 to-cyan-500' },
-    { value: 'tip', icon: Sparkles, label: 'Pro Tip', description: 'Share expertise', color: 'from-purple-500 to-pink-500' },
-    { value: 'showcase', icon: Star, label: 'Showcase', description: 'Highlight best work', color: 'from-yellow-500 to-orange-500' },
-    { value: 'question', icon: Hash, label: 'Question', description: 'Ask community', color: 'from-green-500 to-emerald-500' },
-    { value: 'poll', icon: BarChart3, label: 'Poll', description: 'Get opinions', color: 'from-indigo-500 to-purple-500' },
-  ];
-
-  const categories = [
-    'Nails', 'Hair', 'Makeup', 'Skincare', 'Lashes', 'Brows', 'Massage', 'Tattoo', 'Barber'
-  ];
-
-  const trendingTopics = [
-    { tag: 'nail-art-2024', posts: 234, emoji: '💅', trending: true },
-    { tag: 'lash-extensions', posts: 189, emoji: '👁️', trending: true },
-    { tag: 'hair-color-trends', posts: 156, emoji: '🌈', trending: false },
-    { tag: 'skincare-routine', posts: 143, emoji: '✨', trending: false },
-    { tag: 'makeup-transformation', posts: 98, emoji: '💄', trending: true },
-  ];
-
-  const resetForm = () => {
-    setPostContent('');
-    setPostType('story');
-    setCategory('');
-    setImageFiles([]);
-    setVideoFile(null);
-    setVideoCaptions('');
-    setPollOptions(['', '']);
-    setLocation('');
-    setEditingPost(null);
-    setIsEditMode(false);
-  };
-
-  const handleEditPost = (post: CommunityPost) => {
-    setEditingPost(post);
-    setIsEditMode(true);
-    setPostContent(post.content);
-    setPostType(post.post_type);
-    setCategory(post.category);
-    setImageFiles([]);
-    setVideoFile(null);
-    setVideoCaptions('');
-    setPollOptions(['', '']);
-    setLocation('');
-    setShowPostComposer(true);
-  };
-
-  const handleCreatePost = async () => {
-    if (!isSignedIn || !user) {
-      toast.error('Please sign in to post');
-      return;
-    }
-
-    if (!postContent.trim()) {
-      toast.error('Please add some content to your post');
-      return;
-    }
-
-    try {
-      let videoUrl = null;
-      if (videoFile) {
-        const fileExt = videoFile.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        
-        const { data, error } = await supabase.storage
-          .from('community-images')
-          .upload(fileName, videoFile);
-        
-        if (error) throw error;
-        
-        const { data: { publicUrl } } = supabase.storage
-          .from('community-images')
-          .getPublicUrl(data.path);
-        
-        videoUrl = publicUrl;
-      }
-
-      const postData = {
-        content: postContent,
-        post_type: postType,
-        category: category || 'general',
-        video_url: videoUrl,
-        tags: extractHashtags(postContent),
-        image_urls: [],
-      };
-
-      if (isEditMode && editingPost) {
-        const success = await updatePost(editingPost.id, postData);
-        if (success) {
-          toast.success('Post updated successfully!');
-          resetForm();
-          setShowPostComposer(false);
-        }
-      } else {
-        const success = await createPost(postData);
-        if (success) {
-          toast.success('Post created successfully!');
-          
-          if (isSubmittingToChallenge && success && typeof success === 'object' && success.id) {
-            await submitEntry(success.id);
-            setIsSubmittingToChallenge(false);
-          }
-          
-          resetForm();
-          setShowPostComposer(false);
-        }
-      }
-    } catch (error) {
-      console.error('Error with post:', error);
-      toast.error('Failed to save post. Please try again.');
-    }
-  };
-
-  const extractHashtags = (text: string) => {
-    const hashtags = text.match(/#[\w]+/g);
-    return hashtags ? hashtags.map(tag => tag.substring(1)) : [];
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  };
 
   useEffect(() => {
-    if (isSignedIn && user) {
-      const hasSeenOnboarding = localStorage.getItem(`onboarding_seen_${user.id}`);
-      const userCreatedAt = new Date(user.created_at);
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      
-      if (!hasSeenOnboarding && userCreatedAt > oneDayAgo) {
-        setShowOnboarding(true);
-      }
-    }
-  }, [isSignedIn, user]);
-
-  useEffect(() => {
-    fetchPosts(activeFilter === 'all' ? undefined : activeFilter, searchQuery);
-  }, [activeFilter, searchQuery]);
-
-  // Scroll detection for sticky search bar
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    fetchPosts();
   }, []);
 
-  const handleOnboardingClose = () => {
-    setShowOnboarding(false);
-    if (user) {
-      localStorage.setItem(`onboarding_seen_${user.id}`, 'true');
+  const handleComment = (post: CommunityPost) => {
+    setSelectedPost(post);
+    setShowPostModal(true);
+  };
+
+  const handleShare = (post: CommunityPost) => {
+    if (navigator.share) {
+      navigator.share({
+        title: `${post.profiles?.full_name || 'Beauty Pro'} on EmviApp`,
+        text: post.content,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copied to clipboard!');
     }
   };
 
-  const handleTryAI = () => {
-    setShowPostComposer(true);
-    setPostContent("@AI ");
-  };
-
-  const handleJoinChallenge = () => {
-    if (!isSignedIn) {
-      toast.error('Please sign in to join the challenge');
-      return;
+  const handleSave = (postId: string) => {
+    const newSaved = new Set(savedPosts);
+    if (savedPosts.has(postId)) {
+      newSaved.delete(postId);
+      toast.success('Removed from saved');
+    } else {
+      newSaved.add(postId);
+      toast.success('Added to saved');
     }
-    setIsSubmittingToChallenge(true);
-    setShowPostComposer(true);
-    setPostContent('');
-    toast.info('Create a post to enter the challenge!');
+    setSavedPosts(newSaved);
   };
 
-  const handleLoadMore = () => {
-    // In a real implementation, this would load more posts
-    // For now, we'll simulate no more posts after initial load
-    if (posts.length >= 20) {
-      setHasMore(false);
-    }
+  const handleCreatePost = () => {
+    toast.info('Post creation coming soon!');
   };
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    fetchPosts(activeFilter === 'all' ? undefined : activeFilter, query);
+  const handleCommentSubmit = (postId: string, content: string) => {
+    toast.success('Comment added!');
+    setShowPostModal(false);
   };
 
   return (
     <>
       <SEOMetaTags
-        title="Beauty Community - Share, Learn & Grow"
-        description="Join the most exclusive beauty community. Share your nail art, hair styling, makeup looks, and skincare tips. Connect with beauty professionals worldwide."
+        title="Beauty Social - The Next Revolution"
+        description="The most addictive beauty social platform. Share, discover, and connect with beauty professionals worldwide."
         url="https://emviapp.com/community"
         type="website"
-        tags={['beauty community', 'nail art', 'hair styling', 'makeup', 'skincare', 'beauty professionals']}
+        tags={['beauty social', 'social media', 'beauty community']}
       />
-      
-      {/* 🎯 IMMEDIATE VISUAL CHANGE: Facebook-Style Header Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-6 px-4 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">✨ Where Beauty Pros Connect & Thrive</h1>
-              <p className="text-purple-100 mt-2 text-lg">Join thousands of beauty professionals sharing their journey, celebrating wins, and building the future of beauty together</p>
-            </div>
-            <div className="hidden md:flex items-center gap-4">
-              <span className="text-sm bg-white/20 px-4 py-2 rounded-full">👥 2,847 active today</span>
-              <span className="text-sm bg-white/20 px-4 py-2 rounded-full">🔥 156 trending posts</span>
-              <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-sm transition-colors">
-                Join VIP List
-              </button>
-            </div>
-          </div>
-          <div className="flex md:hidden items-center gap-2 mt-3">
-            <span className="text-xs bg-white/20 px-3 py-1 rounded-full">👥 2,847 active</span>
-            <span className="text-xs bg-white/20 px-3 py-1 rounded-full">🔥 156 trending</span>
-          </div>
-        </div>
+
+      {/* Revolutionary Immersive Feed */}
+      <div className="fixed inset-0 bg-black overflow-hidden">
+        <ImmersiveFeed
+          posts={posts}
+          onLike={toggleLike}
+          onComment={handleComment}
+          onShare={handleShare}
+          onSave={handleSave}
+          onLoadMore={() => {}}
+          hasMore={false}
+        />
       </div>
 
-      <Layout>
-        <CommunityErrorBoundary context="community">
-          <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        {/* Sticky Search Bar */}
-        <StickySearchBar 
-          onSearch={handleSearch}
-          currentFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          scrolled={scrolled}
+      {/* Mobile Navigation */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onCreatePost={handleCreatePost}
+        hasNotifications={true}
+        hasMessages={true}
+      />
+
+      {/* Full Screen Post Modal */}
+      {selectedPost && (
+        <FullScreenPostModal
+          post={selectedPost}
+          isOpen={showPostModal}
+          onClose={() => setShowPostModal(false)}
+          onLike={toggleLike}
+          onShare={handleShare}
+          onSave={handleSave}
+          onCommentSubmit={handleCommentSubmit}
         />
-
-        {/* Content Container - Mobile/Desktop/iPad Responsive */}
-        <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
-          {/* Moderation Panel */}
-          {showModeration && user && (
-            <CommunityErrorBoundary context="moderation">
-              <ContentModerationPanel />
-            </CommunityErrorBoundary>
-          )}
-
-          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
-            {/* Main Content Column */}
-            <div className="lg:col-span-2 space-y-4">
-              <ChallengeOfTheWeek onJoinChallenge={handleJoinChallenge} />
-
-              {/* HIDDEN - Now part of StickySearchBar */}
-
-              {/* Enhanced Posts Feed */}
-              <CommunityErrorBoundary context="posts">
-                <EnhancedCommunityFeed
-                  posts={posts}
-                  onLoadMore={handleLoadMore}
-                  hasMore={hasMore}
-                  isLoading={isLoading}
-                  onLike={toggleLike}
-                  onEdit={handleEditPost}
-                  onShare={(postId, platform) => console.log('Shared:', postId, platform)}
-                />
-              </CommunityErrorBoundary>
-            </div>
-
-            {/* Sidebar - Hidden on mobile */}
-            <div className="hidden lg:block lg:col-span-1 space-y-4">
-              <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="h-4 w-4 text-orange-600" />
-                    <span className="font-semibold text-orange-800">Trending Now</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {trendingTopics.map((topic) => (
-                      <Badge
-                        key={topic.tag}
-                        variant="outline"
-                        className={`cursor-pointer ${
-                          topic.trending 
-                            ? 'bg-orange-100 border-orange-300 text-orange-700' 
-                            : 'bg-white border-gray-200'
-                        }`}
-                      >
-                        {topic.emoji} #{topic.tag} ({topic.posts})
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <TopCreators />
-              <GamificationSystem />
-              <SharerLeaderboard />
-            </div>
-          </div>
-        </div>
-
-        {/* Floating Action Button */}
-        {isSignedIn && (
-          <FloatingActionButton 
-            onCreatePost={(type) => {
-              setPostType(type);
-              setShowPostComposer(true);
-            }}
-          />
-        )}
-
-        {/* Post Composer Modal */}
-        {isSignedIn && (
-          <Dialog open={showPostComposer} onOpenChange={(open) => {
-            setShowPostComposer(open);
-            if (!open) resetForm();
-          }}>
-            <DialogContent className="max-w-lg mx-4 max-h-[85vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{isEditMode ? 'Edit Post' : 'Create Post'}</DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  {postTypes.map((type) => {
-                    const IconComponent = type.icon;
-                    return (
-                      <Button
-                        key={type.value}
-                        variant={postType === type.value ? "default" : "outline"}
-                        onClick={() => setPostType(type.value)}
-                        className={`text-left flex-col h-auto p-3 min-h-[44px] touch-manipulation ${
-                          postType === type.value 
-                            ? `bg-gradient-to-r ${type.color} text-white` 
-                            : 'hover:bg-purple-50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <IconComponent className="h-4 w-4" />
-                          <span className="font-medium">{type.label}</span>
-                        </div>
-                        <span className="text-xs opacity-70">{type.description}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat.toLowerCase()}>
-                        {cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <CommunityPostComposer
-                  content={postContent}
-                  onContentChange={setPostContent}
-                  onSubmit={() => {}}
-                  placeholder="Share what's inspiring you today... Type @AI for expert beauty advice!"
-                  showActions={true}
-                  videoFile={videoFile}
-                  onVideoChange={setVideoFile}
-                  videoCaptions={videoCaptions}
-                  onVideoCaptionsChange={setVideoCaptions}
-                />
-
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      resetForm();
-                      setShowPostComposer(false);
-                    }}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleCreatePost}
-                    disabled={!postContent.trim() || isLoading}
-                    className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500"
-                  >
-                    {isLoading ? 'Saving...' : (isEditMode ? 'Update Post' : 'Share Post')}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {showSearch && (
-          <div className="fixed top-0 left-0 right-0 bg-white z-50 shadow-lg p-4">
-            <CommunitySearch 
-              onSearch={(query, results) => {
-                console.log('Search results:', results);
-                setShowSearch(false);
-              }}
-              placeholder="Search the beauty community..."
-            />
-          </div>
-        )}
-
-        <CommunityErrorBoundary context="ai">
-          <AiAssistantModal 
-            open={showAiAssistant} 
-            onOpenChange={setShowAiAssistant} 
-          />
-        </CommunityErrorBoundary>
-
-        <OnboardingModal 
-          isOpen={showOnboarding} 
-          onClose={handleOnboardingClose}
-          onTryAI={handleTryAI}
-        />
-
-        <FloatingInspirationCTA 
-          onTriggerAI={() => setShowAiAssistant(true)}
-          onOpenPostComposer={() => setShowPostComposer(true)}
-        />
-          </div>
-        </CommunityErrorBoundary>
-      </Layout>
+      )}
     </>
   );
 };
