@@ -28,6 +28,13 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const MAX_LENGTH = 120;
+  const needsTruncation = post.content.length > MAX_LENGTH;
+  const displayContent = isExpanded || !needsTruncation 
+    ? post.content 
+    : post.content.slice(0, MAX_LENGTH);
 
   const levelColors = {
     Bronze: 'from-orange-400 to-orange-600',
@@ -96,7 +103,25 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
         </div>
 
         {/* Content */}
-        <p className="text-gray-800 mb-4 leading-relaxed">{post.content}</p>
+        <div className="text-gray-800 mb-4 leading-relaxed">
+          <motion.div
+            initial={false}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {displayContent}
+            {needsTruncation && !isExpanded && '...'}
+          </motion.div>
+          
+          {needsTruncation && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="ml-2 text-accent hover:text-accent/80 transition-colors duration-200 text-sm font-medium"
+            >
+              {isExpanded ? 'Show less' : 'View more'}
+            </button>
+          )}
+        </div>
 
         {/* Image */}
         {post.image && (
