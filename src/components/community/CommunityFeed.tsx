@@ -7,6 +7,8 @@ import { useCommunityPosts } from '@/hooks/useCommunityPosts';
 import { formatDistanceToNow } from 'date-fns';
 import SuggestedForYou from './SuggestedForYou';
 import CommentsSection from './CommentsSection';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
 
 interface CommunityFeedProps {
   filter: string;
@@ -18,16 +20,25 @@ interface CommunityFeedProps {
 const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, className = '', showSuggestedAfterFirst = false }) => {
   const { posts, isRefreshing, fetchPosts, toggleLike } = useCommunityPosts();
   const [expandedComments, setExpandedComments] = useState<string | null>(null);
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     fetchPosts(filter, searchQuery);
   }, [filter, searchQuery]);
 
   const handleLike = async (postId: string) => {
+    if (!isSignedIn) {
+      toast.error('Please sign in to like posts');
+      return;
+    }
     await toggleLike(postId);
   };
 
   const toggleComments = (postId: string) => {
+    if (!isSignedIn) {
+      toast.error('Please sign in to view comments');
+      return;
+    }
     setExpandedComments(expandedComments === postId ? null : postId);
   };
 
@@ -76,18 +87,9 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
   return (
     <div className={`space-y-6 ${className}`}>
       {posts.map((post, index) => {
-        // Create diverse author names for posts
-        const diverseAuthors = [
-          'Madison Chen', 'Taylor Swift', 'Emma Rodriguez', 'Sofia Kim', 'Jessica Park', 'Alex Chen',
-          'Maya Patel', 'Chloe Johnson', 'Zara Ahmed', 'Luna Martinez', 'Ava Williams', 'Naia Brown',
-          'Isla Thompson', 'Mia Garcia', 'Lila Davis', 'Aria Wilson', 'Nova Jackson', 'Sage Anderson',
-          'Riley Cooper', 'Blake Martin', 'Casey Lee', 'Drew Carter', 'Hayden Moore', 'Kai Wright',
-          'Dani Foster', 'Ryan Bell', 'Sam Collins', 'Quinn Turner', 'Finley Hall', 'Rowan Price'
-        ];
-        
-        // Create consistent author mapping based on post content
-        const authorIndex = (post.content.length + index) % diverseAuthors.length;
-        const authorName = diverseAuthors[authorIndex];
+        // Get real user data from post profiles or fallback to "Community Member"
+        const authorName = post.profiles?.full_name || 'Community Member';
+        const authorAvatar = post.profiles?.avatar_url;
         
         return (
         <div key={post.id}>
@@ -96,15 +98,25 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
               {/* Enhanced User Avatar with Follow Button */}
               <div className="flex-shrink-0">
                 <div className="relative">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-purple-100">
-                    {authorName.charAt(0).toUpperCase()}
-                  </div>
-                  <button
-                    className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                    aria-label="Follow user"
-                  >
-                    <UserPlus className="h-3 w-3" />
-                  </button>
+                  {authorAvatar ? (
+                    <img 
+                      src={authorAvatar} 
+                      alt={authorName}
+                      className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-100"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-purple-100">
+                      {authorName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  {isSignedIn && (
+                    <button
+                      className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                      aria-label="Follow user"
+                    >
+                      <UserPlus className="h-3 w-3" />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -203,15 +215,17 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                     </Button>
                   </div>
 
-                  {/* Save Button */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full p-2"
-                    aria-label="Save post"
-                  >
-                    <Bookmark className="h-5 w-5" />
-                  </Button>
+                  {/* Save Button - Only for signed in users */}
+                  {isSignedIn && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full p-2"
+                      aria-label="Save post"
+                    >
+                      <Bookmark className="h-5 w-5" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

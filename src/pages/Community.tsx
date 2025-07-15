@@ -106,16 +106,7 @@ const Community = () => {
   };
 
   const handleCreatePost = async () => {
-    console.log('🔍 handleCreatePost called - isSignedIn:', isSignedIn, 'user:', user);
-    
-    if (!isSignedIn) {
-      console.log('❌ User not signed in, showing error');
-      toast.error('Please sign in to post');
-      return;
-    }
-    
-    if (!user) {
-      console.log('❌ No user object found, showing error');
+    if (!isSignedIn || !user) {
       toast.error('Please sign in to post');
       return;
     }
@@ -277,36 +268,50 @@ const Community = () => {
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
                   <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                    {user?.user_metadata?.full_name?.charAt(0) || 'U'}
+                    {isSignedIn ? (user?.user_metadata?.full_name?.charAt(0) || 'U') : '?'}
                   </AvatarFallback>
                 </Avatar>
                 <Button
                   variant="outline"
                   className="flex-1 justify-start text-gray-500 bg-gray-50/80 hover:bg-gray-100"
-                  onClick={() => setShowPostComposer(true)}
+                  onClick={() => {
+                    if (!isSignedIn) {
+                      toast.error('Please sign in to post');
+                      return;
+                    }
+                    setShowPostComposer(true);
+                  }}
                 >
-                  What's inspiring you today? Try @AI for expert tips!
+                  {isSignedIn ? "What's inspiring you today? Try @AI for expert tips!" : "Sign in to share your beauty journey!"}
                 </Button>
                 <Button
                   size="icon"
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                  onClick={() => setShowPostComposer(true)}
+                  onClick={() => {
+                    if (!isSignedIn) {
+                      toast.error('Please sign in to post');
+                      return;
+                    }
+                    setShowPostComposer(true);
+                  }}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
               
-              <CommunityPostComposer
-                content={postContent}
-                onContentChange={setPostContent}
-                onSubmit={handleCreatePost}
-                placeholder="Share your beauty journey... Type @AI for instant expert advice!"
-                showActions={true}
-                videoFile={videoFile}
-                onVideoChange={setVideoFile}
-                videoCaptions={videoCaptions}
-                onVideoCaptionsChange={setVideoCaptions}
-              />
+              {isSignedIn && (
+                <CommunityPostComposer
+                  content={postContent}
+                  onContentChange={setPostContent}
+                  onSubmit={handleCreatePost}
+                  placeholder="Share your beauty journey... Type @AI for instant expert advice!"
+                  showActions={true}
+                  videoFile={videoFile}
+                  onVideoChange={setVideoFile}
+                  videoCaptions={videoCaptions}
+                  onVideoCaptionsChange={setVideoCaptions}
+                />
+              )}
             </CardContent>
           </Card>
 
@@ -461,11 +466,12 @@ const Community = () => {
           <div className="h-20" />
         </div>
 
-        {/* Post Composer Modal */}
-        <Dialog open={showPostComposer} onOpenChange={(open) => {
-          setShowPostComposer(open);
-          if (!open) resetForm();
-        }}>
+        {/* Post Composer Modal - Only for signed in users */}
+        {isSignedIn && (
+          <Dialog open={showPostComposer} onOpenChange={(open) => {
+            setShowPostComposer(open);
+            if (!open) resetForm();
+          }}>
           <DialogContent className="max-w-lg mx-4 max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{isEditMode ? 'Edit Post' : 'Create Post'}</DialogTitle>
@@ -608,6 +614,7 @@ const Community = () => {
             </div>
           </DialogContent>
         </Dialog>
+        )}
 
         {/* Search Modal */}
         <CommunitySearch 
