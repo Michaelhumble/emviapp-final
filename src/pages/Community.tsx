@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCommunityPosts } from '@/hooks/useCommunityPosts';
+import { useCommunityPosts, CommunityPost } from '@/hooks/useCommunityPosts';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import PostReactions from '@/components/community/PostReactions';
@@ -22,6 +22,8 @@ import AiAssistantModal from '@/components/community/AiAssistantModal';
 import LeaderboardWidget from '@/components/community/LeaderboardWidget';
 import OnboardingModal from '@/components/community/OnboardingModal';
 import VideoPlayer from '@/components/community/VideoPlayer';
+import { formatPostTimestamp } from '@/utils/timeUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,7 +40,12 @@ const Community = () => {
   const [location, setLocation] = useState('');
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const { posts, isLoading, fetchPosts, createPost, toggleLike } = useCommunityPosts();
+  
+  // Edit mode state
+  const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  
+  const { posts, isLoading, fetchPosts, createPost, updatePost, toggleLike } = useCommunityPosts();
   const { user, isSignedIn } = useAuth();
 
   const quickFilters = [
@@ -70,6 +77,34 @@ const Community = () => {
     { tag: 'makeup-transformation', posts: 98, emoji: '💄', trending: true },
   ];
 
+  const resetForm = () => {
+    setPostContent('');
+    setPostType('story');
+    setCategory('');
+    setImageFiles([]);
+    setVideoFile(null);
+    setVideoCaptions('');
+    setPollOptions(['', '']);
+    setLocation('');
+    setEditingPost(null);
+    setIsEditMode(false);
+  };
+
+  const handleEditPost = (post: CommunityPost) => {
+    setEditingPost(post);
+    setIsEditMode(true);
+    setPostContent(post.content);
+    setPostType(post.post_type);
+    setCategory(post.category);
+    // Note: We can't restore files from URLs, but we show current media
+    setImageFiles([]);
+    setVideoFile(null);
+    setVideoCaptions('');
+    setPollOptions(['', '']);
+    setLocation('');
+    setShowPostComposer(true);
+  };
+
   const handleCreatePost = async () => {
     if (!isSignedIn) {
       toast.error('Please sign in to post');
@@ -82,23 +117,53 @@ const Community = () => {
     }
 
     try {
+      let videoUrl = null;
+      if (videoFile) {
+        const fileExt = videoFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        
+        const { data, error } = await supabase.storage
+          .from('community-images')
+          .upload(fileName, videoFile);
+        
+        if (error) throw error;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('community-images')
+          .getPublicUrl(data.path);
+        
+        videoUrl = publicUrl;
+      }
+
       const postData = {
         content: postContent,
         post_type: postType,
         category: category || 'general',
+        video_url: videoUrl,
         tags: extractHashtags(postContent),
         image_urls: [], // Will be handled by image upload
       };
 
-      await createPost(postData);
-      setPostContent('');
-      setImageFiles([]);
-      setVideoFile(null);
-      setVideoCaptions('');
-      setShowPostComposer(false);
-      toast.success('Post shared successfully!');
+      if (isEditMode && editingPost) {
+        // Update existing post
+        const success = await updatePost(editingPost.id, postData);
+        if (success) {
+          toast.success('Post updated successfully!');
+          resetForm();
+          setShowPostComposer(false);
+        }
+      } else {
+        // Create new post
+        const success = await createPost(postData);
+        if (success) {
+          toast.success('Post created successfully!');
+          resetForm();
+          setShowPostComposer(false);
+        }
+      }
     } catch (error) {
-      toast.error('Failed to create post');
+      console.error('Error with post:', error);
+      toast.error('Failed to save post. Please try again.');
     }
   };
 
@@ -297,7 +362,14 @@ const Community = () => {
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <span>{post.category}</span>
                             <span>•</span>
-                            <span>{formatTimeAgo(post.created_at)}</span>
+                            {(() => {
+                              const timestamp = formatPostTimestamp(post.created_at, post.updated_at);
+                              return (
+                                <span className={timestamp.isEdited ? 'text-blue-600' : ''}>
+                                  {timestamp.text}
+                                </span>
+                              );
+                            })()}
                             {location && (
                               <>
                                 <span>•</span>
@@ -368,6 +440,7 @@ const Community = () => {
                       onComment={() => {/* Handle comment */}}
                       onShare={() => {/* Handle share */}}
                       onBookmark={() => {/* Handle bookmark */}}
+                      onEdit={() => handleEditPost(post)}
                     />
                   </div>
                 </CardContent>
@@ -380,17 +453,14 @@ const Community = () => {
         </div>
 
         {/* Post Composer Modal */}
-        <Dialog open={showPostComposer} onOpenChange={setShowPostComposer}>
+        <Dialog open={showPostComposer} onOpenChange={(open) => {
+          setShowPostComposer(open);
+          if (!open) resetForm();
+        }}>
           <DialogContent className="max-w-lg mx-4 max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create Post</DialogTitle>
+              <DialogTitle>{isEditMode ? 'Edit Post' : 'Create Post'}</DialogTitle>
             </DialogHeader>
-            
-            {/* Debug Modal State */}
-            {(() => {
-              console.log('🚀 MODAL RENDERING - showPostComposer:', showPostComposer);
-              return null;
-            })()}
             
             <div className="space-y-4">
               {/* Post Type Selector */}
@@ -434,6 +504,23 @@ const Community = () => {
                 videoCaptions={videoCaptions}
                 onVideoCaptionsChange={setVideoCaptions}
               />
+
+              {/* Current Video Display for Edit Mode */}
+              {isEditMode && editingPost?.video_url && !videoFile && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Current Video:</label>
+                  <div className="aspect-[9/16] max-w-xs">
+                    <VideoPlayer
+                      src={editingPost.video_url}
+                      autoPlay={false}
+                      muted={true}
+                      loop={true}
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500">Upload a new video to replace this one</p>
+                </div>
+              )}
 
               {/* Poll Options (if poll type) */}
               {postType === 'poll' && (
@@ -493,7 +580,10 @@ const Community = () => {
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
-                  onClick={() => setShowPostComposer(false)}
+                  onClick={() => {
+                    resetForm();
+                    setShowPostComposer(false);
+                  }}
                   className="flex-1"
                 >
                   Cancel
@@ -503,7 +593,7 @@ const Community = () => {
                   disabled={!postContent.trim() || isLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500"
                 >
-                  {isLoading ? 'Posting...' : 'Share Post'}
+                  {isLoading ? 'Saving...' : (isEditMode ? 'Update Post' : 'Share Post')}
                 </Button>
               </div>
             </div>

@@ -125,6 +125,36 @@ export const useCommunityPosts = () => {
     }
   };
 
+  const updatePost = async (postId: string, postData: Partial<CreatePostData>) => {
+    if (!user) {
+      toast.error('Please sign in to edit posts');
+      return false;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('community_posts')
+        .update({
+          ...postData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', postId)
+        .eq('user_id', user.id); // Ensure user can only edit their own posts
+
+      if (error) throw error;
+
+      // Refresh posts to show the updated one
+      await fetchPosts();
+      return true;
+    } catch (error) {
+      console.error('Error updating post:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const toggleLike = async (postId: string) => {
     if (!user) {
       toast.error('Please sign in to like posts');
@@ -208,6 +238,7 @@ export const useCommunityPosts = () => {
     isRefreshing,
     fetchPosts,
     createPost,
+    updatePost,
     toggleLike
   };
 };

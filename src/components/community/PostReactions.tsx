@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Share2, Bookmark, ThumbsUp, ExternalLink } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, ThumbsUp, ExternalLink, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { CommunityPost } from '@/hooks/useCommunityPosts';
 import ReportButton from './ReportButton';
 import SocialShareModal from './SocialShareModal';
+import { useAuth } from '@/context/auth';
 
 interface PostReactionsProps {
   post: CommunityPost;
@@ -13,11 +14,16 @@ interface PostReactionsProps {
   onShare: () => void;
   onBookmark: () => void;
   onExternalShare?: () => void;
+  onEdit?: () => void;
 }
 
-const PostReactions = ({ post, onLike, onComment, onShare, onBookmark, onExternalShare }: PostReactionsProps) => {
+const PostReactions = ({ post, onLike, onComment, onShare, onBookmark, onExternalShare, onEdit }: PostReactionsProps) => {
   const [showReactions, setShowReactions] = useState(false);
   const [showSocialShare, setShowSocialShare] = useState(false);
+  const { user } = useAuth();
+
+  // Check if current user is the post owner
+  const isPostOwner = user?.id === post.user_id;
   
   const emojiReactions = [
     { emoji: '❤️', label: 'Love', count: 24 },
@@ -101,6 +107,19 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark, onExterna
             <ExternalLink className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">Share Externally</span>
           </Button>
+
+          {/* Edit Button - Only show for post owner */}
+          {isPostOwner && onEdit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onEdit}
+              className="text-gray-500 hover:text-blue-500"
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Edit</span>
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
