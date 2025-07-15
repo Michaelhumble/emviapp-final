@@ -98,7 +98,10 @@ export const useCommunityPosts = () => {
   };
 
   const createPost = async (postData: CreatePostData) => {
+    console.log('🔍 useCommunityPosts.createPost called - user:', user);
+    
     if (!user) {
+      console.log('❌ useCommunityPosts: No user found, showing error');
       toast.error('Please sign in to post');
       return false;
     }

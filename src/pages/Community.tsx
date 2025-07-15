@@ -106,7 +106,16 @@ const Community = () => {
   };
 
   const handleCreatePost = async () => {
+    console.log('🔍 handleCreatePost called - isSignedIn:', isSignedIn, 'user:', user);
+    
     if (!isSignedIn) {
+      console.log('❌ User not signed in, showing error');
+      toast.error('Please sign in to post');
+      return;
+    }
+    
+    if (!user) {
+      console.log('❌ No user object found, showing error');
       toast.error('Please sign in to post');
       return;
     }
