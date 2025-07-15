@@ -229,26 +229,26 @@ const CommunityPostComposer = ({
 
       {/* Action Buttons */}
       {showActions && (
-        <div className="flex justify-between items-center">
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="text-purple-600">
+        <div className="flex justify-between items-center flex-wrap gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="ghost" size="sm" className="text-purple-600 flex-shrink-0">
               <Camera className="h-4 w-4 mr-1" />
               Photo
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-pink-600"
+              className="text-pink-600 flex-shrink-0 bg-pink-50 border border-pink-200"
               onClick={handleVideoUploadClick}
             >
               <Video className="h-4 w-4 mr-1" />
               Video
             </Button>
-            <Button variant="ghost" size="sm" className="text-orange-600">
+            <Button variant="ghost" size="sm" className="text-orange-600 flex-shrink-0">
               <BarChart3 className="h-4 w-4 mr-1" />
               Poll
             </Button>
-            <Button variant="ghost" size="sm" className="text-blue-600">
+            <Button variant="ghost" size="sm" className="text-blue-600 flex-shrink-0">
               <Sparkles className="h-4 w-4 mr-1" />
               AI Polish
             </Button>
