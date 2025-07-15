@@ -89,6 +89,7 @@ const Community = () => {
   const [currentStatsIndex, setCurrentStatsIndex] = useState(0);
   const [currentViralIndex, setCurrentViralIndex] = useState(0);
   const [showHeart, setShowHeart] = useState<number | null>(null);
+  const [expandedPosts, setExpandedPosts] = useState<Set<number>>(new Set());
   const [animatedStats, setAnimatedStats] = useState({
     artistsOnline: 0,
     salonsActive: 0,
@@ -137,6 +138,30 @@ const Community = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  // Helper function to truncate text
+  const truncateText = (text: string, maxLength: number = 120) => {
+    if (text.length <= maxLength) return text;
+    const truncated = text.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    return truncated.substring(0, lastSpace > 0 ? lastSpace : maxLength);
+  };
+
+  // Check if text needs truncation
+  const needsTruncation = (text: string) => text.length > 120;
+
+  // Toggle post expansion
+  const togglePostExpansion = (postId: number) => {
+    setExpandedPosts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+  };
 
   const handleLike = (postId: number) => {
     setPosts(posts.map(post => 
@@ -457,9 +482,41 @@ const Community = () => {
               )}
             </div>
 
-            {/* Post Content Text */}
+            {/* Post Content Text with Expandable Functionality */}
             <div className="px-6 mb-6">
-              <p className="text-base leading-relaxed">{post.content}</p>
+              <motion.div
+                layout
+                className="overflow-hidden"
+              >
+                <motion.p 
+                  className="text-base leading-relaxed"
+                  layout
+                  initial={false}
+                  animate={{
+                    height: expandedPosts.has(post.id) ? "auto" : "auto"
+                  }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                >
+                  {expandedPosts.has(post.id) || !needsTruncation(post.content) 
+                    ? post.content 
+                    : truncateText(post.content)
+                  }
+                  {needsTruncation(post.content) && (
+                    <motion.button
+                      onClick={() => togglePostExpansion(post.id)}
+                      className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {expandedPosts.has(post.id) ? (
+                        <span className="text-sm">... Show less</span>
+                      ) : (
+                        <span className="text-sm">... View more</span>
+                      )}
+                    </motion.button>
+                  )}
+                </motion.p>
+              </motion.div>
             </div>
 
             {/* Post Image - Edge to Edge */}
