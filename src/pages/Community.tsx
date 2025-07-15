@@ -220,6 +220,16 @@ const Community = () => {
     fetchPosts(activeFilter === 'all' ? undefined : activeFilter, searchQuery);
   }, [activeFilter, searchQuery]);
 
+  // Scroll detection for sticky search bar
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
     if (user) {
@@ -267,35 +277,24 @@ const Community = () => {
         tags={['beauty community', 'nail art', 'hair styling', 'makeup', 'skincare', 'beauty professionals']}
       />
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        {/* Mobile-First Header */}
-        <div className="bg-white/80 backdrop-blur-md border-b border-purple-100">
-          <div className="px-4 py-3">
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Community
-              </h1>
-              <div className="flex-1" />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowSearch(true)}
-                className="text-gray-600"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-              {user && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowModeration(!showModeration)}
-                  className="text-gray-600"
-                >
-                  🛡️
-                </Button>
-              )}
+        {/* 🎯 VISUAL PROOF: Facebook-Style Header Banner */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-4">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl font-bold">✨ Where Beauty Pros Connect & Thrive</h1>
+            <p className="text-purple-100 mt-1">Join thousands of beauty professionals sharing their journey</p>
+            <div className="flex items-center gap-4 mt-2">
+              <span className="text-sm bg-white/20 px-3 py-1 rounded-full">👥 2,847 active today</span>
+              <span className="text-sm bg-white/20 px-3 py-1 rounded-full">🔥 156 trending posts</span>
             </div>
           </div>
         </div>
+        {/* Sticky Search Bar */}
+        <StickySearchBar 
+          onSearch={handleSearch}
+          currentFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+          scrolled={scrolled}
+        />
 
         {/* Content Container - Mobile/Desktop/iPad Responsive */}
         <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
@@ -311,23 +310,7 @@ const Community = () => {
             <div className="lg:col-span-2 space-y-4">
               <ChallengeOfTheWeek onJoinChallenge={handleJoinChallenge} />
 
-              {/* Quick Filters - Touch-friendly */}
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {quickFilters.map((filter) => (
-                  <Badge
-                    key={filter.id}
-                    variant={activeFilter === filter.id ? "default" : "outline"}
-                    className={`cursor-pointer whitespace-nowrap px-3 py-2 min-h-[44px] flex items-center touch-manipulation ${
-                      activeFilter === filter.id 
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
-                        : 'hover:bg-purple-50'
-                    }`}
-                    onClick={() => setActiveFilter(filter.id)}
-                  >
-                    {filter.label} {filter.count > 99 ? '99+' : filter.count}
-                  </Badge>
-                ))}
-              </div>
+              {/* HIDDEN - Now part of StickySearchBar */}
 
               {/* Enhanced Posts Feed */}
               <CommunityErrorBoundary context="posts">
