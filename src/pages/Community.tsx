@@ -381,7 +381,7 @@ const Community = () => {
 
         {/* Post Composer Modal */}
         <Dialog open={showPostComposer} onOpenChange={setShowPostComposer}>
-          <DialogContent className="max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-lg mx-4 max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Post</DialogTitle>
             </DialogHeader>

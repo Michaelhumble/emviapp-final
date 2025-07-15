@@ -150,6 +150,11 @@ const CommunityPostComposer = ({
     videoInputRef.current?.click();
   };
 
+  // Debug logging
+  useEffect(() => {
+    console.log('CommunityPostComposer - showActions:', showActions);
+  }, [showActions]);
+
   return (
     <div className={`space-y-3 ${className}`}>
       <div className="relative">
@@ -229,40 +234,42 @@ const CommunityPostComposer = ({
 
       {/* Action Buttons */}
       {showActions && (
-        <div className="flex justify-between items-center flex-wrap gap-2 p-2 bg-gray-50 rounded-lg">
-          <div className="flex gap-2 flex-wrap">
-            <Button variant="ghost" size="sm" className="text-purple-600 flex-shrink-0 bg-purple-50 border border-purple-200">
-              <Camera className="h-4 w-4 mr-1" />
-              Photo
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-pink-600 flex-shrink-0 bg-pink-50 border border-pink-200 font-medium"
-              onClick={handleVideoUploadClick}
+        <div className="sticky bottom-0 bg-white border-t pt-3 mt-4">
+          <div className="flex justify-between items-center flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border-2 border-gray-200">
+            <div className="flex gap-2 flex-wrap">
+              <Button variant="ghost" size="sm" className="text-purple-600 flex-shrink-0 bg-purple-50 border border-purple-200">
+                <Camera className="h-4 w-4 mr-1" />
+                Photo
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-pink-600 flex-shrink-0 bg-pink-50 border border-pink-200 font-medium"
+                onClick={handleVideoUploadClick}
+              >
+                <Video className="h-4 w-4 mr-1" />
+                Video
+              </Button>
+              <Button variant="ghost" size="sm" className="text-orange-600 flex-shrink-0 bg-orange-50 border border-orange-200">
+                <BarChart3 className="h-4 w-4 mr-1" />
+                Poll
+              </Button>
+              <Button variant="ghost" size="sm" className="text-blue-600 flex-shrink-0 bg-blue-50 border border-blue-200">
+                <Sparkles className="h-4 w-4 mr-1" />
+                AI Polish
+              </Button>
+            </div>
+
+            <Button
+              onClick={onSubmit}
+              disabled={!content.trim()}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex-shrink-0"
+              size="sm"
             >
-              <Video className="h-4 w-4 mr-1" />
-              Video
-            </Button>
-            <Button variant="ghost" size="sm" className="text-orange-600 flex-shrink-0 bg-orange-50 border border-orange-200">
-              <BarChart3 className="h-4 w-4 mr-1" />
-              Poll
-            </Button>
-            <Button variant="ghost" size="sm" className="text-blue-600 flex-shrink-0 bg-blue-50 border border-blue-200">
-              <Sparkles className="h-4 w-4 mr-1" />
-              AI Polish
+              <Send className="h-4 w-4 mr-1" />
+              Post
             </Button>
           </div>
-
-          <Button
-            onClick={onSubmit}
-            disabled={!content.trim()}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex-shrink-0"
-            size="sm"
-          >
-            <Send className="h-4 w-4 mr-1" />
-            Post
-          </Button>
         </div>
       )}
 
