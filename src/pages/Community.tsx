@@ -27,8 +27,11 @@ import SharerLeaderboard from '@/components/community/SharerLeaderboard';
 import SEOMetaTags from '@/components/community/SEOMetaTags';
 import FloatingInspirationCTA from '@/components/community/FloatingInspirationCTA';
 import ContentModerationPanel from '@/components/community/ContentModerationPanel';
-import OptimizedCommunityFeed from '@/components/community/OptimizedCommunityFeed';
+import EnhancedCommunityFeed from '@/components/community/EnhancedCommunityFeed';
 import CommunityErrorBoundary from '@/components/community/CommunityErrorBoundary';
+import FloatingActionButton from '@/components/community/FloatingActionButton';
+import StickySearchBar from '@/components/community/StickySearchBar';
+import GamificationSystem from '@/components/community/GamificationSystem';
 import { formatPostTimestamp } from '@/utils/timeUtils';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -50,6 +53,7 @@ const Community = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasMore, setHasMore] = useState(true);
   const [totalPosts, setTotalPosts] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   
   // Edit mode state
   const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
@@ -325,15 +329,16 @@ const Community = () => {
                 ))}
               </div>
 
-              {/* Posts Feed */}
+              {/* Enhanced Posts Feed */}
               <CommunityErrorBoundary context="posts">
-                <OptimizedCommunityFeed
+                <EnhancedCommunityFeed
                   posts={posts}
                   onLoadMore={handleLoadMore}
                   hasMore={hasMore}
                   isLoading={isLoading}
                   onLike={toggleLike}
                   onEdit={handleEditPost}
+                  onShare={(postId, platform) => console.log('Shared:', postId, platform)}
                 />
               </CommunityErrorBoundary>
             </div>
@@ -365,11 +370,21 @@ const Community = () => {
               </Card>
               
               <TopCreators />
-              <LeaderboardWidget />
+              <GamificationSystem />
               <SharerLeaderboard />
             </div>
           </div>
         </div>
+
+        {/* Floating Action Button */}
+        {isSignedIn && (
+          <FloatingActionButton 
+            onCreatePost={(type) => {
+              setPostType(type);
+              setShowPostComposer(true);
+            }}
+          />
+        )}
 
         {/* Post Composer Modal */}
         {isSignedIn && (
