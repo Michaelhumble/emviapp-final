@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/context/auth';
 import { useSalon } from '@/context/salon';
 import { useSalonDashboard } from '@/hooks/useSalonDashboard';
+import { useSalonOnboarding } from '@/hooks/useSalonOnboarding';
 
 // Import components
 import SalonStatsOverview from './components/SalonStatsOverview';
@@ -22,6 +23,7 @@ import SalonJobManager from './SalonJobManager';
 import SalonBookingCalendar from './SalonBookingCalendar';
 import SalonPhotoManager from './SalonPhotoManager';
 import SalonSettings from './SalonSettings';
+import SalonOnboardingWizard from './onboarding/SalonOnboardingWizard';
 
 const SalonDashboardNew = () => {
   const { userProfile } = useAuth();
@@ -32,6 +34,7 @@ const SalonDashboardNew = () => {
   // Get salon ID from context or user profile
   const salonId = currentSalon?.id || userProfile?.id;
   const { stats, loading, reviews, offers, todayBookings } = useSalonDashboard(salonId);
+  const { shouldShowOnboarding, markOnboardingComplete } = useSalonOnboarding();
 
   const getSalonName = () => {
     return currentSalon?.salon_name ||
@@ -337,6 +340,13 @@ const SalonDashboardNew = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Onboarding Wizard */}
+      <SalonOnboardingWizard
+        isOpen={shouldShowOnboarding}
+        onClose={() => markOnboardingComplete()}
+        onComplete={() => markOnboardingComplete()}
+      />
     </div>
   );
 };
