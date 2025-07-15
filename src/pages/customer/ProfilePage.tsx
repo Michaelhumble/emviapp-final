@@ -5,13 +5,16 @@ import Layout from "@/components/layout/Layout";
 import { Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Edit, Mail, Phone, MapPin } from "lucide-react";
+import { User, Edit, Mail, Phone, MapPin, Crown, Share2 } from "lucide-react";
 import BeautyJourneyStats from "@/components/customer/journey/BeautyJourneyStats";
 import CommunityImpactCard from "@/components/customer/journey/CommunityImpactCard";
 import WishlistPanel from "@/components/customer/journey/WishlistPanel";
 import ShareJourneyCard from "@/components/customer/journey/ShareJourneyCard";
 import FeatureSuggestionWidget from "@/components/customer/journey/FeatureSuggestionWidget";
 import CustomizeProfileCard from "@/components/customer/journey/CustomizeProfileCard";
+import VIPSystem from "@/components/ecosystem/VIPSystem";
+import SocialShareSystem from "@/components/ecosystem/SocialShareSystem";
+import CrossPlatformCTA from "@/components/ecosystem/CrossPlatformCTA";
 
 const CustomerProfilePage = () => {
   const { user, userProfile, loading } = useAuth();
@@ -91,12 +94,27 @@ const CustomerProfilePage = () => {
                     </div>
                   )}
                   
-                  <Button className="w-full mt-4" variant="outline">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
+                  <div className="flex gap-2 mt-4">
+                    <Button className="flex-1" variant="outline">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    <SocialShareSystem 
+                      content={{
+                        type: 'profile',
+                        title: userProfile?.full_name || 'Beauty Lover',
+                        description: 'Join the beauty community at EmviApp',
+                        imageUrl: userProfile?.avatar_url,
+                        url: window.location.href
+                      }}
+                      className="flex-shrink-0"
+                    />
+                  </div>
                 </CardContent>
               </Card>
+
+              {/* VIP System Integration */}
+              <VIPSystem />
 
               {/* Customize Profile Card */}
               <CustomizeProfileCard />
@@ -118,6 +136,12 @@ const CustomerProfilePage = () => {
                 <ShareJourneyCard />
                 <FeatureSuggestionWidget />
               </div>
+
+              {/* Cross-Platform CTA */}
+              <CrossPlatformCTA 
+                currentPage="profile"
+                variant="card"
+              />
             </div>
           </div>
         </div>

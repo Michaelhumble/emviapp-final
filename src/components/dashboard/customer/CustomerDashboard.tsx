@@ -9,6 +9,8 @@ import CustomerGameifiedProgress from './CustomerGameifiedProgress';
 import CustomerInstantActions from './CustomerInstantActions';
 import UserFreeJobCard from './UserFreeJobCard';
 import ListingManagement from '../common/ListingManagement';
+import VIPSystem from '@/components/ecosystem/VIPSystem';
+import CrossPlatformCTA from '@/components/ecosystem/CrossPlatformCTA';
 
 const CustomerDashboard = () => {
   return (
@@ -103,13 +105,36 @@ const CustomerDashboard = () => {
           <CustomerGameifiedProgress />
         </motion.div>
 
+        {/* VIP System Integration */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9, ease: "easeOut" }}
+          className="mb-8"
+        >
+          <VIPSystem />
+        </motion.div>
+
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
+          className="mb-8"
         >
           <CustomerInstantActions />
+        </motion.div>
+
+        {/* Cross-Platform CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.1, ease: "easeOut" }}
+        >
+          <CrossPlatformCTA 
+            currentPage="dashboard"
+            variant="card"
+          />
         </motion.div>
       </div>
     </div>
