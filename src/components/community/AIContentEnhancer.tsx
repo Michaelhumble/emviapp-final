@@ -69,36 +69,54 @@ const AIContentEnhancer: React.FC<AIContentEnhancerProps> = ({
 
     try {
       for (const type of enhancementTypes) {
-        const { data, error } = await supabase.functions.invoke('ai-polish-post', {
-          body: {
-            content: content,
-            style: type.type,
-            language: 'english',
-            postType: 'story',
-            customPrompt: type.prompt
-          }
-        });
-
-        if (error) {
-          console.error(`Error enhancing content for ${type.type}:`, error);
-          continue;
-        }
-
-        if (data?.polishedContent) {
-          newSuggestions.push({
-            type: type.type,
-            content: data.polishedContent,
-            icon: type.icon,
-            label: type.label,
-            description: type.description
+        try {
+          const { data, error } = await supabase.functions.invoke('ai-polish-post', {
+            body: {
+              content: content,
+              style: type.type,
+              language: 'english',
+              postType: 'story',
+              customPrompt: type.prompt
+            }
           });
+
+          if (error) {
+            console.error(`Error enhancing content for ${type.type}:`, error);
+            // Show user-friendly error for this specific enhancement
+            toast.error(`Failed to generate ${type.label.toLowerCase()} version. Trying other styles...`);
+            continue;
+          }
+
+          if (data?.polishedContent && !data?.error) {
+            newSuggestions.push({
+              type: type.type,
+              content: data.polishedContent,
+              icon: type.icon,
+              label: type.label,
+              description: type.description
+            });
+          } else if (data?.error) {
+            console.error(`AI service error for ${type.type}:`, data.error);
+            toast.error(`${type.label}: ${data.error}`);
+          }
+        } catch (typeError) {
+          console.error(`Network error for ${type.type}:`, typeError);
+          toast.error(`Network error for ${type.label.toLowerCase()} enhancement`);
         }
+      }
+
+      if (newSuggestions.length === 0) {
+        toast.error('AI enhancement is temporarily unavailable. Please try again in a moment.');
+      } else if (newSuggestions.length < enhancementTypes.length) {
+        toast.success(`Generated ${newSuggestions.length} AI suggestions (some failed)`);
+      } else {
+        toast.success('AI suggestions generated successfully!');
       }
 
       setSuggestions(newSuggestions);
     } catch (error) {
       console.error('Error generating suggestions:', error);
-      toast.error('Failed to generate AI suggestions. Please try again.');
+      toast.error('AI enhancement service is currently unavailable. Please try again later.');
     } finally {
       setIsLoading(false);
     }

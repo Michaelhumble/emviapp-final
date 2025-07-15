@@ -608,23 +608,32 @@ const Community = () => {
                   }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                 >
-                  {expandedPosts.has(post.id) || !needsTruncation(post.content) 
-                    ? post.content 
-                    : truncateText(post.content)
-                  }
-                  {needsTruncation(post.content) && (
-                    <motion.button
-                      onClick={() => togglePostExpansion(post.id)}
-                      className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {expandedPosts.has(post.id) ? (
+                  {expandedPosts.has(post.id) ? (
+                    <>
+                      {post.content}
+                      <motion.button
+                        onClick={() => togglePostExpansion(post.id)}
+                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
                         <span className="text-sm">... Show less</span>
-                      ) : (
+                      </motion.button>
+                    </>
+                  ) : needsTruncation(post.content) ? (
+                    <>
+                      {truncateText(post.content)}
+                      <motion.button
+                        onClick={() => togglePostExpansion(post.id)}
+                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
                         <span className="text-sm">... View more</span>
-                      )}
-                    </motion.button>
+                      </motion.button>
+                    </>
+                  ) : (
+                    post.content
                   )}
                 </motion.p>
               </motion.div>

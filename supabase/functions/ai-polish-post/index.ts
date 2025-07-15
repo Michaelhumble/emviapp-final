@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
@@ -15,36 +16,66 @@ serve(async (req) => {
   }
 
   try {
-    const { content, style, language, postType } = await req.json();
+    console.log('AI Polish Post function called');
+    
+    const { content, style, language = 'english', postType = 'story', customPrompt } = await req.json();
 
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    if (!content || content.trim().length === 0) {
+      console.error('No content provided');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Content is required',
+          polishedContent: null 
+        }), 
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    const stylePrompts = {
-      casual: "Make this sound casual, friendly, and conversational",
-      professional: "Make this sound professional and polished",
-      inspiring: "Make this sound inspiring and motivational",
-      fun: "Make this sound fun, playful, and engaging",
-      elegant: "Make this sound elegant and sophisticated"
-    };
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          error: 'AI service temporarily unavailable. Please try again later.',
+          polishedContent: null 
+        }), 
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
-    const languageInstructions = {
-      english: "Respond in English",
-      vietnamese: "Respond in Vietnamese"
-    };
+    // Create system prompt based on style
+    let systemPrompt = 'You are an expert content creator for EmviApp, a beauty industry social network. Transform the user\'s post to be more engaging while keeping it authentic and appropriate for beauty professionals.';
+    
+    if (customPrompt) {
+      systemPrompt += ` Focus on: ${customPrompt}`;
+    } else {
+      switch (style) {
+        case 'funny':
+          systemPrompt += ' Make it funnier and more playful while keeping it professional for the beauty industry.';
+          break;
+        case 'emotional':
+          systemPrompt += ' Make it more emotional and heartfelt, perfect for inspiring others in the beauty community.';
+          break;
+        case 'professional':
+          systemPrompt += ' Make it sound more professional and polished for business networking.';
+          break;
+        case 'viral':
+          systemPrompt += ' Transform this into viral social media content that people will want to share. Use engaging hooks and emotional triggers.';
+          break;
+        default:
+          systemPrompt += ' Improve the writing quality and make it more engaging.';
+      }
+    }
 
-    const postTypeContext = {
-      story: "This is a personal story or experience in the beauty industry",
-      tip: "This is a professional tip or advice for beauty professionals",
-      showcase: "This is showcasing beauty work or portfolio piece",
-      question: "This is a question seeking advice or opinions from the community"
-    };
+    systemPrompt += ' Keep the same core message and personal voice. Return only the polished content without any additional commentary.';
 
-    const systemPrompt = `You are an AI assistant helping beauty professionals and enthusiasts create engaging social media posts. ${stylePrompts[style || 'casual']}. ${languageInstructions[language || 'english']}. ${postTypeContext[postType || 'story']}.
-
-Keep the core message and meaning intact, but improve the writing, add relevant emojis, and make it more engaging for a beauty community. Return only the improved post content, nothing else.`;
-
+    console.log(`Calling OpenAI API for style: ${style}`);
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -52,7 +83,7 @@ Keep the core message and meaning intact, but improve the writing, add relevant 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: content }
@@ -62,22 +93,101 @@ Keep the core message and meaning intact, but improve the writing, add relevant 
       }),
     });
 
-    const data = await response.json();
-    
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to generate polished content');
+      const errorData = await response.text();
+      console.error('OpenAI API error:', response.status, errorData);
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'AI enhancement temporarily unavailable. Please try again in a moment.',
+          polishedContent: null 
+        }), 
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
-    const polishedContent = data.choices[0].message.content;
+    const data = await response.json();
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      return new Response(
+        JSON.stringify({ 
+          error: 'AI enhancement failed. Please try again.',
+          polishedContent: null 
+        }), 
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
-    return new Response(JSON.stringify({ polishedContent }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    const polishedContent = data.choices[0].message.content.trim();
+    
+    console.log('Successfully polished content');
+    
+    // Log usage for rate limiting and monitoring
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      
+      if (supabaseUrl && supabaseServiceKey) {
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        
+        // Get user ID from auth header if available
+        const authHeader = req.headers.get('authorization');
+        let userId = null;
+        
+        if (authHeader) {
+          try {
+            const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+            userId = user?.id || null;
+          } catch (authError) {
+            console.log('Could not get user from auth header:', authError);
+          }
+        }
+        
+        // Log the AI usage
+        await supabase.from('ai_usage_logs').insert({
+          user_id: userId,
+          prompt: content,
+          prompt_hash: await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content)).then(hash => 
+            Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+          ),
+          response: polishedContent,
+          ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+          user_agent: req.headers.get('user-agent') || 'unknown'
+        });
+      }
+    } catch (logError) {
+      console.error('Error logging AI usage:', logError);
+      // Don't fail the request if logging fails
+    }
+
+    return new Response(
+      JSON.stringify({ 
+        polishedContent,
+        error: null 
+      }), 
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
+
   } catch (error) {
-    console.error('Error in ai-polish-post function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Unexpected error in ai-polish-post function:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Something went wrong. Please try again later.',
+        polishedContent: null 
+      }), 
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
