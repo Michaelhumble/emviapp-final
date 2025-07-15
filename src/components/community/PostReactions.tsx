@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Share2, Bookmark, ThumbsUp } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, ThumbsUp, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { CommunityPost } from '@/hooks/useCommunityPosts';
 import ReportButton from './ReportButton';
+import SocialShareModal from './SocialShareModal';
 
 interface PostReactionsProps {
   post: CommunityPost;
@@ -11,10 +12,12 @@ interface PostReactionsProps {
   onComment: () => void;
   onShare: () => void;
   onBookmark: () => void;
+  onExternalShare?: () => void;
 }
 
-const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostReactionsProps) => {
+const PostReactions = ({ post, onLike, onComment, onShare, onBookmark, onExternalShare }: PostReactionsProps) => {
   const [showReactions, setShowReactions] = useState(false);
+  const [showSocialShare, setShowSocialShare] = useState(false);
   
   const emojiReactions = [
     { emoji: '❤️', label: 'Love', count: 24 },
@@ -50,8 +53,8 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostRea
       </div>
 
       {/* Main Action Buttons */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-1 flex-wrap">
           <Button
             variant="ghost"
             size="sm"
@@ -65,7 +68,8 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostRea
             <Heart 
               className={`h-4 w-4 mr-1 ${post.user_has_liked ? 'fill-current' : ''}`} 
             />
-            {post.likes_count}
+            <span className="hidden sm:inline">{post.likes_count}</span>
+            <span className="sm:hidden">{post.likes_count}</span>
           </Button>
 
           <Button
@@ -75,7 +79,7 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostRea
             className="text-gray-500 hover:text-blue-500"
           >
             <MessageCircle className="h-4 w-4 mr-1" />
-            Comment
+            <span className="hidden sm:inline">Comment</span>
           </Button>
 
           <Button
@@ -85,7 +89,17 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostRea
             className="text-gray-500 hover:text-green-500"
           >
             <Share2 className="h-4 w-4 mr-1" />
-            Share
+            <span className="hidden sm:inline">Share</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSocialShare(true)}
+            className="text-gray-500 hover:text-purple-500"
+          >
+            <ExternalLink className="h-4 w-4 mr-1" />
+            <span className="hidden sm:inline">Share Externally</span>
           </Button>
         </div>
 
@@ -131,6 +145,13 @@ const PostReactions = ({ post, onLike, onComment, onShare, onBookmark }: PostRea
       >
         {showReactions ? 'Hide reactions' : 'Quick react'}
       </Button>
+
+      {/* Social Share Modal */}
+      <SocialShareModal
+        isOpen={showSocialShare}
+        onClose={() => setShowSocialShare(false)}
+        post={post}
+      />
     </div>
   );
 };
