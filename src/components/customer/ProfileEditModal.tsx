@@ -133,14 +133,24 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
             <DialogTitle className="text-2xl font-bold">
               Edit Your Beautiful Profile ✨
             </DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-purple-200 hover:text-white hover:bg-purple-500/20"
-            >
-              ← Back to Dashboard
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="text-purple-200 hover:text-white hover:bg-purple-500/20 font-medium"
+              >
+                ← Back to Dashboard
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="text-purple-200 hover:text-white hover:bg-purple-500/20 w-8 h-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </DialogHeader>
         
