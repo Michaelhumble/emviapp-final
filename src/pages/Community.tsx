@@ -292,7 +292,7 @@ const Community = () => {
                 onContentChange={setPostContent}
                 onSubmit={handleCreatePost}
                 placeholder="Share your beauty journey... Type @AI for instant expert advice!"
-                showActions={false}
+                showActions={true}
                 videoFile={videoFile}
                 onVideoChange={setVideoFile}
                 videoCaptions={videoCaptions}
