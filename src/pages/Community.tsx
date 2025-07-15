@@ -386,6 +386,12 @@ const Community = () => {
               <DialogTitle>Create Post</DialogTitle>
             </DialogHeader>
             
+            {/* Debug Modal State */}
+            {(() => {
+              console.log('🚀 MODAL RENDERING - showPostComposer:', showPostComposer);
+              return null;
+            })()}
+            
             <div className="space-y-4">
               {/* Post Type Selector */}
               <div className="grid grid-cols-2 gap-2">

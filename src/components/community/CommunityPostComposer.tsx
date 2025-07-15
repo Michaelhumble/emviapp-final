@@ -152,8 +152,12 @@ const CommunityPostComposer = ({
 
   // Debug logging
   useEffect(() => {
-    console.log('CommunityPostComposer - showActions:', showActions);
+    console.log('🔍 CommunityPostComposer MOUNTED - showActions:', showActions);
+    console.log('🔍 Component props:', { content, showActions, className });
   }, [showActions]);
+
+  // Component render debug
+  console.log('🎯 RENDERING CommunityPostComposer - showActions:', showActions);
 
   return (
     <div className={`space-y-3 ${className}`}>
