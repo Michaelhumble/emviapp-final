@@ -34,6 +34,7 @@ import PostSalon from "@/pages/PostSalon";
 import SalonListingSuccessPage from "@/pages/salon-listing-success";
 import CustomerProfilePage from "@/pages/customer/ProfilePage";
 import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
+import InviteAcceptance from "@/pages/InviteAcceptance";
 
 import NailJobSuccessPage from "@/pages/nails-job-success";
 
@@ -137,6 +138,9 @@ function App() {
                     ))}
                     <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
                     <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
+                    
+                    {/* Team Invite Routes */}
+                    <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
                   </Routes>
                 </Suspense>
                 <Toaster />

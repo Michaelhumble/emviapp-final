@@ -18,7 +18,7 @@ import { useSalonOnboarding } from '@/hooks/useSalonOnboarding';
 import SalonStatsOverview from './components/SalonStatsOverview';
 import SalonReviewsManager from './components/SalonReviewsManager';
 import SalonOffersManager from './components/SalonOffersManager';
-import SalonTeamManager from './SalonTeamManager';
+import SalonTeamManagement from './team/SalonTeamManagement';
 import SalonJobManager from './SalonJobManager';
 import SalonBookingCalendar from './SalonBookingCalendar';
 import SalonPhotoManager from './SalonPhotoManager';
@@ -332,22 +332,7 @@ const SalonDashboardNew = () => {
               animate="visible"
               transition={{ duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-purple-50">
-                <CardContent className="p-8 text-center">
-                  <Users className="h-16 w-16 text-indigo-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-indigo-900 mb-2">Team Management</h3>
-                  <p className="text-indigo-700 mb-6">
-                    Invite team members, track performance, and manage roles & permissions.
-                  </p>
-                  <Button 
-                    onClick={() => setTeamModalOpen(true)}
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                  >
-                    <Users className="h-4 w-4 mr-2" />
-                    Manage Team
-                  </Button>
-                </CardContent>
-              </Card>
+              <SalonTeamManagement />
             </motion.div>
           </TabsContent>
           

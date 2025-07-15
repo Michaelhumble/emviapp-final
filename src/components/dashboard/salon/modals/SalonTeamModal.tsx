@@ -112,16 +112,62 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
 
     setInviting(true);
     try {
-      const { data, error } = await supabase.rpc('send_team_invite', {
+      // Step 1: Create salon staff record with pending status
+      const { data: staffData, error: staffError } = await supabase
+        .from('salon_staff')
+        .insert({
+          salon_id: salonId,
+          email: inviteForm.email,
+          full_name: inviteForm.full_name,
+          role: inviteForm.role,
+          status: 'pending',
+          invitation_sent_at: new Date().toISOString(),
+          invitation_email: inviteForm.email
+        })
+        .select('*')
+        .single();
+
+      if (staffError) throw staffError;
+
+      // Step 2: Create team invite with magic link
+      const { data: inviteData, error: inviteError } = await supabase.rpc('create_team_invite', {
         p_salon_id: salonId,
-        p_email: inviteForm.email,
-        p_role: inviteForm.role,
-        p_full_name: inviteForm.full_name
+        p_phone_number: '', // We'll use email for now
+        p_role: inviteForm.role
       });
 
-      if (error) throw error;
+      if (inviteError) throw inviteError;
 
-      toast.success('Invitation sent successfully!');
+      // Step 3: Create magic link for profile setup
+      const inviteCode = inviteData[0]?.invite_code || 'temp-code';
+      const magicLink = `${window.location.origin}/invite/${inviteCode}`;
+
+      // Step 4: Send invitation email via edge function
+      try {
+        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-team-invite', {
+          body: {
+            salon_id: salonId,
+            email: inviteForm.email,
+            full_name: inviteForm.full_name,
+            role: inviteForm.role,
+            invite_code: inviteCode
+          }
+        });
+
+        if (emailError) {
+          console.warn('Email sending failed:', emailError);
+          // Still show success but mention email issue
+          await navigator.clipboard.writeText(magicLink);
+          toast.success(`Invitation created! Magic link copied to clipboard (email sending unavailable).`);
+        } else {
+          toast.success(`Invitation sent to ${inviteForm.full_name}! They'll receive an email with setup instructions.`);
+        }
+      } catch (emailError) {
+        console.warn('Email service unavailable:', emailError);
+        await navigator.clipboard.writeText(magicLink);
+        toast.success(`Invitation created! Magic link copied to clipboard (please share manually).`);
+      }
+      
       setInviteForm({ email: '', full_name: '', role: 'artist' });
       await fetchTeamMembers();
     } catch (error) {
@@ -168,11 +214,28 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
     }
   };
 
-  const generateInviteLink = () => {
-    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const inviteLink = `${window.location.origin}/join/${inviteCode}`;
-    navigator.clipboard.writeText(inviteLink);
-    toast.success('Invite link copied to clipboard!');
+  const generateInviteLink = async () => {
+    if (!salonId) return;
+    
+    try {
+      // Create a quick invite that can be shared
+      const { data: inviteData, error } = await supabase.rpc('create_team_invite', {
+        p_salon_id: salonId,
+        p_phone_number: 'quick-invite',
+        p_role: 'artist'
+      });
+
+      if (error) throw error;
+
+      const inviteCode = inviteData[0]?.invite_code || 'temp-code';
+      const inviteLink = `${window.location.origin}/invite/${inviteCode}`;
+      
+      await navigator.clipboard.writeText(inviteLink);
+      toast.success('Quick invite link copied! Share this with potential team members.');
+    } catch (error) {
+      console.error('Error generating invite link:', error);
+      toast.error('Failed to generate invite link');
+    }
   };
 
   const getRoleColor = (role: string) => {

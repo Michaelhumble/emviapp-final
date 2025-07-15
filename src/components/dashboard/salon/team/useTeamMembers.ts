@@ -178,7 +178,29 @@ export const useTeamMembers = () => {
 
   useEffect(() => {
     fetchTeamMembers();
-  }, [fetchTeamMembers]);
+
+    // Set up real-time subscription for team updates
+    const channel = supabase
+      .channel('salon_staff_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'salon_staff',
+          filter: `salon_id=eq.${currentSalon?.id}`
+        },
+        (payload) => {
+          console.log('Team member updated:', payload);
+          fetchTeamMembers(); // Refresh the list
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchTeamMembers, currentSalon?.id]);
 
   return {
     teamMembers,
