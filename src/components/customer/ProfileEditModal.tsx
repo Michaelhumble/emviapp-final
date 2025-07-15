@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Upload, X, Save, User, Camera } from 'lucide-react';
 import { useAuth } from '@/context/auth';
+import { useImageUpload } from '@/hooks/useImageUpload';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -17,6 +19,7 @@ interface ProfileEditModalProps {
 
 const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) => {
   const { user, userProfile } = useAuth();
+  const { uploadImage, isUploading } = useImageUpload();
   const [formData, setFormData] = useState({
     full_name: userProfile?.full_name || '',
     bio: userProfile?.bio || '',
@@ -25,6 +28,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
     avatar_url: userProfile?.avatar_url || ''
   });
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
@@ -34,22 +38,45 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setPreviewImage(result);
-        setFormData(prev => ({ ...prev, avatar_url: result }));
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleSave = async () => {
+    if (!user) return;
+    
     setLoading(true);
     try {
-      // Simulate save with success animation
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      let avatarUrl = formData.avatar_url;
       
+      // Upload image if a new one was selected
+      if (selectedFile) {
+        const uploadedUrl = await uploadImage(selectedFile);
+        if (uploadedUrl) {
+          avatarUrl = uploadedUrl;
+        }
+      }
+
+      // Update user profile in Supabase
+      const { error } = await supabase
+        .from('users')
+        .update({
+          full_name: formData.full_name,
+          bio: formData.bio,
+          location: formData.location,
+          phone: formData.phone,
+          avatar_url: avatarUrl
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
       // Trigger celebration
       confetti({
         particleCount: 100,
@@ -59,8 +86,16 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
       });
       
       toast.success('Profile updated successfully! ✨');
+      
+      // Reset form and close
+      setPreviewImage(null);
+      setSelectedFile(null);
       onClose();
+      
+      // Refresh the page to show updated profile
+      window.location.reload();
     } catch (error) {
+      console.error('Error updating profile:', error);
       toast.error('Failed to update profile');
     } finally {
       setLoading(false);
