@@ -3213,6 +3213,7 @@ export type Database = {
       }
       salon_staff: {
         Row: {
+          accepted_at: string | null
           avatar_url: string | null
           commission_rate: number | null
           created_at: string
@@ -3221,6 +3222,8 @@ export type Database = {
           id: string
           invitation_email: string | null
           invitation_sent_at: string | null
+          invitation_token: string | null
+          invited_by: string | null
           job_title: string | null
           profile_photo_url: string | null
           role: string
@@ -3228,8 +3231,10 @@ export type Database = {
           specialty: string | null
           status: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          accepted_at?: string | null
           avatar_url?: string | null
           commission_rate?: number | null
           created_at?: string
@@ -3238,6 +3243,8 @@ export type Database = {
           id?: string
           invitation_email?: string | null
           invitation_sent_at?: string | null
+          invitation_token?: string | null
+          invited_by?: string | null
           job_title?: string | null
           profile_photo_url?: string | null
           role: string
@@ -3245,8 +3252,10 @@ export type Database = {
           specialty?: string | null
           status?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          accepted_at?: string | null
           avatar_url?: string | null
           commission_rate?: number | null
           created_at?: string
@@ -3255,6 +3264,8 @@ export type Database = {
           id?: string
           invitation_email?: string | null
           invitation_sent_at?: string | null
+          invitation_token?: string | null
+          invited_by?: string | null
           job_title?: string | null
           profile_photo_url?: string | null
           role?: string
@@ -3262,6 +3273,7 @@ export type Database = {
           specialty?: string | null
           status?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
