@@ -21,13 +21,17 @@ import SocialShareSystem from '@/components/ecosystem/SocialShareSystem';
 import ProfileEditModal from '@/components/customer/ProfileEditModal';
 import ShareWinModal from '@/components/customer/ShareWinModal';
 import CreditsProgress from '@/components/customer/CreditsProgress';
+import ReviewsSection from '@/components/customer/ReviewsSection';
+import WriteReviewButton from '@/components/customer/WriteReviewButton';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
+import { useCustomerBookingHistory } from '@/hooks/useCustomerBookingHistory';
 import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
 
 const CustomerDashboard = () => {
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   const { stats, activities, bookings, favorites, loading } = useCustomerDashboard();
+  const { bookings: completedBookings, refetch: refetchBookings } = useCustomerBookingHistory();
   const [celebrationActive, setCelebrationActive] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showShareWin, setShowShareWin] = useState(false);
@@ -538,11 +542,66 @@ const CustomerDashboard = () => {
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   </Button>
-                </motion.div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                 </motion.div>
+               </CardContent>
+             </Card>
+
+             {/* Reviews Section */}
+             <ReviewsSection maxReviews={3} />
+
+             {/* Recent Completed Bookings - Review Opportunities */}
+             {completedBookings.filter(booking => booking.status === 'completed').length > 0 && (
+               <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
+                 <CardHeader>
+                   <CardTitle className="flex items-center text-white">
+                     <Star className="h-5 w-5 mr-2 text-yellow-400" />
+                     Write Reviews
+                   </CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                   <p className="text-sm text-white/70 mb-4">
+                     Share your experience and earn 20 EmviPoints per review!
+                   </p>
+                   <div className="space-y-3 max-h-48 overflow-y-auto">
+                     {completedBookings
+                       .filter(booking => booking.status === 'completed')
+                       .slice(0, 3)
+                       .map((booking) => (
+                         <motion.div
+                           key={booking.id}
+                           initial={{ opacity: 0, y: 10 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                         >
+                           <div className="flex-1">
+                             <p className="text-sm font-medium text-white">
+                               {booking.artist?.full_name || 'Artist'}
+                             </p>
+                             <p className="text-xs text-white/60">
+                               {booking.service?.title || 'Service'} • {new Date(booking.date_requested || '').toLocaleDateString()}
+                             </p>
+                           </div>
+                           <WriteReviewButton
+                             bookingId={booking.id}
+                             targetId={booking.artist?.id || ''}
+                             targetType="artist"
+                             targetName={booking.artist?.full_name || 'Artist'}
+                             variant="outline"
+                             size="sm"
+                             onReviewSubmitted={() => {
+                               handleCreditsUpdate();
+                               refetchBookings();
+                             }}
+                             className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                           />
+                         </motion.div>
+                       ))}
+                   </div>
+                 </CardContent>
+               </Card>
+             )}
+           </div>
+         </div>
 
         {/* Celebration Animation */}
         <AnimatePresence>
