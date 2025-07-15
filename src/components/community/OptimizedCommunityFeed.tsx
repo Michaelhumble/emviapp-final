@@ -8,24 +8,25 @@ import { formatPostTimestamp } from '@/utils/timeUtils';
 
 interface CommunityPost {
   id: string;
+  user_id: string;
   content: string;
-  created_at: string;
+  image_urls: string[];
+  video_url?: string;
+  post_type: string;
+  tags: string[];
   likes_count: number;
   comments_count: number;
   shares_count: number;
+  is_featured: boolean;
+  is_trending: boolean;
   category: string;
-  post_type: string;
-  image_urls: string[];
-  video_url?: string;
-  user_id: string;
-  tags?: string[];
-  is_featured?: boolean;
-  is_trending?: boolean;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
   profiles?: {
     full_name?: string;
     avatar_url?: string;
   };
+  user_has_liked?: boolean;
 }
 
 interface LazyImageProps {

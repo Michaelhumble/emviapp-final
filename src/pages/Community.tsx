@@ -456,11 +456,17 @@ const Community = () => {
           </Dialog>
         )}
 
-        <CommunitySearch 
-          isOpen={showSearch}
-          onClose={() => setShowSearch(false)}
-          onSearch={handleSearch}
-        />
+        {showSearch && (
+          <div className="fixed top-0 left-0 right-0 bg-white z-50 shadow-lg p-4">
+            <CommunitySearch 
+              onSearch={(query, results) => {
+                console.log('Search results:', results);
+                setShowSearch(false);
+              }}
+              placeholder="Search the beauty community..."
+            />
+          </div>
+        )}
 
         <CommunityErrorBoundary context="ai">
           <AiAssistantModal 
