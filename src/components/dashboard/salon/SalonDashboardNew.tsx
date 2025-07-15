@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Crown, Bell, BarChart3, Star, MessageSquare, Users, 
   Briefcase, Calendar, Camera, Settings, Zap, Plus,
-  TrendingUp, Target, Award, Sparkles
+  TrendingUp, Target, Award, Sparkles, User
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useSalon } from '@/context/salon';
@@ -25,11 +25,23 @@ import SalonPhotoManager from './SalonPhotoManager';
 import SalonSettings from './SalonSettings';
 import SalonOnboardingWizard from './onboarding/SalonOnboardingWizard';
 
+// Import new modals
+import SalonProfileModal from './modals/SalonProfileModal';
+import SalonAnalyticsModal from './modals/SalonAnalyticsModal';
+import SalonPhotoGalleryModal from './modals/SalonPhotoGalleryModal';
+import SalonTeamModal from './modals/SalonTeamModal';
+
 const SalonDashboardNew = () => {
   const { userProfile } = useAuth();
   const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
   const [notifications] = useState(3);
+  
+  // Modal states
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [analyticsModalOpen, setAnalyticsModalOpen] = useState(false);
+  const [photoGalleryModalOpen, setPhotoGalleryModalOpen] = useState(false);
+  const [teamModalOpen, setTeamModalOpen] = useState(false);
   
   // Get salon ID from context or user profile
   const salonId = currentSalon?.id || userProfile?.id;
@@ -79,18 +91,28 @@ const SalonDashboardNew = () => {
                   <div className="text-lg font-bold">{stats.totalCredits} Credits</div>
                   <div className="text-sm text-purple-100">Level 3 Salon</div>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-white hover:bg-white/20 relative"
-                >
-                  <Bell className="h-6 w-6" />
-                  {notifications > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                      {notifications}
-                    </Badge>
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:bg-white/20"
+                    onClick={() => setProfileModalOpen(true)}
+                  >
+                    <User className="h-5 w-5" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:bg-white/20 relative"
+                  >
+                    <Bell className="h-6 w-6" />
+                    {notifications > 0 && (
+                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                        {notifications}
+                      </Badge>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
             
@@ -175,7 +197,7 @@ const SalonDashboardNew = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <TabsList className="w-full grid grid-cols-4 md:grid-cols-8 gap-1 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-purple-100 h-auto">
+            <TabsList className="w-full grid grid-cols-5 md:grid-cols-9 gap-1 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-purple-100 h-auto">
               <TabsTrigger 
                 value="overview" 
                 className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
@@ -230,6 +252,14 @@ const SalonDashboardNew = () => {
               >
                 <Camera className="h-4 w-4" />
                 <span className="hidden md:inline">Photos</span>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="analytics" 
+                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden md:inline">Analytics</span>
               </TabsTrigger>
               
               <TabsTrigger 
@@ -302,7 +332,22 @@ const SalonDashboardNew = () => {
               animate="visible"
               transition={{ duration: 0.5 }}
             >
-              <SalonTeamManager />
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-purple-50">
+                <CardContent className="p-8 text-center">
+                  <Users className="h-16 w-16 text-indigo-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-indigo-900 mb-2">Team Management</h3>
+                  <p className="text-indigo-700 mb-6">
+                    Invite team members, track performance, and manage roles & permissions.
+                  </p>
+                  <Button 
+                    onClick={() => setTeamModalOpen(true)}
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Manage Team
+                  </Button>
+                </CardContent>
+              </Card>
             </motion.div>
           </TabsContent>
           
@@ -324,7 +369,48 @@ const SalonDashboardNew = () => {
               animate="visible"
               transition={{ duration: 0.5 }}
             >
-              <SalonPhotoManager />
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50">
+                <CardContent className="p-8 text-center">
+                  <Camera className="h-16 w-16 text-teal-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-teal-900 mb-2">Photo Gallery Manager</h3>
+                  <p className="text-teal-700 mb-6">
+                    Upload, organize, and showcase your best work to attract more customers.
+                  </p>
+                  <Button 
+                    onClick={() => setPhotoGalleryModalOpen(true)}
+                    className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700"
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Manage Gallery
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-4">
+            <motion.div 
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-violet-50 to-purple-50">
+                <CardContent className="p-8 text-center">
+                  <TrendingUp className="h-16 w-16 text-violet-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-violet-900 mb-2">Advanced Analytics</h3>
+                  <p className="text-violet-700 mb-6">
+                    Deep insights into your salon's performance, growth trends, and team analytics.
+                  </p>
+                  <Button 
+                    onClick={() => setAnalyticsModalOpen(true)}
+                    className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    View Analytics
+                  </Button>
+                </CardContent>
+              </Card>
             </motion.div>
           </TabsContent>
           
@@ -346,6 +432,30 @@ const SalonDashboardNew = () => {
         isOpen={shouldShowOnboarding}
         onClose={() => markOnboardingComplete()}
         onComplete={() => markOnboardingComplete()}
+      />
+
+      {/* Modal Components */}
+      <SalonProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+      />
+
+      <SalonAnalyticsModal
+        isOpen={analyticsModalOpen}
+        onClose={() => setAnalyticsModalOpen(false)}
+        salonId={salonId}
+      />
+
+      <SalonPhotoGalleryModal
+        isOpen={photoGalleryModalOpen}
+        onClose={() => setPhotoGalleryModalOpen(false)}
+        salonId={salonId}
+      />
+
+      <SalonTeamModal
+        isOpen={teamModalOpen}
+        onClose={() => setTeamModalOpen(false)}
+        salonId={salonId}
       />
     </div>
   );

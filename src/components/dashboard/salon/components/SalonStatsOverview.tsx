@@ -7,6 +7,7 @@ import {
   Calendar, Users, Star, Target, MessageSquare, TrendingUp,
   Award, Plus, Zap, Crown, Sparkles, ChevronRight
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 
 interface SalonStatsOverviewProps {
@@ -177,7 +178,10 @@ const SalonStatsOverview: React.FC<SalonStatsOverviewProps> = ({
       {/* Quick Actions Grid */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 cursor-pointer"
+            onClick={() => toast.info('Messages feature coming soon!')}
+          >
             <CardContent className="p-6 text-center">
               <div className="p-3 bg-green-500 rounded-lg inline-block mb-3">
                 <MessageSquare className="h-6 w-6 text-white" />
@@ -187,7 +191,10 @@ const SalonStatsOverview: React.FC<SalonStatsOverviewProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200 cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200 cursor-pointer"
+            onClick={() => toast.info('Team invitation modal will open here!')}
+          >
             <CardContent className="p-6 text-center">
               <div className="p-3 bg-purple-500 rounded-lg inline-block mb-3">
                 <Users className="h-6 w-6 text-white" />
@@ -197,7 +204,10 @@ const SalonStatsOverview: React.FC<SalonStatsOverviewProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-orange-50 to-red-100 border-orange-200 cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-orange-50 to-red-100 border-orange-200 cursor-pointer"
+            onClick={() => toast.info('Offers modal will open here!')}
+          >
             <CardContent className="p-6 text-center">
               <div className="p-3 bg-orange-500 rounded-lg inline-block mb-3">
                 <Target className="h-6 w-6 text-white" />
@@ -207,7 +217,10 @@ const SalonStatsOverview: React.FC<SalonStatsOverviewProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200 cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200 cursor-pointer"
+            onClick={() => toast.info('AI Insights coming soon!')}
+          >
             <CardContent className="p-6 text-center">
               <div className="p-3 bg-amber-500 rounded-lg inline-block mb-3">
                 <Sparkles className="h-6 w-6 text-white" />
