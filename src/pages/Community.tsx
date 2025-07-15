@@ -595,48 +595,35 @@ const Community = () => {
 
             {/* Post Content Text with Expandable Functionality */}
             <div className="px-6 mb-6">
-              <motion.div
-                layout
-                className="overflow-hidden"
-              >
-                <motion.p 
-                  className="text-base leading-relaxed"
-                  layout
-                  initial={false}
-                  animate={{
-                    height: expandedPosts.has(post.id) ? "auto" : "auto"
-                  }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                >
+              <div className="overflow-hidden">
+                <p className="text-base leading-relaxed">
                   {expandedPosts.has(post.id) ? (
                     <>
                       {post.content}
-                      <motion.button
+                      <button
                         onClick={() => togglePostExpansion(post.id)}
-                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
+                        type="button"
                       >
                         <span className="text-sm">... Show less</span>
-                      </motion.button>
+                      </button>
                     </>
                   ) : needsTruncation(post.content) ? (
                     <>
                       {truncateText(post.content)}
-                      <motion.button
+                      <button
                         onClick={() => togglePostExpansion(post.id)}
-                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
+                        type="button"
                       >
                         <span className="text-sm">... View more</span>
-                      </motion.button>
+                      </button>
                     </>
                   ) : (
                     post.content
                   )}
-                </motion.p>
-              </motion.div>
+                </p>
+              </div>
             </div>
 
             {/* Post Image - Edge to Edge */}
