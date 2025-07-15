@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Layout from "@/components/layout/Layout";
-import SalonDashboard from "@/components/dashboard/salon/SalonDashboard";
+import SalonDashboardNew from "@/components/dashboard/salon/SalonDashboardNew";
 import { SalonProvider } from "@/context/salon";
 
 const OwnerDashboard = () => {
@@ -11,7 +11,7 @@ const OwnerDashboard = () => {
   return (
     <SalonProvider>
       <Layout>
-        <SalonDashboard />
+        <SalonDashboardNew />
       </Layout>
     </SalonProvider>
   );
