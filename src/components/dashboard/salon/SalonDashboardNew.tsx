@@ -10,6 +10,7 @@ import {
   TrendingUp, Target, Award, Sparkles
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
+import { useSalon } from '@/context/salon';
 import { useSalonDashboard } from '@/hooks/useSalonDashboard';
 
 // Import components
@@ -24,15 +25,17 @@ import SalonSettings from './SalonSettings';
 
 const SalonDashboardNew = () => {
   const { userProfile } = useAuth();
+  const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
   const [notifications] = useState(3);
   
   // Get salon ID from context or user profile
-  const salonId = userProfile?.salon_id || userProfile?.id;
-  const { stats, loading } = useSalonDashboard(salonId);
+  const salonId = currentSalon?.id || userProfile?.id;
+  const { stats, loading, reviews, offers, todayBookings } = useSalonDashboard(salonId);
 
   const getSalonName = () => {
-    return userProfile?.salon_name || 
+    return currentSalon?.salon_name ||
+           userProfile?.salon_name || 
            userProfile?.company_name || 
            userProfile?.full_name || 
            "Your Salon";
@@ -249,6 +252,9 @@ const SalonDashboardNew = () => {
                 stats={stats} 
                 loading={loading}
                 salonId={salonId}
+                todayBookings={todayBookings}
+                reviews={reviews}
+                offers={offers}
               />
             </motion.div>
           </TabsContent>

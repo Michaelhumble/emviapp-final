@@ -7,16 +7,25 @@ import {
   Calendar, Users, Star, Target, MessageSquare, TrendingUp,
   Award, Plus, Zap, Crown, Sparkles, ChevronRight
 } from 'lucide-react';
-import { useSalonDashboard } from '@/hooks/useSalonDashboard';
+
 
 interface SalonStatsOverviewProps {
   stats: any;
   loading: boolean;
   salonId?: string;
+  todayBookings: any[];
+  reviews: any[];
+  offers: any[];
 }
 
-const SalonStatsOverview: React.FC<SalonStatsOverviewProps> = ({ stats, loading, salonId }) => {
-  const { todayBookings, reviews, offers } = useSalonDashboard(salonId);
+const SalonStatsOverview: React.FC<SalonStatsOverviewProps> = ({ 
+  stats, 
+  loading, 
+  salonId, 
+  todayBookings = [], 
+  reviews = [], 
+  offers = [] 
+}) => {
 
   const containerVariants = {
     hidden: { opacity: 0 },

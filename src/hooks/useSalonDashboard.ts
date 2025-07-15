@@ -78,8 +78,11 @@ export const useSalonDashboard = (salonId?: string) => {
   const [offers, setOffers] = useState<SalonOffer[]>([]);
   const [todayBookings, setTodayBookings] = useState<BookingData[]>([]);
 
+  // Get the actual salon ID from context or user profile
+  const effectiveSalonId = salonId || user?.id;
+
   const fetchDashboardData = async () => {
-    if (!user?.id || !salonId) return;
+    if (!user?.id || !effectiveSalonId) return;
 
     setLoading(true);
     try {
@@ -100,7 +103,7 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   const fetchBookingsData = async () => {
-    if (!salonId) return;
+    if (!effectiveSalonId) return;
 
     try {
       // Get today's date
@@ -109,18 +112,28 @@ export const useSalonDashboard = (salonId?: string) => {
       const todayEnd = new Date(todayStart);
       todayEnd.setDate(todayEnd.getDate() + 1);
 
-      // Fetch all bookings for salon staff
+      // First, get staff emails for this salon and then find their user IDs
       const { data: staffData } = await supabase
         .from('salon_staff')
         .select('email')
-        .eq('salon_id', salonId)
+        .eq('salon_id', effectiveSalonId)
         .eq('status', 'active');
 
-      if (!staffData) return;
+      if (!staffData || staffData.length === 0) {
+        console.log('No staff found for salon:', effectiveSalonId);
+        return;
+      }
 
+      // Get user IDs from emails
       const staffEmails = staffData.map(s => s.email);
+      const { data: usersData } = await supabase
+        .from('users')
+        .select('id')
+        .in('email', staffEmails);
 
-      // Get all bookings for salon staff
+      const staffUserIds = usersData?.map(u => u.id) || [];
+
+      // Get all bookings for salon staff (where recipient_id is one of the staff members)
       const { data: bookingsData } = await supabase
         .from('bookings')
         .select(`
@@ -128,7 +141,7 @@ export const useSalonDashboard = (salonId?: string) => {
           sender:users!sender_id(full_name, avatar_url),
           recipient:users!recipient_id(full_name)
         `)
-        .in('recipient_id', staffEmails.map(() => user.id)) // This needs to be adjusted for proper staff lookup
+        .in('recipient_id', staffUserIds)
         .order('created_at', { ascending: false });
 
       if (bookingsData) {
@@ -163,7 +176,7 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   const fetchReviewsData = async () => {
-    if (!salonId) return;
+    if (!effectiveSalonId) return;
 
     try {
       const { data: reviewsData } = await supabase
@@ -172,7 +185,7 @@ export const useSalonDashboard = (salonId?: string) => {
           *,
           customer:users!customer_id(full_name, avatar_url)
         `)
-        .eq('salon_id', salonId)
+        .eq('salon_id', effectiveSalonId)
         .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(10);
@@ -200,13 +213,13 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   const fetchOffersData = async () => {
-    if (!salonId) return;
+    if (!effectiveSalonId) return;
 
     try {
       const { data: offersData } = await supabase
         .from('salon_offers')
         .select('*')
-        .eq('salon_id', salonId)
+        .eq('salon_id', effectiveSalonId)
         .eq('is_active', true)
         .gte('end_date', new Date().toISOString())
         .order('created_at', { ascending: false });
@@ -224,11 +237,11 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   const fetchCreditsData = async () => {
-    if (!salonId) return;
+    if (!effectiveSalonId) return;
 
     try {
       const { data: creditsData } = await supabase.rpc('get_salon_credits', {
-        p_salon_id: salonId
+        p_salon_id: effectiveSalonId
       });
 
       if (creditsData !== null) {
@@ -243,13 +256,13 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   const fetchStaffData = async () => {
-    if (!salonId) return;
+    if (!effectiveSalonId) return;
 
     try {
       const { data: staffData } = await supabase
         .from('salon_staff')
         .select('id')
-        .eq('salon_id', salonId)
+        .eq('salon_id', effectiveSalonId)
         .eq('status', 'active');
 
       if (staffData) {
@@ -323,21 +336,21 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   const createOffer = async (offerData: Omit<SalonOffer, 'id' | 'views_count' | 'shares_count' | 'current_redemptions'>) => {
-    if (!salonId) return false;
+    if (!effectiveSalonId) return false;
 
     try {
       const { error } = await supabase
         .from('salon_offers')
         .insert({
           ...offerData,
-          salon_id: salonId,
+          salon_id: effectiveSalonId,
         });
 
       if (error) throw error;
 
       // Award credits for creating offer
       await supabase.rpc('award_salon_credits', {
-        p_salon_id: salonId,
+        p_salon_id: effectiveSalonId,
         p_amount: 5,
         p_source: 'offer_created',
         p_description: `Created offer: ${offerData.title}`,
@@ -355,10 +368,10 @@ export const useSalonDashboard = (salonId?: string) => {
   };
 
   useEffect(() => {
-    if (user?.id && salonId) {
+    if (user?.id && effectiveSalonId) {
       fetchDashboardData();
     }
-  }, [user?.id, salonId]);
+  }, [user?.id, effectiveSalonId]);
 
   return {
     loading,
