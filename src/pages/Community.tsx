@@ -3,6 +3,9 @@ import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Heart, MessageCircle, Share, Bookmark, Plus, Home, Search, Bell, User, Camera, MoreHorizontal, Play, Sparkles, Menu, Video, Zap, Award, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
+import ShareModal from '@/components/community/ShareModal';
+import TopSharersLeaderboard from '@/components/community/TopSharersLeaderboard';
+import RecentActivityPopup from '@/components/community/RecentActivityPopup';
 
 // Mock data for now - will connect to real data later
 const mockPosts = [
@@ -492,6 +495,10 @@ const Community = () => {
         </motion.div>
       )}
 
+      
+      {/* Top Sharers Leaderboard */}
+      <TopSharersLeaderboard />
+
       {/* Main Feed - One Beautiful Card at a Time */}
       <div className="pb-24">
         {posts.map((post, index) => (
@@ -788,6 +795,21 @@ const Community = () => {
         <span className="text-white font-bold text-sm">Share Your Win</span>
       </motion.button>
 
+      
+      {/* Recent Activity Popup */}
+      <RecentActivityPopup />
+
+      {/* Share Modal */}
+      <AnimatePresence>
+        {showShareModal && (
+          <ShareModal
+            isOpen={true}
+            onClose={() => setShowShareModal(null)}
+            post={posts.find(p => p.id === showShareModal)!}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50">
         <div className="flex items-center justify-around py-3 px-4">
@@ -988,147 +1010,6 @@ const Community = () => {
           </motion.div>
         )}
 
-        {/* Share Modal */}
-        {showShareModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm"
-            onClick={() => setShowShareModal(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0, y: 50 }}
-              className="bg-background rounded-3xl w-full max-w-md border border-border/50 shadow-2xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-border/50">
-                <h3 className="text-xl font-bold flex items-center space-x-2">
-                  <Share size={24} className="text-green-500" />
-                  <span>Share Post</span>
-                </h3>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowShareModal(null)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  ✕
-                </motion.button>
-              </div>
-
-              {/* Share Options */}
-              <div className="p-6">
-                <div className="space-y-3">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={async () => {
-                      if (showShareModal) {
-                        await handleShare(showShareModal);
-                        setShowShareModal(null);
-                      }
-                    }}
-                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
-                  >
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <Share size={20} className="text-white" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-semibold">Native Share</p>
-                      <p className="text-sm text-muted-foreground">Share via system menu</p>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={async () => {
-                      if (showShareModal) {
-                        const post = posts.find(p => p.id === showShareModal);
-                        if (post) {
-                          const shareUrl = `${window.location.origin}/community/post/${showShareModal}`;
-                          const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨ ${shareUrl}`;
-                          await navigator.clipboard.writeText(shareText);
-                        }
-                        setShowShareModal(null);
-                      }
-                    }}
-                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
-                  >
-                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">📋</span>
-                    </div>
-                    <div className="text-left">
-                      <p className="font-semibold">Copy Link</p>
-                      <p className="text-sm text-muted-foreground">Copy to clipboard</p>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      if (showShareModal) {
-                        const post = posts.find(p => p.id === showShareModal);
-                        if (post) {
-                          const shareUrl = `${window.location.origin}/community/post/${showShareModal}`;
-                          const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨`;
-                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
-                        }
-                        setShowShareModal(null);
-                      }
-                    }}
-                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
-                  >
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-lg font-bold">f</span>
-                    </div>
-                    <div className="text-left">
-                      <p className="font-semibold">Facebook</p>
-                      <p className="text-sm text-muted-foreground">Share on Facebook</p>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      if (showShareModal) {
-                        const post = posts.find(p => p.id === showShareModal);
-                        if (post) {
-                          const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨ ${window.location.origin}/community/post/${showShareModal}`;
-                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-                        }
-                        setShowShareModal(null);
-                      }
-                    }}
-                    className="w-full flex items-center space-x-4 p-4 bg-accent/50 hover:bg-accent/70 rounded-2xl transition-colors"
-                  >
-                    <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                      <span className="text-white text-lg font-bold">X</span>
-                    </div>
-                    <div className="text-left">
-                      <p className="font-semibold">X (Twitter)</p>
-                      <p className="text-sm text-muted-foreground">Share on X</p>
-                    </div>
-                  </motion.button>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-border/50">
-                  <div className="flex items-center space-x-2 text-center">
-                    <div className="flex-1 h-px bg-border/50"></div>
-                    <p className="text-xs text-muted-foreground px-2">Powered by EmviApp ✨</p>
-                    <div className="flex-1 h-px bg-border/50"></div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
       </AnimatePresence>
     </div>
   );
