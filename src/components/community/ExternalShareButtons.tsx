@@ -35,15 +35,17 @@ Check out this amazing beauty post on EmviApp! 💄✨
     try {
       switch (platform) {
         case 'instagram':
-          // Copy content for Instagram story
+          // Copy content for Instagram and open Instagram
           await navigator.clipboard.writeText(shareText);
-          toast.success('Content copied! Paste it in your Instagram story 📸');
+          window.open('https://www.instagram.com/', '_blank');
+          toast.success('Content copied! Share on Instagram 📸');
           break;
           
         case 'tiktok':
-          // Copy content for TikTok
+          // Copy content for TikTok and open TikTok
           await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
-          toast.success('Content copied! Share on TikTok and tag us! 🎵');
+          window.open('https://www.tiktok.com/upload', '_blank');
+          toast.success('Content copied! Share on TikTok 🎵');
           break;
           
         case 'facebook':

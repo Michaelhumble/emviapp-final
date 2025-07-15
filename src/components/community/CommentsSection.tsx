@@ -46,7 +46,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ storyId }) => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-medium text-sm text-gray-900">
-                  {comment.profiles?.full_name || 'Anonymous'}
+                  {comment.profiles?.full_name || 'Community Member'}
                 </span>
                 <span className="text-xs text-gray-500">
                   {formatTimeAgo(comment.created_at)}
