@@ -101,7 +101,6 @@ const Community = () => {
     setPostContent(post.content);
     setPostType(post.post_type);
     setCategory(post.category);
-    // Note: We can't restore files from URLs, but we show current media
     setImageFiles([]);
     setVideoFile(null);
     setVideoCaptions('');
@@ -146,11 +145,10 @@ const Community = () => {
         category: category || 'general',
         video_url: videoUrl,
         tags: extractHashtags(postContent),
-        image_urls: [], // Will be handled by image upload
+        image_urls: [],
       };
 
       if (isEditMode && editingPost) {
-        // Update existing post
         const success = await updatePost(editingPost.id, postData);
         if (success) {
           toast.success('Post updated successfully!');
@@ -158,12 +156,10 @@ const Community = () => {
           setShowPostComposer(false);
         }
       } else {
-        // Create new post
         const success = await createPost(postData);
         if (success) {
           toast.success('Post created successfully!');
           
-          // If submitting to challenge, also submit the entry
           if (isSubmittingToChallenge && success && typeof success === 'object' && success.id) {
             await submitEntry(success.id);
             setIsSubmittingToChallenge(false);
@@ -197,14 +193,12 @@ const Community = () => {
     return `${days}d ago`;
   };
 
-  // Check for new users and show onboarding
   useEffect(() => {
     if (isSignedIn && user) {
       const hasSeenOnboarding = localStorage.getItem(`onboarding_seen_${user.id}`);
       const userCreatedAt = new Date(user.created_at);
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       
-      // Show onboarding for users created in the last 24 hours who haven't seen it
       if (!hasSeenOnboarding && userCreatedAt > oneDayAgo) {
         setShowOnboarding(true);
       }
@@ -234,7 +228,7 @@ const Community = () => {
     }
     setIsSubmittingToChallenge(true);
     setShowPostComposer(true);
-    setPostContent(''); // Clear any existing content
+    setPostContent('');
     toast.info('Create a post to enter the challenge!');
   };
 
@@ -248,7 +242,7 @@ const Community = () => {
         tags={['beauty community', 'nail art', 'hair styling', 'makeup', 'skincare', 'beauty professionals']}
       />
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        {/* Mobile-First Header - No Sticky Elements */}
+        {/* Mobile-First Header */}
         <div className="bg-white/80 backdrop-blur-md border-b border-purple-100">
           <div className="px-4 py-3">
             <div className="flex items-center gap-3">
@@ -268,127 +262,36 @@ const Community = () => {
           </div>
         </div>
 
-        {/* Content Container */}
-        <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
-          {/* Challenge of the Week */}
-          <ChallengeOfTheWeek onJoinChallenge={handleJoinChallenge} />
+        {/* Content Container - Mobile/Desktop/iPad Responsive */}
+        <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
+            {/* Main Content Column */}
+            <div className="lg:col-span-2 space-y-4">
+              <ChallengeOfTheWeek onJoinChallenge={handleJoinChallenge} />
 
-          {/* Quick Filters */}
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {quickFilters.map((filter) => (
-              <Badge
-                key={filter.id}
-                variant={activeFilter === filter.id ? "default" : "outline"}
-                className={`cursor-pointer whitespace-nowrap px-3 py-2 ${
-                  activeFilter === filter.id 
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
-                    : 'hover:bg-purple-50'
-                }`}
-                onClick={() => setActiveFilter(filter.id)}
-              >
-                {filter.label} {filter.count > 99 ? '99+' : filter.count}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Always-Visible Post Composer with AI */}
-          <Card className="border-2 border-purple-100 bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                    {isSignedIn ? (user?.user_metadata?.full_name?.charAt(0) || 'U') : '?'}
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  variant="outline"
-                  className="flex-1 justify-start text-gray-500 bg-gray-50/80 hover:bg-gray-100"
-                  onClick={() => {
-                    if (!isSignedIn) {
-                      toast.error('Please sign in to post');
-                      return;
-                    }
-                    setShowPostComposer(true);
-                  }}
-                >
-                  {isSignedIn ? 
-                    (isSubmittingToChallenge ? "Create your challenge entry!" : "What's inspiring you today? Try @AI for expert tips!") 
-                    : "Sign in to share your beauty journey!"}
-                </Button>
-                <Button
-                  size="icon"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                  onClick={() => {
-                    if (!isSignedIn) {
-                      toast.error('Please sign in to post');
-                      return;
-                    }
-                    setShowPostComposer(true);
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              {isSignedIn && (
-                <CommunityPostComposer
-                  content={postContent}
-                  onContentChange={setPostContent}
-                  onSubmit={handleCreatePost}
-                  placeholder="Share your beauty journey... Type @AI for instant expert advice!"
-                  showActions={true}
-                  videoFile={videoFile}
-                  onVideoChange={setVideoFile}
-                  videoCaptions={videoCaptions}
-                  onVideoCaptionsChange={setVideoCaptions}
-                />
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Trending Topics - Non-Sticky */}
-          <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="h-4 w-4 text-orange-600" />
-                <span className="font-semibold text-orange-800">Trending Now</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {trendingTopics.map((topic) => (
+              {/* Quick Filters - Touch-friendly */}
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {quickFilters.map((filter) => (
                   <Badge
-                    key={topic.tag}
-                    variant="outline"
-                    className={`cursor-pointer ${
-                      topic.trending 
-                        ? 'bg-orange-100 border-orange-300 text-orange-700' 
-                        : 'bg-white border-gray-200'
+                    key={filter.id}
+                    variant={activeFilter === filter.id ? "default" : "outline"}
+                    className={`cursor-pointer whitespace-nowrap px-3 py-2 min-h-[44px] flex items-center touch-manipulation ${
+                      activeFilter === filter.id 
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                        : 'hover:bg-purple-50'
                     }`}
+                    onClick={() => setActiveFilter(filter.id)}
                   >
-                    {topic.emoji} #{topic.tag} ({topic.posts})
+                    {filter.label} {filter.count > 99 ? '99+' : filter.count}
                   </Badge>
                 ))}
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Top Creators */}
-          <TopCreators />
-          
-          {/* Leaderboard Widget */}
-          <LeaderboardWidget />
-          
-          {/* External Sharer Leaderboard */}
-          <SharerLeaderboard />
-
-          {/* Posts Feed */}
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <Card key={post.id} className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
-                <CardContent className="p-0">
-                  {/* Post Header */}
-                  <div className="p-4 pb-0">
-                    <div className="flex items-start justify-between">
+              {/* Posts Feed */}
+              <div className="space-y-4">
+                {posts.map((post) => (
+                  <Card key={post.id} className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
+                    <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={post.profiles?.avatar_url} />
@@ -397,261 +300,134 @@ const Community = () => {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-gray-900">
-                              {post.profiles?.full_name || 'Community Member'}
-                            </h4>
-                            {post.is_featured && (
-                              <Badge className="bg-yellow-100 text-yellow-800 text-xs">
-                                <Pin className="h-3 w-3 mr-1" />
-                                Pinned
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>{post.category}</span>
-                            <span>•</span>
-                            {(() => {
-                              const timestamp = formatPostTimestamp(post.created_at, post.updated_at);
-                              return (
-                                <span className={timestamp.isEdited ? 'text-blue-600' : ''}>
-                                  {timestamp.text}
-                                </span>
-                              );
-                            })()}
-                            {location && (
-                              <>
-                                <span>•</span>
-                                <MapPin className="h-3 w-3" />
-                                <span>{location}</span>
-                              </>
-                            )}
-                          </div>
+                          <h4 className="font-semibold text-gray-900">
+                            {post.profiles?.full_name || 'Community Member'}
+                          </h4>
+                          <p className="text-gray-800 mt-2">{post.content}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="text-gray-400">
-                        <span className="text-lg">⋯</span>
-                      </Button>
-                    </div>
+                      <PostReactions 
+                        post={post} 
+                        onLike={() => toggleLike(post.id)}
+                        onComment={() => {}}
+                        onShare={() => {}}
+                        onBookmark={() => {}}
+                        onEdit={() => handleEditPost(post)}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Sidebar - Hidden on mobile */}
+            <div className="hidden lg:block lg:col-span-1 space-y-4">
+              <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="h-4 w-4 text-orange-600" />
+                    <span className="font-semibold text-orange-800">Trending Now</span>
                   </div>
-
-                  {/* Post Content */}
-                  <div className="px-4 py-2">
-                    <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
-                    {post.tags?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {post.tags.map((tag) => (
-                          <span key={tag} className="text-purple-600 text-sm">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Post Videos */}
-                  {post.video_url && (
-                    <div className="px-4 py-2">
-                      <div className="aspect-[9/16] max-w-xs mx-auto">
-                        <VideoPlayer
-                          src={post.video_url}
-                          autoPlay={true}
-                          muted={true}
-                          loop={true}
-                          captions={(post as any).video_captions}
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Post Images */}
-                  {post.image_urls?.length > 0 && (
-                    <div className="px-4 py-2">
-                      <div className="grid grid-cols-1 gap-2 rounded-lg overflow-hidden">
-                        {post.image_urls.map((url, index) => (
-                          <img
-                            key={index}
-                            src={url}
-                            alt={`Post image ${index + 1}`}
-                            className="w-full h-64 object-cover rounded-lg"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Post Actions */}
-                  <div className="px-4 py-3 border-t border-gray-100">
-                    <PostReactions 
-                      post={post} 
-                      onLike={() => toggleLike(post.id)}
-                      onComment={() => {/* Handle comment */}}
-                      onShare={() => {/* Handle share */}}
-                      onBookmark={() => {/* Handle bookmark */}}
-                      onEdit={() => handleEditPost(post)}
-                    />
+                  <div className="flex flex-wrap gap-2">
+                    {trendingTopics.map((topic) => (
+                      <Badge
+                        key={topic.tag}
+                        variant="outline"
+                        className={`cursor-pointer ${
+                          topic.trending 
+                            ? 'bg-orange-100 border-orange-300 text-orange-700' 
+                            : 'bg-white border-gray-200'
+                        }`}
+                      >
+                        {topic.emoji} #{topic.tag} ({topic.posts})
+                      </Badge>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              
+              <TopCreators />
+              <LeaderboardWidget />
+              <SharerLeaderboard />
+            </div>
           </div>
-
-          {/* Bottom Spacing for Tab Bar */}
-          <div className="h-20" />
         </div>
 
-        {/* Post Composer Modal - Only for signed in users */}
+        {/* Post Composer Modal */}
         {isSignedIn && (
           <Dialog open={showPostComposer} onOpenChange={(open) => {
             setShowPostComposer(open);
             if (!open) resetForm();
           }}>
-          <DialogContent className="max-w-lg mx-4 max-h-[85vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{isEditMode ? 'Edit Post' : 'Create Post'}</DialogTitle>
-            </DialogHeader>
-            
-            <div className="space-y-4">
-              {/* Post Type Selector */}
-              <div className="grid grid-cols-2 gap-2">
-                {postTypes.map((type) => (
-                  <Button
-                    key={type.value}
-                    variant={postType === type.value ? "default" : "outline"}
-                    onClick={() => setPostType(type.value)}
-                    className="text-left flex-col h-auto p-3"
-                  >
-                    <span className="font-medium">{type.label}</span>
-                    <span className="text-xs opacity-70">{type.description}</span>
-                  </Button>
-                ))}
-              </div>
-
-              {/* Category Selector */}
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat.toLowerCase()}>
-                      {cat}
-                    </SelectItem>
+            <DialogContent className="max-w-lg mx-4 max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{isEditMode ? 'Edit Post' : 'Create Post'}</DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                  {postTypes.map((type) => (
+                    <Button
+                      key={type.value}
+                      variant={postType === type.value ? "default" : "outline"}
+                      onClick={() => setPostType(type.value)}
+                      className="text-left flex-col h-auto p-3"
+                    >
+                      <span className="font-medium">{type.label}</span>
+                      <span className="text-xs opacity-70">{type.description}</span>
+                    </Button>
                   ))}
-                </SelectContent>
-              </Select>
-
-              {/* Post Content with AI */}
-              <CommunityPostComposer
-                content={postContent}
-                onContentChange={setPostContent}
-                onSubmit={() => {}} // Handled by modal submit
-                placeholder="Share what's inspiring you today... Type @AI for expert beauty advice!"
-                showActions={true}
-                videoFile={videoFile}
-                onVideoChange={setVideoFile}
-                videoCaptions={videoCaptions}
-                onVideoCaptionsChange={setVideoCaptions}
-              />
-
-              {/* Current Video Display for Edit Mode */}
-              {isEditMode && editingPost?.video_url && !videoFile && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Current Video:</label>
-                  <div className="aspect-[9/16] max-w-xs">
-                    <VideoPlayer
-                      src={editingPost.video_url}
-                      autoPlay={false}
-                      muted={true}
-                      loop={true}
-                      className="w-full h-full"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500">Upload a new video to replace this one</p>
                 </div>
-              )}
 
-              {/* Poll Options (if poll type) */}
-              {postType === 'poll' && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Poll Options:</label>
-                  {pollOptions.map((option, index) => (
-                    <Input
-                      key={index}
-                      placeholder={`Option ${index + 1}`}
-                      value={option}
-                      onChange={(e) => {
-                        const newOptions = [...pollOptions];
-                        newOptions[index] = e.target.value;
-                        setPollOptions(newOptions);
-                      }}
-                    />
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPollOptions([...pollOptions, ''])}
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat} value={cat.toLowerCase()}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <CommunityPostComposer
+                  content={postContent}
+                  onContentChange={setPostContent}
+                  onSubmit={() => {}}
+                  placeholder="Share what's inspiring you today... Type @AI for expert beauty advice!"
+                  showActions={true}
+                  videoFile={videoFile}
+                  onVideoChange={setVideoFile}
+                  videoCaptions={videoCaptions}
+                  onVideoCaptionsChange={setVideoCaptions}
+                />
+
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      resetForm();
+                      setShowPostComposer(false);
+                    }}
+                    className="flex-1"
                   >
-                    Add Option
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleCreatePost}
+                    disabled={!postContent.trim() || isLoading}
+                    className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500"
+                  >
+                    {isLoading ? 'Saving...' : (isEditMode ? 'Update Post' : 'Share Post')}
                   </Button>
                 </div>
-              )}
-
-              {/* Image Upload */}
-              <PhotoUploader
-                files={imageFiles}
-                onChange={setImageFiles}
-                maxFiles={5}
-                className="border-2 border-dashed border-purple-200 rounded-lg p-4"
-              />
-
-              {/* Location */}
-              <Input
-                placeholder="Add location (optional)"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="flex-1"
-              />
-
-              {/* AI Polish Features */}
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="text-purple-600">
-                  <Sparkles className="h-4 w-4 mr-1" />
-                  AI Polish
-                </Button>
-                <Button variant="outline" size="sm" className="text-blue-600">
-                  <Globe className="h-4 w-4 mr-1" />
-                  Translate
-                </Button>
               </div>
-
-              {/* Submit */}
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    resetForm();
-                    setShowPostComposer(false);
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleCreatePost}
-                  disabled={!postContent.trim() || isLoading}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500"
-                >
-                  {isLoading ? 'Saving...' : (isEditMode ? 'Update Post' : 'Share Post')}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
         )}
 
-        {/* Search Modal */}
         <CommunitySearch 
           isOpen={showSearch}
           onClose={() => setShowSearch(false)}
@@ -661,13 +437,11 @@ const Community = () => {
           }}
         />
 
-        {/* AI Assistant Modal */}
         <AiAssistantModal 
           open={showAiAssistant} 
           onOpenChange={setShowAiAssistant} 
         />
 
-        {/* Onboarding Modal */}
         <OnboardingModal 
           isOpen={showOnboarding} 
           onClose={handleOnboardingClose}

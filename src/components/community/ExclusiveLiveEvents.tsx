@@ -5,6 +5,9 @@ import { Calendar, Users, Clock, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import premiumBeautyMasterclass from '@/assets/premium-beauty-masterclass.jpg';
+import premiumColorTheory from '@/assets/premium-color-theory.jpg';
+import premiumBusinessGrowth from '@/assets/premium-business-growth.jpg';
 
 const ExclusiveLiveEvents = () => {
   const upcomingEvents = [
@@ -18,7 +21,7 @@ const ExclusiveLiveEvents = () => {
       participants: 127,
       maxParticipants: 150,
       price: 'Free for Premium',
-      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(04).png',
+      image: premiumBeautyMasterclass,
       category: 'Nail Art',
       exclusive: true
     },
@@ -32,7 +35,7 @@ const ExclusiveLiveEvents = () => {
       participants: 89,
       maxParticipants: 120,
       price: '$25',
-      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(08).png',
+      image: premiumColorTheory,
       category: 'Education',
       exclusive: false
     },
@@ -46,7 +49,7 @@ const ExclusiveLiveEvents = () => {
       participants: 203,
       maxParticipants: 250,
       price: 'Free for All',
-      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(12).png',
+      image: premiumBusinessGrowth,
       category: 'Business',
       exclusive: false
     }
@@ -70,7 +73,7 @@ const ExclusiveLiveEvents = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {upcomingEvents.map((event, index) => (
             <motion.div
               key={event.id}
@@ -79,7 +82,7 @@ const ExclusiveLiveEvents = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className="h-full hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <Card className="h-full hover:shadow-xl transition-all duration-300 overflow-hidden relative">
                 {event.exclusive && (
                   <div className="absolute top-4 right-4 z-10">
                     <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
@@ -103,7 +106,7 @@ const ExclusiveLiveEvents = () => {
                   </div>
                 </div>
                 
-                <CardContent className="p-6">
+                <CardContent className="p-4 md:p-6">
                   <h3 className="font-bold text-lg mb-2 text-gray-900">{event.title}</h3>
                   
                   {/* Host info with icon instead of photo */}
@@ -127,11 +130,15 @@ const ExclusiveLiveEvents = () => {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <span className="font-semibold text-purple-600">{event.price}</span>
                     <Button 
                       size="sm" 
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
+                      onClick={() => {
+                        console.log(`Registering for: ${event.title}`);
+                        // Real registration logic would go here
+                      }}
                     >
                       Register Now
                     </Button>

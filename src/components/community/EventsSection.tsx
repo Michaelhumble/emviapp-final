@@ -2,52 +2,12 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, Video, Star } from 'lucide-react';
+import { Calendar, Clock, Users, Video, Star, EyeOff } from 'lucide-react';
 
-const upcomingEvents = [
-  {
-    id: '1',
-    title: 'Nail Art Masterclass: Galaxy Designs',
-    host: 'Isabella Rodriguez',
-    type: 'workshop',
-    date: '2024-07-15',
-    time: '2:00 PM EST',
-    duration: '2 hours',
-    participants: 156,
-    maxParticipants: 200,
-    isFree: true,
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=200&fit=crop',
-    tags: ['nails', 'art', 'techniques']
-  },
-  {
-    id: '2',
-    title: 'Hair Color Theory: Spring 2024 Trends',
-    host: 'Marcus Chen',
-    type: 'livestream',
-    date: '2024-07-16',
-    time: '7:00 PM EST',
-    duration: '1.5 hours',
-    participants: 89,
-    maxParticipants: 150,
-    isFree: true,
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=200&fit=crop',
-    tags: ['hair', 'color', 'trends']
-  },
-  {
-    id: '3',
-    title: 'Weekly Challenge: Bold Makeup Looks',
-    host: 'Community Team',
-    type: 'challenge',
-    date: '2024-07-17',
-    time: 'All day',
-    duration: '7 days',
-    participants: 234,
-    maxParticipants: null,
-    isFree: true,
-    image: 'https://images.unsplash.com/photo-1516205651411-aef33a44f7c2?w=400&h=200&fit=crop',
-    tags: ['makeup', 'challenge', 'bold']
-  }
-];
+// No fake events - hide section when no real events are available
+const upcomingEvents: any[] = [];
+
+// Real events will be loaded from Supabase when backend is connected
 
 const EventsSection = () => {
   const getEventTypeIcon = (type: string) => {
@@ -78,8 +38,13 @@ const EventsSection = () => {
     });
   };
 
+  // Don't render the section if no real events are available
+  if (upcomingEvents.length === 0) {
+    return null; // Hide the entire section
+  }
+
   return (
-    <Card className="p-6 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg">
+    <Card className="p-4 md:p-6 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
           <Calendar className="h-5 w-5 text-white" />
@@ -93,15 +58,6 @@ const EventsSection = () => {
       <div className="space-y-4">
         {upcomingEvents.map((event) => (
           <div key={event.id} className="border border-purple-100 rounded-lg p-4 hover:shadow-md transition-shadow">
-            {/* Event Image */}
-            <div className="w-full h-24 bg-gray-200 rounded-lg mb-3 overflow-hidden">
-              <img 
-                src={event.image} 
-                alt={event.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
             {/* Event Info */}
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-2">
@@ -156,7 +112,11 @@ const EventsSection = () => {
 
               <Button 
                 size="sm" 
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white mt-3"
+                className="w-full min-h-[44px] bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white mt-3 transition-all duration-200"
+                onClick={() => {
+                  console.log(`Registering for: ${event.title}`);
+                  // Real registration logic would go here
+                }}
               >
                 {event.type === 'challenge' ? 'Join Challenge' : 'Register Now'}
               </Button>
@@ -168,7 +128,11 @@ const EventsSection = () => {
       <div className="mt-6 pt-4 border-t border-purple-100">
         <Button 
           variant="outline" 
-          className="w-full border-purple-200 hover:bg-purple-50 text-purple-600"
+          className="w-full min-h-[44px] border-purple-200 hover:bg-purple-50 text-purple-600 transition-all duration-200"
+          onClick={() => {
+            console.log('View all events clicked');
+            // Real navigation logic would go here
+          }}
         >
           View All Events
         </Button>

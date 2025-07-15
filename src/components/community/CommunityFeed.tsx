@@ -189,7 +189,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                           post.user_has_liked 
                             ? 'text-red-500 hover:text-red-600 bg-red-50' 
                             : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
-                        } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
+                        } transition-all duration-200 rounded-full px-3 py-2 min-h-[44px] touch-manipulation`}
                       >
                         <Heart className={`h-5 w-5 mr-2 ${post.user_has_liked ? 'fill-current' : ''}`} />
                         <span className="font-medium">{post.likes_count}</span>
@@ -203,7 +203,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                           expandedComments === post.id 
                             ? 'text-blue-500 bg-blue-50' 
                             : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50'
-                        } transition-all duration-200 rounded-full px-4 py-2 h-auto`}
+                        } transition-all duration-200 rounded-full px-3 py-2 min-h-[44px] touch-manipulation`}
                       >
                         <MessageCircle className="h-5 w-5 mr-2" />
                         <span className="font-medium">{post.comments_count}</span>
@@ -212,7 +212,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all duration-200 rounded-full px-4 py-2 h-auto"
+                        className="text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all duration-200 rounded-full px-3 py-2 min-h-[44px] touch-manipulation"
                       >
                         <Share2 className="h-5 w-5 mr-2" />
                         <span className="font-medium">{post.shares_count}</span>
@@ -224,7 +224,7 @@ const CommunityFeed: React.FC<CommunityFeedProps> = ({ filter, searchQuery, clas
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full p-2"
+                        className="text-gray-500 hover:text-purple-500 hover:bg-purple-50 transition-all duration-200 rounded-full min-w-[44px] min-h-[44px] touch-manipulation"
                         aria-label="Save post"
                       >
                         <Bookmark className="h-5 w-5" />

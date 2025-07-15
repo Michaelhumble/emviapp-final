@@ -51,11 +51,13 @@ Check out this amazing beauty post on EmviApp! 💄✨
         case 'facebook':
           const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
           window.open(fbUrl, '_blank', 'width=600,height=400');
+          toast.success('Shared to Facebook! 📘');
           break;
           
         case 'twitter':
           const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
           window.open(twitterUrl, '_blank', 'width=600,height=400');
+          toast.success('Shared to Twitter! 🐦');
           break;
           
         case 'link':
