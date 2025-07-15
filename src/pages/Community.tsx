@@ -164,13 +164,18 @@ const Community = () => {
 
   // Toggle post expansion
   const togglePostExpansion = (postId: number) => {
+    console.log('Toggle post expansion called for post:', postId);
+    console.log('Current expanded posts:', expandedPosts);
     setExpandedPosts(prev => {
       const newSet = new Set(prev);
       if (newSet.has(postId)) {
+        console.log('Removing post from expanded:', postId);
         newSet.delete(postId);
       } else {
+        console.log('Adding post to expanded:', postId);
         newSet.add(postId);
       }
+      console.log('New expanded posts set:', newSet);
       return newSet;
     });
   };
