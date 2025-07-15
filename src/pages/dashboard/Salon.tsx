@@ -4,7 +4,7 @@ import { useAuth } from "@/context/auth";
 import { SalonProvider } from "@/context/salon";
 import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
 import Layout from "@/components/layout/Layout";
-import SalonDashboardOverview from "@/components/dashboard/salon/SalonDashboardOverview";
+import SalonDashboardNew from "@/components/dashboard/salon/SalonDashboardNew";
 import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
 import SalonSettings from "@/components/dashboard/salon/SalonSettings";
 import SalonPhotoManager from "@/components/dashboard/salon/SalonPhotoManager";
@@ -133,7 +133,7 @@ const SalonDashboardPage = () => {
                   </TabsList>
                   
                   <TabsContent value="overview" className="space-y-4 animate-fade-in">
-                    <SalonDashboardOverview />
+                    <SalonDashboardNew />
                   </TabsContent>
                   
                   <TabsContent value="calendar" className="space-y-4 animate-fade-in">

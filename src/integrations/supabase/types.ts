@@ -2596,6 +2596,54 @@ export type Database = {
         }
         Relationships: []
       }
+      salon_credits: {
+        Row: {
+          amount: number
+          created_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          salon_id: string
+          source: string
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          salon_id: string
+          source: string
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          salon_id?: string
+          source?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_credits_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_credits_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
+      }
       salon_listings: {
         Row: {
           address: string | null
@@ -2670,6 +2718,75 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      salon_offers: {
+        Row: {
+          created_at: string | null
+          current_redemptions: number | null
+          description: string
+          discount_amount: number | null
+          discount_percent: number | null
+          end_date: string
+          id: string
+          is_active: boolean | null
+          max_redemptions: number | null
+          salon_id: string
+          shares_count: number | null
+          start_date: string | null
+          title: string
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_redemptions?: number | null
+          description: string
+          discount_amount?: number | null
+          discount_percent?: number | null
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          max_redemptions?: number | null
+          salon_id: string
+          shares_count?: number | null
+          start_date?: string | null
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          current_redemptions?: number | null
+          description?: string
+          discount_amount?: number | null
+          discount_percent?: number | null
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          max_redemptions?: number | null
+          salon_id?: string
+          shares_count?: number | null
+          start_date?: string | null
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_offers_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_offers_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
       }
       salon_photos: {
         Row: {
@@ -2760,6 +2877,73 @@ export type Database = {
           target_count?: number | null
         }
         Relationships: []
+      }
+      salon_reviews: {
+        Row: {
+          booking_id: string | null
+          created_at: string | null
+          customer_id: string
+          flagged: boolean | null
+          flagged_reason: string | null
+          id: string
+          rating: number
+          responded_at: string | null
+          response_text: string | null
+          review_text: string | null
+          salon_id: string
+          status: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string | null
+          customer_id: string
+          flagged?: boolean | null
+          flagged_reason?: string | null
+          id?: string
+          rating: number
+          responded_at?: string | null
+          response_text?: string | null
+          review_text?: string | null
+          salon_id: string
+          status?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string | null
+          customer_id?: string
+          flagged?: boolean | null
+          flagged_reason?: string | null
+          id?: string
+          rating?: number
+          responded_at?: string | null
+          response_text?: string | null
+          review_text?: string | null
+          salon_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_reviews_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_reviews_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
       }
       salon_sale_photos: {
         Row: {
@@ -4045,6 +4229,16 @@ export type Database = {
         Args: { referred_user_id: string }
         Returns: boolean
       }
+      award_salon_credits: {
+        Args: {
+          p_salon_id: string
+          p_amount: number
+          p_source: string
+          p_description?: string
+          p_metadata?: Json
+        }
+        Returns: boolean
+      }
       award_team_badge: {
         Args: { p_member_id: string; p_badge_type: string; p_metadata?: Json }
         Returns: boolean
@@ -4133,6 +4327,10 @@ export type Database = {
       }
       get_next_referral_milestone: {
         Args: { current_count: number }
+        Returns: number
+      }
+      get_salon_credits: {
+        Args: { p_salon_id: string }
         Returns: number
       }
       get_salon_earnings: {
