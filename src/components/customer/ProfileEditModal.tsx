@@ -125,8 +125,14 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
     }
   };
 
+  const handleClose = () => {
+    setPreviewImage(null);
+    setSelectedFile(null);
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 border-purple-500/30 text-white">
         <DialogHeader>
           <div className="flex items-center justify-between">
@@ -137,7 +143,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onClose}
+                onClick={handleClose}
                 className="text-purple-200 hover:text-white hover:bg-purple-500/20 font-medium"
               >
                 ← Back to Dashboard
@@ -145,7 +151,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onClose}
+                onClick={handleClose}
                 className="text-purple-200 hover:text-white hover:bg-purple-500/20 w-8 h-8 p-0"
               >
                 <X className="h-4 w-4" />
@@ -263,7 +269,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
           <div className="flex gap-3 pt-4">
             <Button
               variant="outline"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1 border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
             >
               <X className="h-4 w-4 mr-2" />
