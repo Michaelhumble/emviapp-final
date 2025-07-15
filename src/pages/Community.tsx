@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Search, TrendingUp, Plus, MapPin, Clock, Users, Hash, Sparkles, Zap, BarChart3, Pin, Camera, Video, Smile, X, Check, Globe } from 'lucide-react';
+import { Search, TrendingUp, Plus, MapPin, Clock, Users, Hash, Sparkles, Zap, BarChart3, Pin, Camera, Video, Smile, X, Check, Globe, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,6 +25,7 @@ import OnboardingModal from '@/components/community/OnboardingModal';
 import VideoPlayer from '@/components/community/VideoPlayer';
 import SharerLeaderboard from '@/components/community/SharerLeaderboard';
 import SEOMetaTags from '@/components/community/SEOMetaTags';
+import FloatingInspirationCTA from '@/components/community/FloatingInspirationCTA';
 import { formatPostTimestamp } from '@/utils/timeUtils';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -63,11 +64,11 @@ const Community = () => {
   ];
 
   const postTypes = [
-    { value: 'story', label: '📸 Story', description: 'Share your work' },
-    { value: 'tip', label: '💡 Pro Tip', description: 'Share expertise' },
-    { value: 'showcase', label: '✨ Showcase', description: 'Highlight best work' },
-    { value: 'question', label: '❓ Question', description: 'Ask community' },
-    { value: 'poll', label: '📊 Poll', description: 'Get opinions' },
+    { value: 'story', icon: Camera, label: 'Story', description: 'Share your work', color: 'from-blue-500 to-cyan-500' },
+    { value: 'tip', icon: Sparkles, label: 'Pro Tip', description: 'Share expertise', color: 'from-purple-500 to-pink-500' },
+    { value: 'showcase', icon: Star, label: 'Showcase', description: 'Highlight best work', color: 'from-yellow-500 to-orange-500' },
+    { value: 'question', icon: Hash, label: 'Question', description: 'Ask community', color: 'from-green-500 to-emerald-500' },
+    { value: 'poll', icon: BarChart3, label: 'Poll', description: 'Get opinions', color: 'from-indigo-500 to-purple-500' },
   ];
 
   const categories = [
@@ -366,17 +367,27 @@ const Community = () => {
               
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-2">
-                  {postTypes.map((type) => (
-                    <Button
-                      key={type.value}
-                      variant={postType === type.value ? "default" : "outline"}
-                      onClick={() => setPostType(type.value)}
-                      className="text-left flex-col h-auto p-3"
-                    >
-                      <span className="font-medium">{type.label}</span>
-                      <span className="text-xs opacity-70">{type.description}</span>
-                    </Button>
-                  ))}
+                  {postTypes.map((type) => {
+                    const IconComponent = type.icon;
+                    return (
+                      <Button
+                        key={type.value}
+                        variant={postType === type.value ? "default" : "outline"}
+                        onClick={() => setPostType(type.value)}
+                        className={`text-left flex-col h-auto p-3 min-h-[44px] touch-manipulation ${
+                          postType === type.value 
+                            ? `bg-gradient-to-r ${type.color} text-white` 
+                            : 'hover:bg-purple-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <IconComponent className="h-4 w-4" />
+                          <span className="font-medium">{type.label}</span>
+                        </div>
+                        <span className="text-xs opacity-70">{type.description}</span>
+                      </Button>
+                    );
+                  })}
                 </div>
 
                 <Select value={category} onValueChange={setCategory}>
@@ -446,6 +457,11 @@ const Community = () => {
           isOpen={showOnboarding} 
           onClose={handleOnboardingClose}
           onTryAI={handleTryAI}
+        />
+
+        <FloatingInspirationCTA 
+          onTriggerAI={() => setShowAiAssistant(true)}
+          onOpenPostComposer={() => setShowPostComposer(true)}
         />
       </div>
     </Layout>

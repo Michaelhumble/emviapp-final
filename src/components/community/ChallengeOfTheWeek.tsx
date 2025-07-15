@@ -56,14 +56,18 @@ const ChallengeOfTheWeek: React.FC<ChallengeOfTheWeekProps> = ({ onJoinChallenge
 
   return (
     <>
-      <Card className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white border-0 shadow-xl">
-        <CardContent className="p-4">
+      <Card className="relative bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white border-0 shadow-xl overflow-hidden">
+        {/* Animated border effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 animate-pulse opacity-30 blur-sm"></div>
+        <div className="absolute inset-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-lg"></div>
+        
+        <CardContent className="relative p-4 z-10">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-300" />
+              <Trophy className="h-5 w-5 text-yellow-300 animate-bounce" />
               <span className="font-bold text-sm">CHALLENGE OF THE WEEK</span>
             </div>
-            <Badge className="bg-white/20 text-white border-white/30">
+            <Badge className="bg-white/20 text-white border-white/30 animate-pulse">
               <Clock className="h-3 w-3 mr-1" />
               {timeLeft} left
             </Badge>

@@ -223,6 +223,38 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
             </Button>
           </div>
 
+          {/* Sample Prompts */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium">
+              {language === 'en' ? 'Sample Questions' : 'Câu hỏi mẫu'}
+            </label>
+            <div className="grid grid-cols-1 gap-2">
+              {(language === 'en' ? [
+                "💅 What nail design would look best with my outfit?",
+                "💇‍♀️ How do I fix damaged hair naturally?",
+                "💄 What's the latest makeup trend for 2024?",
+                "✨ Best skincare routine for oily skin?",
+                "👁️ How to make lashes look fuller?",
+                "🎨 Color theory for nail art?"
+              ] : [
+                "💅 Thiết kế nail nào phù hợp với trang phục của tôi?",
+                "💇‍♀️ Làm thế nào để phục hồi tóc hư tổn tự nhiên?",
+                "💄 Xu hướng trang điểm mới nhất 2024?",
+                "✨ Quy trình skincare tốt nhất cho da dầu?",
+                "👁️ Làm thế nào để lông mi trông dày hơn?",
+                "🎨 Lý thuyết màu sắc cho nail art?"
+              ]).map((prompt, index) => (
+                <button
+                  key={index}
+                  onClick={() => setQuestion(prompt)}
+                  className="text-left p-2 text-sm bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 rounded-lg border border-purple-200 transition-all duration-200"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Question Input */}
           <div className="space-y-2">
             <label className="text-sm font-medium">
@@ -230,8 +262,8 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
             </label>
             <Textarea
               placeholder={language === 'en' 
-                ? "What nail design would look best with my outfit? How do I fix damaged hair? What's the latest makeup trend?"
-                : "Thiết kế nail nào sẽ phù hợp với trang phục của tôi? Làm thế nào để phục hồi tóc hư tổn? Xu hướng trang điểm mới nhất là gì?"
+                ? "Type your beauty question here, or click a sample above..."
+                : "Nhập câu hỏi làm đẹp của bạn ở đây, hoặc chọn mẫu ở trên..."
               }
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
