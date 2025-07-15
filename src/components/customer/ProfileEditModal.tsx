@@ -71,14 +71,26 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 border-purple-500/30 text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
-            Edit Your Beautiful Profile ✨
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-2xl font-bold">
+              Edit Your Beautiful Profile ✨
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-purple-200 hover:text-white hover:bg-purple-500/20"
+            >
+              ← Back to Dashboard
+            </Button>
+          </div>
         </DialogHeader>
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
           className="space-y-6"
         >
           {/* Profile Photo Section */}

@@ -96,26 +96,32 @@ const CustomerDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          {/* Profile Avatar with Edit Button */}
+          {/* Profile Avatar with Edit Button - Enhanced */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <motion.div 
-                className="relative cursor-pointer"
+                className="relative cursor-pointer group"
                 whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowProfileEdit(true)}
               >
-                <Avatar className="h-16 w-16 border-4 border-white/20">
+                <Avatar className="h-16 w-16 border-4 border-white/20 transition-all duration-300 group-hover:border-white/40">
                   <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name} />
                   <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xl font-bold">
                     {userProfile?.full_name?.charAt(0) || 'B'}
                   </AvatarFallback>
                 </Avatar>
                 <motion.div
-                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg"
-                  whileHover={{ scale: 1.1 }}
+                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20"
+                  whileHover={{ scale: 1.2, rotate: 15 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Edit className="h-3 w-3 text-white" />
                 </motion.div>
+                {/* Tooltip */}
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Edit Profile
+                </div>
               </motion.div>
               
               <div className="text-left">
