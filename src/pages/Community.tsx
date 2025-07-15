@@ -26,11 +26,13 @@ import VideoPlayer from '@/components/community/VideoPlayer';
 import SharerLeaderboard from '@/components/community/SharerLeaderboard';
 import SEOMetaTags from '@/components/community/SEOMetaTags';
 import FloatingInspirationCTA from '@/components/community/FloatingInspirationCTA';
+import ContentModerationPanel from '@/components/community/ContentModerationPanel';
+import OptimizedCommunityFeed from '@/components/community/OptimizedCommunityFeed';
+import CommunityErrorBoundary from '@/components/community/CommunityErrorBoundary';
 import { formatPostTimestamp } from '@/utils/timeUtils';
 import { supabase } from '@/integrations/supabase/client';
 
 const Community = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [showPostComposer, setShowPostComposer] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -44,6 +46,10 @@ const Community = () => {
   const [location, setLocation] = useState('');
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showModeration, setShowModeration] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [hasMore, setHasMore] = useState(true);
+  const [totalPosts, setTotalPosts] = useState(0);
   
   // Edit mode state
   const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
@@ -233,9 +239,23 @@ const Community = () => {
     toast.info('Create a post to enter the challenge!');
   };
 
+  const handleLoadMore = () => {
+    // In a real implementation, this would load more posts
+    // For now, we'll simulate no more posts after initial load
+    if (posts.length >= 20) {
+      setHasMore(false);
+    }
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    fetchPosts(activeFilter === 'all' ? undefined : activeFilter, query);
+  };
+
   return (
     <Layout>
-      <SEOMetaTags
+      <CommunityErrorBoundary context="community">
+        <SEOMetaTags
         title="Beauty Community - Share, Learn & Grow"
         description="Join the most exclusive beauty community. Share your nail art, hair styling, makeup looks, and skincare tips. Connect with beauty professionals worldwide."
         url="https://emviapp.com/community"
@@ -259,12 +279,29 @@ const Community = () => {
               >
                 <Search className="h-4 w-4" />
               </Button>
+              {user && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowModeration(!showModeration)}
+                  className="text-gray-600"
+                >
+                  🛡️
+                </Button>
+              )}
             </div>
           </div>
         </div>
 
         {/* Content Container - Mobile/Desktop/iPad Responsive */}
         <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
+          {/* Moderation Panel */}
+          {showModeration && user && (
+            <CommunityErrorBoundary context="moderation">
+              <ContentModerationPanel />
+            </CommunityErrorBoundary>
+          )}
+
           <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
             {/* Main Content Column */}
             <div className="lg:col-span-2 space-y-4">
@@ -289,36 +326,16 @@ const Community = () => {
               </div>
 
               {/* Posts Feed */}
-              <div className="space-y-4">
-                {posts.map((post) => (
-                  <Card key={post.id} className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={post.profiles?.avatar_url} />
-                          <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                            {post.profiles?.full_name?.charAt(0) || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">
-                            {post.profiles?.full_name || 'Community Member'}
-                          </h4>
-                          <p className="text-gray-800 mt-2">{post.content}</p>
-                        </div>
-                      </div>
-                      <PostReactions 
-                        post={post} 
-                        onLike={() => toggleLike(post.id)}
-                        onComment={() => {}}
-                        onShare={() => {}}
-                        onBookmark={() => {}}
-                        onEdit={() => handleEditPost(post)}
-                      />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <CommunityErrorBoundary context="posts">
+                <OptimizedCommunityFeed
+                  posts={posts}
+                  onLoadMore={handleLoadMore}
+                  hasMore={hasMore}
+                  isLoading={isLoading}
+                  onLike={toggleLike}
+                  onEdit={handleEditPost}
+                />
+              </CommunityErrorBoundary>
             </div>
 
             {/* Sidebar - Hidden on mobile */}
@@ -442,16 +459,15 @@ const Community = () => {
         <CommunitySearch 
           isOpen={showSearch}
           onClose={() => setShowSearch(false)}
-          onSearch={(query) => {
-            setSearchQuery(query);
-            setShowSearch(false);
-          }}
+          onSearch={handleSearch}
         />
 
-        <AiAssistantModal 
-          open={showAiAssistant} 
-          onOpenChange={setShowAiAssistant} 
-        />
+        <CommunityErrorBoundary context="ai">
+          <AiAssistantModal 
+            open={showAiAssistant} 
+            onOpenChange={setShowAiAssistant} 
+          />
+        </CommunityErrorBoundary>
 
         <OnboardingModal 
           isOpen={showOnboarding} 
@@ -463,7 +479,8 @@ const Community = () => {
           onTriggerAI={() => setShowAiAssistant(true)}
           onOpenPostComposer={() => setShowPostComposer(true)}
         />
-      </div>
+        </div>
+      </CommunityErrorBoundary>
     </Layout>
   );
 };
