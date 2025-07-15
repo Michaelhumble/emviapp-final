@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share, Bookmark, Plus, Home, Search, Bell, User, Camera, MoreHorizontal, Play, Sparkles, Menu, Video } from 'lucide-react';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { Heart, MessageCircle, Share, Bookmark, Plus, Home, Search, Bell, User, Camera, MoreHorizontal, Play, Sparkles, Menu, Video, Zap, Award, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 
@@ -72,18 +72,69 @@ const liveStats = {
   jobsFilled: 156
 };
 
+// Viral love messages for the bottom bar
+const viralMessages = [
+  "Emily just got hired! 🎉",
+  "John got 100 likes! ❤️",
+  "Salon Lux is trending! 🔥",
+  "Maya opened her dream salon! 💎",
+  "Alex hit 1k followers! ⭐",
+  "Sofia shared her journey! ✨"
+];
+
 const Community = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState(mockPosts);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [currentStatsIndex, setCurrentStatsIndex] = useState(0);
+  const [currentViralIndex, setCurrentViralIndex] = useState(0);
   const [showHeart, setShowHeart] = useState<number | null>(null);
+  const [animatedStats, setAnimatedStats] = useState({
+    artistsOnline: 0,
+    salonsActive: 0,
+    jobsFilled: 0
+  });
+
+  // Animate stats count up on load
+  useEffect(() => {
+    const animateCountUp = () => {
+      const duration = 2000; // 2 seconds
+      const startTime = Date.now();
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        setAnimatedStats({
+          artistsOnline: Math.floor(liveStats.artistsOnline * progress),
+          salonsActive: Math.floor(liveStats.salonsActive * progress),
+          jobsFilled: Math.floor(liveStats.jobsFilled * progress)
+        });
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      
+      requestAnimationFrame(animate);
+    };
+    
+    animateCountUp();
+  }, []);
 
   // Rotate live stats every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStatsIndex(prev => (prev + 1) % 3);
     }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Rotate viral messages every 4 seconds  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentViralIndex(prev => (prev + 1) % viralMessages.length);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -116,20 +167,48 @@ const Community = () => {
   };
 
   const statsMessages = [
-    `${liveStats.artistsOnline} artists online now`,
-    `${liveStats.salonsActive} salons active`,
-    `${liveStats.jobsFilled} jobs filled this week`
+    `${animatedStats.artistsOnline} artists online now`,
+    `${animatedStats.salonsActive} salons active`,
+    `${animatedStats.jobsFilled} jobs filled this week`
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* EmviApp Hero Banner */}
+      {/* EmviApp Hero Banner with Sparkling Effects */}
       <motion.div 
-        className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background border-b border-border/50"
+        className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background border-b border-border/50 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-40" />
+        {/* Multiple layered gradients for glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-primary/5" />
+        
+        {/* Animated sparkle particles in background */}
+        <motion.div
+          className="absolute top-4 left-8 w-2 h-2 bg-primary/40 rounded-full"
+          animate={{ 
+            scale: [1, 1.5, 1],
+            opacity: [0.3, 0.8, 0.3] 
+          }}
+          transition={{ duration: 3, repeat: Infinity, delay: 0 }}
+        />
+        <motion.div
+          className="absolute top-12 right-12 w-1 h-1 bg-yellow-400/60 rounded-full"
+          animate={{ 
+            scale: [1, 2, 1],
+            opacity: [0.4, 1, 0.4] 
+          }}
+          transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
+        />
+        <motion.div
+          className="absolute bottom-8 left-16 w-1.5 h-1.5 bg-purple-400/50 rounded-full"
+          animate={{ 
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.7, 0.2] 
+          }}
+          transition={{ duration: 4, repeat: Infinity, delay: 2 }}
+        />
         
         <div className="relative px-6 py-8 text-center">
           <motion.div
@@ -139,15 +218,37 @@ const Community = () => {
             transition={{ duration: 0.6 }}
           >
             <motion.div
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center"
-              animate={{ rotate: [0, 10, -10, 0] }}
+              className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg"
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                boxShadow: [
+                  "0 0 20px rgba(59, 130, 246, 0.3)",
+                  "0 0 30px rgba(59, 130, 246, 0.5)",
+                  "0 0 20px rgba(59, 130, 246, 0.3)"
+                ]
+              }}
               transition={{ duration: 4, repeat: Infinity }}
             >
-              <Sparkles size={24} className="text-primary-foreground" />
+              {/* Glow ring around the logo */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/40 to-purple-400/40"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+              <Sparkles size={28} className="text-primary-foreground relative z-10" />
             </motion.div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+            <motion.h1 
+              className="text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent"
+              animate={{
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+              }}
+              transition={{ duration: 5, repeat: Infinity }}
+            >
               EmviApp
-            </h1>
+            </motion.h1>
           </motion.div>
           
           <motion.p 
@@ -160,12 +261,12 @@ const Community = () => {
           </motion.p>
           
           <motion.p 
-            className="text-sm max-w-md mx-auto leading-relaxed"
+            className="text-sm max-w-lg mx-auto leading-relaxed"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            Every win here is real. Every post helps someone. You are the magic of this community. ✨
+            Every win here is real. Every post helps someone.
           </motion.p>
         </div>
       </motion.div>
@@ -198,46 +299,103 @@ const Community = () => {
         </div>
       </motion.div>
 
-      {/* Spotlight Post of the Day */}
+      {/* Spotlight Post of the Day with Glassmorphic Effect */}
       {posts.find(p => p.isSpotlight) && (
         <motion.div 
-          className="bg-gradient-to-r from-yellow-50/50 to-orange-50/50 border-b border-border/50 p-6"
+          className="relative border-b border-border/50 p-8 overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <div className="flex items-center space-x-2 mb-4">
-            <motion.div
-              className="w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles size={12} className="text-white" />
-            </motion.div>
-            <h3 className="font-bold text-lg bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
-              Spotlight Story
-            </h3>
-          </div>
+          {/* Glassmorphic background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/80 via-orange-50/60 to-purple-50/40 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           
-          {(() => {
-            const spotlightPost = posts.find(p => p.isSpotlight);
-            return spotlightPost ? (
-              <div className="flex items-start space-x-4">
-                <img 
-                  src={spotlightPost.user.avatar} 
-                  alt={spotlightPost.user.name}
-                  className="w-12 h-12 rounded-full object-cover ring-2 ring-yellow-400/50"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <p className="font-semibold">{spotlightPost.user.name}</p>
-                    <span className="text-xs text-muted-foreground">from {spotlightPost.user.location}</span>
+          {/* Floating sparkles */}
+          <motion.div
+            className="absolute top-4 right-8 w-1.5 h-1.5 bg-yellow-400/70 rounded-full"
+            animate={{ 
+              y: [0, -10, 0],
+              opacity: [0.4, 1, 0.4] 
+            }}
+            transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+          />
+          <motion.div
+            className="absolute top-12 right-20 w-1 h-1 bg-orange-400/60 rounded-full"
+            animate={{ 
+              y: [0, -8, 0],
+              opacity: [0.3, 0.8, 0.3] 
+            }}
+            transition={{ duration: 2.5, repeat: Infinity, delay: 1.2 }}
+          />
+          
+          <div className="relative">
+            <div className="flex items-center space-x-3 mb-6">
+              <motion.div
+                className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ 
+                  rotate: 360,
+                  boxShadow: [
+                    "0 0 15px rgba(245, 158, 11, 0.4)",
+                    "0 0 25px rgba(249, 115, 22, 0.6)",
+                    "0 0 15px rgba(245, 158, 11, 0.4)"
+                  ]
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles size={16} className="text-white" />
+              </motion.div>
+              <h3 className="font-bold text-xl bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
+                Spotlight Story
+              </h3>
+              <motion.div
+                className="px-3 py-1 bg-gradient-to-r from-yellow-400/80 to-orange-500/80 rounded-full backdrop-blur-sm"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <span className="text-white text-xs font-bold">✨ FEATURED</span>
+              </motion.div>
+            </div>
+            
+            {(() => {
+              const spotlightPost = posts.find(p => p.isSpotlight);
+              return spotlightPost ? (
+                <div className="flex items-start space-x-6">
+                  <motion.div
+                    className="relative"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    <img 
+                      src={spotlightPost.user.avatar} 
+                      alt={spotlightPost.user.name}
+                      className="w-16 h-16 rounded-full object-cover ring-3 ring-yellow-400/60 shadow-xl"
+                    />
+                    {/* Floating effect ring */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full ring-2 ring-orange-400/40"
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        opacity: [0.6, 0.3, 0.6]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
+                  </motion.div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <p className="font-bold text-lg">{spotlightPost.user.name}</p>
+                      <span className="text-sm text-muted-foreground bg-white/50 px-2 py-1 rounded-full backdrop-blur-sm">
+                        from {spotlightPost.user.location}
+                      </span>
+                    </div>
+                    <p className="text-base leading-relaxed bg-white/30 p-4 rounded-2xl backdrop-blur-sm border border-white/20">
+                      {spotlightPost.content}
+                    </p>
                   </div>
-                  <p className="text-sm leading-relaxed">{spotlightPost.content}</p>
                 </div>
-              </div>
-            ) : null;
-          })()}
+              ) : null;
+            })()}
+          </div>
         </motion.div>
       )}
 
@@ -249,8 +407,17 @@ const Community = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.2 }}
-            className="bg-background border-b border-border/50 mb-8"
+            className="relative bg-background border-b border-border/50 mb-8 overflow-hidden group"
+            whileHover={{ 
+              boxShadow: "0 10px 30px -10px rgba(59, 130, 246, 0.2)",
+              borderColor: "rgba(59, 130, 246, 0.3)"
+            }}
           >
+            {/* Subtle gradient overlay on hover */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              initial={false}
+            />
             {/* Post Header */}
             <div className="flex items-center justify-between p-6">
               <div className="flex items-center space-x-4">
@@ -385,6 +552,49 @@ const Community = () => {
           </motion.div>
         ))}
 
+        {/* Viral Love Bar */}
+        <motion.div 
+          className="relative bg-gradient-to-r from-pink-50/60 via-purple-50/40 to-blue-50/60 border-y border-border/30 py-4 px-6 mb-8 overflow-hidden"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50" />
+          
+          <div className="relative flex items-center justify-center">
+            <div className="flex items-center space-x-4">
+              <motion.div
+                className="flex items-center space-x-2"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <TrendingUp size={20} className="text-pink-500" />
+                <span className="text-sm font-bold text-pink-600">VIRAL LOVE</span>
+              </motion.div>
+              
+              <span className="text-muted-foreground">·</span>
+              
+              <motion.div
+                key={currentViralIndex}
+                initial={{ y: 15, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -15, opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center space-x-2"
+              >
+                <motion.div
+                  className="w-2 h-2 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full"
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <span className="text-foreground font-medium text-sm">
+                  {viralMessages[currentViralIndex]}
+                </span>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Bottom Motivational Ribbon */}
         <motion.div 
           className="text-center py-12 px-6"
@@ -393,23 +603,42 @@ const Community = () => {
           transition={{ delay: 1 }}
         >
           <motion.div
-            className="inline-flex items-center space-x-3 px-6 py-4 bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15 rounded-full border border-primary/30"
+            className="inline-flex items-center space-x-3 px-8 py-5 bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15 rounded-full border border-primary/30 backdrop-blur-sm"
             animate={{ 
               scale: [1, 1.02, 1],
               boxShadow: [
-                "0 0 20px rgba(59, 130, 246, 0.1)",
-                "0 0 40px rgba(59, 130, 246, 0.2)",
-                "0 0 20px rgba(59, 130, 246, 0.1)"
+                "0 0 25px rgba(59, 130, 246, 0.15)",
+                "0 0 45px rgba(59, 130, 246, 0.25)",
+                "0 0 25px rgba(59, 130, 246, 0.15)"
               ]
             }}
-            transition={{ duration: 4, repeat: Infinity }}
+            transition={{ duration: 5, repeat: Infinity }}
           >
-            <Sparkles size={20} className="text-primary" />
-            <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles size={22} className="text-primary" />
+            </motion.div>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary via-purple-500 to-primary bg-clip-text text-transparent">
               You are the magic of this community ✨
             </span>
-            <Sparkles size={20} className="text-primary" />
+            <motion.div
+              animate={{ rotate: [360, 0] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles size={22} className="text-primary" />
+            </motion.div>
           </motion.div>
+          
+          {/* Inspired by Sunshine signature */}
+          <motion.p 
+            className="text-sm text-muted-foreground mt-6 italic"
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          >
+            Inspired by Sunshine ☀️
+          </motion.p>
         </motion.div>
       </div>
 
