@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_actions: {
+        Row: {
+          action_type: string
+          admin_user_id: string
+          created_at: string | null
+          details: Json
+          id: string
+          ip_address: string | null
+          reason: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_user_id: string
+          created_at?: string | null
+          details: Json
+          id?: string
+          ip_address?: string | null
+          reason: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_user_id?: string
+          created_at?: string | null
+          details?: Json
+          id?: string
+          ip_address?: string | null
+          reason?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_usage_logs: {
         Row: {
           admin_action: string | null
@@ -1319,6 +1352,51 @@ export type Database = {
           salon_id?: string
           sender_id?: string
           status?: string
+        }
+        Relationships: []
+      }
+      credits_ledger: {
+        Row: {
+          action_type: string
+          admin_reason: string | null
+          admin_user_id: string | null
+          created_at: string | null
+          credits_amount: number
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          reason: string
+          referral_code: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          admin_reason?: string | null
+          admin_user_id?: string | null
+          created_at?: string | null
+          credits_amount: number
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          reason: string
+          referral_code?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          admin_reason?: string | null
+          admin_user_id?: string | null
+          created_at?: string | null
+          credits_amount?: number
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          reason?: string
+          referral_code?: string | null
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -3559,6 +3637,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_unlocks: {
+        Row: {
+          credits_required: number
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          unlock_type: string
+          unlock_value: string
+          unlocked_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          credits_required: number
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          unlock_type: string
+          unlock_value: string
+          unlocked_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          credits_required?: number
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          unlock_type?: string
+          unlock_value?: string
+          unlocked_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           accepts_bookings: boolean | null
@@ -3909,12 +4023,22 @@ export type Database = {
         Returns: string[]
       }
       award_credits: {
-        Args: {
-          p_user_id: string
-          p_action_type: string
-          p_value: number
-          p_description?: string
-        }
+        Args:
+          | {
+              p_user_id: string
+              p_action_type: string
+              p_value: number
+              p_description?: string
+            }
+          | {
+              p_user_id: string
+              p_credits: number
+              p_reason: string
+              p_metadata?: Json
+              p_ip_address?: string
+              p_user_agent?: string
+              p_referral_code?: string
+            }
         Returns: boolean
       }
       award_referral_upgrade_bonus: {
@@ -4022,6 +4146,10 @@ export type Database = {
           artist_earnings: number
         }[]
       }
+      get_user_credits: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       get_user_free_job_count: {
         Args: { p_user_id: string }
         Returns: number
@@ -4106,6 +4234,15 @@ export type Database = {
         }
         Returns: string
       }
+      spend_credits: {
+        Args: {
+          p_user_id: string
+          p_credits: number
+          p_reason: string
+          p_metadata?: Json
+        }
+        Returns: boolean
+      }
       submit_review_with_credits: {
         Args: {
           p_user_id: string
@@ -4131,6 +4268,16 @@ export type Database = {
       track_salon_view: {
         Args: { p_salon_id: string; p_viewer_id?: string; p_source?: string }
         Returns: undefined
+      }
+      unlock_level: {
+        Args: {
+          p_user_id: string
+          p_level: number
+          p_credits_required: number
+          p_ip_address?: string
+          p_user_agent?: string
+        }
+        Returns: boolean
       }
       user_has_salon_access: {
         Args: {

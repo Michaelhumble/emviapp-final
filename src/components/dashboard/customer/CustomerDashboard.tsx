@@ -10,7 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Crown, Sparkles, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, 
   Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus,
-  Edit, User, Trophy, CheckCircle
+  Edit, User, Trophy, CheckCircle, Coins
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -20,7 +20,9 @@ import VIPSystem from '@/components/ecosystem/VIPSystem';
 import SocialShareSystem from '@/components/ecosystem/SocialShareSystem';
 import ProfileEditModal from '@/components/customer/ProfileEditModal';
 import ShareWinModal from '@/components/customer/ShareWinModal';
+import CreditsProgress from '@/components/customer/CreditsProgress';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
+import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
 
 const CustomerDashboard = () => {
   const { user, userProfile } = useAuth();
@@ -30,6 +32,24 @@ const CustomerDashboard = () => {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showShareWin, setShowShareWin] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
+  const [userCredits, setUserCredits] = useState(0);
+
+  // Load user credits
+  useEffect(() => {
+    if (user?.id) {
+      loadCredits();
+    }
+  }, [user?.id]);
+
+  const loadCredits = async () => {
+    if (!user?.id) return;
+    const credits = await creditsManager.getUserCredits(user.id);
+    setUserCredits(credits);
+  };
+
+  const handleCreditsUpdate = () => {
+    loadCredits();
+  };
 
   // Check for new achievements and trigger celebrations
   React.useEffect(() => {
@@ -293,8 +313,14 @@ const CustomerDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* VIP Upgrade - PROMINENT */}
-            <VIPSystem />
+            {/* Credits Progress - PROMINENT */}
+            {user?.id && (
+              <CreditsProgress 
+                userId={user.id}
+                credits={userCredits}
+                onCreditsUpdate={handleCreditsUpdate}
+              />
+            )}
 
             {/* Personal Progress */}
             <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
