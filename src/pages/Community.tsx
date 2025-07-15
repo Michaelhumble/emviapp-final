@@ -3,6 +3,8 @@ import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Heart, MessageCircle, Share, Bookmark, Plus, Home, Search, Bell, User, Camera, MoreHorizontal, Play, Sparkles, Menu, Video, Zap, Award, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
+import { useCommunityData } from '@/hooks/useCommunityData';
+import { useContestData } from '@/hooks/useContestData';
 import ShareModal from '@/components/community/ShareModal';
 import TopSharersLeaderboard from '@/components/community/TopSharersLeaderboard';
 import RecentActivityPopup from '@/components/community/RecentActivityPopup';
@@ -14,74 +16,6 @@ import AIContentEnhancer from '@/components/community/AIContentEnhancer';
 import ViralVideoGenerator from '@/components/community/ViralVideoGenerator';
 import CreatorMode from '@/components/community/CreatorMode';
 import FeaturedSpotlight from '@/components/community/FeaturedSpotlight';
-
-// Mock data for now - will connect to real data later
-const mockPosts = [
-  {
-    id: 1,
-    user: {
-      id: '1',
-      name: 'Sofia Bella',
-      username: '@sofia_beauty',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b332c2a2?w=150&h=150&fit=crop&crop=face',
-      location: 'Los Angeles, CA'
-    },
-    content: 'Just got my first job through EmviApp! 🎉 After months of searching, I finally found the perfect salon that values creativity and growth. Thank you to this amazing community for all the support and encouragement! ✨',
-    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=1000&fit=crop',
-    type: 'celebration',
-    likes: 2847,
-    comments: 94,
-    shares: 23,
-    time: '2h',
-    isLiked: false,
-    isBookmarked: false,
-    isSpotlight: true
-  },
-  {
-    id: 2,
-    user: {
-      id: '2',
-      name: 'Maya Chen',
-      username: '@maya_nails',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      location: 'San Francisco, CA'
-    },
-    content: 'Opened my dream salon last month and it\'s been incredible! EmviApp helped me connect with the most talented artists. We\'re not just colleagues, we\'re family. Every day feels like magic! 💎✨',
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=1000&fit=crop',
-    type: 'milestone',
-    likes: 1923,
-    comments: 156,
-    shares: 45,
-    time: '4h',
-    isLiked: true,
-    isBookmarked: false
-  },
-  {
-    id: 3,
-    user: {
-      id: '3',
-      name: 'Alex Rivera',
-      username: '@alex_cuts',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      location: 'Miami, FL'
-    },
-    content: 'This community changed my life. From struggling freelancer to salon owner, every step was supported by incredible people here. Today marks 6 months since I took the leap! 🚀',
-    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&h=1000&fit=crop',
-    type: 'journey',
-    likes: 856,
-    comments: 32,
-    shares: 18,
-    time: '6h',
-    isLiked: false,
-    isBookmarked: true
-  }
-];
-
-const liveStats = {
-  artistsOnline: 1247,
-  salonsActive: 89,
-  jobsFilled: 156
-};
 
 // Viral love messages for the bottom bar
 const viralMessages = [
@@ -95,24 +29,26 @@ const viralMessages = [
 
 const Community = () => {
   const { user } = useAuth();
-  const [posts, setPosts] = useState(mockPosts);
+  const { posts, activities, leaderboard, isLoading, createPost, toggleLike, trackShare } = useCommunityData();
+  const { activeContest, contestEntries, submitContestEntry, voteForEntry, getTimeUntilEnd } = useContestData();
+  
   const [showCreatePost, setShowCreatePost] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState<number | null>(null);
-  const [showShareModal, setShowShareModal] = useState<number | null>(null);
+  const [showCommentModal, setShowCommentModal] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState<string | null>(null);
   const [currentStatsIndex, setCurrentStatsIndex] = useState(0);
   const [currentViralIndex, setCurrentViralIndex] = useState(0);
-  const [showHeart, setShowHeart] = useState<number | null>(null);
-  const [expandedPosts, setExpandedPosts] = useState<Set<number>>(new Set());
+  const [showHeart, setShowHeart] = useState<string | null>(null);
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [newComment, setNewComment] = useState('');
-  const [comments, setComments] = useState<{[key: number]: Array<{id: number, user: string, text: string, time: string}>}>({
-    1: [
-      { id: 1, user: 'Maya Chen', text: 'Congratulations! So inspiring! 🎉', time: '1h' },
-      { id: 2, user: 'Alex Rivera', text: 'This gives me hope for my own journey!', time: '45m' }
-    ],
-    2: [
-      { id: 3, user: 'Sofia Bella', text: 'Your salon looks absolutely gorgeous! 💎', time: '2h' }
-    ]
+  const [comments, setComments] = useState<{[key: string]: Array<{id: number, user: string, text: string, time: string}>}>({});
+  
+  // Real stats from database
+  const [liveStats, setLiveStats] = useState({
+    artistsOnline: 1247,
+    salonsActive: 89,
+    jobsFilled: 156
   });
+  
   const [animatedStats, setAnimatedStats] = useState({
     artistsOnline: 0,
     salonsActive: 0,
@@ -180,7 +116,7 @@ const Community = () => {
   const needsTruncation = (text: string) => text.length > 120;
 
   // Toggle post expansion
-  const togglePostExpansion = (postId: number) => {
+  const togglePostExpansion = (postId: string) => {
     console.log('Toggle post expansion called for post:', postId);
     console.log('Current expanded posts:', expandedPosts);
     setExpandedPosts(prev => {
@@ -198,7 +134,7 @@ const Community = () => {
   };
 
   // Add comment to post
-  const handleAddComment = (postId: number) => {
+  const handleAddComment = (postId: string) => {
     if (!newComment.trim()) return;
     
     const comment = {
@@ -213,23 +149,19 @@ const Community = () => {
       [postId]: [...(prev[postId] || []), comment]
     }));
     
-    // Update comment count in posts
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, comments: post.comments + 1 }
-        : post
-    ));
-    
     setNewComment('');
   };
 
   // Share functionality
-  const handleShare = async (postId: number) => {
+  const handleShare = async (postId: string) => {
     const post = posts.find(p => p.id === postId);
     if (!post) return;
 
     const shareUrl = `${window.location.origin}/community/post/${postId}`;
-    const shareText = `Check out this amazing post by ${post.user.name} on EmviApp! ✨`;
+    const shareText = `Check out this amazing post by ${post.profiles?.full_name || 'EmviApp user'} on EmviApp! ✨`;
+
+    // Track the share in database
+    await trackShare('post', postId, 'other');
 
     // Check if native sharing is available
     if (navigator.share) {
@@ -265,32 +197,27 @@ const Community = () => {
     }
   };
 
-  const handleLike = (postId: number) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { 
-            ...post, 
-            isLiked: !post.isLiked,
-            likes: post.isLiked ? post.likes - 1 : post.likes + 1
-          }
-        : post
-    ));
+  const handleLike = async (postId: string) => {
+    await toggleLike(postId);
   };
 
-  const handleBookmark = (postId: number) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, isBookmarked: !post.isBookmarked }
-        : post
-    ));
+  const handleDoubleClick = async (postId: string) => {
+    await toggleLike(postId);
+    setShowHeart(postId);
+    setTimeout(() => setShowHeart(null), 1000);
   };
 
-  const handleDoubleClick = (postId: number) => {
-    if (!posts.find(p => p.id === postId)?.isLiked) {
-      handleLike(postId);
-      setShowHeart(postId);
-      setTimeout(() => setShowHeart(null), 1000);
-    }
+  // Format time ago
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const postDate = new Date(dateString);
+    const diffMs = now.getTime() - postDate.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffDays > 0) return `${diffDays}d`;
+    if (diffHours > 0) return `${diffHours}h`;
+    return 'now';
   };
 
   const statsMessages = [
@@ -431,292 +358,198 @@ const Community = () => {
         <WeeklyChallenge />
       </div>
 
-      {/* Spotlight Post of the Day with Glassmorphic Effect */}
-      {posts.find(p => p.isSpotlight) && (
-        <motion.div 
-          className="relative border-b border-border/50 p-8 overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
-          {/* Glassmorphic background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/80 via-orange-50/60 to-purple-50/40 backdrop-blur-sm" />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          
-          {/* Floating sparkles */}
-          <motion.div
-            className="absolute top-4 right-8 w-1.5 h-1.5 bg-yellow-400/70 rounded-full"
-            animate={{ 
-              y: [0, -10, 0],
-              opacity: [0.4, 1, 0.4] 
-            }}
-            transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-          />
-          <motion.div
-            className="absolute top-12 right-20 w-1 h-1 bg-orange-400/60 rounded-full"
-            animate={{ 
-              y: [0, -8, 0],
-              opacity: [0.3, 0.8, 0.3] 
-            }}
-            transition={{ duration: 2.5, repeat: Infinity, delay: 1.2 }}
-          />
-          
-          <div className="relative">
-            <div className="flex items-center space-x-3 mb-6">
-              <motion.div
-                className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg"
-                animate={{ 
-                  rotate: 360,
-                  boxShadow: [
-                    "0 0 15px rgba(245, 158, 11, 0.4)",
-                    "0 0 25px rgba(249, 115, 22, 0.6)",
-                    "0 0 15px rgba(245, 158, 11, 0.4)"
-                  ]
-                }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles size={16} className="text-white" />
-              </motion.div>
-              <h3 className="font-bold text-xl bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
-                Spotlight Story
-              </h3>
-              <motion.div
-                className="px-3 py-1 bg-gradient-to-r from-yellow-400/80 to-orange-500/80 rounded-full backdrop-blur-sm"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                <span className="text-white text-xs font-bold">✨ FEATURED</span>
-              </motion.div>
-            </div>
-            
-            {(() => {
-              const spotlightPost = posts.find(p => p.isSpotlight);
-              return spotlightPost ? (
-                <div className="flex items-start space-x-6">
-                  <motion.div
-                    className="relative"
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  >
-                    <img 
-                      src={spotlightPost.user.avatar} 
-                      alt={spotlightPost.user.name}
-                      className="w-16 h-16 rounded-full object-cover ring-3 ring-yellow-400/60 shadow-xl"
-                    />
-                    {/* Floating effect ring */}
-                    <motion.div
-                      className="absolute inset-0 rounded-full ring-2 ring-orange-400/40"
-                      animate={{ 
-                        scale: [1, 1.1, 1],
-                        opacity: [0.6, 0.3, 0.6]
-                      }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                    />
-                  </motion.div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <p className="font-bold text-lg">{spotlightPost.user.name}</p>
-                      <span className="text-sm text-muted-foreground bg-white/50 px-2 py-1 rounded-full backdrop-blur-sm">
-                        from {spotlightPost.user.location}
-                      </span>
-                    </div>
-                    <p className="text-base leading-relaxed bg-white/30 p-4 rounded-2xl backdrop-blur-sm border border-white/20">
-                      {spotlightPost.content}
-                    </p>
-                  </div>
-                </div>
-              ) : null;
-            })()}
-          </div>
-        </motion.div>
-      )}
-
-      
       {/* Top Sharers Leaderboard */}
       <TopSharersLeaderboard />
 
       {/* Main Feed - One Beautiful Card at a Time */}
       <div className="pb-24">
-        {posts.map((post, index) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2 }}
-            className="relative bg-background border-b border-border/50 mb-8 overflow-hidden group"
-            whileHover={{ 
-              boxShadow: "0 10px 30px -10px rgba(59, 130, 246, 0.2)",
-              borderColor: "rgba(59, 130, 246, 0.3)"
-            }}
-          >
-            {/* Subtle gradient overlay on hover */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              initial={false}
+              className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
-            {/* Post Header */}
-            <div className="flex items-center justify-between p-6">
-              <div className="flex items-center space-x-4">
-                <img 
-                  src={post.user.avatar} 
-                  alt={post.user.name}
-                  className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
-                />
-                <div>
-                  <p className="font-bold text-base">{post.user.name}</p>
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <span>{post.user.location}</span>
-                    <span>·</span>
-                    <span>{post.time}</span>
-                  </div>
-                </div>
-              </div>
-              
-              {post.type === 'celebration' && (
-                <motion.div
-                  className="px-3 py-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <span className="text-white text-xs font-bold">🎉 WIN</span>
-                </motion.div>
-              )}
-              
-              {post.type === 'milestone' && (
-                <motion.div
-                  className="px-3 py-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <span className="text-white text-xs font-bold">💎 MILESTONE</span>
-                </motion.div>
-              )}
-            </div>
-
-            {/* Post Content Text with Expandable Functionality */}
-            <div className="px-6 mb-6">
-              <div className="overflow-hidden">
-                <p className="text-base leading-relaxed">
-                  {expandedPosts.has(post.id) ? (
-                    <>
-                      {post.content}
-                      <button
-                        onClick={() => togglePostExpansion(post.id)}
-                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
-                        type="button"
-                      >
-                        <span className="text-sm">... Show less</span>
-                      </button>
-                    </>
-                  ) : needsTruncation(post.content) ? (
-                    <>
-                      {truncateText(post.content)}
-                      <button
-                        onClick={() => togglePostExpansion(post.id)}
-                        className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
-                        type="button"
-                      >
-                        <span className="text-sm">... View more</span>
-                      </button>
-                    </>
-                  ) : (
-                    post.content
-                  )}
-                </p>
-              </div>
-            </div>
-
-            {/* Post Image - Edge to Edge */}
-            <div 
-              className="relative overflow-hidden cursor-pointer"
-              onDoubleClick={() => handleDoubleClick(post.id)}
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-12 px-6">
+            <p className="text-muted-foreground text-lg">No posts yet. Be the first to share your story! ✨</p>
+          </div>
+        ) : (
+          posts.map((post, index) => (
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
+              className="relative bg-background border-b border-border/50 mb-8 overflow-hidden group"
+              whileHover={{ 
+                boxShadow: "0 10px 30px -10px rgba(59, 130, 246, 0.2)",
+                borderColor: "rgba(59, 130, 246, 0.3)"
+              }}
             >
-              <motion.img 
-                src={post.image} 
-                alt="Post content"
-                className="w-full h-96 object-cover"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
+              {/* Subtle gradient overlay on hover */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                initial={false}
               />
               
-              {/* Double tap heart overlay */}
-              <AnimatePresence>
-                {showHeart === post.id && (
+              {/* Post Header */}
+              <div className="flex items-center justify-between p-6">
+                <div className="flex items-center space-x-4">
+                  <img 
+                    src={post.profiles?.avatar_url || `https://images.unsplash.com/photo-1494790108755-2616b332c2a2?w=150&h=150&fit=crop&crop=face`} 
+                    alt={post.profiles?.full_name || 'User'}
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
+                  />
+                  <div>
+                    <p className="font-bold text-base">{post.profiles?.full_name || 'EmviApp User'}</p>
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <span>{formatTimeAgo(post.created_at)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {post.tags?.includes('celebration') && (
                   <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1.8, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                    className="px-3 py-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 3, repeat: Infinity }}
                   >
-                    <motion.div
-                      animate={{ rotate: [0, 15, -15, 0] }}
-                      transition={{ duration: 0.8 }}
-                    >
-                      <Heart size={100} className="text-red-500 fill-red-500 drop-shadow-2xl" />
-                    </motion.div>
+                    <span className="text-white text-xs font-bold">🎉 WIN</span>
                   </motion.div>
                 )}
-              </AnimatePresence>
-            </div>
+                
+                {post.tags?.includes('milestone') && (
+                  <motion.div
+                    className="px-3 py-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    <span className="text-white text-xs font-bold">💎 MILESTONE</span>
+                  </motion.div>
+                )}
+              </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between p-6">
-              <div className="flex items-center space-x-8">
-                <motion.button
-                  whileTap={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.2 }}
-                  onClick={() => handleLike(post.id)}
-                  className="flex items-center space-x-2"
+              {/* Post Content Text with Expandable Functionality */}
+              <div className="px-6 mb-6">
+                <div className="overflow-hidden">
+                  <p className="text-base leading-relaxed">
+                    {expandedPosts.has(post.id) ? (
+                      <>
+                        {post.content}
+                        <button
+                          onClick={() => togglePostExpansion(post.id)}
+                          className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
+                          type="button"
+                        >
+                          <span className="text-sm">... Show less</span>
+                        </button>
+                      </>
+                    ) : needsTruncation(post.content) ? (
+                      <>
+                        {truncateText(post.content)}
+                        <button
+                          onClick={() => togglePostExpansion(post.id)}
+                          className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
+                          type="button"
+                        >
+                          <span className="text-sm">... View more</span>
+                        </button>
+                      </>
+                    ) : (
+                      post.content
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* Post Image - Edge to Edge */}
+              {post.image_urls && post.image_urls.length > 0 && (
+                <div 
+                  className="relative overflow-hidden cursor-pointer"
+                  onDoubleClick={() => handleDoubleClick(post.id)}
                 >
-                  <Heart 
-                    size={32} 
-                    className={`transition-all duration-300 ${
-                      post.isLiked 
-                        ? 'text-red-500 fill-red-500 scale-110' 
-                        : 'text-foreground hover:text-red-400'
-                    }`}
+                  <motion.img 
+                    src={post.image_urls[0]} 
+                    alt="Post content"
+                    className="w-full h-96 object-cover"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ duration: 0.3 }}
                   />
-                  <span className="font-bold text-sm">{post.likes.toLocaleString()}</span>
-                </motion.button>
+                  
+                  {/* Double tap heart overlay */}
+                  <AnimatePresence>
+                    {showHeart === post.id && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1.8, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                      >
+                        <motion.div
+                          animate={{ rotate: [0, 15, -15, 0] }}
+                          transition={{ duration: 0.8 }}
+                        >
+                          <Heart size={100} className="text-red-500 fill-red-500 drop-shadow-2xl" />
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between p-6">
+                <div className="flex items-center space-x-8">
+                  <motion.button
+                    whileTap={{ scale: 0.8 }}
+                    whileHover={{ scale: 1.2 }}
+                    onClick={() => handleLike(post.id)}
+                    className="flex items-center space-x-2"
+                  >
+                    <Heart 
+                      size={32} 
+                      className="text-foreground hover:text-red-400 transition-colors"
+                    />
+                    <span className="font-bold text-sm">{post.likes_count || 0}</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.8 }}
+                    whileHover={{ scale: 1.2 }}
+                    onClick={() => setShowCommentModal(post.id)}
+                    className="flex items-center space-x-2"
+                  >
+                    <MessageCircle size={32} className="hover:text-blue-400 transition-colors" />
+                    <span className="font-bold text-sm">{post.comments_count || 0}</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.8 }}
+                    whileHover={{ scale: 1.2 }}
+                    onClick={() => handleShare(post.id)}
+                    className="flex items-center space-x-2"
+                  >
+                    <Share size={32} className="hover:text-green-400 transition-colors" />
+                    <span className="font-bold text-sm">{post.shares_count || 0}</span>
+                  </motion.button>
+                </div>
                 
                 <motion.button
                   whileTap={{ scale: 0.8 }}
                   whileHover={{ scale: 1.2 }}
-                  onClick={() => setShowCommentModal(post.id)}
-                  className="flex items-center space-x-2"
                 >
-                  <MessageCircle size={32} className="hover:text-blue-400 transition-colors" />
-                  <span className="font-bold text-sm">{post.comments}</span>
-                </motion.button>
-                
-                <motion.button
-                  whileTap={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.2 }}
-                  onClick={() => setShowShareModal(post.id)}
-                  className="flex items-center space-x-2"
-                >
-                  <Share size={32} className="hover:text-green-400 transition-colors" />
+                  <Bookmark 
+                    size={32} 
+                    className="text-foreground hover:text-primary transition-colors"
+                  />
                 </motion.button>
               </div>
-              
-              <motion.button
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.2 }}
-                onClick={() => handleBookmark(post.id)}
-              >
-                <Bookmark 
-                  size={32} 
-                  className={`transition-all duration-300 ${
-                    post.isBookmarked 
-                      ? 'text-primary fill-primary scale-110' 
-                      : 'text-foreground hover:text-primary'
-                  }`}
-                />
-              </motion.button>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))
+        )}
 
         {/* Viral Love Bar */}
         <motion.div 
@@ -827,7 +660,6 @@ const Community = () => {
         <span className="text-white font-bold text-sm">Share Your Win</span>
       </motion.button>
 
-      
       {/* Recent Activity Popup */}
       <RecentActivityPopup />
 
@@ -849,7 +681,17 @@ const Community = () => {
           <ShareModal
             isOpen={true}
             onClose={() => setShowShareModal(null)}
-            post={posts.find(p => p.id === showShareModal)!}
+            post={posts.find(p => p.id === showShareModal) ? {
+              id: parseInt(showShareModal),
+              user: {
+                name: posts.find(p => p.id === showShareModal)?.profiles?.full_name || 'EmviApp User',
+                avatar: posts.find(p => p.id === showShareModal)?.profiles?.avatar_url || '',
+                location: ''
+              },
+              content: posts.find(p => p.id === showShareModal)?.content || '',
+              type: 'story',
+              image: posts.find(p => p.id === showShareModal)?.image_urls?.[0]
+            } : undefined}
           />
         )}
       </AnimatePresence>

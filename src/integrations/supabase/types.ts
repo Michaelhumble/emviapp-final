@@ -2174,23 +2174,44 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          badges: Json | null
+          community_points: number | null
           created_at: string | null
+          creator_status: string | null
+          current_streak: number | null
           full_name: string | null
           id: string
+          total_likes_received: number | null
+          total_posts: number | null
+          total_shares: number | null
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          badges?: Json | null
+          community_points?: number | null
           created_at?: string | null
+          creator_status?: string | null
+          current_streak?: number | null
           full_name?: string | null
           id: string
+          total_likes_received?: number | null
+          total_posts?: number | null
+          total_shares?: number | null
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          badges?: Json | null
+          community_points?: number | null
           created_at?: string | null
+          creator_status?: string | null
+          current_streak?: number | null
           full_name?: string | null
           id?: string
+          total_likes_received?: number | null
+          total_posts?: number | null
+          total_shares?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -3245,6 +3266,36 @@ export type Database = {
         }
         Relationships: []
       }
+      shares_tracking: {
+        Row: {
+          created_at: string
+          id: string
+          platform: string | null
+          points_awarded: number | null
+          shared_content_id: string | null
+          shared_content_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          platform?: string | null
+          points_awarded?: number | null
+          shared_content_id?: string | null
+          shared_content_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          platform?: string | null
+          points_awarded?: number | null
+          shared_content_id?: string | null
+          shared_content_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       staff_service_assignments: {
         Row: {
           created_at: string | null
@@ -3456,6 +3507,33 @@ export type Database = {
           icon?: string | null
           id?: string
           metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_activity: {
+        Row: {
+          activity_data: Json
+          activity_type: string
+          created_at: string
+          id: string
+          is_featured: boolean | null
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json
+          activity_type: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json
+          activity_type?: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
           user_id?: string
         }
         Relationships: []
