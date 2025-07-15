@@ -4410,6 +4410,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: boolean
       }
+      link_staff_to_user: {
+        Args: { p_invitation_token: string; p_user_id: string }
+        Returns: boolean
+      }
       process_referral: {
         Args: { referral_code: string; new_user_id: string }
         Returns: boolean
