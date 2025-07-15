@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User, Edit, Mail, Phone, MapPin, Crown, Share2, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { toast } from 'sonner';
 import BeautyJourneyStats from "@/components/customer/journey/BeautyJourneyStats";
 import CommunityImpactCard from "@/components/customer/journey/CommunityImpactCard";
 import WishlistPanel from "@/components/customer/journey/WishlistPanel";
@@ -18,14 +20,19 @@ import CustomizeProfileCard from "@/components/customer/journey/CustomizeProfile
 import VIPSystem from "@/components/ecosystem/VIPSystem";
 import SocialShareSystem from "@/components/ecosystem/SocialShareSystem";
 import CrossPlatformCTA from "@/components/ecosystem/CrossPlatformCTA";
+import ProfileEditModal from "@/components/customer/ProfileEditModal";
+import ShareWinModal from "@/components/customer/ShareWinModal";
 
 const CustomerProfilePage = () => {
   const { user, userProfile, loading } = useAuth();
+  const navigate = useNavigate();
   const [celebrationActive, setCelebrationActive] = useState(false);
   const [currentStreak, setCurrentStreak] = useState(7);
   const [totalPoints, setTotalPoints] = useState(1247);
   const [level, setLevel] = useState("Level 7 Beauty Explorer");
   const [referralCount, setReferralCount] = useState(3);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [showShareWin, setShowShareWin] = useState(false);
   const [recentActivities] = useState([
     { type: 'booking', action: 'Booked at Luxe Nails', time: '2 hours ago', points: 25 },
     { type: 'review', action: 'Reviewed Amazing Spa', time: '1 day ago', points: 15 },
@@ -70,6 +77,16 @@ const CustomerProfilePage = () => {
   const getNextMilestone = () => {
     const nextPoints = Math.ceil(totalPoints / 500) * 500;
     return nextPoints - totalPoints;
+  };
+
+  const handleNavigateTo = (path: string) => {
+    navigate(path);
+  };
+
+  const handleInviteFriends = () => {
+    navigator.clipboard.writeText('https://emvi.app/join?ref=EMVI879e69');
+    triggerCelebration();
+    toast.success('Referral link copied! Share and earn rewards! 🎉');
   };
 
   return (
@@ -182,20 +199,22 @@ const CustomerProfilePage = () => {
               <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
                 <CardHeader className="text-center pb-2">
                   <motion.div 
-                    className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gradient-to-br from-purple-400 to-pink-400 p-1"
+                    className="relative w-24 h-24 mx-auto mb-4 cursor-pointer"
                     whileHover={{ scale: 1.1, rotate: 5 }}
+                    onClick={() => setShowProfileEdit(true)}
                   >
-                    <div className="w-full h-full rounded-full overflow-hidden bg-white">
-                      {userProfile?.avatar_url ? (
-                        <img 
-                          src={userProfile.avatar_url} 
-                          alt={userProfile.full_name || 'Profile'} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-full h-full p-4 text-gray-300" />
-                      )}
-                    </div>
+                    <Avatar className="w-24 h-24 border-4 border-white/20">
+                      <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name} />
+                      <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-2xl font-bold">
+                        {userProfile?.full_name?.charAt(0) || 'B'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <motion.div
+                      className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg"
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <Edit className="h-3 w-3 text-white" />
+                    </motion.div>
                   </motion.div>
                   <CardTitle className="text-xl text-white">{userProfile?.full_name || 'Beauty Lover'}</CardTitle>
                   <p className="text-purple-200">Premium Beauty Member</p>
@@ -205,7 +224,7 @@ const CustomerProfilePage = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <Button 
                       className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
-                      onClick={triggerCelebration}
+                      onClick={() => setShowProfileEdit(true)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
@@ -255,7 +274,7 @@ const CustomerProfilePage = () => {
                   <div className="space-y-3">
                     <Button 
                       className="w-full bg-white text-orange-600 hover:bg-white/90 font-semibold"
-                      onClick={() => navigator.clipboard.writeText('https://emvi.app/join?ref=EMVI879e69')}
+                      onClick={handleInviteFriends}
                     >
                       <Share2 className="h-4 w-4 mr-2" />
                       Share My Link
@@ -319,7 +338,10 @@ const CustomerProfilePage = () => {
               {/* Cross-Platform Navigation */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Card className="bg-gradient-to-br from-blue-500 to-purple-500 border-0 text-white cursor-pointer">
+                  <Card 
+                    className="bg-gradient-to-br from-blue-500 to-purple-500 border-0 text-white cursor-pointer"
+                    onClick={() => handleNavigateTo('/salons')}
+                  >
                     <CardContent className="p-6 text-center">
                       <Users className="h-8 w-8 mx-auto mb-2" />
                       <div className="font-semibold">Discover Salons</div>
@@ -329,7 +351,10 @@ const CustomerProfilePage = () => {
                 </motion.div>
 
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Card className="bg-gradient-to-br from-green-500 to-teal-500 border-0 text-white cursor-pointer">
+                  <Card 
+                    className="bg-gradient-to-br from-green-500 to-teal-500 border-0 text-white cursor-pointer"
+                    onClick={() => handleNavigateTo('/artists')}
+                  >
                     <CardContent className="p-6 text-center">
                       <Star className="h-8 w-8 mx-auto mb-2" />
                       <div className="font-semibold">Top Artists</div>
@@ -339,7 +364,10 @@ const CustomerProfilePage = () => {
                 </motion.div>
 
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Card className="bg-gradient-to-br from-pink-500 to-rose-500 border-0 text-white cursor-pointer">
+                  <Card 
+                    className="bg-gradient-to-br from-pink-500 to-rose-500 border-0 text-white cursor-pointer"
+                    onClick={() => handleNavigateTo('/jobs')}
+                  >
                     <CardContent className="p-6 text-center">
                       <Award className="h-8 w-8 mx-auto mb-2" />
                       <div className="font-semibold">Explore Jobs</div>
@@ -370,6 +398,16 @@ const CustomerProfilePage = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Modals */}
+          <ProfileEditModal 
+            isOpen={showProfileEdit} 
+            onClose={() => setShowProfileEdit(false)} 
+          />
+          <ShareWinModal 
+            isOpen={showShareWin} 
+            onClose={() => setShowShareWin(false)} 
+          />
         </div>
       </div>
     </Layout>

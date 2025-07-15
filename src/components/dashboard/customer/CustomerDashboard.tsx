@@ -2,21 +2,28 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Crown, Sparkles, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, 
-  Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus
+  Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus,
+  Edit, User
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 import CustomerDashboardHeader from './CustomerDashboardHeader';
 import CustomerViralReferralCenter from './CustomerViralReferralCenter';
 import VIPSystem from '@/components/ecosystem/VIPSystem';
 import SocialShareSystem from '@/components/ecosystem/SocialShareSystem';
+import ProfileEditModal from '@/components/customer/ProfileEditModal';
+import ShareWinModal from '@/components/customer/ShareWinModal';
 
 const CustomerDashboard = () => {
   const { user, userProfile } = useAuth();
+  const navigate = useNavigate();
   const [celebrationActive, setCelebrationActive] = useState(false);
   const [currentStreak, setCurrentStreak] = useState(7);
   const [totalPoints, setTotalPoints] = useState(1247);
@@ -24,6 +31,8 @@ const CustomerDashboard = () => {
   const [completedBookings, setCompletedBookings] = useState(12);
   const [reviewsGiven, setReviewsGiven] = useState(8);
   const [level, setLevel] = useState("Level 7 Beauty Explorer");
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [showShareWin, setShowShareWin] = useState(false);
 
   const [recentActivities] = useState([
     { type: 'booking', action: 'Booked at Luxe Nails', time: '2 hours ago', points: 25, icon: Heart },
@@ -50,6 +59,20 @@ const CustomerDashboard = () => {
     return `${greeting}, ${name}! ✨`;
   };
 
+  const handleInviteFriends = () => {
+    navigator.clipboard.writeText('https://emvi.app/join?ref=EMVI879e69');
+    triggerCelebration();
+    toast.success('Referral link copied! Share and earn rewards! 🎉');
+  };
+
+  const handleNavigateTo = (path: string) => {
+    navigate(path);
+  };
+
+  const handleProgressClick = () => {
+    toast.info(`You're ${Math.round((totalPoints % 500) / 5)}% to your next level! Keep going! 🚀`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -67,20 +90,46 @@ const CustomerDashboard = () => {
       </div>
       
       <div className="container mx-auto px-4 py-8 max-w-6xl relative z-10">
-        {/* Personalized Welcome Header */}
+        {/* Personalized Welcome Header with Profile Avatar */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 text-center"
+          className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-white mb-2">
-            {getPersonalizedWelcome()}
-          </h1>
-          <p className="text-purple-200 text-lg">Your personalized luxury beauty experience awaits</p>
+          {/* Profile Avatar with Edit Button */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <motion.div 
+                className="relative cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+                onClick={() => setShowProfileEdit(true)}
+              >
+                <Avatar className="h-16 w-16 border-4 border-white/20">
+                  <AvatarImage src={userProfile?.avatar_url} alt={userProfile?.full_name} />
+                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xl font-bold">
+                    {userProfile?.full_name?.charAt(0) || 'B'}
+                  </AvatarFallback>
+                </Avatar>
+                <motion.div
+                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg"
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <Edit className="h-3 w-3 text-white" />
+                </motion.div>
+              </motion.div>
+              
+              <div className="text-left">
+                <h1 className="text-3xl font-bold text-white">
+                  {getPersonalizedWelcome()}
+                </h1>
+                <p className="text-purple-200">Your personalized luxury beauty experience awaits</p>
+              </div>
+            </div>
+          </div>
           
           {/* VIP Status & Level */}
           <motion.div 
-            className="flex justify-center mt-4 gap-3"
+            className="flex justify-center gap-3"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3 }}
@@ -117,7 +166,8 @@ const CustomerDashboard = () => {
 
           {/* Points */}
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Card className="bg-gradient-to-br from-purple-500 to-blue-500 border-0 text-white overflow-hidden relative cursor-pointer">
+            <Card className="bg-gradient-to-br from-purple-500 to-blue-500 border-0 text-white overflow-hidden relative cursor-pointer"
+                  onClick={handleProgressClick}>
               <CardContent className="p-4 text-center">
                 <Star className="h-6 w-6 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{totalPoints.toLocaleString()}</div>
@@ -128,7 +178,8 @@ const CustomerDashboard = () => {
 
           {/* Referrals */}
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 text-white overflow-hidden relative cursor-pointer">
+            <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 text-white overflow-hidden relative cursor-pointer"
+                  onClick={handleInviteFriends}>
               <CardContent className="p-4 text-center">
                 <Users className="h-6 w-6 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{referralCount}</div>
@@ -139,7 +190,8 @@ const CustomerDashboard = () => {
 
           {/* Bookings */}
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Card className="bg-gradient-to-br from-pink-500 to-rose-500 border-0 text-white overflow-hidden relative cursor-pointer">
+            <Card className="bg-gradient-to-br from-pink-500 to-rose-500 border-0 text-white overflow-hidden relative cursor-pointer"
+                  onClick={() => handleNavigateTo('/bookings')}>
               <CardContent className="p-4 text-center">
                 <Heart className="h-6 w-6 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{completedBookings}</div>
@@ -169,10 +221,7 @@ const CustomerDashboard = () => {
                 <div className="space-y-3">
                   <Button 
                     className="w-full bg-white text-orange-600 hover:bg-white/90 font-semibold"
-                    onClick={() => {
-                      navigator.clipboard.writeText('https://emvi.app/join?ref=EMVI879e69');
-                      triggerCelebration();
-                    }}
+                    onClick={handleInviteFriends}
                   >
                     <Share2 className="h-4 w-4 mr-2" />
                     Share My Link
@@ -213,12 +262,13 @@ const CustomerDashboard = () => {
                       <span>Level Progress</span>
                       <span>{Math.round((totalPoints % 500) / 5)}%</span>
                     </div>
-                    <div className="w-full bg-white/20 rounded-full h-3">
+                    <div className="w-full bg-white/20 rounded-full h-3 cursor-pointer" onClick={handleProgressClick}>
                       <motion.div 
                         className="bg-gradient-to-r from-amber-400 to-orange-500 h-3 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${(totalPoints % 500) / 5}%` }}
                         transition={{ duration: 1, delay: 0.5 }}
+                        whileHover={{ scale: 1.02 }}
                       />
                     </div>
                   </div>
@@ -278,7 +328,7 @@ const CustomerDashboard = () => {
                 
                 <Button 
                   className="w-full mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
-                  onClick={triggerCelebration}
+                  onClick={() => setShowShareWin(true)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Share Your Latest Win
@@ -299,7 +349,10 @@ const CustomerDashboard = () => {
               <CardContent className="space-y-4">
                 {/* Salon Discovery */}
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 h-auto p-4">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 h-auto p-4"
+                    onClick={() => handleNavigateTo('/salons')}
+                  >
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center">
                         <Store className="h-5 w-5 mr-3" />
@@ -315,7 +368,10 @@ const CustomerDashboard = () => {
 
                 {/* Artist Discovery */}
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-0 h-auto p-4">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-0 h-auto p-4"
+                    onClick={() => handleNavigateTo('/artists')}
+                  >
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center">
                         <Scissors className="h-5 w-5 mr-3" />
@@ -331,7 +387,10 @@ const CustomerDashboard = () => {
 
                 {/* Job Exploration */}
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 h-auto p-4">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 h-auto p-4"
+                    onClick={() => handleNavigateTo('/jobs')}
+                  >
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center">
                         <Briefcase className="h-5 w-5 mr-3" />
@@ -347,7 +406,10 @@ const CustomerDashboard = () => {
 
                 {/* Quick Booking */}
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-auto p-4">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 h-auto p-4"
+                    onClick={() => handleNavigateTo('/booking')}
+                  >
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center">
                         <Calendar className="h-5 w-5 mr-3" />
