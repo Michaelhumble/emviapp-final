@@ -47,7 +47,9 @@ const SalonDashboardNew = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 border-8 border-green-500"
+         style={{backgroundColor: 'rgba(0, 255, 0, 0.1)'}} /* 🟢 GREEN = SalonDashboardNew */
+    >
       <div className="space-y-6 px-2 sm:px-4 md:px-6 py-4 md:py-8 max-w-7xl mx-auto">
         
         {/* Premium Header */}
