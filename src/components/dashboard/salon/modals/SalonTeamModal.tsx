@@ -25,6 +25,11 @@ interface TeamMember {
   status: 'active' | 'pending' | 'inactive';
   invitation_sent_at?: string;
   accepted_at?: string;
+  user?: {
+    full_name?: string;
+    avatar_url?: string;
+    phone?: string;
+  };
   performance?: {
     bookings: number;
     revenue: number;
@@ -79,8 +84,9 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
       const membersWithPerformance = data?.map(member => ({
         ...member,
         full_name: member.user?.full_name || member.full_name,
-        phone: member.phone || '',
+        phone: member.user?.phone || '',
         role: member.role as 'owner' | 'manager' | 'artist',
+        status: member.status as 'active' | 'pending' | 'inactive',
         performance: {
           bookings: Math.floor(Math.random() * 50) + 10,
           revenue: Math.floor(Math.random() * 3000) + 1000,
@@ -202,16 +208,24 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="max-w-6xl max-h-[90vh] overflow-y-auto"
+        role="dialog"
+        aria-labelledby="team-modal-title"
+        aria-describedby="team-modal-description"
+      >
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-3 text-2xl">
+            <DialogTitle id="team-modal-title" className="flex items-center gap-3 text-2xl">
               <Users className="h-6 w-6 text-blue-600" />
               Team Management
               <Badge className="bg-blue-100 text-blue-800 border-blue-300">
                 {teamMembers.filter(m => m.status === 'active').length} active members
               </Badge>
             </DialogTitle>
+            <p id="team-modal-description" className="sr-only">
+              Manage your salon team members, send invitations, and track performance
+            </p>
             <Button
               onClick={generateInviteLink}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
@@ -346,6 +360,8 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
                       placeholder="Enter full name"
                       value={inviteForm.full_name}
                       onChange={(e) => setInviteForm({...inviteForm, full_name: e.target.value})}
+                      required
+                      aria-required="true"
                     />
                   </div>
                   <div>
@@ -356,6 +372,8 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
                       placeholder="Enter email address"
                       value={inviteForm.email}
                       onChange={(e) => setInviteForm({...inviteForm, email: e.target.value})}
+                      required
+                      aria-required="true"
                     />
                   </div>
                 </div>
@@ -366,7 +384,8 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
                     id="role"
                     value={inviteForm.role}
                     onChange={(e) => setInviteForm({...inviteForm, role: e.target.value as any})}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    aria-label="Select team member role"
                   >
                     <option value="artist">Artist</option>
                     <option value="manager">Manager</option>
