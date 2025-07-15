@@ -446,6 +446,18 @@ const CustomerDashboard = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        
+        {/* Profile Edit Modal */}
+        <ProfileEditModal 
+          isOpen={showProfileEdit} 
+          onClose={() => setShowProfileEdit(false)} 
+        />
+        
+        {/* Share Win Modal */}
+        <ShareWinModal 
+          isOpen={showShareWin} 
+          onClose={() => setShowShareWin(false)} 
+        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ interface ProfileEditModalProps {
 }
 
 const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, refreshUserProfile } = useAuth();
   const { uploadImage, isUploading } = useImageUpload();
   const [formData, setFormData] = useState({
     full_name: userProfile?.full_name || '',
@@ -30,6 +30,21 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Reset form when modal opens/closes or userProfile changes
+  React.useEffect(() => {
+    if (isOpen && userProfile) {
+      setFormData({
+        full_name: userProfile.full_name || '',
+        bio: userProfile.bio || '',
+        location: userProfile.location || '',
+        phone: userProfile.phone || '',
+        avatar_url: userProfile.avatar_url || ''
+      });
+      setPreviewImage(null);
+      setSelectedFile(null);
+    }
+  }, [isOpen, userProfile]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -57,9 +72,14 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
       
       // Upload image if a new one was selected
       if (selectedFile) {
+        toast.loading('Uploading photo...', { id: 'upload' });
         const uploadedUrl = await uploadImage(selectedFile);
         if (uploadedUrl) {
           avatarUrl = uploadedUrl;
+          toast.success('Photo uploaded successfully!', { id: 'upload' });
+        } else {
+          toast.error('Failed to upload photo', { id: 'upload' });
+          return;
         }
       }
 
@@ -77,6 +97,11 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
 
       if (error) throw error;
 
+      // Refresh the user profile in auth context
+      if (refreshUserProfile) {
+        await refreshUserProfile();
+      }
+
       // Trigger celebration
       confetti({
         particleCount: 100,
@@ -92,11 +117,9 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
       setSelectedFile(null);
       onClose();
       
-      // Refresh the page to show updated profile
-      window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile');
+      toast.error('Failed to update profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -242,15 +265,15 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Button
+               <Button
                 onClick={handleSave}
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+                disabled={loading || isUploading}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 disabled:opacity-50"
               >
-                {loading ? (
+                {loading || isUploading ? (
                   <div className="flex items-center">
                     <div className="animate-spin h-4 w-4 border-t-2 border-white rounded-full mr-2" />
-                    Saving...
+                    {isUploading ? 'Uploading...' : 'Saving...'}
                   </div>
                 ) : (
                   <>
