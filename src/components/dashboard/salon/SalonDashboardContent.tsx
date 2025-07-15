@@ -27,9 +27,7 @@ export const SalonDashboardContent = () => {
   const salonName = userProfile?.salon_name ?? userProfile?.company_name ?? userProfile?.full_name ?? "Salon Owner";
 
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 min-h-screen border-8 border-red-500"
-         style={{backgroundColor: 'rgba(255, 0, 0, 0.15)'}} /* 🔴 RED = SalonDashboardContent */
-    >
+    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 min-h-screen">
       {/* Welcome Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">

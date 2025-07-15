@@ -59,8 +59,7 @@ const SalonDashboardOverview = () => {
 
   return (
     <motion.div 
-      className="space-y-8 border-8 border-yellow-500"
-      style={{backgroundColor: 'rgba(255, 255, 0, 0.1)'}} /* 🟡 YELLOW = SalonDashboardOverview */
+      className="space-y-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
