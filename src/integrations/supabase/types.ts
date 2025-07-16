@@ -5652,6 +5652,10 @@ export type Database = {
         Args: { post_id: string }
         Returns: undefined
       }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_artist_available: {
         Args: {
           p_artist_id: string
