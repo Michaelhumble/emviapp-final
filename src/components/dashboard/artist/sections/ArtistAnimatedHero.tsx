@@ -202,6 +202,15 @@ const ArtistAnimatedHero = () => {
                   <Button 
                     size="lg" 
                     className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 text-lg font-semibold"
+                    onClick={() => {
+                      // Navigate to portfolio tab and trigger upload
+                      const portfolioTab = document.querySelector('[value="portfolio"]') as HTMLElement;
+                      portfolioTab?.click();
+                      setTimeout(() => {
+                        const uploadButton = document.querySelector('[data-upload-trigger]') as HTMLElement;
+                        uploadButton?.click();
+                      }, 100);
+                    }}
                   >
                     <Camera className="w-5 h-5 mr-2" />
                     Add Masterpiece

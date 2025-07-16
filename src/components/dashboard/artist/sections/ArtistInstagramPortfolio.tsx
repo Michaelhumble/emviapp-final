@@ -102,6 +102,31 @@ const ArtistInstagramPortfolio = () => {
     setSelectedImage(newIndex);
   };
 
+  const handleShare = async (item: any) => {
+    const shareData = {
+      title: `Check out this amazing work: ${item.title}`,
+      text: `Beautiful nail art by a talented artist! 💅✨`,
+      url: window.location.href
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.log('Share cancelled');
+      }
+    } else {
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(`${shareData.title} - ${shareData.url}`);
+        // You could show a toast here
+        console.log('Link copied to clipboard!');
+      } catch (error) {
+        console.error('Failed to copy link', error);
+      }
+    }
+  };
+
   const EmptyState = () => (
     <motion.div 
       className="col-span-full text-center py-16"
@@ -149,10 +174,11 @@ const ArtistInstagramPortfolio = () => {
         
         <Button 
           className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+          data-upload-trigger
           {...getRootProps()}
         >
           <input {...getInputProps()} />
-          <Upload className="w-4 h-4 mr-2" />
+          <Upload className="w-4 w-4 mr-2" />
           Upload Photos
         </Button>
       </div>
@@ -236,7 +262,13 @@ const ArtistInstagramPortfolio = () => {
                         {item.views}
                       </span>
                     </div>
-                    <Share2 className="w-4 h-4 hover:text-white transition-colors" />
+                    <Share2 
+                      className="w-4 h-4 hover:text-white transition-colors cursor-pointer" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShare(item);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -319,7 +351,15 @@ const ArtistInstagramPortfolio = () => {
                       {mockEngagement[selectedImage].views}
                     </span>
                   </div>
-                  <Button size="sm" variant="ghost" className="text-white hover:text-white">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="text-white hover:text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShare(mockEngagement[selectedImage]);
+                    }}
+                  >
                     <Share2 className="w-4 h-4 mr-2" />
                     Share
                   </Button>

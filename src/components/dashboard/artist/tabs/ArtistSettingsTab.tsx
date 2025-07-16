@@ -105,7 +105,16 @@ const ArtistSettingsTab = () => {
               <div className="font-medium">Deactivate Account</div>
               <div className="text-sm text-muted-foreground">Temporarily disable your profile</div>
             </div>
-            <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50">
+            <Button 
+              variant="outline" 
+              className="border-red-200 text-red-600 hover:bg-red-50"
+              onClick={() => {
+                if (confirm('Are you sure you want to deactivate your account? You can reactivate it later.')) {
+                  // Implement deactivation logic
+                  console.log('Account deactivated');
+                }
+              }}
+            >
               Deactivate
             </Button>
           </div>
@@ -115,7 +124,15 @@ const ArtistSettingsTab = () => {
               <div className="font-medium">Delete Account</div>
               <div className="text-sm text-muted-foreground">Permanently delete your account and data</div>
             </div>
-            <Button variant="destructive">
+            <Button 
+              variant="destructive"
+              onClick={() => {
+                if (confirm('⚠️ PERMANENT ACTION: This will permanently delete your account and all data. This cannot be undone. Are you absolutely sure?')) {
+                  // Implement deletion logic
+                  console.log('Account deleted');
+                }
+              }}
+            >
               Delete Account
             </Button>
           </div>
