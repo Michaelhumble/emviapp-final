@@ -369,6 +369,42 @@ export type Database = {
           },
         ]
       }
+      artist_job_applications: {
+        Row: {
+          applied_at: string | null
+          cover_letter: string | null
+          id: string
+          job_id: string
+          metadata: Json | null
+          portfolio_urls: string[] | null
+          reviewed_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          cover_letter?: string | null
+          id?: string
+          job_id: string
+          metadata?: Json | null
+          portfolio_urls?: string[] | null
+          reviewed_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          cover_letter?: string | null
+          id?: string
+          job_id?: string
+          metadata?: Json | null
+          portfolio_urls?: string[] | null
+          reviewed_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       artist_offers: {
         Row: {
           artist_id: string
