@@ -16,9 +16,9 @@ import {
   MessageSquare
 } from 'lucide-react';
 
-// Hero and Stats
-import ArtistWelcomeHero from './sections/ArtistWelcomeHero';
-import ArtistEmpireStats from './sections/ArtistEmpireStats';
+// Premium Hero Components
+import ArtistAnimatedHero from './sections/ArtistAnimatedHero';
+import ArtistMobileActionBar from './sections/ArtistMobileActionBar';
 
 // Tab Content Components
 import ArtistOverviewTab from './tabs/ArtistOverviewTab';
@@ -72,14 +72,9 @@ const PremiumArtistDashboard = () => {
         className="relative"
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
-          {/* Hero Welcome */}
+          {/* Animated Hero */}
           <motion.div variants={itemVariants} className="mb-6 md:mb-8">
-            <ArtistWelcomeHero />
-          </motion.div>
-
-          {/* Empire Stats */}
-          <motion.div variants={itemVariants} className="mb-6 md:mb-8">
-            <ArtistEmpireStats />
+            <ArtistAnimatedHero />
           </motion.div>
 
           {/* Tab Navigation */}
@@ -156,6 +151,18 @@ const PremiumArtistDashboard = () => {
             </Tabs>
           </motion.div>
         </div>
+
+        {/* Mobile Action Bar */}
+        <ArtistMobileActionBar 
+          onAction={(action) => {
+            if (action === 'portfolio') setActiveTab('portfolio');
+            else if (action === 'bookings') setActiveTab('bookings');
+            else if (action === 'reviews') setActiveTab('testimonials');
+            else if (action === 'settings') setActiveTab('settings');
+            else if (action === 'upload') setActiveTab('portfolio');
+          }}
+          unreadNotifications={0}
+        />
       </motion.div>
     </div>
   );

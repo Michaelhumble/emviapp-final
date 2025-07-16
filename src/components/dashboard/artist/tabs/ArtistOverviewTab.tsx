@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import ArtistPortfolioShowcase from '../sections/ArtistPortfolioShowcase';
 import ArtistBookingsPreview from '../sections/ArtistBookingsPreview';
 import ArtistLiveActivity from '../sections/ArtistLiveActivity';
-import ArtistAvailableForHire from '../sections/ArtistAvailableForHire';
+import ArtistAvailabilityToggle from '../sections/ArtistAvailabilityToggle';
 import ArtistViralShare from '../sections/ArtistViralShare';
 
 const ArtistOverviewTab = () => {
@@ -17,8 +17,8 @@ const ArtistOverviewTab = () => {
       {/* Live Activity Banner */}
       <ArtistLiveActivity />
       
-      {/* Available For Hire Status */}
-      <ArtistAvailableForHire />
+      {/* Availability & Booking Settings */}
+      <ArtistAvailabilityToggle />
       
       {/* Portfolio Showcase */}
       <ArtistPortfolioShowcase />
