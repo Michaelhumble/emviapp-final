@@ -111,15 +111,22 @@ const ArtistViralShare = () => {
           ))}
         </div>
 
-        {/* QR Code Button */}
-        <Button
-          variant="outline"
-          className="w-full flex items-center gap-2"
-          onClick={() => toast.info("QR Code generator coming soon!")}
-        >
-          <QrCode className="w-4 h-4" />
-          Generate QR Code
-        </Button>
+        {/* QR Code Coming Soon */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <QrCode className="h-5 w-5 text-purple-600" />
+              <div>
+                <h3 className="font-medium text-gray-900">QR Code Generator</h3>
+                <p className="text-sm text-gray-600">Generate QR codes for easy sharing</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-purple-600 font-medium">Coming Soon</div>
+              <div className="text-xs text-gray-500">Q2 2024</div>
+            </div>
+          </div>
+        </div>
 
         {/* Growth Stats */}
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">

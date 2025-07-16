@@ -208,16 +208,14 @@ const PokeOffersCard = () => {
               </AnimatePresence>
               
               {offers.length > 3 && (
-                <Button
-                  variant="ghost"
-                  className="w-full text-purple-600 hover:text-purple-700"
-                  onClick={() => {
-                    // Navigate to full offers page
-                    toast.info('Full offers page coming soon!');
-                  }}
-                >
-                  View all {offers.length} offers
-                </Button>
+                <div className="bg-purple-50 rounded-lg p-3 border border-purple-100 text-center">
+                  <p className="text-sm text-purple-700 font-medium">
+                    Full Offers Management
+                  </p>
+                  <p className="text-xs text-purple-600 mt-1">
+                    Coming Soon • View and manage all your offers in one place
+                  </p>
+                </div>
               )}
             </div>
           )}

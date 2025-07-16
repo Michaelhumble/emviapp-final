@@ -233,16 +233,14 @@ const OneClickApplyCard = () => {
               );
             })}
             
-            <Button
-              variant="ghost"
-              className="w-full text-purple-600 hover:text-purple-700"
-              onClick={() => {
-                // Navigate to full jobs page
-                toast.info('Full jobs page coming soon!');
-              }}
-            >
-              View all jobs
-            </Button>
+            <div className="bg-purple-50 rounded-lg p-3 border border-purple-100 text-center">
+              <p className="text-sm text-purple-700 font-medium">
+                Full Job Browser
+              </p>
+              <p className="text-xs text-purple-600 mt-1">
+                Coming Soon • Browse all available positions with advanced filters
+              </p>
+            </div>
           </div>
         )}
       </CardContent>
