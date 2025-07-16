@@ -282,43 +282,28 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
   }, [filter]);
 
   return (
-    <div className="space-y-6">
-      {/* Filter Bar */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        {categoryFilters.map(({ value, label, emoji }) => (
+    <div className="space-y-12">
+      {/* Minimalist Header */}
+      <div className="text-center">
+        <h2 className="text-3xl font-playfair font-bold mb-4">Community Feed</h2>
+        <p className="text-muted-foreground">Discover inspiring work from our community</p>
+      </div>
+
+      {/* Luxury Filter Bar */}
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide justify-center">
+        {categoryFilters.slice(0, 6).map(({ value, label, emoji }) => (
           <Button
             key={value}
-            variant={filter === value ? "default" : "outline"}
+            variant={filter === value ? "default" : "ghost"}
             size="sm"
             onClick={() => setFilter(value)}
-            className="whitespace-nowrap"
+            className="whitespace-nowrap rounded-full px-6"
           >
-            <span className="mr-1">{emoji}</span>
+            <span className="mr-2">{emoji}</span>
             {label}
           </Button>
         ))}
       </div>
-
-      {/* Create Post Button */}
-      <motion.div
-        className="bg-card border border-border rounded-xl p-4 cursor-pointer hover:bg-accent/50 transition-colors"
-        onClick={() => setShowCreatePost(true)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>
-              <Camera className="h-5 w-5" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 text-muted-foreground">
-            Share your beauty journey with the community...
-          </div>
-          <Sparkles className="h-5 w-5 text-primary" />
-        </div>
-      </motion.div>
 
       {/* Create Post Modal */}
       <AnimatePresence>
@@ -396,87 +381,87 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
         )}
       </AnimatePresence>
 
-      {/* Posts Feed */}
-      <div className="space-y-6">
+      {/* Luxury Posts Feed */}
+      <div className="grid gap-12">
         {isLoading ? (
-          <div className="text-center py-12">
+          <div className="text-center py-20">
             <motion.div
-              className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full mx-auto"
+              className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full mx-auto"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
+            <p className="mt-4 text-muted-foreground">Loading beautiful content...</p>
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-12">
-            <Sparkles className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground text-lg">No posts yet in this category</p>
-            <p className="text-sm text-muted-foreground">Be the first to share! ✨</p>
+          <div className="text-center py-20">
+            <Sparkles className="h-20 w-20 mx-auto mb-6 text-muted-foreground opacity-50" />
+            <h3 className="text-2xl font-semibold mb-4">No posts yet</h3>
+            <p className="text-muted-foreground text-lg">Be the first to share something beautiful</p>
           </div>
         ) : (
           posts.map((post, index) => (
             <motion.div
               key={post.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              className="group"
             >
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                {/* Post Header */}
-                <div className="p-4 border-b border-border/50">
-                  <div className="flex items-center gap-3">
-                    <Avatar 
-                      className="h-12 w-12 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
+              {/* Minimalist Post Card */}
+              <div className="bg-background border border-border/20 rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-500 hover:border-primary/20">
+                {/* Clean Header */}
+                <div className="p-8 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div 
+                      className="flex items-center gap-4 cursor-pointer"
                       onClick={() => onProfileClick(post.user_id)}
                     >
-                      <AvatarImage src={post.profiles?.avatar_url} />
-                      <AvatarFallback>
-                        {post.profiles?.full_name?.[0] || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1">
-                      <p 
-                        className="font-semibold cursor-pointer hover:text-primary transition-colors"
-                        onClick={() => onProfileClick(post.user_id)}
-                      >
-                        {post.profiles?.full_name || 'Community Member'}
-                      </p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{post.profiles?.role}</span>
-                        <span>•</span>
-                        <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                      <Avatar className="h-14 w-14 ring-2 ring-background shadow-lg">
+                        <AvatarImage src={post.profiles?.avatar_url} />
+                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                          {post.profiles?.full_name?.[0] || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div>
+                        <h3 className="font-semibold text-lg hover:text-primary transition-colors">
+                          {post.profiles?.full_name || 'Community Member'}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {post.profiles?.role} • {new Date(post.created_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
 
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="rounded-full">
                       <UserPlus className="h-4 w-4 mr-2" />
-                      Invite
+                      Follow
                     </Button>
                   </div>
                 </div>
 
-                {/* Post Content */}
-                <div className="p-4">
+                {/* Content */}
+                <div className="px-8 pb-6">
                   {post.content && (
-                    <p className="mb-4 whitespace-pre-wrap">{post.content}</p>
+                    <p className="text-lg leading-relaxed mb-6">{post.content}</p>
                   )}
                   
                   {post.image_url && (
-                    <div className="mb-4">
+                    <div className="mb-6">
                       <img
                         src={post.image_url}
                         alt="Post content"
-                        className="w-full h-auto rounded-lg"
+                        className="w-full h-auto rounded-2xl shadow-lg"
                       />
                     </div>
                   )}
 
                   {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-2">
                       {post.tags.map((tag, i) => (
                         <span
                           key={i}
-                          className="px-2 py-1 bg-accent rounded-full text-xs text-accent-foreground"
+                          className="px-4 py-2 bg-primary/5 text-primary rounded-full text-sm font-medium"
                         >
                           #{tag}
                         </span>
@@ -485,17 +470,17 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                   )}
                 </div>
 
-                {/* Engagement Actions */}
-                <div className="px-4 py-3 border-t border-border/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-4">
+                {/* Luxury Actions */}
+                <div className="px-8 py-6 border-t border-border/10 bg-background/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => toggleLike(post.id)}
-                        className={post.is_liked ? "text-red-500" : ""}
+                        className={`rounded-full ${post.is_liked ? "text-red-500" : ""}`}
                       >
-                        <Heart className={`h-4 w-4 mr-1 ${post.is_liked ? 'fill-current' : ''}`} />
+                        <Heart className={`h-5 w-5 mr-2 ${post.is_liked ? 'fill-current' : ''}`} />
                         {post.likes_count || 0}
                       </Button>
 
@@ -577,7 +562,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                     )}
                   </AnimatePresence>
                 </div>
-              </Card>
+              </div>
             </motion.div>
           ))
         )}
