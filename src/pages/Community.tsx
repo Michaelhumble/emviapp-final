@@ -14,6 +14,14 @@ import RecentActivityPopup from '@/components/community/RecentActivityPopup';
 import WeeklyChallenge from '@/components/community/WeeklyChallenge';
 import LiveActivityFeed from '@/components/community/LiveActivityFeed';
 import InviteRewards from '@/components/community/InviteRewards';
+import InviteEverywhere from '@/components/community/InviteEverywhere';
+import TopInvitersLeaderboard from '@/components/community/TopInvitersLeaderboard';
+import SponsorApplicationModal from '@/components/community/SponsorApplicationModal';
+import WeeklyChallengeEnhanced from '@/components/community/WeeklyChallengeEnhanced';
+import TopPerformersCarousel from '@/components/community/TopPerformersCarousel';
+import ReactionBadgeSystem from '@/components/community/ReactionBadgeSystem';
+import CommunityAboutRules from '@/components/community/CommunityAboutRules';
+import RotatingHeroBanner from '@/components/community/RotatingHeroBanner';
 import ShareSuccessPopup from '@/components/community/ShareSuccessPopup';
 import AIContentEnhancer from '@/components/community/AIContentEnhancer';
 import ViralVideoGenerator from '@/components/community/ViralVideoGenerator';
@@ -70,6 +78,7 @@ const Community = () => {
     bonusMessage: 'You\'re on fire! 🔥'
   });
   const [showProfileModal, setShowProfileModal] = useState<{id: string, type: string} | null>(null);
+  const [showAboutModal, setShowAboutModal] = useState(false);
   
 
   // Animate stats count up on load
@@ -239,6 +248,11 @@ const Community = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Rotating Hero Banner */}
+      <div className="px-6 py-8">
+        <RotatingHeroBanner />
+      </div>
+
       {/* EmviApp Hero Banner with Sparkling Effects */}
       <motion.div 
         className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background border-b border-border/50 overflow-hidden"
