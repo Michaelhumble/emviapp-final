@@ -235,12 +235,29 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
             <h3 className="font-semibold text-lg text-foreground line-clamp-2 min-w-0">
               {job.title}
             </h3>
-            {job.compensation_details && (
-              <div className="flex items-center gap-1 text-primary font-bold whitespace-nowrap">
-                <DollarSign className="h-4 w-4" />
-                <span className="text-sm">{job.compensation_details}</span>
-              </div>
-            )}
+            {(() => {
+              // UNIVERSAL: Show compensation - exact user input priority
+              const compensation = (() => {
+                if (job.compensation_details && typeof job.compensation_details === 'string' && job.compensation_details.trim()) {
+                  return job.compensation_details;
+                }
+                if (job.salary_range && typeof job.salary_range === 'string' && job.salary_range.trim()) {
+                  return job.salary_range;
+                }
+                const jobAny = job as any;
+                if (jobAny.salary && typeof jobAny.salary === 'string' && jobAny.salary.trim()) {
+                  return jobAny.salary;
+                }
+                return 'Contact for details';
+              })();
+              
+              return (
+                <div className="flex items-center gap-1 text-primary font-bold whitespace-nowrap">
+                  <DollarSign className="h-4 w-4" />
+                  <span className="text-sm">{compensation}</span>
+                </div>
+              );
+            })()}
           </div>
           
           {/* Location and Category */}

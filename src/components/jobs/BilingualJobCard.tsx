@@ -203,33 +203,26 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     navigate(`/jobs/edit/${job.id}`);
   };
 
-  // Format salary/compensation display with null safety and Vietnamese formatting for nail jobs
+  // UNIVERSAL: Format salary/compensation display - EXACT user input priority
   const formatCompensation = () => {
-    let compensation = '';
-    
-    if (job.compensation_details && typeof job.compensation_details === 'string') {
-      compensation = job.compensation_details;
-    } else if (job.employment_type && typeof job.employment_type === 'string') {
-      compensation = job.employment_type;
-    } else {
-      compensation = 'Contact for details';
+    // Priority 1: compensation_details (exact user input)
+    if (job.compensation_details && typeof job.compensation_details === 'string' && job.compensation_details.trim()) {
+      return job.compensation_details;
     }
     
-    // For nail jobs, format salary with /tuần if not already present
-    const isNailJob = job.category?.toLowerCase().includes('nail') || 
-                      job.title?.toLowerCase().includes('nail');
-    
-    if (isNailJob && compensation !== 'Contact for details') {
-      // If it already has /tuần, return as is
-      if (compensation.includes('/tuần')) return compensation;
-      
-      // If it looks like a salary range ($X-$Y), add /tuần
-      if (compensation.match(/\$[\d,]+-?\$?[\d,]*/) || compensation.match(/\$[\d,]+/)) {
-        return `${compensation}/tuần`;
-      }
+    // Priority 2: salary_range (fallback)
+    if (job.salary_range && typeof job.salary_range === 'string' && job.salary_range.trim()) {
+      return job.salary_range;
     }
     
-    return compensation;
+    // Priority 3: Check for any other salary field (legacy)
+    const jobAny = job as any;
+    if (jobAny.salary && typeof jobAny.salary === 'string' && jobAny.salary.trim()) {
+      return jobAny.salary;
+    }
+    
+    // Only show placeholder if ALL compensation fields are empty
+    return 'Contact for details';
   };
 
   // Get pricing tier badge color and icon - FIXED: Added Gold tier support

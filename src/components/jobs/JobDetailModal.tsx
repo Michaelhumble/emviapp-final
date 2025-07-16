@@ -219,7 +219,20 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       <h3 className="font-semibold text-green-800">Weekly Salary</h3>
                     </div>
                     <p className="text-2xl font-bold text-green-700">
-                      {job.compensation_details || job.salary_range || "Contact for details"}
+                      {(() => {
+                        // UNIVERSAL: Show exact compensation as entered by user
+                        if (job.compensation_details && typeof job.compensation_details === 'string' && job.compensation_details.trim()) {
+                          return job.compensation_details;
+                        }
+                        if (job.salary_range && typeof job.salary_range === 'string' && job.salary_range.trim()) {
+                          return job.salary_range;
+                        }
+                        const jobAny = job as any;
+                        if (jobAny.salary && typeof jobAny.salary === 'string' && jobAny.salary.trim()) {
+                          return jobAny.salary;
+                        }
+                        return "Contact for details";
+                      })()}
                     </p>
                   </div>
 

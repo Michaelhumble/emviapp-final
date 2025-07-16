@@ -96,11 +96,25 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     });
   }
 
-  // Format salary display with null safety
+  // UNIVERSAL: Format salary display - EXACT user input priority  
   const getSalary = () => {
-    if (job.compensation_details && typeof job.compensation_details === 'string') return job.compensation_details;
-    if (job.salary_range && typeof job.salary_range === 'string') return job.salary_range;
-    if (job.salary && typeof job.salary === 'string') return job.salary;
+    // Priority 1: compensation_details (exact user input)
+    if (job.compensation_details && typeof job.compensation_details === 'string' && job.compensation_details.trim()) {
+      return job.compensation_details;
+    }
+    
+    // Priority 2: salary_range (fallback)
+    if (job.salary_range && typeof job.salary_range === 'string' && job.salary_range.trim()) {
+      return job.salary_range;
+    }
+    
+    // Priority 3: Check for any other salary field (legacy)
+    const jobAny = job as any;
+    if (jobAny.salary && typeof jobAny.salary === 'string' && jobAny.salary.trim()) {
+      return jobAny.salary;
+    }
+    
+    // Only show placeholder if ALL compensation fields are empty
     return 'Contact for details';
   };
 
