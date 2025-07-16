@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Bookmark, UserPlus, Camera, Send, MoreHorizontal, Sparkles, Flame, Award, Star, Gift, Users, Palette, Scissors, Droplet } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, UserPlus, UserCheck, Camera, Send, MoreHorizontal, Sparkles, Flame, Award, Star, Gift, Users, Palette, Scissors, Droplet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { useArtistFollow } from '@/hooks/artist-interactions/useArtistFollow';
 
 interface PhotoPost {
   id: string;
@@ -50,6 +51,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [commentText, setCommentText] = useState<{[key: string]: string}>({});
   const [showComments, setShowComments] = useState<{[key: string]: boolean}>({});
+  const [followingUsers, setFollowingUsers] = useState<{[key: string]: boolean}>({});
 
   // Emotional reactions and CTAs
   const emotionalReactions = [
@@ -256,6 +258,50 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
     }
   };
 
+  // Toggle follow
+  const toggleFollow = async (userId: string) => {
+    if (!user) {
+      toast.error('Please sign in to follow people');
+      return;
+    }
+
+    try {
+      const isCurrentlyFollowing = followingUsers[userId];
+      
+      if (isCurrentlyFollowing) {
+        // Unfollow user
+        const { error } = await supabase
+          .from("followers")
+          .delete()
+          .eq("viewer_id", user.id)
+          .eq("artist_id", userId);
+          
+        if (error) throw error;
+        
+        setFollowingUsers(prev => ({ ...prev, [userId]: false }));
+        toast.success("Unfollowed successfully");
+      } else {
+        // Follow user
+        const { error } = await supabase
+          .from("followers")
+          .insert({
+            viewer_id: user.id,
+            artist_id: userId
+          });
+          
+        if (error) throw error;
+        
+        setFollowingUsers(prev => ({ ...prev, [userId]: true }));
+        toast.success("You're now following! (+5 credits)", {
+          description: 'Stay connected and inspired!'
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+      toast.error("Failed to update follow status");
+    }
+  };
+
   // Share post
   const sharePost = async (post: PhotoPost) => {
     const shareUrl = `${window.location.origin}/community/post/${post.id}`;
@@ -278,9 +324,36 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
     }
   };
 
+  // Load follow states for posts
+  const loadFollowStates = async () => {
+    if (!user || posts.length === 0) return;
+
+    try {
+      const userIds = posts.map(post => post.user_id);
+      const { data: followData } = await supabase
+        .from("followers")
+        .select("artist_id")
+        .eq("viewer_id", user.id)
+        .in("artist_id", userIds);
+
+      const followStates: {[key: string]: boolean} = {};
+      followData?.forEach(follow => {
+        followStates[follow.artist_id] = true;
+      });
+
+      setFollowingUsers(followStates);
+    } catch (error) {
+      console.error('Error loading follow states:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
   }, [filter]);
+
+  useEffect(() => {
+    loadFollowStates();
+  }, [user, posts]);
 
   return (
     <div className="space-y-16">
@@ -435,18 +508,29 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
                       </div>
                     </div>
 
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => onProfileClick(post.user_id)}
-                        className="rounded-full transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/20 border-border/50 font-inter font-medium"
-                        aria-label={`Follow ${post.profiles?.full_name}`}
-                      >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Follow
-                      </Button>
-                    </motion.div>
+                    {user?.id !== post.user_id && (
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button 
+                          variant={followingUsers[post.user_id] ? "default" : "outline"} 
+                          size="sm" 
+                          onClick={() => toggleFollow(post.user_id)}
+                          className="rounded-full transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/20 border-border/50 font-inter font-medium"
+                          aria-label={`${followingUsers[post.user_id] ? 'Unfollow' : 'Follow'} ${post.profiles?.full_name}`}
+                        >
+                          {followingUsers[post.user_id] ? (
+                            <>
+                              <UserCheck className="h-4 w-4 mr-2" />
+                              Following
+                            </>
+                          ) : (
+                            <>
+                              <UserPlus className="h-4 w-4 mr-2" />
+                              Follow
+                            </>
+                          )}
+                        </Button>
+                      </motion.div>
+                    )}
                   </div>
                 </div>
 

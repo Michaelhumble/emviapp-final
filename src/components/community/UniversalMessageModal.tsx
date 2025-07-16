@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface UniversalMessageModalProps {
@@ -42,8 +43,17 @@ export const UniversalMessageModal: React.FC<UniversalMessageModalProps> = ({
     setIsLoading(true);
 
     try {
-      // For now, just show success toast
-      // In production, this would integrate with actual messaging system
+      // Use the real messaging hook to send message
+      const { error } = await supabase.from('messages').insert({
+        sender_id: user.id,
+        recipient_id: recipientId,
+        message_body: message.trim(),
+        message_type: 'chat',
+        salon_id: user.id // Using user.id as temporary placeholder
+      });
+
+      if (error) throw error;
+
       toast.success('Message sent! 💌', {
         description: `Your message was delivered to ${recipientName}`
       });

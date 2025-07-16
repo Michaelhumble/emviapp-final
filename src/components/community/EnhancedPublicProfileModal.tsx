@@ -176,6 +176,18 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
         };
 
         setProfile(mockProfile);
+
+        // Check if user is following this profile
+        if (user) {
+          const { data: followData } = await supabase
+            .from("followers")
+            .select("*")
+            .eq("viewer_id", user.id)
+            .eq("artist_id", profileId)
+            .maybeSingle();
+          
+          setIsFollowing(!!followData);
+        }
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
@@ -185,7 +197,7 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
     };
 
     fetchProfile();
-  }, [isOpen, profileId]);
+  }, [isOpen, profileId, user]);
 
   // Handle actions
   const handleFollow = async () => {
@@ -194,8 +206,37 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
       return;
     }
     
-    setIsFollowing(!isFollowing);
-    toast.success(isFollowing ? 'Unfollowed' : 'Following!');
+    try {
+      if (isFollowing) {
+        // Unfollow artist
+        const { error } = await supabase
+          .from("followers")
+          .delete()
+          .eq("viewer_id", user.id)
+          .eq("artist_id", profileId);
+          
+        if (error) throw error;
+        
+        setIsFollowing(false);
+        toast.success("Unfollowed successfully");
+      } else {
+        // Follow artist
+        const { error } = await supabase
+          .from("followers")
+          .insert({
+            viewer_id: user.id,
+            artist_id: profileId
+          });
+          
+        if (error) throw error;
+        
+        setIsFollowing(true);
+        toast.success("You're now following this person! (+5 credits)");
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+      toast.error("Failed to update follow status");
+    }
   };
 
   const handleBookmark = async () => {
@@ -236,14 +277,13 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
       return;
     }
     
-    // In a full implementation, this would open the messaging modal
-    // For now, redirect to messaging page with context
+    // Open the messaging route with the profile context
+    const messageUrl = `/messages?recipient=${profile?.id}&name=${encodeURIComponent(profile?.name || '')}`;
+    window.open(messageUrl, '_blank');
+    
     toast.success('Opening messaging...', {
       description: `Starting conversation with ${profile?.name}`
     });
-    
-    // Could also open the UniversalMessageModal here
-    window.open('/messages', '_blank');
   };
 
   const handleBook = () => {
