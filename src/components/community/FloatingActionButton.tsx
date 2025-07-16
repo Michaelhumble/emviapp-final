@@ -3,6 +3,7 @@ import { Plus, Camera, Video, MessageSquare, Hash, Star, Sparkles } from 'lucide
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface FABProps {
   onCreatePost: (type: string) => void;
@@ -49,10 +50,16 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
                       >
                         <Button
                           variant="ghost"
-                          onClick={() => handlePostTypeSelect(postType.type)}
-                          className="w-full justify-start gap-3 px-3 py-6 text-left hover:bg-gray-50 transition-all duration-200"
+                          onClick={() => {
+                            handlePostTypeSelect(postType.type);
+                            toast.success(`Creating ${postType.label.toLowerCase()}... ✨`, {
+                              description: 'Let your creativity shine!'
+                            });
+                          }}
+                          className="w-full justify-start gap-3 px-3 py-6 text-left hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] focus:ring-2 focus:ring-primary/20 rounded-xl"
+                          aria-label={`Create ${postType.label}`}
                         >
-                          <div className={`p-2 rounded-lg bg-gradient-to-r ${postType.color}`}>
+                          <div className={`p-2 rounded-lg bg-gradient-to-r ${postType.color} shadow-lg`}>
                             <IconComponent className="h-4 w-4 text-white" />
                           </div>
                           <span className="font-medium text-gray-700">{postType.label}</span>
@@ -73,12 +80,13 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
       >
         <Button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 shadow-2xl hover:shadow-3xl transition-all duration-300 border-0"
+          className="h-14 w-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 shadow-2xl hover:shadow-3xl transition-all duration-300 border-0 focus:ring-4 focus:ring-purple-300 focus:outline-none"
           size="icon"
+          aria-label={isExpanded ? "Close create menu" : "Open create menu"}
         >
           <motion.div
             animate={{ rotate: isExpanded ? 45 : 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
           >
             <Plus className="h-6 w-6 text-white" />
           </motion.div>

@@ -90,14 +90,17 @@ const Community = () => {
 
       {/* Community Rules - Accessible */}
       <div className="px-8 py-16 text-center">
-        <Button 
-          variant="outline" 
-          onClick={() => setShowAboutModal(true)}
-          className="flex items-center gap-2"
-        >
-          <Info size={16} />
-          Community Guidelines
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowAboutModal(true)}
+            className="flex items-center gap-2 transition-all duration-300 hover:shadow-lg hover:bg-primary/5 hover:border-primary/30 focus:ring-2 focus:ring-primary/20 rounded-full px-6"
+            aria-label="Open community guidelines"
+          >
+            <Info size={16} />
+            Community Guidelines
+          </Button>
+        </motion.div>
       </div>
 
       {/* Footer Message */}
@@ -180,16 +183,21 @@ const Community = () => {
               <div className="text-center">
                 <Sparkles className="mx-auto mb-4 text-primary" size={40} />
                 <h3 className="text-2xl font-semibold mb-6">Share Your Story</h3>
-                <Button 
-                  onClick={() => {
-                    setShowCreatePost(false);
-                    toast.success('Feature coming soon! 🎉');
-                  }}
-                  className="w-full"
-                  size="lg"
-                >
-                  Create Post
-                </Button>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    onClick={() => {
+                      setShowCreatePost(false);
+                      toast.success('✨ Feature coming soon!', {
+                        description: 'We\'re crafting something beautiful for you!'
+                      });
+                    }}
+                    className="w-full transition-all duration-300 hover:shadow-lg focus:ring-4 focus:ring-primary/30"
+                    size="lg"
+                    aria-label="Create a new post"
+                  >
+                    Create Post
+                  </Button>
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Camera, Heart, Star, Upload, Clock, Award, Users, Zap } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -232,14 +233,22 @@ const WeeklyChallengeEnhanced: React.FC = () => {
 
         {/* Entry Button */}
         {!userHasEntered ? (
-          <Button
-            onClick={() => setShowSubmissionModal(true)}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-            size="lg"
-          >
-            <Camera className="mr-2" size={20} />
-            Submit Your Entry
-          </Button>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              onClick={() => {
+                setShowSubmissionModal(true);
+                toast.success('✨ Ready to showcase your talent?', {
+                  description: 'Show the world your amazing skills!'
+                });
+              }}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 hover:shadow-xl focus:ring-4 focus:ring-purple-300"
+              size="lg"
+              aria-label="Submit your challenge entry"
+            >
+              <Camera className="mr-2" size={20} />
+              Submit Your Entry
+            </Button>
+          </motion.div>
         ) : (
           <div className="text-center p-4 bg-green-100 rounded-xl border border-green-200">
             <Award className="mx-auto mb-2 text-green-600" size={24} />
@@ -293,15 +302,28 @@ const WeeklyChallengeEnhanced: React.FC = () => {
                       <span className="font-medium">{entry.user_name}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleVote(entry.id)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                      >
-                        <Heart size={16} className="mr-1" />
-                        {entry.votes_count}
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            handleVote(entry.id);
+                            confetti({
+                              particleCount: 50,
+                              spread: 70,
+                              origin: { y: 0.6 }
+                            });
+                            toast.success('🗳️ Vote submitted!', {
+                              description: 'Your support helps amazing talent shine!'
+                            });
+                          }}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-300 hover:shadow-md rounded-full focus:ring-2 focus:ring-red-200"
+                          aria-label={`Vote for ${entry.user_name}'s entry`}
+                        >
+                          <Heart size={16} className="mr-1" />
+                          {entry.votes_count}
+                        </Button>
+                      </motion.div>
                     </div>
                   </div>
                   
@@ -396,12 +418,22 @@ const WeeklyChallengeEnhanced: React.FC = () => {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    onClick={handleSubmitEntry}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600"
-                  >
-                    Submit Entry
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      onClick={() => {
+                        handleSubmitEntry();
+                        confetti({
+                          particleCount: 100,
+                          spread: 70,
+                          origin: { y: 0.6 }
+                        });
+                      }}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-lg transition-all duration-300 focus:ring-4 focus:ring-purple-300"
+                      aria-label="Submit challenge entry"
+                    >
+                      Submit Entry
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>

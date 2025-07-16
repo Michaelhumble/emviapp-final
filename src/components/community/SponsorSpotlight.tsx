@@ -4,9 +4,9 @@ import {
   Star, Crown, Gift, TrendingUp, Users, Eye, Calendar,
   ChevronLeft, ChevronRight, ExternalLink, Award, Zap
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
 
 interface Sponsor {
   id: string;
@@ -202,13 +202,16 @@ const SponsorSpotlight: React.FC<Props> = ({ onSponsorClick, className = '' }) =
             <span>Sponsor Spotlight</span>
           </h2>
           
-          <button
+          <motion.button
             onClick={() => setQueueVisible(!queueVisible)}
-            className="text-sm text-primary hover:text-primary/80 font-medium flex items-center space-x-1"
+            className="text-sm text-primary hover:text-primary/80 font-medium flex items-center space-x-1 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/20 rounded-lg px-2 py-1"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label={`${queueVisible ? 'Hide' : 'Show'} sponsor queue`}
           >
             <TrendingUp size={16} />
             <span>View Queue ({queueSponsors.length})</span>
-          </button>
+          </motion.button>
         </div>
 
         {currentSponsor && (
@@ -314,10 +317,16 @@ const SponsorSpotlight: React.FC<Props> = ({ onSponsorClick, className = '' }) =
                     </div>
                     
                     <motion.button
-                      onClick={(e) => handleEnterGiveaway(currentSponsor.currentGiveaway!.id, e)}
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
-                      whileHover={{ scale: 1.05 }}
+                      onClick={(e) => {
+                        handleEnterGiveaway(currentSponsor.currentGiveaway!.id, e);
+                        toast.success('🍀 You\'re in the running!', {
+                          description: 'Good luck! May the beauty gods smile upon you!'
+                        });
+                      }}
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-all duration-300 hover:shadow-lg focus:ring-2 focus:ring-primary/30"
+                      whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
                       whileTap={{ scale: 0.95 }}
+                      aria-label={`Enter ${currentSponsor.currentGiveaway!.title} giveaway`}
                     >
                       Enter Now
                     </motion.button>
@@ -418,14 +427,19 @@ const SponsorSpotlight: React.FC<Props> = ({ onSponsorClick, className = '' }) =
                 ))}
               </div>
               
-              <motion.button
-                className="w-full mt-4 p-3 border-2 border-dashed border-primary/30 rounded-lg text-primary hover:bg-primary/5 transition-colors font-medium"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => toast.success('Opening sponsor application...')}
-              >
-                + Apply for Next Spot
-              </motion.button>
+                <motion.button
+                  className="w-full mt-4 p-3 border-2 border-dashed border-primary/30 rounded-lg text-primary hover:bg-primary/5 transition-all duration-300 font-medium hover:border-primary/50 focus:ring-2 focus:ring-primary/20"
+                  whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary))" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    toast.success('🚀 Opening sponsor application...', {
+                      description: 'Ready to showcase your brand to beauty professionals?'
+                    });
+                  }}
+                  aria-label="Apply for next sponsor spot"
+                >
+                  + Apply for Next Spot
+                </motion.button>
             </div>
           </motion.div>
         )}

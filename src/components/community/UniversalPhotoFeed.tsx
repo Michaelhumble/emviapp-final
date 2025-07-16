@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Bookmark, UserPlus, Camera, Send, MoreHorizontal, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, UserPlus, Camera, Send, MoreHorizontal, Sparkles, Flame, Award, Star, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -52,22 +52,22 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
 
   // Emotional reactions and CTAs
   const emotionalReactions = [
-    { icon: '❤️', label: 'Love', action: 'love' },
-    { icon: '✨', label: 'Inspired', action: 'inspired' },
-    { icon: '🔥', label: 'Fire', action: 'fire' },
-    { icon: '👏', label: 'Amazing', action: 'amazing' }
+    { icon: Heart, label: 'Love', action: 'love', color: 'text-red-500 hover:text-red-600' },
+    { icon: Sparkles, label: 'Inspired', action: 'inspired', color: 'text-purple-500 hover:text-purple-600' },
+    { icon: Flame, label: 'Fire', action: 'fire', color: 'text-orange-500 hover:text-orange-600' },
+    { icon: Award, label: 'Amazing', action: 'amazing', color: 'text-yellow-500 hover:text-yellow-600' }
   ];
 
   const categoryFilters = [
-    { value: 'all', label: 'All Posts', emoji: '🌟' },
-    { value: 'artists', label: 'Artists', emoji: '🎨' },
-    { value: 'salons', label: 'Salons', emoji: '💇‍♀️' },
-    { value: 'customers', label: 'Customers', emoji: '💎' },
-    { value: 'nails', label: 'Nails', emoji: '💅' },
-    { value: 'hair', label: 'Hair', emoji: '💇' },
-    { value: 'makeup', label: 'Makeup', emoji: '💄' },
-    { value: 'massage', label: 'Massage', emoji: '💆' },
-    { value: 'skincare', label: 'Skincare', emoji: '✨' }
+    { value: 'all', label: 'All Posts', icon: Star },
+    { value: 'artists', label: 'Artists', icon: Sparkles },
+    { value: 'salons', label: 'Salons', icon: Gift },
+    { value: 'customers', label: 'Customers', icon: Heart },
+    { value: 'nails', label: 'Nails', icon: Star },
+    { value: 'hair', label: 'Hair', icon: Sparkles },
+    { value: 'makeup', label: 'Makeup', icon: Gift },
+    { value: 'massage', label: 'Massage', icon: Heart },
+    { value: 'skincare', label: 'Skincare', icon: Sparkles }
   ];
 
   // Fetch posts with smart feed logic
@@ -291,17 +291,18 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
 
       {/* Luxury Filter Bar */}
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide justify-center">
-        {categoryFilters.slice(0, 6).map(({ value, label, emoji }) => (
-          <Button
-            key={value}
-            variant={filter === value ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setFilter(value)}
-            className="whitespace-nowrap rounded-full px-6"
-          >
-            <span className="mr-2">{emoji}</span>
-            {label}
-          </Button>
+        {categoryFilters.slice(0, 6).map(({ value, label, icon: Icon }) => (
+          <motion.div key={value} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant={filter === value ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setFilter(value)}
+              className="whitespace-nowrap rounded-full px-6 transition-all duration-300 hover:shadow-lg"
+            >
+              <Icon size={16} className="mr-2" />
+              {label}
+            </Button>
+          </motion.div>
         ))}
       </div>
 
@@ -433,10 +434,17 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                       </div>
                     </div>
 
-                    <Button variant="ghost" size="sm" className="rounded-full">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Follow
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="rounded-full transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/20"
+                        aria-label={`Follow ${post.profiles?.full_name}`}
+                      >
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Follow
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
 
@@ -474,58 +482,109 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                 <div className="px-8 py-6 border-t border-border/10 bg-background/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleLike(post.id)}
-                        className={`rounded-full ${post.is_liked ? "text-red-500" : ""}`}
-                      >
-                        <Heart className={`h-5 w-5 mr-2 ${post.is_liked ? 'fill-current' : ''}`} />
-                        {post.likes_count || 0}
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            toggleLike(post.id);
+                            if (!post.is_liked) {
+                              toast.success('💖 You just made someone\'s day!', {
+                                description: 'Your love is spreading the beauty!'
+                              });
+                            }
+                          }}
+                          className={`rounded-full transition-all duration-300 ${
+                            post.is_liked 
+                              ? "text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100" 
+                              : "hover:text-red-500 hover:bg-red-50"
+                          }`}
+                          aria-label={`${post.is_liked ? 'Unlike' : 'Like'} this post`}
+                        >
+                          <Heart className={`h-5 w-5 mr-2 transition-all duration-300 ${post.is_liked ? 'fill-current scale-110' : ''}`} />
+                          {post.likes_count || 0}
+                        </Button>
+                      </motion.div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
-                      >
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        {post.comments_count || 0}
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
+                          className="rounded-full transition-all duration-300 hover:text-blue-500 hover:bg-blue-50 focus:ring-2 focus:ring-blue-200"
+                          aria-label={`${showComments[post.id] ? 'Hide' : 'Show'} comments`}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-1" />
+                          {post.comments_count || 0}
+                        </Button>
+                      </motion.div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => sharePost(post)}
-                      >
-                        <Share2 className="h-4 w-4 mr-1" />
-                        Share
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            sharePost(post);
+                            toast.success('🚀 Spreading the beauty!', {
+                              description: 'Thanks for sharing amazing content!'
+                            });
+                          }}
+                          className="rounded-full transition-all duration-300 hover:text-green-500 hover:bg-green-50 focus:ring-2 focus:ring-green-200"
+                          aria-label="Share this post"
+                        >
+                          <Share2 className="h-4 w-4 mr-1" />
+                          Share
+                        </Button>
+                      </motion.div>
                     </div>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleBookmark(post.id)}
-                      className={post.is_bookmarked ? "text-primary" : ""}
-                    >
-                      <Bookmark className={`h-4 w-4 ${post.is_bookmarked ? 'fill-current' : ''}`} />
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          toggleBookmark(post.id);
+                          toast.success(post.is_bookmarked ? 'Bookmark removed' : '📌 Saved to your collection!');
+                        }}
+                        className={`rounded-full transition-all duration-300 ${
+                          post.is_bookmarked 
+                            ? "text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20" 
+                            : "hover:text-primary hover:bg-primary/10"
+                        }`}
+                        aria-label={`${post.is_bookmarked ? 'Remove bookmark' : 'Bookmark'} this post`}
+                      >
+                        <Bookmark className={`h-4 w-4 transition-all duration-300 ${post.is_bookmarked ? 'fill-current scale-110' : ''}`} />
+                      </Button>
+                    </motion.div>
                   </div>
 
                   {/* Emotional Reactions */}
                   <div className="flex items-center gap-2 mb-3">
-                    {emotionalReactions.map((reaction) => (
-                      <Button
-                        key={reaction.action}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs h-8"
-                      >
-                        <span className="mr-1">{reaction.icon}</span>
-                        {reaction.label}
-                      </Button>
-                    ))}
+                    {emotionalReactions.map((reaction) => {
+                      const IconComponent = reaction.icon;
+                      return (
+                        <motion.div 
+                          key={reaction.action}
+                          whileHover={{ scale: 1.1, y: -2 }} 
+                          whileTap={{ scale: 0.9 }}
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={`text-xs h-8 rounded-full border-0 bg-background/80 backdrop-blur-sm transition-all duration-300 ${reaction.color} hover:shadow-lg hover:bg-background`}
+                            onClick={() => {
+                              toast.success(`${reaction.label} reaction added! ✨`, {
+                                description: 'Your reaction helps creators feel appreciated!'
+                              });
+                            }}
+                            aria-label={`React with ${reaction.label}`}
+                          >
+                            <IconComponent size={14} className="mr-1" />
+                            {reaction.label}
+                          </Button>
+                        </motion.div>
+                      );
+                    })}
                   </div>
 
                   {/* Comment Section */}
@@ -549,13 +608,22 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                               onChange={(e) => setCommentText(prev => ({ ...prev, [post.id]: e.target.value }))}
                               className="text-sm"
                             />
-                            <Button
-                              size="sm"
-                              onClick={() => addComment(post.id)}
-                              disabled={!commentText[post.id]?.trim()}
-                            >
-                              <Send className="h-4 w-4" />
-                            </Button>
+                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  addComment(post.id);
+                                  toast.success('💬 Comment shared!', {
+                                    description: 'Your voice adds to the conversation!'
+                                  });
+                                }}
+                                disabled={!commentText[post.id]?.trim()}
+                                className="rounded-full transition-all duration-300 hover:shadow-md focus:ring-2 focus:ring-primary/20"
+                                aria-label="Post comment"
+                              >
+                                <Send className="h-4 w-4" />
+                              </Button>
+                            </motion.div>
                           </div>
                         </div>
                       </motion.div>
