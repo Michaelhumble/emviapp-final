@@ -39,6 +39,7 @@ const enhancedJobFormSchema = z.object({
     required_error: "Please select a plan type" 
   }),
   title: z.string().min(1, "Job title is required"),
+  category: z.string().optional(),
   company: z.string().optional(),
   salonName: z.string().min(1, "Salon name is required"),
   location: z.string().min(1, "Location is required"),
@@ -88,6 +89,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     defaultValues: {
       planType: 'free', // Default to free plan
       title: '',
+      category: '',
       company: '',
       salonName: '',
       location: '',
@@ -238,6 +240,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       form.reset({
         planType: initialValues.planType || 'free',
         title: initialValues.title || '',
+        category: initialValues.category || '',
         company: initialValues.company || '',
         salonName: initialValues.company || initialValues.salonName || '',
         location: initialValues.location || '',
@@ -500,7 +503,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
           body: {
             jobData: {
               title: data.title.trim(),
-              category: 'General', // Fixed category since UI no longer shows selection
+              category: data.category || 'General',
               location: data.location.trim() || '',
               description: data.description.trim(),
               // vietnamese_description field removed - not in database schema

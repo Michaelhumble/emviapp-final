@@ -49,7 +49,7 @@ const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
           <h3 className="font-playfair text-xl font-semibold text-gray-900">✨ Add Photos</h3>
           <div className="flex-1"></div>
           <span className="text-sm text-gray-500">
-            {maxPhotos === 1 ? "1 photo" : `Up to ${maxPhotos} photos`}
+            {maxPhotos === 1 ? "Upload 1 photo (max 5MB)" : `Upload up to ${maxPhotos} photos (max 5MB each)`}
           </span>
         </div>
         
