@@ -31,9 +31,20 @@ const UnifiedJobFeed = ({
   };
 
   const handleEditJob = (job: Job) => {
+    console.log('🔍 [UNIFIED-FEED] Edit job clicked:', {
+      jobId: job.id,
+      jobUserId: job.user_id,
+      currentUserId: user?.id,
+      isOwner: user && user.id === job.user_id,
+      jobTitle: job.title
+    });
+    
     // Only allow editing if user owns the job
     if (user && user.id === job.user_id) {
+      console.log('✅ [UNIFIED-FEED] Navigating to edit page:', `/jobs/edit/${job.id}`);
       navigate(`/jobs/edit/${job.id}`);
+    } else {
+      console.log('❌ [UNIFIED-FEED] Edit denied - user does not own this job');
     }
   };
 

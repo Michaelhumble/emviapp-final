@@ -69,6 +69,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   const { toast } = useToast();
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmittingFreeJob, setIsSubmittingFreeJob] = useState(false);
+  const [isSubmittingPaidJob, setIsSubmittingPaidJob] = useState(false);
   const [freeJobError, setFreeJobError] = useState<string | null>(null);
   const [freeJobSuccess, setFreeJobSuccess] = useState(false);
   const [hasPostedFreeJob, setHasPostedFreeJob] = useState(false);
@@ -457,26 +458,32 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
     console.log('✅ [PAID-VALIDATION] Form validation passed');
 
-    setIsSubmittingFreeJob(true);
+    setIsSubmittingPaidJob(true);
 
     try {
       console.log('🚀 [STRIPE-CHECKOUT] Creating checkout session with plan details');
       
       // CRITICAL FIX: Upload photos BEFORE creating checkout (File objects can't be serialized)
       console.log('📸 [PAID-PHOTO-UPLOAD] Starting photo upload for paid job:', photoUploads.length, 'files');
+      console.log('📸 [PAID-PHOTO-UPLOAD] photoUploads array contents:', photoUploads);
       let imageUrls: string[] = [];
       
       if (photoUploads.length > 0) {
+        console.log('📸 [PAID-PHOTO-UPLOAD] Calling uploadPhotosToStorage...');
         const uploadResult = await uploadPhotosToStorage(photoUploads);
+        console.log('📸 [PAID-PHOTO-UPLOAD] Upload result:', uploadResult);
         
         if (!uploadResult.success) {
           console.error('❌ [PAID-PHOTO-UPLOAD] Failed to upload photos:', uploadResult.error);
           setFreeJobError(`Failed to upload photos: ${uploadResult.error}`);
+          setIsSubmittingPaidJob(false);
           return;
         }
         
         imageUrls = uploadResult.imageUrls;
         console.log('✅ [PAID-PHOTO-UPLOAD] Successfully uploaded photos:', imageUrls);
+      } else {
+        console.log('⚠️ [PAID-PHOTO-UPLOAD] No photos to upload - photoUploads.length is 0');
       }
       
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
@@ -585,7 +592,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       const fullError = error instanceof Error ? error.message : 'Unknown error occurred';
       setFreeJobError(`Unexpected error: ${fullError}`);
     } finally {
-      setIsSubmittingFreeJob(false);
+      setIsSubmittingPaidJob(false);
     }
   };
 
@@ -843,7 +850,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                 type="submit"
                 disabled={
                   (selectedPlan === 'free' && (isSubmittingFreeJob || freeJobSuccess)) ||
-                  (selectedPlan === 'paid' && !selectedPaidPlan) ||
+                  (selectedPlan === 'paid' && (!selectedPaidPlan || isSubmittingPaidJob)) ||
                   isSubmittingFreeJob
                 }
                 className={`px-12 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 ${
@@ -857,7 +864,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Posting Job...
                   </>
-                ) : selectedPlan === 'paid' && isSubmittingFreeJob ? (
+                ) : selectedPlan === 'paid' && isSubmittingPaidJob ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Creating Payment...
