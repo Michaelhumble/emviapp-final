@@ -4,11 +4,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Scissors, Store, Briefcase, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
 
 const MobileBottomNavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { loading } = useAuth();
+
+  // Don't render while auth is loading to prevent flickering
+  if (loading) {
+    return null;
+  }
 
   // Define bottom navigation items with consistent properties
   const bottomNavItems = [

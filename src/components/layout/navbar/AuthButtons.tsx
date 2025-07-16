@@ -2,15 +2,28 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
+import { useEffect, useState } from "react";
 
 const AuthButtons = () => {
   const location = useLocation();
   const currentPath = encodeURIComponent(location.pathname + location.search);
-  const { isSignedIn, signOut } = useAuth();
+  const { isSignedIn, signOut, user, loading } = useAuth();
   
+  // Force re-render when auth state changes to ensure UI updates immediately
+  const [authState, setAuthState] = useState(isSignedIn);
+  
+  useEffect(() => {
+    setAuthState(isSignedIn);
+  }, [isSignedIn, user]);
+  
+  // Don't show buttons while loading to prevent flash
+  if (loading) {
+    return null;
+  }
+
   return (
     <>
-      {isSignedIn ? (
+      {authState ? (
         // Show Sign Out button when signed in
         <Button 
           onClick={signOut}

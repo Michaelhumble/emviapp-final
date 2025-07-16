@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
@@ -9,7 +9,14 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user, loading } = useAuth();
+  
+  // Force re-render when auth state changes
+  const [authState, setAuthState] = useState(isSignedIn);
+  
+  useEffect(() => {
+    setAuthState(isSignedIn);
+  }, [isSignedIn, user]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
@@ -95,7 +102,7 @@ const Navbar = () => {
             <LanguageToggle />
             
             {/* Dashboard Link for Signed In Users */}
-            {isSignedIn && (
+            {authState && (
               <div className="hidden md:flex">
                 <Link 
                   to="/dashboard" 

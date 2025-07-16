@@ -88,6 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, error };
       }
 
+      // Sign in successful - the onAuthStateChange will handle state updates
       toast.success("Signed in successfully!");
       return { success: true };
     } catch (error) {
@@ -106,6 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserRole(null);
       setUserProfile(null);
       setIsNewUser(false);
+      setLoading(false); // Ensure loading is false for immediate UI update
       
       // Clear all authentication-related localStorage keys
       const keysToRemove = [
@@ -174,6 +176,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, error };
       }
 
+      // Sign up successful - the onAuthStateChange will handle state updates
       toast.success("Account created successfully!");
       return { success: true, userId: data.user?.id };
     } catch (error) {

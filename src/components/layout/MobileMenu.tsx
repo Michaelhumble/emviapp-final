@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,8 +14,18 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, userProfile, userRole, isSignedIn } = useAuth();
   const navigate = useNavigate();
+
+  // Close menu when auth state changes (e.g., after sign in/out)
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    // Auto-close menu after sign out (when user becomes null)
+    if (!user && !isSignedIn) {
+      setTimeout(onClose, 100);
+    }
+  }, [user, isSignedIn, isOpen, onClose]);
 
   const handleAuthAction = async (action: string) => {
     onClose(); // Close menu immediately
@@ -34,10 +44,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }
   };
 
-  const { userProfile, userRole } = useAuth();
-
-  // Define menu items based on user authentication
-  const menuItems = user ? [
+  // Define menu items based on user authentication (use isSignedIn for consistency)
+  const menuItems = isSignedIn ? [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Building2, label: 'Salons', href: '/salons' },
@@ -88,7 +96,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center space-x-3 flex-1">
                 <Logo size="small" showText={true} />
-                {user && userProfile && (
+                {isSignedIn && userProfile && (
                   <div className="flex items-center space-x-2 ml-auto mr-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage 
@@ -143,7 +151,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
             {/* Authentication Section - Moved to top */}
             <div className="px-4 pb-4 flex-shrink-0">
-              {user ? (
+              {isSignedIn ? (
                 <div className="space-y-2">
                   <Link 
                     to="/dashboard" 
