@@ -18,10 +18,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Tag,
-  Award
+  Award,
+  Instagram
 } from 'lucide-react';
+import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import { useDropzone } from 'react-dropzone';
+import MobilePortfolioNav from '../components/MobilePortfolioNav';
 
 const ArtistInstagramPortfolio = () => {
   const { userProfile } = useAuth();
@@ -165,6 +168,15 @@ const ArtistInstagramPortfolio = () => {
 
   return (
     <div className="space-y-6">
+      {/* Mobile Navigation */}
+      <MobilePortfolioNav 
+        onBack={() => {
+          const overviewTab = document.querySelector('[value="overview"]') as HTMLElement;
+          overviewTab?.click();
+        }}
+        onUpload={() => (document.querySelector('[data-upload-trigger]') as HTMLElement)?.click()}
+        onShare={() => toast.info("Share functionality available in overview tab")}
+      />
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -172,15 +184,29 @@ const ArtistInstagramPortfolio = () => {
           <p className="text-gray-600">Instagram-level showcase of your best work</p>
         </div>
         
-        <Button 
-          className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-          data-upload-trigger
-          {...getRootProps()}
-        >
-          <input {...getInputProps()} />
-          <Upload className="w-4 w-4 mr-2" />
-          Upload Photos
-        </Button>
+        <div className="flex gap-3">
+          <Button 
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => {
+              // Import from Instagram placeholder - show info toast
+              toast.info("Instagram import coming soon! For now, upload your best photos manually.");
+            }}
+          >
+            <Instagram className="w-4 h-4" />
+            Import from IG
+          </Button>
+          
+          <Button 
+            className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+            data-upload-trigger
+            {...getRootProps()}
+          >
+            <input {...getInputProps()} />
+            <Upload className="w-4 w-4 mr-2" />
+            Upload Photos
+          </Button>
+        </div>
       </div>
 
       {/* Upload Progress */}

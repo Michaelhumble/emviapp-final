@@ -1,31 +1,51 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Share2, Copy, Instagram, Facebook } from 'lucide-react';
-
+import { Share2, Copy, Instagram, Facebook, MessageCircle, QrCode } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
 const ArtistViralShare = () => {
-  const { user } = useAuth();
-  const profileUrl = `${window.location.origin}/artist/${user?.id || 'profile'}`;
+  const { user, userProfile } = useAuth();
+  const artistName = userProfile?.full_name || userProfile?.display_name || 'Artist';
+  const profileUrl = `${window.location.origin}/a/${user?.id || 'profile'}`;
 
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(profileUrl);
-      toast.success('Profile link copied to clipboard!');
+      toast.success('✨ Profile link copied to clipboard!');
     } catch (err) {
       toast.error('Failed to copy link');
     }
   };
 
+  const shareMessage = `Check out ${artistName}'s amazing work on EmviApp! Book your appointment: ${profileUrl}`;
+
   const shareButtons = [
+    {
+      name: 'Copy Link',
+      icon: Copy,
+      color: 'from-gray-600 to-gray-700',
+      onClick: handleCopyLink
+    },
+    {
+      name: 'WhatsApp',
+      icon: MessageCircle,
+      color: 'from-green-500 to-green-600',
+      onClick: () => {
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+    },
     {
       name: 'Instagram',
       icon: Instagram,
       color: 'from-pink-500 to-rose-500',
       onClick: () => {
         handleCopyLink();
+        toast.success('Link copied! Paste it in your Instagram story 📸');
         window.open('https://www.instagram.com/', '_blank');
       }
     },
@@ -34,70 +54,83 @@ const ArtistViralShare = () => {
       icon: Facebook,
       color: 'from-blue-600 to-indigo-600',
       onClick: () => {
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileUrl)}`;
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileUrl)}&quote=${encodeURIComponent(shareMessage)}`;
         window.open(shareUrl, '_blank', 'width=600,height=400');
       }
     }
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20"
-    >
-      <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-bold text-slate-900 mb-2 flex items-center gap-2">
-          <Share2 className="h-6 w-6 text-emerald-600" />
+    <Card className="card-luxury">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-3">
+          <Share2 className="h-6 w-6 text-purple-600" />
           Share Your Profile
-        </h2>
-        <p className="text-slate-600 font-inter">Grow your client base by sharing your work</p>
-      </div>
+        </CardTitle>
+        <p className="text-muted-foreground">Grow your client base by sharing your work</p>
+      </CardHeader>
 
-      <div className="bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-2xl p-6 border border-emerald-100 mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-slate-900 mb-1">Your Referral Link</h3>
-            <p className="text-sm text-slate-600 truncate max-w-xs">{profileUrl}</p>
+      <CardContent className="space-y-6">
+        {/* Profile URL Display */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 mb-1">Your Profile Link</h3>
+              <p className="text-sm text-gray-600 truncate">{profileUrl}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyLink}
+              className="ml-4 flex-shrink-0"
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              Copy
+            </Button>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleCopyLink}
-            className="bg-white hover:bg-slate-50 border border-emerald-200 text-emerald-700 px-4 py-2 rounded-xl font-medium flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-300"
-          >
-            <Copy className="h-4 w-4" />
-            Copy Link
-          </motion.button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        {shareButtons.map((button, index) => (
-          <motion.button
-            key={button.name}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={button.onClick}
-            className={`bg-gradient-to-r ${button.color} hover:opacity-90 text-white p-4 rounded-xl font-inter font-medium flex flex-col items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300`}
-          >
-            <button.icon className="h-6 w-6" />
-            <span>Share on {button.name}</span>
-          </motion.button>
-        ))}
-      </div>
-
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-amber-600 mb-1">+127%</div>
-          <div className="text-sm text-slate-600 mb-2">Artists who share get more bookings</div>
-          <div className="text-xs text-slate-500">Share your profile to grow your client base faster</div>
+        {/* Share Buttons Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {shareButtons.map((button, index) => (
+            <motion.div
+              key={button.name}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Button
+                variant="outline"
+                className={`w-full h-16 bg-gradient-to-r ${button.color} text-white border-0 hover:opacity-90 flex flex-col gap-1`}
+                onClick={button.onClick}
+              >
+                <button.icon className="h-5 w-5" />
+                <span className="text-xs">{button.name}</span>
+              </Button>
+            </motion.div>
+          ))}
         </div>
-      </div>
-    </motion.div>
+
+        {/* QR Code Button */}
+        <Button
+          variant="outline"
+          className="w-full flex items-center gap-2"
+          onClick={() => toast.info("QR Code generator coming soon!")}
+        >
+          <QrCode className="w-4 h-4" />
+          Generate QR Code
+        </Button>
+
+        {/* Growth Stats */}
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-600 mb-1">+127%</div>
+            <div className="text-sm text-gray-600 mb-2">Artists who share get more bookings</div>
+            <div className="text-xs text-gray-500">Share your profile to grow your client base faster</div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

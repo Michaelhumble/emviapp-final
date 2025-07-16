@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
-import { Sparkles, Star, Award, TrendingUp, Users, Camera, Crown } from 'lucide-react';
+import { Sparkles, Star, Award, TrendingUp, Users, Camera, Crown, MapPin } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const ArtistAnimatedHero = () => {
@@ -68,7 +68,8 @@ const ArtistAnimatedHero = () => {
 
   const artistName = userProfile?.full_name || userProfile?.display_name || 'Artist';
   const specialties = userProfile?.specialties || [];
-  const tagline = userProfile?.bio || "LA's Premier Beauty Artist";
+  const tagline = userProfile?.bio || "Ready to showcase your talent";
+  const location = userProfile?.location || userProfile?.address || "Location not set";
 
   return (
     <div className="relative overflow-hidden">
@@ -164,14 +165,13 @@ const ArtistAnimatedHero = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-4">
-                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">
-                    Showcase Your Art.
-                  </span>
+                <h1 className="text-3xl md:text-5xl font-playfair font-bold mb-2">
+                  Welcome back, <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">{artistName}</span>
                 </h1>
-                <h2 className="text-2xl md:text-3xl font-playfair font-bold mb-2">
-                  Book More. <span className="text-yellow-500">Become the Star.</span>
-                </h2>
+                <div className="flex items-center gap-2 mb-4">
+                  <MapPin className="w-4 h-4 text-gray-500" />
+                  <span className="text-gray-600">{location}</span>
+                </div>
                 
                 <p className="text-lg text-gray-600 mb-4">{tagline}</p>
                 
