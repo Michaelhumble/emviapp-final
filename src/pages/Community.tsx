@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { useCommunityData } from '@/hooks/useCommunityData';
 import { useContestData } from '@/hooks/useContestData';
+import { toast } from 'sonner';
 import ShareModal from '@/components/community/ShareModal';
 import TopSharersLeaderboard from '@/components/community/TopSharersLeaderboard';
 import CrossPlatformCTA from '@/components/ecosystem/CrossPlatformCTA';
@@ -79,6 +80,8 @@ const Community = () => {
   });
   const [showProfileModal, setShowProfileModal] = useState<{id: string, type: string} | null>(null);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showSponsorApplication, setShowSponsorApplication] = useState(false);
+  const [showWeeklyChallenge, setShowWeeklyChallenge] = useState(false);
   
 
   // Animate stats count up on load
@@ -403,14 +406,35 @@ const Community = () => {
         <WeeklyChallenge />
       </div>
 
-      {/* Top Sharers Leaderboard */}
-      <TopSharersLeaderboard />
+      {/* Top Performers & Invite Leaderboards */}
+      <div className="px-6 py-8">
+        <TopPerformersCarousel />
+      </div>
+
+      <div className="px-6 py-8">
+        <TopInvitersLeaderboard />
+      </div>
+
+      {/* Invite Everywhere System */}
+      <div className="px-6 py-8">
+        <InviteEverywhere />
+      </div>
 
       {/* Universal Photo Feed - Facebook for Beauty */}
-      <div className="px-6 pb-24">
+      <div className="px-6 py-8">
         <UniversalPhotoFeed 
           onProfileClick={(userId) => setShowProfileModal({id: userId, type: 'user'})} 
         />
+      </div>
+
+      {/* Enhanced Weekly Challenge */}
+      <div className="px-6 py-8">
+        <WeeklyChallengeEnhanced />
+      </div>
+
+      {/* Reaction Badge System */}
+      <div className="px-6 py-8">
+        <ReactionBadgeSystem />
       </div>
 
         {/* Viral Love Bar */}
@@ -757,6 +781,52 @@ const Community = () => {
         )}
 
       </AnimatePresence>
+
+      {/* Floating Create Button */}
+      <FloatingCreateButton
+        onCreatePost={() => setShowCreatePost(true)}
+        onCreateJob={() => window.open('/jobs/create', '_blank')}
+        onAskCommunity={() => setShowCreatePost(true)}
+        onApplySponsor={() => setShowSponsorApplication(true)}
+      />
+
+      {/* Enhanced Public Profile Modal */}
+      <AnimatePresence>
+        {showProfileModal && (
+          <EnhancedPublicProfileModal
+            isOpen={true}
+            onClose={() => setShowProfileModal(null)}
+            profileId={showProfileModal.id}
+            profileType={showProfileModal.type}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sponsor Application Modal */}
+      <AnimatePresence>
+        {showSponsorApplication && (
+          <SponsorApplicationModal
+            isOpen={true}
+            onClose={() => setShowSponsorApplication(false)}
+            onSubmit={(application) => {
+              console.log('Sponsor application submitted:', application);
+              toast.success('Sponsor application submitted! We\'ll review it soon.');
+              setShowSponsorApplication(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Community About Rules Modal */}
+      <AnimatePresence>
+        {showAboutModal && (
+          <CommunityAboutRules
+            isOpen={true}
+            onClose={() => setShowAboutModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
