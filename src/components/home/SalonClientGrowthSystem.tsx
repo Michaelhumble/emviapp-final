@@ -12,16 +12,16 @@ const SalonClientGrowthSystem = () => {
   // Questions for the interactive section
   const questions = [
     {
-      question: "Are empty chairs and slow days eating away at your profits—while you struggle to attract or keep top artists?",
-      answer: "You're not alone. 73% of salon owners report this exact struggle. EmviApp's AI instantly connects you with skilled, reliable artists who want steady work—ending the cycle of empty chairs and constant turnover that's draining your business.",
+      question: "The sleepless nights counting empty chairs. The stress of covering payroll while your best talent walks away. The dream of building something lasting, slipping through your fingers—we see the weight you carry.",
+      answer: "Every salon owner knows this pain intimately. The 3am worries, the constant hustle just to survive another month. You didn't open your doors to struggle—you had a vision. EmviApp bridges that gap between your dream and reality, connecting you with artists who share your passion and commitment. You're not alone in this journey—we built this because you deserve better.",
     },
     {
-      question: "Do you feel invisible as an artist—working long hours but never getting the recognition, pay, or bookings you deserve?",
-      answer: "This stops now. EmviApp's intelligent matching puts your skills in front of salon owners and clients who value excellence. Our artists report 40% higher earnings and 3x more bookings within their first month—because you deserve to be seen.",
+      question: "The exhaustion of pouring your heart into every client, only to feel invisible. Working weekends while others rest, questioning if your artistry will ever be truly valued—your passion shouldn't feel like punishment.",
+      answer: "We know the sacrifice. The missed family dinners, the ache in your hands, the moments you wonder if anyone sees your gift. Your talent deserves recognition, not just survival. EmviApp puts your artistry where it belongs—in front of people who understand quality and are willing to pay for excellence. You are an artist, not just a service provider. We're here to remind the world.",
     },
     {
-      question: "Are you sick of disappointing salon visits, unreliable artists, or never finding someone who truly understands your style?",
-      answer: "We get it—trust is everything in beauty. EmviApp's AI learns your preferences and matches you only with verified artists and salons who deliver consistently. No more gambling with your look or your money.",
+      question: "The disappointment of another ruined special occasion. The frustration of never finding someone who truly listens. The longing to walk into a place and feel genuinely cared for—you deserve to feel beautiful, not stressed.",
+      answer: "Your time is precious. Your trust is sacred. You shouldn't have to gamble with either. Every disappointing appointment represents more than just money—it's your confidence, your special moments, your self-care that gets compromised. EmviApp ensures every visit honors your worth. You deserve artists who see you, hear you, and make you feel like the best version of yourself. That's not too much to ask—it's everything.",
     }
   ];
 
@@ -62,10 +62,10 @@ const SalonClientGrowthSystem = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold font-playfair text-foreground mb-4">
-            What's Really Keeping Your Salon From Growing?
+            We See You. We Know the Real Struggles.
           </h2>
           <p className="text-lg text-muted-foreground font-inter">
-            Select a question below to uncover the hidden barriers to your salon's success
+            Behind every empty chair, there's a story—let's talk about yours.
           </p>
         </motion.div>
 
