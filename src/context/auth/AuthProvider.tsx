@@ -244,7 +244,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.id);
+      console.log('🔐 Auth state change:', event, session?.user?.id, 'isSignedIn will be:', !!session?.user);
       
       setSession(session);
       setUser(session?.user ?? null);
@@ -335,7 +335,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userRole,
     userProfile,
     loading,
-    isSignedIn: !!user,
+    isSignedIn: !!user && !!session, // More robust check - both user and session must exist
     isError,
     isNewUser,
     clearIsNewUser,

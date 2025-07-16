@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,19 +17,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { user, signOut, userProfile, userRole, isSignedIn } = useAuth();
   const navigate = useNavigate();
 
-  // Close menu when auth state changes (e.g., after sign in/out)
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    // Auto-close menu after sign out (when user becomes null)
-    if (!user && !isSignedIn) {
-      setTimeout(onClose, 100);
-    }
-  }, [user, isSignedIn, isOpen, onClose]);
+  // DO NOT auto-close menu on auth state changes
+  // This was causing the menu to close every time auth context updates
+  // Menu should only close via user action (close button, navigation, backdrop click)
 
   const handleAuthAction = async (action: string) => {
-    onClose(); // Close menu immediately
     if (action === 'signOut') {
+      onClose(); // Close menu immediately before sign out
       try {
         await signOut();
       } catch (error) {
@@ -40,7 +34,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
         }, 1000);
       }
     } else {
+      // For sign in/up, keep menu open until navigation completes
+      // This prevents menu from flashing closed/open during auth
       navigate(`/auth/${action}`);
+      // Close after navigation starts
+      setTimeout(onClose, 100);
     }
   };
 

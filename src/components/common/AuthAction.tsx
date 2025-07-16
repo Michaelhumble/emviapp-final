@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import {
   Dialog,
@@ -30,10 +30,22 @@ const AuthAction: React.FC<AuthActionProps> = ({
   fallbackContent,
   authenticatedContent
 }) => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user, loading } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close auth dialog when user signs in
+  useEffect(() => {
+    if (isSignedIn && showAuthDialog) {
+      setShowAuthDialog(false);
+    }
+  }, [isSignedIn, showAuthDialog]);
+
+  // Don't render anything while authentication is loading
+  if (loading) {
+    return null;
+  }
 
   const handleAction = async () => {
     if (isSignedIn) {
