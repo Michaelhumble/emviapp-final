@@ -369,8 +369,18 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                 
                 {/* Action Buttons */}
                 <div className="border-t pt-6 flex justify-end space-x-3">
-                  {/* FIXED: Add Edit button for job owners */}
-                  {user && user.id === job.user_id && (
+                {/* ENHANCED: Add Edit button for job owners - ALL beauty categories */}
+                {(() => {
+                  const isOwner = user && user.id === job.user_id;
+                  console.log('🔍 [JOB-DETAIL-MODAL] Edit button ownership check:', {
+                    userId: user?.id,
+                    jobUserId: job.user_id,
+                    isOwner,
+                    jobCategory: job.category,
+                    jobTitle: job.title
+                  });
+                  return isOwner;
+                })() && (
                     <Button
                       variant="outline"
                       onClick={() => {

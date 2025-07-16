@@ -48,6 +48,18 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   }
   
   const isOwner = user?.id === job.user_id;
+  
+  // ENHANCED: Debug ownership logic for ALL beauty categories
+  if (user && job) {
+    console.log('🔍 [BILINGUAL-JOB-CARD] Ownership check:', {
+      userId: user.id,
+      jobUserId: job.user_id,
+      isOwner,
+      jobCategory: job.category,
+      jobTitle: job.title,
+      jobPricingTier: job.pricing_tier
+    });
+  }
   const isExpired = job.expires_at ? new Date(job.expires_at) < new Date() : false;
   
   // Safe image and paid job logic with null checks

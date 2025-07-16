@@ -82,6 +82,19 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
   const pricingDisplay = getPricingTierDisplay();
   const { user } = useAuth();
   const isOwner = user?.id === job.user_id;
+  
+  // ENHANCED: Debug ownership logic for mobile view - ALL beauty categories
+  if (user && job) {
+    console.log('🔍 [MOBILE-JOB-CARD] Ownership check:', {
+      userId: user.id,
+      jobUserId: job.user_id,
+      isOwner,
+      jobCategory: job.category,
+      jobTitle: job.title,
+      showEditButton,
+      onEditJob: !!onEditJob
+    });
+  }
 
   // Format salary display with null safety
   const getSalary = () => {
