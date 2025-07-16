@@ -44,10 +44,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ storyId }) => {
         {comments.map((comment, index) => (
           <motion.div 
             key={comment.id} 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="flex gap-4 p-4 bg-background border border-border/30 rounded-xl hover:border-primary/20 transition-all duration-300"
+            transition={{ delay: index * 0.2, duration: 0.6, ease: "easeOut" }}
+            className="flex gap-4 p-4 bg-background border border-border/30 rounded-xl hover:border-primary/20 transition-all duration-500"
           >
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-medium shadow-md">
               {comment.profiles?.full_name?.charAt(0) || <User className="h-5 w-5" />}
@@ -67,8 +67,9 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ storyId }) => {
         ))}
         {comments.length === 0 && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center py-12"
           >
             <MessageCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />

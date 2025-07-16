@@ -19,6 +19,7 @@ import { UniversalPostModal } from '@/components/community/UniversalPostModal';
 import EnhancedPublicProfileModal from '@/components/community/EnhancedPublicProfileModal';
 import SponsorSpotlight from '@/components/community/SponsorSpotlight';
 import UniversalPhotoFeed from '@/components/community/UniversalPhotoFeed';
+import { UniversalMessageModal } from '@/components/community/UniversalMessageModal';
 
 const Community = () => {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ const Community = () => {
   const [showProfileModal, setShowProfileModal] = useState<{id: string, type: string} | null>(null);
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showSponsorApplication, setShowSponsorApplication] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState<{id: string, name: string, avatar?: string, role?: string} | null>(null);
 
   const handleCreatePost = (type: string) => {
     setPostType(type);
@@ -48,19 +50,19 @@ const Community = () => {
       {/* Luxury Community Header */}
       <div className="text-center py-20 px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-6xl font-playfair font-bold mb-8 text-foreground leading-tight">
             Beauty Community
           </h1>
           <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-inter">
-            Welcome to the most supportive, professional, and inspiring beauty community in the world.
+            Welcome to the world's most connected beauty network—every reaction helps someone grow!
           </p>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-6 leading-relaxed">
-            Where passion meets profession. Connect, inspire, and grow with talented beauty professionals.
+            You belong here. Invite your beauty friends now and watch your influence grow!
           </p>
         </motion.div>
       </div>
@@ -80,7 +82,10 @@ const Community = () => {
       {/* Universal Photo Feed - Main Content */}
       <div className="px-8 py-16">
         <UniversalPhotoFeed 
-          onProfileClick={(userId) => setShowProfileModal({id: userId, type: 'user'})} 
+          onProfileClick={(userId) => setShowProfileModal({id: userId, type: 'user'})}
+          onMessageClick={(userId, userName, userAvatar, userRole) => 
+            setShowMessageModal({id: userId, name: userName, avatar: userAvatar, role: userRole})
+          }
         />
       </div>
 
@@ -118,16 +123,16 @@ const Community = () => {
       <div className="text-center py-24 px-8">
         <motion.div
           className="max-w-md mx-auto"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.8, duration: 0.9, ease: "easeOut" }}
         >
           <Heart className="mx-auto mb-6 text-primary" size={40} />
           <p className="text-xl font-playfair text-foreground font-medium mb-2">
-            You belong here
+            Love their work? Tell them, follow them, or send a message
           </p>
           <p className="text-lg text-muted-foreground">
-            Your art deserves to be seen
+            Connection is a click away
           </p>
         </motion.div>
       </div>
@@ -180,6 +185,20 @@ const Community = () => {
         onClose={() => setShowCreatePost(false)}
         initialPostType={postType}
       />
+
+      {/* Universal Message Modal */}
+      <AnimatePresence>
+        {showMessageModal && (
+          <UniversalMessageModal
+            isOpen={true}
+            onClose={() => setShowMessageModal(null)}
+            recipientId={showMessageModal.id}
+            recipientName={showMessageModal.name}
+            recipientAvatar={showMessageModal.avatar}
+            recipientRole={showMessageModal.role}
+          />
+        )}
+      </AnimatePresence>
 
     </div>
   );

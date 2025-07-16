@@ -34,9 +34,10 @@ interface PhotoPost {
 
 interface UniversalPhotoFeedProps {
   onProfileClick: (userId: string) => void;
+  onMessageClick?: (userId: string, userName: string, userAvatar?: string, userRole?: string) => void;
 }
 
-const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick }) => {
+const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick, onMessageClick }) => {
   const { user } = useAuth();
   const { uploadImage } = useImageUpload();
   
@@ -403,9 +404,9 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
           posts.map((post, index) => (
             <motion.div
               key={post.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.15, duration: 0.8, ease: "easeOut" }}
               className="group"
             >
               {/* Minimalist Post Card */}
@@ -438,6 +439,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                       <Button 
                         variant="outline" 
                         size="sm" 
+                        onClick={() => onProfileClick(post.user_id)}
                         className="rounded-full transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/20 border-border/50 font-inter font-medium"
                         aria-label={`Follow ${post.profiles?.full_name}`}
                       >
@@ -505,6 +507,23 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                           {post.likes_count || 0}
                         </Button>
                       </motion.div>
+
+                      {/* Message/DM Button */}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => onMessageClick?.(
+                          post.user_id, 
+                          post.profiles?.full_name || 'Community Member',
+                          post.profiles?.avatar_url,
+                          post.profiles?.role
+                        )}
+                        className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300 focus:ring-2 focus:ring-primary/20 rounded-lg p-2"
+                        aria-label="Send message"
+                      >
+                        <MessageCircle className="h-5 w-5" />
+                        <span className="text-sm font-inter font-medium">Message</span>
+                      </motion.button>
 
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button

@@ -235,7 +235,15 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
       toast.error('Please sign in to message');
       return;
     }
-    toast.success('Opening chat...');
+    
+    // In a full implementation, this would open the messaging modal
+    // For now, redirect to messaging page with context
+    toast.success('Opening messaging...', {
+      description: `Starting conversation with ${profile?.name}`
+    });
+    
+    // Could also open the UniversalMessageModal here
+    window.open('/messages', '_blank');
   };
 
   const handleBook = () => {
@@ -276,9 +284,10 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 50 }}
+          initial={{ opacity: 0, scale: 0.85, y: 60 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 50 }}
+          exit={{ opacity: 0, scale: 0.85, y: 60 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           onClick={(e) => e.stopPropagation()}
           className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
         >
@@ -413,11 +422,12 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
 
                       <motion.button
                         onClick={handleMessage}
-                        className="px-4 py-2 bg-accent text-foreground rounded-lg font-medium text-sm hover:bg-accent/80 transition-colors"
+                        className="px-4 py-2 bg-accent text-foreground rounded-lg font-medium text-sm hover:bg-accent/80 transition-colors flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <MessageCircle size={16} />
+                        <span>Message</span>
                       </motion.button>
                     </div>
 

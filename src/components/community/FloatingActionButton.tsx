@@ -61,9 +61,10 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
         <AnimatePresence>
           {isExpanded && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              initial={{ opacity: 0, scale: 0.7, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              exit={{ opacity: 0, scale: 0.7, y: 30 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               className="absolute bottom-20 right-0 space-y-2 min-w-[240px]"
             >
               {postTypes.map((postType, index) => {
@@ -71,9 +72,9 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
                 return (
                   <motion.div
                     key={postType.type}
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.15, duration: 0.4 }}
                   >
                     <Button
                       variant="ghost"
@@ -100,8 +101,9 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
 
         {/* Main Floating Action Button */}
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          transition={{ duration: 0.3 }}
           onContextMenu={(e) => {
             e.preventDefault();
             setIsExpanded(!isExpanded);
@@ -136,7 +138,7 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
             {/* Icon */}
             <motion.div
               animate={{ rotate: isExpanded ? 45 : 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
               className="relative z-10"
             >
               <Plus className="h-6 w-6 text-white" />
@@ -146,11 +148,11 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
             <motion.div
               className="absolute inset-0 rounded-full border-2 border-white/30"
               animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.7, 0, 0.7]
+                scale: [1, 1.6, 1],
+                opacity: [0.6, 0, 0.6]
               }}
               transition={{
-                duration: 2,
+                duration: 3,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
