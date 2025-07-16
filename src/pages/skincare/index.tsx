@@ -4,9 +4,11 @@ import { skincareListings } from '@/data/industryListings';
 import { useJobsData } from '@/hooks/useJobsData';
 import { Job } from '@/types/job';
 import { IndustryListing } from '@/types/industryListing';
+import { useAuth } from '@/context/auth';
 
 const SkincarePage = () => {
   const { jobs, loading } = useJobsData();
+  const { user } = useAuth();
 
   const realSkincareJobs: IndustryListing[] = useMemo(() => {
     if (!jobs || !Array.isArray(jobs)) return [];
@@ -47,7 +49,10 @@ const SkincarePage = () => {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',
-          } : undefined
+          } : undefined,
+          // Add user ownership info for edit functionality
+          isOwner: user?.id === job.user_id,
+          originalJobData: job
         };
       });
   }, [jobs]);

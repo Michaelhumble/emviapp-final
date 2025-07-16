@@ -115,7 +115,8 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
 
   const handleEditJob = (listing: IndustryListing) => {
     if (listing.isOwner && listing.originalJobData) {
-      navigate('/post-job/nails', {
+      // Universal edit routing for all industries
+      navigate(`/post-job/${industryName}`, {
         state: {
           editJobId: listing.id,
           editJobData: listing.originalJobData
@@ -292,7 +293,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                           <Eye className="w-4 h-4 mr-2" />
                           View Details
                         </Button>
-                        {listing.isOwner && industryName === 'nails' && (
+                        {listing.isOwner && (
                           <Button
                             onClick={() => handleEditJob(listing)}
                             variant="outline"
@@ -391,7 +392,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                           <Eye className="w-4 h-4 mr-1" />
                           View Details
                         </Button>
-                        {listing.isOwner && industryName === 'nails' && (
+                        {listing.isOwner && (
                           <Button
                             onClick={() => handleEditJob(listing)}
                             variant="outline"
@@ -513,7 +514,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
                           <Eye className="w-4 h-4 mr-1" />
                           View Details
                         </Button>
-                        {listing.isOwner && industryName === 'nails' && (
+                        {listing.isOwner && (
                           <Button
                             onClick={() => handleEditJob(listing)}
                             variant="outline"
