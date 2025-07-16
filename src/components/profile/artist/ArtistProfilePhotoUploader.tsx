@@ -138,23 +138,9 @@ const ArtistProfilePhotoUploader = () => {
 
   // Ensure avatars bucket exists
   const ensureAvatarsBucketExists = async () => {
-    try {
-      // Check if avatars bucket exists
-      const { data: buckets } = await supabase.storage.listBuckets();
-      
-      if (!buckets || !buckets.find(bucket => bucket.name === 'avatars')) {
-        // Create bucket if it doesn't exist
-        const { error } = await supabase.storage.createBucket('avatars', {
-          public: true
-        });
-        
-        if (error) {
-          console.error('Error creating avatars bucket:', error);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking/creating bucket:', error);
-    }
+    // Storage bucket creation is now handled by database migration
+    // This function is kept for backwards compatibility
+    return Promise.resolve();
   };
 
   // Handle avatar removal

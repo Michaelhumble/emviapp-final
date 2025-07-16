@@ -41,36 +41,74 @@ export const usePortfolio = () => {
   const uploadPortfolioImage = async (file: File) => {
     if (!user) throw new Error('User not authenticated');
 
-    // Upload to storage
-    const fileName = `${user.id}/${Date.now()}_${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('portfolio')
-      .upload(fileName, file);
+    try {
+      // Upload to storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('portfolio')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-    if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('portfolio')
-      .getPublicUrl(fileName);
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio')
+        .getPublicUrl(fileName);
 
-    // Create portfolio item record
-    const { data, error } = await supabase
-      .from('portfolio_items')
-      .insert({
+      // Create portfolio item record
+      const { data, error } = await supabase
+        .from('portfolio_items')
+        .insert({
+          user_id: user.id,
+          title: file.name.split('.')[0],
+          image_url: publicUrl,
+          order: portfolioItems.length
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setPortfolioItems(prev => [...prev, data]);
+      toast.success('Image uploaded successfully!');
+      return data;
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image');
+      throw error;
+    }
+  };
+
+  const uploadMultipleImages = async (urls: string[]) => {
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      const insertData = urls.map((url, index) => ({
         user_id: user.id,
-        title: file.name.split('.')[0],
-        image_url: publicUrl,
-        order: portfolioItems.length
-      })
-      .select()
-      .single();
+        title: `Portfolio Image ${portfolioItems.length + index + 1}`,
+        image_url: url,
+        order: portfolioItems.length + index
+      }));
 
-    if (error) throw error;
+      const { data, error } = await supabase
+        .from('portfolio_items')
+        .insert(insertData)
+        .select();
 
-    setPortfolioItems(prev => [...prev, data]);
-    toast.success('Image uploaded successfully!');
-    return data;
+      if (error) throw error;
+
+      setPortfolioItems(prev => [...prev, ...data]);
+      return data;
+    } catch (error) {
+      console.error('Error saving portfolio items:', error);
+      toast.error('Failed to save portfolio items');
+      throw error;
+    }
   };
 
   const deletePortfolioImage = async (itemId: string) => {
@@ -98,6 +136,7 @@ export const usePortfolio = () => {
     portfolioItems,
     isLoading,
     uploadPortfolioImage,
+    uploadMultipleImages,
     deletePortfolioImage,
     refreshPortfolio: fetchPortfolioItems
   };

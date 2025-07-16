@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/context/auth';
 import { usePortfolio } from '@/hooks/use-portfolio';
+import UniversalPortfolioUploader from '@/components/portfolio/UniversalPortfolioUploader';
 import { 
   Camera, 
   Upload, 
@@ -28,10 +29,9 @@ import MobilePortfolioNav from '../components/MobilePortfolioNav';
 
 const ArtistInstagramPortfolio = () => {
   const { userProfile } = useAuth();
-  const { portfolioItems, uploadPortfolioImage, deletePortfolioImage, isLoading } = usePortfolio();
+  const { portfolioItems, uploadMultipleImages, deletePortfolioImage, isLoading, refreshPortfolio } = usePortfolio();
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showUploader, setShowUploader] = useState(false);
 
   // Mock engagement data - replace with real data
   const mockEngagement = portfolioItems?.map((item, index) => ({
@@ -41,55 +41,15 @@ const ArtistInstagramPortfolio = () => {
     featured: index < 2
   })) || [];
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    for (const file of acceptedFiles) {
-      setIsUploading(true);
-      setUploadProgress(0);
-      
-      try {
-        // Simulate progress
-        const progressInterval = setInterval(() => {
-          setUploadProgress(prev => {
-            if (prev >= 90) {
-              clearInterval(progressInterval);
-              return 90;
-            }
-            return prev + 10;
-          });
-        }, 200);
-
-        await uploadPortfolioImage(file);
-        
-        clearInterval(progressInterval);
-        setUploadProgress(100);
-        
-        // Success confetti
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.8 },
-          colors: ['#8A53F8', '#F97316']
-        });
-        
-        setTimeout(() => {
-          setIsUploading(false);
-          setUploadProgress(0);
-        }, 1000);
-      } catch (error) {
-        console.error('Upload failed:', error);
-        setIsUploading(false);
-        setUploadProgress(0);
-      }
+  const handleUploadComplete = async (urls: string[]) => {
+    try {
+      await uploadMultipleImages(urls);
+      await refreshPortfolio();
+      setShowUploader(false);
+    } catch (error) {
+      console.error('Error completing upload:', error);
     }
-  }, [uploadPortfolioImage]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
-    },
-    multiple: true
-  });
+  };
 
   const handleImageClick = (index: number) => {
     setSelectedImage(index);
@@ -157,9 +117,8 @@ const ArtistInstagramPortfolio = () => {
       <Button 
         size="lg" 
         className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4"
-        {...getRootProps()}
+        onClick={() => setShowUploader(true)}
       >
-        <input {...getInputProps()} />
         <Plus className="w-5 h-5 mr-2" />
         Add Your First Masterpiece
       </Button>
@@ -200,57 +159,45 @@ const ArtistInstagramPortfolio = () => {
           <Button 
             className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white"
             data-upload-trigger
-            {...getRootProps()}
+            onClick={() => setShowUploader(true)}
           >
-            <input {...getInputProps()} />
             <Upload className="w-4 w-4 mr-2" />
             Upload Photos
           </Button>
         </div>
       </div>
 
-      {/* Upload Progress */}
+      {/* Universal Portfolio Uploader Modal */}
       <AnimatePresence>
-        {isUploading && (
+        {showUploader && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-white rounded-2xl p-6 shadow-lg border"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowUploader(false);
+              }
+            }}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <Upload className="w-5 h-5 text-purple-600" />
-              <span className="font-medium">Uploading masterpiece...</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <motion.div 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${uploadProgress}%` }}
-                transition={{ duration: 0.3 }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <UniversalPortfolioUploader
+                onUploadComplete={handleUploadComplete}
+                onClose={() => setShowUploader(false)}
+                existingCount={mockEngagement.length}
+                maxFiles={12}
               />
-            </div>
-            <p className="text-sm text-gray-600 mt-2">{uploadProgress}% complete</p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Drag & Drop Zone */}
-      <div 
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
-          isDragActive 
-            ? 'border-purple-400 bg-purple-50' 
-            : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
-        }`}
-      >
-        <input {...getInputProps()} />
-        <Upload className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">
-          {isDragActive ? 'Drop your masterpieces here!' : 'Drag & drop photos here'}
-        </h3>
-        <p className="text-gray-600">or click to browse • JPG, PNG, WEBP up to 10MB</p>
-      </div>
 
       {/* Portfolio Grid */}
       {mockEngagement.length === 0 ? (
