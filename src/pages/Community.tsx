@@ -42,27 +42,22 @@ const Community = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative">
-      {/* Minimalist Hero Section */}
-      <div className="px-8 py-12">
-        <RotatingHeroBanner />
-      </div>
-
-      {/* Luxury Community Header */}
-      <div className="text-center py-20 px-8">
+      {/* Ultra-Compact Hero Section */}
+      <div className="text-center px-8 py-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-6xl font-playfair font-bold mb-8 text-foreground leading-tight">
-            Beauty Community
-          </h1>
-          <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-inter">
-            Welcome to the world's most connected beauty network—every reaction helps someone grow!
-          </p>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-6 leading-relaxed">
-            You belong here. Invite your beauty friends now and watch your influence grow!
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <Users size={24} className="text-primary/60" />
+            <h1 className="text-2xl font-playfair font-bold text-foreground leading-tight">
+              Beauty Community
+            </h1>
+          </div>
+          <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-snug font-inter font-medium">
+            Where artists, salons, and clients connect, grow, and inspire—together.
           </p>
         </motion.div>
       </div>
