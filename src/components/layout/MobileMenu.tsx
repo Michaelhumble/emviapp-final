@@ -26,8 +26,18 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut, userProfile, userRole, isSignedIn } = useAuth();
+  const { user, signOut, userProfile, userRole, isSignedIn, loading } = useAuth();
   const navigate = useNavigate();
+
+  // 🚨 DEBUG: Log auth state to console for troubleshooting
+  console.log('📱 MobileMenu Auth State:', {
+    isOpen,
+    isSignedIn,
+    hasUser: !!user,
+    loading,
+    userRole,
+    hasProfile: !!userProfile
+  });
 
   // DO NOT auto-close menu on auth state changes
   // This was causing the menu to close every time auth context updates
@@ -161,7 +171,14 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
             {/* Authentication Section - Moved to top */}
             <div className="px-4 pb-4 flex-shrink-0">
-              {isSignedIn ? (
+              {loading ? (
+                // 🚨 LOADING STATE: Show skeleton during auth transitions
+                <div className="space-y-2">
+                  <div className="w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+                  <div className="w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+                </div>
+              ) : isSignedIn ? (
+                // ✅ AUTHENTICATED STATE: Show dashboard link and sign out
                 <div className="space-y-2">
                   <Link 
                     to="/dashboard" 
@@ -180,6 +197,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   </Button>
                 </div>
               ) : (
+                // ❌ UNAUTHENTICATED STATE: Show sign in and sign up
                 <div className="space-y-2">
                   <Button
                     onClick={() => handleAuthAction('signin')}
