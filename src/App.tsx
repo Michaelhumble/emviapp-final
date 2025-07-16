@@ -4,6 +4,9 @@ import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
+import { AnalyticsProvider } from '@/context/AnalyticsContext';
+import { RecommendationProvider } from '@/context/RecommendationContext';
+import { OnboardingProvider } from '@/context/OnboardingContext';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
@@ -69,8 +72,11 @@ function App() {
           <SalonProvider>
             <SubscriptionProvider>
               <NotificationProvider>
-                <RouteLogger />
-                <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                <AnalyticsProvider>
+                  <RecommendationProvider>
+                    <OnboardingProvider>
+                      <RouteLogger />
+                      <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
                     
                     {/* Auth routes */}
@@ -157,9 +163,12 @@ function App() {
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
-                  </Routes>
-                </Suspense>
-                <Toaster />
+                        </Routes>
+                      </Suspense>
+                      <Toaster />
+                    </OnboardingProvider>
+                  </RecommendationProvider>
+                </AnalyticsProvider>
               </NotificationProvider>
             </SubscriptionProvider>
           </SalonProvider>
