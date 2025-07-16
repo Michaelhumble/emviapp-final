@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { getIndustryRoute } from '@/utils/industryRouteMap';
 
 const PostSuccessPage = () => {
   const navigate = useNavigate();
@@ -206,6 +207,19 @@ const PostSuccessPage = () => {
 
   const handleViewJobs = () => {
     console.log('🔄 [POST-SUCCESS] Navigating to jobs page...');
+    
+    // Add success confirmation toast
+    toast.success('🎉 Your paid job is now live and attracting top talent!');
+    
+    // Navigate to industry-specific page if we have job data with category
+    if (jobData?.category) {
+      const industryRoute = getIndustryRoute(jobData.category);
+      if (industryRoute !== '/jobs') {
+        navigate(industryRoute);
+        return;
+      }
+    }
+    
     navigate('/jobs');
   };
 

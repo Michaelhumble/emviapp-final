@@ -212,8 +212,12 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       console.log('✅ [SUPABASE-SUCCESS] Job updated successfully:', updateData);
       setFreeJobSuccess(true);
 
-      // Navigate to jobs page after a short delay
+      // Navigate to jobs page with success toast after a short delay
       setTimeout(() => {
+        toast({
+          title: "✅ Free Job Posted Successfully!",
+          description: "Your job is now live and visible to candidates."
+        });
         navigate('/jobs');
       }, 2000);
 
@@ -385,9 +389,13 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       console.log('✅ [SUPABASE-SUCCESS] Job created successfully:', insertData[0]);
       setFreeJobSuccess(true);
 
-      // Navigate to success page with job data
+      // Navigate to success page with job data and success toast
       setTimeout(() => {
         console.log('🔄 [NAVIGATION] Redirecting to job success page');
+        toast({
+          title: "✅ Free Job Posted Successfully!",
+          description: "Your job is now live and visible to candidates."
+        });
         navigate('/job-posted-success', { 
           state: { 
             jobId: insertData[0].id,

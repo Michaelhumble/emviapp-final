@@ -25,6 +25,7 @@ export const JobCardActions = ({
         Xem Chi Tiết
       </Button>
       
+      {/* Show renewal button only for expired jobs owned by user */}
       {isOwner && isExpired && (
         <Button 
           variant="outline" 

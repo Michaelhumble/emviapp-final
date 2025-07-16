@@ -281,10 +281,16 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                         }
                       }
 
-                      if (!contactInfo) {
+                      // Always show contact section for all posts, even if empty
+                      if (!contactInfo || Object.keys(contactInfo).filter(key => contactInfo[key]).length === 0) {
                         return (
                           <div className="text-center py-4">
-                            <p className="text-gray-500 text-sm">Contact information not available</p>
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                              <p className="text-amber-800 font-medium">📞 Contact information available for signed-in users</p>
+                              <p className="text-amber-700 text-sm mt-1">
+                                Complete contact details visible to registered job seekers
+                              </p>
+                            </div>
                           </div>
                         );
                       }

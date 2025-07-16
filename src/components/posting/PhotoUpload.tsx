@@ -22,7 +22,11 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       <div className="border-b pb-4">
         <h2 className="font-playfair text-2xl font-semibold text-gray-900">Add Photos</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Upload photos to showcase your salon and position (up to {maxPhotos})
+          {maxPhotos === 1 ? (
+            "Upload 1 photo (max 5MB) for your listing"
+          ) : (
+            `Upload up to ${maxPhotos} photos (max 5MB each) for your listing`
+          )}
         </p>
       </div>
       

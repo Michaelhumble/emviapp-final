@@ -75,7 +75,11 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                 )}
               </p>
               <p className="text-xs text-muted-foreground">
-                Upload up to {maxFiles} images (max 5MB each)
+                {maxFiles === 1 ? (
+                  "Upload 1 photo (max 5MB)"
+                ) : (
+                  `Upload up to ${maxFiles} photos (max 5MB each)`
+                )}
               </p>
               {files.length < maxFiles && (
                 <Button type="button" variant="outline" size="sm">

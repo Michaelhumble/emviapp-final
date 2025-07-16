@@ -159,11 +159,11 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
       {jobImages && jobImages.length > 0 && (
         <div className="relative">
           {jobImages.length === 1 ? (
-            // Single image display
+            // Single image display - Enhanced for paid jobs
             <img 
               src={jobImages[0]}
               alt={job.title || job.company || 'Job image'}
-              className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
+              className={`w-full object-cover ${expanded ? 'h-48' : isPaidJob ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
               onError={(e) => {
                 console.log('Mobile card image failed to load:', jobImages[0]);
                 e.currentTarget.style.display = 'none';
@@ -177,7 +177,7 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
                 <img 
                   src={jobImages[0]}
                   alt={job.title || job.company || 'Primary job image'}
-                  className={`w-full object-cover ${expanded ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
+                  className={`w-full object-cover ${expanded ? 'h-48' : isPaidJob ? 'h-48' : 'h-40'} ${isExpired ? 'grayscale' : ''}`}
                   onError={(e) => {
                     console.log('Mobile card primary image failed to load:', jobImages[0]);
                     e.currentTarget.style.display = 'none';
