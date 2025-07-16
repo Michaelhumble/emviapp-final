@@ -1,5 +1,17 @@
 
-import React, { useEffect, useState } from 'react';
+/**
+ * 🧭 NAVBAR - CENTRALIZED AUTH STATE
+ * 
+ * CRITICAL: Uses ONLY centralized auth context
+ * NO local auth state to prevent stale data
+ * 
+ * Features:
+ * - Real-time auth state updates
+ * - Immediate button state changes
+ * - No local state conflicts
+ */
+
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
@@ -9,14 +21,9 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 
 const Navbar = () => {
-  const { isSignedIn, user, loading } = useAuth();
-  
-  // Force re-render when auth state changes
-  const [authState, setAuthState] = useState(isSignedIn);
-  
-  useEffect(() => {
-    setAuthState(isSignedIn);
-  }, [isSignedIn, user]);
+  // 🔐 SINGLE SOURCE OF TRUTH: Use only centralized auth state
+  // NO local state needed - AuthProvider handles all auth state management
+  const { isSignedIn, loading } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
@@ -102,7 +109,7 @@ const Navbar = () => {
             <LanguageToggle />
             
             {/* Dashboard Link for Signed In Users */}
-            {authState && (
+            {isSignedIn && (
               <div className="hidden md:flex">
                 <Link 
                   to="/dashboard" 

@@ -1,3 +1,14 @@
+/**
+ * 🔐 AUTH BUTTONS - IMMEDIATE STATE PROPAGATION
+ * 
+ * CRITICAL: This component uses ONLY the centralized auth context
+ * NO local state - all auth state comes from AuthProvider
+ * 
+ * Features:
+ * - Immediate button updates when auth state changes
+ * - Loading state prevents button flickering
+ * - Real-time sync with auth context
+ */
 
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,22 +17,25 @@ import { useAuth } from "@/context/auth";
 const AuthButtons = () => {
   const location = useLocation();
   const currentPath = encodeURIComponent(location.pathname + location.search);
-  const { isSignedIn, signOut, user, loading } = useAuth();
+  const { isSignedIn, signOut, loading } = useAuth();
   
-  // CRITICAL: Show loading state to prevent button flickering
-  // During auth state changes, show nothing until state is resolved
+  // 🚨 CRITICAL: Show loading skeleton during auth transitions
+  // This prevents flickering between Sign In/Sign Out buttons
   if (loading) {
     return (
-      <div className="w-24 h-9 bg-gray-100 animate-pulse rounded-md flex-shrink-0" />
+      <div className="flex items-center gap-2">
+        <div className="w-16 h-9 bg-gray-200 animate-pulse rounded-md" />
+        <div className="w-20 h-9 bg-gray-200 animate-pulse rounded-md" />
+      </div>
     );
   }
 
-  // SINGLE SOURCE OF TRUTH: Use only the centralized isSignedIn from auth context
-  // Do NOT use local state - this caused the original issues
+  // 🔐 SINGLE SOURCE OF TRUTH: Use ONLY centralized isSignedIn
+  // This ensures immediate button updates when auth state changes
   return (
-    <>
+    <div className="flex items-center gap-2">
       {isSignedIn ? (
-        // AUTHENTICATED STATE: Show only Sign Out button
+        // ✅ AUTHENTICATED STATE: Show only Sign Out button
         <Button 
           onClick={signOut}
           variant="outline"
@@ -30,7 +44,7 @@ const AuthButtons = () => {
           Sign Out
         </Button>
       ) : (
-        // UNAUTHENTICATED STATE: Show Sign In and Sign Up buttons
+        // ❌ UNAUTHENTICATED STATE: Show Sign In and Sign Up buttons
         <>
           <Link to={`/sign-in?redirect=${currentPath}`}>
             <Button variant="ghost">Sign In</Button>
@@ -40,7 +54,7 @@ const AuthButtons = () => {
           </Link>
         </>
       )}
-    </>
+    </div>
   );
 };
 

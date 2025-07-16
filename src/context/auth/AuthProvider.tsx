@@ -1,3 +1,16 @@
+/**
+ * 🔐 AUTHENTICATION PROVIDER - CENTRALIZED STATE MANAGEMENT
+ * 
+ * CRITICAL: This is the SINGLE SOURCE OF TRUTH for all authentication state
+ * All components MUST use this context - NO local auth state allowed
+ * 
+ * Key Features:
+ * - Immediate state propagation to all consumers
+ * - Robust loading states to prevent UI flashing
+ * - Synchronized user/session updates
+ * - Real-time auth state without page refresh
+ */
+
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -241,16 +254,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsNewUser(true);
     }
 
-    // Set up auth state listener
+    // 🔐 CRITICAL: Set up auth state listener for IMMEDIATE propagation
+    // This ensures ALL consuming components update instantly when auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔐 Auth state change:', event, session?.user?.id, 'isSignedIn will be:', !!session?.user);
+      console.log('🔐 AuthProvider: Auth state change detected', {
+        event,
+        hasUser: !!session?.user,
+        userId: session?.user?.id,
+        timestamp: new Date().toISOString()
+      });
       
+      // 🚨 IMMEDIATE STATE UPDATES: Set state synchronously for instant propagation
       setSession(session);
       setUser(session?.user ?? null);
       
       if (event === 'SIGNED_UP' as AuthChangeEvent) {
+        console.log('📝 AuthProvider: User signed up - setting new user flag');
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -261,11 +282,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserRole(normalizedRole);
           if (normalizedRole) {
             localStorage.setItem('emviapp_user_role', normalizedRole);
+            console.log('🎭 AuthProvider: Role set from signup metadata:', normalizedRole);
           }
         }
       }
       
       if (event === 'SIGNED_IN' as AuthChangeEvent) {
+        console.log('✅ AuthProvider: User signed in - fetching profile');
         // Store role from metadata if available
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
@@ -273,18 +296,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserRole(normalizedRole);
           if (normalizedRole) {
             localStorage.setItem('emviapp_user_role', normalizedRole);
+            console.log('🎭 AuthProvider: Role set from signin metadata:', normalizedRole);
           }
         }
         
-        // Fetch full profile data after sign in
+        // 🔄 DEFERRED PROFILE FETCH: Use setTimeout to prevent auth listener deadlock
         if (session?.user?.id) {
           setTimeout(() => {
+            console.log('👤 AuthProvider: Fetching user profile');
             fetchUserProfile(session.user.id);
           }, 0);
         }
       }
 
       if (event === 'SIGNED_OUT' as AuthChangeEvent) {
+        console.log('🚪 AuthProvider: User signed out - clearing state');
         setIsNewUser(false);
         setUserRole(null);
         setUserProfile(null);
@@ -292,7 +318,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem('emviapp_user_role');
       }
       
+      // 🏁 LOADING COMPLETE: Always set loading to false after state updates
       setLoading(false);
+      
+      console.log('🔐 AuthProvider: State update complete', {
+        event,
+        isSignedIn: !!session?.user,
+        hasProfile: !!session?.user?.id,
+        loading: false
+      });
     });
 
     // Get initial session

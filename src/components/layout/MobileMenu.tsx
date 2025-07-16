@@ -1,4 +1,16 @@
 
+/**
+ * 📱 MOBILE MENU - IMMEDIATE AUTH STATE SYNC
+ * 
+ * CRITICAL: Uses centralized auth context for real-time updates
+ * NO local auth state - all state comes from AuthProvider
+ * 
+ * Features:
+ * - Immediate menu updates when auth state changes
+ * - Proper loading states during auth transitions
+ * - Menu stays open until user manually closes it
+ */
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
