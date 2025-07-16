@@ -248,11 +248,66 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth state
   useEffect(() => {
+    console.log('🔐 AuthProvider: Initializing auth state');
+    
     // Check for existing new user status
     const storedNewUserStatus = localStorage.getItem('emviapp_new_user') === 'true';
     if (storedNewUserStatus) {
       setIsNewUser(true);
     }
+
+    // 🔐 CRITICAL: Get initial session FIRST before setting up listeners
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        console.log('🔐 AuthProvider: Initial session check', {
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          userId: session?.user?.id,
+          error: error?.message
+        });
+        
+        // Set initial state
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          console.log('✅ AuthProvider: Found existing session, fetching profile');
+          
+          // Check for role in metadata first
+          const userRole = session.user.user_metadata?.role;
+          if (userRole) {
+            const normalizedRole = normalizeRole(userRole as UserRole);
+            setUserRole(normalizedRole);
+            if (normalizedRole) {
+              localStorage.setItem('emviapp_user_role', normalizedRole);
+              console.log('🎭 AuthProvider: Role set from session metadata:', normalizedRole);
+            }
+          }
+          
+          // Fetch full profile
+          await fetchUserProfile(session.user.id);
+        } else {
+          console.log('❌ AuthProvider: No existing session found');
+          // Check localStorage for cached role
+          const cachedRole = localStorage.getItem('emviapp_user_role');
+          if (cachedRole) {
+            setUserRole(normalizeRole(cachedRole as UserRole));
+          }
+        }
+        
+        // Set loading to false after initial check
+        setLoading(false);
+        
+      } catch (error) {
+        console.error('🚨 AuthProvider: Error initializing auth:', error);
+        setLoading(false);
+      }
+    };
+
+    // Initialize auth first
+    initializeAuth();
 
     // 🔐 CRITICAL: Set up auth state listener for IMMEDIATE propagation
     // This ensures ALL consuming components update instantly when auth changes
@@ -318,8 +373,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem('emviapp_user_role');
       }
       
-      // 🏁 LOADING COMPLETE: Always set loading to false after state updates
-      setLoading(false);
+      // 🏁 LOADING COMPLETE: Set loading to false if not already set
+      if (loading) {
+        setLoading(false);
+      }
       
       console.log('🔐 AuthProvider: State update complete', {
         event,
@@ -329,36 +386,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
     });
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // Check for role in metadata first
-        const userRole = session.user.user_metadata?.role;
-        if (userRole) {
-          const normalizedRole = normalizeRole(userRole as UserRole);
-          setUserRole(normalizedRole);
-          if (normalizedRole) {
-            localStorage.setItem('emviapp_user_role', normalizedRole);
-          }
-        }
-        
-        // Fetch full profile
-        fetchUserProfile(session.user.id);
-      } else {
-        // Check localStorage for cached role
-        const cachedRole = localStorage.getItem('emviapp_user_role');
-        if (cachedRole) {
-          setUserRole(normalizeRole(cachedRole as UserRole));
-        }
-      }
-      
-      setLoading(false);
-    });
-
     return () => {
+      console.log('🔐 AuthProvider: Cleaning up subscription');
       subscription.unsubscribe();
     };
   }, []);
@@ -366,10 +395,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // CENTRALIZED AUTH STATE CALCULATIONS (SINGLE SOURCE OF TRUTH)
   
   /** 
-   * ROBUST isSignedIn check: Only true when BOTH user and session exist AND not loading
-   * This prevents UI flickering and ensures consistent auth state across app
+   * SIMPLIFIED isSignedIn check: User exists with valid session
+   * This ensures immediate state detection without complex loading checks
    */
-  const isSignedIn = !loading && !!user && !!session && !!user.id;
+  const isSignedIn = !!user && !!session && !!user.id;
   
   /**
    * CENTRALIZED currentUserRole: Returns role only when authenticated and not loading
