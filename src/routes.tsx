@@ -40,6 +40,7 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import UserAnalytics from './pages/admin/UserAnalytics';
 
 import ArtistProfileSetup from './pages/profile/artist/setup';
 import SalonProfileSetup from './pages/profile/salon/setup';
@@ -330,6 +331,10 @@ const routes = [
   {
     path: '/admin-dashboard',
     element: <AdminDashboard />,
+  },
+  {
+    path: '/admin',
+    element: <UserAnalytics />,
   },
   {
     path: '/pricing-page',
