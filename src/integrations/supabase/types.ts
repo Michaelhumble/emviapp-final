@@ -39,7 +39,15 @@ export type Database = {
           metadata?: Json | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       admin_actions: {
         Row: {
@@ -72,7 +80,22 @@ export type Database = {
           reason?: string
           target_user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "admin_actions_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_actions_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_usage_logs: {
         Row: {
@@ -120,7 +143,22 @@ export type Database = {
           user_agent?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_logs_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       applications: {
         Row: {
@@ -150,7 +188,15 @@ export type Database = {
           target_id?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       appointments: {
         Row: {
@@ -278,7 +324,15 @@ export type Database = {
           is_available?: boolean
           start_time?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "artist_availability_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       artist_clients: {
         Row: {
@@ -305,7 +359,15 @@ export type Database = {
           notes?: string | null
           phone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "artist_clients_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       artist_services: {
         Row: {
@@ -335,7 +397,15 @@ export type Database = {
           price?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "artist_services_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       artist_time_off: {
         Row: {
@@ -362,7 +432,15 @@ export type Database = {
           reason?: string | null
           start_date?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "artist_time_off_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       availability: {
         Row: {
@@ -504,6 +582,13 @@ export type Database = {
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "booking_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bookings: {
@@ -611,6 +696,13 @@ export type Database = {
             referencedRelation: "community_posts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "challenge_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       challenge_votes: {
@@ -638,6 +730,13 @@ export type Database = {
             columns: ["entry_id"]
             isOneToOne: false
             referencedRelation: "challenge_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -691,7 +790,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "challenges_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_comments: {
         Row: {
@@ -721,6 +828,13 @@ export type Database = {
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "community_stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -753,6 +867,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "community_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_event_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -809,7 +930,15 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_events_host_user_id_fkey"
+            columns: ["host_user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_leaderboard: {
         Row: {
@@ -854,7 +983,15 @@ export type Database = {
           user_id?: string
           week_start?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_leaderboard_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_post_comments: {
         Row: {
@@ -902,6 +1039,13 @@ export type Database = {
             referencedRelation: "community_posts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "community_post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       community_post_likes: {
@@ -929,6 +1073,13 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -1017,7 +1168,15 @@ export type Database = {
           user_id?: string
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_questions: {
         Row: {
@@ -1059,7 +1218,22 @@ export type Database = {
           upvotes?: number | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_questions_answered_by_fkey"
+            columns: ["answered_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_questions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_stories: {
         Row: {
@@ -1087,6 +1261,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "community_stories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fk_community_stories_profile"
             columns: ["user_id"]
@@ -1177,7 +1358,15 @@ export type Database = {
           status?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contact_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_reports: {
         Row: {
@@ -1219,7 +1408,22 @@ export type Database = {
           reviewed_by?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contest_entries: {
         Row: {
@@ -1249,6 +1453,13 @@ export type Database = {
             columns: ["contest_id"]
             isOneToOne: false
             referencedRelation: "contests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contest_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -1320,7 +1531,15 @@ export type Database = {
           user_id?: string
           validated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "credit_earnings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       credit_transfers: {
         Row: {
@@ -1353,7 +1572,22 @@ export type Database = {
           sender_id?: string
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "credit_transfers_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transfers_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       credits_ledger: {
         Row: {
@@ -1398,7 +1632,22 @@ export type Database = {
           user_agent?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "credits_ledger_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credits_ledger_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cta_interactions: {
         Row: {
@@ -1433,6 +1682,13 @@ export type Database = {
             referencedRelation: "community_stories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cta_interactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       customer_credits: {
@@ -1463,7 +1719,15 @@ export type Database = {
           user_id?: string
           value?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customer_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       default_artist_data: {
         Row: {
@@ -1520,7 +1784,15 @@ export type Database = {
           status?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "diamond_tier_waitlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       followers: {
         Row: {
@@ -1541,7 +1813,22 @@ export type Database = {
           id?: string
           viewer_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "followers_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "followers_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_applications: {
         Row: {
@@ -1571,7 +1858,15 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_applicant_id_fkey"
+            columns: ["applicant_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       jobs: {
         Row: {
@@ -1738,6 +2033,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "messages_salon_id_fkey"
             columns: ["salon_id"]
             isOneToOne: false
@@ -1750,6 +2052,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user_salon_access"
             referencedColumns: ["salon_id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1887,7 +2196,15 @@ export type Database = {
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       offers_sent: {
         Row: {
@@ -1917,7 +2234,22 @@ export type Database = {
           sent_at?: string | null
           status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "offers_sent_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_sent_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_logs: {
         Row: {
@@ -1959,7 +2291,15 @@ export type Database = {
           stripe_payment_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "payment_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payments: {
         Row: {
@@ -1992,7 +2332,15 @@ export type Database = {
           stripe_session_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pending_salons: {
         Row: {
@@ -2175,7 +2523,15 @@ export type Database = {
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts: {
         Row: {
@@ -2226,7 +2582,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_requirements: {
         Row: {
@@ -2292,7 +2656,15 @@ export type Database = {
           total_shares?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       promo_code_usages: {
         Row: {
@@ -2454,6 +2826,20 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       reviews: {
@@ -2594,7 +2980,15 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salon_bookings_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salon_credits: {
         Row: {
@@ -2717,7 +3111,15 @@ export type Database = {
           user_id?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salon_listings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salon_offers: {
         Row: {
@@ -2876,7 +3278,15 @@ export type Database = {
           status?: string
           target_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salon_promotions_created_by_id_fkey"
+            columns: ["created_by_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salon_reviews: {
         Row: {
@@ -3158,7 +3568,15 @@ export type Database = {
           yearly_revenue?: string | null
           zip_code?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salon_sales_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salon_services: {
         Row: {
@@ -3277,6 +3695,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "salon_staff_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "salon_staff_salon_id_fkey"
             columns: ["salon_id"]
             isOneToOne: false
@@ -3295,6 +3720,13 @@ export type Database = {
             columns: ["salon_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_staff_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -3339,7 +3771,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salon_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salon_team_messages: {
         Row: {
@@ -3381,6 +3821,13 @@ export type Database = {
             referencedRelation: "user_salon_access"
             referencedColumns: ["salon_id"]
           },
+          {
+            foreignKeyName: "salon_team_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       salon_views: {
@@ -3408,7 +3855,15 @@ export type Database = {
           viewed_at?: string | null
           viewer_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salon_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salons: {
         Row: {
@@ -3458,6 +3913,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "salons_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "salons_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -3499,7 +3961,22 @@ export type Database = {
           saved_at?: string | null
           viewer_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "saved_artists_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_artists_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
@@ -3538,7 +4015,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shares_tracking: {
         Row: {
@@ -3634,7 +4119,15 @@ export type Database = {
           timestamp?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "support_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_invites: {
         Row: {
@@ -3677,6 +4170,13 @@ export type Database = {
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "team_invites_accepted_by_user_id_fkey"
+            columns: ["accepted_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "team_invites_salon_id_fkey"
             columns: ["salon_id"]
@@ -3783,7 +4283,15 @@ export type Database = {
           metadata?: Json | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_activity: {
         Row: {
@@ -3831,7 +4339,15 @@ export type Database = {
           tag?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_tags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_unlocks: {
         Row: {
@@ -3867,7 +4383,15 @@ export type Database = {
           user_agent?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_unlocks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -4011,7 +4535,15 @@ export type Database = {
           user_id?: string | null
           vote_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       waitlist_requests: {
         Row: {
@@ -4071,7 +4603,15 @@ export type Database = {
           user_id?: string | null
           waitlist_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "waitlists_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -4094,7 +4634,15 @@ export type Database = {
           purchase_count: number | null
           user_id: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       post_status_view: {
         Row: {
@@ -4151,7 +4699,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_completion_view: {
         Row: {
@@ -4163,6 +4719,15 @@ export type Database = {
           profile_completion: number | null
           required_fields: string[] | null
           role: string | null
+        }
+        Relationships: []
+      }
+      review_customers: {
+        Row: {
+          avatar_url: string | null
+          email: string | null
+          full_name: string | null
+          id: string | null
         }
         Relationships: []
       }
@@ -4206,7 +4771,15 @@ export type Database = {
           salon_id: string | null
           user_id: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "salons_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: true
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
@@ -4335,6 +4908,15 @@ export type Database = {
           points: number
           level: string
           first_ai_user: boolean
+        }[]
+      }
+      get_customer_info: {
+        Args: { customer_id: string }
+        Returns: {
+          id: string
+          full_name: string
+          email: string
+          avatar_url: string
         }[]
       }
       get_next_referral_milestone: {

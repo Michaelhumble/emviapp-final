@@ -183,7 +183,7 @@ export const useSalonDashboard = (salonId?: string) => {
         .from('salon_reviews')
         .select(`
           *,
-          customer:users!customer_id(full_name, avatar_url)
+          customer:review_customers!customer_id(full_name, avatar_url, email)
         `)
         .eq('salon_id', effectiveSalonId)
         .eq('status', 'active')
@@ -209,6 +209,30 @@ export const useSalonDashboard = (salonId?: string) => {
       }
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      // Fallback to basic review data if join fails
+      try {
+        const { data: basicData } = await supabase
+          .from('salon_reviews')
+          .select('*')
+          .eq('salon_id', effectiveSalonId)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        
+        if (basicData) {
+          setReviews(basicData);
+          const avgRating = basicData.length > 0 
+            ? basicData.reduce((sum, r) => sum + r.rating, 0) / basicData.length 
+            : 0;
+          setStats(prev => ({
+            ...prev,
+            averageRating: Number(avgRating.toFixed(1)),
+            totalReviews: basicData.length,
+          }));
+        }
+      } catch (fallbackError) {
+        console.error('Fallback review fetch also failed:', fallbackError);
+      }
     }
   };
 
