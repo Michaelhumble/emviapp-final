@@ -17,10 +17,18 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
-  const handleAuthAction = (action: string) => {
-    onClose();
+  const handleAuthAction = async (action: string) => {
+    onClose(); // Close menu immediately
     if (action === 'signOut') {
-      signOut();
+      try {
+        await signOut();
+      } catch (error) {
+        console.error("Mobile sign out error:", error);
+        // Force navigation even if error occurs
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      }
     } else {
       navigate(`/auth/${action}`);
     }

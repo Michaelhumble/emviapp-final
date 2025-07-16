@@ -38,10 +38,14 @@ export function UserMenu() {
   
   const handleSignOut = async () => {
     try {
+      setOpen(false); // Close menu immediately
       await signOut();
-      setOpen(false);
     } catch (error) {
       console.error("Error signing out:", error);
+      // Still redirect even if error occurs
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
     }
   };
 

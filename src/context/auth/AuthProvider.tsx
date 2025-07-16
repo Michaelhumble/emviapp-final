@@ -100,24 +100,60 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Sign out method
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      // Clear local state
+      // Clear local state immediately for instant UI feedback
       setUser(null);
       setSession(null);
       setUserRole(null);
       setUserProfile(null);
       setIsNewUser(false);
       
-      // Clear localStorage
-      localStorage.removeItem('emviapp_new_user');
-      localStorage.removeItem('emviapp_user_role');
+      // Clear all authentication-related localStorage keys
+      const keysToRemove = [
+        'emviapp_new_user', 
+        'emviapp_user_role',
+        'sb-wwhqbjrhbajpabfdwnip-auth-token'
+      ];
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+      });
+      
+      // Clear all Supabase auth keys (handles environment differences)
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Clear sessionStorage if used
+      Object.keys(sessionStorage || {}).forEach(key => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+      
+      // Global sign out for cross-domain compatibility
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
+      if (error) {
+        console.warn("Sign out warning:", error);
+        // Don't throw - we've already cleared local state
+      }
       
       toast.success("Signed out successfully");
+      
+      // Force page reload for clean state (handles environment differences)
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
+      
     } catch (error) {
       console.error("Sign out error:", error);
       toast.error("Failed to sign out");
+      
+      // Even if sign out fails, redirect to clean up state
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
     }
   };
 
