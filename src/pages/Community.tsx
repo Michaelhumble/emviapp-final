@@ -20,6 +20,10 @@ import ViralVideoGenerator from '@/components/community/ViralVideoGenerator';
 import CreatorMode from '@/components/community/CreatorMode';
 import FeaturedSpotlight from '@/components/community/FeaturedSpotlight';
 import WhatsHotFeed from '@/components/community/WhatsHotFeed';
+import UniversalSearchBar from '@/components/community/UniversalSearchBar';
+import FloatingCreateButton from '@/components/community/FloatingCreateButton';
+import EnhancedPublicProfileModal from '@/components/community/EnhancedPublicProfileModal';
+import SponsorSpotlight from '@/components/community/SponsorSpotlight';
 
 // Viral love messages for the bottom bar
 const viralMessages = [
@@ -64,6 +68,7 @@ const Community = () => {
     newRank: 5,
     bonusMessage: 'You\'re on fire! 🔥'
   });
+  const [showProfileModal, setShowProfileModal] = useState<{id: string, type: string} | null>(null);
   
 
   // Animate stats count up on load
@@ -330,6 +335,20 @@ const Community = () => {
         </div>
       </motion.div>
 
+
+      {/* Universal Search Bar */}
+      <div className="px-6 py-6 border-b border-border/50">
+        <UniversalSearchBar 
+          onResultClick={(result) => setShowProfileModal({id: result.id, type: result.type})} 
+        />
+      </div>
+
+      {/* Sponsor Spotlight */}
+      <div className="px-6 py-6 border-b border-border/50">
+        <SponsorSpotlight 
+          onSponsorClick={(sponsor) => setShowProfileModal({id: sponsor.id, type: 'sponsor'})} 
+        />
+      </div>
 
       {/* Live Stats Ticker */}
       <motion.div 
