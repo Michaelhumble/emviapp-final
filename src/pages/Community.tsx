@@ -24,6 +24,7 @@ import UniversalSearchBar from '@/components/community/UniversalSearchBar';
 import FloatingCreateButton from '@/components/community/FloatingCreateButton';
 import EnhancedPublicProfileModal from '@/components/community/EnhancedPublicProfileModal';
 import SponsorSpotlight from '@/components/community/SponsorSpotlight';
+import UniversalPhotoFeed from '@/components/community/UniversalPhotoFeed';
 
 // Viral love messages for the bottom bar
 const viralMessages = [
@@ -391,195 +392,12 @@ const Community = () => {
       {/* Top Sharers Leaderboard */}
       <TopSharersLeaderboard />
 
-      {/* Main Feed - One Beautiful Card at a Time */}
-      <div className="pb-24">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <motion.div
-              className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            />
-          </div>
-        ) : posts.length === 0 ? (
-          <div className="text-center py-12 px-6">
-            <p className="text-muted-foreground text-lg">No posts yet. Be the first to share your story! ✨</p>
-          </div>
-        ) : (
-          posts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
-              className="relative bg-background border-b border-border/50 mb-8 overflow-hidden group"
-              whileHover={{ 
-                boxShadow: "0 10px 30px -10px rgba(59, 130, 246, 0.2)",
-                borderColor: "rgba(59, 130, 246, 0.3)"
-              }}
-            >
-              {/* Subtle gradient overlay on hover */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                initial={false}
-              />
-              
-              {/* Post Header */}
-              <div className="flex items-center justify-between p-6">
-                <div className="flex items-center space-x-4">
-                  <img 
-                    src={post.profiles?.avatar_url || `https://images.unsplash.com/photo-1494790108755-2616b332c2a2?w=150&h=150&fit=crop&crop=face`} 
-                    alt={post.profiles?.full_name || 'User'}
-                    className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
-                  />
-                  <div>
-                    <p className="font-bold text-base">{post.profiles?.full_name || 'EmviApp User'}</p>
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <span>{formatTimeAgo(post.created_at)}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {post.tags?.includes('celebration') && (
-                  <motion.div
-                    className="px-3 py-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <span className="text-white text-xs font-bold">🎉 WIN</span>
-                  </motion.div>
-                )}
-                
-                {post.tags?.includes('milestone') && (
-                  <motion.div
-                    className="px-3 py-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <span className="text-white text-xs font-bold">💎 MILESTONE</span>
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Post Content Text with Expandable Functionality */}
-              <div className="px-6 mb-6">
-                <div className="overflow-hidden">
-                  <p className="text-base leading-relaxed">
-                    {expandedPosts.has(post.id) ? (
-                      <>
-                        {post.content}
-                        <button
-                          onClick={() => togglePostExpansion(post.id)}
-                          className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
-                          type="button"
-                        >
-                          <span className="text-sm">... Show less</span>
-                        </button>
-                      </>
-                    ) : needsTruncation(post.content) ? (
-                      <>
-                        {truncateText(post.content)}
-                        <button
-                          onClick={() => togglePostExpansion(post.id)}
-                          className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors duration-200 cursor-pointer relative z-10"
-                          type="button"
-                        >
-                          <span className="text-sm">... View more</span>
-                        </button>
-                      </>
-                    ) : (
-                      post.content
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              {/* Post Image - Edge to Edge */}
-              {post.image_urls && post.image_urls.length > 0 && (
-                <div 
-                  className="relative overflow-hidden cursor-pointer"
-                  onDoubleClick={() => handleDoubleClick(post.id)}
-                >
-                  <motion.img 
-                    src={post.image_urls[0]} 
-                    alt="Post content"
-                    className="w-full h-96 object-cover"
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  
-                  {/* Double tap heart overlay */}
-                  <AnimatePresence>
-                    {showHeart === post.id && (
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1.8, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                      >
-                        <motion.div
-                          animate={{ rotate: [0, 15, -15, 0] }}
-                          transition={{ duration: 0.8 }}
-                        >
-                          <Heart size={100} className="text-red-500 fill-red-500 drop-shadow-2xl" />
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between p-6">
-                <div className="flex items-center space-x-8">
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    whileHover={{ scale: 1.2 }}
-                    onClick={() => handleLike(post.id)}
-                    className="flex items-center space-x-2"
-                  >
-                    <Heart 
-                      size={32} 
-                      className="text-foreground hover:text-red-400 transition-colors"
-                    />
-                    <span className="font-bold text-sm">{post.likes_count || 0}</span>
-                  </motion.button>
-                  
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    whileHover={{ scale: 1.2 }}
-                    onClick={() => setShowCommentModal(post.id)}
-                    className="flex items-center space-x-2"
-                  >
-                    <MessageCircle size={32} className="hover:text-blue-400 transition-colors" />
-                    <span className="font-bold text-sm">{post.comments_count || 0}</span>
-                  </motion.button>
-                  
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    whileHover={{ scale: 1.2 }}
-                    onClick={() => handleShare(post.id)}
-                    className="flex items-center space-x-2"
-                  >
-                    <Share size={32} className="hover:text-green-400 transition-colors" />
-                    <span className="font-bold text-sm">{post.shares_count || 0}</span>
-                  </motion.button>
-                </div>
-                
-                <motion.button
-                  whileTap={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.2 }}
-                >
-                  <Bookmark 
-                    size={32} 
-                    className="text-foreground hover:text-primary transition-colors"
-                  />
-                </motion.button>
-              </div>
-            </motion.div>
-          ))
-        )}
+      {/* Universal Photo Feed - Facebook for Beauty */}
+      <div className="px-6 pb-24">
+        <UniversalPhotoFeed 
+          onProfileClick={(userId) => setShowProfileModal({id: userId, type: 'user'})} 
+        />
+      </div>
 
         {/* Viral Love Bar */}
         <motion.div 
@@ -669,8 +487,6 @@ const Community = () => {
             Inspired by Sunshine ☀️
           </motion.p>
         </motion.div>
-      </div>
-
       {/* Share Your Win Floating Button */}
       <motion.button
         whileTap={{ scale: 0.9 }}
