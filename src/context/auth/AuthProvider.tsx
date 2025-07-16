@@ -373,10 +373,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem('emviapp_user_role');
       }
       
-      // 🏁 LOADING COMPLETE: Set loading to false if not already set
-      if (loading) {
-        setLoading(false);
-      }
+  // 🏁 LOADING COMPLETE: Always set loading to false after auth event
+      setLoading(false);
       
       console.log('🔐 AuthProvider: State update complete', {
         event,
@@ -411,15 +409,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const needsOnboarding = isSignedIn && needsRoleSelection(userRole);
 
-  // Debug logging for auth state changes
-  console.log('🔐 AuthProvider State:', {
-    loading,
-    hasUser: !!user,
-    hasSession: !!session,
-    isSignedIn,
-    currentUserRole,
-    needsOnboarding
-  });
 
   // Context value
   const value: AuthContextType = {

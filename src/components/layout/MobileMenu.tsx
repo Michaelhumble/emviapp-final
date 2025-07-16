@@ -29,15 +29,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { user, signOut, userProfile, userRole, isSignedIn, loading } = useAuth();
   const navigate = useNavigate();
 
-  // 🚨 DEBUG: Log auth state to console for troubleshooting
-  console.log('📱 MobileMenu Auth State:', {
-    isOpen,
-    isSignedIn,
-    hasUser: !!user,
-    loading,
-    userRole,
-    hasProfile: !!userProfile
-  });
 
   // DO NOT auto-close menu on auth state changes
   // This was causing the menu to close every time auth context updates
