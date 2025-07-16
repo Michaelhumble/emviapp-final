@@ -24,7 +24,6 @@ import EmviQASection from "@/components/home/EmviQASection";
 
 // Jobs-related components
 import JobsCallToAction from "@/components/home/JobsCallToAction";
-import FeaturedJobsPreview from "@/components/home/FeaturedJobsPreview";
 import JobsFooterCTA from "@/components/home/JobsFooterCTA";
 
 // Premium Industry Showcase
@@ -80,8 +79,6 @@ const Index = () => {
       {/* 4. Meet Your AI Matchmaker - NEW PREMIUM SECTION */}
       <AIMatchmakerSection />
       
-      {/* 4.5. Featured Jobs Preview */}
-      <FeaturedJobsPreview />
       
       {/* 5. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
