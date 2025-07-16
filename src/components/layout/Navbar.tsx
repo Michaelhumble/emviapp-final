@@ -1,16 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
 import MobileHamburgerMenu from './MobileHamburgerMenu';
+import EcosystemNavigation from '../ecosystem/EcosystemNavigation';
 import AuthButtons from './navbar/AuthButtons';
+import VIPSystem from '../ecosystem/VIPSystem';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
-  const { user } = useAuth();
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,50 +21,9 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Clean Original Layout */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link
-              to={user ? "/dashboard" : "/"}
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              {user ? "Dashboard" : "Home"}
-            </Link>
-            <Link
-              to="/jobs"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Jobs
-            </Link>
-            <Link
-              to="/artists"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Artists
-            </Link>
-            <Link
-              to="/salons"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Salons
-            </Link>
-            <Link
-              to="/community"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Community
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Contact
-            </Link>
+          {/* Desktop Navigation - Now Ecosystem-Aware */}
+          <div className="hidden md:flex items-center space-x-4">
+            <EcosystemNavigation />
           </div>
 
           {/* Right side items */}
@@ -94,8 +52,9 @@ const Navbar = () => {
             {/* Language Toggle */}
             <LanguageToggle />
             
-            {/* Desktop Auth Buttons */}
+            {/* VIP Status & Desktop Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3">
+              <VIPSystem variant="button" className="text-sm" />
               <AuthButtons />
             </div>
 

@@ -29,28 +29,16 @@ const TeamMembersList = ({
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          <div>
-            <strong>Error loading team members:</strong>
-            <br />
-            {error.message}
-            <br />
-            <small className="text-xs opacity-75 mt-2 block">
-              This might be due to missing salon context or database permissions. 
-              Check that your salon is properly selected and you have owner permissions.
-            </small>
-          </div>
-        </AlertDescription>
+        <AlertDescription>{error.message}</AlertDescription>
       </Alert>
     );
   }
 
   if (loading) {
     return (
-      <div className="py-8 text-center text-gray-500">
-        <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-3" />
-        <p className="text-sm">Loading team members...</p>
-        <p className="text-xs text-gray-400 mt-1">Please wait while we fetch your team data</p>
+      <div className="py-4 text-center text-gray-500">
+        <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2" />
+        <p>Loading team members...</p>
       </div>
     );
   }
@@ -63,33 +51,28 @@ const TeamMembersList = ({
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">No team members yet</h3>
         <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
-          Start building your dream team by inviting your first artist or staff member
+          Start building your dream team by inviting your first artist
         </p>
         <Button className="bg-purple-600 hover:bg-purple-700">
           <UserPlus className="mr-2 h-4 w-4" />
-          Invite Your First Team Member
+          Invite Your First Artist
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="text-sm text-gray-600 mb-4">
-        Found {teamMembers.length} team member{teamMembers.length !== 1 ? 's' : ''}
-      </div>
-      <div className="divide-y divide-gray-100">
-        {teamMembers.map((member) => (
-          <TeamMemberItem 
-            key={member.id} 
-            member={member}
-            onEdit={onEdit}
-            onRemove={onRemoveTeamMember}
-            onToggleStatus={onToggleMemberStatus}
-            userRole={userRole}
-          />
-        ))}
-      </div>
+    <div className="divide-y divide-gray-100">
+      {teamMembers.map((member) => (
+        <TeamMemberItem 
+          key={member.id} 
+          member={member}
+          onEdit={onEdit}
+          onRemove={onRemoveTeamMember}
+          onToggleStatus={onToggleMemberStatus}
+          userRole={userRole}
+        />
+      ))}
     </div>
   );
 };

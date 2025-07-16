@@ -1,179 +1,204 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Salon } from './types';
 import { toast } from 'sonner';
 
-export const useSalonProvider = (userId?: string) => {
+export const useSalonProvider = (userId: string | undefined) => {
   const [salons, setSalons] = useState<Salon[]>([]);
   const [currentSalon, setCurrentSalon] = useState<Salon | null>(null);
   const [isLoadingSalons, setIsLoadingSalons] = useState(true);
 
-  const fetchSalons = useCallback(async () => {
-    if (!userId) {
-      console.log('No user ID provided, skipping salon fetch');
-      setIsLoadingSalons(false);
-      return;
-    }
+  // Fetch salons owned by the current user
+  const fetchSalons = async () => {
+    if (!userId) return;
+    setIsLoadingSalons(true);
 
     try {
-      setIsLoadingSalons(true);
-      console.log('Fetching salons for user:', userId);
-      
+      // Use explicit type casting to avoid deep instantiation issues
       const { data, error } = await supabase
         .from('salons')
         .select('*')
-        .eq('owner_id', userId)
-        .order('created_at', { ascending: false });
+        .eq('id', userId)
+        .order('created_at', { ascending: false }) as unknown as { 
+          data: Salon[] | null; 
+          error: any; 
+        };
 
-      if (error) {
-        console.error('Error fetching salons:', error);
-        toast.error('Failed to load salons');
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log('Fetched salons:', data);
+      // Safely handle the data with explicit type assertion
+      const salonData = (data || []) as Salon[];
+      setSalons(salonData);
       
-      // Convert Json services to string[] and ensure proper typing
-      const transformedSalons: Salon[] = (data || []).map(salon => ({
-        ...salon,
-        services: Array.isArray(salon.services) ? 
-                 salon.services.filter(s => typeof s === 'string') as string[] : 
-                 typeof salon.services === 'string' ? [salon.services] : []
-      }));
-      
-      setSalons(transformedSalons);
-      
-      // Auto-select first salon if none selected and salons exist
-      if (transformedSalons.length > 0 && !currentSalon) {
-        console.log('Auto-selecting first salon:', transformedSalons[0]);
-        setCurrentSalon(transformedSalons[0]);
+      // If there's at least one salon and no current salon is set, select the first one
+      if (salonData.length > 0 && !currentSalon) {
+        setCurrentSalon(salonData[0]);
+        // Save selected salon to localStorage
+        localStorage.setItem('selected_salon_id', salonData[0].id);
       }
-    } catch (error) {
-      console.error('Error in fetchSalons:', error);
-      setSalons([]);
+    } catch (err) {
+      console.error('Error fetching salons:', err);
+      toast.error('Failed to load your salons');
     } finally {
       setIsLoadingSalons(false);
     }
-  }, [userId, currentSalon]);
-
-  const createSalon = async (salonData: Partial<Salon>) => {
-    if (!userId) {
-      toast.error('User not authenticated');
-      return false;
-    }
-
-    try {
-      // Prepare data for database with owner_id and services as Json
-      const insertData = {
-        ...salonData,
-        owner_id: userId,
-        services: salonData.services ? salonData.services : null,
-        id: crypto.randomUUID(), // Generate ID since it's required
-      };
-      
-      const { data, error } = await supabase
-        .from('salons')
-        .insert(insertData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Transform the data to match Salon type
-      const transformedSalon: Salon = {
-        ...data,
-        services: Array.isArray(data.services) ? 
-                 data.services.filter(s => typeof s === 'string') as string[] : 
-                 typeof data.services === 'string' ? [data.services] : []
-      };
-
-      setSalons(prev => [transformedSalon, ...prev]);
-      setCurrentSalon(transformedSalon);
-      toast.success('Salon created successfully!');
-      return true;
-    } catch (error) {
-      console.error('Error creating salon:', error);
-      toast.error('Failed to create salon');
-      return false;
-    }
   };
 
-  const selectSalon = (salonId: string) => {
-    const salon = salons.find(s => s.id === salonId);
-    if (salon) {
-      console.log('Selecting salon:', salon);
-      setCurrentSalon(salon);
-    }
-  };
+  // Create a new salon
+  const createSalon = async (salonData: Partial<Salon>): Promise<boolean> => {
+    if (!userId) return false;
 
-  const updateSalon = async (salonId: string, updates: Partial<Salon>) => {
     try {
-      // Prepare data for database with services as Json
-      const updateData = {
-        ...updates,
-        services: updates.services ? updates.services : undefined,
+      // Create new salon data with owner_id and set id to be the same as userId
+      // This is required by the Supabase schema based on the error message
+      const newSalonData = {
+        id: userId, // Using userId as the salon ID based on schema requirements
+        salon_name: salonData.salon_name || 'New Salon',
+        logo_url: salonData.logo_url,
+        location: salonData.location,
+        about: salonData.about,
+        website: salonData.website,
+        instagram: salonData.instagram,
+        phone: salonData.phone,
       };
       
+      // Use explicit type casting to avoid deep instantiation issues
       const { data, error } = await supabase
         .from('salons')
-        .update(updateData)
-        .eq('id', salonId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Transform the data to match Salon type
-      const transformedSalon: Salon = {
-        ...data,
-        services: Array.isArray(data.services) ? 
-                 data.services.filter(s => typeof s === 'string') as string[] : 
-                 typeof data.services === 'string' ? [data.services] : []
-      };
-
-      setSalons(prev => prev.map(s => s.id === salonId ? transformedSalon : s));
-      if (currentSalon?.id === salonId) {
-        setCurrentSalon(transformedSalon);
+        .insert(newSalonData)
+        .select() as unknown as { 
+          data: Salon[] | null; 
+          error: any; 
+        };
+        
+      if (error) {
+        if (error.message.includes('maximum of 3 salons')) {
+          toast.error('You have reached the maximum limit of 3 salons');
+        } else {
+          toast.error('Failed to create salon');
+        }
+        throw error;
       }
-      toast.success('Salon updated successfully!');
+
+      if (data && data.length > 0) {
+        const newSalon = data[0] as Salon;
+        setSalons(prev => [newSalon, ...prev]);
+        setCurrentSalon(newSalon);
+        localStorage.setItem('selected_salon_id', newSalon.id);
+        toast.success('New salon created successfully');
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      console.error('Error creating salon:', err);
+      return false;
+    }
+  };
+
+  // Update a salon
+  const updateSalon = async (salonId: string, data: Partial<Salon>): Promise<boolean> => {
+    try {
+      // Use explicit type casting to avoid deep instantiation issues
+      const { error } = await supabase
+        .from('salons')
+        .update(data)
+        .eq('id', salonId) as unknown as { 
+          error: any; 
+        };
+
+      if (error) throw error;
+
+      // Update local state
+      setSalons(prev => 
+        prev.map(salon => 
+          salon.id === salonId ? { ...salon, ...data } : salon
+        )
+      );
+
+      // If the current salon was updated, update that too
+      if (currentSalon?.id === salonId) {
+        setCurrentSalon(prev => prev ? { ...prev, ...data } : null);
+      }
+
+      toast.success('Salon updated successfully');
       return true;
-    } catch (error) {
-      console.error('Error updating salon:', error);
+    } catch (err) {
+      console.error('Error updating salon:', err);
       toast.error('Failed to update salon');
       return false;
     }
   };
 
-  const deleteSalon = async (salonId: string) => {
+  // Delete a salon
+  const deleteSalon = async (salonId: string): Promise<boolean> => {
+    if (!confirm('Are you sure you want to delete this salon? This action cannot be undone.')) {
+      return false;
+    }
+
     try {
+      // Use explicit type casting to avoid deep instantiation issues
       const { error } = await supabase
         .from('salons')
         .delete()
-        .eq('id', salonId);
+        .eq('id', salonId) as unknown as { 
+          error: any; 
+        };
 
       if (error) throw error;
 
-      setSalons(prev => prev.filter(s => s.id !== salonId));
+      // Update local state
+      setSalons(prev => prev.filter(salon => salon.id !== salonId));
+
+      // If the deleted salon was the current one, select another one if available
       if (currentSalon?.id === salonId) {
-        setCurrentSalon(null);
+        const remainingSalons = salons.filter(salon => salon.id !== salonId);
+        if (remainingSalons.length > 0) {
+          setCurrentSalon(remainingSalons[0]);
+          localStorage.setItem('selected_salon_id', remainingSalons[0].id);
+        } else {
+          setCurrentSalon(null);
+          localStorage.removeItem('selected_salon_id');
+        }
       }
-      toast.success('Salon deleted successfully!');
+
+      toast.success('Salon deleted successfully');
       return true;
-    } catch (error) {
-      console.error('Error deleting salon:', error);
+    } catch (err) {
+      console.error('Error deleting salon:', err);
       toast.error('Failed to delete salon');
       return false;
     }
   };
 
-  const refreshSalons = async () => {
-    await fetchSalons();
+  // Select a salon
+  const selectSalon = (salonId: string) => {
+    const salon = salons.find(s => s.id === salonId);
+    if (salon) {
+      setCurrentSalon(salon);
+      localStorage.setItem('selected_salon_id', salonId);
+    }
   };
 
+  // Initial load and salon selection from localStorage
   useEffect(() => {
-    fetchSalons();
-  }, [fetchSalons]);
+    if (userId) {
+      // Check if there's a saved salon selection
+      const savedSalonId = localStorage.getItem('selected_salon_id');
+      
+      // Fetch salons first
+      fetchSalons().then(() => {
+        // After fetching, try to select the saved salon
+        if (savedSalonId) {
+          const salon = salons.find(s => s.id === savedSalonId);
+          if (salon) {
+            setCurrentSalon(salon);
+          }
+        }
+      });
+    }
+  }, [userId]);
 
   return {
     salons,
@@ -181,8 +206,8 @@ export const useSalonProvider = (userId?: string) => {
     isLoadingSalons,
     createSalon,
     selectSalon,
-    refreshSalons,
+    refreshSalons: fetchSalons,
     updateSalon,
-    deleteSalon,
+    deleteSalon
   };
 };

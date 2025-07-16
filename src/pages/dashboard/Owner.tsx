@@ -1,6 +1,4 @@
-
 import React, { useEffect } from 'react';
-import Layout from '@/components/layout/Layout';
 import SalonDashboardNew from "@/components/dashboard/salon/SalonDashboardNew";
 import { SalonProvider } from "@/context/salon";
 
@@ -10,11 +8,9 @@ const OwnerDashboard = () => {
   }, []);
 
   return (
-    <Layout hideFooter={true}>
-      <SalonProvider>
-        <SalonDashboardNew />
-      </SalonProvider>
-    </Layout>
+    <SalonProvider>
+      <SalonDashboardNew />
+    </SalonProvider>
   );
 };
 
