@@ -73,7 +73,7 @@ const InviteEverywhere: React.FC<InviteEverywhereProps> = ({
             </div>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold text-primary">{referralStats?.referralCount || 0}</div>
+            <div className="text-2xl font-bold text-primary">{referralStats?.totalReferrals || 0}</div>
             <div className="text-xs text-muted-foreground">Invited</div>
           </div>
         </div>
