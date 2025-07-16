@@ -17,11 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
-import { Copy, Phone, MessageCircle, Send, CheckCircle2, Info } from "lucide-react";
+import { Copy, Phone, MessageCircle, Send, CheckCircle2, Info, Users, User, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useTeamInvites } from "./hooks/useTeamInvites";
+import { useUniversalInvites } from "./hooks/useUniversalInvites";
 
 interface InviteMemberModalProps {
   isOpen: boolean;
@@ -34,10 +36,16 @@ const InviteMemberModal = ({
   onClose, 
   onSendInvite 
 }: InviteMemberModalProps) => {
-  const { createInvite, isLoading } = useTeamInvites();
+  const { createInvite, isLoading: individualLoading } = useTeamInvites();
+  const { createUniversalInvite, isLoading: universalLoading } = useUniversalInvites();
+  
+  const [activeTab, setActiveTab] = useState<'individual' | 'universal' | 'solo'>('individual');
   const [step, setStep] = useState<'form' | 'link'>('form');
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied] = useState(false);
+  const [currentInviteType, setCurrentInviteType] = useState<'individual' | 'universal'>('individual');
+  
+  // Individual invite data
   const [memberData, setMemberData] = useState({
     full_name: '',
     phone_number: '',
@@ -45,11 +53,21 @@ const InviteMemberModal = ({
     role: 'technician'
   });
 
+  // Universal invite data  
+  const [universalData, setUniversalData] = useState({
+    max_uses: 5,
+    default_role: 'technician'
+  });
+
   const handleInputChange = (field: string, value: string) => {
     setMemberData({ ...memberData, [field]: value });
   };
 
-  const handleCreateInvite = async () => {
+  const handleUniversalChange = (field: string, value: string | number) => {
+    setUniversalData({ ...universalData, [field]: value });
+  };
+
+  const handleCreateIndividualInvite = async () => {
     if (!memberData.full_name || !memberData.phone_number) {
       toast.error("Please fill in name and phone number");
       return;
@@ -65,13 +83,36 @@ const InviteMemberModal = ({
       if (result) {
         const link = `${window.location.origin}/team-invite/${result.invite_code}`;
         setInviteLink(link);
+        setCurrentInviteType('individual');
         setStep('link');
-        toast.success("Invite link created successfully!");
+        toast.success("Individual invite link created successfully!");
       }
     } catch (err) {
-      console.error('Error creating invite:', err);
+      console.error('Error creating individual invite:', err);
       toast.error("Failed to create invite link");
     }
+  };
+
+  const handleCreateUniversalInvite = async () => {
+    try {
+      const result = await createUniversalInvite(universalData.max_uses, universalData.default_role);
+
+      if (result) {
+        const link = `${window.location.origin}/universal-invite/${result.invite_code}`;
+        setInviteLink(link);
+        setCurrentInviteType('universal');
+        setStep('link');
+        toast.success(`Universal invite created! ${universalData.max_uses} spots available.`);
+      }
+    } catch (err) {
+      console.error('Error creating universal invite:', err);
+      toast.error("Failed to create universal invite");
+    }
+  };
+
+  const handleSkipTeamSetup = () => {
+    toast.success("Solo mode activated - you can always add team members later!");
+    onClose();
   };
 
   const handleCopyLink = async () => {
@@ -86,15 +127,21 @@ const InviteMemberModal = ({
   };
 
   const handleShare = (platform: 'sms' | 'whatsapp' | 'messenger') => {
-    const message = `Hi ${memberData.full_name}! You've been invited to join our salon team as ${memberData.role}. Click this link to accept: ${inviteLink}`;
+    let message = '';
+    
+    if (currentInviteType === 'individual') {
+      message = `Hi ${memberData.full_name}! You've been invited to join our salon team as ${memberData.role}. Click this link to accept: ${inviteLink}`;
+    } else {
+      message = `Join our salon team! We have ${universalData.max_uses} open positions. Click this link to apply: ${inviteLink}`;
+    }
     
     let shareUrl = '';
     switch (platform) {
       case 'sms':
-        shareUrl = `sms:${memberData.phone_number}?body=${encodeURIComponent(message)}`;
+        shareUrl = `sms:?body=${encodeURIComponent(message)}`;
         break;
       case 'whatsapp':
-        shareUrl = `https://wa.me/${memberData.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
         break;
       case 'messenger':
         shareUrl = `fb-messenger://share?text=${encodeURIComponent(message)}`;
@@ -116,7 +163,10 @@ const InviteMemberModal = ({
     setStep('form');
     setInviteLink('');
     setCopied(false);
+    setActiveTab('individual');
+    setCurrentInviteType('individual');
     setMemberData({ full_name: '', phone_number: '', email: '', role: 'technician' });
+    setUniversalData({ max_uses: 5, default_role: 'technician' });
     onClose();
   };
 
@@ -126,108 +176,226 @@ const InviteMemberModal = ({
     setCopied(false);
   };
 
+  const isLoading = individualLoading || universalLoading;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px]">
         {step === 'form' ? (
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Phone className="h-5 w-5 text-purple-600" />
-                Invite Team Member
+                <Users className="h-5 w-5 text-purple-600" />
+                Team Setup
               </DialogTitle>
               <DialogDescription>
-                Invite someone to join your salon team using their phone number
+                Choose how you want to build your salon team
               </DialogDescription>
             </DialogHeader>
-            
-            <Alert className="bg-blue-50 border-blue-200">
-              <Info className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800">
-                <strong>Phone number preferred:</strong> We'll generate a secure invite link you can send via SMS, WhatsApp, or any messaging app - no fees required!
-              </AlertDescription>
-            </Alert>
 
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Full Name *</Label>
-                <Input
-                  id="name"
-                  placeholder="e.g., Maria Garcia"
-                  autoComplete="name"
-                  value={memberData.full_name}
-                  onChange={(e) => handleInputChange('full_name', e.target.value)}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="phone">Phone Number *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="e.g., +1 (555) 123-4567"
-                  autoComplete="tel"
-                  value={memberData.phone_number}
-                  onChange={(e) => handleInputChange('phone_number', e.target.value)}
-                />
-                <p className="text-xs text-gray-500">
-                  This will be used to send the invite link via your preferred messaging app
-                </p>
-              </div>
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="individual" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Individual
+                </TabsTrigger>
+                <TabsTrigger value="universal" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Team Link
+                </TabsTrigger>
+                <TabsTrigger value="solo" className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Solo Mode
+                </TabsTrigger>
+              </TabsList>
 
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email (optional)</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="maria@example.com"
-                  autoComplete="email"
-                  value={memberData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                />
-                <p className="text-xs text-gray-500">
-                  Backup contact method if needed
-                </p>
-              </div>
+              <TabsContent value="individual" className="space-y-4">
+                <Alert className="bg-blue-50 border-blue-200">
+                  <User className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    <strong>Personal invite:</strong> Send a unique invite link to a specific person with their name and role.
+                  </AlertDescription>
+                </Alert>
 
-              <div className="grid gap-2">
-                <Label htmlFor="role">Role *</Label>
-                <Select 
-                  value={memberData.role}
-                  onValueChange={(value) => handleInputChange('role', value)}
-                >
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="technician">Artist / Technician</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="front_desk">Front Desk</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      placeholder="e.g., Maria Garcia"
+                      autoComplete="name"
+                      value={memberData.full_name}
+                      onChange={(e) => handleInputChange('full_name', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="e.g., +1 (555) 123-4567"
+                      autoComplete="tel"
+                      value={memberData.phone_number}
+                      onChange={(e) => handleInputChange('phone_number', e.target.value)}
+                    />
+                  </div>
 
-            <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>Cancel</Button>
-              <Button 
-                onClick={handleCreateInvite} 
-                disabled={!memberData.full_name || !memberData.phone_number || isLoading}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                {isLoading ? 'Creating Link...' : 'Create Invite Link'}
-              </Button>
-            </DialogFooter>
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">Email (optional)</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="maria@example.com"
+                      autoComplete="email"
+                      value={memberData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="role">Role *</Label>
+                    <Select 
+                      value={memberData.role}
+                      onValueChange={(value) => handleInputChange('role', value)}
+                    >
+                      <SelectTrigger id="role">
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="technician">Artist / Technician</SelectItem>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="front_desk">Front Desk</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                  <Button 
+                    onClick={handleCreateIndividualInvite} 
+                    disabled={!memberData.full_name || !memberData.phone_number || isLoading}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {isLoading ? 'Creating...' : 'Create Personal Invite'}
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+
+              <TabsContent value="universal" className="space-y-4">
+                <Alert className="bg-purple-50 border-purple-200">
+                  <Users className="h-4 w-4 text-purple-600" />
+                  <AlertDescription className="text-purple-800">
+                    <strong>Universal team link:</strong> Create one link that multiple people can use to join your team. Perfect for team chats or group sharing.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="max_uses">Maximum Team Members</Label>
+                    <Select 
+                      value={universalData.max_uses.toString()}
+                      onValueChange={(value) => handleUniversalChange('max_uses', parseInt(value))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select number of spots" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="3">3 people</SelectItem>
+                        <SelectItem value="5">5 people</SelectItem>
+                        <SelectItem value="10">10 people</SelectItem>
+                        <SelectItem value="15">15 people</SelectItem>
+                        <SelectItem value="20">20 people</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500">
+                      How many people can use this link to join your team
+                    </p>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="default_role">Default Role</Label>
+                    <Select 
+                      value={universalData.default_role}
+                      onValueChange={(value) => handleUniversalChange('default_role', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select default role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="technician">Artist / Technician</SelectItem>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="front_desk">Front Desk</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500">
+                      New team members will be assigned this role (you can change it later)
+                    </p>
+                  </div>
+                </div>
+
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>How it works:</strong> Share this link in your team chat. Each person must sign up with their own info. All new members will appear as "pending" until you review and approve them.
+                  </AlertDescription>
+                </Alert>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                  <Button 
+                    onClick={handleCreateUniversalInvite} 
+                    disabled={isLoading}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {isLoading ? 'Creating...' : `Create Team Link (${universalData.max_uses} spots)`}
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+
+              <TabsContent value="solo" className="space-y-4">
+                <Alert className="bg-green-50 border-green-200">
+                  <Settings className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    <strong>Solo salon mode:</strong> Skip team setup for now. You can add team members anytime later from your dashboard.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <User className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Just you for now?</h3>
+                  <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+                    Perfect! Your salon dashboard will be optimized for solo operations. You can always invite team members later when you're ready to grow.
+                  </p>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                  <Button 
+                    onClick={handleSkipTeamSetup}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Continue as Solo Salon
+                  </Button>
+                </DialogFooter>
+              </TabsContent>
+            </Tabs>
           </>
         ) : (
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
-                Invite Link Ready!
+                {currentInviteType === 'individual' ? 'Personal Invite Ready!' : 'Team Link Ready!'}
               </DialogTitle>
               <DialogDescription>
-                Share this secure link with {memberData.full_name} to join your team
+                {currentInviteType === 'individual' 
+                  ? `Share this secure link with ${memberData.full_name} to join your team`
+                  : `Share this link with your team - ${universalData.max_uses} people can use it to join`
+                }
               </DialogDescription>
             </DialogHeader>
 
@@ -235,13 +403,15 @@ const InviteMemberModal = ({
               <Alert className="bg-green-50 border-green-200">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
-                  <strong>Link created successfully!</strong> Copy and send this link using your phone's messaging app. No SMS fees required.
+                  <strong>Link created successfully!</strong> Copy and share this link using your preferred messaging method.
                 </AlertDescription>
               </Alert>
 
               <Card>
                 <CardContent className="p-4">
-                  <Label className="text-sm font-medium">Invite Link</Label>
+                  <Label className="text-sm font-medium">
+                    {currentInviteType === 'individual' ? 'Personal Invite Link' : 'Universal Team Link'}
+                  </Label>
                   <div className="flex gap-2 mt-2">
                     <Input
                       value={inviteLink}
@@ -293,15 +463,16 @@ const InviteMemberModal = ({
                     <span className="text-xs">Messenger</span>
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 text-center">
-                  Click any option to open your messaging app with the invite pre-filled
-                </p>
               </div>
 
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Instructions:</strong> Copy the link above and send it to {memberData.full_name} using SMS, WhatsApp, Zalo, or any messaging app. They'll click the link to join your team - no app download required!
+                  {currentInviteType === 'individual' ? (
+                    <span><strong>Instructions:</strong> Send this link to {memberData.full_name} using SMS, WhatsApp, or any messaging app. They'll create their profile and join your team.</span>
+                  ) : (
+                    <span><strong>Instructions:</strong> Share this link in your team chat, social media, or send directly to potential team members. Each person will create their own profile and appear in your dashboard for approval.</span>
+                  )}
                 </AlertDescription>
               </Alert>
             </div>

@@ -4137,11 +4137,13 @@ export type Database = {
           expires_at: string | null
           id: string
           invite_code: string
+          invite_type: string | null
           metadata: Json | null
           phone_number: string
           role: string
           salon_id: string
           status: string
+          universal_invite_id: string | null
         }
         Insert: {
           accepted_at?: string | null
@@ -4150,11 +4152,13 @@ export type Database = {
           expires_at?: string | null
           id?: string
           invite_code: string
+          invite_type?: string | null
           metadata?: Json | null
           phone_number: string
           role: string
           salon_id: string
           status?: string
+          universal_invite_id?: string | null
         }
         Update: {
           accepted_at?: string | null
@@ -4163,11 +4167,13 @@ export type Database = {
           expires_at?: string | null
           id?: string
           invite_code?: string
+          invite_type?: string | null
           metadata?: Json | null
           phone_number?: string
           role?: string
           salon_id?: string
           status?: string
+          universal_invite_id?: string | null
         }
         Relationships: [
           {
@@ -4190,6 +4196,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user_salon_access"
             referencedColumns: ["salon_id"]
+          },
+          {
+            foreignKeyName: "team_invites_universal_invite_id_fkey"
+            columns: ["universal_invite_id"]
+            isOneToOne: false
+            referencedRelation: "universal_team_invites"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -4251,6 +4264,73 @@ export type Database = {
           vietnamese?: string
         }
         Relationships: []
+      }
+      universal_team_invites: {
+        Row: {
+          created_at: string
+          created_by: string
+          current_uses: number
+          default_role: string
+          expires_at: string
+          id: string
+          invite_code: string
+          max_uses: number
+          metadata: Json | null
+          salon_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          current_uses?: number
+          default_role?: string
+          expires_at?: string
+          id?: string
+          invite_code: string
+          max_uses?: number
+          metadata?: Json | null
+          salon_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          current_uses?: number
+          default_role?: string
+          expires_at?: string
+          id?: string
+          invite_code?: string
+          max_uses?: number
+          metadata?: Json | null
+          salon_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "universal_team_invites_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "universal_team_invites_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "universal_team_invites_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
       }
       user_achievements: {
         Row: {
@@ -4787,6 +4867,15 @@ export type Database = {
         Args: { p_invite_code: string; p_user_id: string }
         Returns: boolean
       }
+      accept_universal_invite: {
+        Args: {
+          p_invite_code: string
+          p_full_name: string
+          p_phone_number: string
+          p_email?: string
+        }
+        Returns: Json
+      }
       array_append_unique: {
         Args: { arr: string[]; item: string }
         Returns: string[]
@@ -4877,6 +4966,17 @@ export type Database = {
           expires_at: string
         }[]
       }
+      create_universal_team_invite: {
+        Args: {
+          p_salon_id: string
+          p_max_uses: number
+          p_default_role?: string
+        }
+        Returns: {
+          invite_code: string
+          expires_at: string
+        }[]
+      }
       decrement_post_likes: {
         Args: { post_id: string }
         Returns: undefined
@@ -4886,6 +4986,10 @@ export type Database = {
         Returns: string
       }
       generate_team_invite_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_universal_invite_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
