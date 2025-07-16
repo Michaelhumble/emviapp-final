@@ -2,29 +2,26 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import { useEffect, useState } from "react";
 
 const AuthButtons = () => {
   const location = useLocation();
   const currentPath = encodeURIComponent(location.pathname + location.search);
   const { isSignedIn, signOut, user, loading } = useAuth();
   
-  // Force re-render when auth state changes to ensure UI updates immediately
-  const [authState, setAuthState] = useState(isSignedIn);
-  
-  useEffect(() => {
-    setAuthState(isSignedIn);
-  }, [isSignedIn, user]);
-  
-  // Don't show buttons while loading to prevent flash
+  // CRITICAL: Show loading state to prevent button flickering
+  // During auth state changes, show nothing until state is resolved
   if (loading) {
-    return null;
+    return (
+      <div className="w-24 h-9 bg-gray-100 animate-pulse rounded-md flex-shrink-0" />
+    );
   }
 
+  // SINGLE SOURCE OF TRUTH: Use only the centralized isSignedIn from auth context
+  // Do NOT use local state - this caused the original issues
   return (
     <>
-      {authState ? (
-        // Show Sign Out button when signed in
+      {isSignedIn ? (
+        // AUTHENTICATED STATE: Show only Sign Out button
         <Button 
           onClick={signOut}
           variant="outline"
@@ -33,7 +30,7 @@ const AuthButtons = () => {
           Sign Out
         </Button>
       ) : (
-        // Show Sign In and Sign Up when not signed in
+        // UNAUTHENTICATED STATE: Show Sign In and Sign Up buttons
         <>
           <Link to={`/sign-in?redirect=${currentPath}`}>
             <Button variant="ghost">Sign In</Button>

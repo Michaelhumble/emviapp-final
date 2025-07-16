@@ -35,14 +35,16 @@ const AuthAction: React.FC<AuthActionProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Close auth dialog when user signs in
+  // CRITICAL: Close auth dialog when user successfully signs in
+  // This ensures that after authentication, protected content is immediately accessible
   useEffect(() => {
     if (isSignedIn && showAuthDialog) {
+      console.log('🔐 AuthAction: User signed in, closing auth dialog');
       setShowAuthDialog(false);
     }
   }, [isSignedIn, showAuthDialog]);
 
-  // Don't render anything while authentication is loading
+  // LOADING STATE: Show nothing while auth is resolving to prevent premature prompts
   if (loading) {
     return null;
   }

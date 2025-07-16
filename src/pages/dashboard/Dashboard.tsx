@@ -1,15 +1,20 @@
 
+/**
+ * MAIN DASHBOARD PAGE - UPDATED TO USE CENTRALIZED ROUTING
+ * 
+ * This now uses DashboardRouter for all role-based routing logic
+ * IMPORTANT: All old redirect logic has been moved to DashboardRouter
+ */
+
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { Navigate } from "react-router-dom";
-import Layout from "@/components/layout/Layout";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import Map from "@/components/Map";
+import DashboardRouter from "@/components/dashboard/DashboardRouter";
 import { migrateSingleToMultiSalon } from "@/utils/migration/migrateSingleToMultiSalon";
 
 const DashboardPage = () => {
-  const { user, userRole, userProfile, loading } = useAuth();
+  const { user, userRole } = useAuth();
 
+  // TODO: LEGACY CODE - Keep salon migration for now, remove after verification
   useEffect(() => {
     // If user exists and is a salon owner, check if we need to migrate
     if (user && userRole === "owner") {
@@ -25,51 +30,8 @@ const DashboardPage = () => {
     }
   }, [user, userRole]);
 
-  // If still loading, don't redirect yet
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  // Redirect based on user role
-  if (user) {
-    if (userRole === "artist") {
-      return <Navigate to="/dashboard/artist" replace />;
-    } else if (userRole === "owner") {
-      return <Navigate to="/dashboard/owner" replace />;
-    } else if (userRole === "customer") {
-      return <Navigate to="/dashboard/customer" replace />;
-    } else if (userRole === "freelancer") {
-      return <Navigate to="/dashboard/freelancer" replace />;
-    } else if (userRole === "supplier") {
-      return <Navigate to="/dashboard/supplier" replace />;
-    } else {
-      return <Navigate to="/dashboard/other" replace />;
-    }
-  }
-
-  // Return default dashboard for non-authenticated users
-  return (
-    <Layout>
-      <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Welcome to EmviApp</h1>
-        
-        <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Discover Beauty Professionals in Los Angeles</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Map 
-                height="500px" 
-                className="rounded-lg shadow-lg" 
-                zoom={12}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </Layout>
-  );
+  // CENTRALIZED ROUTING: Use DashboardRouter for ALL role-based logic
+  return <DashboardRouter />;
 };
 
 export default DashboardPage;

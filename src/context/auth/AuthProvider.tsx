@@ -6,6 +6,7 @@ import { normalizeRole } from "@/utils/roles";
 import { AuthContextType } from "./types";
 import { AuthContext } from "./AuthContext";
 import { toast } from "sonner";
+import { needsRoleSelection } from "@/utils/roleDashboardMap";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -328,14 +329,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
+  // CENTRALIZED AUTH STATE CALCULATIONS (SINGLE SOURCE OF TRUTH)
+  
+  /** 
+   * ROBUST isSignedIn check: Only true when BOTH user and session exist AND not loading
+   * This prevents UI flickering and ensures consistent auth state across app
+   */
+  const isSignedIn = !loading && !!user && !!session && !!user.id;
+  
+  /**
+   * CENTRALIZED currentUserRole: Returns role only when authenticated and not loading
+   * Returns null if user needs role selection (triggers onboarding)
+   */
+  const currentUserRole = isSignedIn ? userRole : null;
+  
+  /**
+   * CENTRALIZED needsOnboarding: True if user is signed in but needs role selection
+   */
+  const needsOnboarding = isSignedIn && needsRoleSelection(userRole);
+
+  // Debug logging for auth state changes
+  console.log('🔐 AuthProvider State:', {
+    loading,
+    hasUser: !!user,
+    hasSession: !!session,
+    isSignedIn,
+    currentUserRole,
+    needsOnboarding
+  });
+
   // Context value
   const value: AuthContextType = {
     user,
     session,
-    userRole,
+    userRole: currentUserRole, // Use computed role
     userProfile,
     loading,
-    isSignedIn: !!user && !!session, // More robust check - both user and session must exist
+    isSignedIn, // Use robust calculation
     isError,
     isNewUser,
     clearIsNewUser,
