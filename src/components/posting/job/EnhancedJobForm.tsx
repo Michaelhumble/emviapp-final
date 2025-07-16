@@ -462,6 +462,23 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     try {
       console.log('🚀 [STRIPE-CHECKOUT] Creating checkout session with plan details');
       
+      // CRITICAL FIX: Upload photos BEFORE creating checkout (File objects can't be serialized)
+      console.log('📸 [PAID-PHOTO-UPLOAD] Starting photo upload for paid job:', photoUploads.length, 'files');
+      let imageUrls: string[] = [];
+      
+      if (photoUploads.length > 0) {
+        const uploadResult = await uploadPhotosToStorage(photoUploads);
+        
+        if (!uploadResult.success) {
+          console.error('❌ [PAID-PHOTO-UPLOAD] Failed to upload photos:', uploadResult.error);
+          setFreeJobError(`Failed to upload photos: ${uploadResult.error}`);
+          return;
+        }
+        
+        imageUrls = uploadResult.imageUrls;
+        console.log('✅ [PAID-PHOTO-UPLOAD] Successfully uploaded photos:', imageUrls);
+      }
+      
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
         'create-job-checkout',
         {
@@ -479,8 +496,14 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
               contactPhone: data.contactPhone?.trim() || '',
               contactEmail: data.contactEmail?.trim() || '',
               contactNotes: data.contactNotes?.trim() || '',
-              // Include images (will be processed by edge function)
-              photoUploads: photoUploads,
+              // CRITICAL FIX: Send photo URLs instead of File objects
+              image_url: imageUrls.length > 0 ? imageUrls[0] : null,
+              image_urls: imageUrls,
+              photos: imageUrls,
+              metadata: {
+                photos: imageUrls,
+                image_urls: imageUrls
+              },
               // Include selected plan details
               selectedPlan: selectedPaidPlan,
               selectedPrice: selectedPaidPrice,
