@@ -30,6 +30,12 @@ import JobsFooterCTA from "@/components/home/JobsFooterCTA";
 import PremiumIndustryShowcase from "@/components/home/PremiumIndustryShowcase";
 import { industryConfig } from "@/data/industryListings";
 
+// Trust & Social Proof Components
+import LiveStatsBar from "@/components/home/trust/LiveStatsBar";
+import TrustBadges from "@/components/home/trust/TrustBadges";
+import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
+import PartnerLogos from "@/components/home/trust/PartnerLogos";
+
 const Index = () => {
   const { user, userRole, loading } = useAuth();
   const navigate = useNavigate();
@@ -57,20 +63,51 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
+      {/* 1.1 Live Stats Bar - Trust & Social Proof */}
+      <section className="relative -mt-16 z-20 px-4">
+        <div className="container mx-auto">
+          <LiveStatsBar />
+        </div>
+      </section>
+      
+      {/* 1.2 Partner Logos Marquee */}
+      <section className="py-8 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
+        <div className="container mx-auto px-4">
+          <PartnerLogos />
+        </div>
+      </section>
+      
       {/* 1.5. Jobs Call to Action - Above the fold */}
       <JobsCallToAction />
       
+      {/* 1.6 Real-time Activity Feed */}
+      <section className="py-8 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <RealTimeActivity />
+        </div>
+      </section>
+      
       {/* 2. Premium Industry Showcases - Diamond listings first */}
-      {Object.values(industryConfig).map((industry) => (
-        <PremiumIndustryShowcase
-          key={industry.name}
-          industryName={industry.name}
-          displayName={industry.displayName}
-          listings={industry.listings}
-          routePath={industry.routePath}
-          gradientColors={industry.gradientColors}
-          icon={industry.icon}
-        />
+      {Object.values(industryConfig).map((industry, index) => (
+        <div key={industry.name}>
+          <PremiumIndustryShowcase
+            industryName={industry.name}
+            displayName={industry.displayName}
+            listings={industry.listings}
+            routePath={industry.routePath}
+            gradientColors={industry.gradientColors}
+            icon={industry.icon}
+          />
+          
+          {/* Trust Badges after every 2nd industry showcase */}
+          {index === 1 && (
+            <section className="py-12 bg-gradient-to-r from-purple-50/30 to-pink-50/20">
+              <div className="container mx-auto px-4 text-center">
+                <TrustBadges />
+              </div>
+            </section>
+          )}
+        </div>
       ))}
       
       {/* 3. Why Artists & Salons Trust Us */}
@@ -78,7 +115,6 @@ const Index = () => {
       
       {/* 4. Meet Your AI Matchmaker - NEW PREMIUM SECTION */}
       <AIMatchmakerSection />
-      
       
       {/* 5. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />

@@ -105,22 +105,46 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
-      <div className="container mx-auto px-4">
+    <section className="py-16 bg-gradient-to-br from-gray-50/80 to-white relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-purple-400 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-pink-400 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-14"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4 flex items-center justify-center">
-            <IndustryIcon iconName={icon} className="w-12 h-12 mr-4 text-muted-foreground" />
+          <motion.h2 
+            className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center leading-tight"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+          >
+            <motion.div
+              className="mr-4"
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <IndustryIcon iconName={icon} className="w-10 h-10 md:w-12 md:h-12 text-purple-600" />
+            </motion.div>
             {displayName} Listings — Premium Spaces
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-inter">
+          </motion.h2>
+          <motion.p 
+            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-inter leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             Explore premium {industryName.toLowerCase()} spaces, jobs, and opportunities. Connect with the best.
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* Premium Listings Grid - 5 cards wide */}
@@ -202,31 +226,55 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
                     </div>
                   )}
                   
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full text-sm font-inter font-medium hover:bg-gray-50"
-                    onClick={() => handleViewDetails(listing)}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    View Details
-                  </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full text-sm font-inter font-medium hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-all duration-300 group"
+                      onClick={() => handleViewDetails(listing)}
+                    >
+                      <span className="mr-2">View Details</span>
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200" />
+                    </Button>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
         </div>
 
-        {/* CTA Button */}
-        <div className="text-center">
+        {/* Enhanced CTA Button */}
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
           <Link to={routePath}>
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-inter font-bold py-4 px-8 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
             >
-              See all {displayName} Jobs <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white font-inter font-bold py-6 px-10 rounded-2xl text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-500 group relative overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center">
+                  <span className="mr-3">🔥 Claim Your Spot in {displayName}</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+                </span>
+                
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:animate-shimmer" />
+              </Button>
+            </motion.div>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

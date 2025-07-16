@@ -188,29 +188,42 @@ const ClientSuccessStories = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section className="py-16 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4">
-        {/* Background elements */}
-        <div className="absolute inset-0 overflow-hidden opacity-5 z-0">
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary rounded-full filter blur-3xl opacity-10" />
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-pink-500 rounded-full filter blur-3xl opacity-10" />
+        {/* Enhanced background elements */}
+        <div className="absolute inset-0 overflow-hidden opacity-8 z-0">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full filter blur-3xl opacity-15" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-tl from-blue-400 to-purple-400 rounded-full filter blur-3xl opacity-15" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-amber-300 to-orange-300 rounded-full filter blur-3xl opacity-10" />
         </div>
         
-        {/* Section header */}
+        {/* Enhanced section header */}
         <motion.div 
-          className="text-center max-w-3xl mx-auto mb-16 relative z-10"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center max-w-4xl mx-auto mb-16 relative z-10"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4 tracking-tight text-foreground">
+          <motion.h2 
+            className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6 tracking-tight text-foreground leading-tight"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+          >
             No Matter Your Craft — We Know the Struggle
-          </h2>
-          <p className="text-lg text-muted-foreground font-inter">
+          </motion.h2>
+          <motion.p 
+            className="text-lg md:text-xl text-muted-foreground font-inter leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             Real stories from Nail Techs, Barbers, Tattoo Artists, Makeup Artists, Massage Therapists, and more — 
-            finally, a platform built for all of us.
-          </p>
+            finally, a platform built for <em className="text-purple-600 font-semibold">all of us</em>.
+          </motion.p>
         </motion.div>
         
         {/* Testimonial carousel */}
@@ -231,8 +244,13 @@ const ClientSuccessStories = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
-                      className={`h-full bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 
-                                border-t-4 ${professionStyle.borderColor} overflow-hidden`}
+                      whileHover={{ 
+                        y: -8, 
+                        scale: 1.02,
+                        transition: { duration: 0.3, ease: "easeOut" }
+                      }}
+                      className={`h-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 
+                                border-t-4 ${professionStyle.borderColor} overflow-hidden group cursor-pointer`}
                     >
                       <div className="p-6 h-full flex flex-col">
                         <div className="flex items-center mb-4">
@@ -300,13 +318,34 @@ const ClientSuccessStories = () => {
           </div>
         </div>
         
-        {/* CTA button */}
-        <div className="mt-12 text-center">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-inter font-medium px-6 py-2 rounded-md transition-all
-                                     hover:shadow-lg hover:translate-y-[-2px]">
-            Join Thousands Taking Control of Their Career — Get Started with EmviApp
-          </Button>
-        </div>
+        {/* Enhanced CTA button */}
+        <motion.div 
+          className="mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.05, y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white font-inter font-bold px-10 py-6 rounded-2xl text-lg shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 group relative overflow-hidden"
+              aria-label="Join EmviApp community"
+            >
+              <span className="relative z-10 flex items-center">
+                <span className="mr-3">💪 Join 50,000+ Taking Control of Their Career</span>
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+              </span>
+              
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:animate-shimmer" />
+            </Button>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
