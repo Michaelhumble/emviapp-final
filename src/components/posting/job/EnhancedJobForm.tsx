@@ -19,6 +19,7 @@ import ContactInfoSection from '@/components/posting/sections/ContactInfoSection
 import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
 import PremiumJobPricingCards from '@/components/posting/job/PremiumJobPricingCards';
 import { useToast } from '@/hooks/use-toast';
+import { uploadPhotosToStorage } from '@/utils/photoUpload';
 
 // Job categories - locked choices
 const JOB_CATEGORIES = [
@@ -307,9 +308,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       },
       user_id: user.id,
       status: 'active',
-      pricing_tier: 'free',
-      // Store first uploaded image URL (will be implemented with image upload)
-      image_url: photoUploads.length > 0 ? null : null // Placeholder for image upload implementation
+      pricing_tier: 'free'
     };
 
     console.log('📋 [PAYLOAD] Prepared payload for Supabase:', payload);
@@ -317,11 +316,50 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     setIsSubmittingFreeJob(true);
 
     try {
+      // CRITICAL FIX: Upload photos for free jobs BEFORE creating job record
+      console.log('📸 [PHOTO-UPLOAD] Starting photo upload for free job:', photoUploads.length, 'files');
+      let imageUrls: string[] = [];
+      
+      if (photoUploads.length > 0) {
+        const uploadResult = await uploadPhotosToStorage(photoUploads);
+        
+        if (!uploadResult.success) {
+          console.error('❌ [PHOTO-UPLOAD] Failed to upload photos:', uploadResult.error);
+          setFreeJobError(`Failed to upload photos: ${uploadResult.error}`);
+          return;
+        }
+        
+        imageUrls = uploadResult.imageUrls;
+        console.log('✅ [PHOTO-UPLOAD] Successfully uploaded photos:', imageUrls);
+      }
+      
+      // Update payload with actual photo URLs in ALL fields (matching paid job logic)
+      const payloadWithPhotos = {
+        ...payload,
+        image_url: imageUrls.length > 0 ? imageUrls[0] : null,
+        image_urls: imageUrls.length > 0 ? imageUrls : null,
+        photos: imageUrls.length > 0 ? imageUrls : null,
+        metadata: {
+          photos: imageUrls,
+          image_urls: imageUrls,
+          contact_info: payload.contact_info
+        }
+      };
+      
+      console.log('🔍 [FREE-JOB-PHOTO-DEBUG] Final payload with photos:', {
+        image_url: payloadWithPhotos.image_url,
+        image_urls: payloadWithPhotos.image_urls,
+        photos: payloadWithPhotos.photos,
+        'metadata.photos': payloadWithPhotos.metadata?.photos,
+        'metadata.image_urls': payloadWithPhotos.metadata?.image_urls,
+        photoCount: imageUrls.length
+      });
+      
       console.log('🚀 [SUPABASE-CALL] Calling supabase.from("jobs").insert()');
       
       const { data: insertData, error } = await supabase
         .from('jobs')
-        .insert([payload])
+        .insert([payloadWithPhotos])
         .select();
 
       console.log('📨 [SUPABASE-RESPONSE] Response received:', {
