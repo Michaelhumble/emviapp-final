@@ -28,7 +28,7 @@ EmviApp exists because you deserve more: more recognition, more respect, more re
 
 This is your community—a place to be seen, supported, and celebrated.
 
-Thank you for inspiring us every day. Together, we're making the beauty world more human.`,
+Thank you for making life more beautiful. Together, we're changing the beauty industry—starting with love and sincerity.`,
       signature: "— The EmviApp Team",
       icon: Sparkles
     },
