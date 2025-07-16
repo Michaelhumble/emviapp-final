@@ -917,6 +917,38 @@ export type Database = {
           },
         ]
       }
+      community_comment_mentions: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          id: string
+          mentioned_by_user_id: string
+          mentioned_user_id: string
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          mentioned_by_user_id: string
+          mentioned_user_id: string
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          mentioned_by_user_id?: string
+          mentioned_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_comment_mentions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "community_post_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_comments: {
         Row: {
           content: string
@@ -1110,6 +1142,60 @@ export type Database = {
           },
         ]
       }
+      community_notifications: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          post_id: string | null
+          read: boolean | null
+          triggered_by_user_id: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          post_id?: string | null
+          read?: boolean | null
+          triggered_by_user_id: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          post_id?: string | null
+          read?: boolean | null
+          triggered_by_user_id?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_notifications_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "community_post_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_post_comments: {
         Row: {
           content: string
@@ -1118,6 +1204,8 @@ export type Database = {
           likes_count: number | null
           parent_comment_id: string | null
           post_id: string
+          reply_to_user_id: string | null
+          thread_level: number | null
           updated_at: string | null
           user_id: string
         }
@@ -1128,6 +1216,8 @@ export type Database = {
           likes_count?: number | null
           parent_comment_id?: string | null
           post_id: string
+          reply_to_user_id?: string | null
+          thread_level?: number | null
           updated_at?: string | null
           user_id: string
         }
@@ -1138,6 +1228,8 @@ export type Database = {
           likes_count?: number | null
           parent_comment_id?: string | null
           post_id?: string
+          reply_to_user_id?: string | null
+          thread_level?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -1201,6 +1293,38 @@ export type Database = {
           },
         ]
       }
+      community_post_mentions: {
+        Row: {
+          created_at: string | null
+          id: string
+          mentioned_by_user_id: string
+          mentioned_user_id: string
+          post_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mentioned_by_user_id: string
+          mentioned_user_id: string
+          post_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mentioned_by_user_id?: string
+          mentioned_user_id?: string
+          post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_post_mentions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_post_reactions: {
         Row: {
           created_at: string
@@ -1239,51 +1363,63 @@ export type Database = {
           comments_count: number | null
           content: string
           created_at: string | null
+          hashtags: string[] | null
           id: string
           image_urls: string[] | null
           is_featured: boolean | null
           is_trending: boolean | null
           likes_count: number | null
+          location: string | null
+          mentions: string[] | null
           post_type: string | null
           shares_count: number | null
           tags: string[] | null
           updated_at: string | null
           user_id: string
           video_url: string | null
+          views_count: number | null
         }
         Insert: {
           category?: string | null
           comments_count?: number | null
           content: string
           created_at?: string | null
+          hashtags?: string[] | null
           id?: string
           image_urls?: string[] | null
           is_featured?: boolean | null
           is_trending?: boolean | null
           likes_count?: number | null
+          location?: string | null
+          mentions?: string[] | null
           post_type?: string | null
           shares_count?: number | null
           tags?: string[] | null
           updated_at?: string | null
           user_id: string
           video_url?: string | null
+          views_count?: number | null
         }
         Update: {
           category?: string | null
           comments_count?: number | null
           content?: string
           created_at?: string | null
+          hashtags?: string[] | null
           id?: string
           image_urls?: string[] | null
           is_featured?: boolean | null
           is_trending?: boolean | null
           likes_count?: number | null
+          location?: string | null
+          mentions?: string[] | null
           post_type?: string | null
           shares_count?: number | null
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string
           video_url?: string | null
+          views_count?: number | null
         }
         Relationships: [
           {
@@ -5082,6 +5218,18 @@ export type Database = {
       check_ai_rate_limit: {
         Args: { p_user_id: string }
         Returns: Json
+      }
+      create_community_notification: {
+        Args: {
+          p_user_id: string
+          p_type: string
+          p_message: string
+          p_post_id?: string
+          p_comment_id?: string
+          p_triggered_by?: string
+          p_metadata?: Json
+        }
+        Returns: string
       }
       create_diamond_tier_waitlist_if_not_exists: {
         Args: Record<PropertyKey, never>
