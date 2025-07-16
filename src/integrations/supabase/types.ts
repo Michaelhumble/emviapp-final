@@ -369,6 +369,45 @@ export type Database = {
           },
         ]
       }
+      artist_offers: {
+        Row: {
+          artist_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          message: string | null
+          metadata: Json | null
+          offer_type: string | null
+          salon_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          offer_type?: string | null
+          salon_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          offer_type?: string | null
+          salon_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       artist_services: {
         Row: {
           created_at: string
