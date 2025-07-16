@@ -19,6 +19,7 @@ import AIContentEnhancer from '@/components/community/AIContentEnhancer';
 import ViralVideoGenerator from '@/components/community/ViralVideoGenerator';
 import CreatorMode from '@/components/community/CreatorMode';
 import FeaturedSpotlight from '@/components/community/FeaturedSpotlight';
+import WhatsHotFeed from '@/components/community/WhatsHotFeed';
 
 // Viral love messages for the bottom bar
 const viralMessages = [
@@ -63,6 +64,7 @@ const Community = () => {
     newRank: 5,
     bonusMessage: 'You\'re on fire! 🔥'
   });
+  
 
   // Animate stats count up on load
   useEffect(() => {
@@ -328,6 +330,7 @@ const Community = () => {
         </div>
       </motion.div>
 
+
       {/* Live Stats Ticker */}
       <motion.div 
         className="bg-accent/30 border-b border-border/50 py-3 px-6 overflow-hidden"
@@ -355,6 +358,11 @@ const Community = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* What's Hot Feed */}
+      <div className="px-6 py-8">
+        <WhatsHotFeed />
+      </div>
 
       {/* Weekly Challenge */}
       <div className="px-6 pt-8">
