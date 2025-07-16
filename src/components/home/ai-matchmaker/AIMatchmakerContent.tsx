@@ -97,37 +97,53 @@ const AIMatchmakerContent = ({ language, itemVariants }: AIMatchmakerContentProp
         ))}
       </div>
       
-      {/* Premium CTA Button */}
+      {/* Redesigned Premium CTA Button */}
       <motion.div
-        className="flex justify-center pt-12"
-        initial={{ opacity: 0, y: 20 }}
+        className="flex justify-center pt-8"
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.6 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
       >
-        <Button
-          size="lg"
-          onClick={handleCTAClick}
-          className="relative px-16 py-8 text-xl font-bold text-white rounded-2xl overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-2xl border-0"
-          style={{
-            background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 30%, #F59E0B 70%, #10B981 100%)",
-            boxShadow: "0 12px 32px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.3)"
-          }}
+        <motion.div
+          whileHover={{ scale: 1.05, y: -3 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
         >
-          {/* Enhanced shimmer effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-          
-          {/* Button text */}
-          <span className="relative z-10">
-            {language === "en" 
-              ? "Try Your AI Matchmaker →"
-              : "Khám Phá AI Ghép Đôi Ngay →"
-            }
-          </span>
-          
-          {/* Enhanced glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-400/30 via-pink-400/30 to-emerald-400/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </Button>
+          <Button
+            size="lg"
+            onClick={handleCTAClick}
+            className="relative px-12 py-6 text-lg font-bold text-white rounded-2xl overflow-hidden group transition-all duration-500 border-0 shadow-2xl hover:shadow-purple-500/30"
+            style={{
+              background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 30%, #F59E0B 70%, #10B981 100%)",
+              boxShadow: "0 20px 40px rgba(139, 92, 246, 0.4), 0 8px 16px rgba(139, 92, 246, 0.2), 0 0 0 1px rgba(255,255,255,0.1)"
+            }}
+            aria-label="Try AI Matchmaker now"
+          >
+            {/* Enhanced shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 transform -skew-x-12 group-hover:animate-shimmer" />
+            
+            {/* Button text with icon */}
+            <span className="relative z-10 flex items-center">
+              <span className="mr-3">
+                {language === "en" 
+                  ? "🚀 Experience Your AI Matchmaker"
+                  : "🚀 Khám Phá AI Ghép Đôi Ngay"
+                }
+              </span>
+              <motion.span
+                className="inline-block"
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                →
+              </motion.span>
+            </span>
+            
+            {/* Enhanced glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400/40 via-pink-400/40 to-emerald-400/40 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+          </Button>
+        </motion.div>
       </motion.div>
     </div>
   );
