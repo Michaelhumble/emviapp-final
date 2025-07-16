@@ -56,12 +56,12 @@ const SalonProfileEditor = () => {
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="w-full mb-6">
-            <TabsTrigger value="info" className="flex-1">Basic Info</TabsTrigger>
-            <TabsTrigger value="details" className="flex-1">About & Contact</TabsTrigger>
-            <TabsTrigger value="logo" className="flex-1">Logo</TabsTrigger>
+          <TabsList className="w-full mb-6 h-auto p-1">
+            <TabsTrigger value="info" className="flex-1 text-xs sm:text-sm py-3 px-2">Basic Info</TabsTrigger>
+            <TabsTrigger value="details" className="flex-1 text-xs sm:text-sm py-3 px-2">About & Contact</TabsTrigger>
+            <TabsTrigger value="logo" className="flex-1 text-xs sm:text-sm py-3 px-2">Logo</TabsTrigger>
           </TabsList>
           
           <TabsContent value="info" className="space-y-6">
@@ -97,12 +97,12 @@ const SalonProfileEditor = () => {
           </TabsContent>
         </Tabs>
         
-        <div className="flex justify-end mt-8">
+        <div className="flex justify-center sm:justify-end mt-8">
           <Button
             type="button" 
             onClick={handleSaveProfile}
             disabled={isLoading}
-            className="min-w-[120px]"
+            className="w-full sm:w-auto min-w-[120px] h-12 sm:h-10 text-base sm:text-sm"
           >
             {isLoading ? (
               <>

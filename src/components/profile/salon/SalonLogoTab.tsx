@@ -20,10 +20,10 @@ const SalonLogoTab = ({
   removeLogo 
 }: SalonLogoTabProps) => {
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <h3 className="text-lg font-medium">Salon Logo or Image</h3>
+    <div className="flex flex-col items-center space-y-6">
+      <h3 className="text-lg font-medium text-center">Salon Logo or Image</h3>
       
-      <div className="h-40 w-40 rounded-lg border-2 border-primary flex items-center justify-center bg-muted relative overflow-hidden">
+      <div className="h-48 w-48 sm:h-40 sm:w-40 rounded-lg border-2 border-primary flex items-center justify-center bg-muted relative overflow-hidden">
         {logoPreview || logoUrl ? (
           <img
             src={logoPreview || logoUrl || ""}
@@ -32,7 +32,7 @@ const SalonLogoTab = ({
           />
         ) : (
           <div className="h-full w-full flex items-center justify-center bg-muted">
-            <Building className="h-12 w-12 text-muted-foreground" />
+            <Building className="h-16 w-16 sm:h-12 sm:w-12 text-muted-foreground" />
           </div>
         )}
         
@@ -43,7 +43,7 @@ const SalonLogoTab = ({
         )}
       </div>
       
-      <div className="flex flex-col sm:flex-row items-center gap-2">
+      <div className="flex flex-col w-full gap-3 max-w-xs">
         <div>
           <input
             id="logo"
@@ -55,7 +55,7 @@ const SalonLogoTab = ({
           />
           <Label
             htmlFor="logo"
-            className={`cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 py-2 rounded-md text-sm font-medium inline-flex items-center ${
+            className={`cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-3 rounded-md text-base font-medium inline-flex items-center justify-center w-full h-12 ${
               isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -72,23 +72,22 @@ const SalonLogoTab = ({
           <Button
             type="button"
             variant="outline"
-            size="sm"
             onClick={removeLogo}
             disabled={isLoading}
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive w-full h-12 text-base"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
               <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"></path>
               <line x1="10" y1="11" x2="10" y2="17"></line>
               <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
-            Remove
+            Remove Image
           </Button>
         )}
       </div>
       
-      <p className="text-sm text-muted-foreground text-center max-w-md">
+      <p className="text-sm text-muted-foreground text-center max-w-sm px-4">
         Upload a high-quality logo or image of your salon to make a great first impression with potential clients and professionals.
       </p>
     </div>

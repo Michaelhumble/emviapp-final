@@ -1,25 +1,22 @@
-
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import InviteMemberModal from "./team/InviteMemberModal";
 import TeamMembersList from "./team/TeamMembersList";
 import { useTeamMembers } from "./manager/hooks/useTeamMembers";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { Heart, Users, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SalonTeamManagement = () => {
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const navigate = useNavigate();
   const { 
     teamMembers, 
     loading, 
     error, 
-    sendInvite, 
     removeTeamMember,
     toggleMemberStatus,
   } = useTeamMembers();
 
-  const handleSendInvite = async (memberData: any) => {
-    await sendInvite(memberData);
+  const handleVoteClick = () => {
+    navigate('/community#feature-voting');
   };
 
   return (
@@ -29,14 +26,28 @@ const SalonTeamManagement = () => {
           <CardTitle>Team Management</CardTitle>
           <CardDescription>Manage your salon team members</CardDescription>
         </div>
-        <Button 
-          onClick={() => setIsInviteModalOpen(true)}
-          size="sm"
-        >
-          <UserPlus className="h-4 w-4 mr-2" />
-          Invite Member
-        </Button>
+        
+        {/* Coming Soon Vote CTA */}
+        <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Users className="h-5 w-5 text-primary" />
+            <span className="font-medium text-primary">Team Invites Coming Soon!</span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Want this feature? Vote to help us prioritize.
+          </p>
+          <Button 
+            onClick={handleVoteClick}
+            size="sm"
+            className="w-full"
+          >
+            <Heart className="h-4 w-4 mr-2" />
+            Vote for Team Invites
+            <ExternalLink className="h-3 w-3 ml-2" />
+          </Button>
+        </div>
       </CardHeader>
+      
       <CardContent>
         <TeamMembersList 
           teamMembers={teamMembers}
@@ -46,12 +57,6 @@ const SalonTeamManagement = () => {
           onToggleMemberStatus={toggleMemberStatus}
         />
       </CardContent>
-
-      <InviteMemberModal 
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        onSendInvite={handleSendInvite}
-      />
     </Card>
   );
 };
