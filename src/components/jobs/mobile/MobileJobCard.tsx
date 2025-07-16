@@ -98,8 +98,9 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
 
   // Format salary display with null safety
   const getSalary = () => {
-    if (job.salary && typeof job.salary === 'string') return job.salary;
     if (job.compensation_details && typeof job.compensation_details === 'string') return job.compensation_details;
+    if (job.salary_range && typeof job.salary_range === 'string') return job.salary_range;
+    if (job.salary && typeof job.salary === 'string') return job.salary;
     return 'Contact for details';
   };
 

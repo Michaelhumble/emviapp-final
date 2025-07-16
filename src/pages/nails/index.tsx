@@ -41,7 +41,7 @@ const NailsPage = () => {
         
         // Format salary for nail jobs with Vietnamese "/tuần" suffix
         const formatNailSalary = (compensation: string | null) => {
-          if (!compensation) return 'Competitive Pay';
+          if (!compensation) return 'Contact for details';
           
           // If it already has /tuần, return as is
           if (compensation.includes('/tuần')) return compensation;

@@ -34,13 +34,13 @@ const TattooPage = () => {
           id: job.id,
           title: job.title || 'Tattoo Artist Position',
           location: job.location || 'Location TBD',
-          salary: job.compensation_details || 'Competitive Pay',
+          salary: job.compensation_details || job.salary_range || 'Contact for details',
           tier,
           summary: job.description?.substring(0, 150) + '...' || 'Great opportunity to join our tattoo studio.',
           imageUrl: job.image_url || job.imageUrl || undefined,
           rating: 4.5,
           fullDescription: job.description || '',
-          contact: (job.contact_info && (tier !== 'free' || job.pricing_tier !== 'free')) ? {
+          contact: job.contact_info ? {
             name: job.contact_info.owner_name || 'Hiring Manager',
             phone: job.contact_info.phone || '',
             email: job.contact_info.email || '',

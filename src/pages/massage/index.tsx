@@ -36,7 +36,7 @@ const MassagePage = () => {
           id: job.id,
           title: job.title || 'Massage Therapist Position',
           location: job.location || 'Location TBD',
-          salary: job.compensation_details || 'Competitive Pay',
+          salary: job.compensation_details || job.salary_range || 'Contact for details',
           tier,
           summary: job.description?.substring(0, 150) + '...' || 'Great opportunity to join our massage therapy team.',
           imageUrl: job.image_url || job.imageUrl || undefined,

@@ -33,7 +33,7 @@ const BarberPage = () => {
           id: job.id,
           title: job.title || 'Barber Position',
           location: job.location || 'Location TBD',
-          salary: job.compensation_details || 'Competitive Pay',
+          salary: job.compensation_details || job.salary_range || 'Contact for details',
           tier,
           summary: job.description?.substring(0, 150) + '...' || 'Great opportunity to join our barber team.',
           imageUrl: job.image_url || job.imageUrl || undefined,

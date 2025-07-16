@@ -219,7 +219,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       <h3 className="font-semibold text-green-800">Weekly Salary</h3>
                     </div>
                     <p className="text-2xl font-bold text-green-700">
-                      {job.compensation_details || job.salary_range || job.salaryRange || "$1,200–$1,800/tuần"}
+                      {job.compensation_details || job.salary_range || "Contact for details"}
                     </p>
                   </div>
 
