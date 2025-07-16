@@ -7,6 +7,7 @@ import { NotificationProvider } from '@/context/notification';
 import { AnalyticsProvider } from '@/context/AnalyticsContext';
 import { RecommendationProvider } from '@/context/RecommendationContext';
 import { OnboardingProvider } from '@/context/OnboardingContext';
+import { SecurityProvider } from '@/components/security/SecurityProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
@@ -68,13 +69,14 @@ function App() {
   return (
     <HelmetProvider>
       <GeneralErrorBoundary>
-        <AuthProvider>
-          <SalonProvider>
-            <SubscriptionProvider>
-              <NotificationProvider>
-                <AnalyticsProvider>
-                  <RecommendationProvider>
-                    <OnboardingProvider>
+        <SecurityProvider>
+          <AuthProvider>
+            <SalonProvider>
+              <SubscriptionProvider>
+                <NotificationProvider>
+                  <AnalyticsProvider>
+                    <RecommendationProvider>
+                      <OnboardingProvider>
                       <RouteLogger />
                       <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
@@ -173,6 +175,7 @@ function App() {
             </SubscriptionProvider>
           </SalonProvider>
         </AuthProvider>
+      </SecurityProvider>
       </GeneralErrorBoundary>
     </HelmetProvider>
   );

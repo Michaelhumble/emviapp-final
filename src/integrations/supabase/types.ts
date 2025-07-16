@@ -559,6 +559,50 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       availability: {
         Row: {
           artist_id: string
@@ -1614,6 +1658,60 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "contact_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_moderation: {
+        Row: {
+          content_hash: string | null
+          content_id: string
+          content_type: string
+          created_at: string | null
+          id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_reason: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content_hash?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_reason?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content_hash?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_reason?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_moderation_moderated_by_fkey"
+            columns: ["moderated_by"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_moderation_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "review_customers"
@@ -3001,6 +3099,47 @@ export type Database = {
           value?: number
         }
         Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          ip_address: unknown | null
+          requests_count: number | null
+          updated_at: string | null
+          user_id: string | null
+          window_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          ip_address?: unknown | null
+          requests_count?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          ip_address?: unknown | null
+          requests_count?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_limits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       referrals: {
         Row: {
@@ -4744,6 +4883,50 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          is_active: boolean | null
+          last_activity: string | null
+          session_token: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity?: string | null
+          session_token: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity?: string | null
+          session_token?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_tags: {
         Row: {
           created_at: string
@@ -5245,6 +5428,15 @@ export type Database = {
         Args: { arr: string[]; item: string }
         Returns: string[]
       }
+      audit_user_action: {
+        Args: {
+          p_action: string
+          p_resource_type: string
+          p_resource_id?: string
+          p_metadata?: Json
+        }
+        Returns: undefined
+      }
       award_credits: {
         Args:
           | {
@@ -5309,6 +5501,14 @@ export type Database = {
       check_ai_rate_limit: {
         Args: { p_user_id: string }
         Returns: Json
+      }
+      check_rate_limit: {
+        Args: {
+          p_endpoint: string
+          p_max_requests?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
       }
       create_community_notification: {
         Args: {
@@ -5501,6 +5701,10 @@ export type Database = {
           p_target_id?: string
         }
         Returns: boolean
+      }
+      sanitize_content: {
+        Args: { p_content: string }
+        Returns: string
       }
       send_team_invite: {
         Args: {
