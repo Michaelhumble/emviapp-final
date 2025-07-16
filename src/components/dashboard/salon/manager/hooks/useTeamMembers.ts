@@ -50,10 +50,28 @@ export const useTeamMembers = () => {
     }
   }, [currentSalon?.id]);
 
+  const sendInvite = async (memberData: any) => {
+    // This will be implemented when team functionality is added
+    console.log("Invite functionality placeholder", memberData);
+  };
+
+  const removeTeamMember = async (id: string, name?: string) => {
+    // This will be implemented when team functionality is added  
+    console.log("Remove member functionality placeholder", id, name);
+  };
+
+  const toggleMemberStatus = async (id: string, currentStatus?: 'active' | 'inactive' | 'pending') => {
+    // This will be implemented when team functionality is added
+    console.log("Toggle status functionality placeholder", id, currentStatus);
+  };
+
   return {
     teamMembers,
     loading,
     error,
-    fetchTeamMembers
+    fetchTeamMembers,
+    sendInvite,
+    removeTeamMember,
+    toggleMemberStatus
   };
 };
