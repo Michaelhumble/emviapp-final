@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Phone, Mail, Calendar, ChevronLeft, ChevronRight, DollarSign, MapPin, Building, User, FileText } from 'lucide-react';
+import { X, Phone, Mail, Calendar, ChevronLeft, ChevronRight, DollarSign, MapPin, Building, User, FileText, Edit } from 'lucide-react';
 import { JobSummary } from './card-sections/JobSummary';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
@@ -17,7 +17,7 @@ interface JobDetailModalProps {
 }
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onClose }) => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Ensure we have valid job data before rendering
@@ -369,6 +369,20 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                 
                 {/* Action Buttons */}
                 <div className="border-t pt-6 flex justify-end space-x-3">
+                  {/* FIXED: Add Edit button for job owners */}
+                  {user && user.id === job.user_id && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        onClose();
+                        window.location.href = `/jobs/edit/${job.id}`;
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit Job
+                    </Button>
+                  )}
                   <Button onClick={onClose} variant="outline">
                     Close
                   </Button>

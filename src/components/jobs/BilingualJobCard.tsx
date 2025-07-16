@@ -53,126 +53,47 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // Safe image and paid job logic with null checks
   const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && job.pricing_tier !== 'free';
   
-  // COMPREHENSIVE DEBUGGING: Enhanced image detection with metadata support
+  // Enhanced image detection with fallback support for ALL beauty categories
   const getJobImages = () => {
-    const jobAny = job as any; // Type assertion to access potentially new fields
-    console.log('🚨 [DEBUG-JOB-CARD] ===== JOB CARD PHOTO ANALYSIS =====');
-    console.log('📸 [DEBUG-JOB-CARD] Full job object for ID:', job.id, jobAny);
-    console.log('📸 [DEBUG-JOB-CARD] Photo field analysis:', {
-      'job.image_urls': jobAny.image_urls,
-      'job.photos': jobAny.photos,
-      'job.image_url': job.image_url,
-      'job.metadata': jobAny.metadata,
-      'job.metadata.photos': jobAny.metadata?.photos,
-      'job.metadata.image_urls': jobAny.metadata?.image_urls,
-      pricing_tier: job.pricing_tier,
-      isPaidJob
-    });
-
-    let allFoundImages: string[] = [];
-
-    // Check metadata for photos first (webhook processed jobs)
+    const jobAny = job as any;
+    
+    // Priority 1: Check metadata for photos (webhook processed jobs)
     if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
       const validUrls = jobAny.metadata.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-JOB-CARD] Found metadata photos:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using metadata.photos (highest priority)');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
 
-    // Check metadata for image_urls (webhook processed jobs)
+    // Priority 2: Check metadata for image_urls (webhook processed jobs)
     if (jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
       const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-JOB-CARD] Found metadata image_urls:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using metadata.image_urls');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
 
-    // Check direct image_urls field (direct upload)
+    // Priority 3: Check direct image_urls field (direct upload)
     if (jobAny.image_urls && Array.isArray(jobAny.image_urls)) {
       const validUrls = jobAny.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-JOB-CARD] Found direct image_urls:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct image_urls');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
 
-    // Check photos field (direct upload)
+    // Priority 4: Check photos field (direct upload)
     if (jobAny.photos && Array.isArray(jobAny.photos)) {
       const validUrls = jobAny.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-JOB-CARD] Found direct photos:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct photos');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
 
-    // Single image_url fallback
+    // Priority 5: Single image_url fallback
     if (job.image_url && typeof job.image_url === 'string' && job.image_url.trim()) {
-      console.log('🚨 [DEBUG-JOB-CARD] ✅ Using single image_url');
       return [job.image_url];
     }
-
-    console.log('🚨 [DEBUG-JOB-CARD] ❌ No valid images found');
-    return [];
-    if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
-      const validUrls = jobAny.image_urls.filter((url: any) => 
-        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
-      );
-      console.log('🚨 [DEBUG-JOB-CARD] Found direct image_urls:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct image_urls');
-        return validUrls;
-      }
-    }
     
-    // Check direct photos field (direct upload)
-    if (jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
-      const validUrls = jobAny.photos.filter((url: any) => 
-        url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
-      );
-      console.log('🚨 [DEBUG-JOB-CARD] Found direct photos:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-JOB-CARD] ✅ Using direct photos');
-        return validUrls;
-      }
-    }
-    
-    // Check for single uploaded image (backwards compatibility)
-    const singleImage = job.image_url || jobAny.imageUrl || jobAny.image || null;
-    if (singleImage && typeof singleImage === 'string' && singleImage.trim() && singleImage !== 'photos-uploaded') {
-      console.log('🚨 [DEBUG-JOB-CARD] Found single image:', singleImage);
-      allFoundImages = [singleImage];
-      console.log('🚨 [DEBUG-JOB-CARD] ✅ Using single image fallback');
-      return [singleImage];
-    }
-    
-    console.log('🚨 [DEBUG-JOB-CARD] ❌ NO VALID IMAGES FOUND');
-    console.log('🚨 [DEBUG-JOB-CARD] Final analysis summary:', {
-      jobId: job.id,
-      isPaidJob,
-      foundAnyImages: allFoundImages.length > 0,
-      checkedFields: ['metadata.photos', 'metadata.image_urls', 'image_urls', 'photos', 'image_url'],
-      allFieldsChecked: true
-    });
     return [];
   };
 
@@ -299,21 +220,33 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     return compensation;
   };
 
-  // Get pricing tier badge color and icon
+  // Get pricing tier badge color and icon - FIXED: Added Gold tier support
   const getPricingTierDisplay = () => {
     const tier = job.pricing_tier?.toLowerCase() || 'free';
     switch (tier) {
+      case 'diamond':
+        return { 
+          color: 'bg-blue-100 text-blue-800 border-blue-200', 
+          icon: <Crown className="h-3 w-3" />,
+          text: 'Diamond'
+        };
+      case 'gold':
+        return { 
+          color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
+          icon: <Crown className="h-3 w-3" />,
+          text: 'Gold'
+        };
       case 'premium':
         return { 
           color: 'bg-purple-100 text-purple-800 border-purple-200', 
           icon: <Star className="h-3 w-3" />,
           text: 'Premium'
         };
-      case 'diamond':
+      case 'featured':
         return { 
-          color: 'bg-blue-100 text-blue-800 border-blue-200', 
-          icon: <Crown className="h-3 w-3" />,
-          text: 'Diamond'
+          color: 'bg-orange-100 text-orange-800 border-orange-200', 
+          icon: <Star className="h-3 w-3" />,
+          text: 'Featured'
         };
       case 'free':
       default:

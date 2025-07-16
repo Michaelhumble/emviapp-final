@@ -90,110 +90,48 @@ const MobileJobCard: React.FC<MobileJobCardProps> = ({
     return 'Contact for details';
   };
 
-  // Enhanced job image handling - support for multiple photos (similar to BilingualJobCard)
+  // FIXED: Enhanced image detection for ALL beauty categories
   const getJobImages = () => {
-    const jobAny = job as any; // Type assertion to access potentially new fields
-    console.log('🚨 [DEBUG-MOBILE-CARD] ===== MOBILE CARD PHOTO ANALYSIS =====');
-    console.log('📸 [DEBUG-MOBILE-CARD] Full job object for ID:', job.id, jobAny);
+    const jobAny = job as any;
 
-    let allFoundImages: string[] = [];
-
-    // Check metadata for photos first (webhook processed jobs)
+    // Priority 1: Check metadata for photos (webhook processed jobs)
     if (jobAny.metadata?.photos && Array.isArray(jobAny.metadata.photos)) {
       const validUrls = jobAny.metadata.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-MOBILE-CARD] Found metadata photos:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using metadata.photos (highest priority)');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
 
-    // Check metadata for image_urls (webhook processed jobs)
+    // Priority 2: Check metadata for image_urls (webhook processed jobs)
     if (jobAny.metadata?.image_urls && Array.isArray(jobAny.metadata.image_urls)) {
       const validUrls = jobAny.metadata.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-MOBILE-CARD] Found metadata image_urls:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using metadata.image_urls');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
 
-    // Check direct image_urls field (direct upload)
-    if (jobAny.image_urls && Array.isArray(jobAny.image_urls) && jobAny.image_urls.length > 0) {
+    // Priority 3: Check direct image_urls field
+    if (jobAny.image_urls && Array.isArray(jobAny.image_urls)) {
       const validUrls = jobAny.image_urls.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-MOBILE-CARD] Found direct image_urls:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using direct image_urls');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
     }
-    
-    // Check direct photos field (direct upload)
-    if (jobAny.photos && Array.isArray(jobAny.photos) && jobAny.photos.length > 0) {
+
+    // Priority 4: Check photos field
+    if (jobAny.photos && Array.isArray(jobAny.photos)) {
       const validUrls = jobAny.photos.filter((url: any) => 
         url && typeof url === 'string' && url.trim() && url !== 'photos-uploaded'
       );
-      console.log('🚨 [DEBUG-MOBILE-CARD] Found direct photos:', validUrls);
-      if (validUrls.length > 0) {
-        allFoundImages = validUrls;
-        console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using direct photos');
-        return validUrls;
-      }
+      if (validUrls.length > 0) return validUrls;
+    }
+
+    // Priority 5: Single image fallback
+    if (job.image_url && typeof job.image_url === 'string' && job.image_url.trim()) {
+      return [job.image_url];
     }
     
-    // Check for single uploaded image (backwards compatibility)
-    const singleImage = job.image_url || jobAny.imageUrl || jobAny.image || null;
-    if (singleImage && typeof singleImage === 'string' && singleImage.trim() && singleImage !== 'photos-uploaded') {
-      console.log('🚨 [DEBUG-MOBILE-CARD] Found single image:', singleImage);
-      allFoundImages = [singleImage];
-      console.log('🚨 [DEBUG-MOBILE-CARD] ✅ Using single image fallback');
-      return [singleImage];
-    }
-    
-    // Only show fallback images for paid jobs (premium, gold, diamond)
-    const isPaidJob = job.pricing_tier && typeof job.pricing_tier === 'string' && !['free', 'starter'].includes(job.pricing_tier.toLowerCase());
-    if (!isPaidJob) {
-      return null; // Free jobs get no fallback image
-    }
-    
-    // Fallback to category-based default for paid jobs only with null safety
-    const category = (job.category && typeof job.category === 'string' ? job.category.toLowerCase() : '');
-    if (category.includes('nail')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png'];
-    }
-    if (category.includes('hair')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/hair/modern-hair-salon-1.png'];
-    }
-    if (category.includes('barber')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/barber/premium-barbershop-1.png'];
-    }
-    if (category.includes('massage')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/massage/luxury-spa-1.png'];
-    }
-    if (category.includes('makeup')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/makeup/makeup-studio-1.png'];
-    }
-    if (category.includes('lash') || category.includes('brow')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/brow-lashes/generated-11.png'];
-    }
-    if (category.includes('tattoo')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/tattoo/tattoo-studio-1.png'];
-    }
-    if (category.includes('esthetic') || category.includes('skin')) {
-      return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/facial-skincare/premium-facial-spa-1.png'];
-    }
-    
-    // Fallback for paid jobs without specific category
-    return ['https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png'];
+    return [];
   };
 
   const jobImages = getJobImages();

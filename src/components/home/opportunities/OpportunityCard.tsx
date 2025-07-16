@@ -65,18 +65,43 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     >
       <Card className="overflow-hidden h-full flex flex-col">
         <div className="relative aspect-video bg-gray-100">
-          {(listing.image_url || listing.imageUrl || listing.image) ? (
-            <ImageWithFallback 
-              src={listing.image_url || listing.imageUrl || listing.image} 
-              alt={listing.title || listing.company || "Beauty opportunity"} 
-              className="w-full h-full object-cover"
-              businessName={listing.title || listing.company}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              <span className="text-gray-400 text-xl">No Image Available</span>
-            </div>
-          )}
+          {/* FIXED: Enhanced image detection with fallback for ALL beauty categories */}
+          {(() => {
+            const images = [];
+            const listingAny = listing as any;
+
+            // Check multiple image sources
+            if (listingAny.metadata?.photos && Array.isArray(listingAny.metadata.photos)) {
+              images.push(...listingAny.metadata.photos.filter((url: any) => url && url.trim()));
+            }
+            if (listingAny.metadata?.image_urls && Array.isArray(listingAny.metadata.image_urls)) {
+              images.push(...listingAny.metadata.image_urls.filter((url: any) => url && url.trim()));
+            }
+            if (listingAny.image_urls && Array.isArray(listingAny.image_urls)) {
+              images.push(...listingAny.image_urls.filter((url: any) => url && url.trim()));
+            }
+            if (listingAny.photos && Array.isArray(listingAny.photos)) {
+              images.push(...listingAny.photos.filter((url: any) => url && url.trim()));
+            }
+            if (listing.image_url) images.push(listing.image_url);
+            if (listingAny.imageUrl) images.push(listingAny.imageUrl);
+            if (listingAny.image) images.push(listingAny.image);
+
+            const validImage = images.find(img => img && typeof img === 'string' && img.trim());
+
+            return validImage ? (
+              <ImageWithFallback 
+                src={validImage} 
+                alt={listing.title || listing.company || "Beauty opportunity"} 
+                className="w-full h-full object-cover"
+                businessName={listing.title || listing.company}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                <span className="text-gray-400 text-xl">No Image Available</span>
+              </div>
+            );
+          })()}
           
           <div className="absolute bottom-3 left-3">
             <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
