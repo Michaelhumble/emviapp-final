@@ -96,50 +96,38 @@ const PremiumArtistDashboard = () => {
                     {tabs.map((tab, index) => {
                       const IconComponent = tab.icon;
                       return (
-                        <motion.div
+                        <TabsTrigger
                           key={tab.id}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
+                          value={tab.id}
+                          className="flex items-center gap-2 px-5 py-3 text-sm font-semibold rounded-2xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 min-w-[130px] justify-center hover:bg-purple-50 data-[state=active]:scale-105"
                         >
-                          <TabsTrigger
-                            value={tab.id}
-                            className="flex items-center gap-2 px-5 py-3 text-sm font-semibold rounded-2xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 min-w-[130px] justify-center hover:bg-purple-50 data-[state=active]:scale-105"
-                          >
-                            <IconComponent className="h-4 w-4" />
-                            <span className="hidden sm:inline">{tab.label}</span>
-                          </TabsTrigger>
-                        </motion.div>
+                          <IconComponent className="h-4 w-4" />
+                          <span className="hidden sm:inline">{tab.label}</span>
+                        </TabsTrigger>
                       );
                     })}
                   </TabsList>
                 </div>
               ) : (
-                /* Desktop: Enhanced grid layout with staggered animations */
-                <div className="grid grid-cols-7 gap-3 bg-white/90 backdrop-blur-lg p-3 rounded-3xl shadow-xl border border-purple-100/50 card-glass">
+                /* Desktop: Enhanced grid layout with proper TabsList structure */
+                <TabsList className="grid grid-cols-7 gap-3 bg-white/90 backdrop-blur-lg p-3 rounded-3xl shadow-xl border border-purple-100/50 card-glass h-auto">
                   {tabs.map((tab, index) => {
                     const IconComponent = tab.icon;
                     return (
-                      <motion.div
+                      <TabsTrigger
                         key={tab.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
+                        value={tab.id}
+                        className="flex flex-col items-center gap-3 px-4 py-5 text-sm font-semibold rounded-2xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 h-auto hover:bg-purple-50 data-[state=active]:scale-105 relative overflow-hidden"
                       >
-                        <TabsTrigger
-                          value={tab.id}
-                          className="flex flex-col items-center gap-3 px-4 py-5 text-sm font-semibold rounded-2xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 h-auto hover:bg-purple-50 data-[state=active]:scale-105 relative overflow-hidden"
-                        >
-                          <IconComponent className="h-6 w-6 relative z-10" />
-                          <span className="relative z-10">{tab.label}</span>
-                          
-                          {/* Active indicator glow */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300" />
-                        </TabsTrigger>
-                      </motion.div>
+                        <IconComponent className="h-6 w-6 relative z-10" />
+                        <span className="relative z-10">{tab.label}</span>
+                        
+                        {/* Active indicator glow */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300" />
+                      </TabsTrigger>
                     );
                   })}
-                </div>
+                </TabsList>
               )}
 
               {/* Enhanced Tab Content with staggered animations */}
