@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Lightbulb, Bug, Star, TrendingUp, MessageCircle, MoreHorizontal, User, Mail } from 'lucide-react';
+import { Lightbulb, Bug, Star, TrendingUp, MessageCircle, MoreHorizontal, User, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface ContactReason {
   id: string;
@@ -60,16 +62,103 @@ const contactReasons: ContactReason[] = [
 ];
 
 const ContactForm = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     reason: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form submitted:', formData);
+    
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Get the selected reason title for the email
+      const selectedReason = contactReasons.find(r => r.id === formData.reason);
+      const reasonText = selectedReason ? selectedReason.title : 'General Inquiry';
+      
+      // Prepare the message with reason context
+      const fullMessage = `Contact Reason: ${reasonText}\n\n${formData.message}`;
+
+      // Call the edge function
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          message: fullMessage
+        }
+      });
+
+      if (error) {
+        console.error('Error sending contact email:', error);
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Store in database for tracking
+      const { error: dbError } = await supabase
+        .from('contact_messages')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          message: fullMessage,
+          status: 'new'
+        });
+
+      if (dbError) {
+        console.error('Error storing contact message:', dbError);
+        // Don't show error to user as email was sent successfully
+      }
+
+      // Success feedback
+      setIsSubmitted(true);
+      toast({
+        title: "Message Sent! 🎉",
+        description: "We've received your message and will get back to you within 24 hours.",
+      });
+      
+      // Reset form after a short delay to let user see success state
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          reason: '',
+          message: ''
+        });
+        // Reset success state after 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 5000);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -178,14 +267,54 @@ const ContactForm = () => {
           />
         </div>
 
+        {/* Success Message */}
+        {isSubmitted && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 text-center shadow-lg">
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <CheckCircle className="h-16 w-16 text-green-500 animate-bounce" />
+                <div className="absolute -top-1 -right-1 h-6 w-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs">
+                  ✨
+                </div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-green-800 mb-3">
+              Message Sent Successfully! 🎉
+            </h3>
+            <p className="text-green-700 text-lg mb-4">
+              Thank you for reaching out. We've received your message and will get back to you within 24 hours.
+            </p>
+            <div className="bg-white/50 rounded-lg p-4 mt-4">
+              <p className="text-sm text-green-600 font-medium">
+                💌 Your message has been delivered to support@emvi.app
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Submit Button */}
         <div className="flex justify-center pt-4">
           <Button 
             type="submit" 
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-3 px-8 rounded-lg transition-all duration-200 text-base"
+            disabled={isSubmitting || isSubmitted}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-8 rounded-lg transition-all duration-200 text-base"
             size="lg"
           >
-            📧 Send Message
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Sending...
+              </>
+            ) : isSubmitted ? (
+              <>
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Sent!
+              </>
+            ) : (
+              <>
+                📧 Send Message
+              </>
+            )}
           </Button>
         </div>
       </form>

@@ -14,6 +14,7 @@ interface ContactFormData {
   name: string;
   email: string;
   message: string;
+  reason?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,7 +24,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, message }: ContactFormData = await req.json();
+    const { name, email, message, reason }: ContactFormData = await req.json();
 
     // Validate required fields
     if (!name || !email || !message) {
