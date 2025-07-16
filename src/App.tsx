@@ -28,6 +28,9 @@ import PostJobBillion from "@/pages/PostJobBillion";
 import PostJobExperimental from "@/pages/PostJobExperimental";
 import SignIn from "@/pages/auth/SignIn";
 import NewSignUp from "@/pages/auth/NewSignUp";
+import AuthPage from "@/pages/auth/AuthPage";
+import Onboarding from "@/pages/Onboarding";
+import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
 import SellSalonPage from "@/pages/sell-salon";
 import PostSalon from "@/pages/PostSalon";
@@ -70,11 +73,16 @@ function App() {
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
                     
-                    {/* Auth routes - USE NEW SIGN UP */}
+                    {/* Auth routes */}
                     <Route path="/login" element={<SignIn />} />
-                    <Route path="/sign-in" element={<SignIn />} />
-                    <Route path="/sign-up" element={<NewSignUp />} />
-                    <Route path="/register" element={<NewSignUp />} />
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/signup" element={<NewSignUp />} />
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/onboarding" element={
+                      <ProtectedRoute>
+                        <Onboarding />
+                      </ProtectedRoute>
+                    } />
                     
                     {/* Customer Profile route */}
                     <Route path="/profile" element={<CustomerProfilePage />} />
@@ -136,8 +144,16 @@ function App() {
                         />
                       )
                     ))}
-                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
-                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
+                    <Route path="/dashboard/artist/booking-calendar" element={
+                      <ProtectedRoute>
+                        <Layout><BookingCalendar /></Layout>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/dashboard/artist/inbox" element={
+                      <ProtectedRoute>
+                        <Layout><ArtistInbox /></Layout>
+                      </ProtectedRoute>
+                    } />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
