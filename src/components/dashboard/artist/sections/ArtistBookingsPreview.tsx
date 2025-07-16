@@ -2,12 +2,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, User, Plus, Eye } from 'lucide-react';
-import BookingModal from '../modals/BookingModal';
-import { useNavigate } from 'react-router-dom';
 
 const ArtistBookingsPreview = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const navigate = useNavigate();
 
   const upcomingBookings = [
     {
@@ -37,8 +34,8 @@ const ArtistBookingsPreview = () => {
   ];
 
   const handleViewAllBookings = () => {
-    // Navigate to full bookings page
-    navigate('/dashboard/artist/bookings');
+    // Navigate to full bookings page - using window.location for now
+    window.location.href = '/dashboard/artist';
   };
 
   return (
@@ -138,10 +135,7 @@ const ArtistBookingsPreview = () => {
         </motion.button>
       </motion.div>
 
-      <BookingModal 
-        open={showBookingModal} 
-        onClose={() => setShowBookingModal(false)} 
-      />
+      {/* Coming Soon - Booking Modal */}
     </>
   );
 };

@@ -4,13 +4,14 @@ import { motion } from 'framer-motion';
 import { Camera, Plus, Eye, Heart, Share2, Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import UploadPhotoModal from '../modals/UploadPhotoModal';
+import { useAuth } from '@/context/auth';
 
 const ArtistPortfolioShowcase = () => {
+  const { userProfile } = useAuth();
   const [showUploadModal, setShowUploadModal] = useState(false);
   
-  // For demonstration - in real app this would come from user data
-  const portfolioImages: string[] = []; // Empty by default for new artists
+  // Get portfolio images from user profile
+  const portfolioImages = userProfile?.portfolio_urls || [];
   const hasPortfolio = portfolioImages.length > 0;
 
   const handleViewAll = () => {
@@ -153,10 +154,6 @@ const ArtistPortfolioShowcase = () => {
         )}
       </motion.div>
 
-      <UploadPhotoModal 
-        open={showUploadModal} 
-        onClose={() => setShowUploadModal(false)} 
-      />
     </>
   );
 };

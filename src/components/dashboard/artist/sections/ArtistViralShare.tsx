@@ -2,19 +2,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Share2, Copy, Instagram, Facebook } from 'lucide-react';
-import { copyToClipboard, shareToSocial, getProfileUrl } from '../utils/shareUtils';
+
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
 const ArtistViralShare = () => {
   const { user } = useAuth();
-  const profileUrl = getProfileUrl(user?.id);
+  const profileUrl = `${window.location.origin}/artist/${user?.id || 'profile'}`;
 
   const handleCopyLink = async () => {
-    const success = await copyToClipboard(profileUrl);
-    if (success) {
+    try {
+      await navigator.clipboard.writeText(profileUrl);
       toast.success('Profile link copied to clipboard!');
-    } else {
+    } catch (err) {
       toast.error('Failed to copy link');
     }
   };
@@ -24,13 +24,19 @@ const ArtistViralShare = () => {
       name: 'Instagram',
       icon: Instagram,
       color: 'from-pink-500 to-rose-500',
-      onClick: () => shareToSocial('instagram', profileUrl)
+      onClick: () => {
+        handleCopyLink();
+        window.open('https://www.instagram.com/', '_blank');
+      }
     },
     {
       name: 'Facebook', 
       icon: Facebook,
       color: 'from-blue-600 to-indigo-600',
-      onClick: () => shareToSocial('facebook', profileUrl)
+      onClick: () => {
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileUrl)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+      }
     }
   ];
 
