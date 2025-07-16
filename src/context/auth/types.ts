@@ -58,6 +58,15 @@ export interface UserProfile {
   skills?: string[] | null;
   profile_completion?: number | null;
   
+  // Matchmaking fields
+  available_for_hire?: boolean | null;
+  looking_for_work?: boolean | null;
+  just_moved?: boolean | null;
+  moved_to_city?: string | null;
+  moved_to_state?: string | null;
+  moved_date?: string | null;
+  matchmaking_radius?: number | null;
+  
   // Additional fields for compatibility
   [key: string]: any;
 }

@@ -97,6 +97,48 @@ export type Database = {
           },
         ]
       }
+      ai_recommendations: {
+        Row: {
+          clicked: boolean | null
+          created_at: string | null
+          dismissed: boolean | null
+          id: string
+          metadata: Json | null
+          reasons: string[] | null
+          recommendation_type: string
+          score: number | null
+          shown_at: string | null
+          target_id: string
+          user_id: string
+        }
+        Insert: {
+          clicked?: boolean | null
+          created_at?: string | null
+          dismissed?: boolean | null
+          id?: string
+          metadata?: Json | null
+          reasons?: string[] | null
+          recommendation_type: string
+          score?: number | null
+          shown_at?: string | null
+          target_id: string
+          user_id: string
+        }
+        Update: {
+          clicked?: boolean | null
+          created_at?: string | null
+          dismissed?: boolean | null
+          id?: string
+          metadata?: Json | null
+          reasons?: string[] | null
+          recommendation_type?: string
+          score?: number | null
+          shown_at?: string | null
+          target_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_usage_logs: {
         Row: {
           admin_action: string | null
