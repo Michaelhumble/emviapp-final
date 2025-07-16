@@ -33,12 +33,21 @@ export const useSalonProvider = (userId?: string) => {
       }
 
       console.log('Fetched salons:', data);
-      setSalons(data || []);
+      
+      // Convert Json services to string[] and ensure proper typing
+      const transformedSalons: Salon[] = (data || []).map(salon => ({
+        ...salon,
+        services: Array.isArray(salon.services) ? 
+                 salon.services.filter(s => typeof s === 'string') as string[] : 
+                 typeof salon.services === 'string' ? [salon.services] : []
+      }));
+      
+      setSalons(transformedSalons);
       
       // Auto-select first salon if none selected and salons exist
-      if (data && data.length > 0 && !currentSalon) {
-        console.log('Auto-selecting first salon:', data[0]);
-        setCurrentSalon(data[0]);
+      if (transformedSalons.length > 0 && !currentSalon) {
+        console.log('Auto-selecting first salon:', transformedSalons[0]);
+        setCurrentSalon(transformedSalons[0]);
       }
     } catch (error) {
       console.error('Error in fetchSalons:', error);
@@ -55,19 +64,32 @@ export const useSalonProvider = (userId?: string) => {
     }
 
     try {
+      // Prepare data for database with owner_id and services as Json
+      const insertData = {
+        ...salonData,
+        owner_id: userId,
+        services: salonData.services ? salonData.services : null,
+        id: crypto.randomUUID(), // Generate ID since it's required
+      };
+      
       const { data, error } = await supabase
         .from('salons')
-        .insert({
-          ...salonData,
-          owner_id: userId,
-        })
+        .insert(insertData)
         .select()
         .single();
 
       if (error) throw error;
 
-      setSalons(prev => [data, ...prev]);
-      setCurrentSalon(data);
+      // Transform the data to match Salon type
+      const transformedSalon: Salon = {
+        ...data,
+        services: Array.isArray(data.services) ? 
+                 data.services.filter(s => typeof s === 'string') as string[] : 
+                 typeof data.services === 'string' ? [data.services] : []
+      };
+
+      setSalons(prev => [transformedSalon, ...prev]);
+      setCurrentSalon(transformedSalon);
       toast.success('Salon created successfully!');
       return true;
     } catch (error) {
@@ -87,18 +109,32 @@ export const useSalonProvider = (userId?: string) => {
 
   const updateSalon = async (salonId: string, updates: Partial<Salon>) => {
     try {
+      // Prepare data for database with services as Json
+      const updateData = {
+        ...updates,
+        services: updates.services ? updates.services : undefined,
+      };
+      
       const { data, error } = await supabase
         .from('salons')
-        .update(updates)
+        .update(updateData)
         .eq('id', salonId)
         .select()
         .single();
 
       if (error) throw error;
 
-      setSalons(prev => prev.map(s => s.id === salonId ? data : s));
+      // Transform the data to match Salon type
+      const transformedSalon: Salon = {
+        ...data,
+        services: Array.isArray(data.services) ? 
+                 data.services.filter(s => typeof s === 'string') as string[] : 
+                 typeof data.services === 'string' ? [data.services] : []
+      };
+
+      setSalons(prev => prev.map(s => s.id === salonId ? transformedSalon : s));
       if (currentSalon?.id === salonId) {
-        setCurrentSalon(data);
+        setCurrentSalon(transformedSalon);
       }
       toast.success('Salon updated successfully!');
       return true;
