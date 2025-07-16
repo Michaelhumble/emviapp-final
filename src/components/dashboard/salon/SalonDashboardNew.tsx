@@ -13,6 +13,7 @@ import { useAuth } from '@/context/auth';
 import { useSalon } from '@/context/salon';
 import { useSalonDashboard } from '@/hooks/useSalonDashboard';
 import { useSalonOnboarding } from '@/hooks/useSalonOnboarding';
+import Layout from '@/components/layout/Layout';
 
 // Import components
 import SalonStatsOverview from './components/SalonStatsOverview';
@@ -62,128 +63,217 @@ const SalonDashboardNew = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      <div className="space-y-6 px-2 sm:px-4 md:px-6 py-4 md:py-8 max-w-7xl mx-auto">
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        <div className="space-y-6 px-2 sm:px-4 md:px-6 py-4 md:py-8 max-w-7xl mx-auto">
         
-        {/* Premium Header */}
+        {/* Premium Header - Billion Dollar SaaS Style */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="relative"
         >
-          <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl p-6 text-white relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 backdrop-blur-sm"></div>
-            <div className="relative z-10 flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-3">
-                  <Crown className="h-8 w-8" />
-                  {getSalonName()} Dashboard
-                </h1>
-                <p className="text-purple-100">
-                  Manage your salon empire with AI-powered insights and premium tools
-                </p>
+          <div className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl border border-white/10">
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm animate-pulse"></div>
+            
+            {/* Floating Orbs */}
+            <div className="absolute -right-20 -top-20 w-60 h-60 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -left-24 -bottom-24 w-72 h-72 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute top-16 right-1/3 w-32 h-32 bg-gradient-to-br from-pink-300/20 to-purple-300/20 rounded-full blur-2xl animate-bounce"></div>
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex-1">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-4 mb-4"
+                >
+                  <div className="relative">
+                    <Crown className="h-12 w-12 text-yellow-400 drop-shadow-lg" />
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent drop-shadow-2xl">
+                      {getSalonName()}
+                    </h1>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-semibold px-3 py-1">
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        Premium Salon
+                      </Badge>
+                      <Badge className="bg-white/20 text-white backdrop-blur-sm border border-white/30">
+                        Level 3 Elite
+                      </Badge>
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <motion.p 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-lg text-purple-100 max-w-md leading-relaxed"
+                >
+                  Transform your business with AI-powered insights, premium analytics, and enterprise-grade tools
+                </motion.p>
               </div>
               
-              {/* Credit & Level Display */}
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-lg font-bold">{stats.totalCredits} Credits</div>
-                  <div className="text-sm text-purple-100">Level 3 Salon</div>
-                </div>
-                <div className="flex gap-2">
+              {/* Stats & Actions */}
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                {/* Credit Display */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="text-center md:text-right"
+                >
+                  <div className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                    {stats.totalCredits}
+                  </div>
+                  <div className="text-sm text-purple-200 font-medium">Premium Credits</div>
+                  <div className="text-xs text-purple-300 mt-1">Next reward: 1,000 XP</div>
+                </motion.div>
+                
+                {/* Action Buttons */}
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="flex gap-3"
+                >
                   <Button 
                     variant="ghost" 
-                    size="sm" 
-                    className="text-white hover:bg-white/20"
+                    size="lg" 
+                    className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-3"
                     onClick={() => setProfileModalOpen(true)}
                   >
-                    <User className="h-5 w-5" />
+                    <User className="h-6 w-6" />
                   </Button>
                   <Button 
                     variant="ghost" 
-                    size="sm" 
-                    className="text-white hover:bg-white/20 relative"
+                    size="lg" 
+                    className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-3 relative"
                   >
                     <Bell className="h-6 w-6" />
                     {notifications > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs h-6 w-6 rounded-full flex items-center justify-center font-bold shadow-lg"
+                      >
                         {notifications}
-                      </Badge>
+                      </motion.div>
                     )}
                   </Button>
-                </div>
+                  <Button 
+                    className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-6 py-3 rounded-xl shadow-2xl border-2 border-yellow-300/50"
+                  >
+                    <Zap className="h-5 w-5 mr-2" />
+                    Upgrade Pro
+                  </Button>
+                </motion.div>
               </div>
             </div>
-            
-            {/* Background decorations */}
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div className="absolute -left-12 -bottom-12 w-40 h-40 bg-pink-500/20 rounded-full blur-3xl"></div>
           </div>
         </motion.div>
 
-        {/* Quick Stats Cards */}
+        {/* Premium Stats Cards */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6"
         >
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-500 rounded-lg">
-                  <Calendar className="h-5 w-5 text-white" />
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-6 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Calendar className="h-6 w-6 text-white" />
+                  </div>
+                  <TrendingUp className="h-5 w-5 text-blue-200" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-blue-900">{stats.todayBookings}</p>
-                  <p className="text-sm text-blue-700">Today's Bookings</p>
+                  <p className="text-3xl font-bold mb-1">{stats.todayBookings}</p>
+                  <p className="text-blue-100 text-sm">Today's Bookings</p>
+                  <p className="text-xs text-blue-200 mt-1">+12% vs yesterday</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-500 rounded-lg">
-                  <Star className="h-5 w-5 text-white" />
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-emerald-500 to-green-600 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-6 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Star className="h-6 w-6 text-white fill-current" />
+                  </div>
+                  <Award className="h-5 w-5 text-green-200" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-green-900">{stats.averageRating}</p>
-                  <p className="text-sm text-green-700">Avg Rating</p>
+                  <p className="text-3xl font-bold mb-1">{stats.averageRating}</p>
+                  <p className="text-green-100 text-sm">Avg Rating</p>
+                  <p className="text-xs text-green-200 mt-1">Top 5% salons</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-500 rounded-lg">
-                  <Users className="h-5 w-5 text-white" />
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-6 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <Crown className="h-5 w-5 text-purple-200" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-purple-900">{stats.staffCount}</p>
-                  <p className="text-sm text-purple-700">Team Members</p>
+                  <p className="text-3xl font-bold mb-1">{stats.staffCount}</p>
+                  <p className="text-purple-100 text-sm">Team Members</p>
+                  <p className="text-xs text-purple-200 mt-1">Elite team</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-50 to-amber-100">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-500 rounded-lg">
-                  <Target className="h-5 w-5 text-white" />
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-6 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Target className="h-6 w-6 text-white" />
+                  </div>
+                  <Sparkles className="h-5 w-5 text-amber-200" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-amber-900">{stats.activeOffers}</p>
-                  <p className="text-sm text-amber-700">Active Offers</p>
+                  <p className="text-3xl font-bold mb-1">{stats.activeOffers}</p>
+                  <p className="text-amber-100 text-sm">Active Offers</p>
+                  <p className="text-xs text-amber-200 mt-1">Driving growth</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         </motion.div>
         
         {/* Premium Tab Navigation */}
@@ -410,39 +500,40 @@ const SalonDashboardNew = () => {
             </motion.div>
           </TabsContent>
         </Tabs>
+        
+        {/* Onboarding Wizard */}
+        <SalonOnboardingWizard
+          isOpen={shouldShowOnboarding}
+          onClose={() => markOnboardingComplete()}
+          onComplete={() => markOnboardingComplete()}
+        />
+
+        {/* Modal Components */}
+        <SalonProfileModal
+          isOpen={profileModalOpen}
+          onClose={() => setProfileModalOpen(false)}
+        />
+
+        <SalonAnalyticsModal
+          isOpen={analyticsModalOpen}
+          onClose={() => setAnalyticsModalOpen(false)}
+          salonId={salonId}
+        />
+
+        <SalonPhotoGalleryModal
+          isOpen={photoGalleryModalOpen}
+          onClose={() => setPhotoGalleryModalOpen(false)}
+          salonId={salonId}
+        />
+
+        <SalonTeamModal
+          isOpen={teamModalOpen}
+          onClose={() => setTeamModalOpen(false)}
+          salonId={salonId}
+        />
+        </div>
       </div>
-      
-      {/* Onboarding Wizard */}
-      <SalonOnboardingWizard
-        isOpen={shouldShowOnboarding}
-        onClose={() => markOnboardingComplete()}
-        onComplete={() => markOnboardingComplete()}
-      />
-
-      {/* Modal Components */}
-      <SalonProfileModal
-        isOpen={profileModalOpen}
-        onClose={() => setProfileModalOpen(false)}
-      />
-
-      <SalonAnalyticsModal
-        isOpen={analyticsModalOpen}
-        onClose={() => setAnalyticsModalOpen(false)}
-        salonId={salonId}
-      />
-
-      <SalonPhotoGalleryModal
-        isOpen={photoGalleryModalOpen}
-        onClose={() => setPhotoGalleryModalOpen(false)}
-        salonId={salonId}
-      />
-
-      <SalonTeamModal
-        isOpen={teamModalOpen}
-        onClose={() => setTeamModalOpen(false)}
-        salonId={salonId}
-      />
-    </div>
+    </Layout>
   );
 };
 
