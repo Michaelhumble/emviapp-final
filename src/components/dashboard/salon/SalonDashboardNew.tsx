@@ -65,46 +65,45 @@ const SalonDashboardNew = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <div className="space-y-6 px-2 sm:px-4 md:px-6 py-4 md:py-8 max-w-7xl mx-auto">
+        <div className="space-y-4 sm:space-y-6 px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-8 max-w-7xl mx-auto">
         
-        {/* Premium Header - Billion Dollar SaaS Style */}
+        {/* Mobile-Optimized Premium Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="relative"
         >
-          <div className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl border border-white/10">
-            {/* Animated Background */}
+          <div className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 text-white relative overflow-hidden shadow-2xl border border-white/10">
+            {/* Animated Background - Optimized for mobile */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-sm animate-pulse"></div>
             
-            {/* Floating Orbs */}
-            <div className="absolute -right-20 -top-20 w-60 h-60 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -left-24 -bottom-24 w-72 h-72 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute top-16 right-1/3 w-32 h-32 bg-gradient-to-br from-pink-300/20 to-purple-300/20 rounded-full blur-2xl animate-bounce"></div>
+            {/* Mobile-Optimized Floating Orbs */}
+            <div className="absolute -right-10 sm:-right-20 -top-10 sm:-top-20 w-32 sm:w-60 h-32 sm:h-60 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -left-12 sm:-left-24 -bottom-12 sm:-bottom-24 w-36 sm:w-72 h-36 sm:h-72 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
             
-            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="relative z-10 flex flex-col gap-4 sm:gap-6">
               <div className="flex-1">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex items-center gap-4 mb-4"
+                  className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4"
                 >
                   <div className="relative">
-                    <Crown className="h-12 w-12 text-yellow-400 drop-shadow-lg" />
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+                    <Crown className="h-8 w-8 sm:h-12 sm:w-12 text-yellow-400 drop-shadow-lg" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-yellow-400 rounded-full animate-ping"></div>
                   </div>
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent drop-shadow-2xl">
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent drop-shadow-2xl truncate">
                       {getSalonName()}
                     </h1>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-semibold px-3 py-1">
+                    <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-2">
+                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-semibold px-2 py-1 text-xs sm:text-sm">
                         <Sparkles className="h-3 w-3 mr-1" />
-                        Premium Salon
+                        Premium
                       </Badge>
-                      <Badge className="bg-white/20 text-white backdrop-blur-sm border border-white/30">
+                      <Badge className="bg-white/20 text-white backdrop-blur-sm border border-white/30 text-xs sm:text-sm">
                         Level 3 Elite
                       </Badge>
                     </div>
@@ -115,64 +114,64 @@ const SalonDashboardNew = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-lg text-purple-100 max-w-md leading-relaxed"
+                  className="text-sm sm:text-base md:text-lg text-purple-100 leading-relaxed"
                 >
-                  Transform your business with AI-powered insights, premium analytics, and enterprise-grade tools
+                  Transform your business with AI-powered insights
                 </motion.p>
               </div>
               
-              {/* Stats & Actions */}
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                {/* Credit Display */}
+              {/* Mobile-Optimized Stats & Actions */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+                {/* Credit Display - Mobile Optimized */}
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="text-center md:text-right"
+                  className="text-center sm:text-right"
                 >
-                  <div className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                  <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
                     {stats.totalCredits}
                   </div>
-                  <div className="text-sm text-purple-200 font-medium">Premium Credits</div>
+                  <div className="text-xs sm:text-sm text-purple-200 font-medium">Premium Credits</div>
                   <div className="text-xs text-purple-300 mt-1">Next reward: 1,000 XP</div>
                 </motion.div>
                 
-                {/* Action Buttons */}
+                {/* Mobile-Optimized Action Buttons */}
                 <motion.div 
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.8 }}
-                  className="flex gap-3"
+                  className="flex gap-2 sm:gap-3"
                 >
                   <Button 
                     variant="ghost" 
-                    size="lg" 
-                    className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-3"
+                    size="sm"
+                    className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-2 sm:p-3 h-10 w-10 sm:h-12 sm:w-12"
                     onClick={() => setProfileModalOpen(true)}
                   >
-                    <User className="h-6 w-6" />
+                    <User className="h-4 w-4 sm:h-6 sm:w-6" />
                   </Button>
                   <Button 
                     variant="ghost" 
-                    size="lg" 
-                    className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-3 relative"
+                    size="sm"
+                    className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-2 sm:p-3 h-10 w-10 sm:h-12 sm:w-12 relative"
                   >
-                    <Bell className="h-6 w-6" />
+                    <Bell className="h-4 w-4 sm:h-6 sm:w-6" />
                     {notifications > 0 && (
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs h-6 w-6 rounded-full flex items-center justify-center font-bold shadow-lg"
+                        className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs h-5 w-5 sm:h-6 sm:w-6 rounded-full flex items-center justify-center font-bold shadow-lg"
                       >
                         {notifications}
                       </motion.div>
                     )}
                   </Button>
                   <Button 
-                    className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-6 py-3 rounded-xl shadow-2xl border-2 border-yellow-300/50"
+                    className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-3 sm:px-6 py-2 sm:py-3 rounded-xl shadow-2xl border-2 border-yellow-300/50 text-sm sm:text-base h-10 sm:h-auto"
                   >
-                    <Zap className="h-5 w-5 mr-2" />
-                    Upgrade Pro
+                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">Upgrade </span>Pro
                   </Button>
                 </motion.div>
               </div>
@@ -180,30 +179,31 @@ const SalonDashboardNew = () => {
           </div>
         </motion.div>
 
-        {/* Premium Stats Cards */}
+        {/* Mobile-Optimized Premium Stats Cards */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
         >
           <motion.div
             whileHover={{ scale: 1.05, y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
+            className="col-span-1"
           >
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
-              <CardContent className="p-6 relative">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <Calendar className="h-6 w-6 text-white" />
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white relative overflow-hidden h-full">
+              <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-3 sm:p-4 md:p-6 relative">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm">
+                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <TrendingUp className="h-5 w-5 text-blue-200" />
+                  <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-blue-200" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold mb-1">{stats.todayBookings}</p>
-                  <p className="text-blue-100 text-sm">Today's Bookings</p>
-                  <p className="text-xs text-blue-200 mt-1">+12% vs yesterday</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{stats.todayBookings}</p>
+                  <p className="text-blue-100 text-xs sm:text-sm">Today's Bookings</p>
+                  <p className="text-xs text-blue-200 mt-1 hidden sm:block">+12% vs yesterday</p>
                 </div>
               </CardContent>
             </Card>
@@ -212,20 +212,21 @@ const SalonDashboardNew = () => {
           <motion.div
             whileHover={{ scale: 1.05, y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
+            className="col-span-1"
           >
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-emerald-500 to-green-600 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
-              <CardContent className="p-6 relative">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <Star className="h-6 w-6 text-white fill-current" />
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-emerald-500 to-green-600 text-white relative overflow-hidden h-full">
+              <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-3 sm:p-4 md:p-6 relative">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm">
+                    <Star className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white fill-current" />
                   </div>
-                  <Award className="h-5 w-5 text-green-200" />
+                  <Award className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-green-200" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold mb-1">{stats.averageRating}</p>
-                  <p className="text-green-100 text-sm">Avg Rating</p>
-                  <p className="text-xs text-green-200 mt-1">Top 5% salons</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{stats.averageRating}</p>
+                  <p className="text-green-100 text-xs sm:text-sm">Avg Rating</p>
+                  <p className="text-xs text-green-200 mt-1 hidden sm:block">Top 5% salons</p>
                 </div>
               </CardContent>
             </Card>
@@ -234,20 +235,21 @@ const SalonDashboardNew = () => {
           <motion.div
             whileHover={{ scale: 1.05, y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
+            className="col-span-1"
           >
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
-              <CardContent className="p-6 relative">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <Users className="h-6 w-6 text-white" />
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white relative overflow-hidden h-full">
+              <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-3 sm:p-4 md:p-6 relative">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <Crown className="h-5 w-5 text-purple-200" />
+                  <Crown className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-purple-200" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold mb-1">{stats.staffCount}</p>
-                  <p className="text-purple-100 text-sm">Team Members</p>
-                  <p className="text-xs text-purple-200 mt-1">Elite team</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{stats.staffCount}</p>
+                  <p className="text-purple-100 text-xs sm:text-sm">Team Members</p>
+                  <p className="text-xs text-purple-200 mt-1 hidden sm:block">Elite team</p>
                 </div>
               </CardContent>
             </Card>
@@ -256,114 +258,181 @@ const SalonDashboardNew = () => {
           <motion.div
             whileHover={{ scale: 1.05, y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
+            className="col-span-1"
           >
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
-              <CardContent className="p-6 relative">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <Target className="h-6 w-6 text-white" />
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white relative overflow-hidden h-full">
+              <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
+              <CardContent className="p-3 sm:p-4 md:p-6 relative">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm">
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <Sparkles className="h-5 w-5 text-amber-200" />
+                  <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-amber-200" />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold mb-1">{stats.activeOffers}</p>
-                  <p className="text-amber-100 text-sm">Active Offers</p>
-                  <p className="text-xs text-amber-200 mt-1">Driving growth</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{stats.activeOffers}</p>
+                  <p className="text-amber-100 text-xs sm:text-sm">Active Offers</p>
+                  <p className="text-xs text-amber-200 mt-1 hidden sm:block">Driving growth</p>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
         </motion.div>
         
-        {/* Premium Tab Navigation */}
+        {/* Mobile-Optimized Premium Tab Navigation */}
         <Tabs 
           value={activeTab} 
           onValueChange={setActiveTab}
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
         >
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <TabsList className="w-full grid grid-cols-5 md:grid-cols-9 gap-1 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-purple-100 h-auto">
-              <TabsTrigger 
-                value="overview" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden md:inline">Overview</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="reviews" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Star className="h-4 w-4" />
-                <span className="hidden md:inline">Reviews</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="offers" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Target className="h-4 w-4" />
-                <span className="hidden md:inline">Offers</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="calendar" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Calendar className="h-4 w-4" />
-                <span className="hidden md:inline">Calendar</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="team" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Users className="h-4 w-4" />
-                <span className="hidden md:inline">Team</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="jobs" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Briefcase className="h-4 w-4" />
-                <span className="hidden md:inline">Jobs</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="photos" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Camera className="h-4 w-4" />
-                <span className="hidden md:inline">Photos</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="analytics" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden md:inline">Analytics</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="settings" 
-                className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-600 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
-              >
-                <Settings className="h-4 w-4" />
-                <span className="hidden md:inline">Settings</span>
-              </TabsTrigger>
-            </TabsList>
+            {/* Mobile: Horizontal Scrollable Tabs */}
+            <div className="block md:hidden">
+              <div className="overflow-x-auto scrollbar-hide">
+                <TabsList className="flex w-max min-w-full gap-1 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-purple-100 h-auto">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Overview
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="reviews" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <Star className="h-4 w-4" />
+                    Reviews
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="offers" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <Target className="h-4 w-4" />
+                    Offers
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="calendar" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    Calendar
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="team" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <Users className="h-4 w-4" />
+                    Team
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="photos" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <Camera className="h-4 w-4" />
+                    Photos
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="analytics" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    Analytics
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="settings" 
+                    className="flex items-center gap-2 py-3 px-4 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-600 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+            </div>
+
+            {/* Desktop: Grid Layout */}
+            <div className="hidden md:block">
+              <TabsList className="w-full grid grid-cols-4 lg:grid-cols-8 gap-1 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-purple-100 h-auto">
+                <TabsTrigger 
+                  value="overview" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden lg:inline">Overview</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="reviews" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Star className="h-4 w-4" />
+                  <span className="hidden lg:inline">Reviews</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="offers" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Target className="h-4 w-4" />
+                  <span className="hidden lg:inline">Offers</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="calendar" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span className="hidden lg:inline">Calendar</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="team" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Users className="h-4 w-4" />
+                  <span className="hidden lg:inline">Team</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="photos" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Camera className="h-4 w-4" />
+                  <span className="hidden lg:inline">Photos</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="analytics" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="hidden lg:inline">Analytics</span>
+                </TabsTrigger>
+                
+                <TabsTrigger 
+                  value="settings" 
+                  className="flex items-center gap-2 py-3 px-2 text-sm font-medium rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-600 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span className="hidden lg:inline">Settings</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </motion.div>
           
           {/* Tab Content */}
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-4 sm:space-y-6">
             <motion.div 
               variants={tabVariants}
               initial="hidden"
