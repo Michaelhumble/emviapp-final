@@ -95,11 +95,14 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
         >
           {/* Header */}
           <div className="p-6 border-b border-border bg-gradient-to-r from-primary/10 to-purple-500/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold">EmviApp Community</h2>
-                <p className="text-muted-foreground">Learn about our community guidelines and values</p>
-              </div>
+          <div className="flex items-center justify-between">
+            <div className="max-w-2xl">
+              <h2 className="text-3xl font-playfair font-bold mb-3 text-foreground">EmviApp Community</h2>
+              <p className="text-xl font-inter text-primary font-medium mb-2">
+                Welcome to the most supportive, professional, and inspiring beauty community in the world.
+              </p>
+              <p className="text-muted-foreground font-inter">Learn about our community guidelines and values</p>
+            </div>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X size={20} />
               </Button>
@@ -119,9 +122,9 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                     variant={activeTab === tab.key ? "default" : "outline"}
                     size="sm"
                     onClick={() => setActiveTab(tab.key as any)}
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full font-inter font-medium transition-all duration-300"
                   >
-                    <IconComponent size={16} />
+                    <IconComponent size={18} />
                     <span>{tab.label}</span>
                   </Button>
                 );
@@ -160,9 +163,15 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                     </div>
                   </div>
 
-                  <Card className="p-6 bg-gradient-to-r from-primary/5 to-purple-500/5">
-                    <h3 className="text-xl font-bold mb-4">Welcome to EmviApp Community! 🌟</h3>
-                    <div className="space-y-4 text-muted-foreground">
+                  <Card className="p-8 bg-gradient-to-r from-primary/5 to-purple-500/5 border-0 shadow-lg">
+                    <div className="text-center mb-6">
+                      <Heart className="h-12 w-12 mx-auto mb-4 text-primary" />
+                      <h3 className="text-2xl font-playfair font-bold mb-4 text-foreground">Welcome to EmviApp Community</h3>
+                      <p className="text-xl font-inter text-primary font-medium">
+                        Welcome to the most supportive, professional, and inspiring beauty community in the world.
+                      </p>
+                    </div>
+                    <div className="space-y-6 text-muted-foreground font-inter text-lg leading-relaxed">
                       <p>
                         EmviApp is the ultimate social platform for beauty professionals, artists, and enthusiasts. 
                         Our community brings together nail artists, hair stylists, makeup artists, salon owners, 
@@ -172,7 +181,7 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                         Whether you're showcasing your latest creation, seeking inspiration, looking for career 
                         opportunities, or simply celebrating the art of beauty, you'll find your tribe here.
                       </p>
-                      <p>
+                      <p className="font-medium text-foreground">
                         We believe that beauty is an art form that deserves recognition, and every artist has a 
                         story worth sharing. Join us in building a supportive, inspiring, and inclusive community 
                         where creativity thrives.
@@ -236,9 +245,10 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                   exit={{ opacity: 0, y: -20 }}
                   className="space-y-6"
                 >
-                  <div className="text-center mb-8">
-                    <h3 className="text-xl font-bold mb-2">Community Guidelines</h3>
-                    <p className="text-muted-foreground">
+                  <div className="text-center mb-10">
+                    <Shield className="h-12 w-12 mx-auto mb-4 text-primary" />
+                    <h3 className="text-2xl font-playfair font-bold mb-4 text-foreground">Community Guidelines</h3>
+                    <p className="text-lg font-inter text-muted-foreground">
                       These guidelines help us maintain a positive, supportive environment for everyone
                     </p>
                   </div>
@@ -253,14 +263,14 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <Card className="p-4">
+                          <Card className="p-6 border-0 shadow-md hover:shadow-lg transition-all duration-300">
                             <div className="flex items-start space-x-4">
-                              <div className="p-2 bg-primary/10 rounded-full flex-shrink-0">
-                                <IconComponent className="text-primary" size={20} />
+                              <div className="p-3 bg-gradient-to-br from-primary to-purple-600 rounded-xl flex-shrink-0 shadow-md">
+                                <IconComponent className="text-white" size={20} />
                               </div>
-                              <div>
-                                <h4 className="font-semibold mb-2">{rule.title}</h4>
-                                <p className="text-sm text-muted-foreground">{rule.description}</p>
+                              <div className="space-y-2">
+                                <h4 className="font-playfair font-bold text-lg text-foreground">{rule.title}</h4>
+                                <p className="font-inter text-muted-foreground leading-relaxed">{rule.description}</p>
                               </div>
                             </div>
                           </Card>
@@ -292,9 +302,10 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                   exit={{ opacity: 0, y: -20 }}
                   className="space-y-6"
                 >
-                  <div className="text-center mb-8">
-                    <h3 className="text-xl font-bold mb-2">Our Core Values</h3>
-                    <p className="text-muted-foreground">
+                  <div className="text-center mb-10">
+                    <Star className="h-12 w-12 mx-auto mb-4 text-primary" />
+                    <h3 className="text-2xl font-playfair font-bold mb-4 text-foreground">Our Core Values</h3>
+                    <p className="text-lg font-inter text-muted-foreground">
                       These values guide everything we do and shape our community culture
                     </p>
                   </div>
@@ -309,13 +320,13 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <Card className="p-6 h-full">
+                          <Card className="p-8 h-full border-0 shadow-md hover:shadow-lg transition-all duration-300">
                             <div className="text-center">
-                              <div className="p-4 bg-primary/10 rounded-full inline-flex mb-4">
-                                <IconComponent className="text-primary" size={32} />
+                              <div className="p-4 bg-gradient-to-br from-primary to-purple-600 rounded-full inline-flex mb-6 shadow-lg">
+                                <IconComponent className="text-white" size={32} />
                               </div>
-                              <h4 className="font-bold text-lg mb-3">{value.title}</h4>
-                              <p className="text-muted-foreground">{value.description}</p>
+                              <h4 className="font-playfair font-bold text-xl mb-4 text-foreground">{value.title}</h4>
+                              <p className="font-inter text-muted-foreground leading-relaxed">{value.description}</p>
                             </div>
                           </Card>
                         </motion.div>
@@ -323,13 +334,14 @@ const CommunityAboutRules: React.FC<CommunityAboutRulesProps> = ({ isOpen, onClo
                     })}
                   </div>
 
-                  <Card className="p-6 bg-gradient-to-r from-primary/5 to-purple-500/5 text-center">
-                    <h4 className="font-bold text-lg mb-3">Join Our Mission 🚀</h4>
-                    <p className="text-muted-foreground mb-4">
+                  <Card className="p-8 bg-gradient-to-r from-primary/5 to-purple-500/5 text-center border-0 shadow-lg">
+                    <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
+                    <h4 className="font-playfair font-bold text-2xl mb-4 text-foreground">Join Our Mission</h4>
+                    <p className="font-inter text-muted-foreground text-lg leading-relaxed mb-6">
                       Help us build the most supportive and inspiring beauty community in the world. 
                       Every post, like, comment, and share contributes to our shared vision.
                     </p>
-                    <Button className="bg-gradient-to-r from-primary to-purple-600">
+                    <Button className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 font-inter font-medium px-8 py-3 rounded-full shadow-lg">
                       Start Contributing Today
                     </Button>
                   </Card>

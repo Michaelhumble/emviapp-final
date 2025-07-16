@@ -11,7 +11,12 @@ import {
   Plus,
   ChevronDown,
   Loader2,
-  Sparkles
+  Sparkles,
+  Palette,
+  Scissors,
+  Droplet,
+  Eye,
+  Star
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -29,12 +34,12 @@ interface UniversalPostModalProps {
 }
 
 const categories = [
-  { value: 'nails', label: '💅 Nail Art', color: 'from-pink-500 to-rose-500' },
-  { value: 'hair', label: '💇‍♀️ Hair Styling', color: 'from-purple-500 to-indigo-500' },
-  { value: 'makeup', label: '💄 Makeup', color: 'from-red-500 to-pink-500' },
-  { value: 'skincare', label: '✨ Skincare', color: 'from-green-500 to-teal-500' },
-  { value: 'lashes', label: '👁️ Lashes & Brows', color: 'from-blue-500 to-cyan-500' },
-  { value: 'general', label: '🌟 General Beauty', color: 'from-yellow-500 to-orange-500' },
+  { value: 'nails', label: 'Nail Art', icon: Sparkles, color: 'from-pink-500 to-rose-500' },
+  { value: 'hair', label: 'Hair Styling', icon: Scissors, color: 'from-purple-500 to-indigo-500' },
+  { value: 'makeup', label: 'Makeup', icon: Palette, color: 'from-red-500 to-pink-500' },
+  { value: 'skincare', label: 'Skincare', icon: Droplet, color: 'from-green-500 to-teal-500' },
+  { value: 'lashes', label: 'Lashes & Brows', icon: Eye, color: 'from-blue-500 to-cyan-500' },
+  { value: 'general', label: 'General Beauty', icon: Star, color: 'from-yellow-500 to-orange-500' },
 ];
 
 export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({ 
@@ -114,13 +119,14 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
 
       // Success celebration
       confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#8A53F8', '#FF6B8A', '#4ECDC4', '#FFE66D']
       });
 
-      toast.success('🚀 Your post is live!', {
-        description: 'Your content has been shared with the community!'
+      toast.success('Your post is live! 🌟', {
+        description: 'Your art is now inspiring the community!'
       });
 
       handleClose();
@@ -233,9 +239,12 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
                 <Button
                   variant="outline"
                   onClick={() => setShowCategories(!showCategories)}
-                  className="flex items-center gap-2 min-w-[160px] justify-between"
+                  className="flex items-center gap-3 min-w-[180px] justify-between px-4 py-2"
                 >
-                  <span className="text-sm">{selectedCategory.label}</span>
+                  <div className="flex items-center gap-2">
+                    <selectedCategory.icon size={16} className="text-muted-foreground" />
+                    <span className="text-sm font-inter font-medium">{selectedCategory.label}</span>
+                  </div>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
                 
@@ -254,10 +263,12 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
                             setSelectedCategory(category);
                             setShowCategories(false);
                           }}
-                          className="w-full px-4 py-3 text-left hover:bg-accent transition-colors flex items-center gap-2"
+                          className="w-full px-4 py-3 text-left hover:bg-accent transition-colors flex items-center gap-3 rounded-lg"
                         >
-                          <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${category.color}`} />
-                          <span className="text-sm">{category.label}</span>
+                          <div className={`p-2 rounded-lg bg-gradient-to-r ${category.color}`}>
+                            <category.icon size={14} className="text-white" />
+                          </div>
+                          <span className="text-sm font-inter font-medium">{category.label}</span>
                         </button>
                       ))}
                     </motion.div>
@@ -270,10 +281,10 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
           {/* Text Input */}
           <div className="px-6 py-4">
             <Textarea
-              placeholder="What's inspiring you today? Share your thoughts, ask questions, or showcase your work..."
+              placeholder="What's inspiring you today? Share your creativity, ask questions, or showcase your beautiful work..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[120px] border-0 resize-none text-lg placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="min-h-[140px] border-0 resize-none text-lg font-inter placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0 leading-relaxed"
               autoFocus
             />
           </div>
@@ -297,8 +308,8 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
                   transition={{ duration: 0.2 }}
                 >
                   <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {isDragging ? 'Drop your images here!' : 'Drag & drop images or click to upload'}
+                  <p className="text-sm font-inter text-muted-foreground mb-2">
+                    {isDragging ? 'Drop your beautiful images here!' : 'Drag & drop images or click to upload'}
                   </p>
                   <Button
                     variant="outline"
@@ -309,8 +320,8 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
                     <Upload className="h-4 w-4 mr-2" />
                     Choose Files
                   </Button>
-                  <p className="text-xs text-muted-foreground">
-                    Up to 4 images • JPG, PNG, WebP
+                  <p className="text-xs font-inter text-muted-foreground">
+                    Up to 4 images • JPG, PNG, WebP • Your art deserves to be seen
                   </p>
                 </motion.div>
               </div>

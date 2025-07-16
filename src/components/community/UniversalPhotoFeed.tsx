@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Bookmark, UserPlus, Camera, Send, MoreHorizontal, Sparkles, Flame, Award, Star, Gift } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, UserPlus, Camera, Send, MoreHorizontal, Sparkles, Flame, Award, Star, Gift, Users, Palette, Scissors, Droplet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -60,14 +60,14 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
 
   const categoryFilters = [
     { value: 'all', label: 'All Posts', icon: Star },
-    { value: 'artists', label: 'Artists', icon: Sparkles },
+    { value: 'artists', label: 'Artists', icon: Users },
     { value: 'salons', label: 'Salons', icon: Gift },
     { value: 'customers', label: 'Customers', icon: Heart },
-    { value: 'nails', label: 'Nails', icon: Star },
-    { value: 'hair', label: 'Hair', icon: Sparkles },
-    { value: 'makeup', label: 'Makeup', icon: Gift },
+    { value: 'nails', label: 'Nails', icon: Sparkles },
+    { value: 'hair', label: 'Hair', icon: Scissors },
+    { value: 'makeup', label: 'Makeup', icon: Palette },
     { value: 'massage', label: 'Massage', icon: Heart },
-    { value: 'skincare', label: 'Skincare', icon: Sparkles }
+    { value: 'skincare', label: 'Skincare', icon: Droplet }
   ];
 
   // Fetch posts with smart feed logic
@@ -156,7 +156,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
 
       if (error) throw error;
 
-      toast.success('Post shared! 🎉', {
+      toast.success('Your post is live! ✨', {
         description: 'Your amazing work is now inspiring the community!'
       });
 
@@ -282,22 +282,22 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
   }, [filter]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       {/* Minimalist Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-playfair font-bold mb-4">Community Feed</h2>
-        <p className="text-muted-foreground">Discover inspiring work from our community</p>
+        <h2 className="text-4xl font-playfair font-bold mb-6 text-foreground">Community Feed</h2>
+        <p className="text-xl font-inter text-muted-foreground">Discover inspiring work from our community</p>
       </div>
 
       {/* Luxury Filter Bar */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide justify-center">
+      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide justify-center">
         {categoryFilters.slice(0, 6).map(({ value, label, icon: Icon }) => (
           <motion.div key={value} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
-              variant={filter === value ? "default" : "ghost"}
+              variant={filter === value ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter(value)}
-              className="whitespace-nowrap rounded-full px-6 transition-all duration-300 hover:shadow-lg"
+              className="whitespace-nowrap rounded-full px-6 py-3 font-inter font-medium transition-all duration-300 hover:shadow-lg border-border/50"
             >
               <Icon size={16} className="mr-2" />
               {label}
@@ -323,21 +323,21 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl font-semibold mb-4">Share Your Story</h3>
+              <h3 className="text-2xl font-playfair font-bold mb-6 text-foreground">Share Your Story</h3>
               
               <Textarea
-                placeholder="What's inspiring you today? Share your beauty journey..."
+                placeholder="What's inspiring you today? Share your beautiful work and creative journey..."
                 value={newPost.content}
                 onChange={(e) => setNewPost(prev => ({ ...prev, content: e.target.value }))}
-                className="mb-4"
+                className="mb-6 font-inter text-lg leading-relaxed"
                 rows={4}
               />
 
               <Input
-                placeholder="Add tags (e.g., nails, hair, makeup)"
+                placeholder="Add tags (e.g., nails, hair, makeup, skincare)"
                 value={newPost.tags}
                 onChange={(e) => setNewPost(prev => ({ ...prev, tags: e.target.value }))}
-                className="mb-4"
+                className="mb-6 font-inter"
               />
 
               {imagePreview && (
@@ -385,19 +385,19 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
       {/* Luxury Posts Feed */}
       <div className="grid gap-12">
         {isLoading ? (
-          <div className="text-center py-20">
+          <div className="text-center py-32">
             <motion.div
-              className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full mx-auto"
+              className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full mx-auto"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
-            <p className="mt-4 text-muted-foreground">Loading beautiful content...</p>
+            <p className="mt-6 text-muted-foreground font-inter text-lg">Loading beautiful content...</p>
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-20">
-            <Sparkles className="h-20 w-20 mx-auto mb-6 text-muted-foreground opacity-50" />
-            <h3 className="text-2xl font-semibold mb-4">No posts yet</h3>
-            <p className="text-muted-foreground text-lg">Be the first to share something beautiful</p>
+          <div className="text-center py-32">
+            <Sparkles className="h-24 w-24 mx-auto mb-8 text-muted-foreground opacity-50" />
+            <h3 className="text-3xl font-playfair font-bold mb-6 text-foreground">No posts yet</h3>
+            <p className="text-muted-foreground font-inter text-xl">Be the first to share something beautiful</p>
           </div>
         ) : (
           posts.map((post, index) => (
@@ -425,10 +425,10 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                       </Avatar>
                       
                       <div>
-                        <h3 className="font-semibold text-lg hover:text-primary transition-colors">
+                        <h3 className="font-playfair font-bold text-xl hover:text-primary transition-colors">
                           {post.profiles?.full_name || 'Community Member'}
                         </h3>
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground font-inter">
                           {post.profiles?.role} • {new Date(post.created_at).toLocaleDateString()}
                         </p>
                       </div>
@@ -436,9 +436,9 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
 
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm" 
-                        className="rounded-full transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/20"
+                        className="rounded-full transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/20 border-border/50 font-inter font-medium"
                         aria-label={`Follow ${post.profiles?.full_name}`}
                       >
                         <UserPlus className="h-4 w-4 mr-2" />
@@ -451,7 +451,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                 {/* Content */}
                 <div className="px-8 pb-6">
                   {post.content && (
-                    <p className="text-lg leading-relaxed mb-6">{post.content}</p>
+                    <p className="text-lg font-inter leading-relaxed mb-6 text-foreground">{post.content}</p>
                   )}
                   
                   {post.image_url && (
@@ -469,7 +469,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick 
                       {post.tags.map((tag, i) => (
                         <span
                           key={i}
-                          className="px-4 py-2 bg-primary/5 text-primary rounded-full text-sm font-medium"
+                          className="px-4 py-2 bg-primary/5 text-primary rounded-full text-sm font-inter font-medium"
                         >
                           #{tag}
                         </span>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Info } from 'lucide-react';
+import { ShieldCheck, Users, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 import { useCommunityData } from '@/hooks/useCommunityData';
@@ -39,24 +39,28 @@ const Community = () => {
 
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative">
       {/* Minimalist Hero Section */}
       <div className="px-8 py-12">
         <RotatingHeroBanner />
       </div>
 
       {/* Luxury Community Header */}
-      <div className="text-center py-16 px-8">
+      <div className="text-center py-20 px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto"
         >
-          <h1 className="text-5xl font-playfair font-bold mb-6 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-6xl font-playfair font-bold mb-8 text-foreground leading-tight">
             Beauty Community
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Where passion meets profession. Connect, inspire, and grow with the world's most talented beauty professionals.
+          <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-inter">
+            Welcome to the most supportive, professional, and inspiring beauty community in the world.
+          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mt-6 leading-relaxed">
+            Where passion meets profession. Connect, inspire, and grow with talented beauty professionals.
           </p>
         </motion.div>
       </div>
@@ -95,32 +99,35 @@ const Community = () => {
         <InviteEverywhere />
       </div>
 
-      {/* Community Rules - Accessible */}
-      <div className="px-8 py-16 text-center">
+      {/* Community Guidelines - Prominent Top Right Position */}
+      <div className="absolute top-8 right-8 z-10">
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button 
             variant="outline" 
             onClick={() => setShowAboutModal(true)}
-            className="flex items-center gap-2 transition-all duration-300 hover:shadow-lg hover:bg-primary/5 hover:border-primary/30 focus:ring-2 focus:ring-primary/20 rounded-full px-6"
+            className="flex items-center gap-3 px-6 py-3 rounded-full border-2 border-border/50 bg-background/95 backdrop-blur-lg hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 shadow-lg hover:shadow-xl focus:ring-2 focus:ring-primary/20"
             aria-label="Open community guidelines"
           >
-            <Info size={16} />
-            Community Guidelines
+            <ShieldCheck size={18} className="text-primary" />
+            <span className="font-inter font-medium">Guidelines</span>
           </Button>
         </motion.div>
       </div>
 
       {/* Footer Message */}
-      <div className="text-center py-20 px-8">
+      <div className="text-center py-24 px-8">
         <motion.div
           className="max-w-md mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Sparkles className="mx-auto mb-4 text-primary" size={32} />
-          <p className="text-lg text-muted-foreground italic">
-            Inspired by Sunshine ☀️
+          <Heart className="mx-auto mb-6 text-primary" size={40} />
+          <p className="text-xl font-playfair text-foreground font-medium mb-2">
+            You belong here
+          </p>
+          <p className="text-lg text-muted-foreground">
+            Your art deserves to be seen
           </p>
         </motion.div>
       </div>
