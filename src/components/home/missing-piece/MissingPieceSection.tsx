@@ -9,20 +9,20 @@ import SectionTitle from "./SectionTitle";
 const MissingPieceSection = () => {
   const { isVietnamese, toggleLanguage } = useTranslation();
   
-  // Define motion variants that will be passed to child components
+  // Enhanced motion variants for luxury feel
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
-  // Sparkle animation keyframes
+  // Refined sparkle animation
   const sparkleVariants = {
     animate: {
-      scale: [1, 1.2, 1],
-      opacity: [0.7, 1, 0.7],
+      scale: [1, 1.15, 1],
+      opacity: [0.4, 1, 0.4],
       rotate: [0, 180, 360],
       transition: {
-        duration: 3,
+        duration: 5,
         repeat: Infinity,
         ease: "easeInOut"
       }
@@ -30,31 +30,34 @@ const MissingPieceSection = () => {
   };
 
   return (
-    <section className="py-20 md:py-32 relative overflow-hidden">
-      {/* Premium gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-purple-50/30 to-orange-50/20" />
+    <section className="py-16 relative overflow-hidden bg-gradient-to-br from-gray-50/40 via-white to-purple-50/20">
+      {/* Sophisticated background elements */}
+      <div className="absolute inset-0 overflow-hidden opacity-6">
+        <div className="absolute top-1/4 left-8 w-80 h-80 bg-gradient-to-br from-purple-400/15 to-pink-400/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-8 w-60 h-60 bg-gradient-to-tl from-amber-400/10 to-orange-400/10 rounded-full blur-3xl" />
+      </div>
       
-      {/* Animated sparkles */}
+      {/* Elegant floating sparkles */}
       <motion.div
-        className="absolute top-20 left-1/4 text-yellow-400 text-2xl"
+        className="absolute top-24 left-1/4 text-purple-400 text-lg opacity-50"
         variants={sparkleVariants}
         animate="animate"
       >
         ✨
       </motion.div>
       <motion.div
-        className="absolute top-40 right-1/3 text-purple-400 text-xl"
-        variants={sparkleVariants}
-        animate="animate"
-        style={{ animationDelay: "1s" }}
-      >
-        ✨
-      </motion.div>
-      <motion.div
-        className="absolute bottom-32 left-1/5 text-orange-400 text-lg"
+        className="absolute top-32 right-1/3 text-amber-400 text-base opacity-50"
         variants={sparkleVariants}
         animate="animate"
         style={{ animationDelay: "2s" }}
+      >
+        ✨
+      </motion.div>
+      <motion.div
+        className="absolute bottom-20 left-1/5 text-pink-400 text-lg opacity-50"
+        variants={sparkleVariants}
+        animate="animate"
+        style={{ animationDelay: "4s" }}
       >
         ✨
       </motion.div>
@@ -65,24 +68,28 @@ const MissingPieceSection = () => {
           itemVariants={itemVariants} 
         />
         
-        <div className="relative">
-          {/* Premium glassmorphism container */}
+        <div className="relative max-w-6xl mx-auto">
+          {/* Redesigned compact premium container */}
           <motion.div
-            className="relative rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl border border-white/20"
+            className="relative rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl border border-white/40"
             style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 50%, rgba(248,250,252,0.8) 100%)",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.2)"
+              background: "linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.94) 50%, rgba(248,250,252,0.96) 100%)",
+              boxShadow: "0 32px 64px -12px rgba(139,92,246,0.18), 0 8px 32px -8px rgba(139,92,246,0.12), 0 0 0 1px rgba(255,255,255,0.3)"
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
           >
-            {/* Subtle shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" 
-                 style={{ animationDuration: "3s" }} />
+            {/* Subtle luxury shimmer overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-20" 
+                 style={{ 
+                   animation: "shimmer 4s ease-in-out infinite",
+                   backgroundSize: "200% 100%"
+                 }} />
             
-            <div className="relative py-16 px-8 md:px-16 lg:px-24">
+            {/* Reduced padding for more compact design */}
+            <div className="relative py-12 px-6 md:px-10 lg:px-12">
               <ContentCard 
                 language={isVietnamese ? "vi" : "en"} 
                 itemVariants={itemVariants} 
@@ -90,14 +97,20 @@ const MissingPieceSection = () => {
             </div>
           </motion.div>
           
-          {/* Enhanced language toggle positioning */}
-          <div className="absolute -bottom-6 right-6 z-20">
+          {/* Enhanced language toggle */}
+          <motion.div 
+            className="absolute -bottom-3 right-3 z-20"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
             <LanguageToggleButton
               isVietnamese={isVietnamese}
               toggleLanguage={toggleLanguage}
-              className="shadow-lg backdrop-blur-md border border-white/30"
+              className="shadow-2xl backdrop-blur-md border border-white/50 hover:shadow-purple-500/20 transition-all duration-300"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
