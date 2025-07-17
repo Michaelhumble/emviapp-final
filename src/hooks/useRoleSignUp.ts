@@ -46,6 +46,8 @@ export const useRoleSignUp = () => {
 
     try {
       // Create the auth user with metadata
+      const isEmviEmail = email.endsWith('@emvi.app');
+      
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -56,6 +58,9 @@ export const useRoleSignUp = () => {
             full_name: '',
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
+          emailRedirectTo: `${window.location.origin}/`,
+          // Skip email confirmation for @emvi.app emails
+          ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
         },
       });
       

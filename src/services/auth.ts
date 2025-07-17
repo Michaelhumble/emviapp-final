@@ -20,17 +20,26 @@ export async function signInWithEmail(email: string, password: string) {
 
 export async function signUpWithEmail(email: string, password: string, userData: any) {
   try {
+    const isEmviEmail = email.endsWith('@emvi.app');
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: userData
+        data: userData,
+        emailRedirectTo: `${window.location.origin}/`,
+        // Skip email confirmation for @emvi.app emails
+        ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
       }
     });
 
     if (error) throw error;
     
-    toast.info("Your account has been created! Please check your email for verification instructions.");
+    if (isEmviEmail) {
+      toast.success("Your @emvi.app account has been created and is ready to use!");
+    } else {
+      toast.info("Your account has been created! Please check your email for verification instructions.");
+    }
 
     return { success: true, user: data.user };
   } catch (error: any) {

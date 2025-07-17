@@ -31,9 +31,16 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
+      const isEmviEmail = email.endsWith('@emvi.app');
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          // Skip email confirmation for @emvi.app emails
+          ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
+        }
       });
       
       if (error) throw error;
@@ -41,7 +48,11 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       // Mark as new user in localStorage
       localStorage.setItem('emviapp_new_user', 'true');
       
-      toast.success("Account created successfully!");
+      if (isEmviEmail) {
+        toast.success("Your @emvi.app account is ready to use!");
+      } else {
+        toast.success("Account created successfully!");
+      }
       return { data, error: null };
     } catch (error) {
       console.error("Error signing up:", error);
