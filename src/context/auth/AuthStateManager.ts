@@ -190,13 +190,26 @@ class AuthStateManager {
    * 🎯 SET AUTHENTICATED STATE
    */
   private async setAuthenticatedState(session: Session) {
+    console.log('🎯 [AUTH MANAGER] Setting authenticated state for:', session.user.email);
+    
     this.state.session = session;
     this.state.user = session.user;
+    
+    // CRITICAL: Set isSignedIn to true IMMEDIATELY when we have valid session
     this.state.isSignedIn = true;
+    
+    console.log('✅ [AUTH MANAGER] User marked as signed in with valid session');
 
-    // Load profile and role
+    // Load profile and role (these can fail without affecting signed-in status)
     await this.loadUserProfile(session.user.id);
     this.loadUserRole(session.user);
+    
+    console.log('🎯 [AUTH MANAGER] Final authenticated state:', {
+      isSignedIn: this.state.isSignedIn,
+      hasUser: !!this.state.user,
+      hasSession: !!this.state.session,
+      userEmail: this.state.user?.email
+    });
   }
 
   /**
@@ -215,20 +228,34 @@ class AuthStateManager {
    */
   private async loadUserProfile(userId: string): Promise<void> {
     try {
+      console.log('👤 [AUTH MANAGER] Loading profile for user:', userId);
+      
       const { data: profileData, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
       
-      if (!error && profileData) {
+      console.log('👤 [AUTH MANAGER] Profile query result:', { profileData, error });
+      
+      if (error) {
+        console.error('❌ [AUTH MANAGER] Profile load error - RLS ISSUE:', error);
+        // If profile load fails due to RLS, we can still mark as signed in with metadata
+        console.warn('⚠️ [AUTH MANAGER] Using fallback role from user metadata');
+        return;
+      }
+      
+      if (profileData) {
         this.state.userProfile = {
           ...profileData,
           role: normalizeRole(profileData.role as string) || 'customer'
         } as UserProfile;
+        console.log('✅ [AUTH MANAGER] Profile loaded successfully:', this.state.userProfile);
+      } else {
+        console.warn('⚠️ [AUTH MANAGER] No profile data found for user');
       }
     } catch (error) {
-      console.error('❌ [AUTH MANAGER] Profile load error:', error);
+      console.error('❌ [AUTH MANAGER] Profile load critical error:', error);
     }
   }
 
