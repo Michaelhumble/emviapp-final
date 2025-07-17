@@ -47,6 +47,21 @@ export const EnhancedSignUpForm = () => {
     try {
       console.log("📧 [SIGN UP] Calling Supabase signUp...");
       
+      // Map frontend roles to backend-compatible roles
+      let mappedRole: string = data.role;
+      if (data.role === 'salon') {
+        mappedRole = 'owner'; // Map "salon" selection to "owner" in database
+        console.log("🔄 [ROLE MAPPING] Mapped 'salon' to 'owner'");
+      }
+      
+      // Validate role is supported
+      const supportedRoles = ['artist', 'owner', 'customer', 'supply_partner', 'freelancer', 'salon'];
+      if (!supportedRoles.includes(mappedRole)) {
+        throw new Error(`Rất tiếc, bạn chỉ có thể đăng ký với vai trò Khách hàng, Thợ, Chủ tiệm, Freelancer, hoặc Nhà cung cấp. / Sorry, only Customer, Artist, Owner, Freelancer, or Supplier roles are supported right now.`);
+      }
+      
+      console.log("📝 [SIGN UP] Final role for database:", mappedRole);
+      
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -54,7 +69,7 @@ export const EnhancedSignUpForm = () => {
           emailRedirectTo: window.location.origin,
           data: {
             full_name: data.fullName,
-            role: data.role,
+            role: mappedRole, // Use mapped role
           },
         },
       });
@@ -90,15 +105,18 @@ export const EnhancedSignUpForm = () => {
       
       if (error instanceof Error) {
         // Handle specific error cases with friendly EmviApp messaging
-        if (error.message.includes("Database error saving new user")) {
+        if (error.message.includes("Database error saving new user") || error.message.includes("violates check constraint")) {
           errorTitle = "Vấn đề hệ thống - System Issue";
-          errorMessage = "We're experiencing technical difficulties. Our team has been notified. Please try again in a few minutes. 💚";
+          errorMessage = "We're experiencing technical difficulties with your selected role. Our team has been notified. Please try a different role or contact support. 💚";
         } else if (error.message.includes("User already registered")) {
           errorTitle = "Tài khoản đã tồn tại - Account Already Exists";
           errorMessage = "This email is already part of our beauty community! Try signing in instead. 💅";
         } else if (error.message.includes("Password")) {
           errorTitle = "Mật khẩu không hợp lệ - Password Issue";
           errorMessage = "Please make sure your password is at least 6 characters long. 🔐";
+        } else if (error.message.includes("only") && error.message.includes("roles are supported")) {
+          errorTitle = "Vai trò không hỗ trợ - Role Not Supported";
+          errorMessage = error.message;
         } else {
           errorMessage = error.message;
         }
