@@ -65,7 +65,7 @@ const BookingsTab = () => {
             note,
             service_id,
             sender_id,
-            sender:users!sender_id(id, full_name, avatar_url),
+            sender:profiles!sender_id(id, full_name, avatar_url),
             service:service_id(id, title, price)
           `)
           .eq("recipient_id", user.id)

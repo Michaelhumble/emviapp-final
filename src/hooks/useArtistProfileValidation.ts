@@ -27,7 +27,7 @@ export const useArtistProfileValidation = () => {
       
       // Save to Supabase
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           ...validatedData,
           role: 'artist',

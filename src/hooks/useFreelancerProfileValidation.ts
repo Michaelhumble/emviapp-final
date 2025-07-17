@@ -23,7 +23,7 @@ export const useFreelancerProfileValidation = () => {
       const validatedData = freelancerProfileSchema.parse(data);
       
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           ...validatedData,
           role: 'freelancer',

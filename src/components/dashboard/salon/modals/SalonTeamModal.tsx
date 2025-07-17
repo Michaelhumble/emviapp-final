@@ -74,7 +74,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
         .from('salon_staff')
         .select(`
           *,
-          user:users(full_name, avatar_url, phone)
+          user:profiles(full_name, avatar_url, phone)
         `)
         .eq('salon_id', salonId);
 

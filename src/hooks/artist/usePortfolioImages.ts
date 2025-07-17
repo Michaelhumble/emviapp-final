@@ -49,7 +49,7 @@ export const usePortfolioImages = (artistId?: string) => {
         
         // If no portfolio items, try to get from user profile
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('portfolio_urls')
           .eq('id', targetUserId)
           .single();

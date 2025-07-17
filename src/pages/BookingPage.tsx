@@ -52,7 +52,7 @@ const BookingPage = () => {
     queryKey: ['providers'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, full_name, role')
         .in('role', ['artist', 'salon', 'owner'])
         .eq('accepts_bookings', true)

@@ -29,7 +29,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
       }
 
       const { data, error } = await supabase
-        .from('profile_completion_view')
+        .from('profile_completion_status')
         .select('*')
         .eq('id', user.id)
         .single();
@@ -74,7 +74,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
         
         // Update in the database
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ 
             completed_profile_tasks: updatedTasks,
             updated_at: new Date().toISOString()

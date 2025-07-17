@@ -25,7 +25,7 @@ export const useCustomerProfileValidation = () => {
       
       // Save to Supabase
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           ...validatedData,
           role: 'customer',

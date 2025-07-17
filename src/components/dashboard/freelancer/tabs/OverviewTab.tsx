@@ -52,7 +52,7 @@ const OverviewTab = () => {
           .from("bookings")
           .select(
             `id, created_at, date_requested, time_requested, status, note, service_id, 
-            sender:users!sender_id(id, full_name, avatar_url),
+            sender:profiles!sender_id(id, full_name, avatar_url),
             service:service_id(id, title, price)`
           )
           .eq("recipient_id", user.id)
@@ -78,7 +78,7 @@ const OverviewTab = () => {
           
           if (booking.sender && !Array.isArray(booking.sender)) {
             if (typeof booking.sender === 'object' && 'id' in booking.sender && 'full_name' in booking.sender) {
-              validSender = booking.sender;
+              validSender = booking.sender as { id: string; full_name: string; avatar_url: string; };
             }
           }
           

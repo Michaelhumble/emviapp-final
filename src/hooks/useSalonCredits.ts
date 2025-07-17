@@ -36,7 +36,7 @@ export function useSalonCredits(): SalonCreditsState {
     try {
       // Fetch user's credit balance
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('credits, boosted_until')
         .eq('id', user.id)
         .eq('role', 'salon')

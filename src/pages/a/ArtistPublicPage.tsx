@@ -35,14 +35,14 @@ const ArtistPublicPage = () => {
         setLoading(true);
         
         let { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*')
           .eq('instagram', username)
           .single();
         
         if (userError || !userData) {
           const { data: idData, error: idError } = await supabase
-            .from('users')
+            .from('profiles')
             .select('*')
             .eq('id', username)
             .single();

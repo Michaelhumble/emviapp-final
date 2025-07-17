@@ -73,7 +73,7 @@ export const useSalonAvailability = (salonId?: string) => {
         if (staff.id) {
           // Query users table to get user_id by email
           const { data: userData, error: userError } = await supabase
-            .from('users')
+            .from('profiles')
             .select('id')
             .eq('email', staff.email)
             .single();

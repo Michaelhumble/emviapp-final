@@ -24,7 +24,7 @@ export const useSupplierProfileValidation = () => {
       const validatedData = supplierProfileSchema.parse(data);
       
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           ...validatedData,
           role: 'supplier',

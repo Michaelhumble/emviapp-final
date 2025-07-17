@@ -42,7 +42,7 @@ export const useSalonTeamMessages = () => {
         data.map(async (message) => {
           // Get sender info
           const { data: senderData, error: senderError } = await supabase
-            .from('users')
+            .from('profiles')
             .select('full_name, avatar_url')
             .eq('id', message.sender_id)
             .single();

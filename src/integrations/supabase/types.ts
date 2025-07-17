@@ -44,6 +44,13 @@ export type Database = {
             foreignKeyName: "activity_log_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -235,6 +242,13 @@ export type Database = {
             foreignKeyName: "applications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -329,6 +343,13 @@ export type Database = {
             foreignKeyName: "artist_availability_artist_id_fkey"
             columns: ["artist_id"]
             isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_availability_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -360,6 +381,13 @@ export type Database = {
           phone?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "artist_clients_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "artist_clients_artist_id_fkey"
             columns: ["artist_id"]
@@ -477,6 +505,13 @@ export type Database = {
             foreignKeyName: "artist_services_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_services_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -508,6 +543,13 @@ export type Database = {
           start_date?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "artist_time_off_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "artist_time_off_artist_id_fkey"
             columns: ["artist_id"]
@@ -723,7 +765,21 @@ export type Database = {
             foreignKeyName: "bookings_recipient_id_fkey"
             columns: ["recipient_id"]
             isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_status"
             referencedColumns: ["id"]
           },
           {
@@ -1491,6 +1547,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_community_stories_profile"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_status"
             referencedColumns: ["id"]
           },
           {
@@ -2315,6 +2378,13 @@ export type Database = {
             foreignKeyName: "messages_recipient_id_fkey"
             columns: ["recipient_id"]
             isOneToOne: false
+            referencedRelation: "profile_completion_status"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2323,6 +2393,13 @@ export type Database = {
             columns: ["salon_id"]
             isOneToOne: false
             referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_status"
             referencedColumns: ["id"]
           },
           {
@@ -4984,6 +5061,44 @@ export type Database = {
             foreignKeyName: "posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "review_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_completion_status: {
+        Row: {
+          calculated_completion: number | null
+          id: string | null
+          is_complete: boolean | null
+          min_completion_percentage: number | null
+          optional_fields: string[] | null
+          required_fields: string[] | null
+          role: string | null
+        }
+        Insert: {
+          calculated_completion?: never
+          id?: string | null
+          is_complete?: never
+          min_completion_percentage?: never
+          optional_fields?: never
+          required_fields?: never
+          role?: string | null
+        }
+        Update: {
+          calculated_completion?: never
+          id?: string | null
+          is_complete?: never
+          min_completion_percentage?: never
+          optional_fields?: never
+          required_fields?: never
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
             referencedRelation: "review_customers"
             referencedColumns: ["id"]
           },

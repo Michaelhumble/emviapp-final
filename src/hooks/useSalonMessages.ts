@@ -57,7 +57,7 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
         const transformedMessages: SalonMessage[] = await Promise.all(
           data.map(async (msg: DbMessage) => {
             const { data: userData } = await supabase
-              .from('users')
+              .from('profiles')
               .select('full_name')
               .eq('id', msg.sender_id)
               .single();

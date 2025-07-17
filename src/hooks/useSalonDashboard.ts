@@ -127,7 +127,7 @@ export const useSalonDashboard = (salonId?: string) => {
       // Get user IDs from emails
       const staffEmails = staffData.map(s => s.email);
       const { data: usersData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id')
         .in('email', staffEmails);
 

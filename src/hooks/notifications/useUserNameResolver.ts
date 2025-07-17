@@ -5,7 +5,7 @@ export const useUserNameResolver = () => {
   const getUserName = async (userId: string) => {
     try {
       const { data } = await supabase
-        .from('users')
+        .from('profiles')
         .select('full_name')
         .eq('id', userId)
         .single();

@@ -51,7 +51,7 @@ export const useReferralData = () => {
               data.map(async (item) => {
                 // Fetch the user data for the referred user
                 const { data: userData, error: userError } = await supabase
-                  .from('users')
+                  .from('profiles')
                   .select('full_name, email')
                   .eq('id', item.referred_id)
                   .single();

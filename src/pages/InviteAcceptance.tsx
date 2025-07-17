@@ -132,7 +132,7 @@ const InviteAcceptance = () => {
 
         // Step 3: Update user profile
         const { error: profileError } = await supabase
-          .from('users')
+          .from('profiles')
           .update({
             full_name: profileForm.full_name,
             phone: profileForm.phone,

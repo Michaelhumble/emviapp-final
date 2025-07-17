@@ -33,7 +33,7 @@ export function useCustomerReviews() {
 
           if (review.artist_id) {
             const { data: artist } = await supabase
-              .from('users')
+              .from('profiles')
               .select('id, full_name, avatar_url')
               .eq('id', review.artist_id)
               .maybeSingle();
