@@ -148,7 +148,7 @@ const InternalTools = () => {
       if (updateError) throw updateError;
 
       const { data: existingUser, error: userCheckError } = await supabase
-        .from("users")
+        .from("profiles")
         .select("id, email")
         .eq("email", email)
         .single();
@@ -159,7 +159,7 @@ const InternalTools = () => {
 
       if (existingUser) {
         const { error: userUpdateError } = await supabase
-          .from("users")
+          .from("profiles")
           .update({ invited: true })
           .eq("id", existingUser.id);
 

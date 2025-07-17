@@ -36,7 +36,7 @@ const LiveMetrics = () => {
         today.setHours(0, 0, 0, 0);
         
         const { count: todayCount, error: todayError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id', { count: 'exact', head: true })
           .gte('created_at', today.toISOString());
         
@@ -46,7 +46,7 @@ const LiveMetrics = () => {
         weekStart.setHours(0, 0, 0, 0);
         
         const { count: weekCount, error: weekError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id', { count: 'exact', head: true })
           .gte('created_at', weekStart.toISOString());
         
@@ -55,7 +55,7 @@ const LiveMetrics = () => {
         
         // Get artist with most views (mock data - replace with real query)
         const { data: artists, error: artistsError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id, full_name')
           .eq('role', 'artist')
           .limit(10);
@@ -63,7 +63,7 @@ const LiveMetrics = () => {
         // Get salon owners (role = 'owner' or 'salon')
         // Fixed: Query users with role = 'owner' or 'salon' and handle errors properly
         const { data: salonOwners, error: salonsError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id, full_name')
           .in('role', ['owner', 'salon'])
           .limit(10);

@@ -27,13 +27,13 @@ const UserOverview = () => {
       try {
         // Get artists count
         const { count: artistsCount, error: artistsError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id', { count: 'exact', head: true })
           .eq('role', 'artist');
 
         // Get salons count
         const { count: salonsCount, error: salonsError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id', { count: 'exact', head: true })
           .eq('role', 'salon');
         
