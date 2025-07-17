@@ -362,43 +362,48 @@ class AuthStateManager {
       if (error) {
         console.error('❌ [AUTH MANAGER] Sign in failed:', error.message);
         
-        // For @emvi.app emails, if it's an email confirmation issue, attempt to bypass
+        // For @emvi.app emails, if it's an email confirmation issue, force confirm via edge function
         if (isEmviEmail && (error.message.includes('email_not_confirmed') || error.message.includes('Email not confirmed'))) {
-          console.log('🔧 [AUTH MANAGER] Attempting to handle @emvi.app email confirmation...');
+          console.log('🔧 [AUTH MANAGER] Email not confirmed, forcing confirmation for @emvi.app email...');
           
-          // First try to sign up again to trigger auto-confirmation
           try {
-            const { data: signupData, error: signupError } = await supabase.auth.signUp({
-              email,
-              password,
-              options: {
-                emailRedirectTo: `${window.location.origin}/`
-              }
+            // Call edge function to force confirm the email
+            const { data: confirmData, error: confirmError } = await supabase.functions.invoke('force-confirm-email', {
+              body: { email }
             });
             
-            if (!signupError && signupData.user) {
-              console.log('✅ [AUTH MANAGER] Auto-confirmed via signup, retrying login...');
-              
-              // Wait a moment for confirmation to process
-              await new Promise(resolve => setTimeout(resolve, 1000));
-              
-              // Retry login
-              const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-              });
-              
-              if (!retryError) {
-                console.log('✅ [AUTH MANAGER] Retry login successful for:', email);
-                toast.success("Signed in successfully!");
-                return { success: true };
-              }
+            if (confirmError) {
+              console.error('❌ [AUTH MANAGER] Force confirm failed:', confirmError);
+              toast.error("Failed to confirm @emvi.app email. Please contact support.");
+              return { success: false, error: confirmError };
             }
+            
+            console.log('✅ [AUTH MANAGER] Email force-confirmed, retrying login...');
+            
+            // Wait a moment for confirmation to process
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Retry login
+            const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+            
+            if (!retryError && retryData.user) {
+              console.log('✅ [AUTH MANAGER] Retry login successful for:', email);
+              toast.success("Signed in successfully!");
+              return { success: true };
+            } else {
+              console.error('❌ [AUTH MANAGER] Retry login failed:', retryError);
+              toast.error("Login retry failed after email confirmation.");
+              return { success: false, error: retryError };
+            }
+            
           } catch (retryError) {
-            console.error('❌ [AUTH MANAGER] Failed to auto-confirm email:', retryError);
+            console.error('❌ [AUTH MANAGER] Failed to force confirm email:', retryError);
+            toast.error("@emvi.app email confirmation failed. Please contact support.");
+            return { success: false, error: retryError };
           }
-          
-          toast.error("@emvi.app email confirmation issue detected. Redirecting to support...");
         } else {
           toast.error(error.message);
         }
