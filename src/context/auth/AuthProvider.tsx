@@ -112,32 +112,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Sign out method
+  // Sign out method with comprehensive cleanup
   const signOut = async () => {
     try {
-      // Clear local state immediately for instant UI feedback
+      console.log('🚪 Starting comprehensive sign out process...');
+      
+      // 🚨 IMMEDIATE STATE CLEANUP for instant UI feedback
       setUser(null);
       setSession(null);
       setUserRole(null);
       setUserProfile(null);
       setIsNewUser(false);
-      setLoading(false); // Ensure loading is false for immediate UI update
+      setLoading(false);
       
-      // Clear all authentication-related localStorage keys
-      const keysToRemove = [
+      // 🧹 COMPREHENSIVE CLEANUP: Clear ALL auth-related storage
+      const authKeys = [
         'emviapp_new_user', 
         'emviapp_user_role',
-        'sb-wwhqbjrhbajpabfdwnip-auth-token'
+        'sb-wwhqbjrhbajpabfdwnip-auth-token',
+        'supabase.auth.token'
       ];
       
-      keysToRemove.forEach(key => {
+      authKeys.forEach(key => {
         localStorage.removeItem(key);
+        console.log('🗑️ Removed:', key);
       });
       
       // Clear all Supabase auth keys (handles environment differences)
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
           localStorage.removeItem(key);
+          console.log('🗑️ Removed localStorage key:', key);
         }
       });
       
@@ -145,28 +150,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       Object.keys(sessionStorage || {}).forEach(key => {
         if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
           sessionStorage.removeItem(key);
+          console.log('🗑️ Removed sessionStorage key:', key);
         }
       });
       
-      // Global sign out for cross-domain compatibility
-      const { error } = await supabase.auth.signOut({ scope: 'global' });
-      if (error) {
-        console.warn("Sign out warning:", error);
-        // Don't throw - we've already cleared local state
+      // 🌐 GLOBAL SIGN OUT for cross-domain compatibility
+      try {
+        const { error } = await supabase.auth.signOut({ scope: 'global' });
+        if (error) {
+          console.warn("⚠️ Sign out warning:", error.message);
+          // Don't throw - we've already cleared local state
+        }
+      } catch (supabaseError) {
+        console.warn("⚠️ Supabase sign out failed:", supabaseError);
+        // Continue with local cleanup even if remote sign out fails
       }
       
       toast.success("Signed out successfully");
       
-      // Force page reload for clean state (handles environment differences)
+      // 🔄 FORCE FULL PAGE RELOAD for completely clean state
       setTimeout(() => {
+        console.log('🔄 Forcing page reload for clean state...');
         window.location.href = '/';
-      }, 500);
+      }, 300); // Reduced timeout for faster UX
       
     } catch (error) {
-      console.error("Sign out error:", error);
+      console.error("❌ Sign out error:", error);
       toast.error("Failed to sign out");
       
-      // Even if sign out fails, redirect to clean up state
+      // 🚨 FALLBACK: Even if sign out fails, redirect to clean up state
       setTimeout(() => {
         window.location.href = '/';
       }, 1000);

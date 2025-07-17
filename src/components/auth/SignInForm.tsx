@@ -20,20 +20,66 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   
+  
+  // 🛠️ COMPREHENSIVE AUTH CLEANUP UTILITY
+  const cleanupAuthState = () => {
+    console.log('🧹 Cleaning up all auth state...');
+    
+    // Remove standard Supabase auth tokens
+    const authKeys = [
+      'supabase.auth.token',
+      'sb-wwhqbjrhbajpabfdwnip-auth-token',
+      'emviapp_new_user',
+      'emviapp_user_role'
+    ];
+    
+    authKeys.forEach(key => {
+      localStorage.removeItem(key);
+    });
+    
+    // Remove ALL Supabase auth keys from localStorage
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        console.log('🗑️ Removing localStorage key:', key);
+        localStorage.removeItem(key);
+      }
+    });
+    
+    // Remove from sessionStorage if in use
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        console.log('🗑️ Removing sessionStorage key:', key);
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     try {
+      // 🚨 CRITICAL: Clean up existing state FIRST
+      cleanupAuthState();
+      
+      // Wait a moment for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const result = await signIn(email, password);
       
-      if (result) {
+      if (result?.success) {
+        console.log('✅ Sign in successful, redirecting...');
+        
         // Decode the redirect URL if it exists, default to dashboard
         const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        // Use window.location.href for full page refresh to ensure auth state is properly updated
-        window.location.href = decodedRedirect;
+        
+        // 🚨 FORCE FULL PAGE REFRESH to ensure clean state
+        setTimeout(() => {
+          window.location.href = decodedRedirect;
+        }, 500);
       }
     } catch (error) {
+      console.error('❌ Sign in error:', error);
       // Error handling is done in the signIn method
     } finally {
       setLoading(false);
