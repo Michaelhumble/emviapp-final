@@ -97,7 +97,7 @@ const ArtistPublicPage = () => {
         if (userData.id) {
           const newCount = (typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0) + 1;
           await supabase
-            .from('users')
+            .from('profiles')
             .update({ profile_views: newCount } as any)
             .eq('id', userData.id);
           setViewCount(newCount);

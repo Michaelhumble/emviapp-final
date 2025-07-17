@@ -81,7 +81,7 @@ const AdminCredits = () => {
       .select('credits_amount, user_id');
 
     const { data: usersData } = await supabase
-      .from('users')
+      .from('profiles')
       .select('id')
       .not('id', 'is', null);
 
@@ -102,7 +102,7 @@ const AdminCredits = () => {
 
   const loadUsers = async () => {
     const { data: usersData } = await supabase
-      .from('users')
+      .from('profiles')
       .select(`
         id,
         email,

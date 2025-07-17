@@ -55,7 +55,7 @@ export function useCustomerBookingHistory() {
           let artistData = null;
           if (booking.recipient_id) {
             const { data: artist, error: artistError } = await supabase
-              .from("users")
+              .from("profiles")
               .select("id, full_name, avatar_url")
               .eq("id", booking.recipient_id)
               .maybeSingle();

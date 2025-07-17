@@ -32,7 +32,7 @@ export function useReferralStatsDb() {
 
       // Get user credits
       const { data: udata, error: e2 } = await supabase
-        .from("users")
+        .from("profiles")
         .select("credits")
         .eq("id", user.id)
         .single();

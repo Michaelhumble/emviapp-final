@@ -42,12 +42,12 @@ const AdminDashboard = () => {
 
       // Fetch total users
       const { count: totalUsers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true });
 
       // Fetch recent signups
       const { count: recentSignups } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', sevenDaysAgo.toISOString());
 
