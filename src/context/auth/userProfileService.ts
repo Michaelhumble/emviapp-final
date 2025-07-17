@@ -14,7 +14,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
   try {
     // Get user profile data
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
@@ -110,7 +110,7 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
     
     // Insert new profile into database
     const { error } = await supabase
-      .from('users')
+      .from('profiles')
       .upsert(profileData);
     
     if (error) throw error;
@@ -148,7 +148,7 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
     
     // Update profile in database
     const { error } = await supabase
-      .from('users')
+      .from('profiles')
       .update(updateData)
       .eq('id', profile.id);
     

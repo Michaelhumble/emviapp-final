@@ -52,7 +52,7 @@ const ArtistPortfolio = () => {
       const updatedPortfolio = [...portfolioImages, publicUrl];
       
       const { error: updateError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           portfolio_urls: updatedPortfolio,
           updated_at: new Date().toISOString()
@@ -81,7 +81,7 @@ const ArtistPortfolio = () => {
       const updatedPortfolio = portfolioImages.filter(url => url !== imageUrl);
       
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           portfolio_urls: updatedPortfolio,
           updated_at: new Date().toISOString()

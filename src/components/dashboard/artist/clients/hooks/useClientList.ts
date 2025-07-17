@@ -45,7 +45,7 @@ export const useClientList = (): UseClientListReturn => {
       // Get customer names
       const customerIds = [...new Set(bookingDetails?.map(b => b.sender_id) || [])];
       const { data: customers, error: customersError } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, full_name')
         .in('id', customerIds);
 

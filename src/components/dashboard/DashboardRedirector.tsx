@@ -34,7 +34,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
 
         // Check for salon manager status
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('manager_for_salon_id')
           .eq('id', user.id)
           .single();
@@ -50,7 +50,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       
       // If no role in auth state, check database
       const { data: profile, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('role, manager_for_salon_id')
         .eq('id', user.id)
         .maybeSingle();

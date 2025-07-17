@@ -231,7 +231,7 @@ class AuthStateManager {
       console.log('👤 [AUTH MANAGER] Loading profile for user:', userId);
       
       const { data: profileData, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
@@ -544,7 +544,7 @@ class AuthStateManager {
       }
 
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update(data)
         .eq('id', this.state.user.id);
 
@@ -570,7 +570,7 @@ class AuthStateManager {
       if (!this.state.user?.id) return;
 
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ role })
         .eq('id', this.state.user.id);
 

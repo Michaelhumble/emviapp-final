@@ -139,7 +139,7 @@ const CustomerPreferencesPanel: React.FC = () => {
       avatar_url: form.avatar_url,
     };
     const { error } = await supabase
-      .from("users")
+      .from("profiles")
       .update(updateObj)
       .eq("id", user.id);
     setSaving(false);

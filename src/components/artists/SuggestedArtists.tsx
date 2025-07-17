@@ -23,7 +23,7 @@ const SuggestedArtists: React.FC<SuggestedArtistsProps> = ({
     queryKey: ['suggestedArtists'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .in('role', ['artist', 'nail technician/artist', 'freelancer'])
         .neq('full_name', '')

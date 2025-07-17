@@ -101,7 +101,7 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
       try {
         // Fetch user profile
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*')
           .eq('id', profileId)
           .single();

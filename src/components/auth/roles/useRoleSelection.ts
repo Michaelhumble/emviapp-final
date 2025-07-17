@@ -18,7 +18,7 @@ export const useRoleSelection = (userId: string, onComplete: (open: boolean) => 
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ role: selectedRole })
         .eq('id', userId);
       

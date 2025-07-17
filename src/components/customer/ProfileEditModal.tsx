@@ -156,7 +156,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
 
       // Update user profile in Supabase
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           bio: formData.bio,

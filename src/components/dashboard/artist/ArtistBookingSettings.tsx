@@ -140,7 +140,7 @@ const ArtistBookingSettings = () => {
       
       // Update user profile
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           accepts_bookings: acceptsBookings,
           preferences: preferences

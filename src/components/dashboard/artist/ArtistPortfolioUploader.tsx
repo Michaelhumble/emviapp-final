@@ -77,7 +77,7 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
 
       // 2. Update user profile with the new portfolio URL
       const { data: userData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('portfolio_urls')
         .eq('id', user.id)
         .single();
@@ -86,7 +86,7 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
       const updatedUrls = [...currentUrls, imageUrl];
 
       const { error: updateError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ portfolio_urls: updatedUrls })
         .eq('id', user.id);
 
