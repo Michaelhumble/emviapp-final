@@ -43,7 +43,7 @@ const OtherProfileSetup = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.fullName,
           custom_role: formData.customRole,
@@ -98,9 +98,9 @@ const OtherProfileSetup = () => {
         .getPublicUrl(filePath);
         
       if (data) {
-        // Update avatar URL in users table
+        // Update avatar URL in profiles table
         const { error: updateError } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ avatar_url: data.publicUrl })
           .eq('id', user?.id);
           

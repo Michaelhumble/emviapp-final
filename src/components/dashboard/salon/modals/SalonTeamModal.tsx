@@ -72,30 +72,45 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
     try {
       const { data, error } = await supabase
         .from('salon_staff')
-        .select(`
-          *,
-          user:profiles(full_name, avatar_url, phone)
-        `)
+        .select('*')
         .eq('salon_id', salonId);
 
       if (error) throw error;
 
-      // Add mock performance data for demonstration
-      const membersWithPerformance = data?.map(member => ({
-        ...member,
-        full_name: member.user?.full_name || member.full_name,
-        phone: member.user?.phone || '',
-        role: member.role as 'owner' | 'manager' | 'artist',
-        status: member.status as 'active' | 'pending' | 'inactive',
-        performance: {
-          bookings: Math.floor(Math.random() * 50) + 10,
-          revenue: Math.floor(Math.random() * 3000) + 1000,
-          rating: 4.2 + Math.random() * 0.8,
-          monthlyGrowth: Math.floor(Math.random() * 40) - 10
+      // Fetch user details for each staff member
+      const membersWithDetails = [];
+      for (const member of data || []) {
+        let userDetails = null;
+        if (member.user_id) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url, phone')
+            .eq('id', member.user_id)
+            .single();
+          userDetails = profile;
         }
-      })) || [];
 
-      setTeamMembers(membersWithPerformance);
+        membersWithDetails.push({
+          ...member,
+          full_name: userDetails?.full_name || member.full_name,
+          phone: userDetails?.phone || '',
+          role: member.role as 'owner' | 'manager' | 'artist',
+          status: member.status as 'active' | 'pending' | 'inactive',
+          user: {
+            full_name: userDetails?.full_name,
+            avatar_url: userDetails?.avatar_url,
+            phone: userDetails?.phone
+          },
+          performance: {
+            bookings: Math.floor(Math.random() * 50) + 10,
+            revenue: Math.floor(Math.random() * 3000) + 1000,
+            rating: 4.2 + Math.random() * 0.8,
+            monthlyGrowth: Math.floor(Math.random() * 40) - 10
+          }
+        });
+      }
+
+      setTeamMembers(membersWithDetails);
     } catch (error) {
       console.error('Error fetching team members:', error);
       toast.error('Failed to load team members');

@@ -24,7 +24,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       
       // First try to find by username (instagram handle)
       let { data: userData, error: userError } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('instagram', username)
         .single();
@@ -32,7 +32,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       // If not found by username, try with ID
       if (userError || !userData) {
         const { data: idData, error: idError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*')
           .eq('id', username)
           .single();
@@ -149,7 +149,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       const newCount = (viewCount || 0) + 1;
       // Using typecast as any for the update to avoid TypeScript errors
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ profile_views: newCount } as any)
         .eq('id', profile.id);
         

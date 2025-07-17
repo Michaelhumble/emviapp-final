@@ -42,7 +42,7 @@ export const populateArtistProfileWithTestData = async (userId: string) => {
 
     // Step 4: Update the user profile with sample data in Supabase
     const { error: updateError } = await supabase
-      .from("users")
+      .from("profiles")
       .update({
         bio: "Passionate artist with 5+ years of experience.",
         specialty: "Nail Design",

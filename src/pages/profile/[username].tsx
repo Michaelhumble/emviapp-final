@@ -22,7 +22,7 @@ const UserProfilePage = () => {
       try {
         // First try to find by username in URL
         let { data, error } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*')
           .eq('id', username)
           .single();
@@ -30,7 +30,7 @@ const UserProfilePage = () => {
         // If not found, try searching by full_name
         if (error || !data) {
           const { data: nameData, error: nameError } = await supabase
-            .from('users')
+            .from('profiles')
             .select('*')
             .ilike('full_name', `%${username}%`)
             .limit(1)

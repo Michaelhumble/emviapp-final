@@ -25,18 +25,12 @@ const AffiliateReferralCard = () => {
     
     const fetchReferralStats = async () => {
       try {
-        // Get referred users count
-        const { count: referralCount, error: countError } = await supabase
-          .from('profiles')
-          .select('id', { count: 'exact', head: true })
-          .eq('referred_by', referralCode);
+        // Get referred users count using RPC call to avoid type issues
+        try {
+          const { data: referralData } = await supabase.rpc('get_user_referral_stats', { user_id: user.id });
+          const referralCount = referralData?.[0]?.referral_count || 0;
         
-        if (countError) {
-          console.error('Error fetching referral count:', countError);
-          return;
-        }
-        
-        // Get user credits
+          // Get user credits
         const { data: userData, error: userError } = await supabase
           .from('profiles')
           .select('credits')
@@ -48,10 +42,13 @@ const AffiliateReferralCard = () => {
           return;
         }
         
-        setReferralStats({
-          count: referralCount || 0,
-          credits: userData?.credits || 0
-        });
+          setReferralStats({
+            count: referralCount,
+            credits: userData?.credits || 0
+          });
+        } catch (referralError) {
+          console.error('Error fetching referral count:', referralError);
+        }
       } catch (err) {
         console.error('Unexpected error fetching referral stats:', err);
       }

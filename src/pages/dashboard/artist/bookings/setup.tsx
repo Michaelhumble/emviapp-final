@@ -55,7 +55,7 @@ const BookingSetupPage = () => {
 
     try {
       const { error } = await supabase
-        .from("users")
+        .from("profiles")
         .update({
           accepts_bookings: values.acceptsBookings,
           booking_url: values.bookingUrl || null,

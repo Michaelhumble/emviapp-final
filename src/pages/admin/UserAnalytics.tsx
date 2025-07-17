@@ -87,7 +87,7 @@ const UserAnalytics = () => {
     try {
       // Get total users
       const { count: totalUsers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true });
 
       // Get users from last month for growth calculation
@@ -95,7 +95,7 @@ const UserAnalytics = () => {
       lastMonth.setMonth(lastMonth.getMonth() - 1);
       
       const { count: lastMonthUsers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .lt('created_at', lastMonth.toISOString());
 
@@ -107,13 +107,13 @@ const UserAnalytics = () => {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
       const { count: recentSignups } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', sevenDaysAgo.toISOString());
 
       // Get users by role
       const { data: roleData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('role')
         .not('role', 'is', null);
 
@@ -134,7 +134,7 @@ const UserAnalytics = () => {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
       const { data: dailyData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('created_at')
         .gte('created_at', thirtyDaysAgo.toISOString())
         .order('created_at', { ascending: true });
@@ -155,7 +155,7 @@ const UserAnalytics = () => {
       twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84);
 
       const { data: weeklyData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('created_at')
         .gte('created_at', twelveWeeksAgo.toISOString());
 
@@ -179,7 +179,7 @@ const UserAnalytics = () => {
       twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
 
       const { data: monthlyData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('created_at')
         .gte('created_at', twelveMonthsAgo.toISOString());
 
@@ -199,7 +199,7 @@ const UserAnalytics = () => {
 
       // Get latest 20 users
       const { data: latestUsers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, full_name, email, role, created_at')
         .order('created_at', { ascending: false })
         .limit(20);

@@ -38,7 +38,7 @@ export interface CreditFormattedItem {
 export const checkCredits = async (userId: string): Promise<number> => {
   try {
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .select('credits')
       .eq('id', userId)
       .single();
@@ -76,7 +76,7 @@ export const deductCredits = async ({
     
     // Begin transaction to update credits and add to activity log
     const { error: updateError } = await supabase
-      .from('users')
+      .from('profiles')
       .update({ credits: currentCredits - amount })
       .eq('id', userId);
     
@@ -182,7 +182,7 @@ export const supportArtist = async (
     
     // Add to artist - Fix the RPC call issue
     const { data: artistData, error: fetchError } = await supabase
-      .from('users')
+      .from('profiles')
       .select('credits')
       .eq('id', artistId)
       .single();
@@ -196,7 +196,7 @@ export const supportArtist = async (
     const newCreditAmount = (artistData?.credits || 0) + amount;
     
     const { error: updateError } = await supabase
-      .from('users')
+      .from('profiles')
       .update({ credits: newCreditAmount })
       .eq('id', artistId);
     

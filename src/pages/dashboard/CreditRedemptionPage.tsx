@@ -128,7 +128,7 @@ const CreditRedemptionPage = () => {
       
       // Deduct credits from user's account
       const { error: deductError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ 
           credits: credits - selectedOption.cost,
           updated_at: new Date().toISOString()
@@ -154,9 +154,9 @@ const CreditRedemptionPage = () => {
         const boostUntil = new Date();
         boostUntil.setDate(boostUntil.getDate() + 7); // 7 days in the future
         
-        // Update the boosted_until field in the users table
+        // Update the boosted_until field in the profiles table
         const { error: updateError } = await supabase
-          .from('users')
+          .from('profiles')
           .update({
             boosted_until: boostUntil.toISOString(),
             updated_at: new Date().toISOString()
@@ -180,7 +180,7 @@ const CreditRedemptionPage = () => {
           ];
           
           const { error: badgeError } = await supabase
-            .from('users')
+            .from('profiles')
             .update({
               badges: updatedBadges,
               updated_at: new Date().toISOString()

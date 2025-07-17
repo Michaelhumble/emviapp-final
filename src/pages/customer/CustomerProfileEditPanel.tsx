@@ -73,7 +73,7 @@ const CustomerProfileEditPanel: React.FC<EditPanelProps> = ({ open, onOpenChange
     setSaving(true);
     try {
       const { error } = await supabase
-        .from("users")
+        .from("profiles")
         .update({
           ...form,
           favorite_artist_types: form.favorite_artist_types,
