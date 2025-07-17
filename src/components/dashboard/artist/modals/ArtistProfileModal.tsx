@@ -199,7 +199,7 @@ const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({ isOpen, onClose
     setLoading(true);
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           bio: formData.bio,

@@ -128,7 +128,7 @@ const SalonSettings = () => {
       
       // Update user profile in database
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           salon_name: formData.salon_name,
           bio: formData.bio,

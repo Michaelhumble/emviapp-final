@@ -103,7 +103,7 @@ const ArtistSettingsModal: React.FC<ArtistSettingsModalProps> = ({ isOpen, onClo
     try {
       // Update user profile fields  
       const { error: profileError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           phone: settings.business_phone,
           email: settings.business_email,

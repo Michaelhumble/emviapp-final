@@ -30,7 +30,7 @@ const MatchmakingToggles = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update(updates)
         .eq('id', userProfile.id);
 

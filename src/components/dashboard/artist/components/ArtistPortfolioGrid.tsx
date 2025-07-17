@@ -34,7 +34,7 @@ const ArtistPortfolioGrid = ({ images, isLoading }: ArtistPortfolioGridProps) =>
 
       // Update user profile
       const { data: userData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('portfolio_urls')
         .eq('id', user.id)
         .single();
@@ -43,7 +43,7 @@ const ArtistPortfolioGrid = ({ images, isLoading }: ArtistPortfolioGridProps) =>
         const updatedUrls = (userData.portfolio_urls || []).filter(url => url !== imageToDelete.url);
         
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ portfolio_urls: updatedUrls })
           .eq('id', user.id);
 

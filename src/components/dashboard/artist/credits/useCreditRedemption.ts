@@ -89,7 +89,7 @@ export function useCreditRedemption(
         
         // Update user's credits count
         const { error: updateError } = await supabase
-          .from('users')
+          .from('profiles')
           .update({
             credits: credits - creditCost,
             updated_at: new Date().toISOString()

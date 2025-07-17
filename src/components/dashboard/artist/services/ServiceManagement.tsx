@@ -40,7 +40,7 @@ const ServiceManagement = () => {
     
     try {
       const { error } = await supabase
-        .from("users")
+        .from("profiles")
         .update({ 
           skills: updatedServices,
           updated_at: new Date().toISOString()

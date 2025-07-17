@@ -44,7 +44,7 @@ export const useCustomerBookings = () => {
         if (booking.recipient_id) {
           try {
             const { data: artist, error: artistError } = await supabase
-              .from('users')
+              .from('profiles')
               .select('id, full_name, avatar_url')
               .eq('id', booking.recipient_id)
               .single();

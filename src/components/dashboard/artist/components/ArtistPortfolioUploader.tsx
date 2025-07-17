@@ -26,7 +26,7 @@ const ArtistPortfolioUploader = ({ onComplete }: ArtistPortfolioUploaderProps) =
       const updatedUrls = [...currentUrls, ...urls];
       
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ portfolio_urls: updatedUrls })
         .eq('id', user.id);
 

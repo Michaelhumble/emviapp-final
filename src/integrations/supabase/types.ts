@@ -2865,60 +2865,142 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accepts_bookings: boolean | null
+          address: string | null
           avatar_url: string | null
           badges: Json | null
+          bio: string | null
+          booking_url: string | null
           boosted_until: string | null
           community_points: number | null
+          company_name: string | null
+          completed_profile_tasks: string[] | null
+          contact_link: string | null
           created_at: string | null
           creator_status: string | null
+          credits: number | null
           current_streak: number | null
+          custom_role: string | null
           email: string | null
           full_name: string
+          gallery: string[] | null
           id: string
+          instagram: string | null
+          invited: boolean | null
+          location: string | null
+          manager_for_salon_id: string | null
           phone: string | null
+          portfolio_urls: string[] | null
+          preferences: string[] | null
+          preferred_language: string | null
+          professional_name: string | null
+          profile_views: number | null
+          referral_code: string | null
           role: string | null
+          salon_name: string | null
+          services: string[] | null
+          specialty: string | null
           total_likes_received: number | null
           total_posts: number | null
           total_shares: number | null
           updated_at: string | null
+          website: string | null
+          years_experience: number | null
         }
         Insert: {
+          accepts_bookings?: boolean | null
+          address?: string | null
           avatar_url?: string | null
           badges?: Json | null
+          bio?: string | null
+          booking_url?: string | null
           boosted_until?: string | null
           community_points?: number | null
+          company_name?: string | null
+          completed_profile_tasks?: string[] | null
+          contact_link?: string | null
           created_at?: string | null
           creator_status?: string | null
+          credits?: number | null
           current_streak?: number | null
+          custom_role?: string | null
           email?: string | null
           full_name: string
+          gallery?: string[] | null
           id: string
+          instagram?: string | null
+          invited?: boolean | null
+          location?: string | null
+          manager_for_salon_id?: string | null
           phone?: string | null
+          portfolio_urls?: string[] | null
+          preferences?: string[] | null
+          preferred_language?: string | null
+          professional_name?: string | null
+          profile_views?: number | null
+          referral_code?: string | null
           role?: string | null
+          salon_name?: string | null
+          services?: string[] | null
+          specialty?: string | null
           total_likes_received?: number | null
           total_posts?: number | null
           total_shares?: number | null
           updated_at?: string | null
+          website?: string | null
+          years_experience?: number | null
         }
         Update: {
+          accepts_bookings?: boolean | null
+          address?: string | null
           avatar_url?: string | null
           badges?: Json | null
+          bio?: string | null
+          booking_url?: string | null
           boosted_until?: string | null
           community_points?: number | null
+          company_name?: string | null
+          completed_profile_tasks?: string[] | null
+          contact_link?: string | null
           created_at?: string | null
           creator_status?: string | null
+          credits?: number | null
           current_streak?: number | null
+          custom_role?: string | null
           email?: string | null
           full_name?: string
+          gallery?: string[] | null
           id?: string
+          instagram?: string | null
+          invited?: boolean | null
+          location?: string | null
+          manager_for_salon_id?: string | null
           phone?: string | null
+          portfolio_urls?: string[] | null
+          preferences?: string[] | null
+          preferred_language?: string | null
+          professional_name?: string | null
+          profile_views?: number | null
+          referral_code?: string | null
           role?: string | null
+          salon_name?: string | null
+          services?: string[] | null
+          specialty?: string | null
           total_likes_received?: number | null
           total_posts?: number | null
           total_shares?: number | null
           updated_at?: string | null
+          website?: string | null
+          years_experience?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_profiles_manager_for_salon"
+            columns: ["manager_for_salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]

@@ -77,7 +77,7 @@ export const useBookings = () => {
       // In a real implementation, you'd fetch staff members associated with this salon
       // For now, using a mock approach since salon_id field might not exist yet
       const { data, error } = await supabase
-        .from("users")
+        .from("profiles")
         .select("id, full_name")
         .eq("role", "artist");
       

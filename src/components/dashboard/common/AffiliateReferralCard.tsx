@@ -27,7 +27,7 @@ const AffiliateReferralCard = () => {
       try {
         // Get referred users count
         const { count: referralCount, error: countError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id', { count: 'exact', head: true })
           .eq('referred_by', referralCode);
         
@@ -38,7 +38,7 @@ const AffiliateReferralCard = () => {
         
         // Get user credits
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('credits')
           .eq('id', user.id)
           .single();

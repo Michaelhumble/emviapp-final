@@ -112,7 +112,7 @@ const SalonProfileModal: React.FC<SalonProfileModalProps> = ({ isOpen, onClose }
     setLoading(true);
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           salon_name: formData.salon_name,
           company_name: formData.salon_name,

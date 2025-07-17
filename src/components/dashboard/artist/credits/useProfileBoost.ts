@@ -97,7 +97,7 @@ export function useProfileBoost() {
 
       // Update user profile with boosted status and deduct credits
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           boosted_until: expiryDateString,
           credits: (userProfile.credits || 0) - 100,

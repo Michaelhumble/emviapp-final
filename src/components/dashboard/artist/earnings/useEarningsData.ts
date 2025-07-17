@@ -70,7 +70,7 @@ export const useEarningsData = () => {
       // Get client names
       const userIds = bookingDetails?.map(booking => booking.sender_id) || [];
       const { data: userDetails, error: userError } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, full_name')
         .in('id', userIds.length > 0 ? userIds : ['no-users']);
         

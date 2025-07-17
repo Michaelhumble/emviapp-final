@@ -196,7 +196,7 @@ const CustomerPendingReviewsSection: React.FC = () => {
           // Fetch artist details
           if (booking.recipient_id) {
             const { data: artistData, error: artistError } = await supabase
-              .from("users")
+              .from("profiles")
               .select("full_name, avatar_url")
               .eq("id", booking.recipient_id)
               .maybeSingle();
