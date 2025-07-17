@@ -20,6 +20,7 @@ import { AuthContextType } from "./types";
 import { AuthContext } from "./AuthContext";
 import { toast } from "sonner";
 import { needsRoleSelection } from "@/utils/roleDashboardMap";
+import { cleanupAuthState, cleanupBeforeAuth, detectCorruptedTokens, emergencyAuthReset } from "@/utils/authCleanup";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -89,35 +90,54 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return false;
   };
 
-  // Sign in method
+  // 🔐 ENHANCED SIGN IN with comprehensive cleanup and error recovery
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('🔐 [SIGN IN] Starting enhanced sign in process...');
+      
+      // 🚨 CRITICAL: Cleanup before auth to prevent token conflicts
+      await cleanupBeforeAuth();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        toast.error(error.message);
+        console.error('❌ [SIGN IN] Authentication failed:', error.message);
+        
+        // Handle specific auth errors
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error("Invalid email or password");
+        } else if (error.message.includes('session_not_found')) {
+          toast.error("Session expired. Please try again.");
+          // Trigger emergency reset for session issues
+          await emergencyAuthReset();
+        } else {
+          toast.error(error.message);
+        }
+        
         return { success: false, error };
       }
 
-      // Sign in successful - the onAuthStateChange will handle state updates
+      // 🎉 SUCCESS: Log successful authentication
+      console.log('✅ [SIGN IN] Authentication successful for:', email);
       toast.success("Signed in successfully!");
       return { success: true };
     } catch (error) {
       const err = error as Error;
+      console.error('🚨 [SIGN IN] Unexpected error:', err);
       toast.error(err.message || "Failed to sign in");
       return { success: false, error: err };
     }
   };
 
-  // Sign out method with comprehensive cleanup
+  // 🚪 ENHANCED SIGN OUT with comprehensive cleanup and recovery
   const signOut = async () => {
     try {
-      console.log('🚪 Starting comprehensive sign out process...');
+      console.log('🚪 [SIGN OUT] Starting enhanced sign out process...');
       
-      // 🚨 IMMEDIATE STATE CLEANUP for instant UI feedback
+      // 🚨 IMMEDIATE UI STATE CLEANUP for instant feedback
       setUser(null);
       setSession(null);
       setUserRole(null);
@@ -125,69 +145,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsNewUser(false);
       setLoading(false);
       
-      // 🧹 COMPREHENSIVE CLEANUP: Clear ALL auth-related storage
-      const authKeys = [
-        'emviapp_new_user', 
-        'emviapp_user_role',
-        'sb-wwhqbjrhbajpabfdwnip-auth-token',
-        'supabase.auth.token'
-      ];
-      
-      authKeys.forEach(key => {
-        localStorage.removeItem(key);
-        console.log('🗑️ Removed:', key);
-      });
-      
-      // Clear all Supabase auth keys (handles environment differences)
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-          localStorage.removeItem(key);
-          console.log('🗑️ Removed localStorage key:', key);
-        }
-      });
-      
-      // Clear sessionStorage if used
-      Object.keys(sessionStorage || {}).forEach(key => {
-        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-          sessionStorage.removeItem(key);
-          console.log('🗑️ Removed sessionStorage key:', key);
-        }
-      });
+      // 🧹 COMPREHENSIVE STORAGE CLEANUP
+      const removedCount = cleanupAuthState();
+      console.log(`🗑️ [SIGN OUT] Cleaned ${removedCount} storage items`);
       
       // 🌐 GLOBAL SIGN OUT for cross-domain compatibility
       try {
         const { error } = await supabase.auth.signOut({ scope: 'global' });
         if (error) {
-          console.warn("⚠️ Sign out warning:", error.message);
+          console.warn("⚠️ [SIGN OUT] Global sign out warning:", error.message);
           // Don't throw - we've already cleared local state
+        } else {
+          console.log('✅ [SIGN OUT] Global sign out successful');
         }
       } catch (supabaseError) {
-        console.warn("⚠️ Supabase sign out failed:", supabaseError);
+        console.warn("⚠️ [SIGN OUT] Supabase sign out failed:", supabaseError);
         // Continue with local cleanup even if remote sign out fails
       }
       
       toast.success("Signed out successfully");
       
-      // 🔄 FORCE FULL PAGE RELOAD for completely clean state
+      // 🔄 FORCE CLEAN RELOAD for completely fresh state
       setTimeout(() => {
-        console.log('🔄 Forcing page reload for clean state...');
+        console.log('🔄 [SIGN OUT] Forcing clean page reload...');
         window.location.href = '/';
-      }, 300); // Reduced timeout for faster UX
+      }, 200); // Reduced timeout for better UX
       
     } catch (error) {
-      console.error("❌ Sign out error:", error);
+      console.error("❌ [SIGN OUT] Error during sign out:", error);
       toast.error("Failed to sign out");
       
-      // 🚨 FALLBACK: Even if sign out fails, redirect to clean up state
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+      // 🚨 FALLBACK: Emergency reset if normal sign out fails
+      console.log('🚨 [SIGN OUT] Triggering emergency auth reset...');
+      await emergencyAuthReset();
     }
   };
 
-  // Sign up method
+  // 📝 ENHANCED SIGN UP with comprehensive cleanup and validation
   const signUp = async (email: string, password: string, userData: any = {}) => {
     try {
+      console.log('📝 [SIGN UP] Starting enhanced sign up process...');
+      
+      // 🚨 CRITICAL: Cleanup before auth to prevent conflicts
+      await cleanupBeforeAuth();
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -198,15 +199,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (error) {
-        toast.error(error.message);
+        console.error('❌ [SIGN UP] Registration failed:', error.message);
+        
+        // Handle specific signup errors
+        if (error.message.includes('already registered')) {
+          toast.error("An account with this email already exists");
+        } else if (error.message.includes('session_not_found')) {
+          toast.error("Session error. Please try again.");
+          await emergencyAuthReset();
+        } else {
+          toast.error(error.message);
+        }
+        
         return { success: false, error };
       }
 
-      // Sign up successful - the onAuthStateChange will handle state updates
+      // 🎉 SUCCESS: Log successful registration
+      console.log('✅ [SIGN UP] Registration successful for:', email);
       toast.success("Account created successfully!");
       return { success: true, userId: data.user?.id };
     } catch (error) {
       const err = error as Error;
+      console.error('🚨 [SIGN UP] Unexpected error:', err);
       toast.error(err.message || "Failed to sign up");
       return { success: false, error: err };
     }
@@ -258,9 +272,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Initialize auth state
+  // 🚀 ENHANCED AUTH INITIALIZATION with error detection and recovery
   useEffect(() => {
-    console.log('🔐 AuthProvider: Initializing auth state');
+    console.log('🔐 [AUTH PROVIDER] Initializing enhanced auth state...');
+    
+    // 🔍 DETECT CORRUPTED TOKENS on startup
+    const corruptionIssues = detectCorruptedTokens();
+    if (corruptionIssues.length > 0) {
+      console.warn('⚠️ [AUTH PROVIDER] Detected auth corruption on startup:', corruptionIssues);
+      cleanupAuthState();
+      toast.error("Authentication issue detected. Please sign in again.");
+    }
     
     // Check for existing new user status
     const storedNewUserStatus = localStorage.getItem('emviapp_new_user') === 'true';
@@ -268,24 +290,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsNewUser(true);
     }
 
-    // 🔐 CRITICAL: Get initial session FIRST before setting up listeners
+    // 🔐 CRITICAL: Get initial session FIRST with error handling
     const initializeAuth = async () => {
       try {
+        console.log('🔍 [AUTH PROVIDER] Checking for existing session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        console.log('🔐 AuthProvider: Initial session check', {
+        if (error) {
+          console.error('❌ [AUTH PROVIDER] Session check failed:', error.message);
+          
+          // Handle specific session errors
+          if (error.message.includes('session_not_found') || 
+              error.message.includes('bad_jwt') ||
+              error.message.includes('missing sub claim')) {
+            console.log('🧹 [AUTH PROVIDER] Cleaning corrupted session...');
+            cleanupAuthState();
+          }
+          
+          setLoading(false);
+          return;
+        }
+        
+        console.log('🔍 [AUTH PROVIDER] Initial session check result:', {
           hasSession: !!session,
           hasUser: !!session?.user,
           userId: session?.user?.id,
-          error: error?.message
+          tokenPreview: session?.access_token ? `${session.access_token.substring(0, 10)}...` : 'none'
         });
         
-        // Set initial state
+        // 🚨 IMMEDIATE STATE UPDATE for UI synchronization
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          console.log('✅ AuthProvider: Found existing session, fetching profile');
+          console.log('✅ [AUTH PROVIDER] Valid session found, fetching profile...');
           
           // Check for role in metadata first
           const userRole = session.user.user_metadata?.role;
@@ -294,14 +332,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUserRole(normalizedRole);
             if (normalizedRole) {
               localStorage.setItem('emviapp_user_role', normalizedRole);
-              console.log('🎭 AuthProvider: Role set from session metadata:', normalizedRole);
+              console.log('🎭 [AUTH PROVIDER] Role set from session metadata:', normalizedRole);
             }
           }
           
           // Fetch full profile
           await fetchUserProfile(session.user.id);
         } else {
-          console.log('❌ AuthProvider: No existing session found');
+          console.log('❌ [AUTH PROVIDER] No valid session found');
           // Check localStorage for cached role
           const cachedRole = localStorage.getItem('emviapp_user_role');
           if (cachedRole) {
@@ -309,36 +347,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
         
-        // Set loading to false after initial check
+        // 🏁 COMPLETE: Set loading to false after initial check
         setLoading(false);
+        console.log('✅ [AUTH PROVIDER] Auth initialization complete');
         
       } catch (error) {
-        console.error('🚨 AuthProvider: Error initializing auth:', error);
+        console.error('🚨 [AUTH PROVIDER] Critical error during initialization:', error);
+        // Emergency cleanup and reset
+        cleanupAuthState();
         setLoading(false);
+        toast.error("Authentication error. Please refresh the page.");
       }
     };
 
     // Initialize auth first
     initializeAuth();
 
-    // 🔐 CRITICAL: Set up auth state listener for IMMEDIATE propagation
-    // This ensures ALL consuming components update instantly when auth changes
+    // 🔄 ENHANCED AUTH STATE LISTENER with comprehensive error handling
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔐 AuthProvider: Auth state change detected', {
+      console.log('🔄 [AUTH PROVIDER] Auth state change detected:', {
         event,
         hasUser: !!session?.user,
         userId: session?.user?.id,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        tokenPreview: session?.access_token ? `${session.access_token.substring(0, 10)}...` : 'none'
       });
       
-      // 🚨 IMMEDIATE STATE UPDATES: Set state synchronously for instant propagation
+      // 🛡️ ERROR DETECTION: Check for corrupted session data
+      if (session && (!session.user || !session.access_token)) {
+        console.error('🚨 [AUTH PROVIDER] Corrupted session detected:', session);
+        cleanupAuthState();
+        setSession(null);
+        setUser(null);
+        toast.error("Authentication issue detected. Please sign in again.");
+        return;
+      }
+      
+      // 🚨 IMMEDIATE SYNCHRONOUS STATE UPDATES for instant UI propagation
       setSession(session);
       setUser(session?.user ?? null);
       
+      // 🎯 EVENT-SPECIFIC HANDLING with enhanced logging
       if (event === 'SIGNED_UP' as AuthChangeEvent) {
-        console.log('📝 AuthProvider: User signed up - setting new user flag');
+        console.log('📝 [AUTH PROVIDER] User signed up - setting new user flag');
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -349,13 +402,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserRole(normalizedRole);
           if (normalizedRole) {
             localStorage.setItem('emviapp_user_role', normalizedRole);
-            console.log('🎭 AuthProvider: Role set from signup metadata:', normalizedRole);
+            console.log('🎭 [AUTH PROVIDER] Role set from signup metadata:', normalizedRole);
           }
         }
       }
       
       if (event === 'SIGNED_IN' as AuthChangeEvent) {
-        console.log('✅ AuthProvider: User signed in - fetching profile');
+        console.log('✅ [AUTH PROVIDER] User signed in - fetching profile');
+        
         // Store role from metadata if available
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
@@ -363,32 +417,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserRole(normalizedRole);
           if (normalizedRole) {
             localStorage.setItem('emviapp_user_role', normalizedRole);
-            console.log('🎭 AuthProvider: Role set from signin metadata:', normalizedRole);
+            console.log('🎭 [AUTH PROVIDER] Role set from signin metadata:', normalizedRole);
           }
         }
         
-        // 🔄 DEFERRED PROFILE FETCH: Use setTimeout to prevent auth listener deadlock
+        // 🔄 DEFERRED PROFILE FETCH to prevent auth listener deadlock
         if (session?.user?.id) {
           setTimeout(() => {
-            console.log('👤 AuthProvider: Fetching user profile');
+            console.log('👤 [AUTH PROVIDER] Fetching user profile...');
             fetchUserProfile(session.user.id);
           }, 0);
         }
       }
 
       if (event === 'SIGNED_OUT' as AuthChangeEvent) {
-        console.log('🚪 AuthProvider: User signed out - clearing state');
+        console.log('🚪 [AUTH PROVIDER] User signed out - clearing all state');
         setIsNewUser(false);
         setUserRole(null);
         setUserProfile(null);
-        localStorage.removeItem('emviapp_new_user');
-        localStorage.removeItem('emviapp_user_role');
+        
+        // Additional cleanup for sign out event
+        cleanupAuthState();
       }
       
-  // 🏁 LOADING COMPLETE: Always set loading to false after auth event
+      if (event === 'TOKEN_REFRESHED' as AuthChangeEvent) {
+        console.log('🔄 [AUTH PROVIDER] Token refreshed successfully');
+      }
+      
+      // 🏁 ALWAYS: Set loading to false after any auth event
       setLoading(false);
       
-      console.log('🔐 AuthProvider: State update complete', {
+      console.log('✅ [AUTH PROVIDER] Auth state update complete:', {
         event,
         isSignedIn: !!session?.user,
         hasProfile: !!session?.user?.id,
@@ -397,29 +456,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     return () => {
-      console.log('🔐 AuthProvider: Cleaning up subscription');
+      console.log('🔐 [AUTH PROVIDER] Cleaning up auth subscription');
       subscription.unsubscribe();
     };
-  }, []);
+  }, []); // Empty dependency array to prevent re-initialization
 
-  // CENTRALIZED AUTH STATE CALCULATIONS (SINGLE SOURCE OF TRUTH)
+  // 🎯 CENTRALIZED AUTH STATE CALCULATIONS (SINGLE SOURCE OF TRUTH)
   
   /** 
-   * SIMPLIFIED isSignedIn check: User exists with valid session
-   * This ensures immediate state detection without complex loading checks
+   * 🔐 ENHANCED isSignedIn check: User exists with valid session and no corruption
+   * This ensures immediate state detection with corruption protection
    */
-  const isSignedIn = !!user && !!session && !!user.id;
+  const isSignedIn = !!user && !!session && !!user.id && !!session.access_token;
   
   /**
-   * CENTRALIZED currentUserRole: Returns role only when authenticated and not loading
+   * 🎭 CENTRALIZED currentUserRole: Returns role only when authenticated
    * Returns null if user needs role selection (triggers onboarding)
    */
   const currentUserRole = isSignedIn ? userRole : null;
   
   /**
-   * CENTRALIZED needsOnboarding: True if user is signed in but needs role selection
+   * 🚀 CENTRALIZED needsOnboarding: True if user is signed in but needs role selection
    */
   const needsOnboarding = isSignedIn && needsRoleSelection(userRole);
+
+  // 📊 ENHANCED DEBUG LOGGING for comprehensive monitoring
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔐 [AUTH PROVIDER] Current State:', {
+      loading,
+      hasUser: !!user,
+      hasSession: !!session,
+      hasValidToken: !!session?.access_token,
+      isSignedIn,
+      currentUserRole,
+      needsOnboarding,
+      userId: user?.id,
+      timestamp: new Date().toISOString()
+    });
+  }
 
 
   // Context value

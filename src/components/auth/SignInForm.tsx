@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { cleanupBeforeAuth } from "@/utils/authCleanup";
 
 interface SignInFormProps {
   redirectUrl?: string | null;
@@ -21,66 +22,36 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
   const navigate = useNavigate();
   
   
-  // 🛠️ COMPREHENSIVE AUTH CLEANUP UTILITY
-  const cleanupAuthState = () => {
-    console.log('🧹 Cleaning up all auth state...');
-    
-    // Remove standard Supabase auth tokens
-    const authKeys = [
-      'supabase.auth.token',
-      'sb-wwhqbjrhbajpabfdwnip-auth-token',
-      'emviapp_new_user',
-      'emviapp_user_role'
-    ];
-    
-    authKeys.forEach(key => {
-      localStorage.removeItem(key);
-    });
-    
-    // Remove ALL Supabase auth keys from localStorage
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        console.log('🗑️ Removing localStorage key:', key);
-        localStorage.removeItem(key);
-      }
-    });
-    
-    // Remove from sessionStorage if in use
-    Object.keys(sessionStorage || {}).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        console.log('🗑️ Removing sessionStorage key:', key);
-        sessionStorage.removeItem(key);
-      }
-    });
-  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // 🚨 CRITICAL: Clean up existing state FIRST
-      cleanupAuthState();
+      console.log('🔐 [SIGN IN FORM] Starting sign in process...');
       
-      // Wait a moment for cleanup to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // 🚨 CRITICAL: Comprehensive cleanup before authentication
+      await cleanupBeforeAuth();
       
       const result = await signIn(email, password);
       
       if (result?.success) {
-        console.log('✅ Sign in successful, redirecting...');
+        console.log('✅ [SIGN IN FORM] Sign in successful, preparing redirect...');
         
         // Decode the redirect URL if it exists, default to dashboard
         const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
         
-        // 🚨 FORCE FULL PAGE REFRESH to ensure clean state
+        // 🔄 FORCE FULL PAGE REFRESH for completely clean auth state
         setTimeout(() => {
+          console.log('🔄 [SIGN IN FORM] Redirecting to:', decodedRedirect);
           window.location.href = decodedRedirect;
-        }, 500);
+        }, 300); // Brief delay to ensure auth state propagates
+      } else {
+        console.error('❌ [SIGN IN FORM] Sign in failed:', result?.error);
       }
     } catch (error) {
-      console.error('❌ Sign in error:', error);
-      // Error handling is done in the signIn method
+      console.error('🚨 [SIGN IN FORM] Unexpected error:', error);
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
