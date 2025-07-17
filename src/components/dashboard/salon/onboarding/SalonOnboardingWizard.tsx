@@ -131,7 +131,7 @@ export const SalonOnboardingWizard: React.FC<SalonOnboardingWizardProps> = ({
 
   const updateSalonProfile = async () => {
     const { error } = await supabase
-      .from('users')
+      .from('profiles')
       .update({
         salon_name: salonData.salon_name,
         bio: salonData.bio,
@@ -195,7 +195,7 @@ export const SalonOnboardingWizard: React.FC<SalonOnboardingWizardProps> = ({
   const markOnboardingComplete = async () => {
     const completedTasks = ['profile_setup', 'team_invite', 'first_offer'];
     const { error } = await supabase
-      .from('users')
+      .from('profiles')
       .update({
         completed_profile_tasks: completedTasks,
         updated_at: new Date().toISOString()

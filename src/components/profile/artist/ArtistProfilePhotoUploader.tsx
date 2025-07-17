@@ -101,7 +101,7 @@ const ArtistProfilePhotoUploader = () => {
         
       // Update user profile with the new avatar URL
       const { error: updateError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           avatar_url: publicUrl,
           updated_at: new Date().toISOString()
@@ -152,7 +152,7 @@ const ArtistProfilePhotoUploader = () => {
       
       // Update user profile to remove avatar URL
       const { error: updateError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           avatar_url: null,
           updated_at: new Date().toISOString()

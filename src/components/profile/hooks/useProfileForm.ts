@@ -67,7 +67,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
       }
       
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           bio: formData.bio,

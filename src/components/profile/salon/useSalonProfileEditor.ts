@@ -107,7 +107,7 @@ export const useSalonProfileEditor = () => {
       
       // Update user profile in database
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           salon_name: salonName,
           location,

@@ -96,7 +96,7 @@ const ProfilePictureUploader = ({
 
       // Update user record in the database
       const { error: updateError } = await supabase
-        .from("users")
+        .from("profiles")
         .update({ avatar_url: publicUrl })
         .eq("id", userId);
 
@@ -131,7 +131,7 @@ const ProfilePictureUploader = ({
     try {
       // Update user record to remove avatar_url
       const { error } = await supabase
-        .from("users")
+        .from("profiles")
         .update({ avatar_url: null })
         .eq("id", userId);
 

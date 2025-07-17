@@ -74,7 +74,7 @@ const ArtistProfileForm = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           specialty: formData.specialty,

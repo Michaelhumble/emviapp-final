@@ -17,7 +17,7 @@ const FreelancersHighlight = () => {
     const fetchFeaturedFreelancers = async () => {
       try {
         const { data, error } = await supabase
-          .from("users")
+          .from("profiles")
           .select("*")
           .eq("role", "freelancer")
           .limit(4);

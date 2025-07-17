@@ -21,7 +21,7 @@ const ProfileMission = () => {
     setSaving(true);
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ bio: mission })
         .eq('id', userProfile.id);
         

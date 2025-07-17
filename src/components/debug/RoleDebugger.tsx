@@ -33,7 +33,7 @@ const RoleDebugger = () => {
     if (user?.id) {
       const fetchDatabaseRole = async () => {
         const { data, error } = await supabase
-          .from('users')
+          .from('profiles')
           .select('role')
           .eq('id', user.id)
           .single();
@@ -56,7 +56,7 @@ const RoleDebugger = () => {
     setLoading(true);
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ role: newRole })
         .eq('id', user.id);
         

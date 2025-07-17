@@ -138,7 +138,7 @@ const ArtistPortfolioUploader = () => {
         setPortfolioImages(updatedUrls);
         
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ 
             portfolio_urls: updatedUrls,
             updated_at: new Date().toISOString()
@@ -203,7 +203,7 @@ const ArtistPortfolioUploader = () => {
 
       // Update the user profile
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ 
           portfolio_urls: updatedImages,
           updated_at: new Date().toISOString()

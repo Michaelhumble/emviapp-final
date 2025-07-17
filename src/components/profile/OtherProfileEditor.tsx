@@ -101,7 +101,7 @@ const OtherProfileEditor = () => {
       
       // Update user profile in database
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: fullName,
           custom_role: customRole,

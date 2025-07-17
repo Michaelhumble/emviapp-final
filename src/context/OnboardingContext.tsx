@@ -50,7 +50,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       // Check if user has completed onboarding
       const { data: profile } = await supabase
-        .from('users')
+        .from('profiles')
         .select('completed_profile_tasks, role')
         .eq('id', user.id)
         .single();
@@ -73,7 +73,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (!user) return;
 
       const { data: profile } = await supabase
-        .from('users')
+        .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
@@ -189,7 +189,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       // Update database
       await supabase
-        .from('users')
+        .from('profiles')
         .update({ completed_profile_tasks: newCompletedSteps })
         .eq('id', user.id);
 

@@ -54,7 +54,7 @@ const SalonProfileForm = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           salon_name: formData.salon_name, // Ensure salon_name is explicitly updated

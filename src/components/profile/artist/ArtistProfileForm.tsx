@@ -47,7 +47,7 @@ const ArtistProfileForm = () => {
       
       try {
         const { data, error } = await supabase
-          .from('users')
+          .from('profiles')
           .select('full_name, specialty, location, bio, instagram, website')
           .eq('id', user.id)
           .single();
@@ -90,7 +90,7 @@ const ArtistProfileForm = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.displayName,
           specialty: formData.specialty,

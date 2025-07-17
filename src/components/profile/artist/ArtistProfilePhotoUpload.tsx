@@ -20,7 +20,7 @@ const ArtistProfilePhotoUpload = () => {
       
       try {
         const { data, error } = await supabase
-          .from('users')
+          .from('profiles')
           .select('avatar_url')
           .eq('id', user.id)
           .single();
@@ -78,7 +78,7 @@ const ArtistProfilePhotoUpload = () => {
       
       // Update user profile with the avatar URL
       const { error: updateError } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ 
           avatar_url: newAvatarUrl,
           updated_at: new Date().toISOString(),
@@ -115,7 +115,7 @@ const ArtistProfilePhotoUpload = () => {
       
       // Update user profile
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ 
           avatar_url: null,
           updated_at: new Date().toISOString()
@@ -142,7 +142,7 @@ const ArtistProfilePhotoUpload = () => {
     
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('completed_profile_tasks')
         .eq('id', user.id)
         .single();

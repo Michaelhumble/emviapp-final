@@ -74,7 +74,7 @@ const CustomerProfileForm = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           location: formData.location,

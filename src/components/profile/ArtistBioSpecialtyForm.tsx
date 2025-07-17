@@ -56,9 +56,9 @@ const ArtistBioSpecialtyForm = ({ onComplete }: ArtistBioSpecialtyFormProps) => 
     setIsSaving(true);
 
     try {
-      // Update bio and specialty in the users table
+      // Update bio and specialty in the profiles table
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           bio: bio.trim(),
           specialty,

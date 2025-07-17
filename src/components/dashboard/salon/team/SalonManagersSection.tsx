@@ -74,7 +74,7 @@ const SalonManagersSection = () => {
     try {
       // Fetch users who are managers for this salon
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, full_name, email, avatar_url, manager_for_salon_id')
         .eq('manager_for_salon_id', currentSalon.id);
         
@@ -105,7 +105,7 @@ const SalonManagersSection = () => {
     try {
       // First check if user already exists
       const { data: existingUser, error: userError } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, email')
         .eq('email', inviteEmail.trim().toLowerCase())
         .maybeSingle();
@@ -115,7 +115,7 @@ const SalonManagersSection = () => {
       if (existingUser) {
         // User exists, update their manager_for_salon_id
         const { error: updateError } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ manager_for_salon_id: currentSalon.id })
           .eq('id', existingUser.id);
           
@@ -167,7 +167,7 @@ const SalonManagersSection = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ manager_for_salon_id: null })
         .eq('id', managerId);
         
