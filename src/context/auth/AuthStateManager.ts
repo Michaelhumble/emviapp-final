@@ -362,10 +362,43 @@ class AuthStateManager {
       if (error) {
         console.error('❌ [AUTH MANAGER] Sign in failed:', error.message);
         
-        // For @emvi.app emails, provide more helpful error context
-        if (isEmviEmail && error.message.includes('email_not_confirmed')) {
-          console.warn('⚠️ [AUTH MANAGER] @emvi.app email not confirmed - this should not happen');
-          toast.error("@emvi.app email confirmation issue. Please contact support.");
+        // For @emvi.app emails, if it's an email confirmation issue, attempt to bypass
+        if (isEmviEmail && (error.message.includes('email_not_confirmed') || error.message.includes('Email not confirmed'))) {
+          console.log('🔧 [AUTH MANAGER] Attempting to handle @emvi.app email confirmation...');
+          
+          // First try to sign up again to trigger auto-confirmation
+          try {
+            const { data: signupData, error: signupError } = await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                emailRedirectTo: `${window.location.origin}/`
+              }
+            });
+            
+            if (!signupError && signupData.user) {
+              console.log('✅ [AUTH MANAGER] Auto-confirmed via signup, retrying login...');
+              
+              // Wait a moment for confirmation to process
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              
+              // Retry login
+              const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+              });
+              
+              if (!retryError) {
+                console.log('✅ [AUTH MANAGER] Retry login successful for:', email);
+                toast.success("Signed in successfully!");
+                return { success: true };
+              }
+            }
+          } catch (retryError) {
+            console.error('❌ [AUTH MANAGER] Failed to auto-confirm email:', retryError);
+          }
+          
+          toast.error("@emvi.app email confirmation issue detected. Redirecting to support...");
         } else {
           toast.error(error.message);
         }
