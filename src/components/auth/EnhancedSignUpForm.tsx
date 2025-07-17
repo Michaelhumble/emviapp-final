@@ -109,7 +109,7 @@ export const EnhancedSignUpForm = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700">
-                  Full Name
+                  Full Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="fullName"
@@ -124,7 +124,7 @@ export const EnhancedSignUpForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
-                  Email Address
+                  Email Address <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -140,7 +140,7 @@ export const EnhancedSignUpForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
-                  Password
+                  Password <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="password"
