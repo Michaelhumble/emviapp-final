@@ -1,24 +1,26 @@
 
 /**
- * 📱 MOBILE MENU - IMMEDIATE AUTH STATE SYNC
+ * 📱 MOBILE MENU - BULLETPROOF AUTH STATE SYNC
  * 
  * CRITICAL: Uses centralized auth context for real-time updates
  * NO local auth state - all state comes from AuthProvider
  * 
  * Features:
  * - Immediate menu updates when auth state changes
- * - Proper loading states during auth transitions
- * - Menu stays open until user manually closes it
+ * - Hydration-safe rendering
+ * - Shared auth logic with desktop components
+ * - Debug utilities for testing
  */
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Info, Phone } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
+import { getAuthUIState } from './navbar/AuthButtons';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -26,13 +28,25 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { user, signOut, userProfile, userRole, isSignedIn, loading } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
-
-
-  // DO NOT auto-close menu on auth state changes
-  // This was causing the menu to close every time auth context updates
-  // Menu should only close via user action (close button, navigation, backdrop click)
+  const authState = useAuth();
+  const { user, signOut, userProfile, userRole } = authState;
+  
+  const uiState = getAuthUIState(authState);
+  
+  // 🐛 DEBUG UTILITY: Expose mobile menu auth state for testing
+  if (typeof window !== 'undefined') {
+    (window as any).emviTestCheckMobileUI = () => ({
+      ...uiState.debugInfo,
+      menuType: 'mobile-menu',
+      isOpen,
+      userProfile: !!userProfile,
+      userRole,
+      currentPath: location.pathname,
+      timestamp: new Date().toISOString()
+    });
+  }
 
   const handleAuthAction = async (action: string) => {
     if (action === 'signOut') {
@@ -55,8 +69,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }
   };
 
-  // Define menu items based on user authentication (use isSignedIn for consistency)
-  const menuItems = isSignedIn ? [
+  // 🎯 CONSISTENT MENU LOGIC: Use shared auth state computation
+  const menuItems = uiState.isAuthenticated ? [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Jobs', href: '/jobs' },
     { icon: Building2, label: 'Salons', href: '/salons' },
@@ -107,7 +121,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center space-x-3 flex-1">
                 <Logo size="small" showText={true} />
-                {isSignedIn && userProfile && (
+                {uiState.isAuthenticated && userProfile && (
                   <div className="flex items-center space-x-2 ml-auto mr-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage 
@@ -162,13 +176,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
             {/* Authentication Section - Moved to top */}
             <div className="px-4 pb-4 flex-shrink-0">
-              {loading ? (
-                // 🚨 LOADING STATE: Show skeleton during auth transitions
+              {!uiState.showAuth ? (
+                // 🚨 HYDRATION GUARD: Show skeleton during initialization
                 <div className="space-y-2">
                   <div className="w-full h-8 bg-gray-200 animate-pulse rounded-md" />
                   <div className="w-full h-8 bg-gray-200 animate-pulse rounded-md" />
                 </div>
-              ) : isSignedIn ? (
+              ) : uiState.isAuthenticated ? (
                 // ✅ AUTHENTICATED STATE: Show dashboard link and sign out
                 <div className="space-y-2">
                   <Link 

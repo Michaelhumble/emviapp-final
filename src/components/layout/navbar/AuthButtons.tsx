@@ -1,27 +1,61 @@
 /**
- * 🔐 AUTH BUTTONS - IMMEDIATE STATE PROPAGATION
+ * 🔐 AUTH BUTTONS - BULLETPROOF STATE SYNC
  * 
  * CRITICAL: This component uses ONLY the centralized auth context
  * NO local state - all auth state comes from AuthProvider
  * 
  * Features:
  * - Immediate button updates when auth state changes
- * - Loading state prevents button flickering
+ * - Hydration-safe rendering
  * - Real-time sync with auth context
+ * - Debug utilities for testing
  */
 
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 
+/**
+ * 🎯 SHARED AUTH UI LOGIC
+ * DRY principle - identical logic for mobile and desktop
+ */
+const getAuthUIState = (authState: any) => {
+  const { isSignedIn, loading, isInitialized, user, session } = authState;
+  
+  return {
+    showAuth: isInitialized && !loading,
+    isAuthenticated: isSignedIn && !!user && !!session,
+    isLoading: loading || !isInitialized,
+    debugInfo: {
+      isSignedIn,
+      hasUser: !!user,
+      hasSession: !!session,
+      loading,
+      isInitialized
+    }
+  };
+};
+
 const AuthButtons = () => {
   const location = useLocation();
   const currentPath = encodeURIComponent(location.pathname + location.search);
-  const { isSignedIn, signOut, loading } = useAuth();
+  const authState = useAuth();
+  const { signOut } = authState;
   
-  // 🚨 CRITICAL: Show loading skeleton during auth transitions
-  // This prevents flickering between Sign In/Sign Out buttons
-  if (loading) {
+  const uiState = getAuthUIState(authState);
+  
+  // 🐛 DEBUG UTILITY: Expose auth UI state for testing
+  if (typeof window !== 'undefined') {
+    (window as any).emviTestCheckAuthUI = () => ({
+      ...uiState.debugInfo,
+      menuType: 'desktop-auth-buttons',
+      currentPath: location.pathname,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  // 🚨 HYDRATION GUARD: Prevent SSR/CSR mismatch
+  if (!uiState.showAuth) {
     return (
       <div className="flex items-center gap-2">
         <div className="w-16 h-9 bg-gray-200 animate-pulse rounded-md" />
@@ -30,11 +64,10 @@ const AuthButtons = () => {
     );
   }
 
-  // 🔐 SINGLE SOURCE OF TRUTH: Use ONLY centralized isSignedIn
-  // This ensures immediate button updates when auth state changes
+  // 🔐 BULLETPROOF AUTH UI: Use computed state for consistency
   return (
     <div className="flex items-center gap-2">
-      {isSignedIn ? (
+      {uiState.isAuthenticated ? (
         // ✅ AUTHENTICATED STATE: Show only Sign Out button
         <Button 
           onClick={signOut}
@@ -57,5 +90,8 @@ const AuthButtons = () => {
     </div>
   );
 };
+
+// Export the shared logic for use in other components
+export { getAuthUIState };
 
 export default AuthButtons;
