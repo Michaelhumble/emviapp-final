@@ -408,12 +408,16 @@ class AuthStateManager {
       
       cleanupAuthState();
       
+      const isEmviEmail = email.endsWith('@emvi.app');
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: userData,
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/`,
+          // Skip email confirmation for @emvi.app emails
+          ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
         }
       });
 
@@ -424,7 +428,13 @@ class AuthStateManager {
       }
 
       console.log('✅ [AUTH MANAGER] Sign up successful');
-      toast.success("Account created successfully!");
+      
+      if (isEmviEmail) {
+        toast.success("Your @emvi.app account is ready to use!");
+      } else {
+        toast.success("Account created successfully!");
+      }
+      
       return { success: true, userId: data.user?.id };
 
     } catch (error) {
