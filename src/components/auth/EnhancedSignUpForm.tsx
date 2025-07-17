@@ -41,9 +41,13 @@ export const EnhancedSignUpForm = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
+    console.log("🚀 [SIGN UP] Starting sign up process for:", data.email, "Role:", data.role);
     setIsLoading(true);
+    
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log("📧 [SIGN UP] Calling Supabase signUp...");
+      
+      const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -55,22 +59,59 @@ export const EnhancedSignUpForm = () => {
         },
       });
 
-      if (error) throw error;
+      console.log("✅ [SIGN UP] Supabase response:", { authData, error });
 
-      toast({
-        title: "Welcome to our beauty community!",
-        description: "Please check your email to verify your account and complete your journey.",
-      });
+      if (error) {
+        console.error("❌ [SIGN UP] Supabase error:", error);
+        throw error;
+      }
 
-      navigate("/dashboard");
+      if (authData?.user) {
+        console.log("🎉 [SIGN UP] User created successfully:", authData.user.id);
+        
+        // Show success message with EmviApp branding
+        toast({
+          title: "Chào mừng bạn đến với EmviApp! 🌸",
+          description: "Welcome to our beautiful community! Please check your email to verify your account and begin your journey.",
+        });
+
+        // Navigate to dashboard
+        console.log("🔄 [SIGN UP] Navigating to dashboard...");
+        navigate("/dashboard");
+      } else {
+        console.warn("⚠️ [SIGN UP] No user returned from Supabase");
+        throw new Error("Account creation didn't complete properly. Please try again.");
+      }
     } catch (error) {
+      console.error("💥 [SIGN UP] Full error details:", error);
+      
+      let errorMessage = "Something went wrong. Please try again or contact our support team.";
+      let errorTitle = "Không thể tạo tài khoản - Unable to Create Account";
+      
+      if (error instanceof Error) {
+        // Handle specific error cases with friendly EmviApp messaging
+        if (error.message.includes("Database error saving new user")) {
+          errorTitle = "Vấn đề hệ thống - System Issue";
+          errorMessage = "We're experiencing technical difficulties. Our team has been notified. Please try again in a few minutes. 💚";
+        } else if (error.message.includes("User already registered")) {
+          errorTitle = "Tài khoản đã tồn tại - Account Already Exists";
+          errorMessage = "This email is already part of our beauty community! Try signing in instead. 💅";
+        } else if (error.message.includes("Password")) {
+          errorTitle = "Mật khẩu không hợp lệ - Password Issue";
+          errorMessage = "Please make sure your password is at least 6 characters long. 🔐";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       toast({
-        title: "Unable to create account",
-        description: error instanceof Error ? error.message : "Please try again or contact support",
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+      console.log("🏁 [SIGN UP] Process completed");
     }
   };
 
