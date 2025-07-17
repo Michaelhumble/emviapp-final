@@ -35,7 +35,7 @@ export const SignUpForm = () => {
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
     try {
-      const userRole = "customer"; // Default role for basic signup
+      const userRole = "salon"; // Use "salon" role which maps to "owner" in the database
       
       const { error } = await supabase.auth.signUp({
         email: data.email,
