@@ -344,7 +344,12 @@ class AuthStateManager {
    */
   async signIn(email: string, password: string): Promise<{ success: boolean; error?: any }> {
     try {
-      console.log('🔐 [AUTH MANAGER] Starting sign in...');
+      console.log('🔐 [AUTH MANAGER] Starting sign in for:', email);
+      
+      const isEmviEmail = email.endsWith('@emvi.app');
+      if (isEmviEmail) {
+        console.log('🎯 [AUTH MANAGER] @emvi.app email detected - bypassing restrictions');
+      }
       
       // Pre-cleanup
       cleanupAuthState();
@@ -356,11 +361,18 @@ class AuthStateManager {
 
       if (error) {
         console.error('❌ [AUTH MANAGER] Sign in failed:', error.message);
-        toast.error(error.message);
+        
+        // For @emvi.app emails, provide more helpful error context
+        if (isEmviEmail && error.message.includes('email_not_confirmed')) {
+          console.warn('⚠️ [AUTH MANAGER] @emvi.app email not confirmed - this should not happen');
+          toast.error("@emvi.app email confirmation issue. Please contact support.");
+        } else {
+          toast.error(error.message);
+        }
         return { success: false, error };
       }
 
-      console.log('✅ [AUTH MANAGER] Sign in successful');
+      console.log('✅ [AUTH MANAGER] Sign in successful for:', email);
       toast.success("Signed in successfully!");
       return { success: true };
 
