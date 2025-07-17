@@ -71,7 +71,14 @@ export interface UserProfile {
   [key: string]: any;
 }
 
+/**
+ * 🎯 ENHANCED AUTH CONTEXT TYPE
+ * 
+ * This interface defines the complete auth context API.
+ * All components should use this through useAuth() hook.
+ */
 export interface AuthContextType {
+  // Core State
   user: SupabaseUser | null;
   session: Session | null;
   userProfile: UserProfile | null;
@@ -80,12 +87,23 @@ export interface AuthContextType {
   isSignedIn: boolean;
   isError: boolean;
   isNewUser: boolean;
-  clearIsNewUser: () => void;
-  setLoading: (loading: boolean) => void;
-  refreshUserProfile: () => Promise<boolean>;
+  
+  // Enhanced State
+  isInitialized: boolean;
+  lastValidation: number;
+  
+  // Core Actions
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
   signOut: () => Promise<void>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
   updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
   updateUserRole: (role: UserRole) => Promise<void>;
+  refreshUserProfile: () => Promise<boolean>;
+  
+  // Utility Actions
+  clearIsNewUser: () => void;
+  setLoading: (loading: boolean) => void;
+  
+  // Emergency Actions
+  emergencyReset: () => Promise<void>;
 }
