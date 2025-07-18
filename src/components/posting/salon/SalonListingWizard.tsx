@@ -15,7 +15,7 @@ import SalonPhotosStep from './steps/SalonPhotosStep';
 import SalonPreviewStep from './steps/SalonPreviewStep';
 import SalonPaymentStep from './steps/SalonPaymentStep';
 import PostWizardLayout from '../PostWizardLayout';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 const SalonListingWizard = () => {
@@ -83,7 +83,7 @@ const SalonListingWizard = () => {
       
       setLoading(true);
       try {
-        const { data: salon, error } = await supabase
+        const { data: salon, error } = await supabaseBypass
           .from('salon_sales')
           .select('*')
           .eq('id', editId)

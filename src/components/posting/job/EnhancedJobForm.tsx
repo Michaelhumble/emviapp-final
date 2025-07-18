@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -120,7 +120,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       }
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('jobs')
           .select('*')
           .eq('user_id', user.id)
@@ -198,7 +198,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     setIsSubmittingFreeJob(true);
 
     try {
-      const { data: updateData, error } = await supabase
+      const { data: updateData, error } = await supabaseBypass
         .from('jobs')
         .update(updatePayload)
         .eq('id', existingFreeJob.id)
@@ -365,7 +365,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       
       console.log('🚀 [SUPABASE-CALL] Calling supabase.from("jobs").insert()');
       
-      const { data: insertData, error } = await supabase
+      const { data: insertData, error } = await supabaseBypass
         .from('jobs')
         .insert([payloadWithPhotos])
         .select();
@@ -497,7 +497,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
         console.log('⚠️ [PAID-PHOTO-UPLOAD] No photos to upload - photoUploads.length is 0');
       }
       
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+      const { data: checkoutData, error: checkoutError } = await supabaseBypass.functions.invoke(
         'create-job-checkout',
         {
           body: {

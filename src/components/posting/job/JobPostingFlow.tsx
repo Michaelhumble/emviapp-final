@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -85,7 +85,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         console.log('🆓 [DEBUG] Free job - creating job directly and showing success');
         
         // Create free job posting
-        const { data: insertData, error } = await supabase
+        const { data: insertData, error } = await supabaseBypass
           .from('jobs')
           .insert([{
             ...jobFormData,
@@ -116,7 +116,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
 
       // Create Stripe checkout session for paid plans (ONLY when not simulating)
       console.log('💰 [DEBUG] Creating Stripe checkout session for paid plan');
-      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
+      const { data, error } = await supabaseBypass.functions.invoke('create-job-checkout', {
         body: {
           tier,
           finalPrice,
