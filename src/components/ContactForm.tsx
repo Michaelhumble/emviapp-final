@@ -286,7 +286,7 @@ const ContactForm = () => {
             </p>
             <div className="bg-white/50 rounded-lg p-4 mt-4">
               <p className="text-sm text-green-600 font-medium">
-                💌 Your message has been delivered to support@emvi.app
+                💌 Your message has been delivered to michaelemviapp@gmail.com
               </p>
             </div>
           </div>
