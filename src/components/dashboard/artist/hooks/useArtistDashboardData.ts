@@ -55,7 +55,7 @@ export const useArtistDashboardData = (activeTab: string) => {
       if (bookingError) throw bookingError;
       
       // Get completed bookings with earnings data
-      const { data: completedBookingsData, error: completedError } = await supabase
+      const { data: completedBookingsData, error: completedError } = await supabaseBypass
         .from('completed_bookings')
         .select('commission_earned')
         .eq('artist_id', user.id);
