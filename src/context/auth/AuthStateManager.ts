@@ -123,7 +123,9 @@ class AuthStateManager {
       const corruptionIssues = detectCorruptedTokens();
       if (corruptionIssues.length > 0) {
         console.warn('⚠️ [AUTH MANAGER] Detected corrupted tokens on startup:', corruptionIssues);
-        cleanupAuthState();
+        // Only clean corrupted tokens, not valid sessions
+        localStorage.removeItem('emviapp_new_user');
+        localStorage.removeItem('emviapp_user_role');
         toast.error("Authentication issue detected. Please sign in again.");
       }
 
@@ -301,7 +303,9 @@ class AuthStateManager {
       }
 
       if (event === 'SIGNED_OUT') {
-        cleanupAuthState();
+        // Only clean up app-specific keys, not Supabase session tokens
+        localStorage.removeItem('emviapp_new_user');
+        localStorage.removeItem('emviapp_user_role');
         this.setUnauthenticatedState();
       } else if (session && await this.validateSession(session)) {
         await this.setAuthenticatedState(session);
@@ -323,8 +327,9 @@ class AuthStateManager {
   private async handleSessionError(error: any) {
     console.error('🚨 [AUTH MANAGER] Session error:', error.message);
     
-    // Clean up corrupted state
-    cleanupAuthState();
+    // Clean up corrupted state (preserve valid Supabase tokens)
+    localStorage.removeItem('emviapp_new_user');
+    localStorage.removeItem('emviapp_user_role');
     this.setUnauthenticatedState();
     this.state.loading = false;
     this.state.isInitialized = true;
@@ -351,8 +356,8 @@ class AuthStateManager {
         console.log('🎯 [AUTH MANAGER] @emvi.app email detected - bypassing restrictions');
       }
       
-      // Pre-cleanup
-      cleanupAuthState();
+      // Removed aggressive cleanup that was destroying session persistence
+      // Only clean up on actual errors, not during normal sign-in
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -433,8 +438,9 @@ class AuthStateManager {
       this.setUnauthenticatedState();
       this.broadcast();
       
-      // Clean storage
-      cleanupAuthState();
+      // Clean only app-specific storage, preserve Supabase session for proper cleanup
+      localStorage.removeItem('emviapp_new_user');
+      localStorage.removeItem('emviapp_user_role');
       
       // Remote sign out
       await supabase.auth.signOut({ scope: 'global' });
@@ -456,7 +462,7 @@ class AuthStateManager {
     try {
       console.log('📝 [AUTH MANAGER] Starting sign up...');
       
-      cleanupAuthState();
+      // Removed aggressive cleanup that destroys session persistence
       
       const isEmviEmail = email.endsWith('@emvi.app');
       
