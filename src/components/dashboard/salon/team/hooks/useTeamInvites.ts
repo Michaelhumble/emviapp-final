@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { useSalon } from "@/context/salon";
 
@@ -38,7 +38,7 @@ export const useTeamInvites = () => {
       
       // Add comment to clarify that we're not using full_name in the RPC call yet
       // We'll need to update the Supabase function to accept this parameter
-      const { data: invite, error } = await supabase.rpc(
+      const { data: invite, error } = await supabaseBypass.rpc(
         'create_team_invite',
         params
       );

@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 export interface PromotionStats {
   totalBookings: number;
@@ -23,7 +23,7 @@ export const useArtistPromotions = (artistId: string | undefined) => {
     queryFn: async (): Promise<PromotionStats> => {
       if (!artistId) throw new Error('Artist ID is required');
 
-      const { data: bookings, error } = await supabase
+      const { data: bookings, error } = await supabaseBypass
         .from('bookings')
         .select('id')
         .eq('recipient_id', artistId)

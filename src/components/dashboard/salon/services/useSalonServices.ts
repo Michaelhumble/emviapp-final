@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { SalonService } from '../types';
 
@@ -22,7 +22,7 @@ export function useSalonServices() {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('services')
         .select('*')
         .eq('user_id', currentSalon?.id)
@@ -52,7 +52,7 @@ export function useSalonServices() {
         image_url: serviceData.image_url
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('services')
         .insert(newService)
         .select()
@@ -71,7 +71,7 @@ export function useSalonServices() {
 
   const updateService = async (id: string, serviceData: Partial<SalonService>) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('services')
         .update(serviceData)
         .eq('id', id)
@@ -94,7 +94,7 @@ export function useSalonServices() {
 
   const deleteService = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('services')
         .delete()
         .eq('id', id)
@@ -112,7 +112,7 @@ export function useSalonServices() {
 
   const toggleServiceVisibility = async (id: string, isVisible: boolean) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('services')
         .update({ is_visible: isVisible })
         .eq('id', id)

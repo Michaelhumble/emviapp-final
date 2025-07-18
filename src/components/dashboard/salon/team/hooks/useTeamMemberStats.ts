@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { startOfWeek, endOfWeek } from "date-fns";
 
 export interface TeamMemberStats {
@@ -18,7 +18,7 @@ export const useTeamMemberStats = (memberId: string | undefined) => {
     queryFn: async (): Promise<TeamMemberStats> => {
       if (!memberId) return { bookingsCount: 0, totalEarnings: 0 };
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .select(`
           id,

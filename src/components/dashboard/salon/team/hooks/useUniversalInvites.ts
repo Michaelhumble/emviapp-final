@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 import { toast } from "sonner";
 
@@ -39,7 +39,7 @@ export const useUniversalInvites = () => {
       setIsLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('universal_team_invites')
         .select('*')
         .eq('salon_id', currentSalon.id)
@@ -76,7 +76,7 @@ export const useUniversalInvites = () => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase.rpc(
+      const { data, error } = await supabaseBypass.rpc(
         'create_universal_team_invite',
         {
           p_salon_id: currentSalon.id,
@@ -118,7 +118,7 @@ export const useUniversalInvites = () => {
 
   const disableUniversalInvite = async (inviteId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('universal_team_invites')
         .update({ status: 'disabled' })
         .eq('id', inviteId);
@@ -142,7 +142,7 @@ export const useUniversalInvites = () => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase.rpc(
+      const { data, error } = await supabaseBypass.rpc(
         'accept_universal_invite',
         {
           p_invite_code: inviteCode,

@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 
 export interface TeamMemberBadge {
@@ -17,16 +17,16 @@ export const useTeamMemberBadges = (memberId: string | undefined) => {
 
       const [badgesPromise, performancePromise, feedbackPromise] = await Promise.all([
         // Get existing badges
-        supabase
+        supabaseBypass
           .from('team_member_badges')
           .select('*')
           .eq('member_id', memberId),
         
         // Check if top performer
-        supabase.rpc('is_top_performer', { p_artist_id: memberId }),
+        supabaseBypass.rpc('is_top_performer', { p_artist_id: memberId }),
         
         // Check if has great feedback
-        supabase.rpc('has_great_feedback', { p_artist_id: memberId })
+        supabaseBypass.rpc('has_great_feedback', { p_artist_id: memberId })
       ]);
 
       const [{ data: badges, error: badgesError }, 
@@ -39,14 +39,14 @@ export const useTeamMemberBadges = (memberId: string | undefined) => {
       
       // Add dynamic badges based on current status
       if (isTopPerformer) {
-        await supabase.rpc('award_team_badge', {
+        await supabaseBypass.rpc('award_team_badge', {
           p_member_id: memberId,
           p_badge_type: 'top_performer'
         });
       }
 
       if (hasGreatFeedback) {
-        await supabase.rpc('award_team_badge', {
+        await supabaseBypass.rpc('award_team_badge', {
           p_member_id: memberId,
           p_badge_type: 'great_feedback'
         });

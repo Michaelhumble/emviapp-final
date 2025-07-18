@@ -13,7 +13,7 @@ import {
   Award, TrendingUp, Calendar, DollarSign
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 interface TeamMember {
@@ -70,7 +70,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
     
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .select('*')
         .eq('salon_id', salonId);
@@ -82,7 +82,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
       for (const member of data || []) {
         let userDetails = null;
         if (member.user_id) {
-          const { data: profile } = await supabase
+          const { data: profile } = await supabaseBypass
             .from('profiles')
             .select('full_name, avatar_url, phone')
             .eq('id', member.user_id)
@@ -128,7 +128,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
     setInviting(true);
     try {
       // Step 1: Create salon staff record with pending status
-      const { data: staffData, error: staffError } = await supabase
+      const { data: staffData, error: staffError } = await supabaseBypass
         .from('salon_staff')
         .insert({
           salon_id: salonId,
@@ -145,7 +145,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
       if (staffError) throw staffError;
 
       // Step 2: Create team invite with magic link
-      const { data: inviteData, error: inviteError } = await supabase.rpc('create_team_invite', {
+      const { data: inviteData, error: inviteError } = await supabaseBypass.rpc('create_team_invite', {
         p_salon_id: salonId,
         p_phone_number: '', // We'll use email for now
         p_role: inviteForm.role
@@ -159,7 +159,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
 
       // Step 4: Send invitation email via edge function
       try {
-        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-team-invite', {
+        const { data: emailData, error: emailError } = await supabaseBypass.functions.invoke('send-team-invite', {
           body: {
             salon_id: salonId,
             email: inviteForm.email,
@@ -195,7 +195,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
 
   const updateMemberRole = async (memberId: string, newRole: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .update({ role: newRole })
         .eq('id', memberId);
@@ -214,7 +214,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
 
   const removeMember = async (memberId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .update({ status: 'inactive' })
         .eq('id', memberId);
@@ -234,7 +234,7 @@ const SalonTeamModal: React.FC<SalonTeamModalProps> = ({
     
     try {
       // Create a quick invite that can be shared
-      const { data: inviteData, error } = await supabase.rpc('create_team_invite', {
+      const { data: inviteData, error } = await supabaseBypass.rpc('create_team_invite', {
         p_salon_id: salonId,
         p_phone_number: 'quick-invite',
         p_role: 'artist'

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { useSalon } from "@/context/salon";
 import { useAuth } from "@/context/auth";
@@ -73,7 +73,7 @@ const SalonManagersSection = () => {
     setLoading(true);
     try {
       // Fetch users who are managers for this salon
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('profiles')
         .select('id, full_name, email, avatar_url, manager_for_salon_id')
         .eq('manager_for_salon_id', currentSalon.id);
@@ -104,7 +104,7 @@ const SalonManagersSection = () => {
     setInviteSending(true);
     try {
       // First check if user already exists
-      const { data: existingUser, error: userError } = await supabase
+      const { data: existingUser, error: userError } = await supabaseBypass
         .from('profiles')
         .select('id, email')
         .eq('email', inviteEmail.trim().toLowerCase())
@@ -114,7 +114,7 @@ const SalonManagersSection = () => {
       
       if (existingUser) {
         // User exists, update their manager_for_salon_id
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseBypass
           .from('profiles')
           .update({ manager_for_salon_id: currentSalon.id })
           .eq('id', existingUser.id);
@@ -166,7 +166,7 @@ const SalonManagersSection = () => {
     }
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({ manager_for_salon_id: null })
         .eq('id', managerId);

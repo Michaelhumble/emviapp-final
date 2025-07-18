@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 import { SalonTeamMember, SalonStaffRole, TeamMemberFormData } from "../types";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export const useTeamMembers = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .select('*')
         .eq('salon_id', currentSalon.id)
@@ -59,7 +59,7 @@ export const useTeamMembers = () => {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .insert({
           salon_id: currentSalon.id,
@@ -107,7 +107,7 @@ export const useTeamMembers = () => {
 
   const updateTeamMember = async (id: string, updates: Partial<SalonTeamMember>) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .update({
           full_name: updates.full_name,
@@ -137,7 +137,7 @@ export const useTeamMembers = () => {
 
   const removeTeamMember = async (id: string, name?: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .delete()
         .eq('id', id);
@@ -156,7 +156,7 @@ export const useTeamMembers = () => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .update({ status: newStatus })
         .eq('id', id);

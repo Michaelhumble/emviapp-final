@@ -47,7 +47,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 
 type StaffMember = {
@@ -90,7 +90,7 @@ const SalonTeamManager = () => {
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .select('*')
         .eq('salon_id', currentSalon.id);
@@ -133,7 +133,7 @@ const SalonTeamManager = () => {
     }
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .insert({
           salon_id: currentSalon.id,
@@ -178,7 +178,7 @@ const SalonTeamManager = () => {
     if (!editingMember || !currentSalon?.id) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .update({
           full_name: editingMember.full_name,
@@ -210,7 +210,7 @@ const SalonTeamManager = () => {
     try {
       const newStatus = member.status === 'active' ? 'inactive' : 'active';
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .update({ status: newStatus })
         .eq('id', member.id);
@@ -236,7 +236,7 @@ const SalonTeamManager = () => {
     }
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .delete()
         .eq('id', member.id);

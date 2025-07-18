@@ -13,7 +13,7 @@ import {
   X, Check, Star, Crown
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -84,13 +84,13 @@ const SalonProfileModal: React.FC<SalonProfileModalProps> = ({ isOpen, onClose }
       const fileName = `${userProfile.id}_${type}_${Date.now()}.${fileExt}`;
       const filePath = `salon-${type}s/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabaseBypass.storage
         .from('salon-photos')
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
+      const { data } = supabaseBypass.storage
         .from('salon-photos')
         .getPublicUrl(filePath);
 
@@ -111,7 +111,7 @@ const SalonProfileModal: React.FC<SalonProfileModalProps> = ({ isOpen, onClose }
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           salon_name: formData.salon_name,

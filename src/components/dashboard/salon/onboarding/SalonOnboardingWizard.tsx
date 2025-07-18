@@ -12,7 +12,7 @@ import {
   MapPin, Phone, Globe, Instagram, Star
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 interface OnboardingStep {
@@ -130,7 +130,7 @@ export const SalonOnboardingWizard: React.FC<SalonOnboardingWizardProps> = ({
   };
 
   const updateSalonProfile = async () => {
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from('profiles')
       .update({
         salon_name: salonData.salon_name,
@@ -155,7 +155,7 @@ export const SalonOnboardingWizard: React.FC<SalonOnboardingWizardProps> = ({
     }
 
     // Create salon staff entry
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from('salon_staff')
       .insert({
         salon_id: userProfile?.id,
@@ -176,7 +176,7 @@ export const SalonOnboardingWizard: React.FC<SalonOnboardingWizardProps> = ({
       return;
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from('salon_offers')
       .insert({
         salon_id: userProfile?.id,
@@ -194,7 +194,7 @@ export const SalonOnboardingWizard: React.FC<SalonOnboardingWizardProps> = ({
 
   const markOnboardingComplete = async () => {
     const completedTasks = ['profile_setup', 'team_invite', 'first_offer'];
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from('profiles')
       .update({
         completed_profile_tasks: completedTasks,
