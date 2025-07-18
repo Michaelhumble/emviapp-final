@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 interface EnhancedJobCardProps {
@@ -124,7 +124,7 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
     if (!confirm('Are you sure you want to delete this job posting?')) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('jobs')
         .delete()
         .eq('id', job.id);

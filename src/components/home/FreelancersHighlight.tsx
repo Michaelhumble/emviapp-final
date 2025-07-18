@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ArrowRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -16,7 +16,7 @@ const FreelancersHighlight = () => {
   useEffect(() => {
     const fetchFeaturedFreelancers = async () => {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from("profiles")
           .select("*")
           .eq("role", "freelancer")

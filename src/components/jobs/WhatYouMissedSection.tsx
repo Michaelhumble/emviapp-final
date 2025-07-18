@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, DollarSign, TrendingDown } from 'lucide-react';
@@ -25,7 +25,7 @@ const WhatYouMissedSection = ({
   const fetchExpiredJobs = async () => {
     setLoading(true);
     try {
-      const { data: jobsData, error } = await supabase
+      const { data: jobsData, error } = await supabaseBypass
         .from('jobs')
         .select('*')
         .eq('status', 'active')

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { normalizeRole } from '@/utils/roles';
@@ -32,7 +32,7 @@ const RoleDebugger = () => {
     // Fetch the role directly from the database if user exists
     if (user?.id) {
       const fetchDatabaseRole = async () => {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('profiles')
           .select('role')
           .eq('id', user.id)
@@ -55,7 +55,7 @@ const RoleDebugger = () => {
     
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({ role: newRole })
         .eq('id', user.id);

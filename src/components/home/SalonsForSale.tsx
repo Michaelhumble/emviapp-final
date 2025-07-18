@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { SalonSale } from '@/types/salonSale';
 import SalonSaleCard from '@/components/salons/SalonSaleCard';
 import { Link } from 'react-router-dom';
@@ -19,7 +19,7 @@ export default function SalonsForSale() {
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('salon_sales')
           .select(`
             *,

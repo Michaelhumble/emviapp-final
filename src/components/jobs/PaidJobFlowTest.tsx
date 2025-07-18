@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 
 const PaidJobFlowTest = () => {
@@ -46,7 +46,7 @@ const PaidJobFlowTest = () => {
         selectedDuration: 1
       };
 
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+      const { data: checkoutData, error: checkoutError } = await supabaseBypass.functions.invoke(
         'create-job-checkout',
         {
           body: { jobData: testJobData }
@@ -65,7 +65,7 @@ const PaidJobFlowTest = () => {
         // Test 2: Verify draft job was created
         log('📋 Step 2: Verifying draft job was created in database...');
         
-        const { data: draftJobs, error: draftError } = await supabase
+        const { data: draftJobs, error: draftError } = await supabaseBypass
           .from('jobs')
           .select('*')
           .eq('user_id', user.id)
@@ -91,7 +91,7 @@ const PaidJobFlowTest = () => {
           log('🎣 Step 3: Testing webhook job activation (simulated)...');
           
           // Create service client to simulate webhook behavior
-          const { data: activationResult, error: activationError } = await supabase
+          const { data: activationResult, error: activationError } = await supabaseBypass
             .from('jobs')
             .update({ 
               status: 'active',
@@ -113,7 +113,7 @@ const PaidJobFlowTest = () => {
             // Test 4: Verify job is now visible on jobs page
             log('👁️ Step 4: Verifying job is visible on jobs page...');
             
-            const { data: activeJobs, error: activeError } = await supabase
+            const { data: activeJobs, error: activeError } = await supabaseBypass
               .from('jobs')
               .select('*')
               .eq('status', 'active')
@@ -130,7 +130,7 @@ const PaidJobFlowTest = () => {
               
               // Clean up test job
               log('🧹 Cleaning up test job...');
-              await supabase.from('jobs').delete().eq('id', draftJob.id);
+              await supabaseBypass.from('jobs').delete().eq('id', draftJob.id);
               log('✅ Test job cleaned up');
             } else {
               log('❌ Step 4 FAILED: Job not visible on jobs page');

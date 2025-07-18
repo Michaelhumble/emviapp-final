@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +25,7 @@ const JobPostingDebugPanel = () => {
     try {
       // Test 1: Check if we can read from jobs table
       console.log('🔍 [DEBUG] Testing jobs table read access...');
-      const { data: readTest, error: readError } = await supabase
+      const { data: readTest, error: readError } = await supabaseBypass
         .from('jobs')
         .select('count(*)')
         .limit(1);
@@ -52,7 +52,7 @@ const JobPostingDebugPanel = () => {
           image_url: null // Include image_url field for consistency
         };
 
-        const { data: insertTest, error: insertError } = await supabase
+        const { data: insertTest, error: insertError } = await supabaseBypass
           .from('jobs')
           .insert([testJob])
           .select()
@@ -73,7 +73,7 @@ const JobPostingDebugPanel = () => {
         // If insert succeeded, clean up the test job
         if (insertTest && !insertError) {
           console.log('🧹 [DEBUG] Cleaning up test job...');
-          await supabase.from('jobs').delete().eq('id', insertTest.id);
+          await supabaseBypass.from('jobs').delete().eq('id', insertTest.id);
         }
       }
 

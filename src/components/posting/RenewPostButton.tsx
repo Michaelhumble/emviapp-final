@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { format, addDays } from "date-fns";
 
 interface RenewPostButtonProps {
@@ -23,7 +23,7 @@ const RenewPostButton = ({ postId, onRenew, isExpired = false }: RenewPostButton
       const newExpiresAt = addDays(new Date(), 30);
       
       // Update post expiration date
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('posts')
         .update({ 
           expires_at: newExpiresAt.toISOString(),

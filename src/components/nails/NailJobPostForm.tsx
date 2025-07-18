@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -198,7 +198,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       }
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('jobs')
           .select('*')
           .eq('user_id', user.id)
@@ -422,7 +422,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
             
             console.log('📸 [EDIT-JOB-PHOTO-UPLOAD] Uploading:', fileName);
             
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { data: uploadData, error: uploadError } = await supabaseBypass.storage
               .from('job-photos')
               .upload(fileName, file);
 
@@ -431,7 +431,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
               throw uploadError;
             }
 
-            const { data: { publicUrl } } = supabase.storage
+            const { data: { publicUrl } } = supabaseBypass.storage
               .from('job-photos')
               .getPublicUrl(fileName);
 
@@ -537,7 +537,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       if (editJobId) {
         console.log('🚨 [DEBUG-DB-WRITE] ===== UPDATING EXISTING JOB =====');
         // Update existing job
-        const { data: updateData, error } = await supabase
+        const { data: updateData, error } = await supabaseBypass
           .from('jobs')
           .update(payload)
           .eq('id', editJobId)
@@ -580,7 +580,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       } else {
         console.log('🚨 [DEBUG-DB-WRITE] ===== CREATING NEW JOB =====');
         // Create new job
-        const { data: insertData, error } = await supabase
+        const { data: insertData, error } = await supabaseBypass
           .from('jobs')
           .insert([payload])
           .select();
@@ -660,7 +660,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
 
             console.log(`📸 [PAID-JOB-PHOTO-UPLOAD] Uploading:`, fileName);
 
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { data: uploadData, error: uploadError } = await supabaseBypass.storage
               .from('job-photos')
               .upload(fileName, file);
 
@@ -669,7 +669,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
               throw uploadError;
             }
 
-            const { data: { publicUrl } } = supabase.storage
+            const { data: { publicUrl } } = supabaseBypass.storage
               .from('job-photos')
               .getPublicUrl(fileName);
 
@@ -739,7 +739,7 @@ const NailJobPostForm: React.FC<NailJobPostFormProps> = ({ onSubmit, editJobId, 
       });
 
       // Create Stripe checkout session
-      const { data, error } = await supabase.functions.invoke('create-job-checkout', {
+      const { data, error } = await supabaseBypass.functions.invoke('create-job-checkout', {
         body: {
           tier,
           finalPrice,

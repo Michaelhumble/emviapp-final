@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -152,7 +152,7 @@ const PaidJobTestForm: React.FC<PaidJobTestFormProps> = ({
 
       console.log('🚀 [PAID-TEST-SUPABASE-CALL] Calling supabase.from(\"jobs\").insert()');
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('jobs')
         .insert([payload])
         .select();
