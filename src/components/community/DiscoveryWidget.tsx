@@ -12,6 +12,7 @@ import {
   X
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -52,7 +53,7 @@ const DiscoveryWidget = ({ userQuestion, onClose, className }: DiscoveryWidgetPr
       const keywords = extractKeywords(userQuestion);
       
       // Find users who asked similar questions (containing AI tag and similar keywords)
-      const { data: similarPosts } = await supabase
+      const { data: similarPosts } = await supabaseBypass
         .from('community_posts')
         .select(`
           user_id,
@@ -93,7 +94,7 @@ const DiscoveryWidget = ({ userQuestion, onClose, className }: DiscoveryWidgetPr
       if (topUserIds.length === 0) return;
 
       // Fetch user profiles
-      const { data: profiles } = await supabase
+      const { data: profiles } = await supabaseBypass
         .from('profiles')
         .select('id, full_name, avatar_url')
         .in('id', topUserIds);
@@ -124,7 +125,7 @@ const DiscoveryWidget = ({ userQuestion, onClose, className }: DiscoveryWidgetPr
     if (!user || similarUsers.length === 0) return;
 
     try {
-      const { data: following } = await supabase
+      const { data: following } = await supabaseBypass
         .from('followers')
         .select('artist_id')
         .eq('viewer_id', user.id)
@@ -149,7 +150,7 @@ const DiscoveryWidget = ({ userQuestion, onClose, className }: DiscoveryWidgetPr
       
       if (isFollowing) {
         // Unfollow
-        await supabase
+        await supabaseBypass
           .from('followers')
           .delete()
           .eq('viewer_id', user.id)
@@ -164,12 +165,12 @@ const DiscoveryWidget = ({ userQuestion, onClose, className }: DiscoveryWidgetPr
         toast.success('Unfollowed successfully');
       } else {
         // Follow
-        await supabase
+        await supabaseBypass
           .from('followers')
           .insert({
             viewer_id: user.id,
             artist_id: userId
-          });
+          } as any);
         
         setFollowingIds(prev => new Set([...prev, userId]));
         toast.success('Following successfully!');

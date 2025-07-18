@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Shield, Flag, Eye, Ban, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from 'sonner';
 
 interface FlaggedContent {
@@ -104,22 +105,22 @@ const ContentModerationPanel: React.FC = () => {
     try {
       if (action === 'remove') {
         // Remove flagged tag and update content
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('community_posts')
           .update({ 
             tags: [] // Remove all tags to remove flagged status
-          })
+          } as any)
           .eq('id', contentId);
         
         if (error) throw error;
         toast.success('Content removed successfully');
       } else {
         // Approve content - remove flagged tag
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('community_posts')
           .update({ 
             tags: [] // Remove flagged tag
-          })
+          } as any)
           .eq('id', contentId);
         
         if (error) throw error;

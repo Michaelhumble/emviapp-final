@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Image, Video, Smile, MapPin, AtSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -46,14 +47,14 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
       }
 
       // Create post
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('community_posts')
         .insert({
           content: content.trim(),
           user_id: user.id,
           image_urls: imageUrls,
           post_type: 'story'
-        });
+        } as any);
 
       if (error) throw error;
 

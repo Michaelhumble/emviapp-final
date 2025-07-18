@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -102,9 +103,9 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ onCreatePost }) => {
     } else {
       setLikedPosts(prev => new Set([...prev, postId]));
       
-      await supabase
+      await supabaseBypass
         .from('community_post_likes')
-        .insert({ post_id: postId, user_id: user.id });
+        .insert({ post_id: postId, user_id: user.id } as any);
         
       await supabase.rpc('increment_post_likes', { post_id: postId });
     }

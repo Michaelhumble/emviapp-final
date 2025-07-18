@@ -18,6 +18,7 @@ import {
   Zap
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 
 interface LeaderboardUser {
@@ -87,15 +88,15 @@ const LeaderboardWidget = () => {
       // Get profiles for the posts
       let aiAnswersWithProfiles: AIAnswer[] = [];
       if (postsData) {
-        const userIds = postsData.map(post => post.user_id);
-        const { data: profiles } = await supabase
+        const userIds = (postsData as any[]).map((post: any) => post.user_id);
+        const { data: profiles } = await supabaseBypass
           .from('profiles')
           .select('id, full_name, avatar_url')
           .in('id', userIds);
 
-        aiAnswersWithProfiles = postsData.map(post => ({
+        aiAnswersWithProfiles = (postsData as any[]).map((post: any) => ({
           ...post,
-          profiles: profiles?.find(p => p.id === post.user_id) || { full_name: 'Anonymous' }
+          profiles: (profiles as any[])?.find((p: any) => p.id === post.user_id) || { full_name: 'Anonymous' }
         }));
       }
 

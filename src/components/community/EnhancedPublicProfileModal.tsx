@@ -7,6 +7,7 @@ import {
   Camera, Video, ExternalLink, Copy, Check, Zap
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -100,7 +101,7 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
       setLoading(true);
       try {
         // Fetch user profile
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await supabaseBypass
           .from('profiles')
           .select('*')
           .eq('id', profileId)
@@ -109,28 +110,28 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
         if (userError) throw userError;
 
         // Fetch portfolio images
-        const { data: portfolioData } = await supabase
+        const { data: portfolioData } = await supabaseBypass
           .from('portfolio_items')
           .select('*')
           .eq('user_id', profileId)
           .order('order');
 
         // Fetch services for artists/salons
-        const { data: servicesData } = await supabase
+        const { data: servicesData } = await supabaseBypass
           .from('artist_services')
           .select('*')
           .eq('user_id', profileId);
 
         // Mock additional data (in real app, this would come from various tables)
         const mockProfile: ProfileData = {
-          id: userData.id,
-          type: userData.role as any,
-          name: userData.full_name || 'Unknown User',
-          avatar: userData.avatar_url,
-          banner: userData.avatar_url, // Using avatar as banner fallback
-          role: userData.role,
-          location: userData.location,
-          bio: userData.bio,
+          id: (userData as any).id,
+          type: (userData as any).role as any,
+          name: (userData as any).full_name || 'Unknown User',
+          avatar: (userData as any).avatar_url,
+          banner: (userData as any).avatar_url, // Using avatar as banner fallback
+          role: (userData as any).role,
+          location: (userData as any).location,
+          bio: (userData as any).bio,
           rating: 4.8,
           reviewCount: 156,
           followers: 2340,
@@ -138,24 +139,24 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
           posts: 234,
           status: Math.random() > 0.5 ? 'online' : 'offline',
           verified: Math.random() > 0.6,
-          specialties: userData.specialty ? [userData.specialty] : ['Nails', 'Gel Polish', 'Nail Art'],
+          specialties: (userData as any).specialty ? [(userData as any).specialty] : ['Nails', 'Gel Polish', 'Nail Art'],
           achievements: ['Top Artist 2024', '1000+ Happy Clients', 'Master Certificated'],
-          portfolio: portfolioData?.map(item => ({
+          portfolio: (portfolioData as any[])?.map((item: any) => ({
             id: item.id,
             url: item.image_url,
             type: 'image' as const,
             title: item.title,
             likes: Math.floor(Math.random() * 100) + 10
           })) || [],
-          services: servicesData?.map(service => ({
+          services: (servicesData as any[])?.map((service: any) => ({
             id: service.id,
             name: service.name,
             price: service.price,
             duration: service.duration || 60
           })) || [],
           socialLinks: {
-            instagram: userData.instagram,
-            website: userData.website
+            instagram: (userData as any).instagram,
+            website: (userData as any).website
           },
           reviews: [
             {
@@ -179,7 +180,7 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
 
         // Check if user is following this profile
         if (user) {
-          const { data: followData } = await supabase
+          const { data: followData } = await supabaseBypass
             .from("followers")
             .select("*")
             .eq("viewer_id", user.id)
@@ -209,7 +210,7 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
     try {
       if (isFollowing) {
         // Unfollow artist
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("followers")
           .delete()
           .eq("viewer_id", user.id)
@@ -221,12 +222,12 @@ const EnhancedPublicProfileModal: React.FC<Props> = ({
         toast.success("Unfollowed successfully");
       } else {
         // Follow artist
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("followers")
           .insert({
             viewer_id: user.id,
             artist_id: profileId
-          });
+          } as any);
           
         if (error) throw error;
         

@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { useImageUpload } from '@/hooks/useImageUpload';
@@ -93,14 +94,14 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
       const postsWithEngagement = await Promise.all(
         (data || []).map(async (post) => {
           const [likesRes, commentsRes] = await Promise.all([
-            supabaseBypass.from('community_post_likes').select('id').eq('post_id', post.id),
-            supabaseBypass.from('community_post_comments').select('id').eq('post_id', post.id)
+            supabaseBypass.from('community_post_likes').select('id').eq('post_id', (post as any).id),
+            supabaseBypass.from('community_post_comments').select('id').eq('post_id', (post as any).id)
           ]);
 
           return {
-            ...post,
-            likes_count: likesRes.data?.length || 0,
-            comments_count: commentsRes.data?.length || 0,
+            ...(post as any),
+            likes_count: (likesRes.data as any[])?.length || 0,
+            comments_count: (commentsRes.data as any[])?.length || 0,
             is_liked: false, // Simplified for now
             is_bookmarked: false // Simplified for now
           };
@@ -147,7 +148,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
 
       const tags = newPost.tags.split(',').map(tag => tag.trim()).filter(Boolean);
 
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('community_stories')
         .insert({
           user_id: user.id,
@@ -155,7 +156,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
           image_url: imageUrl,
           tags,
           category: newPost.category
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -186,15 +187,15 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
       if (!post) return;
 
       if (post.is_liked) {
-        await supabase
+        await supabaseBypass
           .from('community_post_likes')
           .delete()
           .eq('post_id', postId)
           .eq('user_id', user.id);
       } else {
-        await supabase
+        await supabaseBypass
           .from('community_post_likes')
-          .insert({ post_id: postId, user_id: user.id });
+          .insert({ post_id: postId, user_id: user.id } as any);
       }
 
       // Update local state
@@ -241,13 +242,13 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
     if (!content) return;
 
     try {
-      await supabase
+      await supabaseBypass
         .from('community_post_comments')
         .insert({
           post_id: postId,
           user_id: user.id,
           content
-        });
+        } as any);
 
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       toast.success('Comment added! 💬');
@@ -270,7 +271,7 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
       
       if (isCurrentlyFollowing) {
         // Unfollow user
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("followers")
           .delete()
           .eq("viewer_id", user.id)
@@ -282,12 +283,12 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
         toast.success("Unfollowed successfully");
       } else {
         // Follow user
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("followers")
           .insert({
             viewer_id: user.id,
             artist_id: userId
-          });
+          } as any);
           
         if (error) throw error;
         
@@ -330,14 +331,14 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
 
     try {
       const userIds = posts.map(post => post.user_id);
-      const { data: followData } = await supabase
+      const { data: followData } = await supabaseBypass
         .from("followers")
         .select("artist_id")
         .eq("viewer_id", user.id)
         .in("artist_id", userIds);
 
       const followStates: {[key: string]: boolean} = {};
-      followData?.forEach(follow => {
+      (followData as any[])?.forEach((follow: any) => {
         followStates[follow.artist_id] = true;
       });
 

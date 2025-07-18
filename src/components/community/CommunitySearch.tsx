@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Search, X, User, MessageSquare, Hash } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useDebounce } from '@/hooks/useDebounce';
 
 interface SearchResult {
@@ -69,7 +70,7 @@ const CommunitySearch: React.FC<CommunitySearchProps> = ({
       const searchResults: SearchResult[] = [];
 
       // Search posts - simplified approach
-      const { data: posts } = await supabase
+      const { data: posts } = await supabaseBypass
         .from('community_posts')
         .select('id, content, created_at, user_id')
         .ilike('content', `%${searchQuery}%`)
@@ -77,15 +78,15 @@ const CommunitySearch: React.FC<CommunitySearchProps> = ({
 
       if (posts && posts.length > 0) {
         // Get user profiles separately
-        const userIds = [...new Set(posts.map(post => post.user_id))];
-        const { data: profiles } = await supabase
+        const userIds = [...new Set((posts as any[]).map((post: any) => post.user_id))];
+        const { data: profiles } = await supabaseBypass
           .from('profiles')
           .select('id, full_name, avatar_url')
           .in('id', userIds);
 
-        const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+        const profileMap = new Map((profiles as any[])?.map((p: any) => [p.id, p]) || []);
 
-        searchResults.push(...posts.map(post => {
+        searchResults.push(...(posts as any[]).map((post: any) => {
           const profile = profileMap.get(post.user_id);
           return {
             id: post.id,
@@ -100,14 +101,14 @@ const CommunitySearch: React.FC<CommunitySearchProps> = ({
       }
 
       // Search users (profiles)
-      const { data: profiles } = await supabase
+      const { data: profiles } = await supabaseBypass
         .from('profiles')
         .select('id, full_name, avatar_url')
         .ilike('full_name', `%${searchQuery}%`)
         .limit(5);
 
       if (profiles) {
-        searchResults.push(...profiles.map(profile => ({
+        searchResults.push(...(profiles as any[]).map((profile: any) => ({
           id: profile.id,
           type: 'user' as const,
           title: profile.full_name || 'Unnamed User',

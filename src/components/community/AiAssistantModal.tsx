@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, ThumbsUp, ThumbsDown, Flag, Copy, Share, Save, Zap, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import DiscoveryWidget from './DiscoveryWidget';
 
@@ -134,7 +135,7 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
   const submitSharedPost = async () => {
     try {
       // Create community post
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('community_posts')
         .insert({
           content: shareContent,
@@ -143,7 +144,7 @@ const AiAssistantModal = ({ open, onOpenChange, context, onUseAnswer }: AiAssist
           category: 'general',
           tags: ['AI', 'EmviApp'],
           is_featured: false
-        });
+        } as any);
 
       if (error) throw error;
 
