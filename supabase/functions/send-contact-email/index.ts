@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email to michaelemviapp@gmail.com
     const emailResponse = await resend.emails.send({
-      from: "EmviApp Contact Form <noreply@emvi.app>",
+      from: "EmviApp Contact Form <onboarding@resend.dev>",
       to: ["michaelemviapp@gmail.com"],
       subject: `New Contact Form Message from ${name}`,
       html: `
