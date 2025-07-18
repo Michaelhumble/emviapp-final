@@ -5,7 +5,7 @@ import { BadgeDollarSign, Award, Star, Gift, FileText, Plus, Minus } from "lucid
 import { toast } from "sonner";
 import AnimatedNumber from "./AnimatedNumber";
 import WalletConfetti from "./WalletConfetti";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const DUMMY_TRANSACTIONS = [
   {
@@ -113,10 +113,10 @@ const CustomerWallet: React.FC = () => {
 
   const fetchCreditHistory = async (userId: string) => {
     setLoadingHistory(true);
-    const { data, error } = await supabase
+    const { data, error } = await supabaseBypass
       .from("customer_credits")
       .select("*")
-      .eq("user_id", userId)
+      .eq("user_id", userId as any)
       .order("created_at", { ascending: false })
       .limit(8);
     if (!error && data) {

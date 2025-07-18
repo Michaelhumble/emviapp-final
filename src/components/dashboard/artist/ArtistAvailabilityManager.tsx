@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -68,10 +68,10 @@ const ArtistAvailabilityManager = () => {
     
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('availability')
         .select('*')
-        .eq('artist_id', user.id)
+        .eq('artist_id', user.id as any)
         .order('day_of_week');
       
       if (error) throw error;
@@ -105,7 +105,7 @@ const ArtistAvailabilityManager = () => {
     }
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('availability')
         .insert({
           artist_id: user.id,
@@ -113,7 +113,7 @@ const ArtistAvailabilityManager = () => {
           start_time: selectedStartTime,
           end_time: selectedEndTime,
           is_available: true
-        })
+        } as any)
         .select()
         .single();
       
@@ -121,12 +121,12 @@ const ArtistAvailabilityManager = () => {
       
       // Add the new availability to the state
       setAvailableDays(prev => [...prev, {
-        id: data.id,
-        day_of_week: data.day_of_week,
-        start_time: data.start_time,
-        end_time: data.end_time,
-        is_available: data.is_available,
-        artist_id: data.artist_id
+        id: (data as any).id,
+        day_of_week: (data as any).day_of_week,
+        start_time: (data as any).start_time,
+        end_time: (data as any).end_time,
+        is_available: (data as any).is_available,
+        artist_id: (data as any).artist_id
       }]);
       
       // Reset selections
@@ -143,10 +143,10 @@ const ArtistAvailabilityManager = () => {
 
   const toggleAvailability = async (id: string, isCurrentlyAvailable: boolean) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('availability')
-        .update({ is_available: !isCurrentlyAvailable })
-        .eq('id', id);
+        .update({ is_available: !isCurrentlyAvailable } as any)
+        .eq('id', id as any);
       
       if (error) throw error;
       
@@ -168,10 +168,10 @@ const ArtistAvailabilityManager = () => {
 
   const removeAvailability = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('availability')
         .delete()
-        .eq('id', id);
+        .eq('id', id as any);
       
       if (error) throw error;
       

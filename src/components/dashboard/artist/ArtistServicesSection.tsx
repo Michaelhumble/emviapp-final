@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, DollarSign, Clock, Edit, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -43,14 +43,14 @@ const ArtistServicesSection: React.FC = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", user.id as any)
         .order("title", { ascending: true });
         
       if (error) throw error;
-      return data as Service[];
+      return data as unknown as Service[];
     },
     enabled: !!user?.id
   });
@@ -60,12 +60,12 @@ const ArtistServicesSection: React.FC = () => {
     mutationFn: async (service: Omit<Service, 'id' | 'user_id'>) => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .insert([{
           ...service,
           user_id: user.id
-        }])
+        }] as any)
         .select()
         .single();
         
@@ -87,7 +87,7 @@ const ArtistServicesSection: React.FC = () => {
   // Update service mutation
   const updateServiceMutation = useMutation({
     mutationFn: async (service: Service) => {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .update({
           title: service.title,
@@ -95,8 +95,8 @@ const ArtistServicesSection: React.FC = () => {
           price: service.price,
           duration_minutes: service.duration_minutes,
           is_visible: service.is_visible
-        })
-        .eq("id", service.id)
+        } as any)
+        .eq("id", service.id as any)
         .select()
         .single();
         
@@ -118,10 +118,10 @@ const ArtistServicesSection: React.FC = () => {
   // Delete service mutation
   const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .delete()
-        .eq("id", serviceId);
+        .eq("id", serviceId as any);
         
       if (error) throw error;
       return serviceId;

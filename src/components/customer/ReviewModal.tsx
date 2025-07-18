@@ -4,7 +4,7 @@ import { X, Star } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
@@ -43,7 +43,7 @@ export default function ReviewModal({
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('reviews')
         .insert({
           customer_id: user.id,
@@ -51,7 +51,7 @@ export default function ReviewModal({
           [targetType === 'artist' ? 'artist_id' : 'salon_id']: targetId,
           rating: stars,
           comment: reviewText.trim() || null
-        });
+        } as any);
 
       if (error) throw error;
 

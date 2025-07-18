@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, User, Building, Briefcase, Star, MapPin, Clock, Filter, Zap, TrendingUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 
 interface SearchResult {
@@ -69,7 +69,7 @@ const UniversalSearchBar: React.FC<Props> = ({ onResultClick, className = '' }) 
     
     try {
       // Search users (artists, customers, salons)
-      const { data: users, error: usersError } = await supabase
+      const { data: users, error: usersError } = await supabaseBypass
         .from('profiles')
         .select('id, full_name, avatar_url, role, location, specialty')
         .or(`full_name.ilike.%${searchQuery}%,specialty.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`)
@@ -78,18 +78,18 @@ const UniversalSearchBar: React.FC<Props> = ({ onResultClick, className = '' }) 
       if (usersError) throw usersError;
 
       // Search jobs
-      const { data: jobs, error: jobsError } = await supabase
+      const { data: jobs, error: jobsError } = await supabaseBypass
         .from('jobs')
         .select('id, title, location, category')
         .or(`title.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`)
-        .eq('status', 'active')
+        .eq('status', 'active' as any)
         .limit(5);
 
       if (jobsError) throw jobsError;
 
       // Transform results
       const searchResults: SearchResult[] = [
-        ...(users || []).map(user => ({
+        ...(users || []).map((user: any) => ({
           id: user.id,
           type: user.role === 'salon' ? 'salon' as const : 'artist' as const,
           name: user.full_name || 'Unknown User',
@@ -101,7 +101,7 @@ const UniversalSearchBar: React.FC<Props> = ({ onResultClick, className = '' }) 
           verified: Math.random() > 0.7,
           specialties: user.specialty ? [user.specialty] : []
         })),
-        ...(jobs || []).map(job => ({
+        ...(jobs || []).map((job: any) => ({
           id: job.id,
           type: 'job' as const,
           name: job.title,

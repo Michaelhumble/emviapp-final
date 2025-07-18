@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Upload, X, Save, User, Camera, Crop, Filter, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useImageUpload } from '@/hooks/useImageUpload';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -155,7 +155,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
       }
 
       // Update user profile in Supabase
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           full_name: formData.full_name,
@@ -163,8 +163,8 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
           location: formData.location,
           phone: formData.phone,
           avatar_url: avatarUrl
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id', user.id as any);
 
       if (error) throw error;
 

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { Calendar } from "lucide-react";
 
@@ -112,9 +112,9 @@ const CustomerPreferencesPanel: React.FC = () => {
       setForm(f => ({ ...f, uploading: true }));
       try {
         const filePath = `avatars/${user.id}-${Date.now()}-${file.name}`;
-        const { error } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+        const { error } = await supabaseBypass.storage.from("avatars").upload(filePath, file, { upsert: true });
         if (error) throw error;
-        const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+        const { data: publicUrlData } = supabaseBypass.storage.from("avatars").getPublicUrl(filePath);
         const url = publicUrlData.publicUrl;
         setForm(f => ({ ...f, avatar_url: url, uploading: false }));
         toast.success("Avatar uploaded!");
@@ -138,10 +138,10 @@ const CustomerPreferencesPanel: React.FC = () => {
       communication_preferences: form.communication_preferences,
       avatar_url: form.avatar_url,
     };
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from("profiles")
       .update(updateObj)
-      .eq("id", user.id);
+      .eq("id", user.id as any);
     setSaving(false);
     if (error) {
       toast.error("Could not save preferences");

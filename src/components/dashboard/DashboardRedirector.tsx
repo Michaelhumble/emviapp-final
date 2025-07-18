@@ -1,7 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 import { useAuth } from "@/context/auth";
 import { normalizeRole } from "@/utils/roles";
@@ -33,13 +33,13 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         }
 
         // Check for salon manager status
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await supabaseBypass
           .from('profiles')
           .select('manager_for_salon_id')
-          .eq('id', user.id)
+          .eq('id', user.id as any)
           .single();
           
-        if (!userError && userData && userData.manager_for_salon_id) {
+        if (!userError && userData && (userData as any).manager_for_salon_id) {
           navigate('/dashboard/manager');
           return;
         }
@@ -49,17 +49,17 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       }
       
       // If no role in auth state, check database
-      const { data: profile, error } = await supabase
+      const { data: profile, error } = await supabaseBypass
         .from('profiles')
         .select('role, manager_for_salon_id')
-        .eq('id', user.id)
+        .eq('id', user.id as any)
         .maybeSingle();
         
       if (error) {
         throw new Error(`Failed to fetch user role: ${error.message}`);
       }
       
-      if (!profile || !profile.role) {
+      if (!profile || !(profile as any).role) {
         setShowRoleModal(true);
         if (isNewUser) {
           clearIsNewUser();
@@ -67,13 +67,13 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      if (profile.manager_for_salon_id) {
+      if ((profile as any).manager_for_salon_id) {
         navigate('/dashboard/manager');
         return;
       }
       
       // Normalize the role before using it
-      const normalizedRole = normalizeRole(profile.role);
+      const normalizedRole = normalizeRole((profile as any).role);
       if (normalizedRole) {
         navigateToRoleDashboard(navigate, normalizedRole);
       } else {

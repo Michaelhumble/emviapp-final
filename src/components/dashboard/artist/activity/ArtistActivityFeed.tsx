@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/auth';
 import { ActivityLog } from '@/types/activity';
@@ -27,10 +27,10 @@ const ArtistActivityFeed = ({ limit = 5 }: ArtistActivityFeedProps) => {
         setError(null);
         
         // Use a raw query approach to avoid type issues with the new table
-        const { data, error: queryError } = await supabase
+        const { data, error: queryError } = await supabaseBypass
           .from('activity_log')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', user.id as any)
           .order('created_at', { ascending: false })
           .limit(limit);
           

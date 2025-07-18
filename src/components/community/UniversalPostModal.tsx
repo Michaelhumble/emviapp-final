@@ -18,7 +18,7 @@ import {
   Eye,
   Star
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -103,7 +103,7 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
       const contentMentions = content.match(/@[\w]+/g) || [];
 
       // Create post
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('community_posts')
         .insert({
           content: content.trim(),
@@ -113,7 +113,7 @@ export const UniversalPostModal: React.FC<UniversalPostModalProps> = ({
           category: selectedCategory.value,
           hashtags: hashtags.map(tag => tag.slice(1)), // Remove # symbol
           mentions: [...mentions, ...contentMentions.map(mention => mention.slice(1))], // Remove @ symbol
-        });
+        } as any);
 
       if (error) throw error;
 

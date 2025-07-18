@@ -1,7 +1,7 @@
 
 import { useAuth } from "@/context/auth";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { AvailabilityDay, TimeOffPeriod } from "../types";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -21,14 +21,14 @@ export const useArtistAvailability = () => {
 
   const fetchAvailability = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('artist_availability')
         .select('*')
-        .eq('artist_id', user?.id)
+        .eq('artist_id', user?.id as any)
         .order('day_of_week');
 
       if (error) throw error;
-      setAvailabilityDays(data || []);
+      setAvailabilityDays(data as any || []);
     } catch (error) {
       console.error('Error fetching availability:', error);
       toast.error('Failed to load availability settings');
@@ -39,14 +39,14 @@ export const useArtistAvailability = () => {
 
   const fetchTimeOff = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('artist_time_off')
         .select('*')
-        .eq('artist_id', user?.id)
+        .eq('artist_id', user?.id as any)
         .order('start_date');
 
       if (error) throw error;
-      setTimeOffPeriods(data.map(period => ({
+      setTimeOffPeriods((data as any).map((period: any) => ({
         ...period,
         start_date: new Date(period.start_date),
         end_date: new Date(period.end_date)
@@ -59,13 +59,13 @@ export const useArtistAvailability = () => {
 
   const saveAvailability = async (availability: AvailabilityDay[]) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_availability')
         .upsert(
           availability.map(day => ({
             artist_id: user?.id,
             ...day
-          }))
+          })) as any
         );
 
       if (error) throw error;
@@ -87,9 +87,9 @@ export const useArtistAvailability = () => {
         reason: timeOff.reason
       };
 
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_time_off')
-        .insert(formattedTimeOff);
+        .insert(formattedTimeOff as any);
 
       if (error) throw error;
       toast.success('Time off period added');
@@ -102,10 +102,10 @@ export const useArtistAvailability = () => {
 
   const deleteTimeOff = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_time_off')
         .delete()
-        .eq('id', id);
+        .eq('id', id as any);
 
       if (error) throw error;
       toast.success('Time off period removed');

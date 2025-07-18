@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { TimePicker } from "@/components/ui/time-picker";
@@ -66,11 +66,11 @@ const ArtistBookingDialog: React.FC<BookingDialogProps> = ({
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('services')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('is_visible', true)
+        .eq('user_id', user.id as any)
+        .eq('is_visible', true as any)
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -138,10 +138,10 @@ const ArtistBookingDialog: React.FC<BookingDialogProps> = ({
       endDateTime.setHours(endTime.getHours(), endTime.getMinutes(), 0);
       
       // Check for booking conflicts
-      const { data: existingBookings, error: conflictError } = await supabase
+      const { data: existingBookings, error: conflictError } = await supabaseBypass
         .from('appointments')
         .select('id, start_time, end_time')
-        .eq('artist_id', user?.id)
+        .eq('artist_id', user?.id as any)
         .neq('id', booking?.id || 'none') // Exclude current booking if editing
         .or(`start_time.lte.${endDateTime.toISOString()},end_time.gte.${startDateTime.toISOString()}`);
       

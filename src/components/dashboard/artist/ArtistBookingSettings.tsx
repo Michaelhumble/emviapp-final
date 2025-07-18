@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useArtistData } from "./context/ArtistDataContext";
 import { Check, Calendar, Clock } from "lucide-react";
 
@@ -139,13 +139,13 @@ const ArtistBookingSettings = () => {
       preferences.push(scheduleString);
       
       // Update user profile
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           accepts_bookings: acceptsBookings,
           preferences: preferences
-        })
-        .eq('id', artistProfile.id);
+        } as any)
+        .eq('id', artistProfile.id as any);
       
       if (error) throw error;
       

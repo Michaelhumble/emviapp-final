@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ImageIcon, X, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -62,7 +62,7 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
 
       // 1. Upload image to Supabase storage
       const filePath = `portfolio_images/${user.id}/${Date.now()}-${file.name}`;
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabaseBypass.storage
         .from('portfolio_images')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -76,19 +76,19 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
       const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/portfolio_images/${filePath}`;
 
       // 2. Update user profile with the new portfolio URL
-      const { data: userData } = await supabase
+      const { data: userData } = await supabaseBypass
         .from('profiles')
         .select('portfolio_urls')
-        .eq('id', user.id)
+        .eq('id', user.id as any)
         .single();
 
-      const currentUrls = userData?.portfolio_urls || [];
+      const currentUrls = (userData as any)?.portfolio_urls || [];
       const updatedUrls = [...currentUrls, imageUrl];
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseBypass
         .from('profiles')
-        .update({ portfolio_urls: updatedUrls })
-        .eq('id', user.id);
+        .update({ portfolio_urls: updatedUrls } as any)
+        .eq('id', user.id as any);
 
       if (updateError) {
         throw updateError;

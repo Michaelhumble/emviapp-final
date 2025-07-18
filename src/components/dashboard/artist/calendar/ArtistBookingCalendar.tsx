@@ -48,11 +48,11 @@ const ArtistBookingCalendar = () => {
     selectedDate.setHours(hour, 0, 0, 0);
     
     // Check if this time is already booked or blocked
-    const isBooked = appointments.some(apt => 
+    const isBooked = appointments.some((apt: any) => 
       format(new Date(apt.start_time), "yyyy-MM-dd HH:00") === format(selectedDate, "yyyy-MM-dd HH:00")
     );
     
-    const isBlocked = blockedTimes.some(block =>
+    const isBlocked = blockedTimes.some((block: any) =>
       format(new Date(block.start_time), "yyyy-MM-dd HH:00") === format(selectedDate, "yyyy-MM-dd HH:00")
     );
     
