@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,14 +40,14 @@ const ListingManagement: React.FC = () => {
       setLoading(true);
       
       // Fetch job listings
-      const { data: jobs, error: jobsError } = await supabase
+      const { data: jobs, error: jobsError } = await supabaseBypass
         .from('jobs')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       // Fetch salon listings
-      const { data: salons, error: salonsError } = await supabase
+      const { data: salons, error: salonsError } = await supabaseBypass
         .from('salon_sales')
         .select('*')
         .eq('user_id', user.id)
@@ -110,7 +110,7 @@ const ListingManagement: React.FC = () => {
 
     try {
       const table = listing.type === 'job' ? 'jobs' : 'salon_sales';
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from(table)
         .delete()
         .eq('id', listing.id);

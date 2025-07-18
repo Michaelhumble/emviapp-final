@@ -13,7 +13,7 @@ import {
   Save, MapPin, Phone, Mail, Link
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 interface ArtistSettingsModalProps {
@@ -102,7 +102,7 @@ const ArtistSettingsModal: React.FC<ArtistSettingsModalProps> = ({ isOpen, onClo
     setLoading(true);
     try {
       // Update user profile fields  
-      const { error: profileError } = await supabase
+      const { error: profileError } = await supabaseBypass
         .from('profiles')
         .update({
           phone: settings.business_phone,
