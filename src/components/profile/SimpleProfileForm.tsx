@@ -82,7 +82,7 @@ const SimpleProfileForm = () => {
   }
   
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative min-h-[80vh]">
       <div className="flex justify-center mb-6">
         <ProfilePictureUploader 
           userId={user.id}
@@ -91,7 +91,7 @@ const SimpleProfileForm = () => {
         />
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 pb-24">
         <div>
           <Label htmlFor="full_name">Name</Label>
           <Input
@@ -162,18 +162,27 @@ const SimpleProfileForm = () => {
             className="mt-1"
           />
         </div>
-        
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            "Save Profile"
-          )}
-        </Button>
       </form>
+      
+      {/* Sticky Action Footer - Always visible */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
+        <div className="max-w-3xl mx-auto">
+          <Button 
+            onClick={handleSubmit} 
+            className="w-full h-12 text-base font-semibold" 
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Save Profile"
+            )}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

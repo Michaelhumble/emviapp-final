@@ -226,233 +226,246 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 border-purple-500/30 text-white">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold">
-              Edit Your Beautiful Profile ✨
-            </DialogTitle>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClose}
-                className="text-purple-200 hover:text-white hover:bg-purple-500/20 font-medium"
-              >
-                ← Back to Dashboard
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClose}
-                className="text-purple-200 hover:text-white hover:bg-purple-500/20 w-8 h-8 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 border-purple-500/30 text-white p-0 overflow-hidden">
+        <div className="flex flex-col h-full max-h-[85vh]">
+          {/* Header - Fixed */}
+          <div className="shrink-0 p-6 pb-0">
+            <DialogHeader>
+              <div className="flex items-center justify-between">
+                <DialogTitle className="text-2xl font-bold">
+                  Edit Your Beautiful Profile ✨
+                </DialogTitle>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClose}
+                    className="text-purple-200 hover:text-white hover:bg-purple-500/20 font-medium"
+                  >
+                    ← Back to Dashboard
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClose}
+                    className="text-purple-200 hover:text-white hover:bg-purple-500/20 w-8 h-8 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </DialogHeader>
           </div>
-        </DialogHeader>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-6"
-        >
-          {/* Profile Photo Section */}
-          <div className="text-center space-y-4">
-            <div className="relative inline-block">
-              <motion.div 
-                className="w-24 h-24 rounded-full overflow-hidden mx-auto bg-gradient-to-br from-purple-400 to-pink-400 p-1"
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
-                  {previewImage || formData.avatar_url ? (
-                    <img 
-                      src={previewImage || formData.avatar_url} 
-                      alt="Profile preview" 
-                      className="w-full h-full object-cover"
-                      style={selectedFilter !== 'none' ? { 
-                        filter: filters.find(f => f.id === selectedFilter)?.style.split(': ')[1] 
-                      } : {}}
-                    />
-                  ) : (
-                    <User className="w-full h-full p-4 text-gray-300" />
-                  )}
-                  {isUploading && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <div className="animate-spin h-6 w-6 border-t-2 border-white rounded-full" />
+          
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-6 pb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              {/* Profile Photo Section */}
+              <div className="text-center space-y-4">
+                <div className="relative inline-block">
+                  <motion.div 
+                    className="w-24 h-24 rounded-full overflow-hidden mx-auto bg-gradient-to-br from-purple-400 to-pink-400 p-1"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
+                      {previewImage || formData.avatar_url ? (
+                        <img 
+                          src={previewImage || formData.avatar_url} 
+                          alt="Profile preview" 
+                          className="w-full h-full object-cover"
+                          style={selectedFilter !== 'none' ? { 
+                            filter: filters.find(f => f.id === selectedFilter)?.style.split(': ')[1] 
+                          } : {}}
+                        />
+                      ) : (
+                        <User className="w-full h-full p-4 text-gray-300" />
+                      )}
+                      {isUploading && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <div className="animate-spin h-6 w-6 border-t-2 border-white rounded-full" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </motion.div>
-              
-              <motion.label
-                htmlFor="photo-upload"
-                className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Camera className="h-4 w-4 text-white" />
-              </motion.label>
-              <input
-                id="photo-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-            </div>
-            <p className="text-sm text-purple-200">Click to change your beautiful photo</p>
-            
-            {/* Photo Enhancement Options */}
-            {previewImage && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 space-y-3"
-              >
-                <h4 className="text-sm font-medium text-purple-200 flex items-center">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Photo Enhancements
-                </h4>
-                
-                {/* Filter Selection */}
-                <div className="grid grid-cols-3 gap-2">
-                  {filters.map(filter => (
-                    <button
-                      key={filter.id}
-                      onClick={() => setSelectedFilter(filter.id)}
-                      className={`p-2 rounded-lg text-xs transition-all ${
-                        selectedFilter === filter.id
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-white/10 text-purple-200 hover:bg-white/20'
-                      }`}
-                    >
-                      {filter.name}
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setShowCropModal(true)}
-                    className="border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
+                  </motion.div>
+                  
+                  <motion.label
+                    htmlFor="photo-upload"
+                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <Crop className="h-3 w-3 mr-1" />
-                    Adjust
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setSelectedFilter('none')}
-                    className="border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
-                  >
-                    Reset
-                  </Button>
+                    <Camera className="h-4 w-4 text-white" />
+                  </motion.label>
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
                 </div>
-              </motion.div>
-            )}
-          </div>
-
-          {/* Form Fields */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="full_name" className="text-purple-200">Full Name</Label>
-              <Input
-                id="full_name"
-                value={formData.full_name}
-                onChange={(e) => handleInputChange('full_name', e.target.value)}
-                className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50"
-                placeholder="Your beautiful name"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio" className="text-purple-200">Bio</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => handleInputChange('bio', e.target.value)}
-                className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50 min-h-[80px]"
-                placeholder="Tell us about your beauty journey..."
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location" className="text-purple-200">Location</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50"
-                  placeholder="City, State"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-purple-200">Phone</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50"
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-purple-200">Email</Label>
-              <Input
-                value={user?.email || ''}
-                disabled
-                className="bg-white/5 border-purple-300/20 text-purple-300 cursor-not-allowed"
-              />
-              <p className="text-xs text-purple-300">Email can be changed in account settings</p>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              className="flex-1 border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Cancel
-            </Button>
-            
-            <motion.div 
-              className="flex-1"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-               <Button
-                onClick={handleSave}
-                disabled={loading || isUploading}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 disabled:opacity-50"
-              >
-                {loading || isUploading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin h-4 w-4 border-t-2 border-white rounded-full mr-2" />
-                    {isUploading ? 'Uploading...' : 'Saving...'}
-                  </div>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Profile
-                  </>
+                <p className="text-sm text-purple-200">Click to change your beautiful photo</p>
+                
+                {/* Photo Enhancement Options */}
+                {previewImage && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 space-y-3"
+                  >
+                    <h4 className="text-sm font-medium text-purple-200 flex items-center">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Photo Enhancements
+                    </h4>
+                    
+                    {/* Filter Selection */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {filters.map(filter => (
+                        <button
+                          key={filter.id}
+                          onClick={() => setSelectedFilter(filter.id)}
+                          className={`p-2 rounded-lg text-xs transition-all ${
+                            selectedFilter === filter.id
+                              ? 'bg-purple-500 text-white'
+                              : 'bg-white/10 text-purple-200 hover:bg-white/20'
+                          }`}
+                        >
+                          {filter.name}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowCropModal(true)}
+                        className="border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
+                      >
+                        <Crop className="h-3 w-3 mr-1" />
+                        Adjust
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedFilter('none')}
+                        className="border-purple-300/30 text-purple-200 hover:bg-purple-500/20"
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                  </motion.div>
                 )}
-              </Button>
+              </div>
+
+              {/* Form Fields */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="full_name" className="text-purple-200">Full Name</Label>
+                  <Input
+                    id="full_name"
+                    value={formData.full_name}
+                    onChange={(e) => handleInputChange('full_name', e.target.value)}
+                    className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50"
+                    placeholder="Your beautiful name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bio" className="text-purple-200">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    value={formData.bio}
+                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50 min-h-[80px]"
+                    placeholder="Tell us about your beauty journey..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="location" className="text-purple-200">Location</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => handleInputChange('location', e.target.value)}
+                      className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50"
+                      placeholder="City, State"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-purple-200">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="bg-white/10 border-purple-300/30 text-white placeholder-purple-300/50"
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-purple-200">Email</Label>
+                  <Input
+                    value={user?.email || ''}
+                    disabled
+                    className="bg-white/5 border-purple-300/20 text-purple-300 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-purple-300">Email can be changed in account settings</p>
+                </div>
+              </div>
+
+              {/* Add padding at bottom to ensure content isn't hidden behind sticky footer */}
+              <div className="h-20" />
             </motion.div>
           </div>
-        </motion.div>
+
+          {/* Sticky Action Footer - Always visible */}
+          <div className="shrink-0 bg-gradient-to-r from-purple-900 via-pink-900 to-rose-900 border-t border-purple-500/30 p-4 rounded-b-lg">
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1 border-purple-300/30 text-purple-200 hover:bg-purple-500/20 h-12"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+              
+              <motion.div 
+                className="flex-1"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                 <Button
+                  onClick={handleSave}
+                  disabled={loading || isUploading}
+                  className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 disabled:opacity-50 text-base font-semibold"
+                >
+                  {loading || isUploading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin h-4 w-4 border-t-2 border-white rounded-full mr-2" />
+                      {isUploading ? 'Uploading...' : 'Saving...'}
+                    </div>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Profile
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
