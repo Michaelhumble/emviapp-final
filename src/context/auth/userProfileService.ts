@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
 import { cacheProfile } from './utils/profileCache';
@@ -13,7 +13,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
   
   try {
     // Get user profile data
-    const { data, error } = await supabase
+    const { data, error } = await supabaseBypass
       .from('profiles')
       .select('*')
       .eq('id', userId)
@@ -21,33 +21,33 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     
     if (error) throw error;
     
-    if (!data) return null;
+    if (!data || typeof data !== 'object') return null;
     
     // Transform database record to UserProfile type with safe fallbacks
     const profile: UserProfile = {
-      id: data.id,
-      email: data.email || '',
-      full_name: data.full_name || null,
-      phone: data.phone || null,
-      role: (data.role as UserRole) || null,
-      avatar_url: data.avatar_url || null,
-      specialty: data.specialty || null,
-      location: data.location || null,
-      bio: data.bio || null,
-      instagram: data.instagram || null,
-      website: data.website || null,
-      created_at: data.created_at || null,
-      updated_at: data.updated_at || null,
+      id: (data as any).id,
+      email: (data as any).email || '',
+      full_name: (data as any).full_name || null,
+      phone: (data as any).phone || null,
+      role: ((data as any).role as UserRole) || null,
+      avatar_url: (data as any).avatar_url || null,
+      specialty: (data as any).specialty || null,
+      location: (data as any).location || null,
+      bio: (data as any).bio || null,
+      instagram: (data as any).instagram || null,
+      website: (data as any).website || null,
+      created_at: (data as any).created_at || null,
+      updated_at: (data as any).updated_at || null,
       
       // Additional database fields
-      custom_role: data.custom_role || null,
-      contact_link: data.contact_link || null,
-      badges: Array.isArray(data.badges) ? data.badges as string[] : null,
-      accepts_bookings: data.accepts_bookings || null,
-      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks as string[] : null,
+      custom_role: (data as any).custom_role || null,
+      contact_link: (data as any).contact_link || null,
+      badges: Array.isArray((data as any).badges) ? (data as any).badges as string[] : null,
+      accepts_bookings: (data as any).accepts_bookings || null,
+      completed_profile_tasks: Array.isArray((data as any).completed_profile_tasks) ? (data as any).completed_profile_tasks as string[] : null,
       
       // Social and professional fields
-      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls as string[] : null,
+      portfolio_urls: Array.isArray((data as any).portfolio_urls) ? (data as any).portfolio_urls as string[] : null,
       referral_code: data.referral_code || null,
       credits: typeof data.credits === 'number' ? data.credits : null,
       profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : null,
@@ -109,9 +109,9 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
     };
     
     // Insert new profile into database
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from('profiles')
-      .upsert(profileData);
+      .upsert(profileData as any);
     
     if (error) throw error;
     
@@ -147,9 +147,9 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
     }
     
     // Update profile in database
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from('profiles')
-      .update(updateData)
+      .update(updateData as any)
       .eq('id', profile.id);
     
     if (error) throw error;

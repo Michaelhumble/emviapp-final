@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Job } from '@/types/job';
 
 interface RecommendationItem {
@@ -46,28 +46,30 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
 
   const loadUserPreferences = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabaseBypass.auth.getUser();
       if (!user) return;
 
       // Load user activity to build preferences
-      const { data: activity } = await supabase
+      const { data: activity } = await supabaseBypass
         .from('activity_log')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(100);
 
-      if (activity) {
+      if (activity && Array.isArray(activity)) {
         const categories = new Set<string>();
         const locations = new Set<string>();
         const viewHistory: string[] = [];
 
         activity.forEach(log => {
-          const meta = log.metadata as any;
-          if (meta?.category) categories.add(meta.category);
-          if (meta?.location) locations.add(meta.location);
-          if (log.activity_type.includes('view') && meta?.entityId) {
-            viewHistory.push(meta.entityId);
+          if (log && 'metadata' in log && 'activity_type' in log) {
+            const meta = log.metadata as any;
+            if (meta?.category) categories.add(meta.category);
+            if (meta?.location) locations.add(meta.location);
+            if (log.activity_type.includes('view') && meta?.entityId) {
+              viewHistory.push(meta.entityId);
+            }
           }
         });
 
@@ -84,7 +86,7 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
 
   const getRecommendations = async (type: 'job' | 'salon' | 'artist', limit = 6): Promise<RecommendationItem[]> => {
     try {
-      let query = supabase.from('jobs').select('*');
+      let query = supabaseBypass.from('jobs').select('*');
       
       if (type === 'job') {
         query = query.neq('category', 'salon');
@@ -95,38 +97,42 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
       query = query.eq('status', 'active').limit(limit * 2); // Get more to filter
 
       const { data: items } = await query;
-      if (!items) return [];
+      if (!items || !Array.isArray(items)) return [];
 
       // Score items based on user preferences
       const scoredItems = items.map(item => {
+        if (!item || typeof item !== 'object') return null;
+        
         let score = 0;
         
         // Category match
-        if (userPreferences.categories.includes(item.category)) score += 3;
+        if ('category' in item && item.category && userPreferences.categories.includes(item.category as string)) score += 3;
         
         // Location match
-        if (item.location && userPreferences.locations.some(loc => 
-          item.location?.toLowerCase().includes(loc.toLowerCase())
+        if ('location' in item && item.location && userPreferences.locations.some(loc => 
+          (item.location as string)?.toLowerCase().includes(loc.toLowerCase())
         )) score += 2;
         
         // Recency boost
-        const daysOld = (Date.now() - new Date(item.created_at).getTime()) / (1000 * 60 * 60 * 24);
-        if (daysOld < 7) score += 1;
+        if ('created_at' in item && item.created_at) {
+          const daysOld = (Date.now() - new Date(item.created_at as string).getTime()) / (1000 * 60 * 60 * 24);
+          if (daysOld < 7) score += 1;
+        }
         
         // Random factor for diversity
         score += Math.random() * 0.5;
 
         return {
-          id: item.id,
-          title: item.title,
+          id: (item as any).id,
+          title: (item as any).title,
           type: type,
           score,
           reason: getRecommendationReason(item as any, userPreferences),
-          image: item.image_urls?.[0] || item.image_url,
-          location: item.location,
-          category: item.category
+          image: (item as any).image_urls?.[0] || (item as any).image_url,
+          location: (item as any).location,
+          category: (item as any).category
         } as RecommendationItem;
-      });
+      }).filter(Boolean) as RecommendationItem[];
 
       // Sort by score and return top items
       return scoredItems
@@ -142,16 +148,16 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
   const getRelatedItems = async (itemId: string, itemType: 'job' | 'salon' | 'artist', limit = 4): Promise<RecommendationItem[]> => {
     try {
       // Get the current item to find similar ones
-      const { data: currentItem } = await supabase
+      const { data: currentItem } = await supabaseBypass
         .from('jobs')
         .select('*')
         .eq('id', itemId)
         .single();
 
-      if (!currentItem) return [];
+      if (!currentItem || typeof currentItem !== 'object') return [];
 
       // Find similar items by category and location
-      let query = supabase
+      let query = supabaseBypass
         .from('jobs')
         .select('*')
         .neq('id', itemId)
@@ -164,34 +170,36 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
       }
 
       // Prefer same category
-      if (currentItem.category) {
+      if ('category' in currentItem && currentItem.category) {
         query = query.eq('category', currentItem.category);
       }
 
       const { data: relatedItems } = await query.limit(limit * 2);
-      if (!relatedItems) return [];
+      if (!relatedItems || !Array.isArray(relatedItems)) return [];
 
       // Score based on similarity
       const scoredItems = relatedItems.map(item => {
+        if (!item || typeof item !== 'object') return null;
+        
         let score = 0;
         
-        if (item.category === currentItem.category) score += 3;
-        if (item.location === currentItem.location) score += 2;
+        if ('category' in item && 'category' in currentItem && item.category === currentItem.category) score += 3;
+        if ('location' in item && 'location' in currentItem && item.location === currentItem.location) score += 2;
         
         // Random factor
         score += Math.random() * 0.5;
 
         return {
-          id: item.id,
-          title: item.title,
+          id: (item as any).id,
+          title: (item as any).title,
           type: itemType,
           score,
-          reason: `Similar to "${currentItem.title}"`,
-          image: item.image_urls?.[0] || item.image_url,
-          location: item.location,
-          category: item.category
+          reason: `Similar to "${(currentItem as any).title}"`,
+          image: (item as any).image_urls?.[0] || (item as any).image_url,
+          location: (item as any).location,
+          category: (item as any).category
         } as RecommendationItem;
-      });
+      }).filter(Boolean) as RecommendationItem[];
 
       return scoredItems
         .sort((a, b) => b.score - a.score)
@@ -205,10 +213,10 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
 
   const trackInteraction = async (itemId: string, itemType: string, interactionType: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabaseBypass.auth.getUser();
       if (!user) return;
 
-      await supabase
+      await supabaseBypass
         .from('ai_recommendations')
         .insert({
           user_id: user.id,
@@ -217,7 +225,7 @@ export const RecommendationProvider: React.FC<{ children: React.ReactNode }> = (
           metadata: { interaction_type: interactionType },
           clicked: interactionType === 'click',
           shown_at: new Date().toISOString()
-        });
+        } as any);
 
       // Update user preferences
       loadUserPreferences();

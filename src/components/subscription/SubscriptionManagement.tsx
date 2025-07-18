@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "@/hooks/useTranslation";
@@ -28,7 +28,7 @@ const SubscriptionManagement = () => {
       setLoading(true);
       try {
         // Use a table that actually exists in the database
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('payments')
           .select('*')
           .eq('user_id', user?.id)
@@ -61,7 +61,7 @@ const SubscriptionManagement = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('cancel-subscription', {
+      const { data, error } = await supabaseBypass.functions.invoke('cancel-subscription', {
         body: { subscriptionId: subscription.stripe_subscription_id }
       });
 

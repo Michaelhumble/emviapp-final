@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 
 interface OnboardingStep {
@@ -49,13 +49,13 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (!user) return;
 
       // Check if user has completed onboarding
-      const { data: profile } = await supabase
+      const { data: profile } = await supabaseBypass
         .from('profiles')
         .select('completed_profile_tasks, role')
         .eq('id', user.id)
         .single();
 
-      if (profile) {
+      if (profile && 'completed_profile_tasks' in profile && 'role' in profile) {
         setCompletedSteps(profile.completed_profile_tasks || []);
         setUserRole(profile.role || 'customer');
         
@@ -72,13 +72,13 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       if (!user) return;
 
-      const { data: profile } = await supabase
+      const { data: profile } = await supabaseBypass
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
 
-      if (profile?.role) {
+      if (profile && 'role' in profile && profile.role) {
         setUserRole(profile.role);
       }
     } catch (error) {
@@ -188,20 +188,20 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setCompletedSteps(newCompletedSteps);
 
       // Update database
-      await supabase
+      await supabaseBypass
         .from('profiles')
-        .update({ completed_profile_tasks: newCompletedSteps })
+        .update({ completed_profile_tasks: newCompletedSteps } as any)
         .eq('id', user.id);
 
       // Track completion in analytics
-      await supabase
+      await supabaseBypass
         .from('activity_log')
         .insert({
           user_id: user.id,
           activity_type: 'onboarding_step_completed',
           description: `Completed onboarding step: ${stepId}`,
           metadata: { step_id: stepId, total_completed: newCompletedSteps.length }
-        });
+        } as any);
 
       // Hide onboarding if user completed enough steps
       if (newCompletedSteps.length >= 3) {
@@ -218,14 +218,14 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // Track dismissal
     if (user) {
       try {
-        await supabase
+        await supabaseBypass
           .from('activity_log')
           .insert({
             user_id: user.id,
             activity_type: 'onboarding_dismissed',
             description: 'User dismissed onboarding checklist',
             metadata: { completed_steps: completedSteps.length, total_steps: steps.length }
-          });
+          } as any);
       } catch (error) {
         console.warn('Failed to track onboarding dismissal:', error);
       }

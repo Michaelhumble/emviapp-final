@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Users, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useUniversalInvites } from "@/components/dashboard/salon/team/hooks/useUniversalInvites";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 
 interface UniversalInviteInfo {
@@ -40,7 +40,7 @@ const UniversalInviteAcceptance = () => {
       if (!inviteCode) return;
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('universal_team_invites')
           .select(`
             max_uses,
@@ -56,7 +56,7 @@ const UniversalInviteAcceptance = () => {
 
         if (error) throw error;
 
-        if (data) {
+        if (data && data.salons) {
           setInviteInfo({
             salon_name: (data.salons as any)?.salon_name || 'Unknown Salon',
             max_uses: data.max_uses,

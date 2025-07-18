@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 interface InteractionEvent {
   type: 'view' | 'click' | 'search' | 'favorite' | 'apply' | 'contact' | 'share';
@@ -39,13 +39,13 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   useEffect(() => {
     // Track authenticated user
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabaseBypass.auth.getUser();
       setUserId(user?.id);
     };
     
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabaseBypass.auth.onAuthStateChange((event, session) => {
       setUserId(session?.user?.id);
     });
 
@@ -74,7 +74,7 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       // Store in database if user is authenticated
       if (userId) {
-        await supabase
+        await supabaseBypass
           .from('activity_log')
           .insert({
             user_id: userId,
@@ -84,7 +84,7 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               ...fullEvent,
               session_id: sessionId
             }
-          });
+          } as any);
       }
     } catch (error) {
       console.warn('Failed to track event:', error);
