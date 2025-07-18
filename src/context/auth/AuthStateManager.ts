@@ -119,25 +119,21 @@ class AuthStateManager {
     try {
       console.log('🚀 [AUTH MANAGER] Starting initialization...');
 
-      // 🔐 GET INITIAL SESSION - TRUST SUPABASE STORAGE
+      // 🔐 GET INITIAL SESSION - TRUST SUPABASE STORAGE COMPLETELY
       const { data: { session }, error } = await supabase.auth.getSession();
       
       if (error) {
-        console.error('❌ [AUTH MANAGER] Session check failed:', error.message);
-        await this.handleSessionError(error);
-        return;
+        console.warn('⚠️ [AUTH MANAGER] Session check warning (continuing):', error.message);
+        // Don't fail initialization on session errors - user might still be logged in
       }
 
       // 🔄 SET UP AUTH LISTENER FIRST
       this.setupAuthListener();
 
-      // 🎯 TRUST SUPABASE SESSION STORAGE - NO AGGRESSIVE VALIDATION
-      if (session && session.access_token && session.user?.id) {
-        console.log('✅ [AUTH MANAGER] Valid session found, restoring authenticated state');
+      // 🎯 TRUST SUPABASE SESSION STORAGE COMPLETELY - NO VALIDATION
+      if (session) {
+        console.log('✅ [AUTH MANAGER] Session found, restoring authenticated state');
         await this.setAuthenticatedState(session);
-      } else if (session) {
-        console.warn('⚠️ [AUTH MANAGER] Malformed session detected, clearing');
-        this.setUnauthenticatedState();
       } else {
         console.log('ℹ️ [AUTH MANAGER] No session found, user not signed in');
         this.setUnauthenticatedState();
@@ -303,7 +299,7 @@ class AuthStateManager {
         localStorage.removeItem('emviapp_user_role');
         this.setUnauthenticatedState();
       } else if (session) {
-        // Accept session without strict validation to prevent premature sign-outs
+        // TRUST Supabase session completely - don't validate to prevent sign-outs
         await this.setAuthenticatedState(session);
       }
 
@@ -347,11 +343,8 @@ class AuthStateManager {
         console.log('🎯 [AUTH MANAGER] @emvi.app email detected - bypassing restrictions');
       }
       
-      // PRESERVE existing valid Supabase sessions during sign-in
-      // Only remove app-specific keys that could conflict
-      if (localStorage.getItem('emviapp_new_user')) {
-        localStorage.removeItem('emviapp_new_user');
-      }
+      // DON'T touch any storage during sign-in - let Supabase handle everything
+      // NO cleanup of any kind during normal authentication flows
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -456,7 +449,7 @@ class AuthStateManager {
     try {
       console.log('📝 [AUTH MANAGER] Starting sign up...');
       
-      // DON'T clean up during sign up - this destroys session persistence
+      // CRITICAL: Never clean storage during sign up - destroys session persistence
       
       const isEmviEmail = email.endsWith('@emvi.app');
       
