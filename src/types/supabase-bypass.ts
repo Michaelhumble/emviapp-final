@@ -54,5 +54,16 @@ export const supabaseQueries = {
   
   // Not filter with type bypass
   not: (query: any, column: string, operator: string, value: any) => 
-    query.not(column as any, operator, value)
+    query.not(column as any, operator, value),
+  
+  // In filter with type bypass
+  in: (query: any, column: string, values: any[]) => 
+    query.in(column as any, values),
+  
+  // Neq filter with type bypass
+  neq: (query: any, column: string, value: any) => 
+    query.neq(column as any, value)
 };
+
+// Direct Supabase client bypass for complex operations
+export const supabaseBypass = supabase as any;

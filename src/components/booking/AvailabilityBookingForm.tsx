@@ -13,6 +13,7 @@ import { CalendarIcon, Clock } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { Service } from "@/pages/u/artist-profile/types";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { useBookingErrorHandler } from "@/hooks/useBookingErrorHandler";
 
@@ -67,7 +68,7 @@ export const AvailabilityBookingForm = ({
       const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
       // Create booking in Supabase
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("bookings")
         .insert({
           recipient_id: artistId,

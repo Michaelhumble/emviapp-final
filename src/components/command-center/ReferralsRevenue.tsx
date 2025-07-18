@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, Users, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 interface ReferralRevenueData {
   totalReferralClicks: number;
@@ -31,7 +32,7 @@ const ReferralsRevenue = () => {
         const estimatedClicks = signupsCount ? signupsCount * 5 : 0; // Assuming 20% conversion rate
         
         // Get total credits earned from credit_earnings 
-        const { data: creditData, error: creditsError } = await supabase
+        const { data: creditData, error: creditsError } = await supabaseBypass
           .from('credit_earnings')
           .select('amount')
           .eq('type', 'referral');

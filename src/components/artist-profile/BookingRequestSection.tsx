@@ -106,7 +106,7 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
           note: note,
           service_id: selectedService,
           status: 'pending'
-        });
+        } as any); // TODO: Fix Supabase types for bookings table
       
       if (error) throw error;
       

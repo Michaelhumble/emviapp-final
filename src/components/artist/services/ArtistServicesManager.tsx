@@ -5,6 +5,7 @@ import { Plus, DollarSign, Clock, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseQueries } from "@/types/supabase-bypass";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -50,15 +51,14 @@ const ArtistServicesManager = () => {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("artist_services")
-        .select("*")
-        .eq("user_id", user.id)
+      const { data, error } = await supabaseQueries
+        .select("artist_services")
+        .eq(supabaseQueries.select("artist_services"), "user_id", user.id)
         .order("created_at", { ascending: false });
         
       if (error) throw error;
       
-      setServices(data || []);
+      setServices((data as any) || []); // TODO: Fix Supabase types for artist_services
     } catch (error) {
       console.error("Error fetching services:", error);
       toast.error("Failed to load your services");
@@ -88,9 +88,8 @@ const ArtistServicesManager = () => {
     }
     
     try {
-      const { error } = await supabase
-        .from("artist_services")
-        .insert([{
+      const { error } = await supabaseQueries
+        .insert("artist_services", [{
           ...newService,
           user_id: user.id
         }]);
@@ -125,15 +124,13 @@ const ArtistServicesManager = () => {
     }
     
     try {
-      const { error } = await supabase
-        .from("artist_services")
-        .update({
-          name: currentService.name,
-          price: currentService.price,
-          duration: currentService.duration,
-          description: currentService.description
-        })
-        .eq("id", currentService.id);
+      const updateQuery = supabaseQueries.update("artist_services", {
+        name: currentService.name,
+        price: currentService.price,
+        duration: currentService.duration,
+        description: currentService.description
+      });
+      const { error } = await supabaseQueries.eq(updateQuery, "id", currentService.id);
         
       if (error) throw error;
       
@@ -152,10 +149,8 @@ const ArtistServicesManager = () => {
     if (!serviceToDelete) return;
     
     try {
-      const { error } = await supabase
-        .from("artist_services")
-        .delete()
-        .eq("id", serviceToDelete);
+      const deleteQuery = supabaseQueries.delete("artist_services");
+      const { error } = await supabaseQueries.eq(deleteQuery, "id", serviceToDelete);
         
       if (error) throw error;
       

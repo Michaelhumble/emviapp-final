@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Lightbulb, Bug, Map, Plus, Trash2, Save, CheckCircle, XCircle, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -66,13 +67,13 @@ const InternalTools = () => {
   const fetchWaitlistRequests = async () => {
     setLoadingWaitlist(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("waitlist_requests")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setWaitlistRequests(data || []);
+      setWaitlistRequests((data as any) || []);
     } catch (error) {
       console.error("Error fetching waitlist requests:", error);
       toast.error("Failed to load waitlist requests");
@@ -140,14 +141,14 @@ const InternalTools = () => {
 
   const approveWaitlistRequest = async (id: string, email: string) => {
     try {
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseBypass
         .from("waitlist_requests")
         .update({ status: "approved" })
         .eq("id", id);
 
       if (updateError) throw updateError;
 
-      const { data: existingUser, error: userCheckError } = await supabase
+      const { data: existingUser, error: userCheckError } = await supabaseBypass
         .from("profiles")
         .select("id, email")
         .eq("email", email)
@@ -158,10 +159,10 @@ const InternalTools = () => {
       }
 
       if (existingUser) {
-        const { error: userUpdateError } = await supabase
+        const { error: userUpdateError } = await supabaseBypass
           .from("profiles")
           .update({ invited: true })
-          .eq("id", existingUser.id);
+          .eq("id", (existingUser as any).id);
 
         if (userUpdateError) throw userUpdateError;
       }
@@ -176,7 +177,7 @@ const InternalTools = () => {
 
   const rejectWaitlistRequest = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("waitlist_requests")
         .update({ status: "rejected" })
         .eq("id", id);

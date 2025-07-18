@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { UserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseQueries } from "@/types/supabase-bypass";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { navigateToRoleDashboard } from "@/utils/navigation";
@@ -17,10 +18,8 @@ export const useRoleSelection = (userId: string, onComplete: (open: boolean) => 
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: selectedRole })
-        .eq('id', userId);
+      const updateQuery = supabaseQueries.update('profiles', { role: selectedRole });
+      const { error } = await supabaseQueries.eq(updateQuery, 'id', userId);
       
       if (error) throw error;
       

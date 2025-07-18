@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Eye, Activity } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 interface LiveMetricsData {
   newUsersToday: number;
@@ -54,7 +55,7 @@ const LiveMetrics = () => {
         // In a real implementation, you would have these metrics tracked in their own tables
         
         // Get artist with most views (mock data - replace with real query)
-        const { data: artists, error: artistsError } = await supabase
+        const { data: artists, error: artistsError } = await supabaseBypass
           .from('profiles')
           .select('id, full_name')
           .eq('role', 'artist')
@@ -62,7 +63,7 @@ const LiveMetrics = () => {
         
         // Get salon owners (role = 'owner' or 'salon')
         // Fixed: Query users with role = 'owner' or 'salon' and handle errors properly
-        const { data: salonOwners, error: salonsError } = await supabase
+        const { data: salonOwners, error: salonsError } = await supabaseBypass
           .from('profiles')
           .select('id, full_name')
           .in('role', ['owner', 'salon'])

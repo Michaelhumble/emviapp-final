@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseQueries } from "@/types/supabase-bypass";
 import { UserProfile, getLocationString } from "@/types/profile";
 
 interface SuggestedArtistsProps {
@@ -22,11 +23,10 @@ const SuggestedArtists: React.FC<SuggestedArtistsProps> = ({
   const { data: artists, isLoading } = useQuery({
     queryKey: ['suggestedArtists'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .in('role', ['artist', 'nail technician/artist', 'freelancer'])
-        .neq('full_name', '')
+      const query = supabaseQueries.select('profiles');
+      const { data, error } = await query
+        .in('role', ['artist', 'nail technician/artist', 'freelancer'] as any)
+        .neq('full_name', '' as any)
         .order('boosted_until', { ascending: false, nullsFirst: false })
         .limit(limit);
         

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { Service } from "@/pages/u/artist-profile/types";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import BookingForm from "./BookingForm";
 import BookingConfirmation from "./BookingConfirmation";
 import { useBookingErrorHandler } from "@/hooks/useBookingErrorHandler";
@@ -34,7 +35,7 @@ export const BookingDialog = ({
     
     try {
       // Validate availability before proceeding
-      const { data: availability, error: availabilityError } = await supabase
+      const { data: availability, error: availabilityError } = await supabaseBypass
         .from('artist_availability')
         .select('*')
         .eq('artist_id', profile.id)
@@ -45,7 +46,7 @@ export const BookingDialog = ({
         throw new Error("Selected time slot is not available");
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .insert({
           recipient_id: profile.id,
