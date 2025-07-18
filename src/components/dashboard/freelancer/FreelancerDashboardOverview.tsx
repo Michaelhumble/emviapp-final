@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Calendar, List, Clock, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 // Simple helpers
 function formatDate(dateStr: string) {
@@ -39,7 +39,7 @@ const FreelancerDashboardOverview = () => {
       setLoading(true);
       try {
         // Bookings assigned to this freelancer
-        const { data: bData, error: bErr } = await supabase
+        const { data: bData, error: bErr } = await supabaseBypass
           .from("bookings")
           .select(
             `id, created_at, date_requested, time_requested, status, note, service_id, recipient_id, service:service_id(id, title, price)`
@@ -48,18 +48,18 @@ const FreelancerDashboardOverview = () => {
           .order("date_requested", { ascending: true });
         if (bErr) throw bErr;
         // Services created by this freelancer
-        const { data: sData, error: sErr } = await supabase
+        const { data: sData, error: sErr } = await supabaseBypass
           .from("services")
           .select("*")
           .eq("user_id", user?.id || "");
         if (sErr) throw sErr;
 
         // Stats
-        const upcomingBookings = bData?.filter(b => b.status !== "completed" && b.status !== "cancelled") || [];
+        const upcomingBookings = (bData as any)?.filter((b: any) => b.status !== "completed" && b.status !== "cancelled") || [];
         // Estimate revenue (sum of prices for completed bookings)
-        const completed = bData?.filter(b => b.status === "completed" && b.service && b.service.price) || [];
-        const clientIds = new Set(bData?.map(b => b.recipient_id).filter(Boolean));
-        const revenue = completed.reduce((acc, curr) => acc + (curr.service?.price || 0), 0);
+        const completed = (bData as any)?.filter((b: any) => b.status === "completed" && b.service && b.service.price) || [];
+        const clientIds = new Set((bData as any)?.map((b: any) => b.recipient_id).filter(Boolean));
+        const revenue = completed.reduce((acc: number, curr: any) => acc + (curr.service?.price || 0), 0);
 
         if (!cancelled) {
           setBookings(bData || []);

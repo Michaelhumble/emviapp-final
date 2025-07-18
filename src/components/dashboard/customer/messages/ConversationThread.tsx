@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { SalonMessage } from "@/types/SalonMessage";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
@@ -40,7 +40,7 @@ const ConversationThread = ({
   useEffect(() => {
     const fetchMessages = async () => {
       setLoading(true);
-      const { data } = await supabase
+      const { data } = await supabaseBypass
         .from("messages")
         .select(
           `
@@ -79,13 +79,13 @@ const ConversationThread = ({
   const handleSend = async () => {
     if (!input.trim()) return;
     setSending(true);
-    await supabase.from("messages").insert({
+    await supabaseBypass.from("messages").insert({
       sender_id: currentUserId,
       recipient_id: otherUserId,
       message_body: input,
       message_type: "chat",
       salon_id: otherUserId,
-    });
+    } as any);
     setInput("");
     setSending(false);
     setTimeout(() => {
