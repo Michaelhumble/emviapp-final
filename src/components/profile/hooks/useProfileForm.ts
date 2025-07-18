@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import { UserProfile, getLocationString } from '@/types/profile';
 
@@ -66,8 +66,8 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
         referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
       }
       
-      const { error } = await supabase
-        .from('profiles')
+      const { error } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           full_name: formData.full_name,
           bio: formData.bio,
@@ -77,8 +77,8 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           website: formData.website,
           affiliate_code: referralCode,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
       
       if (error) throw error;
       

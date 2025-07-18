@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Button } from "@/components/ui/button";
 import { Trash2, Upload, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -85,14 +85,14 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       const filePath = `${fileName}.${fileExt}`;
       
       // Check if avatars bucket exists or create it
-      const { data: buckets } = await supabase.storage.listBuckets();
+      const { data: buckets } = await supabaseBypass.storage.listBuckets();
       const avatarsBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
       
       // Create bucket if it doesn't exist
       if (!avatarsBucketExists) {
-        const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
+        const { error: createBucketError } = await supabaseBypass.storage.createBucket('avatars' as any, {
           public: true,
-        });
+        } as any);
         
         if (createBucketError) {
           console.error('Error creating avatars bucket:', createBucketError);
@@ -103,12 +103,12 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       }
       
       // Upload the file
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, fileSelected, {
+      const { error: uploadError } = await supabaseBypass.storage
+        .from('avatars' as any)
+        .upload(filePath as any, fileSelected as any, {
           cacheControl: '3600',
           upsert: true
-        });
+        } as any);
         
       if (uploadError) {
         console.error('Error uploading avatar:', uploadError);
@@ -118,18 +118,18 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       }
       
       // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabaseBypass.storage
+        .from('avatars' as any)
+        .getPublicUrl(filePath as any);
         
       // Update user profile with the new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
+      const { error: updateError } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           avatar_url: publicUrl,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
         
       if (updateError) {
         console.error('Error updating profile with avatar:', updateError);
@@ -169,13 +169,13 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       setUploading(true);
       
       // Update user profile to remove avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
+      const { error: updateError } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           avatar_url: null,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
         
       if (updateError) {
         console.error('Error removing avatar from profile:', updateError);

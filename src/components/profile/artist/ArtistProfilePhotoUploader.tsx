@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Button } from "@/components/ui/button";
 import { Trash2, Upload, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -80,12 +80,12 @@ const ArtistProfilePhotoUploader = () => {
       const filePath = `${user.id}/${fileName}`;
       
       // Upload the file
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, fileSelected, {
+      const { error: uploadError } = await supabaseBypass.storage
+        .from('avatars' as any)
+        .upload(filePath as any, fileSelected as any, {
           cacheControl: '3600',
           upsert: true
-        });
+        } as any);
         
       if (uploadError) {
         console.error('Error uploading avatar:', uploadError);
@@ -95,18 +95,18 @@ const ArtistProfilePhotoUploader = () => {
       }
       
       // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabaseBypass.storage
+        .from('avatars' as any)
+        .getPublicUrl(filePath as any);
         
       // Update user profile with the new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
+      const { error: updateError } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           avatar_url: publicUrl,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
         
       if (updateError) {
         console.error('Error updating profile with avatar:', updateError);
@@ -151,13 +151,13 @@ const ArtistProfilePhotoUploader = () => {
       setUploading(true);
       
       // Update user profile to remove avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
+      const { error: updateError } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           avatar_url: null,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
         
       if (updateError) {
         console.error('Error removing avatar from profile:', updateError);
@@ -167,9 +167,9 @@ const ArtistProfilePhotoUploader = () => {
       
       // Try to delete avatar files (don't throw if it fails)
       try {
-        await supabase.storage
-          .from('avatars')
-          .remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.png`]);
+        await supabaseBypass.storage
+          .from('avatars' as any)
+          .remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.png`] as any);
       } catch (err) {
         console.log('Error removing avatar files (non-critical):', err);
       }

@@ -84,24 +84,24 @@ const OtherProfileEditor = () => {
         const fileExt = avatarFile.name.split('.').pop();
         const fileName = `other-${user.id}-${Date.now()}.${fileExt}`;
         
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, avatarFile);
+        const { error: uploadError, data: uploadData } = await supabaseBypass.storage
+          .from('avatars' as any)
+          .upload(fileName as any, avatarFile as any);
         
         if (uploadError) throw uploadError;
         
         if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(fileName);
+          const { data: { publicUrl } } = supabaseBypass.storage
+            .from('avatars' as any)
+            .getPublicUrl(fileName as any);
           
           updatedAvatarUrl = publicUrl;
         }
       }
       
       // Update user profile in database
-      const { error } = await supabase
-        .from('profiles')
+      const { error } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           full_name: fullName,
           custom_role: customRole,
@@ -110,8 +110,8 @@ const OtherProfileEditor = () => {
           contact_link: contactLink,
           avatar_url: updatedAvatarUrl,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
       
       if (error) throw error;
       

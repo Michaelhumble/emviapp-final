@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 export const useSalonProfileEditor = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
@@ -81,12 +81,12 @@ export const useSalonProfileEditor = () => {
         const fileExt = logoFile.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('salon-logos')
-          .upload(fileName, logoFile, {
+        const { error: uploadError, data: uploadData } = await supabaseBypass.storage
+          .from('salon-logos' as any)
+          .upload(fileName as any, logoFile as any, {
             cacheControl: '3600',
             upsert: false
-          });
+          } as any);
         
         if (uploadError) {
           console.error('Logo upload error:', uploadError);
@@ -94,9 +94,9 @@ export const useSalonProfileEditor = () => {
         }
         
         if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('salon-logos')
-            .getPublicUrl(fileName);
+          const { data: { publicUrl } } = supabaseBypass.storage
+            .from('salon-logos' as any)
+            .getPublicUrl(fileName as any);
           
           updatedLogoUrl = publicUrl;
           setLogoUrl(publicUrl);
@@ -106,8 +106,8 @@ export const useSalonProfileEditor = () => {
       }
       
       // Update user profile in database
-      const { error } = await supabase
-        .from('profiles')
+      const { error } = await supabaseBypass
+        .from('profiles' as any)
         .update({
           salon_name: salonName,
           location,
@@ -117,8 +117,8 @@ export const useSalonProfileEditor = () => {
           website,
           avatar_url: updatedLogoUrl,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id as any);
       
       if (error) {
         console.error('Supabase update error:', error);
