@@ -32,7 +32,7 @@ const ArtistServices = () => {
     
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .select("*")
         .eq("user_id", user.id)

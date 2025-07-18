@@ -38,7 +38,7 @@ export const useEarningsData = () => {
       console.log("Date range:", { weekStart, weekEnd, monthStart, monthEnd });
 
       // First, fetch the completed bookings
-      const { data: completedBookings, error } = await supabase
+      const { data: completedBookings, error } = await supabaseBypass
         .from('completed_bookings')
         .select('*, booking_id')
         .eq('artist_id', user?.id)
@@ -55,7 +55,7 @@ export const useEarningsData = () => {
       const bookingIds = completedBookings?.map(booking => booking.booking_id) || [];
       
       // Fetch booking details to get client info
-      const { data: bookingDetails, error: bookingError } = await supabase
+      const { data: bookingDetails, error: bookingError } = await supabaseBypass
         .from('bookings')
         .select('id, sender_id, service_id')
         .in('id', bookingIds.length > 0 ? bookingIds : ['no-bookings']);
@@ -69,7 +69,7 @@ export const useEarningsData = () => {
       
       // Get client names
       const userIds = bookingDetails?.map(booking => booking.sender_id) || [];
-      const { data: userDetails, error: userError } = await supabase
+      const { data: userDetails, error: userError } = await supabaseBypass
         .from('profiles')
         .select('id, full_name')
         .in('id', userIds.length > 0 ? userIds : ['no-users']);
@@ -83,7 +83,7 @@ export const useEarningsData = () => {
       
       // Get service details
       const serviceIds = bookingDetails?.map(booking => booking.service_id).filter(Boolean) || [];
-      const { data: serviceDetails, error: serviceError } = await supabase
+      const { data: serviceDetails, error: serviceError } = await supabaseBypass
         .from('services')
         .select('id, title')
         .in('id', serviceIds.length > 0 ? serviceIds : ['no-services']);
@@ -153,7 +153,7 @@ export const useEarningsData = () => {
 
       const chartData = Object.entries(dailyEarnings).map(([date, amount]) => ({
         date,
-        amount
+        amount: Number(amount) || 0
       }));
 
       console.log("Chart data:", chartData);

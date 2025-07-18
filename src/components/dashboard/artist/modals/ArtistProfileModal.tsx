@@ -12,7 +12,7 @@ import {
   Instagram, Star, Crown, Award, Plus, X
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -101,13 +101,13 @@ const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({ isOpen, onClose
       const fileExt = file.name.split('.').pop();
       const fileName = `${userProfile?.id}/avatar.${fileExt}`;
 
-      const { data, error } = await supabase.storage
+      const { data, error } = await supabaseBypass.storage
         .from('profiles')
         .upload(fileName, file, { upsert: true });
 
       if (error) throw error;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabaseBypass.storage
         .from('profiles')
         .getPublicUrl(fileName);
 
@@ -130,13 +130,13 @@ const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({ isOpen, onClose
       const fileExt = file.name.split('.').pop();
       const fileName = `${userProfile?.id}/cover.${fileExt}`;
 
-      const { data, error } = await supabase.storage
+      const { data, error } = await supabaseBypass.storage
         .from('profiles')
         .upload(fileName, file, { upsert: true });
 
       if (error) throw error;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabaseBypass.storage
         .from('profiles')
         .getPublicUrl(fileName);
 
@@ -198,7 +198,7 @@ const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({ isOpen, onClose
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           full_name: formData.full_name,

@@ -52,7 +52,7 @@ export function useCreditRedemption(
 
       if (actionId === 'profileBoost') {
         // Call redeem credits function on the server
-        const { data, error } = await supabase.functions.invoke('redeem-credits', {
+        const { data, error } = await supabaseBypass.functions.invoke('redeem-credits', {
           body: {
             action: 'profile_boost',
             credits: creditCost,
@@ -64,7 +64,7 @@ export function useCreditRedemption(
         success = data?.success || false;
       } else if (actionId === 'featuredPosition') {
         // Call redeem credits function for featured position
-        const { data, error } = await supabase.functions.invoke('redeem-credits', {
+        const { data, error } = await supabaseBypass.functions.invoke('redeem-credits', {
           body: {
             action: 'featured_position',
             credits: creditCost,
@@ -88,7 +88,7 @@ export function useCreditRedemption(
         if (error) throw error;
         
         // Update user's credits count
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseBypass
           .from('profiles')
           .update({
             credits: credits - creditCost,

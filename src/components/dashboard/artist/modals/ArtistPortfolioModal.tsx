@@ -77,7 +77,7 @@ const ArtistPortfolioModal: React.FC<ArtistPortfolioModalProps> = ({ isOpen, onC
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('portfolio_items')
         .select('*')
         .eq('user_id', userProfile.id)
@@ -118,13 +118,13 @@ const ArtistPortfolioModal: React.FC<ArtistPortfolioModalProps> = ({ isOpen, onC
         const fileExt = file.name.split('.').pop();
         const fileName = `${userProfile?.id}/portfolio/${Date.now()}.${fileExt}`;
 
-        const { data, error } = await supabase.storage
+        const { data, error } = await supabaseBypass.storage
           .from('portfolio')
           .upload(fileName, file);
 
         if (error) throw error;
 
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = supabaseBypass.storage
           .from('portfolio')
           .getPublicUrl(fileName);
 
@@ -147,7 +147,7 @@ const ArtistPortfolioModal: React.FC<ArtistPortfolioModalProps> = ({ isOpen, onC
         order: portfolioItems.length + index
       }));
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('portfolio_items')
         .insert(newItems)
         .select();
@@ -167,7 +167,7 @@ const ArtistPortfolioModal: React.FC<ArtistPortfolioModalProps> = ({ isOpen, onC
 
   const deletePortfolioItem = async (item: PortfolioItem) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('portfolio_items')
         .delete()
         .eq('id', item.id);
@@ -177,7 +177,7 @@ const ArtistPortfolioModal: React.FC<ArtistPortfolioModalProps> = ({ isOpen, onC
       // Also delete from storage
       const fileName = item.image_url.split('/').pop();
       if (fileName) {
-        await supabase.storage
+        await supabaseBypass.storage
           .from('portfolio')
           .remove([`${userProfile?.id}/portfolio/${fileName}`]);
       }

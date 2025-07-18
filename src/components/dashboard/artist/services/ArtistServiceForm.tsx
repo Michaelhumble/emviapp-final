@@ -90,7 +90,7 @@ const ArtistServiceForm = ({ isOpen, onClose, onServiceSaved, initialData }: Art
       
       setUploadProgress(30);
       
-      const { data, error } = await supabase.storage
+      const { data, error } = await supabaseBypass.storage
         .from('service_images')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -102,7 +102,7 @@ const ArtistServiceForm = ({ isOpen, onClose, onServiceSaved, initialData }: Art
       setUploadProgress(70);
       
       // Get public URL
-      const { data: urlData } = supabase.storage
+      const { data: urlData } = supabaseBypass.storage
         .from('service_images')
         .getPublicUrl(data.path);
       
@@ -143,7 +143,7 @@ const ArtistServiceForm = ({ isOpen, onClose, onServiceSaved, initialData }: Art
 
       if (isEditing && initialData) {
         // Update existing service
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("services")
           .update(serviceData)
           .eq("id", initialData.id);
@@ -152,7 +152,7 @@ const ArtistServiceForm = ({ isOpen, onClose, onServiceSaved, initialData }: Art
         toast.success("Service updated successfully");
       } else {
         // Create new service
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("services")
           .insert(serviceData);
 

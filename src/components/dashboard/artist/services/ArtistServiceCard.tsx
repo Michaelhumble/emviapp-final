@@ -40,7 +40,7 @@ const ArtistServiceCard = ({ service, onServiceUpdated }: ArtistServiceCardProps
   const handleToggleVisibility = async () => {
     setIsUpdatingVisibility(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .update({ is_visible: !service.is_visible, updated_at: new Date().toISOString() })
         .eq("id", service.id);
@@ -59,7 +59,7 @@ const ArtistServiceCard = ({ service, onServiceUpdated }: ArtistServiceCardProps
 
   const handleDeleteService = async () => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .delete()
         .eq("id", service.id);

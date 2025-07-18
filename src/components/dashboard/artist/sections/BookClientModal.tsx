@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 
 const SERVICES = [
@@ -78,7 +78,7 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
     
     try {
       // Insert booking to Supabase
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .insert({
           client_name: clientName,

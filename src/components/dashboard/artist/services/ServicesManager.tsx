@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -36,7 +36,7 @@ const ServicesManager = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .select("*")
         .eq("user_id", user.id)
@@ -53,7 +53,7 @@ const ServicesManager = () => {
     mutationFn: async (service: Omit<Service, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .insert([{
           ...service,
@@ -78,7 +78,7 @@ const ServicesManager = () => {
   // Update service mutation
   const updateServiceMutation = useMutation({
     mutationFn: async (service: Service) => {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .update({
           title: service.title,
@@ -109,7 +109,7 @@ const ServicesManager = () => {
   // Delete service mutation
   const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .delete()
         .eq("id", serviceId)

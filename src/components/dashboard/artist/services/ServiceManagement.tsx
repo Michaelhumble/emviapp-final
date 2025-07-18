@@ -5,7 +5,7 @@ import { Edit2, Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -39,7 +39,7 @@ const ServiceManagement = () => {
     if (!user) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("profiles")
         .update({ 
           skills: updatedServices,

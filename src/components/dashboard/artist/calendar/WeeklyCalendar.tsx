@@ -60,25 +60,25 @@ export const WeeklyCalendar = () => {
   };
 
   const getBookingsForDay = (day: Date) => {
-    return appointments.filter((booking) => {
-      if (booking.start_time) {
+    return appointments.filter((booking: any) => {
+      if (booking?.start_time) {
         // Use start_time instead of date_requested
         const bookingDate = parseISO(booking.start_time);
         return isSameDay(bookingDate, day);
       }
       return false;
-    }).map(booking => {
+    }).map((booking: any) => {
       // Convert from API format to our Booking type
       return {
-        id: booking.id,
-        sender_id: booking.customer_id || '',
-        recipient_id: booking.artist_id || '',
-        client_name: booking.customer_name || 'Client',
-        service_name: booking.services?.title || 'Service',
-        date_requested: booking.start_time || '',
-        time_requested: booking.start_time ? format(parseISO(booking.start_time), 'h:mm a') : '',
-        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
-        created_at: booking.created_at || new Date().toISOString()
+        id: booking?.id || '',
+        sender_id: booking?.customer_id || '',
+        recipient_id: booking?.artist_id || '',
+        client_name: booking?.customer_name || 'Client',
+        service_name: booking?.services?.title || 'Service',
+        date_requested: booking?.start_time || '',
+        time_requested: booking?.start_time ? format(parseISO(booking.start_time), 'h:mm a') : '',
+        status: booking?.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
+        created_at: booking?.created_at || new Date().toISOString()
       } as Booking;
     });
   };

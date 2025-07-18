@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, DollarSign, Clock, Edit, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,7 @@ const ServiceManager = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .select("*")
         .eq("user_id", user.id)
@@ -64,7 +64,7 @@ const ServiceManager = () => {
     mutationFn: async (service: Omit<Service, 'id' | 'user_id'>) => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .insert([{
           ...service,
@@ -91,7 +91,7 @@ const ServiceManager = () => {
   // Update service mutation
   const updateServiceMutation = useMutation({
     mutationFn: async (service: Service) => {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .update({
           title: service.title,
@@ -122,7 +122,7 @@ const ServiceManager = () => {
   // Delete service mutation
   const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .delete()
         .eq("id", serviceId);

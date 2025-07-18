@@ -47,7 +47,7 @@ export const useArtistDashboardData = (activeTab: string) => {
     setIsLoadingStats(true);
     try {
       // Get booking stats
-      const { data: bookingData, error: bookingError } = await supabase
+      const { data: bookingData, error: bookingError } = await supabaseBypass
         .from('appointments')
         .select('id, status')
         .eq('artist_id', user.id);
@@ -63,7 +63,7 @@ export const useArtistDashboardData = (activeTab: string) => {
       if (completedError) throw completedError;
       
       // Get ratings data
-      const { data: ratingsData, error: ratingsError } = await supabase
+      const { data: ratingsData, error: ratingsError } = await supabaseBypass
         .from('reviews')
         .select('rating')
         .eq('artist_id', user.id)
@@ -72,7 +72,7 @@ export const useArtistDashboardData = (activeTab: string) => {
       if (ratingsError) throw ratingsError;
       
       // Count referrals
-      const { count: referralCount, error: referralError } = await supabase
+      const { count: referralCount, error: referralError } = await supabaseBypass
         .from('referrals')
         .select('id', { count: 'exact' })
         .eq('referrer_id', user.id);
@@ -80,7 +80,7 @@ export const useArtistDashboardData = (activeTab: string) => {
       if (referralError) throw referralError;
       
       // Get unique customer counts
-      const { data: clientsData, error: clientsError } = await supabase
+      const { data: clientsData, error: clientsError } = await supabaseBypass
         .from('appointments')
         .select('customer_id')
         .eq('artist_id', user.id)
@@ -156,7 +156,7 @@ export const useArtistDashboardData = (activeTab: string) => {
     setIsLoadingBookings(true);
     try {
       // Get recent bookings with service details
-      const { data, error } = await supabase
+    const { data, error } = await supabaseBypass
         .from('appointments')
         .select(`
           id, 
@@ -223,7 +223,7 @@ export const useArtistDashboardData = (activeTab: string) => {
       
       const monthlyEarnings = await Promise.all(
         months.map(async (month) => {
-          const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
             .from('completed_bookings')
             .select('commission_earned')
             .eq('artist_id', user.id)
@@ -240,7 +240,7 @@ export const useArtistDashboardData = (activeTab: string) => {
       );
       
       // Get total earnings (all time)
-      const { data: totalData, error: totalError } = await supabase
+      const { data: totalData, error: totalError } = await supabaseBypass
         .from('completed_bookings')
         .select('commission_earned')
         .eq('artist_id', user.id);
@@ -251,7 +251,7 @@ export const useArtistDashboardData = (activeTab: string) => {
         sum + (booking.commission_earned || 0), 0);
       
       // Get pending payouts (completed but not paid)
-      const { data: pendingData, error: pendingError } = await supabase
+      const { data: pendingData, error: pendingError } = await supabaseBypass
         .from('completed_bookings')
         .select('commission_earned')
         .eq('artist_id', user.id)
