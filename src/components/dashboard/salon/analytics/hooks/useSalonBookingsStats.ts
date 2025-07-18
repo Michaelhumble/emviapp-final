@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { format, startOfWeek, endOfWeek, subWeeks, addWeeks } from 'date-fns';
 
 type BookingStats = {
@@ -56,7 +56,7 @@ export const useSalonBookingsStats = ({
               : endOfYear(startDate)
         );
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('completed_bookings')
           .select('*')
           .eq('salon_id', salonId)

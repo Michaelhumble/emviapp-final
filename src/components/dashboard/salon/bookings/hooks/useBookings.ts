@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { Booking } from "../types";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ export const useBookings = () => {
     async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("bookings")
         .select(`
           *,
@@ -76,7 +76,7 @@ export const useBookings = () => {
     try {
       // In a real implementation, you'd fetch staff members associated with this salon
       // For now, using a mock approach since salon_id field might not exist yet
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("profiles")
         .select("id, full_name")
         .eq("role", "artist");
@@ -100,9 +100,9 @@ export const useBookings = () => {
     if (!user?.id) return false;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
-        .update({ status: newStatus })
+        .update({ status: newStatus } as any)
         .eq("id", bookingId)
         .eq("recipient_id", user.id);
       
@@ -137,9 +137,9 @@ export const useBookings = () => {
         metadata: { assigned_staff_id: staffId }
       };
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
-        .update(updateData)
+        .update(updateData as any)
         .eq("id", bookingId)
         .eq("recipient_id", user.id);
       
@@ -172,9 +172,9 @@ export const useBookings = () => {
       if (updates.time) updateData.time_requested = updates.time;
       if (updates.notes !== undefined) updateData.note = updates.notes;
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
-        .update(updateData)
+        .update(updateData as any)
         .eq("id", bookingId)
         .eq("recipient_id", user.id);
       

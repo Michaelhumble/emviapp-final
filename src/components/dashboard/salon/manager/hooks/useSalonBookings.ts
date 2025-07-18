@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 import { SalonBooking } from "../../types";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ export const useSalonBookings = () => {
       setError(null);
 
       // First get all staff IDs for the salon
-      const { data: staffData, error: staffError } = await supabase
+      const { data: staffData, error: staffError } = await supabaseBypass
         .from('salon_staff')
         .select('id')
         .eq('salon_id', currentSalon.id);
@@ -44,7 +44,7 @@ export const useSalonBookings = () => {
       const staffIds = staffData.map(staff => staff.id);
       
       // Fetch the bookings
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .select(`
           *,

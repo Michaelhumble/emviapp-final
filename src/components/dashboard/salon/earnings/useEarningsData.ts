@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { SalonEarnings, MonthlyStats } from './types';
 import { startOfMonth, endOfMonth } from 'date-fns';
@@ -21,7 +21,7 @@ export const useEarningsData = () => {
       
       try {
         setLoading(true);
-        const { data, error: fetchError } = await supabase
+        const { data, error: fetchError } = await supabaseBypass
           .rpc('get_salon_earnings', {
             p_salon_id: currentSalon.id
           });

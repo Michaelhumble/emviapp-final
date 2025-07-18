@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const SalonSettings = () => {
   const { user, userProfile, updateProfile, refreshUserProfile } = useAuth();
@@ -80,7 +80,7 @@ const SalonSettings = () => {
       const fileExt = logoFile.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError, data: uploadData } = await supabaseBypass.storage
         .from('salon-logos')
         .upload(fileName, logoFile, {
           cacheControl: '3600',
@@ -92,7 +92,7 @@ const SalonSettings = () => {
       }
       
       if (uploadData) {
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = supabaseBypass.storage
           .from('salon-logos')
           .getPublicUrl(fileName);
         
@@ -127,14 +127,14 @@ const SalonSettings = () => {
       });
       
       // Update user profile in database
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           salon_name: formData.salon_name,
           bio: formData.bio,
           avatar_url: logoUrl,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', user?.id);
       
       if (error) {

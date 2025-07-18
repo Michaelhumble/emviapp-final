@@ -31,7 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createTranslation } from "../SalonTranslationHelper";
 import { format } from "date-fns";
@@ -91,7 +91,7 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
     setIsSubmitting(true);
     try {
       // Check for time slot availability first
-      const { data: existingBookings, error: conflictError } = await supabase
+      const { data: existingBookings, error: conflictError } = await supabaseBypass
         .from('bookings')
         .select('id')
         .eq('recipient_id', values.artist_id)
@@ -113,7 +113,7 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
         return;
       }
 
-      const { data: booking, error } = await supabase
+      const { data: booking, error } = await supabaseBypass
         .from('bookings')
         .insert({
           sender_id: user.id,
@@ -128,7 +128,7 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
             customer_phone: values.phone || null,
           },
           status: 'accepted'
-        })
+        } as any)
         .select()
         .single();
 

@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 import { SalonTeamMember, SalonStaffRole } from "../../team/types";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export const useTeamMembers = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .select('*')
         .eq('salon_id', currentSalon.id)

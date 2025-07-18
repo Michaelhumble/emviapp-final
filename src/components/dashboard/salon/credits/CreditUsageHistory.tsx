@@ -5,7 +5,7 @@ import { Clock, CreditCard, Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { format } from "date-fns";
 
 interface CreditTransaction {
@@ -31,7 +31,7 @@ const CreditUsageHistory: React.FC = () => {
       try {
         // In a real app, this would be a query to the customer_credits table
         // For now, we'll use mock data if no customer_credits table exists
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from("customer_credits")
           .select("*")
           .eq("user_id", user.id)

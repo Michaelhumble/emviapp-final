@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 import { SalonBooking } from "../../types";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ export const useSalonBookingsFixed = () => {
     if (!currentSalon?.id) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .select('id, full_name')
         .eq('salon_id', currentSalon.id)
@@ -63,7 +63,7 @@ export const useSalonBookingsFixed = () => {
       setLoadingTimedOut(false);
 
       // First get all staff IDs for the salon
-      const { data: staffData, error: staffError } = await supabase
+      const { data: staffData, error: staffError } = await supabaseBypass
         .from('salon_staff')
         .select('id')
         .eq('salon_id', currentSalon.id);
@@ -86,7 +86,7 @@ export const useSalonBookingsFixed = () => {
       const staffIds = staffData.map(staff => staff.id);
       
       // Fetch the bookings
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .select(`
           *,
@@ -163,9 +163,9 @@ export const useSalonBookingsFixed = () => {
     try {
       setLoading(true);
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('bookings')
-        .update({ status: newStatus })
+        .update({ status: newStatus } as any)
         .eq('id', bookingId);
         
       if (error) {
@@ -209,12 +209,12 @@ export const useSalonBookingsFixed = () => {
       );
       
       // Then update in the database
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('bookings')
         .update({ 
           recipient_id: artistId,
           metadata: { assigned_staff_id: artistId }
-        })
+        } as any)
         .eq('id', bookingId);
         
       if (error) {

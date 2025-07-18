@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useSalon } from "@/context/salon";
 import { SalonBooking } from "../../types";
 import { toast } from "sonner";
@@ -15,7 +15,7 @@ export const useSalonBookings = () => {
     if (!currentSalon?.id) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_staff')
         .select('id, full_name')
         .eq('salon_id', currentSalon.id)
@@ -42,7 +42,7 @@ export const useSalonBookings = () => {
       setLoading(true);
       setError(null);
 
-      const { data: staffData, error: staffError } = await supabase
+      const { data: staffData, error: staffError } = await supabaseBypass
         .from('salon_staff')
         .select('id')
         .eq('salon_id', currentSalon.id);
@@ -57,7 +57,7 @@ export const useSalonBookings = () => {
       
       const staffIds = staffData.map(staff => staff.id);
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .select(`
           *,
@@ -118,9 +118,9 @@ export const useSalonBookings = () => {
     try {
       setLoading(true);
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('bookings')
-        .update({ status: newStatus })
+        .update({ status: newStatus } as any)
         .eq('id', bookingId);
         
       if (error) throw error;
