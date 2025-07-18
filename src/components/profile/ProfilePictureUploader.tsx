@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { UserCircle, Upload, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -29,12 +29,12 @@ const ProfilePictureUploader = ({
   const ensureStorageBucketExists = async () => {
     try {
       // Check if profile_images bucket exists
-      const { data: buckets } = await supabase.storage.listBuckets();
+      const { data: buckets } = await supabaseBypass.storage.listBuckets();
       const bucketExists = buckets?.some(b => b.name === 'profile_images');
       
       if (!bucketExists) {
         console.log('Creating profile_images bucket...');
-        await supabase.storage.createBucket('profile_images', {
+        await supabaseBypass.storage.createBucket('profile_images', {
           public: true
         });
       }
@@ -76,7 +76,7 @@ const ProfilePictureUploader = ({
       const filePath = `${userId}/${fileName}`;
 
       // Upload file to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabaseBypass.storage
         .from("profile_images")
         .upload(filePath, file, {
           upsert: true,
@@ -88,17 +88,17 @@ const ProfilePictureUploader = ({
       }
 
       // Get public URL
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData } = supabaseBypass.storage
         .from("profile_images")
         .getPublicUrl(filePath);
 
       const publicUrl = publicUrlData.publicUrl;
 
       // Update user record in the database
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseBypass
         .from("profiles")
-        .update({ avatar_url: publicUrl })
-        .eq("id", userId);
+        .update({ avatar_url: publicUrl } as any)
+        .eq("id" as any, userId);
 
       if (updateError) {
         throw updateError;
@@ -130,16 +130,16 @@ const ProfilePictureUploader = ({
 
     try {
       // Update user record to remove avatar_url
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("profiles")
-        .update({ avatar_url: null })
-        .eq("id", userId);
+        .update({ avatar_url: null } as any)
+        .eq("id" as any, userId);
 
       if (error) throw error;
 
       // Try to delete the file from storage (don't fail if it doesn't exist)
       try {
-        await supabase.storage
+        await supabaseBypass.storage
           .from("profile_images")
           .remove([`${userId}/avatar.jpg`, `${userId}/avatar.jpeg`, `${userId}/avatar.png`]);
       } catch (storageError) {

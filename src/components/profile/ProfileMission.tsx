@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit2, Heart, Save } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -20,10 +20,10 @@ const ProfileMission = () => {
     
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
-        .update({ bio: mission })
-        .eq('id', userProfile.id);
+        .update({ bio: mission } as any)
+        .eq('id' as any, userProfile.id);
         
       if (error) throw error;
       

@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { LoaderCircle, Check } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import SpecialtySelector from './components/SpecialtySelector';
 
 interface ArtistBioSpecialtyFormProps {
@@ -57,7 +57,7 @@ const ArtistBioSpecialtyForm = ({ onComplete }: ArtistBioSpecialtyFormProps) => 
 
     try {
       // Update bio and specialty in the profiles table
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           bio: bio.trim(),

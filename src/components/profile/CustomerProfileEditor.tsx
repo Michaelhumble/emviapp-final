@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Loader2, User, MapPin } from 'lucide-react';
 import { 
   Card,
@@ -83,14 +83,14 @@ const CustomerProfileEditor = () => {
         const fileExt = avatarFile.name.split('.').pop();
         const fileName = `customer-${user.id}-${Date.now()}.${fileExt}`;
         
-        const { error: uploadError, data: uploadData } = await supabase.storage
+        const { error: uploadError, data: uploadData } = await supabaseBypass.storage
           .from('avatars')
           .upload(fileName, avatarFile);
         
         if (uploadError) throw uploadError;
         
         if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
+          const { data: { publicUrl } } = supabaseBypass.storage
             .from('avatars')
             .getPublicUrl(fileName);
           
@@ -104,7 +104,7 @@ const CustomerProfileEditor = () => {
         : [];
       
       // Update user profile in database
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           full_name: fullName,

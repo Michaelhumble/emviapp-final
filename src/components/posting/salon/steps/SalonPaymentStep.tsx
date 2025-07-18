@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useStripe } from "@/hooks/useStripe";
 import { CreditCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useNavigate } from "react-router-dom";
 
 interface SalonPaymentStepProps {
@@ -51,13 +51,13 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
             const fileExt = file.name.split('.').pop();
             const fileName = `salon-edit-${Date.now()}-${index}.${fileExt}`;
             
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { data: uploadData, error: uploadError } = await supabaseBypass.storage
               .from('salon_sale_photos')
               .upload(fileName, file);
 
             if (uploadError) throw uploadError;
 
-            const { data: { publicUrl } } = supabase.storage
+            const { data: { publicUrl } } = supabaseBypass.storage
               .from('salon_sale_photos')
               .getPublicUrl(fileName);
 
@@ -76,7 +76,7 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
       // Combine existing and new photo URLs
       const allPhotoUrls = [...photoUrls, ...uploadedPhotoUrls];
 
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_sales')
         .update({
           salon_name: formData.salonName,
@@ -122,7 +122,7 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
           images: allPhotoUrls, // Include updated photo URLs
           updated_at: new Date().toISOString()
         })
-        .eq('id', editId);
+        .eq('id' as any, editId);
 
       if (error) throw error;
 

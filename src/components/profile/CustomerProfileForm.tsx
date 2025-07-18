@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,7 +73,7 @@ const CustomerProfileForm = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           full_name: formData.full_name,
@@ -81,8 +81,8 @@ const CustomerProfileForm = () => {
           avatar_url: formData.avatar_url,
           preferences: preferences,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id' as any, user.id);
       
       if (error) throw error;
       
@@ -107,14 +107,14 @@ const CustomerProfileForm = () => {
     
     try {
       // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabaseBypass.storage
         .from('avatars')
         .upload(filePath, file);
         
       if (uploadError) throw uploadError;
       
       // Get the public URL for the uploaded file
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const { data } = supabaseBypass.storage.from('avatars').getPublicUrl(filePath);
       
       // Update the form data with the new avatar URL
       setFormData(prev => ({ ...prev, avatar_url: data.publicUrl }));
