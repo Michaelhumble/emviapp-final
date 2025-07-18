@@ -119,7 +119,7 @@ class AuthStateManager {
     try {
       console.log('🚀 [AUTH MANAGER] Starting initialization...');
 
-      // 🔐 GET INITIAL SESSION WITHOUT AGGRESSIVE CLEANUP
+      // 🔐 GET INITIAL SESSION - TRUST SUPABASE STORAGE
       const { data: { session }, error } = await supabase.auth.getSession();
       
       if (error) {
@@ -131,17 +131,15 @@ class AuthStateManager {
       // 🔄 SET UP AUTH LISTENER FIRST
       this.setupAuthListener();
 
-      // 🎯 SET INITIAL STATE (LESS STRICT VALIDATION)
-      if (session) {
-        // Accept session if it exists, only validate if there are obvious issues
-        const hasBasicTokens = session.access_token && session.user && session.user.id;
-        if (hasBasicTokens) {
-          await this.setAuthenticatedState(session);
-        } else {
-          console.warn('⚠️ [AUTH MANAGER] Session missing basic tokens, signing out');
-          this.setUnauthenticatedState();
-        }
+      // 🎯 TRUST SUPABASE SESSION STORAGE - NO AGGRESSIVE VALIDATION
+      if (session && session.access_token && session.user?.id) {
+        console.log('✅ [AUTH MANAGER] Valid session found, restoring authenticated state');
+        await this.setAuthenticatedState(session);
+      } else if (session) {
+        console.warn('⚠️ [AUTH MANAGER] Malformed session detected, clearing');
+        this.setUnauthenticatedState();
       } else {
+        console.log('ℹ️ [AUTH MANAGER] No session found, user not signed in');
         this.setUnauthenticatedState();
       }
 
@@ -349,10 +347,11 @@ class AuthStateManager {
         console.log('🎯 [AUTH MANAGER] @emvi.app email detected - bypassing restrictions');
       }
       
-      // DON'T clean up valid sessions during normal sign-in
-      // Only clean up corrupted app-specific data
-      localStorage.removeItem('emviapp_new_user');
-      localStorage.removeItem('emviapp_user_role');
+      // PRESERVE existing valid Supabase sessions during sign-in
+      // Only remove app-specific keys that could conflict
+      if (localStorage.getItem('emviapp_new_user')) {
+        localStorage.removeItem('emviapp_new_user');
+      }
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,

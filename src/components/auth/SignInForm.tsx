@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { cleanupBeforeAuth } from "@/utils/authCleanup";
+// import { cleanupBeforeAuth } from "@/utils/authCleanup"; // REMOVED - was destroying sessions
 
 interface SignInFormProps {
   redirectUrl?: string | null;
@@ -30,8 +30,8 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
     try {
       console.log('🔐 [SIGN IN FORM] Starting sign in process...');
       
-      // 🚨 CRITICAL: Comprehensive cleanup before authentication
-      await cleanupBeforeAuth();
+      // DON'T clean up valid Supabase sessions during normal sign-in
+      // Only clear app-specific keys if needed, but preserve session tokens
       
       const result = await signIn(email, password);
       
