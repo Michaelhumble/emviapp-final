@@ -4353,84 +4353,7 @@ export type Database = {
       }
     }
     Views: {
-      artist_earnings_summary: {
-        Row: {
-          artist_id: string | null
-          booking_count: number | null
-          paid: boolean | null
-          salon_id: string | null
-          total_earnings: number | null
-          total_revenue: number | null
-          week_start: string | null
-        }
-        Relationships: []
-      }
-      post_payments: {
-        Row: {
-          last_purchase_date: string | null
-          payment_type: string | null
-          purchase_count: number | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
-      post_status_view: {
-        Row: {
-          contact_info: Json | null
-          content: string | null
-          created_at: string | null
-          expires_at: string | null
-          id: string | null
-          is_expired: boolean | null
-          is_expiring_soon: boolean | null
-          is_nationwide: boolean | null
-          location: string | null
-          metadata: Json | null
-          post_type: string | null
-          price: number | null
-          status: string | null
-          title: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          contact_info?: Json | null
-          content?: string | null
-          created_at?: string | null
-          expires_at?: string | null
-          id?: string | null
-          is_expired?: never
-          is_expiring_soon?: never
-          is_nationwide?: boolean | null
-          location?: string | null
-          metadata?: Json | null
-          post_type?: string | null
-          price?: number | null
-          status?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          contact_info?: Json | null
-          content?: string | null
-          created_at?: string | null
-          expires_at?: string | null
-          id?: string | null
-          is_expired?: never
-          is_expiring_soon?: never
-          is_nationwide?: boolean | null
-          location?: string | null
-          metadata?: Json | null
-          post_type?: string | null
-          price?: number | null
-          status?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       accept_team_invite: {
@@ -4596,6 +4519,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_artist_earnings_for_user: {
+        Args: { p_artist_id: string }
+        Returns: {
+          week_start: string
+          booking_count: number
+          total_revenue: number
+          total_earnings: number
+          salon_id: string
+          paid: boolean
+        }[]
+      }
       get_artist_rating: {
         Args: { artist_id: string }
         Returns: {
@@ -4629,6 +4563,14 @@ export type Database = {
       get_next_referral_milestone: {
         Args: { current_count: number }
         Returns: number
+      }
+      get_post_status_for_user: {
+        Args: { p_user_id: string }
+        Returns: {
+          post_id: string
+          status: string
+          payment_status: string
+        }[]
       }
       get_public_artist_profiles: {
         Args: { p_limit?: number; p_offset?: number }

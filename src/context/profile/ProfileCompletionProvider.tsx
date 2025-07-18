@@ -20,7 +20,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   const { user, userRole, userProfile } = useAuth();
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
 
-  // Fetch profile completion status from the database view
+  // Calculate profile completion based on user profile data
   const { data: dbCompletionStatus, isLoading } = useSafeQuery<any>({
     queryKey: ['profile-completion', user?.id],
     queryFn: async () => {
@@ -28,27 +28,38 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
         throw new Error('User or role not found');
       }
 
-      const { data, error } = await supabase
-        .from('profile_completion_status')
+      // Get user profile since we removed the view
+      const { data: profile, error } = await supabase
+        .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
-      // Map missing required fields
-      const missingFields = (data.required_fields || []).filter(field => {
-        const value = data[field];
-        return !value || value.length === 0;
-      });
+      if (profile) {
+        // Calculate basic completion based on essential fields
+        const requiredFields = ['full_name', 'phone', 'role'];
+        const completedFields = requiredFields.filter(field => profile[field]);
+        const completionPercentage = Math.round((completedFields.length / requiredFields.length) * 100);
+        
+        return {
+          isComplete: completionPercentage >= 80,
+          completionPercentage,
+          requiredFields,
+          optionalFields: ['bio', 'avatar_url', 'location', 'specialty'],
+          minCompletionPercentage: 80,
+          missingFields: requiredFields.filter(field => !profile[field])
+        };
+      }
 
       return {
-        isComplete: data.is_complete,
-        completionPercentage: data.calculated_completion,
-        requiredFields: data.required_fields || [],
-        optionalFields: data.optional_fields || [],
-        minCompletionPercentage: data.min_completion_percentage,
-        missingFields
+        isComplete: false,
+        completionPercentage: 0,
+        requiredFields: ['full_name', 'phone', 'role'],
+        optionalFields: ['bio', 'avatar_url', 'location', 'specialty'],
+        minCompletionPercentage: 80,
+        missingFields: ['full_name', 'phone', 'role']
       };
     },
     enabled: !!user?.id && !!userRole,

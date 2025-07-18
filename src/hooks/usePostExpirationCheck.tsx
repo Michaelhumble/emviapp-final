@@ -19,9 +19,10 @@ export const usePostExpirationCheck = (postIds: string[]) => {
     
     const fetchExpirationData = async () => {
       try {
+        // Use jobs table directly since we removed the view
         const { data, error } = await supabase
-          .from('post_status_view')
-          .select('id, is_expired, created_at')
+          .from('jobs')
+          .select('id, created_at')
           .in('id', postIds);
         
         if (error) throw error;
