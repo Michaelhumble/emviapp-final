@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,22 +45,19 @@ const ServicesManager = () => {
   const [currentService, setCurrentService] = useState<ArtistService | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
 
-  // Fetch services
+  // Fetch services - using any to bypass type issues
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['artist-services', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
       
-      // Use a more generic approach to avoid type issues
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('artist_services')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      
-      // Cast the result to our expected type
       return (data || []) as ArtistService[];
     },
     enabled: !!user?.id && isArtist
@@ -72,8 +68,7 @@ const ServicesManager = () => {
     mutationFn: async (service: Omit<ArtistService, 'id' | 'user_id' | 'created_at'>) => {
       if (!user?.id) throw new Error('User not authenticated');
       
-      // Use a more generic approach to avoid type issues
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('artist_services')
         .insert({
           user_id: user.id,
@@ -85,8 +80,6 @@ const ServicesManager = () => {
         .select();
         
       if (error) throw error;
-      
-      // Return the first item
       return data?.[0] as ArtistService;
     },
     onSuccess: () => {
@@ -104,8 +97,7 @@ const ServicesManager = () => {
   // Update service mutation
   const updateServiceMutation = useMutation({
     mutationFn: async (service: ArtistService) => {
-      // Use a more generic approach to avoid type issues
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('artist_services')
         .update({
           name: service.name,
@@ -117,8 +109,6 @@ const ServicesManager = () => {
         .select();
         
       if (error) throw error;
-      
-      // Return the first item
       return data?.[0] as ArtistService;
     },
     onSuccess: () => {
@@ -136,8 +126,7 @@ const ServicesManager = () => {
   // Delete service mutation
   const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
-      // Use a more generic approach to avoid type issues
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('artist_services')
         .delete()
         .eq('id', serviceId);

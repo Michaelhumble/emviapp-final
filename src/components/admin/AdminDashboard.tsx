@@ -70,7 +70,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       // Load flagged AI usage
-      const { data: aiData, error: aiError } = await supabase
+      const { data: aiData, error: aiError } = await (supabase as any)
         .from('ai_usage_logs')
         .select(`
           *,
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
       setFlaggedAI((aiData || []) as unknown as AIUsageLog[]);
 
       // Load content reports
-      const { data: reportData, error: reportError } = await supabase
+      const { data: reportData, error: reportError } = await (supabase as any)
         .from('content_reports')
         .select(`
           *,
@@ -100,12 +100,12 @@ const AdminDashboard = () => {
 
       // Load stats
       const [flaggedCount, reportCount, totalUsage] = await Promise.all([
-        supabase
+        (supabase as any)
           .from('ai_usage_logs')
           .select('id', { count: 'exact' })
           .not('flagged_reason', 'is', null)
           .eq('admin_reviewed', false),
-        supabase
+        (supabase as any)
           .from('content_reports')
           .select('id', { count: 'exact' })
           .eq('status', 'pending'),
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
 
   const handleAIReview = async (logId: string, action: 'approved' | 'rejected' | 'warning') => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('ai_usage_logs')
         .update({
           admin_reviewed: true,
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
 
   const handleReportReview = async (reportId: string, action: 'reviewed' | 'dismissed' | 'action_taken') => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('content_reports')
         .update({
           status: action,
