@@ -25,6 +25,7 @@ import SalonBookingCalendar from './SalonBookingCalendar';
 import SalonPhotoManager from './SalonPhotoManager';
 import SalonSettings from './SalonSettings';
 import SalonOnboardingWizard from './onboarding/SalonOnboardingWizard';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 // Import new modals
 import SalonProfileModal from './modals/SalonProfileModal';
@@ -36,7 +37,6 @@ const SalonDashboardNew = () => {
   const { userProfile } = useAuth();
   const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
-  const [notifications] = useState(3);
   
   // Modal states
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -151,24 +151,13 @@ const SalonDashboardNew = () => {
                   >
                     <User className="h-4 w-4 sm:h-6 sm:w-6" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
+                  <NotificationCenter 
+                    variant="icon"
                     className="text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-2 sm:p-3 h-10 w-10 sm:h-12 sm:w-12 relative"
-                  >
-                    <Bell className="h-4 w-4 sm:h-6 sm:w-6" />
-                    {notifications > 0 && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs h-5 w-5 sm:h-6 sm:w-6 rounded-full flex items-center justify-center font-bold shadow-lg"
-                      >
-                        {notifications}
-                      </motion.div>
-                    )}
-                  </Button>
+                  />
                   <Button 
                     className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-3 sm:px-6 py-2 sm:py-3 rounded-xl shadow-2xl border-2 border-yellow-300/50 text-sm sm:text-base h-10 sm:h-auto"
+                    onClick={() => window.open('https://buy.stripe.com/test_28o00geHp0XJaOQcMN', '_blank')}
                   >
                     <Zap className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                     <span className="hidden xs:inline">Upgrade </span>Pro
