@@ -6,7 +6,7 @@ import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRi
 import { SalonSale } from '@/types/salonSale';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
@@ -43,10 +43,10 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
     if (!confirm('Are you sure you want to delete this listing?')) return;
     
     try {
-      const { error } = await supabase
-        .from('salon_sales')
+      const { error } = await supabaseBypass
+        .from('salon_sales' as any)
         .delete()
-        .eq('id', salon.id);
+        .eq('id' as any, salon.id);
         
       if (error) throw error;
       

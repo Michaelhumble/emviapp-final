@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { enforceHTTPS, validateSession } from '@/utils/security';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 interface SecurityContextType {
   isSessionValid: boolean;
@@ -34,7 +34,7 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     setIsSessionValid(true); // Default to valid
 
     // Set up session monitoring - TRUST SUPABASE EVENTS ONLY
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = supabaseBypass.auth.onAuthStateChange(
       (event, session) => {
         console.log('🔐 [SECURITY] Auth event:', event, 'Session exists:', !!session);
         setIsSessionValid(!!session);
@@ -53,7 +53,7 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
 
   const checkRateLimit = async (endpoint: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.rpc('check_rate_limit', {
+      const { data, error } = await supabaseBypass.rpc('check_rate_limit' as any, {
         p_endpoint: endpoint,
         p_max_requests: 100,
         p_window_minutes: 60

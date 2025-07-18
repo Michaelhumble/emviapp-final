@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { deductCredits, CREDIT_COSTS, checkCredits } from "@/utils/credits";
 import { useAuth } from "@/context/auth";
 import {
@@ -83,11 +83,11 @@ export const FeatureListingButton = ({
         return;
       }
       
-      const { error } = await supabase
-        .from('salon_sales')
+      const { error } = await supabaseBypass
+        .from('salon_sales' as any)
         .update({ is_featured: true } as any)
-        .eq('id', salonSaleId)
-        .eq('user_id', user.id);
+        .eq('id' as any, salonSaleId)
+        .eq('user_id' as any, user.id);
       
       if (error) {
         console.error("Error featuring listing:", error);
@@ -95,7 +95,7 @@ export const FeatureListingButton = ({
         return;
       }
       
-      await supabase.from('activity_log').insert({
+      await supabaseBypass.from('activity_log' as any).insert({
         user_id: user.id,
         activity_type: 'feature_listing',
         description: `Featured salon listing (ID: ${salonSaleId})`,

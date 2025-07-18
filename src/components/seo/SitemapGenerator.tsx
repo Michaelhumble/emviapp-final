@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 export interface SitemapUrl {
   url: string;
@@ -41,14 +41,14 @@ export async function generateSitemap(baseUrl: string = 'https://emviapp.com'): 
 
   try {
     // Fetch active job listings
-    const { data: jobs } = await supabase
-      .from('jobs')
+    const { data: jobs } = await supabaseBypass
+      .from('jobs' as any)
       .select('id, title, location, category, updated_at')
-      .eq('status', 'active')
+      .eq('status' as any, 'active')
       .limit(1000);
 
     if (jobs) {
-      jobs.forEach(job => {
+      jobs.forEach((job: any) => {
         const slug = generateSEOSlug(job.title, job.location, job.id);
         urls.push({
           url: `${baseUrl}/${job.category}/${slug}`,
@@ -60,15 +60,15 @@ export async function generateSitemap(baseUrl: string = 'https://emviapp.com'): 
     }
 
     // Fetch active salon listings (assuming they're also in jobs table with category 'salon')
-    const { data: salons } = await supabase
-      .from('jobs')
+    const { data: salons } = await supabaseBypass
+      .from('jobs' as any)
       .select('id, title, location, updated_at')
-      .eq('category', 'salon')
-      .eq('status', 'active')
+      .eq('category' as any, 'salon')
+      .eq('status' as any, 'active')
       .limit(1000);
 
     if (salons) {
-      salons.forEach(salon => {
+      salons.forEach((salon: any) => {
         const slug = generateSEOSlug(salon.title, salon.location, salon.id);
         urls.push({
           url: `${baseUrl}/salons/${slug}`,

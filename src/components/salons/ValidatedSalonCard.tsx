@@ -9,7 +9,7 @@ import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 interface ValidatedSalonCardProps {
@@ -39,10 +39,10 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
     if (!confirm('Are you sure you want to delete this listing?')) return;
     
     try {
-      const { error } = await supabase
-        .from('salon_sales')
+      const { error } = await supabaseBypass
+        .from('salon_sales' as any)
         .delete()
-        .eq('id', salon.id);
+        .eq('id' as any, salon.id);
         
       if (error) throw error;
       

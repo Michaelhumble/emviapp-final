@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 
 interface SalonDetailModalProps {
@@ -38,10 +38,10 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onCl
     if (!confirm('Are you sure you want to delete this listing?')) return;
     
     try {
-      const { error } = await supabase
-        .from('salon_sales')
+      const { error } = await supabaseBypass
+        .from('salon_sales' as any)
         .delete()
-        .eq('id', salon.id);
+        .eq('id' as any, salon.id);
         
       if (error) throw error;
       

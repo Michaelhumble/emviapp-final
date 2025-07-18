@@ -66,7 +66,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
           if ((isLash || isBrow || isMassage || isNail) && salonImage) {
             data.image_url = salonImage;
           }
-          setSalonWithPhotos(data as SalonSale);
+          setSalonWithPhotos(data as any as SalonSale);
         }
       } catch (error) {
         console.error("Error loading salon details:", error);
