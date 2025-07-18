@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { useTranslation, Translation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 
@@ -32,7 +33,7 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
       if (error) throw error;
       
       // Update booking record to mark reminder as sent
-      await supabase
+      await supabaseBypass
         .from("bookings")
         .update({
           reminder_sent: true,

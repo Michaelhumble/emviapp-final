@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarCheck, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { CustomerBooking } from "./types";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 
 type Props = {
@@ -19,9 +19,9 @@ const CustomerBookingCard: React.FC<Props> = ({ booking, isUpcoming }) => {
   const handleCancel = async () => {
     if (!window.confirm("Cancel this booking?")) return;
     setCancelling(true);
-    const { error } = await supabase
+    const { error } = await supabaseBypass
       .from("bookings")
-      .update({ status: "cancelled" })
+      .update({ status: "cancelled" } as any)
       .eq("id", booking.id);
 
     if (error) {

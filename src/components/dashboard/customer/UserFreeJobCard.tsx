@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, MapPin, Calendar, Loader2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const UserFreeJobCard = () => {
@@ -23,7 +23,7 @@ const UserFreeJobCard = () => {
       }
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('jobs')
           .select('*')
           .eq('user_id', user.id)

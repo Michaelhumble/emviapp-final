@@ -12,7 +12,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/hooks/useTranslation";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 
@@ -52,8 +52,8 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
     setIsLoading(true);
     try {
       // Use type assertion to tell TypeScript this is okay
-      const { data, error } = await supabase
-        .from("notification_settings" as any)
+      const { data, error } = await supabaseBypass
+        .from("notification_settings")
         .select("email_reminders_enabled, sms_reminders_enabled")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -79,8 +79,8 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
     setIsSaving(true);
     try {
       // Check if settings exist for this user
-      const { data: existingSettings, error: selectError } = await supabase
-        .from("notification_settings" as any)
+      const { data: existingSettings, error: selectError } = await supabaseBypass
+        .from("notification_settings")
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -101,17 +101,17 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
       
       if (existingSettingsData && existingSettingsData.id) {
         // Update existing settings
-        const { error: updateError } = await supabase
-          .from("notification_settings" as any)
-          .update(settings)
+        const { error: updateError } = await supabaseBypass
+          .from("notification_settings")
+          .update(settings as any)
           .eq("id", existingSettingsData.id);
         
         error = updateError;
       } else {
         // Insert new settings
-        const { error: insertError } = await supabase
-          .from("notification_settings" as any)
-          .insert(settings);
+        const { error: insertError } = await supabaseBypass
+          .from("notification_settings")
+          .insert(settings as any);
         
         error = insertError;
       }

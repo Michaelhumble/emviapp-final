@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const CustomerReferralCenter = () => {
   const { userProfile, user } = useAuth();
@@ -35,7 +35,7 @@ const CustomerReferralCenter = () => {
         }
         
         // Get user credits
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await supabaseBypass
           .from('profiles')
           .select('credits')
           .eq('id', user.id)
@@ -48,7 +48,7 @@ const CustomerReferralCenter = () => {
         
         setReferralStats({
           count: tempReferralCount || 0,
-          credits: userData?.credits || 0
+          credits: (userData as any)?.credits || 0
         });
       } catch (err) {
         console.error('Unexpected error fetching referral stats:', err);

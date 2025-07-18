@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { startOfMonth, endOfMonth } from "date-fns";
 
@@ -44,7 +44,7 @@ export function useArtistAssignmentStats() {
       const monthEnd = endOfMonth(new Date());
 
       // Fetch bookings where this artist is the recipient, for this month
-      const { data: bookings, error } = await supabase
+      const { data: bookings, error } = await supabaseBypass
         .from("bookings")
         .select(`id, status, created_at, date_requested, time_requested, service:service_id(id, title, price, duration_minutes)`)
         .eq("recipient_id", user.id)

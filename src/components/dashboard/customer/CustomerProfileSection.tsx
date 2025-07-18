@@ -5,7 +5,7 @@ import { Calendar, Heart, Search, Star, Ticket, Users, Gift } from "lucide-react
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const CustomerProfileSection = () => {
   const { userProfile, user } = useAuth();
@@ -31,7 +31,7 @@ const CustomerProfileSection = () => {
         setReferralCount(0); // Will be implemented later with proper query
         
         // Get user credits
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await supabaseBypass
           .from('profiles')
           .select('credits')
           .eq('id', user.id)
@@ -42,7 +42,7 @@ const CustomerProfileSection = () => {
           return;
         }
         
-        setCredits(userData?.credits || 0);
+        setCredits((userData as any)?.credits || 0);
       } catch (err) {
         console.error('Unexpected error fetching referral stats:', err);
       }

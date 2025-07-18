@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { CustomerBooking } from './types';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
@@ -14,7 +14,7 @@ export const useCustomerBookings = () => {
       if (!user) throw new Error("User not authenticated");
       
       // Get bookings directly without trying to join with artist
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .select(`
           id, 
@@ -41,12 +41,12 @@ export const useCustomerBookings = () => {
         let artistData = null;
         
         // Fetch artist (recipient) details
-        if (booking.recipient_id) {
+        if ((booking as any).recipient_id) {
           try {
-            const { data: artist, error: artistError } = await supabase
+            const { data: artist, error: artistError } = await supabaseBypass
               .from('profiles')
               .select('id, full_name, avatar_url')
-              .eq('id', booking.recipient_id)
+              .eq('id', (booking as any).recipient_id)
               .single();
               
             if (!artistError && artist) {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link2, Copy, Users, Gift, CheckCircle, Coins, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const AffiliateReferralCard = () => {
   const { userProfile, user } = useAuth();
@@ -27,11 +27,11 @@ const AffiliateReferralCard = () => {
       try {
         // Get referred users count using RPC call to avoid type issues
         try {
-          const { data: referralData } = await supabase.rpc('get_user_referral_stats', { user_id: user.id });
+          const { data: referralData } = await supabaseBypass.rpc('get_user_referral_stats', { user_id: user.id });
           const referralCount = referralData?.[0]?.referral_count || 0;
         
           // Get user credits
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await supabaseBypass
           .from('profiles')
           .select('credits')
           .eq('id', user.id)
@@ -44,7 +44,7 @@ const AffiliateReferralCard = () => {
         
           setReferralStats({
             count: referralCount,
-            credits: userData?.credits || 0
+            credits: (userData as any)?.credits || 0
           });
         } catch (referralError) {
           console.error('Error fetching referral count:', referralError);
