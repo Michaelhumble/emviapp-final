@@ -24,68 +24,26 @@ import { supabase } from "@/integrations/supabase/client";
  * Removes ALL possible auth-related storage across all browsers
  */
 export const cleanupAuthState = () => {
-  console.log('🧹 [AUTH CLEANUP] Starting comprehensive auth state cleanup...');
+  console.log('🧹 [AUTH CLEANUP] Starting selective auth state cleanup...');
   
-  // Standard EmviApp auth keys
-  const standardKeys = [
+  // ONLY clean up app-specific keys, NOT Supabase session tokens
+  const appSpecificKeys = [
     'emviapp_new_user',
-    'emviapp_user_role',
-    'supabase.auth.token',
-    'sb-wwhqbjrhbajpabfdwnip-auth-token'
+    'emviapp_user_role'
   ];
   
   let removedCount = 0;
   
-  // Remove standard keys
-  standardKeys.forEach(key => {
+  // Remove only app-specific keys, preserve Supabase session storage
+  appSpecificKeys.forEach(key => {
     if (localStorage.getItem(key)) {
       localStorage.removeItem(key);
       removedCount++;
-      console.log('🗑️ [AUTH CLEANUP] Removed standard key:', key);
+      console.log('🗑️ [AUTH CLEANUP] Removed app key:', key);
     }
   });
   
-  // AGGRESSIVE: Remove ALL Supabase-related keys from localStorage
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || 
-        key.includes('sb-') || 
-        key.includes('supabase-auth-token') ||
-        key.includes('access-token') ||
-        key.includes('refresh-token')) {
-      localStorage.removeItem(key);
-      removedCount++;
-      console.log('🗑️ [AUTH CLEANUP] Removed localStorage key:', key);
-    }
-  });
-  
-  // AGGRESSIVE: Remove from sessionStorage
-  Object.keys(sessionStorage || {}).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || 
-        key.includes('sb-') || 
-        key.includes('supabase-auth-token') ||
-        key.includes('access-token') ||
-        key.includes('refresh-token')) {
-      sessionStorage.removeItem(key);
-      removedCount++;
-      console.log('🗑️ [AUTH CLEANUP] Removed sessionStorage key:', key);
-    }
-  });
-  
-  // FUTURE-PROOF: Clear potential cookies (if any)
-  try {
-    document.cookie.split(";").forEach((c) => {
-      const eqPos = c.indexOf("=");
-      const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
-      if (name.includes('supabase') || name.includes('sb-') || name.includes('auth')) {
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-        console.log('🗑️ [AUTH CLEANUP] Cleared cookie:', name);
-      }
-    });
-  } catch (e) {
-    console.warn('⚠️ [AUTH CLEANUP] Cookie cleanup failed:', e);
-  }
-  
-  console.log(`✅ [AUTH CLEANUP] Complete. Removed ${removedCount} storage items`);
+  console.log(`✅ [AUTH CLEANUP] Selective cleanup complete. Removed ${removedCount} app-specific items`);
   return removedCount;
 };
 
@@ -120,27 +78,10 @@ export const detectCorruptedTokens = () => {
 export const cleanupBeforeAuth = async () => {
   console.log('🔄 [AUTH CLEANUP] Pre-auth cleanup starting...');
   
-  // Detect and log any corrupted tokens
-  const issues = detectCorruptedTokens();
-  if (issues.length > 0) {
-    console.warn('⚠️ [AUTH CLEANUP] Detected corrupted tokens:', issues);
-  }
-  
-  // Perform aggressive cleanup
+  // Only clean up app-specific storage, NOT Supabase session tokens
   cleanupAuthState();
   
-  // Try global sign out to clear server-side sessions
-  try {
-    await supabase.auth.signOut({ scope: 'global' });
-    console.log('✅ [AUTH CLEANUP] Global sign out completed');
-  } catch (error) {
-    console.warn('⚠️ [AUTH CLEANUP] Global sign out failed:', error.message);
-    // Continue - this is not critical
-  }
-  
-  // Wait for cleanup to propagate
-  await new Promise(resolve => setTimeout(resolve, 150));
-  console.log('✅ [AUTH CLEANUP] Pre-auth cleanup complete');
+  console.log('✅ [AUTH CLEANUP] Pre-auth cleanup complete (selective mode)');
 };
 
 /**

@@ -119,17 +119,7 @@ class AuthStateManager {
     try {
       console.log('🚀 [AUTH MANAGER] Starting initialization...');
 
-      // 🔍 DETECT AND CLEAN CORRUPTED TOKENS
-      const corruptionIssues = detectCorruptedTokens();
-      if (corruptionIssues.length > 0) {
-        console.warn('⚠️ [AUTH MANAGER] Detected corrupted tokens on startup:', corruptionIssues);
-        // Only clean corrupted tokens, not valid sessions
-        localStorage.removeItem('emviapp_new_user');
-        localStorage.removeItem('emviapp_user_role');
-        toast.error("Authentication issue detected. Please sign in again.");
-      }
-
-      // 🔐 GET INITIAL SESSION WITH VALIDATION
+      // 🔐 GET INITIAL SESSION WITHOUT AGGRESSIVE CLEANUP
       const { data: { session }, error } = await supabase.auth.getSession();
       
       if (error) {
@@ -141,9 +131,16 @@ class AuthStateManager {
       // 🔄 SET UP AUTH LISTENER FIRST
       this.setupAuthListener();
 
-      // 🎯 VALIDATE AND SET INITIAL STATE
-      if (session && await this.validateSession(session)) {
-        await this.setAuthenticatedState(session);
+      // 🎯 SET INITIAL STATE (LESS STRICT VALIDATION)
+      if (session) {
+        // Accept session if it exists, only validate if there are obvious issues
+        const hasBasicTokens = session.access_token && session.user && session.user.id;
+        if (hasBasicTokens) {
+          await this.setAuthenticatedState(session);
+        } else {
+          console.warn('⚠️ [AUTH MANAGER] Session missing basic tokens, signing out');
+          this.setUnauthenticatedState();
+        }
       } else {
         this.setUnauthenticatedState();
       }
@@ -307,13 +304,9 @@ class AuthStateManager {
         localStorage.removeItem('emviapp_new_user');
         localStorage.removeItem('emviapp_user_role');
         this.setUnauthenticatedState();
-      } else if (session && await this.validateSession(session)) {
-        await this.setAuthenticatedState(session);
       } else if (session) {
-        // Invalid session - clean up
-        console.warn('⚠️ [AUTH MANAGER] Invalid session during auth change');
-        await this.handleSessionError(new Error('Invalid session'));
-        return;
+        // Accept session without strict validation to prevent premature sign-outs
+        await this.setAuthenticatedState(session);
       }
 
       this.state.loading = false;
@@ -356,8 +349,10 @@ class AuthStateManager {
         console.log('🎯 [AUTH MANAGER] @emvi.app email detected - bypassing restrictions');
       }
       
-      // Removed aggressive cleanup that was destroying session persistence
-      // Only clean up on actual errors, not during normal sign-in
+      // DON'T clean up valid sessions during normal sign-in
+      // Only clean up corrupted app-specific data
+      localStorage.removeItem('emviapp_new_user');
+      localStorage.removeItem('emviapp_user_role');
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -462,7 +457,7 @@ class AuthStateManager {
     try {
       console.log('📝 [AUTH MANAGER] Starting sign up...');
       
-      // Removed aggressive cleanup that destroys session persistence
+      // DON'T clean up during sign up - this destroys session persistence
       
       const isEmviEmail = email.endsWith('@emvi.app');
       
