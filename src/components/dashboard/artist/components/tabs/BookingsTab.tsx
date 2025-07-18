@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, ListCheck, Plus, Loader } from "lucide-react";
 import AddBookingModal from "./AddBookingModal";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useArtistBookings } from "@/hooks/artist/hooks/useArtistBookings";
 
 // Restoring the statusBadge function
@@ -106,7 +106,7 @@ const BookingsTab = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         onBookingAdded={refresh}
-        supabase={supabase}
+        supabase={supabaseBypass}
         user={user}
       />
     </Card>

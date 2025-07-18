@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from 'sonner';
 import { Zap, MapPin, DollarSign, Clock, CheckCircle, Loader2, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -43,7 +43,7 @@ const OneClickApplyCard = () => {
   const fetchJobsAndApplications = async () => {
     try {
       // Fetch jobs
-      const { data: jobsData, error: jobsError } = await supabase
+      const { data: jobsData, error: jobsError } = await supabaseBypass
         .from('jobs')
         .select('*')
         .eq('status', 'active')
@@ -53,7 +53,7 @@ const OneClickApplyCard = () => {
       if (jobsError) throw jobsError;
 
       // Fetch user's applications
-      const { data: applicationsData, error: applicationsError } = await supabase
+      const { data: applicationsData, error: applicationsError } = await supabaseBypass
         .from('artist_job_applications')
         .select('job_id, status')
         .eq('user_id', user?.id);
@@ -78,7 +78,7 @@ const OneClickApplyCard = () => {
 
     setApplyingToJob(job.id);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_job_applications')
         .insert({
           job_id: job.id,

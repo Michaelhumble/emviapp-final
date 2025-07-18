@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Check, X, Upload, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useProfileCompletion } from "@/components/profile/hooks/useProfileCompletion";
 
 import { Button } from "@/components/ui/button";

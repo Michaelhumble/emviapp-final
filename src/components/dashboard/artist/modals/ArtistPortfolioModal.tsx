@@ -13,7 +13,7 @@ import {
   Heart, Share2, Download, MoreHorizontal
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from 'sonner';
 
 interface PortfolioItem {

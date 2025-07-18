@@ -1,11 +1,11 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { ArtistClientRow, ClientData, BookingHistoryItem } from "../types";
 import { ClientBookingMetadata } from "../types/clientTypes";
 
 export const fetchClientBookings = async (userId: string) => {
-  const { data: bookings, error: bookingsError } = await supabase
+  const { data: bookings, error: bookingsError } = await supabaseBypass
     .from('bookings')
     .select('*, services(title, price)')
     .eq('recipient_id', userId);
@@ -15,20 +15,20 @@ export const fetchClientBookings = async (userId: string) => {
 };
 
 export const fetchManualClients = async (userId: string) => {
-  const { data: manualClients, error: manualClientsError } = await supabase
+  const { data: manualClients, error: manualClientsError } = await supabaseBypass
     .from('artist_clients')
     .select('*')
     .eq('artist_id', userId);
 
   if (manualClientsError) throw manualClientsError;
-  return manualClients as ArtistClientRow[];
+  return manualClients as any[];
 };
 
 export const addClientToDatabase = async (
   artistId: string,
   clientData: { name: string; phone: string; notes: string }
 ) => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseBypass
     .from('artist_clients')
     .insert({
       artist_id: artistId,
@@ -48,7 +48,7 @@ export const updateClientNotesInDatabase = async (
   clientId: string,
   notes: string
 ) => {
-  const { error } = await supabase
+  const { error } = await supabaseBypass
     .from('artist_clients')
     .update({ notes })
     .eq('id', clientId)

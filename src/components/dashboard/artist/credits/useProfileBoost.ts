@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -96,7 +96,7 @@ export function useProfileBoost() {
       const expiryDateString = expiryDate.toISOString();
 
       // Update user profile with boosted status and deduct credits
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           boosted_until: expiryDateString,

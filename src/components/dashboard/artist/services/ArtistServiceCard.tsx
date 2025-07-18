@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Edit, Trash, DollarSign, Clock, Eye, EyeOff, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from 'sonner';
 import { Heart, MessageSquare, Clock, CheckCircle, XCircle, Loader2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -79,7 +79,7 @@ const PokeOffersCard = () => {
   const respondToOffer = async (offerId: string, status: 'accepted' | 'declined') => {
     setIsResponding(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_offers')
         .update({ status })
         .eq('id', offerId);

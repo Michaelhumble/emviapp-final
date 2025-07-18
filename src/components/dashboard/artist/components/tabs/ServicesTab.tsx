@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -119,7 +119,7 @@ export default function ServicesTab() {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("services")
         .select("*")
         .eq("user_id", user.id)
@@ -170,7 +170,7 @@ export default function ServicesTab() {
     try {
       if (editingService) {
         // Update existing service
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("services")
           .update(values)
           .eq("id", editingService.id)
@@ -181,7 +181,7 @@ export default function ServicesTab() {
         toast.success("Service updated successfully");
       } else {
         // Add new service - Fix: Ensuring all required fields are included
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("services")
           .insert({
             title: values.title,
@@ -213,7 +213,7 @@ export default function ServicesTab() {
     if (!user || !serviceToDelete) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .delete()
         .eq("id", serviceToDelete.id)

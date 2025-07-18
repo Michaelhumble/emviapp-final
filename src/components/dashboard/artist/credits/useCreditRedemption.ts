@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { BoostStatus } from './useProfileBoost';
@@ -76,7 +76,7 @@ export function useCreditRedemption(
         success = data?.success || false;
       } else {
         // Generic credit redemption
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('customer_credits')
           .insert({
             user_id: user.id,

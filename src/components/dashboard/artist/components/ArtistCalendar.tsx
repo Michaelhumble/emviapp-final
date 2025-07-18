@@ -21,7 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { format, addMinutes, isWithinInterval, set, parseISO } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz'; // Updated function names
 import { Loader2 } from "lucide-react";

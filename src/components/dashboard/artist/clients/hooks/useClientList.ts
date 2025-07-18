@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 import { ClientData } from "../types";
@@ -18,7 +18,7 @@ export const useClientList = (): UseClientListReturn => {
     setIsLoading(true);
     try {
       // Get manual clients first
-      const { data: artistClients, error: clientsError } = await supabase
+      const { data: artistClients, error: clientsError } = await supabaseBypass
         .from('artist_clients')
         .select('*')
         .eq('artist_id', user.id);
@@ -26,7 +26,7 @@ export const useClientList = (): UseClientListReturn => {
       if (clientsError) throw clientsError;
 
       // Get completed bookings to calculate totals
-      const { data: bookings, error: bookingsError } = await supabase
+      const { data: bookings, error: bookingsError } = await supabaseBypass
         .from('completed_bookings')
         .select('*, booking_id')
         .eq('artist_id', user.id);
@@ -35,7 +35,7 @@ export const useClientList = (): UseClientListReturn => {
 
       // Get booking details for customer info
       const bookingIds = bookings?.map(b => b.booking_id) || [];
-      const { data: bookingDetails, error: bookingDetailsError } = await supabase
+      const { data: bookingDetails, error: bookingDetailsError } = await supabaseBypass
         .from('bookings')
         .select('id, sender_id, service_id')
         .in('id', bookingIds);
@@ -44,7 +44,7 @@ export const useClientList = (): UseClientListReturn => {
 
       // Get customer names
       const customerIds = [...new Set(bookingDetails?.map(b => b.sender_id) || [])];
-      const { data: customers, error: customersError } = await supabase
+      const { data: customers, error: customersError } = await supabaseBypass
         .from('profiles')
         .select('id, full_name')
         .in('id', customerIds);
@@ -137,7 +137,7 @@ export const useClientList = (): UseClientListReturn => {
     if (!user?.id) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('artist_clients')
         .insert({
           artist_id: user.id,
@@ -165,7 +165,7 @@ export const useClientList = (): UseClientListReturn => {
     if (!user?.id) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_clients')
         .update({ notes })
         .eq('id', clientId)

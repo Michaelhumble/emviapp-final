@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Trash2, ZoomIn, Loader2, ImageIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import ArtistPortfolioViewer from "./ArtistPortfolioViewer";
 import { useAuth } from "@/context/auth";
 import { PortfolioImage } from "../types/ArtistDashboardTypes";
@@ -27,13 +27,13 @@ const ArtistPortfolioGrid = ({ images, isLoading }: ArtistPortfolioGridProps) =>
       if (filePath) {
         // Try to delete from storage - this might fail if the file doesn't exist
         // but we still want to remove it from the user's profile
-        await supabase.storage
+        await supabaseBypass.storage
           .from('portfolio_images')
           .remove([filePath]);
       }
 
       // Update user profile
-      const { data: userData } = await supabase
+      const { data: userData } = await supabaseBypass
         .from('profiles')
         .select('portfolio_urls')
         .eq('id', user.id)
@@ -42,7 +42,7 @@ const ArtistPortfolioGrid = ({ images, isLoading }: ArtistPortfolioGridProps) =>
       if (userData) {
         const updatedUrls = (userData.portfolio_urls || []).filter(url => url !== imageToDelete.url);
         
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('profiles')
           .update({ portfolio_urls: updatedUrls })
           .eq('id', user.id);

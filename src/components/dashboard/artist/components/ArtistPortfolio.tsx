@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const ArtistPortfolio = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
@@ -35,14 +35,14 @@ const ArtistPortfolio = () => {
     
     try {
       // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabaseBypass.storage
         .from('portfolio')
         .upload(filePath, file);
       
       if (uploadError) throw uploadError;
       
       // Get the public URL
-      const { data } = supabase.storage
+      const { data } = supabaseBypass.storage
         .from('portfolio')
         .getPublicUrl(filePath);
       
@@ -51,7 +51,7 @@ const ArtistPortfolio = () => {
       // Update user profile with new portfolio image
       const updatedPortfolio = [...portfolioImages, publicUrl];
       
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseBypass
         .from('profiles')
         .update({
           portfolio_urls: updatedPortfolio,
@@ -80,7 +80,7 @@ const ArtistPortfolio = () => {
       // Remove from portfolio_urls array
       const updatedPortfolio = portfolioImages.filter(url => url !== imageUrl);
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           portfolio_urls: updatedPortfolio,

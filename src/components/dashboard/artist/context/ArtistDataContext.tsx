@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { PortfolioImage } from '@/types/artist';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 interface ArtistDataContextType {
   firstName: string;
@@ -79,7 +79,7 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
     const loadPortfolio = async () => {
       setLoadingPortfolio(true);
       try {
-        const { data: portfolioItems, error } = await supabase
+        const { data: portfolioItems, error } = await supabaseBypass
           .from('portfolio_items')
           .select('*')
           .eq('user_id', userProfile?.id)

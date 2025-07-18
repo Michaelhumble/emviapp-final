@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Loader2, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { UserProfile } from "@/context/auth/types";
 import { useAuth } from "@/context/auth";
 import { useArtistData } from "../context/ArtistDataContext";
@@ -25,7 +25,7 @@ const ArtistPortfolioUploader = ({ onComplete }: ArtistPortfolioUploaderProps) =
       const currentUrls = artistProfile?.portfolio_urls || [];
       const updatedUrls = [...currentUrls, ...urls];
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({ portfolio_urls: updatedUrls })
         .eq('id', user.id);
