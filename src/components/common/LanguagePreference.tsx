@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { getLanguagePreference, setLanguagePreference, hasLanguagePreference } from "@/utils/languagePreference";
 import { Globe } from "lucide-react";
@@ -46,7 +47,7 @@ const LanguagePreference = () => {
     setLanguagePreference(language as 'en' | 'vi');
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')  // Use 'profiles' table instead of 'users'
         .update({ preferred_language: language })
         .eq('id', user.id);

@@ -93,8 +93,8 @@ const UniversalPhotoFeed: React.FC<UniversalPhotoFeedProps> = ({ onProfileClick,
       const postsWithEngagement = await Promise.all(
         (data || []).map(async (post) => {
           const [likesRes, commentsRes] = await Promise.all([
-            supabase.from('community_post_likes').select('id').eq('post_id', post.id),
-            supabase.from('community_post_comments').select('id').eq('post_id', post.id)
+            supabaseBypass.from('community_post_likes').select('id').eq('post_id', post.id),
+            supabaseBypass.from('community_post_comments').select('id').eq('post_id', post.id)
           ]);
 
           return {

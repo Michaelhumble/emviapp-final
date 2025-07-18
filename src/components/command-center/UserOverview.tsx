@@ -27,30 +27,30 @@ const UserOverview = () => {
     const fetchUserStats = async () => {
       try {
         // Get artists count
-        const { count: artistsCount, error: artistsError } = await supabase
+        const { count: artistsCount, error: artistsError } = await supabaseBypass
           .from('profiles')
           .select('id', { count: 'exact', head: true })
           .eq('role', 'artist');
 
         // Get salons count
-        const { count: salonsCount, error: salonsError } = await supabase
+        const { count: salonsCount, error: salonsError } = await supabaseBypass
           .from('profiles')
           .select('id', { count: 'exact', head: true })
           .eq('role', 'salon');
         
         // Get jobs count
-        const { count: jobsCount, error: jobsError } = await supabase
+        const { count: jobsCount, error: jobsError } = await supabaseBypass
           .from('jobs')
           .select('id', { count: 'exact', head: true });
         
         // Get booth listings count (posts with type "booth")
-        const { count: boothsCount, error: boothsError } = await supabase
+        const { count: boothsCount, error: boothsError } = await supabaseBypass
           .from('posts')
           .select('id', { count: 'exact', head: true })
           .eq('post_type', 'booth');
         
         // Get salon-for-sale count
-        const { count: salonSalesCount, error: salonSalesError } = await supabase
+        const { count: salonSalesCount, error: salonSalesError } = await supabaseBypass
           .from('salon_sales')
           .select('id', { count: 'exact', head: true });
 

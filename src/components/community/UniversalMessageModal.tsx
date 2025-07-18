@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from 'sonner';
 
 interface UniversalMessageModalProps {
@@ -44,7 +45,7 @@ export const UniversalMessageModal: React.FC<UniversalMessageModalProps> = ({
 
     try {
       // Use the real messaging hook to send message
-      const { error } = await supabase.from('messages').insert({
+      const { error } = await supabaseBypass.from('messages').insert({
         sender_id: user.id,
         recipient_id: recipientId,
         message_body: message.trim(),
