@@ -41,7 +41,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Loader2, Plus, Pencil, Trash, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { format, parse } from "date-fns";
@@ -102,7 +102,7 @@ const AvailabilityTab = () => {
   const fetchAvailability = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("artist_availability")
         .select("*")
         .eq("artist_id", user?.id)
@@ -157,7 +157,7 @@ const AvailabilityTab = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("artist_availability")
         .delete()
         .eq("id", id);
@@ -176,7 +176,7 @@ const AvailabilityTab = () => {
     try {
       if (isAdding) {
         // Create new availability
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("artist_availability")
           .insert({
             artist_id: user?.id,
@@ -184,20 +184,20 @@ const AvailabilityTab = () => {
             start_time: values.start_time,
             end_time: values.end_time,
             is_available: values.is_available,
-          });
+          } as any);
 
         if (error) throw error;
         toast.success("Availability added successfully");
       } else if (isEditing && currentItem?.id) {
         // Update existing availability
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("artist_availability")
           .update({
             day_of_week: values.day_of_week,
             start_time: values.start_time,
             end_time: values.end_time,
             is_available: values.is_available,
-          })
+          } as any)
           .eq("id", currentItem.id);
 
         if (error) throw error;

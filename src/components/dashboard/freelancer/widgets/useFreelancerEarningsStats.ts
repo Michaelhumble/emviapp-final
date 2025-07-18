@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 export function useFreelancerEarningsStats() {
   const { user } = useAuth();
@@ -23,7 +23,7 @@ export function useFreelancerEarningsStats() {
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
         
         // Fetch all bookings for this freelancer
-        const { data: bookingsData, error: bookingsError } = await supabase
+        const { data: bookingsData, error: bookingsError } = await supabaseBypass
           .from("bookings")
           .select(`
             id, created_at, date_requested, status,
@@ -36,7 +36,7 @@ export function useFreelancerEarningsStats() {
         if (bookingsError) throw bookingsError;
         
         // Fetch all unique client IDs from bookings
-        const { data: clientsData, error: clientsError } = await supabase
+        const { data: clientsData, error: clientsError } = await supabaseBypass
           .from("bookings")
           .select("sender_id")
           .eq("recipient_id", user.id)
@@ -46,7 +46,7 @@ export function useFreelancerEarningsStats() {
         if (clientsError) throw clientsError;
         
         // Fetch total services offered
-        const { data: servicesData, error: servicesError } = await supabase
+        const { data: servicesData, error: servicesError } = await supabaseBypass
           .from("services")
           .select("id")
           .eq("user_id", user.id);

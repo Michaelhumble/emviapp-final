@@ -9,7 +9,7 @@ import {
   Search
 } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   DropdownMenu,
@@ -54,7 +54,7 @@ const BookingsTab = () => {
 
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from("bookings")
           .select(`
             id, 
@@ -124,9 +124,9 @@ const BookingsTab = () => {
 
   const handleMarkComplete = async (bookingId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
-        .update({ status: "completed" })
+        .update({ status: "completed" } as any)
         .eq("id", bookingId);
       
       if (error) throw error;
@@ -149,9 +149,9 @@ const BookingsTab = () => {
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
-        .update({ status: "cancelled" })
+        .update({ status: "cancelled" } as any)
         .eq("id", bookingId);
       
       if (error) throw error;

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Edit, Trash2, Clock, DollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import {
   Dialog,
@@ -74,7 +74,7 @@ const ServicesTab = () => {
 
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from("services")
           .select("*")
           .eq("user_id", user.id)
@@ -121,7 +121,7 @@ const ServicesTab = () => {
     if (!confirm("Are you sure you want to delete this service?")) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("services")
         .delete()
         .eq("id", serviceId);
@@ -145,7 +145,7 @@ const ServicesTab = () => {
 
       if (editingService) {
         // Update existing service
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("services")
           .update({
             title: values.title,
@@ -153,7 +153,7 @@ const ServicesTab = () => {
             price: values.price,
             duration_minutes: values.duration_minutes,
             is_visible: values.is_visible,
-          })
+          } as any)
           .eq("id", editingService.id);
 
         if (error) throw error;
@@ -177,7 +177,7 @@ const ServicesTab = () => {
         toast.success("Service updated successfully");
       } else {
         // Create new service
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from("services")
           .insert({
             user_id: user.id,
@@ -186,7 +186,7 @@ const ServicesTab = () => {
             price: values.price,
             duration_minutes: values.duration_minutes,
             is_visible: values.is_visible,
-          })
+          } as any)
           .select("*")
           .single();
 

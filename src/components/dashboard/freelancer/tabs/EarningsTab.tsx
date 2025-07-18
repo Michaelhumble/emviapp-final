@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { DollarSign, TrendingUp, Calendar } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { addMonths, format, startOfMonth } from "date-fns";
 import {
   BarChart,
@@ -41,7 +41,7 @@ const EarningsTab = () => {
         
         // For demo, generate sample data since we don't have real payment data yet
         // In a real implementation, this would fetch from completed_bookings table
-        const { data: bookings, error } = await supabase
+        const { data: bookings, error } = await supabaseBypass
           .from("bookings")
           .select(`
             id, 

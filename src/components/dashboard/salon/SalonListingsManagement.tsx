@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SalonSale } from "@/types/salonSale";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
 import { formatCurrency } from "@/utils/salonSales";
@@ -53,7 +53,7 @@ const SalonListingsManagement = () => {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_sales')
         .select('*, photos:salon_sale_photos(*)')
         .eq('user_id', user.id)
@@ -99,9 +99,9 @@ const SalonListingsManagement = () => {
     
     setIsUpdatingStatus(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_sales')
-        .update({ status: 'inactive' })
+        .update({ status: 'inactive' } as any)
         .eq('id', listingId)
         .eq('user_id', user.id); // Security check
         
@@ -126,9 +126,9 @@ const SalonListingsManagement = () => {
     
     setIsUpdatingStatus(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_sales')
-        .update({ status: 'active' })
+        .update({ status: 'active' } as any)
         .eq('id', listingId)
         .eq('user_id', user.id); // Security check
         
@@ -158,7 +158,7 @@ const SalonListingsManagement = () => {
     
     setIsDeleting(true);
     try {
-      const { error: photosError } = await supabase
+      const { error: photosError } = await supabaseBypass
         .from('salon_sale_photos')
         .delete()
         .eq('salon_sale_id', listingToDelete);
@@ -167,7 +167,7 @@ const SalonListingsManagement = () => {
         console.error("Error deleting listing photos:", photosError);
       }
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_sales')
         .delete()
         .eq('id', listingToDelete)

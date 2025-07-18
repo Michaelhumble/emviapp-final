@@ -2,7 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { TrendingUp, Users, Eye, MousePointerClick } from "lucide-react";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -53,7 +53,7 @@ const SalonAnalyticsCards = () => {
 
       try {
         // Fetch job application counts
-        const { data: applicationsData, error: applicationsError } = await supabase
+        const { data: applicationsData, error: applicationsError } = await supabaseBypass
           .from('job_applications')
           .select('created_at, job_id')
           .eq('applicant_id', user.id)

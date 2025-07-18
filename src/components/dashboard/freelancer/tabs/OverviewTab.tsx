@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import UpcomingAppointmentList from "../UpcomingAppointmentList";
 import ServicesList from "../ServicesList";
@@ -48,7 +48,7 @@ const OverviewTab = () => {
       try {
         if (!user?.id) return;
 
-        const { data: bData, error: bErr } = await supabase
+        const { data: bData, error: bErr } = await supabaseBypass
           .from("bookings")
           .select(
             `id, created_at, date_requested, time_requested, status, note, service_id, 
@@ -60,7 +60,7 @@ const OverviewTab = () => {
         
         if (bErr) throw bErr;
         
-        const { data: sData, error: sErr } = await supabase
+        const { data: sData, error: sErr } = await supabaseBypass
           .from("services")
           .select("*")
           .eq("user_id", user.id);
