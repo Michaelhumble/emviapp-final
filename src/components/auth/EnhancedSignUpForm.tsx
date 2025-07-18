@@ -90,9 +90,30 @@ export const EnhancedSignUpForm = () => {
           description: "Welcome to our beautiful community! Please check your email to verify your account and begin your journey.",
         });
 
-        // Navigate to dashboard
-        console.log("🔄 [SIGN UP] Navigating to dashboard...");
-        navigate("/dashboard");
+        // Navigate to appropriate dashboard based on role
+        console.log("🔄 [SIGN UP] Determining target dashboard for role:", mappedRole);
+        
+        let targetUrl = '/dashboard'; // Default fallback
+        
+        switch (mappedRole) {
+          case 'artist':
+            targetUrl = '/dashboard/artist';
+            break;
+          case 'owner':
+            targetUrl = '/dashboard/salon';
+            break;
+          case 'customer':
+            targetUrl = '/dashboard/customer';
+            break;
+          case 'freelancer':
+            targetUrl = '/dashboard/freelancer';
+            break;
+          default:
+            targetUrl = '/dashboard';
+        }
+        
+        console.log("🔄 [SIGN UP] Navigating to:", targetUrl);
+        navigate(targetUrl, { replace: true });
       } else {
         console.warn("⚠️ [SIGN UP] No user returned from Supabase");
         throw new Error("Account creation didn't complete properly. Please try again.");

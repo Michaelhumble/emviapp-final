@@ -38,14 +38,35 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
       if (result?.success) {
         console.log('✅ [SIGN IN FORM] Sign in successful, preparing redirect...');
         
-        // Decode the redirect URL if it exists, default to dashboard
-        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+        // Define protected routes that are safe to redirect to
+        const protectedRoutes = [
+          '/dashboard', '/profile', '/onboarding', '/settings',
+          '/dashboard/artist', '/dashboard/salon', '/dashboard/customer', 
+          '/dashboard/manager', '/dashboard/admin', '/dashboard/freelancer',
+          '/dashboard/supplier', '/dashboard/renter', '/dashboard/other',
+          '/my-bookings', '/messaging', '/checkout', '/invite'
+        ];
         
-        // 🔄 FORCE FULL PAGE REFRESH for completely clean auth state
+        let targetUrl = '/dashboard'; // Default to dashboard
+        
+        if (redirectUrl) {
+          const decodedRedirect = decodeURIComponent(redirectUrl);
+          console.log('🔍 [SIGN IN FORM] Checking redirect URL:', decodedRedirect);
+          
+          // Only redirect to protected routes or dashboard paths
+          if (protectedRoutes.some(route => decodedRedirect.startsWith(route))) {
+            targetUrl = decodedRedirect;
+            console.log('✅ [SIGN IN FORM] Redirect URL is protected, using:', targetUrl);
+          } else {
+            console.log('⚠️ [SIGN IN FORM] Redirect URL is public, defaulting to dashboard');
+          }
+        }
+        
+        // Use navigate instead of window.location.href to avoid full page reload
         setTimeout(() => {
-          console.log('🔄 [SIGN IN FORM] Redirecting to:', decodedRedirect);
-          window.location.href = decodedRedirect;
-        }, 300); // Brief delay to ensure auth state propagates
+          console.log('🔄 [SIGN IN FORM] Navigating to:', targetUrl);
+          navigate(targetUrl, { replace: true });
+        }, 500); // Slightly longer delay to ensure auth state propagates
       } else {
         console.error('❌ [SIGN IN FORM] Sign in failed:', result?.error);
       }

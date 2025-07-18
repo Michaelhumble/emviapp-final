@@ -99,26 +99,47 @@ const NewSignUp = () => {
         
         toast.success('Account created successfully! Redirecting...');
         
-        // Role-based redirect
+        // Define protected routes that are safe to redirect to after signup
+        const protectedRoutes = [
+          '/dashboard', '/profile', '/onboarding', '/settings',
+          '/dashboard/artist', '/dashboard/salon', '/dashboard/customer', 
+          '/dashboard/manager', '/dashboard/admin', '/dashboard/freelancer',
+          '/dashboard/supplier', '/dashboard/renter', '/dashboard/other',
+          '/my-bookings', '/messaging', '/checkout', '/invite'
+        ];
+        
+        let targetUrl = '/dashboard'; // Default to dashboard
+        
+        // First, check for role-based redirect
+        switch (role) {
+          case 'artist':
+          case 'nail technician/artist':
+            targetUrl = '/dashboard/artist';
+            break;
+          case 'salon':
+          case 'owner':
+            targetUrl = '/dashboard/salon';
+            break;
+          case 'customer':
+            targetUrl = '/dashboard/customer';
+            break;
+          case 'freelancer':
+            targetUrl = '/dashboard/freelancer';
+            break;
+          default:
+            // Check if redirect URL is a protected route
+            if (redirectUrl) {
+              const decodedRedirect = decodeURIComponent(redirectUrl);
+              if (protectedRoutes.some(route => decodedRedirect.startsWith(route))) {
+                targetUrl = decodedRedirect;
+              }
+            }
+            break;
+        }
+        
         setTimeout(() => {
-          switch (role) {
-            case 'artist':
-            case 'nail technician/artist':
-              navigate('/dashboard/artist');
-              break;
-            case 'salon':
-            case 'owner':
-              navigate('/dashboard/salon');
-              break;
-            case 'customer':
-              navigate('/dashboard/customer');
-              break;
-            case 'freelancer':
-              navigate('/dashboard/freelancer');
-              break;
-            default:
-              navigate(redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard');
-          }
+          console.log('🔄 [SIGN UP] Navigating to:', targetUrl);
+          navigate(targetUrl, { replace: true });
         }, 1500);
       } else {
         console.error('=== NO USER RETURNED ===');
