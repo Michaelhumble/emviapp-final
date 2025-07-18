@@ -104,7 +104,7 @@ export const manualEmergencyReset = async () => {
 };
 
 /**
- * 🧪 SIMULATE TOKEN CORRUPTION (DEV ONLY)
+ * 🧪 SIMULATE TOKEN CORRUPTION (DEV ONLY) - DISABLED TO PREVENT ACCIDENTAL CORRUPTION
  */
 export const simulateTokenCorruption = () => {
   if (process.env.NODE_ENV !== 'development') {
@@ -112,16 +112,9 @@ export const simulateTokenCorruption = () => {
     return false;
   }
 
-  // Inject corrupted tokens
-  localStorage.setItem('sb-wwhqbjrhbajpabfdwnip-auth-token', 'undefined');
-  localStorage.setItem('supabase.auth.token', 'null');
-  localStorage.setItem('corrupted-session', JSON.stringify({ 
-    user: null, 
-    access_token: 'invalid_token_' + Date.now() 
-  }));
-
-  console.log('🧪 [AUTH DEBUG] Injected corrupted tokens');
-  return true;
+  console.warn('⚠️ [AUTH DEBUG] Token corruption simulation DISABLED to prevent accidental session destruction');
+  console.log('🛡️ [AUTH DEBUG] This function was corrupting live sessions - now safely disabled');
+  return false;
 };
 
 /**

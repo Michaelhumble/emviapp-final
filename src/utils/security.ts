@@ -64,27 +64,24 @@ export const auditUserAction = async (
   }
 };
 
-// Session validation
+// Session validation - TRUST SUPABASE, NO FORCED SIGNOUTS
 export const validateSession = async (): Promise<boolean> => {
   try {
     const { data: { session }, error } = await supabase.auth.getSession();
     
+    // Let Supabase handle session validity - don't force signouts
     if (error || !session) {
+      console.warn('⚠️ [SECURITY] Session validation warning:', error?.message || 'No session');
       return false;
     }
     
-    // Check if session is not expired
-    const now = new Date().getTime();
-    const expiresAt = new Date(session.expires_at || 0).getTime();
-    
-    if (now >= expiresAt) {
-      await supabase.auth.signOut();
-      return false;
-    }
-    
+    // REMOVED: Automatic signOut on expiry - Supabase handles token refresh
+    // Trust Supabase's token management and auto-refresh capabilities
+    console.log('✅ [SECURITY] Session validation passed');
     return true;
+    
   } catch (error) {
-    console.error('Session validation error:', error);
+    console.error('❌ [SECURITY] Session validation error:', error);
     return false;
   }
 };

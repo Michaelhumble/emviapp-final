@@ -29,28 +29,25 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     // Enforce HTTPS in production
     enforceHTTPS();
 
-    // Initial session validation
-    validateSession().then(setIsSessionValid);
+    // REMOVED: Aggressive session validation that was destroying sessions
+    // Instead, trust Supabase's built-in session management
+    setIsSessionValid(true); // Default to valid
 
-    // Set up session monitoring
+    // Set up session monitoring - TRUST SUPABASE EVENTS ONLY
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('🔐 [SECURITY] Auth event:', event, 'Session exists:', !!session);
         setIsSessionValid(!!session);
         
-        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-          validateSession().then(setIsSessionValid);
-        }
+        // NO MORE FORCED VALIDATION - trust Supabase state changes
       }
     );
 
-    // Session validation interval (every 5 minutes)
-    const sessionCheckInterval = setInterval(() => {
-      validateSession().then(setIsSessionValid);
-    }, 5 * 60 * 1000);
+    // REMOVED: Destructive 5-minute session validation interval
+    // This was the main cause of users being signed out unexpectedly
 
     return () => {
       subscription.unsubscribe();
-      clearInterval(sessionCheckInterval);
     };
   }, []);
 
@@ -75,8 +72,9 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
   };
 
   const refreshSecurity = async (): Promise<void> => {
-    const sessionValid = await validateSession();
-    setIsSessionValid(sessionValid);
+    // REMOVED: Destructive validateSession call
+    // Trust current auth state instead of forcing validation
+    console.log('🔐 [SECURITY] Security refresh requested - trusting current state');
   };
 
   const value: SecurityContextType = {
