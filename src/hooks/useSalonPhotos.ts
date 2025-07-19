@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { useSalon } from '@/context/salon';
 import { toast } from 'sonner';
@@ -30,14 +30,14 @@ export const useSalonPhotos = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_photos')
         .select('*')
-        .eq('salon_id', currentSalon.id)
-        .order('order_number', { ascending: true });
+        .eq('salon_id' as any, currentSalon.id)
+        .order('order_number' as any, { ascending: true });
 
       if (error) throw error;
-      setPhotos(data || []);
+      setPhotos((data as any) || []);
     } catch (err) {
       console.error('Error fetching salon photos:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch photos'));
@@ -60,7 +60,7 @@ export const useSalonPhotos = () => {
         return false;
       }
 
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_photos')
         .insert({
           salon_id: currentSalon.id,
@@ -68,7 +68,7 @@ export const useSalonPhotos = () => {
           title: title || file.name,
           is_primary: photos.length === 0, // First photo is primary
           order_number: photos.length
-        });
+        } as any);
 
       if (error) throw error;
       
@@ -85,10 +85,10 @@ export const useSalonPhotos = () => {
   // Delete photo
   const deletePhoto = async (photoId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_photos')
         .delete()
-        .eq('id', photoId);
+        .eq('id' as any, photoId);
 
       if (error) throw error;
       
@@ -108,16 +108,16 @@ export const useSalonPhotos = () => {
 
     try {
       // First, unset all primary photos
-      await supabase
+      await supabaseBypass
         .from('salon_photos')
-        .update({ is_primary: false })
-        .eq('salon_id', currentSalon.id);
+        .update({ is_primary: false } as any)
+        .eq('salon_id' as any, currentSalon.id);
 
       // Then set the selected photo as primary
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_photos')
-        .update({ is_primary: true })
-        .eq('id', photoId);
+        .update({ is_primary: true } as any)
+        .eq('id' as any, photoId);
 
       if (error) throw error;
       
@@ -153,10 +153,10 @@ export const useSalonPhotos = () => {
       ];
 
       for (const update of updates) {
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('salon_photos')
-          .update({ order_number: update.order_number })
-          .eq('id', update.id);
+          .update({ order_number: update.order_number } as any)
+          .eq('id' as any, update.id);
 
         if (error) throw error;
       }

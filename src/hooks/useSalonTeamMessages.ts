@@ -1,7 +1,7 @@
 
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';

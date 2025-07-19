@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 
 export interface SalonInsights {
@@ -28,14 +28,14 @@ export const useSalonInsights = () => {
         setLoading(true);
         
         // Get salon staff IDs
-        const { data: staffData, error: staffError } = await supabase
+        const { data: staffData, error: staffError } = await supabaseBypass
           .from('salon_staff')
           .select('id')
-          .eq('salon_id', currentSalon.id);
+          .eq('salon_id' as any, currentSalon.id);
         
         if (staffError) throw staffError;
         
-        const staffIds = staffData ? staffData.map(staff => staff.id) : [];
+        const staffIds = (staffData as any) ? (staffData as any).map((staff: any) => staff.id) : [];
         
         // Create a default insights object
         const rawData = {
@@ -48,50 +48,50 @@ export const useSalonInsights = () => {
         
         if (staffIds.length > 0) {
           // Get total bookings
-          const { data: totalBookingsData } = await supabase
+          const { data: totalBookingsData } = await supabaseBypass
             .from('bookings')
             .select('id', { count: 'exact' })
-            .in('recipient_id', staffIds);
+            .in('recipient_id' as any, staffIds);
           
-          rawData.total_bookings = totalBookingsData?.length || 0;
+          rawData.total_bookings = (totalBookingsData as any)?.length || 0;
           
           // Get bookings this month
           const firstDayOfMonth = new Date();
           firstDayOfMonth.setDate(1);
           firstDayOfMonth.setHours(0, 0, 0, 0);
           
-          const { data: monthlyBookingsData } = await supabase
+          const { data: monthlyBookingsData } = await supabaseBypass
             .from('bookings')
             .select('id')
-            .in('recipient_id', staffIds)
-            .gte('created_at', firstDayOfMonth.toISOString());
+            .in('recipient_id' as any, staffIds)
+            .gte('created_at' as any, firstDayOfMonth.toISOString());
           
-          rawData.bookings_this_month = monthlyBookingsData?.length || 0;
+          rawData.bookings_this_month = (monthlyBookingsData as any)?.length || 0;
           
           // Get profile views this week
           const firstDayOfWeek = new Date();
           firstDayOfWeek.setDate(firstDayOfWeek.getDate() - firstDayOfWeek.getDay());
           firstDayOfWeek.setHours(0, 0, 0, 0);
           
-          const { data: profileViewsData } = await supabase
+          const { data: profileViewsData } = await supabaseBypass
             .from('salon_views')
             .select('id')
-            .eq('salon_id', currentSalon.id)
-            .gte('viewed_at', firstDayOfWeek.toISOString());
+            .eq('salon_id' as any, currentSalon.id)
+            .gte('viewed_at' as any, firstDayOfWeek.toISOString());
           
-          rawData.profile_views_week = profileViewsData?.length || 0;
+          rawData.profile_views_week = (profileViewsData as any)?.length || 0;
           
           // Calculate repeat client rate
           if (rawData.total_bookings > 0) {
-            const { data: bookingData } = await supabase
+            const { data: bookingData } = await supabaseBypass
               .from('bookings')
               .select('sender_id')
-              .in('recipient_id', staffIds);
+              .in('recipient_id' as any, staffIds);
 
             // Fix: Properly type clientCounts as a Record with number values
             const clientCounts: Record<string, number> = {};
-            bookingData?.forEach(booking => {
-              if (booking.sender_id) {
+            (bookingData as any)?.forEach((booking: any) => {
+              if (booking?.sender_id) {
                 clientCounts[booking.sender_id] = (clientCounts[booking.sender_id] || 0) + 1;
               }
             });

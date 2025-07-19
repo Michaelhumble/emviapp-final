@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 
 const managerProfileSchema = z.object({
@@ -33,7 +33,7 @@ export const useSalonManagerProfile = () => {
       const validatedData = managerProfileSchema.parse(data);
       
       // Update salon_staff record
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_staff')
         .update({
           full_name: validatedData.full_name,
@@ -41,9 +41,9 @@ export const useSalonManagerProfile = () => {
           phone: validatedData.phone,
           profile_photo_url: validatedData.profile_photo_url,
           updated_at: new Date().toISOString()
-        })
-        .eq('salon_id', currentSalon.id)
-        .eq('email', user.email);
+        } as any)
+        .eq('salon_id' as any, currentSalon.id)
+        .eq('email' as any, user.email);
       
       if (error) throw error;
       

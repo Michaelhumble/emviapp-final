@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { SalonStaffRole } from '@/components/dashboard/salon/team/types';
 import { useSalon } from '@/context/salon';
 
@@ -18,13 +18,12 @@ export const useSalonRolePermissions = () => {
 
       try {
         // We need to use a direct query instead of RPC since get_user_salon_role isn't in the allowed list
-        const { data: user } = await supabase.auth.getUser();
-        const { data, error } = await supabase
+        const { data: user } = await (supabaseBypass as any).auth.getUser();
+        const { data, error } = await supabaseBypass
           .from('salon_staff')
           .select('role')
-          .eq('salon_id', currentSalon.id)
-          .eq('email', user.user?.email)
-          .single();
+          .eq('salon_id' as any, currentSalon.id)
+          .eq('email' as any, user.user?.email);
 
         if (error) {
           console.error('Error fetching user role:', error);

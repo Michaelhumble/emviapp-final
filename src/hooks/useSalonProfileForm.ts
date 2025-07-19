@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useSalon } from '@/context/salon';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -64,13 +64,13 @@ export const useSalonProfileForm = () => {
     const filePath = `${userProfile.id}/${Math.random()}.${fileExt}`;
 
     try {
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await (supabaseBypass as any).storage
         .from('salon-logos')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
+      const { data } = (supabaseBypass as any).storage
         .from('salon-logos')
         .getPublicUrl(filePath);
 

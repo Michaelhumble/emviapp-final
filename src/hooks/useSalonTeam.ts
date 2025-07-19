@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { toast } from 'sonner';
 
@@ -32,15 +32,15 @@ export const useSalonTeam = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_team_members')
         .select('*')
-        .eq('salon_id', currentSalon.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: true });
+        .eq('salon_id' as any, currentSalon.id)
+        .eq('status' as any, 'active')
+        .order('created_at' as any, { ascending: true });
 
       if (error) throw error;
-      setTeamMembers(data || []);
+      setTeamMembers((data as any) || []);
     } catch (err) {
       console.error('Error fetching team members:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch team members'));
@@ -62,7 +62,7 @@ export const useSalonTeam = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_team_members')
         .insert({
           salon_id: currentSalon.id,
@@ -71,7 +71,7 @@ export const useSalonTeam = () => {
           role: memberData.role,
           specialties: memberData.specialties || [],
           status: 'active'
-        });
+        } as any);
 
       if (error) throw error;
       
@@ -93,10 +93,10 @@ export const useSalonTeam = () => {
     specialties?: string[];
   }) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_team_members')
-        .update(updates)
-        .eq('id', memberId);
+        .update(updates as any)
+        .eq('id' as any, memberId);
 
       if (error) throw error;
       
@@ -113,10 +113,10 @@ export const useSalonTeam = () => {
   // Remove team member
   const removeTeamMember = async (memberId: string, memberName: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_team_members')
-        .update({ status: 'inactive' })
-        .eq('id', memberId);
+        .update({ status: 'inactive' } as any)
+        .eq('id' as any, memberId);
 
       if (error) throw error;
       

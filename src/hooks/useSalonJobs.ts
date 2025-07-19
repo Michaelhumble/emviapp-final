@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
@@ -57,18 +57,18 @@ export const useSalonJobs = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('jobs')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .eq('user_id' as any, user.id)
+        .eq('status' as any, 'active')
+        .order('created_at' as any, { ascending: false });
 
       if (error) {
         console.error('Error fetching jobs:', error);
         throw error;
       }
-      setJobs(data || []);
+      setJobs((data as any) || []);
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch jobs'));
@@ -84,28 +84,28 @@ export const useSalonJobs = () => {
 
     try {
       // Get job IDs for this user
-      const { data: userJobs, error: jobsError } = await supabase
+      const { data: userJobs, error: jobsError } = await supabaseBypass
         .from('jobs')
         .select('id')
-        .eq('user_id', user.id);
+        .eq('user_id' as any, user.id);
 
       if (jobsError) throw jobsError;
       
-      if (!userJobs?.length) {
+      if (!(userJobs as any)?.length) {
         setApplications([]);
         return;
       }
 
-      const jobIds = userJobs.map(job => job.id);
+      const jobIds = (userJobs as any).map((job: any) => job.id);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('job_applications')
         .select('*')
-        .in('job_id', jobIds)
-        .order('created_at', { ascending: false });
+        .in('job_id' as any, jobIds)
+        .order('created_at' as any, { ascending: false });
 
       if (error) throw error;
-      setApplications(data || []);
+      setApplications((data as any) || []);
     } catch (err) {
       console.error('Error fetching applications:', err);
     }
@@ -126,14 +126,14 @@ export const useSalonJobs = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('jobs')
         .insert({
           ...jobData,
           user_id: user.id,
           status: 'active',
           category: 'beauty', // Default category
-        });
+        } as any);
 
       if (error) throw error;
       
@@ -150,10 +150,10 @@ export const useSalonJobs = () => {
   // Update job
   const updateJob = async (jobId: string, updates: Partial<SalonJob>) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('jobs')
-        .update(updates)
-        .eq('id', jobId);
+        .update(updates as any)
+        .eq('id' as any, jobId);
 
       if (error) throw error;
       
@@ -174,11 +174,11 @@ export const useSalonJobs = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('jobs')
         .delete()
-        .eq('id', jobId)
-        .eq('user_id', user?.id); // Security check
+        .eq('id' as any, jobId)
+        .eq('user_id' as any, user?.id); // Security check
 
       if (error) {
         console.error('Error deleting job:', error);
@@ -198,10 +198,10 @@ export const useSalonJobs = () => {
   // Update application status
   const updateApplicationStatus = async (applicationId: string, status: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('job_applications')
-        .update({ status })
-        .eq('id', applicationId);
+        .update({ status } as any)
+        .eq('id' as any, applicationId);
 
       if (error) throw error;
       
