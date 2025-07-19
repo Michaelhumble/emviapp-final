@@ -29,7 +29,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
       }
 
       // Get user profile since we removed the view
-      const { data: profile, error } = await supabase
+      const { data: profile, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('id', user.id)
@@ -84,12 +84,12 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
         setCompletedTasks(updatedTasks);
         
         // Update in the database
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('profiles')
           .update({ 
             completed_profile_tasks: updatedTasks,
             updated_at: new Date().toISOString()
-          })
+          } as any)
           .eq('id', user.id);
           
         if (error) {

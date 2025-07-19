@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { UseArtistBookmarkReturn } from "./types";
 
@@ -16,7 +16,7 @@ export const useArtistBookmark = (artistId: string): UseArtistBookmarkReturn => 
 
     const checkBookmark = async () => {
       try {
-        const { data: bookmarkData, error: bookmarkError } = await supabase
+        const { data: bookmarkData, error: bookmarkError } = await supabaseBypass
           .from("saved_artists")
           .select("*")
           .eq("viewer_id", user?.id)
@@ -43,7 +43,7 @@ export const useArtistBookmark = (artistId: string): UseArtistBookmarkReturn => 
       
       if (isBookmarked) {
         // Remove bookmark
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("saved_artists")
           .delete()
           .eq("viewer_id", user?.id)
@@ -55,7 +55,7 @@ export const useArtistBookmark = (artistId: string): UseArtistBookmarkReturn => 
         toast.success("Artist removed from your list");
       } else {
         // Add bookmark
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("saved_artists")
           .insert({
             viewer_id: user?.id,

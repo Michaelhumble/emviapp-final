@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { BookingCounts } from "@/types/booking";
@@ -39,7 +39,7 @@ export const useArtistBookings = () => {
       setError(null);
       
       // Fetch bookings from Supabase
-      const { data, error: fetchError } = await supabase
+      const { data, error: fetchError } = await supabaseBypass
         .from("bookings")
         .select("*")
         .eq("recipient_id", user.id)
@@ -78,7 +78,7 @@ export const useArtistBookings = () => {
     if (!user?.id) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
         .update({ status: "accepted" })
         .eq("id", bookingId)
@@ -104,7 +104,7 @@ export const useArtistBookings = () => {
     if (!user?.id) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
         .update({ status: "declined" })
         .eq("id", bookingId)
@@ -130,7 +130,7 @@ export const useArtistBookings = () => {
     fetchBookings();
     
     // Set up real-time subscription for bookings table changes
-    const subscription = supabase
+    const subscription = supabaseBypass
       .channel('bookings_changes')
       .on(
         'postgres_changes',
@@ -148,7 +148,7 @@ export const useArtistBookings = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(subscription);
+      supabaseBypass.removeChannel(subscription);
     };
   }, [user?.id, fetchBookings]);
   

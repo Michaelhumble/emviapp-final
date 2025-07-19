@@ -18,7 +18,7 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     // Use Promise.all for parallel requests - optimized with early timeout handling
     const fetchPromise = Promise.all([
       supabase.auth.getUser(),
-      supabase.from('profiles').select('*').eq('id', userId).single()
+      (supabase as any).from('profiles').select('*').eq('id', userId).single()
     ]);
     
     // Add a timeout to prevent long-running requests

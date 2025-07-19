@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { Booking } from "@/types/booking";
@@ -17,7 +17,7 @@ export function useArtistBookings() {
     setError(null);
 
     try {
-      const { data, error: fetchError } = await supabase
+      const { data, error: fetchError } = await supabaseBypass
         .from("bookings")
         .select("id, client_name, service_type, date_requested, appointment_time, status")
         .eq("recipient_id", user.id)
@@ -53,7 +53,7 @@ export function useArtistBookings() {
     if (!user?.id) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
         .update({ status: "accepted" })
         .eq("id", bookingId)
@@ -78,7 +78,7 @@ export function useArtistBookings() {
     if (!user?.id) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("bookings")
         .update({ status: "declined" })
         .eq("id", bookingId)

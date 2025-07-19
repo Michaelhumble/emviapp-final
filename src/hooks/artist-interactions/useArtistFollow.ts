@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { UseArtistFollowReturn } from "./types";
 
@@ -17,7 +17,7 @@ export const useArtistFollow = (artistId: string): UseArtistFollowReturn => {
     const checkFollow = async () => {
       try {
         // Check if artist is followed
-        const { data: followData, error: followError } = await supabase
+        const { data: followData, error: followError } = await supabaseBypass
           .from("followers")
           .select("*")
           .eq("viewer_id", user?.id)
@@ -44,7 +44,7 @@ export const useArtistFollow = (artistId: string): UseArtistFollowReturn => {
       
       if (isFollowing) {
         // Unfollow artist
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("followers")
           .delete()
           .eq("viewer_id", user?.id)
@@ -56,7 +56,7 @@ export const useArtistFollow = (artistId: string): UseArtistFollowReturn => {
         toast.success("Unfollowed artist");
       } else {
         // Follow artist
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from("followers")
           .insert({
             viewer_id: user?.id,

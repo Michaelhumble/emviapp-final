@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { logActivity } from "@/utils/activity";
 import { UseArtistOfferReturn } from "./types";
@@ -22,7 +22,7 @@ export const useArtistOffer = (artistId: string): UseArtistOfferReturn => {
       const creditCost = 5;
       
       // Send offer to artist
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("offers_sent")
         .insert({
           sender_id: user?.id,
@@ -35,7 +35,7 @@ export const useArtistOffer = (artistId: string): UseArtistOfferReturn => {
       
       // Deduct credits using our new function
       // Use type assertion to work around TypeScript error
-      const { error: deductError } = await supabase.rpc('redeem_credits' as any, {
+      const { error: deductError } = await supabaseBypass.rpc('redeem_credits', {
         p_user_id: user?.id,
         p_amount: creditCost,
         p_redemption_type: 'offer',
