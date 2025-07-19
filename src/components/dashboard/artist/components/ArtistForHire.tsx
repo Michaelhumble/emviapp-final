@@ -35,7 +35,7 @@ const ArtistForHire = () => {
   };
 
   const handleEditProfile = () => {
-    navigate('/artist-profile');
+    navigate('/profile/edit');
   };
 
   if (isLoading) {

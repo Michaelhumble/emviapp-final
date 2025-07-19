@@ -111,7 +111,11 @@ const PremiumForHireCard = ({
   const handleEdit = () => {
     if (onEditProfile) {
       onEditProfile();
+    } else if (isArtist) {
+      // For artists, navigate to profile edit page by default
+      window.location.href = '/profile/edit';
     } else {
+      // For freelancers, use inline editing
       setIsEditing(true);
     }
   };

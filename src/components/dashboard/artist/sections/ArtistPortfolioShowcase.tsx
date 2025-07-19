@@ -5,6 +5,7 @@ import { Camera, Plus, Eye, Heart, Share2, Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
+import ArtistPortfolioUploadModal from '../portfolio/ArtistPortfolioUploadModal';
 
 const ArtistPortfolioShowcase = () => {
   const { userProfile } = useAuth();
@@ -17,6 +18,10 @@ const ArtistPortfolioShowcase = () => {
   const handleViewAll = () => {
     // Navigate to full portfolio page
     window.location.href = '/dashboard/artist/portfolio';
+  };
+
+  const handleCloseModal = () => {
+    setShowUploadModal(false);
   };
 
   return (
@@ -154,6 +159,11 @@ const ArtistPortfolioShowcase = () => {
         )}
       </motion.div>
 
+      {/* Artist Portfolio Upload Modal */}
+      <ArtistPortfolioUploadModal
+        open={showUploadModal}
+        onClose={handleCloseModal}
+      />
     </>
   );
 };

@@ -203,13 +203,16 @@ const ArtistAnimatedHero = () => {
                     size="lg" 
                     className="btn-luxury bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 text-lg font-semibold"
                     onClick={() => {
-                      // Navigate to portfolio tab and trigger upload
-                      const portfolioTab = document.querySelector('[value="portfolio"]') as HTMLElement;
-                      portfolioTab?.click();
-                      setTimeout(() => {
-                        const uploadButton = document.querySelector('[data-upload-trigger]') as HTMLElement;
-                        uploadButton?.click();
-                      }, 100);
+                      // Scroll to portfolio section and trigger upload
+                      const portfolioSection = document.querySelector('[data-section="portfolio"]') as HTMLElement;
+                      if (portfolioSection) {
+                        portfolioSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => {
+                          // Find and click the Add Photos button in the portfolio section
+                          const addButton = portfolioSection.querySelector('button') as HTMLElement;
+                          addButton?.click();
+                        }, 800);
+                      }
                     }}
                   >
                     <Camera className="w-5 h-5 mr-2" />
