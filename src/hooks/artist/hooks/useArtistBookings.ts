@@ -65,7 +65,7 @@ export const useArtistBookings = () => {
         )
       );
       
-      setServiceTypes(uniqueServiceTypes);
+      setServiceTypes(uniqueServiceTypes as string[]);
     } catch (err: any) {
       console.error('Error fetching bookings:', err);
       setError("Failed to load bookings. Please try again.");

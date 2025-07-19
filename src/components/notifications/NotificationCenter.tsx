@@ -22,7 +22,7 @@ export function NotificationCenter({
   variant = 'icon' 
 }: NotificationCenterProps) {
   const [open, setOpen] = useState(false);
-  const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationContext();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationContext();
 
   // Handler for clicking on a notification
   const handleNotificationClick = (notification: Notification) => {
@@ -48,7 +48,7 @@ export function NotificationCenter({
         <PopoverTrigger asChild>
           <NotificationIcon 
             unreadCount={unreadCount}
-            onClick={() => fetchNotifications()}
+            onClick={() => setOpen(!open)}
             className={className}
           />
         </PopoverTrigger>
