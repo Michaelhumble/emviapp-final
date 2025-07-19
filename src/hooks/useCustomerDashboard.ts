@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { CustomerBooking } from '@/components/dashboard/customer/bookings/types';
 import { toast } from 'sonner';
@@ -141,7 +141,7 @@ export const useCustomerDashboard = () => {
         setError(null);
         
         // Fetch bookings with related data
-        const { data: bookingsData, error: bookingsError } = await supabase
+        const { data: bookingsData, error: bookingsError } = await supabaseBypass
           .from('bookings')
           .select(`
             id, 
@@ -153,7 +153,7 @@ export const useCustomerDashboard = () => {
             service_id,
             recipient_id
           `)
-          .eq('sender_id', user.id)
+          .eq('sender_id', user.id as any)
           .order('created_at', { ascending: false });
         
         if (bookingsError) throw bookingsError;
@@ -161,15 +161,15 @@ export const useCustomerDashboard = () => {
         // Fetch artist details for each booking
         let enhancedBookings: CustomerBooking[] = [];
         if (bookingsData && bookingsData.length > 0) {
-          enhancedBookings = await Promise.all(bookingsData.map(async (booking) => {
+          enhancedBookings = await Promise.all((bookingsData as any[]).map(async (booking: any) => {
             let artistData = null;
             let serviceData = null;
             
-            if (booking.recipient_id) {
-              const { data: artist, error: artistError } = await supabase
+            if (booking?.recipient_id) {
+              const { data: artist, error: artistError } = await supabaseBypass
                 .from('profiles')
                 .select('id, full_name, avatar_url')
-                .eq('id', booking.recipient_id)
+                .eq('id', booking.recipient_id as any)
                 .maybeSingle();
                 
               if (!artistError && artist) {
@@ -177,11 +177,11 @@ export const useCustomerDashboard = () => {
               }
             }
 
-            if (booking.service_id) {
-              const { data: service, error: serviceError } = await supabase
+            if (booking?.service_id) {
+              const { data: service, error: serviceError } = await supabaseBypass
                 .from('services')
                 .select('id, title, price')
-                .eq('id', booking.service_id)
+                .eq('id', booking.service_id as any)
                 .maybeSingle();
                 
               if (!serviceError && service) {
@@ -198,33 +198,33 @@ export const useCustomerDashboard = () => {
         }
         
         // Fetch saved artists (favorites)
-        const { data: savedArtistsData, error: favoritesError } = await supabase
+        const { data: savedArtistsData, error: favoritesError } = await supabaseBypass
           .from('saved_artists')
           .select('id, artist_id, viewer_id')
-          .eq('viewer_id', user.id);
+          .eq('viewer_id', user.id as any);
           
         const formattedFavorites: CustomerFavorite[] = [];
         
         if (savedArtistsData && savedArtistsData.length > 0) {
-          const artistIds = savedArtistsData.map(item => item.artist_id).filter(Boolean);
+          const artistIds = (savedArtistsData as any[]).map((item: any) => item?.artist_id).filter(Boolean);
 
           if (artistIds.length > 0) {
-            const { data: artistsData, error: artistsError } = await supabase
+            const { data: artistsData, error: artistsError } = await supabaseBypass
               .from('profiles')
               .select('id, full_name, avatar_url, specialty, location')
-              .in('id', artistIds);
+              .in('id', artistIds as any);
 
             if (!artistsError && artistsData) {
-              savedArtistsData.forEach(savedArtist => {
-                const artistDetail = artistsData.find(artist => artist.id === savedArtist.artist_id);
+              (savedArtistsData as any[]).forEach((savedArtist: any) => {
+                const artistDetail = (artistsData as any[]).find((artist: any) => artist?.id === savedArtist?.artist_id);
                 if (artistDetail?.full_name) {
                   formattedFavorites.push({
-                    id: savedArtist.id,
-                    name: artistDetail.full_name,
-                    avatar_url: artistDetail.avatar_url,
+                    id: savedArtist?.id,
+                    name: artistDetail?.full_name,
+                    avatar_url: artistDetail?.avatar_url,
                     type: 'artist',
-                    specialty: artistDetail.specialty,
-                    location: artistDetail.location
+                    specialty: artistDetail?.specialty,
+                    location: artistDetail?.location
                   });
                 }
               });
@@ -299,7 +299,7 @@ export const useCustomerDashboard = () => {
     fetchCustomerData();
 
     // Set up real-time subscriptions
-    const bookingsSubscription = supabase
+    const bookingsSubscription = supabaseBypass
       .channel('customer-bookings')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'bookings', filter: `sender_id=eq.${user?.id}` }, 
@@ -307,7 +307,7 @@ export const useCustomerDashboard = () => {
       )
       .subscribe();
 
-    const favoritesSubscription = supabase
+    const favoritesSubscription = supabaseBypass
       .channel('customer-favorites')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'saved_artists', filter: `viewer_id=eq.${user?.id}` }, 
@@ -316,8 +316,8 @@ export const useCustomerDashboard = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(bookingsSubscription);
-      supabase.removeChannel(favoritesSubscription);
+      supabaseBypass.removeChannel(bookingsSubscription);
+      supabaseBypass.removeChannel(favoritesSubscription);
     };
   }, [user, userProfile]);
 

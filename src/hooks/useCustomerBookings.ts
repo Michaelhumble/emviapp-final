@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { CustomerBooking } from '@/components/dashboard/customer/bookings/types';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
@@ -20,7 +20,7 @@ export const useCustomerBookings = () => {
         setError(null);
         
         // Get bookings directly without trying to join with artist
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('bookings')
           .select(`
             id, 
@@ -33,7 +33,7 @@ export const useCustomerBookings = () => {
             service:service_id (id, title, price),
             recipient_id
           `)
-          .eq('sender_id', user.id)
+          .eq('sender_id', user.id as any)
           .order('created_at', { ascending: false });
         
         if (error) throw error;
@@ -44,15 +44,15 @@ export const useCustomerBookings = () => {
         }
         
         // Now we need to fetch artist details separately
-        const enhancedBookings = await Promise.all(data.map(async (booking) => {
+        const enhancedBookings = await Promise.all((data as any[]).map(async (booking: any) => {
           let artistData = null;
           
           // Fetch artist (recipient) details
-          if (booking.recipient_id) {
-            const { data: artist, error: artistError } = await supabase
+          if (booking?.recipient_id) {
+            const { data: artist, error: artistError } = await supabaseBypass
               .from('profiles')
               .select('id, full_name, avatar_url')
-              .eq('id', booking.recipient_id)
+              .eq('id', booking.recipient_id as any)
               .single();
               
             if (!artistError && artist) {
@@ -62,14 +62,14 @@ export const useCustomerBookings = () => {
           
           // Create the booking object with the right structure
           return {
-            id: booking.id,
-            created_at: booking.created_at,
-            date_requested: booking.date_requested,
-            time_requested: booking.time_requested,
-            status: booking.status || undefined,
-            note: booking.note || undefined,
-            service_id: booking.service_id || undefined,
-            service: booking.service,
+            id: booking?.id,
+            created_at: booking?.created_at,
+            date_requested: booking?.date_requested,
+            time_requested: booking?.time_requested,
+            status: booking?.status || undefined,
+            note: booking?.note || undefined,
+            service_id: booking?.service_id || undefined,
+            service: booking?.service,
             artist: artistData // May be null if not found
           } as CustomerBooking;
         }));

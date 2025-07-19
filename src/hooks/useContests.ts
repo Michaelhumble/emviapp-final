@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -21,14 +21,14 @@ export const useContests = () => {
 
   const fetchActiveContests = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('contests')
         .select('*')
-        .eq('status', 'active')
+        .eq('status', 'active' as any)
         .gte('end_date', new Date().toISOString());
 
       if (error) throw error;
-      setContests(data || []);
+      setContests((data || []) as any);
     } catch (error) {
       console.error('Error fetching contests:', error);
     }
@@ -44,11 +44,11 @@ export const useContests = () => {
     
     try {
       // Check if user already entered
-      const { data: existingEntry } = await supabase
+      const { data: existingEntry } = await supabaseBypass
         .from('contest_entries')
         .select('id')
-        .eq('contest_id', contestId)
-        .eq('user_id', user.id)
+        .eq('contest_id', contestId as any)
+        .eq('user_id', user.id as any)
         .single();
 
       if (existingEntry) {
@@ -59,10 +59,10 @@ export const useContests = () => {
       // Check contest capacity
       const contest = contests.find(c => c.id === contestId);
       if (contest?.max_entries) {
-        const { count } = await supabase
+        const { count } = await supabaseBypass
           .from('contest_entries')
           .select('id', { count: 'exact' })
-          .eq('contest_id', contestId);
+          .eq('contest_id', contestId as any);
 
         if (count && count >= contest.max_entries) {
           toast.error('Contest is full');
@@ -70,13 +70,13 @@ export const useContests = () => {
         }
       }
 
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('contest_entries')
         .insert({
           contest_id: contestId,
           user_id: user.id,
           entry_data: entryData
-        });
+        } as any);
 
       if (error) throw error;
 

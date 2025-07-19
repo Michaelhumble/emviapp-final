@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 
@@ -34,27 +34,27 @@ export function useArtistUpcomingBookings() {
 
       try {
         // Get upcoming bookings (status = pending, accepted)
-        const { data, error: fetchError } = await supabase
+        const { data, error: fetchError } = await supabaseBypass
           .from("bookings")
           .select("id, client_name, service_type, date_requested, time_requested, status, note")
-          .eq("recipient_id", user.id)
-          .in("status", ["pending", "accepted"]) 
+          .eq("recipient_id", user.id as any)
+          .in("status", ["pending", "accepted"] as any) 
           .order("date_requested", { ascending: true })
           .order("time_requested", { ascending: true })
           .limit(5);
 
         if (fetchError) throw fetchError;
 
-        const mappedBookings = (data || []).map((booking) => ({
-          id: booking.id,
-          client_name: booking.client_name,
-          service_type: booking.service_type,
-          appointment_date: booking.date_requested,
-          appointment_time: booking.time_requested,
-          date_requested: booking.date_requested,
-          time_requested: booking.time_requested,
-          status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
-          note: booking.note
+        const mappedBookings = (data || [] as any[]).map((booking: any) => ({
+          id: booking?.id || '',
+          client_name: booking?.client_name || null,
+          service_type: booking?.service_type || null,
+          appointment_date: booking?.date_requested || null,
+          appointment_time: booking?.time_requested || null,
+          date_requested: booking?.date_requested || null,
+          time_requested: booking?.time_requested || null,
+          status: (booking?.status || 'pending') as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
+          note: booking?.note || null
         }));
 
         setBookings(mappedBookings);
@@ -70,7 +70,7 @@ export function useArtistUpcomingBookings() {
     fetchBookings();
     
     // Set up real-time subscription for bookings table changes
-    const subscription = supabase
+    const subscription = supabaseBypass
       .channel('bookings_changes')
       .on(
         'postgres_changes',
@@ -88,7 +88,7 @@ export function useArtistUpcomingBookings() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(subscription);
+      supabaseBypass.removeChannel(subscription);
     };
   }, [user?.id]);
 

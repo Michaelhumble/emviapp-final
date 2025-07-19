@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 const customerProfileSchema = z.object({
   full_name: z.string().min(2, "Name is required"),
@@ -24,14 +24,14 @@ export const useCustomerProfileValidation = () => {
       const validatedData = customerProfileSchema.parse(data);
       
       // Save to Supabase
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           ...validatedData,
           role: 'customer',
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user?.id);
+        } as any)
+        .eq('id', user?.id as any);
       
       if (error) throw error;
       

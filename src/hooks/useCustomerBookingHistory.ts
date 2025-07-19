@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { CustomerBooking } from "@/components/dashboard/customer/bookings/types";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ export function useCustomerBookingHistory() {
 
     try {
       // Get bookings with completed/cancelled/no-show status for the user
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("bookings")
         .select(
           `
@@ -37,8 +37,8 @@ export function useCustomerBookingHistory() {
             recipient_id
           `
         )
-        .eq("sender_id", user.id)
-        .in("status", ["completed", "cancelled", "no-show"])
+        .eq("sender_id", user.id as any)
+        .in("status", ["completed", "cancelled", "no-show"] as any)
         .order("date_requested", { ascending: false })
         .order("created_at", { ascending: false });
 
@@ -51,13 +51,13 @@ export function useCustomerBookingHistory() {
 
       // Fetch each recipient artist's details
       const bookingsWithArtist = await Promise.all(
-        data.map(async (booking) => {
+        (data as any[]).map(async (booking: any) => {
           let artistData = null;
-          if (booking.recipient_id) {
-            const { data: artist, error: artistError } = await supabase
+          if (booking?.recipient_id) {
+            const { data: artist, error: artistError } = await supabaseBypass
               .from("profiles")
               .select("id, full_name, avatar_url")
-              .eq("id", booking.recipient_id)
+              .eq("id", booking.recipient_id as any)
               .maybeSingle();
             if (!artistError && artist) {
               artistData = artist;

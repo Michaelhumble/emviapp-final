@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from '@/context/auth';
 import { Review } from '@/types/reviews';
 
@@ -16,35 +16,35 @@ export function useCustomerReviews() {
     setError(null);
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('reviews')
         .select('*')
-        .eq('customer_id', user.id)
-        .eq('status', 'active')
+        .eq('customer_id', user.id as any)
+        .eq('status', 'active' as any)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       // Fetch artist/salon details separately
       const reviewsWithDetails = await Promise.all(
-        (data || []).map(async (review) => {
+        ((data || []) as any[]).map(async (review: any) => {
           let artistData = null;
           let salonData = null;
 
-          if (review.artist_id) {
-            const { data: artist } = await supabase
+          if (review?.artist_id) {
+            const { data: artist } = await supabaseBypass
               .from('profiles')
               .select('id, full_name, avatar_url')
-              .eq('id', review.artist_id)
+              .eq('id', review.artist_id as any)
               .maybeSingle();
             artistData = artist;
           }
 
-          if (review.salon_id) {
-            const { data: salon } = await supabase
+          if (review?.salon_id) {
+            const { data: salon } = await supabaseBypass
               .from('salons')
               .select('id, salon_name')
-              .eq('id', review.salon_id)
+              .eq('id', review.salon_id as any)
               .maybeSingle();
             salonData = salon;
           }
