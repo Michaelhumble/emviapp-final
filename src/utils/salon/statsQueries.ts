@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 /**
  * Fetches active jobs for a salon (simplified without salon_id reference)
@@ -7,10 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const fetchSalonJobs = async (salonId: string) => {
   // Since salon_id doesn't exist in jobs table, we'll fetch all active jobs
   // In the future, this could be filtered by user_id if the salon owner posted them
-  const response = await supabase
+  const response = await supabaseBypass
     .from('jobs')
     .select('id, title, status')
-    .eq('status', 'active');
+    .eq('status' as any, 'active');
     
   if (response.error) {
     console.error("Error fetching jobs data:", response.error);
@@ -25,10 +25,10 @@ export const fetchSalonJobs = async (salonId: string) => {
  */
 export const fetchUserData = async (userId: string) => {
   // Checking if the user exists first and getting the proper fields
-  const response = await supabase
+  const response = await supabaseBypass
     .from('profiles')
     .select('credits, full_name, location, bio, phone, instagram, website, avatar_url')
-    .eq('id', userId)
+    .eq('id' as any, userId)
     .single();
     
   if (response.error) {
@@ -44,11 +44,11 @@ export const fetchUserData = async (userId: string) => {
  * Fetches applicants for the specified job IDs since the given date
  */
 export const fetchApplicantsForJobs = async (jobIds: string[], sinceDate: Date) => {
-  const response = await supabase
+  const response = await supabaseBypass
     .from('job_applications')
     .select('id, applicant_id, status')
-    .in('job_id', jobIds)
-    .gte('created_at', sinceDate.toISOString());
+    .in('job_id' as any, jobIds)
+    .gte('created_at' as any, sinceDate.toISOString());
     
   if (response.error) {
     console.error("Error fetching applicants:", response.error);
