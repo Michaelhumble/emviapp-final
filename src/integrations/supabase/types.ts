@@ -339,6 +339,62 @@ export type Database = {
           },
         ]
       }
+      artist_for_hire_profiles: {
+        Row: {
+          available_for_work: boolean | null
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          headline: string | null
+          hourly_rate: string | null
+          id: string
+          location: string | null
+          shifts_available: string | null
+          specialties: string | null
+          updated_at: string | null
+          user_id: string
+          years_experience: string | null
+        }
+        Insert: {
+          available_for_work?: boolean | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          headline?: string | null
+          hourly_rate?: string | null
+          id?: string
+          location?: string | null
+          shifts_available?: string | null
+          specialties?: string | null
+          updated_at?: string | null
+          user_id: string
+          years_experience?: string | null
+        }
+        Update: {
+          available_for_work?: boolean | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          headline?: string | null
+          hourly_rate?: string | null
+          id?: string
+          location?: string | null
+          shifts_available?: string | null
+          specialties?: string | null
+          updated_at?: string | null
+          user_id?: string
+          years_experience?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artist_for_hire_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artist_job_applications: {
         Row: {
           applied_at: string | null

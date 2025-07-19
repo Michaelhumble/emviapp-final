@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useArtistProfile } from '@/hooks/artist/useArtistProfile';
 import { toast } from 'sonner';
-import PremiumForHireCard from '@/components/shared/PremiumForHireCard';
+import ArtistForHireCard from './ArtistForHireCard';
+import ArtistForHireEditModal from './ArtistForHireEditModal';
 
 const ArtistForHire = () => {
-  const { profile, isLoading } = useArtistProfile();
-  const navigate = useNavigate();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
 
   const handleShareProfile = async () => {
     setIsSharing(true);
     try {
-      const profileUrl = `${window.location.origin}/artist-profile/${profile?.id || 'demo'}`;
+      const profileUrl = `${window.location.origin}/artist-for-hire/demo`;
       
       if (navigator.share) {
         await navigator.share({
-          title: `${profile?.full_name || 'Nail Artist'} - For Hire`,
-          text: `Check out my nail art services! ${profile?.specialty || 'Professional nail artist'}`,
+          title: 'Artist For Hire - EmviApp',
+          text: 'Check out my professional nail art services and availability!',
           url: profileUrl,
         });
       } else {
         await navigator.clipboard.writeText(profileUrl);
-        toast.success("Profile link copied to clipboard!", {
-          description: "Share your profile link with potential clients."
+        toast.success("Profile link copied to clipboard! 🔗", {
+          description: "Share your for-hire profile with potential clients."
         });
       }
     } catch (error) {
@@ -35,19 +33,22 @@ const ArtistForHire = () => {
   };
 
   const handleEditProfile = () => {
-    navigate('/profile/edit');
+    setIsEditModalOpen(true);
   };
 
-  if (isLoading) {
-    return <PremiumForHireCard mode="artist" />;
-  }
-
   return (
-    <PremiumForHireCard 
-      mode="artist" 
-      onShareProfile={handleShareProfile}
-      onEditProfile={handleEditProfile}
-    />
+    <>
+      <ArtistForHireCard 
+        onShareProfile={handleShareProfile}
+        onEditProfile={handleEditProfile}
+        isSharing={isSharing}
+      />
+      
+      <ArtistForHireEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
+    </>
   );
 };
 
