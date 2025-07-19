@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -17,14 +17,14 @@ export const useVoting = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('votes')
         .upsert({
           user_id: user.id,
           target_id: targetId,
           target_type: targetType,
           vote_type: voteType
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -41,16 +41,16 @@ export const useVoting = () => {
 
   const getVoteCount = async (targetId: string, targetType: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('votes')
         .select('vote_type')
-        .eq('target_id', targetId)
-        .eq('target_type', targetType);
+        .eq('target_id' as any, targetId as any)
+        .eq('target_type' as any, targetType as any);
 
       if (error) throw error;
 
-      const upvotes = data?.filter(vote => vote.vote_type === 'upvote').length || 0;
-      const downvotes = data?.filter(vote => vote.vote_type === 'downvote').length || 0;
+      const upvotes = (data as any)?.filter((vote: any) => vote.vote_type === 'upvote').length || 0;
+      const downvotes = (data as any)?.filter((vote: any) => vote.vote_type === 'downvote').length || 0;
 
       return { upvotes, downvotes, total: upvotes + downvotes };
     } catch (error) {

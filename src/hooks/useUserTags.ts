@@ -1,6 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 
 export interface UserTag {
@@ -14,7 +14,7 @@ export const useUserTags = () => {
   const { user } = useAuth();
 
   const tagUser = async (userId: string, tag: string) => {
-    const { error } = await supabase.rpc('tag_user', {
+    const { error } = await supabaseBypass.rpc('tag_user', {
       p_user_id: userId,
       p_tag: tag
     });
@@ -26,13 +26,13 @@ export const useUserTags = () => {
     queryFn: async () => {
       if (!user?.id) return [] as UserTag[];
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('user_tags')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id' as any, user.id as any);
         
       if (error) throw error;
-      return data as UserTag[];
+      return (data as any) as UserTag[];
     },
     enabled: !!user?.id
   });

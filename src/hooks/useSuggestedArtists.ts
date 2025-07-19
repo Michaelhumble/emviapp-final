@@ -29,17 +29,17 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
           console.log("Fetching artists based on location:", userProfile.location);
           
           // Get artists with the same location
-          query = supabase
+          query = supabaseBypass
             .from('profiles')
             .select('*')
-            .in('role', ['artist', 'freelancer', 'nail technician/artist'])
-            .neq('avatar_url', '')
-            .ilike('location', `%${userProfile.location.split(',')[0]}%`)
-            .order('boosted_until', { ascending: false });
+            .in('role' as any, ['artist', 'freelancer', 'nail technician/artist'])
+            .neq('avatar_url' as any, '')
+            .ilike('location' as any, `%${userProfile.location.split(',')[0]}%`)
+            .order('boosted_until' as any, { ascending: false });
             
           // Exclude current artist if viewing a profile
           if (currentArtistId) {
-            query = query.neq('id', currentArtistId);
+            query = query.neq('id' as any, currentArtistId);
           }
         } else {
           // Fallback for unauthenticated users or those without location
@@ -52,8 +52,8 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
         if (error) throw error;
         
         // Sort results: boosted first, then randomize slightly
-        const boostedArtists = artists?.filter(a => a.boosted_until && new Date(a.boosted_until) > new Date()) || [];
-        const regularArtists = artists?.filter(a => !a.boosted_until || new Date(a.boosted_until) <= new Date()) || [];
+        const boostedArtists = (artists as any)?.filter((a: any) => a.boosted_until && new Date(a.boosted_until) > new Date()) || [];
+        const regularArtists = (artists as any)?.filter((a: any) => !a.boosted_until || new Date(a.boosted_until) <= new Date()) || [];
         
         // Randomize regular artists slightly
         const shuffledRegular = regularArtists.sort(() => 0.5 - Math.random());
@@ -72,16 +72,16 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
   
   // Helper function for fallback query
   const getFallbackQuery = (currentArtistId?: string) => {
-    let query = supabase
+    let query = supabaseBypass
       .from('profiles')
       .select('*')
-      .in('role', ['artist', 'freelancer', 'nail technician/artist'])
-      .neq('full_name', '')
-      .neq('avatar_url', '');
+      .in('role' as any, ['artist', 'freelancer', 'nail technician/artist'])
+      .neq('full_name' as any, '')
+      .neq('avatar_url' as any, '');
       
     // Exclude current artist if viewing a profile
     if (currentArtistId) {
-      query = query.neq('id', currentArtistId);
+      query = query.neq('id' as any, currentArtistId);
     }
     
     return query;

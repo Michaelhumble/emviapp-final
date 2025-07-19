@@ -30,16 +30,16 @@ export const useServiceUpsells = (artistId: string | undefined, currentServiceId
         setError(null);
         
         // Fetch services by the same artist excluding the current one
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('services')
           .select('*')
-          .eq('user_id', artistId)
-          .neq('id', currentServiceId)
+          .eq('user_id' as any, artistId)
+          .neq('id' as any, currentServiceId)
           .limit(3);
         
         if (error) throw error;
         
-        setRelatedServices(data || []);
+        setRelatedServices((data as any) || []);
       } catch (err) {
         console.error('Error fetching related services:', err);
         setError('Failed to load related services');

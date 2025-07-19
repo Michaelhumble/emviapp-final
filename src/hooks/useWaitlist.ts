@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -17,13 +17,13 @@ export const useWaitlist = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('waitlists')
         .upsert({
           user_id: user.id,
           waitlist_type: waitlistType,
           metadata: metadata
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -42,11 +42,11 @@ export const useWaitlist = () => {
     if (!user) return null;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('waitlists')
         .select('status, joined_at')
-        .eq('user_id', user.id)
-        .eq('waitlist_type', waitlistType)
+        .eq('user_id' as any, user.id as any)
+        .eq('waitlist_type' as any, waitlistType as any)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;

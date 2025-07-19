@@ -15,7 +15,7 @@ export const useUserCount = () => {
           throw error;
         }
         
-        setUserCount(data);
+        setUserCount(data as any);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch user count');
         console.error('Error fetching user count:', err);

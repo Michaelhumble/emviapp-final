@@ -23,14 +23,14 @@ export const useSupplierProfileValidation = () => {
     try {
       const validatedData = supplierProfileSchema.parse(data);
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('profiles')
         .update({
           ...validatedData,
           role: 'supplier',
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user?.id);
+        } as any)
+        .eq('id' as any, user?.id);
       
       if (error) throw error;
       

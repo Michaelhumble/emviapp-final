@@ -51,7 +51,7 @@ export function useSalonStats() {
       let applicantsCount = 0;
       
       if (jobsResponse.data && jobsResponse.data.length > 0) {
-        const jobIds = jobsResponse.data.map(job => job.id);
+        const jobIds = jobsResponse.data.map((job: any) => job.id);
         console.log(`Found ${jobIds.length} active jobs, fetching applicants...`);
         
         const applicantsResponse = await fetchApplicantsForJobs(jobIds, firstDayOfMonth);
@@ -68,7 +68,7 @@ export function useSalonStats() {
       setStats({
         activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userDataResponse.data?.credits || 0,
+        creditsRemaining: (userDataResponse.data as any)?.credits || 0,
         profileCompletion: {
           percentage: completionPercentage,
           incompleteFields: incompleteFields
