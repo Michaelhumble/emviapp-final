@@ -19,19 +19,9 @@ export default function FreelancerServicesManagement() {
         </p>
       </div>
       <div className="flex gap-3">
-        <Button
-          variant="outline"
-          className="border-purple-200"
-          onClick={() => navigate("/dashboard/freelancer/services")}
-        >
-          View/Edit My Services
-        </Button>
-        <Button
-          onClick={() => navigate("/dashboard/freelancer/services?add=new")}
-          className="bg-purple-600 hover:bg-purple-700 text-white"
-        >
-          + Add a New Service
-        </Button>
+        <div className="text-sm text-gray-500 bg-purple-50 px-4 py-2 rounded-lg border border-purple-200">
+          ✨ Coming Soon - Service management tools
+        </div>
       </div>
     </Card>
   );

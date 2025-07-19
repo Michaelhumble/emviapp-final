@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,12 +6,16 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Calendar, Clock, DollarSign, Star, Users, Briefcase } from 'lucide-react';
+import { MapPin, Calendar, Clock, DollarSign, Star, Users, Briefcase, Camera } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/auth';
 
 const FreelancerForHire = () => {
+  const { userProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [profile, setProfile] = useState({
+    fullName: '',
     cities: '',
     rates: '',
     shifts: '',
@@ -21,11 +25,50 @@ const FreelancerForHire = () => {
     description: ''
   });
 
+  // Load profile data from localStorage on component mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('freelancerProfile');
+    const savedPhoto = localStorage.getItem('freelancerPhoto');
+    
+    if (savedProfile) {
+      setProfile(JSON.parse(savedProfile));
+    } else {
+      // Initialize with user profile data if available
+      setProfile(prev => ({
+        ...prev,
+        fullName: userProfile?.full_name || '',
+        specialties: userProfile?.specialty || ''
+      }));
+    }
+    
+    if (savedPhoto) {
+      setProfilePhoto(savedPhoto);
+    }
+  }, [userProfile]);
+
   const handleSave = () => {
+    // Save to localStorage for MVP
+    localStorage.setItem('freelancerProfile', JSON.stringify(profile));
+    if (profilePhoto) {
+      localStorage.setItem('freelancerPhoto', profilePhoto);
+    }
+    
     toast.success("Your freelancer profile is now live!", {
       description: "Salons can now discover and hire you for on-demand work."
     });
     setIsEditing(false);
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfilePhoto(result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleEdit = () => {
@@ -55,45 +98,73 @@ const FreelancerForHire = () => {
         {!isEditing ? (
           // Display Mode
           <div className="space-y-6">
-            <div className="bg-white rounded-lg p-4 border border-blue-200">
-              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <div className="bg-white rounded-lg p-6 border border-blue-200">
+              <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Star className="h-4 w-4 text-blue-500" />
                 Your Freelancer Profile
               </h4>
               
+              {/* Profile Photo and Name */}
+              <div className="flex items-center gap-6 mb-6">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-blue-200 to-purple-200 flex items-center justify-center">
+                    {profilePhoto ? (
+                      <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <Users className="h-8 w-8 text-blue-600" />
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {profile.fullName || userProfile?.full_name || 'Your Name'}
+                  </h3>
+                  <p className="text-blue-600 font-medium">Freelance Nail Technician</p>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm text-gray-600">San Francisco, Oakland, San Jose</span>
+                  <span className="text-sm text-gray-600">{profile.cities || 'San Francisco, Oakland, San Jose'}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <DollarSign className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm text-gray-600">$50-75/hour</span>
+                  <span className="text-sm text-gray-600">{profile.rates || '$50-75/hour'}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm text-gray-600">Days, Evenings, Weekends</span>
+                  <span className="text-sm text-gray-600">{profile.shifts || 'Days, Evenings, Weekends'}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Users className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm text-gray-600">5+ years experience</span>
+                  <span className="text-sm text-gray-600">{profile.experience || '5+ years experience'}</span>
                 </div>
               </div>
               
               <div className="mb-4">
                 <h5 className="font-medium text-gray-700 mb-2">Specialties</h5>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Gel Manicures</Badge>
-                  <Badge variant="outline">Nail Art</Badge>
-                  <Badge variant="outline">Pedicures</Badge>
-                  <Badge variant="outline">Acrylics</Badge>
+                  {profile.specialties ? (
+                    profile.specialties.split(',').map((specialty, index) => (
+                      <Badge key={index} variant="outline">{specialty.trim()}</Badge>
+                    ))
+                  ) : (
+                    <>
+                      <Badge variant="outline">Gel Manicures</Badge>
+                      <Badge variant="outline">Nail Art</Badge>
+                      <Badge variant="outline">Pedicures</Badge>
+                      <Badge variant="outline">Acrylics</Badge>
+                    </>
+                  )}
                 </div>
               </div>
               
               <div className="pt-3 border-t border-blue-100">
                 <p className="text-sm text-gray-600">
-                  "Experienced freelance nail technician available for short-term projects, busy periods, and special events. 
-                  Reliable, professional, and ready to integrate seamlessly with your existing team."
+                  {profile.description || 
+                    "Experienced freelance nail technician available for short-term projects, busy periods, and special events. Reliable, professional, and ready to integrate seamlessly with your existing team."
+                  }
                 </p>
               </div>
             </div>
@@ -115,7 +186,38 @@ const FreelancerForHire = () => {
           </div>
         ) : (
           // Edit Mode
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Photo Upload */}
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-blue-200 to-purple-200 flex items-center justify-center">
+                  {profilePhoto ? (
+                    <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <Users className="h-8 w-8 text-blue-600" />
+                  )}
+                </div>
+                <label htmlFor="photo-upload" className="absolute -bottom-1 -right-1 bg-blue-600 text-white rounded-full p-1.5 cursor-pointer hover:bg-blue-700 transition-colors">
+                  <Camera className="h-3 w-3" />
+                </label>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Full Name</label>
+                <Input 
+                  placeholder="Your full name"
+                  value={profile.fullName}
+                  onChange={(e) => setProfile({...profile, fullName: e.target.value})}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Cities Willing to Work</label>
@@ -138,39 +240,26 @@ const FreelancerForHire = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Preferred Shifts</label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select preferred shifts" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mornings">Morning shifts</SelectItem>
-                    <SelectItem value="afternoons">Afternoon shifts</SelectItem>
-                    <SelectItem value="evenings">Evening shifts</SelectItem>
-                    <SelectItem value="weekends">Weekends</SelectItem>
-                    <SelectItem value="flexible">Flexible</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input 
+                  placeholder="e.g., Days, Evenings, Weekends"
+                  value={profile.shifts}
+                  onChange={(e) => setProfile({...profile, shifts: e.target.value})}
+                />
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Years of Experience</label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select experience level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1-2">1-2 years</SelectItem>
-                    <SelectItem value="3-5">3-5 years</SelectItem>
-                    <SelectItem value="5+">5+ years</SelectItem>
-                    <SelectItem value="10+">10+ years</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input 
+                  placeholder="e.g., 5+ years"
+                  value={profile.experience}
+                  onChange={(e) => setProfile({...profile, experience: e.target.value})}
+                />
               </div>
             </div>
             
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Specialties & Services</label>
               <Input 
-                placeholder="e.g., Gel manicures, Nail art, Pedicures, Acrylics"
+                placeholder="e.g., Gel manicures, Nail art, Pedicures, Acrylics (separated by commas)"
                 value={profile.specialties}
                 onChange={(e) => setProfile({...profile, specialties: e.target.value})}
               />

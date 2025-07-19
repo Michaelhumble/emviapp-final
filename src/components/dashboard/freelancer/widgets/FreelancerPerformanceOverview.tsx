@@ -35,11 +35,11 @@ export default function FreelancerPerformanceOverview() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {metrics.map((_, i) => (
-          <Card key={i} className="p-4">
-            <Skeleton className="h-8 w-20 bg-muted-foreground/20" />
-            <Skeleton className="h-5 w-12 mt-2 bg-muted-foreground/10" />
+          <Card key={i} className="p-4 sm:p-6">
+            <Skeleton className="h-6 sm:h-8 w-16 sm:w-20 bg-muted-foreground/20 mx-auto" />
+            <Skeleton className="h-4 sm:h-5 w-8 sm:w-12 mt-2 bg-muted-foreground/10 mx-auto" />
           </Card>
         ))}
       </div>
@@ -47,17 +47,17 @@ export default function FreelancerPerformanceOverview() {
   }
 
   return (
-    <section className="mb-8 rounded-lg">
-      <h2 className="text-xl font-bold mb-2 text-purple-800">Performance Overview</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <section className="mb-6 sm:mb-8 rounded-lg">
+      <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-purple-800">Performance Overview</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {metrics.map((card, idx) => (
           <Card
             key={card.label}
-            className="rounded-xl border border-purple-100 bg-purple-50/70 shadow-sm flex flex-col items-center py-6 gap-1"
+            className="rounded-xl border border-purple-100 bg-purple-50/70 shadow-sm flex flex-col items-center py-4 sm:py-6 gap-1 hover:shadow-md transition-shadow"
           >
-            <card.icon className={`h-8 w-8 mb-1 ${card.color}`} />
-            <p className="text-2xl font-bold">{card.value}</p>
-            <p className="text-sm text-gray-600">{card.label}</p>
+            <card.icon className={`h-6 w-6 sm:h-8 sm:w-8 mb-1 ${card.color}`} />
+            <p className="text-xl sm:text-2xl font-bold">{card.value}</p>
+            <p className="text-xs sm:text-sm text-gray-600 text-center px-2">{card.label}</p>
           </Card>
         ))}
       </div>

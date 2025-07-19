@@ -13,13 +13,9 @@ export default function FreelancerAvailabilityEditor() {
         <div className="font-semibold">Manage Your Availability</div>
         <div className="text-sm text-gray-500">Update the times when clients can book you.</div>
       </div>
-      <Button
-        variant="outline"
-        onClick={() => navigate("/dashboard/freelancer/availability")}
-        className="border-purple-300"
-      >
-        Edit Schedule
-      </Button>
+      <div className="text-sm text-gray-500 bg-purple-50 px-4 py-2 rounded-lg border border-purple-200">
+        ✨ Coming Soon
+      </div>
     </Card>
   );
 }

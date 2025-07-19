@@ -12,79 +12,18 @@ export function useFreelancerEarningsStats() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStats() {
-      if (!user?.id) return;
-      
-      setLoading(true);
-      try {
-        // Get current month boundaries
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
-        
-        // Fetch all bookings for this freelancer
-        const { data: bookingsData, error: bookingsError } = await supabaseBypass
-          .from("bookings")
-          .select(`
-            id, created_at, date_requested, status,
-            service:service_id(price)
-          `)
-          .eq("recipient_id", user.id)
-          .gte("created_at", startOfMonth)
-          .lte("created_at", endOfMonth);
-          
-        if (bookingsError) throw bookingsError;
-        
-        // Fetch all unique client IDs from bookings
-        const { data: clientsData, error: clientsError } = await supabaseBypass
-          .from("bookings")
-          .select("sender_id")
-          .eq("recipient_id", user.id)
-          .gte("created_at", startOfMonth)
-          .lte("created_at", endOfMonth);
-          
-        if (clientsError) throw clientsError;
-        
-        // Fetch total services offered
-        const { data: servicesData, error: servicesError } = await supabaseBypass
-          .from("services")
-          .select("id")
-          .eq("user_id", user.id);
-          
-        if (servicesError) throw servicesError;
-        
-        // Calculate metrics
-        const bookingCount = bookingsData?.length || 0;
-        
-        // Calculate earnings (sum of service prices for completed bookings)
-        let earnings = 0;
-        bookingsData?.forEach(booking => {
-          if (booking.service && booking.service.price) {
-            earnings += Number(booking.service.price);
-          }
-        });
-        
-        // Count unique clients
-        const uniqueClients = new Set();
-        clientsData?.forEach(client => {
-          if (client.sender_id) {
-            uniqueClients.add(client.sender_id);
-          }
-        });
-        
-        // Set state with calculated metrics
-        setTotalBookings(bookingCount);
-        setEstimatedEarnings(Math.round(earnings));
-        setNewClients(uniqueClients.size);
-        setTotalServices(servicesData?.length || 0);
-      } catch (error) {
-        console.error("Error fetching freelancer stats:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    // Use mock data for MVP - no real backend integration needed
+    setLoading(true);
     
-    fetchStats();
+    // Simulate loading delay
+    setTimeout(() => {
+      // Mock data based on a successful freelancer
+      setTotalBookings(12);
+      setEstimatedEarnings(1840);
+      setNewClients(8);
+      setTotalServices(4);
+      setLoading(false);
+    }, 800);
   }, [user?.id]);
   
   return {
