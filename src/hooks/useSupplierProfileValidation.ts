@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 const supplierProfileSchema = z.object({
   full_name: z.string().min(2, "Business name is required"),

@@ -29,11 +29,11 @@ export const useSalonTeamMessages = () => {
     setLoading(true);
     try {
       // First, fetch the messages
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_team_messages')
         .select('*')
-        .eq('salon_id', currentSalon.id)
-        .order('created_at', { ascending: true });
+        .eq('salon_id' as any, currentSalon.id)
+        .order('created_at' as any, { ascending: true });
 
       if (error) throw error;
 
@@ -41,16 +41,15 @@ export const useSalonTeamMessages = () => {
       const messagesWithSenders = await Promise.all(
         data.map(async (message) => {
           // Get sender info
-          const { data: senderData, error: senderError } = await supabase
+          const { data: senderData, error: senderError } = await supabaseBypass
             .from('profiles')
             .select('full_name, avatar_url')
-            .eq('id', message.sender_id)
-            .single();
+            .eq('id' as any, (message as any).sender_id);
 
           return {
-            ...message,
-            sender_name: senderError ? undefined : senderData?.full_name,
-            sender_avatar: senderError ? undefined : senderData?.avatar_url
+            ...(message as any),
+            sender_name: senderError ? undefined : (senderData as any)?.full_name,
+            sender_avatar: senderError ? undefined : (senderData as any)?.avatar_url
           } as SalonTeamMessage;
         })
       );
@@ -68,14 +67,14 @@ export const useSalonTeamMessages = () => {
     if (!currentSalon?.id || !user || !content.trim()) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_team_messages')
         .insert({
           salon_id: currentSalon.id,
           sender_id: user.id,
           content: content.trim(),
           is_announcement: isAnnouncement
-        });
+        } as any);
 
       if (error) throw error;
     } catch (error) {
@@ -87,7 +86,7 @@ export const useSalonTeamMessages = () => {
   useEffect(() => {
     fetchMessages();
 
-    const channel = supabase
+    const channel = (supabaseBypass as any)
       .channel('salon_team_messages')
       .on(
         'postgres_changes',
@@ -97,14 +96,14 @@ export const useSalonTeamMessages = () => {
           table: 'salon_team_messages', 
           filter: `salon_id=eq.${currentSalon?.id}` 
         },
-        (payload) => {
+        (payload: any) => {
           fetchMessages();
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      (supabaseBypass as any).removeChannel(channel);
     };
   }, [currentSalon?.id]);
 
