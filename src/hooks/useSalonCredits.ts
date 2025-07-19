@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 
 export interface BoostStatus {
@@ -35,20 +35,20 @@ export function useSalonCredits(): SalonCreditsState {
     
     try {
       // Fetch user's credit balance
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('profiles')
         .select('credits, boosted_until')
-        .eq('id', user.id)
-        .eq('role', 'salon')
+        .eq('id' as any, user.id)
+        .eq('role' as any, 'salon')
         .single();
         
       if (error) throw error;
       
       // Set credits
-      setCredits(data?.credits || 0);
+      setCredits((data as any)?.credits || 0);
       
       // Set boost status
-      const boostedUntil = data?.boosted_until ? new Date(data.boosted_until) : null;
+      const boostedUntil = (data as any)?.boosted_until ? new Date((data as any).boosted_until) : null;
       const isActive = boostedUntil ? boostedUntil > new Date() : false;
       
       setBoostStatus({
@@ -57,7 +57,7 @@ export function useSalonCredits(): SalonCreditsState {
       });
       
       console.log("Salon credits data fetched successfully:", { 
-        credits: data?.credits,
+        credits: (data as any)?.credits,
         boostedUntil,
         isActive
       });

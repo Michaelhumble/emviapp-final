@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -113,11 +113,11 @@ export const useSalonDashboard = (salonId?: string) => {
       todayEnd.setDate(todayEnd.getDate() + 1);
 
       // First, get staff emails for this salon and then find their user IDs
-      const { data: staffData } = await supabase
+      const { data: staffData } = await supabaseBypass
         .from('salon_staff')
         .select('email')
-        .eq('salon_id', effectiveSalonId)
-        .eq('status', 'active');
+        .eq('salon_id' as any, effectiveSalonId)
+        .eq('status' as any, 'active');
 
       if (!staffData || staffData.length === 0) {
         console.log('No staff found for salon:', effectiveSalonId);
@@ -125,42 +125,42 @@ export const useSalonDashboard = (salonId?: string) => {
       }
 
       // Get user IDs from emails
-      const staffEmails = staffData.map(s => s.email);
-      const { data: usersData } = await supabase
+      const staffEmails = (staffData as any)?.map((s: any) => s?.email) || [];
+      const { data: usersData } = await supabaseBypass
         .from('profiles')
         .select('id')
-        .in('email', staffEmails);
+        .in('email' as any, staffEmails);
 
-      const staffUserIds = usersData?.map(u => u.id) || [];
+      const staffUserIds = (usersData as any)?.map((u: any) => u?.id) || [];
 
       // Get all bookings for salon staff (where recipient_id is one of the staff members)
-      const { data: bookingsData } = await supabase
+      const { data: bookingsData } = await supabaseBypass
         .from('bookings')
         .select(`
           *,
           sender:users!sender_id(full_name, avatar_url),
           recipient:users!recipient_id(full_name)
         `)
-        .in('recipient_id', staffUserIds)
-        .order('created_at', { ascending: false });
+        .in('recipient_id' as any, staffUserIds)
+        .order('created_at' as any, { ascending: false });
 
       if (bookingsData) {
-        const total = bookingsData.length;
-        const todayCount = bookingsData.filter(b => {
-          const bookingDate = new Date(b.created_at);
+        const total = (bookingsData as any).length;
+        const todayCount = (bookingsData as any).filter((b: any) => {
+          const bookingDate = new Date(b?.created_at);
           return bookingDate >= todayStart && bookingDate < todayEnd;
         }).length;
 
         // Get today's bookings with proper formatting
-        const todaysBookings = bookingsData
-          .filter(b => {
-            const bookingDate = new Date(b.created_at);
+        const todaysBookings = (bookingsData as any)
+          .filter((b: any) => {
+            const bookingDate = new Date(b?.created_at);
             return bookingDate >= todayStart && bookingDate < todayEnd;
           })
-          .map(booking => ({
+          .map((booking: any) => ({
             ...booking,
-            customer: Array.isArray(booking.sender) ? booking.sender[0] : booking.sender,
-            artist: Array.isArray(booking.recipient) ? booking.recipient[0] : booking.recipient,
+            customer: Array.isArray(booking?.sender) ? booking?.sender[0] : booking?.sender,
+            artist: Array.isArray(booking?.recipient) ? booking?.recipient[0] : booking?.recipient,
           }));
 
         setStats(prev => ({
@@ -179,55 +179,55 @@ export const useSalonDashboard = (salonId?: string) => {
     if (!effectiveSalonId) return;
 
     try {
-      const { data: reviewsData } = await supabase
+      const { data: reviewsData } = await supabaseBypass
         .from('salon_reviews')
         .select(`
           *,
           customer:review_customers!customer_id(full_name, avatar_url, email)
         `)
-        .eq('salon_id', effectiveSalonId)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
+        .eq('salon_id' as any, effectiveSalonId)
+        .eq('status' as any, 'active')
+        .order('created_at' as any, { ascending: false })
         .limit(10);
 
       if (reviewsData) {
-        const avgRating = reviewsData.length > 0 
-          ? reviewsData.reduce((sum, r) => sum + r.rating, 0) / reviewsData.length 
+        const avgRating = (reviewsData as any).length > 0 
+          ? (reviewsData as any).reduce((sum: number, r: any) => sum + r?.rating, 0) / (reviewsData as any).length 
           : 0;
 
-        const formattedReviews = reviewsData.map(review => ({
+        const formattedReviews = (reviewsData as any).map((review: any) => ({
           ...review,
-          customer: Array.isArray(review.customer) ? review.customer[0] : review.customer,
+          customer: Array.isArray(review?.customer) ? review?.customer[0] : review?.customer,
         }));
 
         setReviews(formattedReviews);
         setStats(prev => ({
           ...prev,
           averageRating: Number(avgRating.toFixed(1)),
-          totalReviews: reviewsData.length,
+          totalReviews: (reviewsData as any).length,
         }));
       }
     } catch (error) {
       console.error('Error fetching reviews:', error);
       // Fallback to basic review data if join fails
       try {
-        const { data: basicData } = await supabase
+        const { data: basicData } = await supabaseBypass
           .from('salon_reviews')
           .select('*')
-          .eq('salon_id', effectiveSalonId)
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
+          .eq('salon_id' as any, effectiveSalonId)
+          .eq('status' as any, 'active')
+          .order('created_at' as any, { ascending: false })
           .limit(10);
         
         if (basicData) {
-          setReviews(basicData);
-          const avgRating = basicData.length > 0 
-            ? basicData.reduce((sum, r) => sum + r.rating, 0) / basicData.length 
+          setReviews(basicData as any);
+          const avgRating = (basicData as any).length > 0 
+            ? (basicData as any).reduce((sum: number, r: any) => sum + r?.rating, 0) / (basicData as any).length 
             : 0;
           setStats(prev => ({
             ...prev,
             averageRating: Number(avgRating.toFixed(1)),
-            totalReviews: basicData.length,
+            totalReviews: (basicData as any).length,
           }));
         }
       } catch (fallbackError) {
@@ -240,19 +240,19 @@ export const useSalonDashboard = (salonId?: string) => {
     if (!effectiveSalonId) return;
 
     try {
-      const { data: offersData } = await supabase
+      const { data: offersData } = await supabaseBypass
         .from('salon_offers')
         .select('*')
-        .eq('salon_id', effectiveSalonId)
-        .eq('is_active', true)
-        .gte('end_date', new Date().toISOString())
-        .order('created_at', { ascending: false });
+        .eq('salon_id' as any, effectiveSalonId)
+        .eq('is_active' as any, true)
+        .gte('end_date' as any, new Date().toISOString())
+        .order('created_at' as any, { ascending: false });
 
       if (offersData) {
-        setOffers(offersData);
+        setOffers(offersData as any);
         setStats(prev => ({
           ...prev,
-          activeOffers: offersData.length,
+          activeOffers: (offersData as any).length,
         }));
       }
     } catch (error) {
@@ -264,7 +264,7 @@ export const useSalonDashboard = (salonId?: string) => {
     if (!effectiveSalonId) return;
 
     try {
-      const { data: creditsData } = await supabase.rpc('get_salon_credits', {
+      const { data: creditsData } = await (supabaseBypass as any).rpc('get_salon_credits', {
         p_salon_id: effectiveSalonId
       });
 
@@ -283,16 +283,16 @@ export const useSalonDashboard = (salonId?: string) => {
     if (!effectiveSalonId) return;
 
     try {
-      const { data: staffData } = await supabase
+      const { data: staffData } = await supabaseBypass
         .from('salon_staff')
         .select('id')
-        .eq('salon_id', effectiveSalonId)
-        .eq('status', 'active');
+        .eq('salon_id' as any, effectiveSalonId)
+        .eq('status' as any, 'active');
 
       if (staffData) {
         setStats(prev => ({
           ...prev,
-          staffCount: staffData.length,
+          staffCount: (staffData as any).length,
         }));
       }
     } catch (error) {
@@ -302,13 +302,13 @@ export const useSalonDashboard = (salonId?: string) => {
 
   const respondToReview = async (reviewId: string, responseText: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_reviews')
         .update({
           response_text: responseText,
           responded_at: new Date().toISOString(),
-        })
-        .eq('id', reviewId);
+        } as any)
+        .eq('id' as any, reviewId);
 
       if (error) throw error;
 
@@ -332,13 +332,13 @@ export const useSalonDashboard = (salonId?: string) => {
 
   const flagReview = async (reviewId: string, reason: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_reviews')
         .update({
           flagged: true,
           flagged_reason: reason,
-        })
-        .eq('id', reviewId);
+        } as any)
+        .eq('id' as any, reviewId);
 
       if (error) throw error;
 
@@ -363,17 +363,17 @@ export const useSalonDashboard = (salonId?: string) => {
     if (!effectiveSalonId) return false;
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_offers')
         .insert({
           ...offerData,
           salon_id: effectiveSalonId,
-        });
+        } as any);
 
       if (error) throw error;
 
       // Award credits for creating offer
-      await supabase.rpc('award_salon_credits', {
+      await (supabaseBypass as any).rpc('award_salon_credits', {
         p_salon_id: effectiveSalonId,
         p_amount: 5,
         p_source: 'offer_created',

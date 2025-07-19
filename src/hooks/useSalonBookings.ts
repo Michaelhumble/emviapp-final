@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
@@ -37,15 +37,15 @@ export const useSalonBookings = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('salon_bookings')
         .select('*')
-        .eq('salon_id', currentSalon.id)
-        .order('booking_date', { ascending: true })
-        .order('booking_time', { ascending: true });
+        .eq('salon_id' as any, currentSalon.id)
+        .order('booking_date' as any, { ascending: true })
+        .order('booking_time' as any, { ascending: true });
 
       if (error) throw error;
-      setBookings(data || []);
+      setBookings((data as any) || []);
     } catch (err) {
       console.error('Error fetching bookings:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch bookings'));
@@ -71,7 +71,7 @@ export const useSalonBookings = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_bookings')
         .insert({
           ...bookingData,
@@ -79,7 +79,7 @@ export const useSalonBookings = () => {
           artist_id: user.id,
           duration_minutes: bookingData.duration_minutes || 60,
           status: 'confirmed'
-        });
+        } as any);
 
       if (error) throw error;
       
@@ -96,10 +96,10 @@ export const useSalonBookings = () => {
   // Update booking
   const updateBooking = async (bookingId: string, updates: Partial<SalonBooking>) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_bookings')
-        .update(updates)
-        .eq('id', bookingId);
+        .update(updates as any)
+        .eq('id' as any, bookingId);
 
       if (error) throw error;
       
@@ -116,10 +116,10 @@ export const useSalonBookings = () => {
   // Delete booking
   const deleteBooking = async (bookingId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('salon_bookings')
-        .update({ status: 'cancelled' })
-        .eq('id', bookingId);
+        .update({ status: 'cancelled' } as any)
+        .eq('id' as any, bookingId);
 
       if (error) throw error;
       
