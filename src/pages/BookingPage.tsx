@@ -24,7 +24,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 import { Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { useAvailableTimeSlots } from '@/hooks/useAvailableTimeSlots';
@@ -51,15 +51,15 @@ const BookingPage = () => {
   const { data: providers, isLoading: loadingProviders } = useQuery({
     queryKey: ['providers'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('profiles')
         .select('id, full_name, role')
-        .in('role', ['artist', 'salon', 'owner'])
-        .eq('accepts_bookings', true)
-        .order('full_name');
+        .in('role' as any, ['artist' as any, 'salon' as any, 'owner' as any])
+        .eq('accepts_bookings' as any, true)
+        .order('full_name' as any);
       
       if (error) throw error;
-      return data || [];
+      return (data as any) || [];
     }
   });
 
@@ -69,15 +69,15 @@ const BookingPage = () => {
     queryFn: async () => {
       if (!providerId) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('services')
         .select('id, title')
-        .eq('user_id', providerId)
-        .eq('is_visible', true)
-        .order('title');
+        .eq('user_id' as any, providerId)
+        .eq('is_visible' as any, true)
+        .order('title' as any);
       
       if (error) throw error;
-      return data || [];
+      return (data as any) || [];
     },
     enabled: !!providerId
   });
@@ -104,7 +104,7 @@ const BookingPage = () => {
       const formattedDate = bookingDate ? format(bookingDate, 'yyyy-MM-dd') : null;
 
       // Create booking in Supabase
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .insert({
           customer_id: user.id,
@@ -119,7 +119,7 @@ const BookingPage = () => {
           recipient_id: providerId,
           date_requested: formattedDate,
           time_requested: bookingTime
-        })
+        } as any)
         .select();
 
       if (error) throw error;

@@ -23,9 +23,6 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storageKey: 'sb-wwhqbjrhbajpabfdwnip-auth-token',
     flowType: 'pkce',
     // Extended session settings for better persistence
-    refreshTimeout: 30000, // 30 seconds
-    // Don't auto-sign out on token refresh errors - let users stay logged in
-    autoSignOutOnTokenRefreshFailure: false
   }
 });
 

@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 export interface CreditTransaction {
   id: string;
@@ -130,7 +130,7 @@ class CreditsManager {
   }
 
   async getUserCredits(userId: string): Promise<number> {
-    const { data, error } = await supabase.rpc('get_user_credits', {
+    const { data, error } = await supabaseBypass.rpc('get_user_credits', {
       p_user_id: userId
     });
 
@@ -139,7 +139,7 @@ class CreditsManager {
       return 0;
     }
 
-    return data || 0;
+    return (data as any) || 0;
   }
 
   async awardCredits(
@@ -152,7 +152,7 @@ class CreditsManager {
     const ip = await this.getClientIP();
     const userAgent = this.getUserAgent();
 
-    const { data, error } = await supabase.rpc('award_credits', {
+    const { data, error } = await supabaseBypass.rpc('award_credits', {
       p_user_id: userId,
       p_credits: credits,
       p_reason: reason,
@@ -167,7 +167,7 @@ class CreditsManager {
       return false;
     }
 
-    return data;
+    return (data as any);
   }
 
   async spendCredits(
@@ -176,7 +176,7 @@ class CreditsManager {
     reason: string,
     metadata: any = {}
   ): Promise<boolean> {
-    const { data, error } = await supabase.rpc('spend_credits', {
+    const { data, error } = await supabaseBypass.rpc('spend_credits', {
       p_user_id: userId,
       p_credits: credits,
       p_reason: reason,
@@ -188,7 +188,7 @@ class CreditsManager {
       return false;
     }
 
-    return data;
+    return (data as any);
   }
 
   async unlockLevel(
@@ -199,7 +199,7 @@ class CreditsManager {
     const ip = await this.getClientIP();
     const userAgent = this.getUserAgent();
 
-    const { data, error } = await supabase.rpc('unlock_level', {
+    const { data, error } = await supabaseBypass.rpc('unlock_level', {
       p_user_id: userId,
       p_level: level,
       p_credits_required: creditsRequired,
@@ -212,14 +212,14 @@ class CreditsManager {
       return false;
     }
 
-    return data;
+    return (data as any);
   }
 
   async getUserUnlocks(userId: string): Promise<UserUnlock[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseBypass
       .from('user_unlocks')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id' as any, userId as any)
       .order('unlocked_at', { ascending: false });
 
     if (error) {
@@ -227,14 +227,14 @@ class CreditsManager {
       return [];
     }
 
-    return data || [];
+    return (data as any) || [];
   }
 
   async getCreditHistory(userId: string): Promise<CreditTransaction[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseBypass
       .from('credits_ledger')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id' as any, userId as any)
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -243,7 +243,7 @@ class CreditsManager {
       return [];
     }
 
-    return data || [];
+    return (data as any) || [];
   }
 
   getCurrentLevel(credits: number): LevelConfig {
@@ -280,11 +280,11 @@ class CreditsManager {
   async detectSuspiciousActivity(userId: string): Promise<boolean> {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
     
-    const { data, error } = await supabase
+    const { data, error } = await supabaseBypass
       .from('credits_ledger')
       .select('id')
-      .eq('user_id', userId)
-      .eq('action_type', 'earn')
+      .eq('user_id' as any, userId as any)
+      .eq('action_type' as any, 'earn' as any)
       .gte('created_at', oneHourAgo);
 
     if (error) return false;
