@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -55,7 +55,7 @@ export const useCommunityData = () => {
   // Fetch community posts
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('community_posts')
         .select('*')
         .order('created_at', { ascending: false })
@@ -65,20 +65,20 @@ export const useCommunityData = () => {
 
       // Fetch profiles separately and merge
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(post => post.user_id))];
-        const { data: profilesData } = await supabase
+        const userIds = [...new Set((data as any).map((post: any) => post?.user_id))];
+        const { data: profilesData } = await supabaseBypass
           .from('profiles')
           .select('id, full_name, avatar_url')
-          .in('id', userIds);
+          .in('id', userIds as any);
 
-        const profilesMap = profilesData?.reduce((acc, profile) => {
-          acc[profile.id] = profile;
+        const profilesMap = (profilesData as any)?.reduce((acc: any, profile: any) => {
+          acc[profile?.id] = profile;
           return acc;
         }, {} as Record<string, any>) || {};
 
-        const postsWithProfiles = data.map(post => ({
+        const postsWithProfiles = (data as any).map((post: any) => ({
           ...post,
-          profiles: profilesMap[post.user_id] || null
+          profiles: profilesMap[post?.user_id] || null
         }));
 
         setPosts(postsWithProfiles);
@@ -94,7 +94,7 @@ export const useCommunityData = () => {
   // Fetch user activities
   const fetchActivities = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('user_activity')
         .select('*')
         .order('created_at', { ascending: false })
@@ -104,20 +104,20 @@ export const useCommunityData = () => {
 
       // Fetch profiles separately and merge
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(activity => activity.user_id))];
-        const { data: profilesData } = await supabase
+        const userIds = [...new Set((data as any).map((activity: any) => activity?.user_id))];
+        const { data: profilesData } = await supabaseBypass
           .from('profiles')
           .select('id, full_name, avatar_url')
-          .in('id', userIds);
+          .in('id', userIds as any);
 
-        const profilesMap = profilesData?.reduce((acc, profile) => {
-          acc[profile.id] = profile;
+        const profilesMap = (profilesData as any)?.reduce((acc: any, profile: any) => {
+          acc[profile?.id] = profile;
           return acc;
         }, {} as Record<string, any>) || {};
 
-        const activitiesWithProfiles = data.map(activity => ({
+        const activitiesWithProfiles = (data as any).map((activity: any) => ({
           ...activity,
-          profiles: profilesMap[activity.user_id] || null
+          profiles: profilesMap[activity?.user_id] || null
         }));
 
         setActivities(activitiesWithProfiles);
@@ -132,7 +132,7 @@ export const useCommunityData = () => {
   // Fetch leaderboard
   const fetchLeaderboard = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('profiles')
         .select('id, full_name, avatar_url, community_points, total_posts, total_likes_received, total_shares, creator_status')
         .gt('community_points', 0)
@@ -140,7 +140,7 @@ export const useCommunityData = () => {
         .limit(10);
 
       if (error) throw error;
-      setLeaderboard(data || []);
+      setLeaderboard((data as any) || []);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
     }
@@ -156,14 +156,14 @@ export const useCommunityData = () => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('community_posts')
         .insert({
           user_id: user.id,
           content,
           image_urls: imageUrls.length > 0 ? imageUrls : null,
           tags: tags.length > 0 ? tags : null
-        })
+        } as any)
         .select();
 
       if (error) throw error;
@@ -189,28 +189,28 @@ export const useCommunityData = () => {
 
     try {
       // Check if already liked
-      const { data: existingLike } = await supabase
+      const { data: existingLike } = await supabaseBypass
         .from('community_post_likes')
         .select('id')
-        .eq('post_id', postId)
-        .eq('user_id', user.id)
+        .eq('post_id', postId as any)
+        .eq('user_id', user.id as any)
         .single();
 
       if (existingLike) {
         // Unlike
-        await supabase
+        await supabaseBypass
           .from('community_post_likes')
           .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
+          .eq('post_id', postId as any)
+          .eq('user_id', user.id as any);
       } else {
         // Like
-        await supabase
+        await supabaseBypass
           .from('community_post_likes')
           .insert({
             post_id: postId,
             user_id: user.id
-          });
+          } as any);
       }
 
       // Refresh posts to get updated like count
@@ -228,7 +228,7 @@ export const useCommunityData = () => {
     try {
       const pointsAwarded = contentType === 'post' ? 3 : contentType === 'profile' ? 5 : 2;
       
-      await supabase
+      await supabaseBypass
         .from('shares_tracking')
         .insert({
           user_id: user.id,
@@ -236,7 +236,7 @@ export const useCommunityData = () => {
           shared_content_id: contentId,
           platform,
           points_awarded: pointsAwarded
-        });
+        } as any);
 
       toast.success(`You earned ${pointsAwarded} points for sharing!`);
     } catch (error: any) {
@@ -252,7 +252,7 @@ export const useCommunityData = () => {
     fetchLeaderboard();
 
     // Real-time subscriptions
-    const postsSubscription = supabase
+    const postsSubscription = supabaseBypass
       .channel('community_posts_changes')
       .on(
         'postgres_changes',
@@ -267,7 +267,7 @@ export const useCommunityData = () => {
       )
       .subscribe();
 
-    const activitySubscription = supabase
+    const activitySubscription = supabaseBypass
       .channel('user_activity_changes')
       .on(
         'postgres_changes',
@@ -282,7 +282,7 @@ export const useCommunityData = () => {
       )
       .subscribe();
 
-    const likesSubscription = supabase
+    const likesSubscription = supabaseBypass
       .channel('community_post_likes_changes')
       .on(
         'postgres_changes',
@@ -298,9 +298,9 @@ export const useCommunityData = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(postsSubscription);
-      supabase.removeChannel(activitySubscription);
-      supabase.removeChannel(likesSubscription);
+      supabaseBypass.removeChannel(postsSubscription);
+      supabaseBypass.removeChannel(activitySubscription);
+      supabaseBypass.removeChannel(likesSubscription);
     };
   }, []);
 

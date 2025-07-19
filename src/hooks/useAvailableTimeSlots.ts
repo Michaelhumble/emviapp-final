@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { format } from "date-fns";
 
 export function useAvailableTimeSlots(artistId: string, selectedDate: Date | undefined) {
@@ -18,12 +18,12 @@ export function useAvailableTimeSlots(artistId: string, selectedDate: Date | und
 
       try {
         // Get artist's availability for the day
-        const { data: availabilityData, error: availabilityError } = await supabase
+        const { data: availabilityData, error: availabilityError } = await supabaseBypass
           .from("artist_availability")
           .select("start_time, end_time")
-          .eq("artist_id", artistId)
-          .eq("day_of_week", dayName)
-          .eq("is_available", true)
+          .eq("artist_id", artistId as any)
+          .eq("day_of_week", dayName as any)
+          .eq("is_available", true as any)
           .single();
 
         if (availabilityError || !availabilityData) {
@@ -33,11 +33,11 @@ export function useAvailableTimeSlots(artistId: string, selectedDate: Date | und
         }
 
         // Get existing bookings for the day
-        const { data: bookings, error: bookingsError } = await supabase
+        const { data: bookings, error: bookingsError } = await supabaseBypass
           .from("bookings")
           .select("time_requested")
-          .eq("recipient_id", artistId)
-          .eq("date_requested", dateStr)
+          .eq("recipient_id", artistId as any)
+          .eq("date_requested", dateStr as any)
           .not("status", "in", '("cancelled","declined")');
 
         if (bookingsError) {
@@ -46,8 +46,8 @@ export function useAvailableTimeSlots(artistId: string, selectedDate: Date | und
         }
 
         // Generate time slots between start and end time
-        const bookedTimes = new Set(bookings?.map(b => b.time_requested) || []);
-        const slots = generateTimeSlots(availabilityData.start_time, availabilityData.end_time);
+        const bookedTimes = new Set(bookings?.map((b: any) => b?.time_requested) || []);
+        const slots = generateTimeSlots((availabilityData as any)?.start_time, (availabilityData as any)?.end_time);
         
         // Filter out booked times
         const availableSlots = slots.filter(slot => !bookedTimes.has(slot));

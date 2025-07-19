@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { format } from "date-fns";
 import { BookingResponse } from "@/types/availability";
 import { useBookingErrorHandler } from "./useBookingErrorHandler";
@@ -28,24 +28,24 @@ export const useAvailabilityValidation = () => {
       const dateStr = format(date, "yyyy-MM-dd");
 
       // Check artist's availability for that day
-      const { data: availabilityData, error: availabilityError } = await supabase
+      const { data: availabilityData, error: availabilityError } = await supabaseBypass
         .from("artist_availability")
         .select("start_time, end_time, is_available")
-        .eq("artist_id", artistId)
-        .eq("day_of_week", dayName)
+        .eq("artist_id", artistId as any)
+        .eq("day_of_week", dayName as any)
         .maybeSingle();
 
       if (availabilityError) throw availabilityError;
       
       // If no availability record or not available
-      if (!availabilityData || !availabilityData.is_available) {
+      if (!availabilityData || !(availabilityData as any)?.is_available) {
         return false;
       }
 
       // Check if the time is within the available hours
       const [requestHour, requestMinute] = time.split(":").map(Number);
-      const [startHour, startMinute] = availabilityData.start_time.split(":").map(Number);
-      const [endHour, endMinute] = availabilityData.end_time.split(":").map(Number);
+      const [startHour, startMinute] = ((availabilityData as any)?.start_time || '09:00').split(":").map(Number);
+      const [endHour, endMinute] = ((availabilityData as any)?.end_time || '17:00').split(":").map(Number);
       
       const requestTimeInMinutes = requestHour * 60 + requestMinute;
       const startTimeInMinutes = startHour * 60 + startMinute;
@@ -56,12 +56,12 @@ export const useAvailabilityValidation = () => {
       }
 
       // Now check if there are any existing bookings at that time
-      const { data: existingBookings, error: bookingsError } = await supabase
+      const { data: existingBookings, error: bookingsError } = await supabaseBypass
         .from("bookings")
         .select("*")
-        .eq("recipient_id", artistId)
-        .eq("date_requested", dateStr)
-        .eq("time_requested", time)
+        .eq("recipient_id", artistId as any)
+        .eq("date_requested", dateStr as any)
+        .eq("time_requested", time as any)
         .not("status", "in", '("cancelled","declined")');
 
       if (bookingsError) throw bookingsError;
@@ -90,7 +90,7 @@ export const useAvailabilityValidation = () => {
     try {
       const dateStr = format(date, "yyyy-MM-dd");
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("bookings")
         .select(`
           id,
@@ -102,8 +102,8 @@ export const useAvailabilityValidation = () => {
           sender_id,
           users:sender_id(full_name)
         `)
-        .eq("recipient_id", artistId)
-        .eq("date_requested", dateStr)
+        .eq("recipient_id", artistId as any)
+        .eq("date_requested", dateStr as any)
         .not("status", "in", '("cancelled","declined")');
 
       if (error) throw error;

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -25,7 +25,7 @@ export const useComments = (storyId: string) => {
   // Fetch comments with real user profiles
   const fetchComments = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('community_post_comments')
         .select(`
           id,
@@ -34,13 +34,13 @@ export const useComments = (storyId: string) => {
           user_id,
           post_id
         `)
-        .eq('post_id', storyId)
+        .eq('post_id', storyId as any)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       
       // Use real authenticated user data only - no fake names
-      const commentsWithRealProfiles = (data || []).map((comment) => ({
+      const commentsWithRealProfiles = ((data as any) || []).map((comment: any) => ({
         ...comment,
         profiles: {
           full_name: null,
@@ -69,13 +69,13 @@ export const useComments = (storyId: string) => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('community_post_comments')
         .insert({
           post_id: storyId,
           user_id: user.id,
           content: content.trim()
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -95,7 +95,7 @@ export const useComments = (storyId: string) => {
   useEffect(() => {
     fetchComments();
 
-    const channel = supabase
+    const channel = supabaseBypass
       .channel('comments-changes')
       .on(
         'postgres_changes',
@@ -112,7 +112,7 @@ export const useComments = (storyId: string) => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabaseBypass.removeChannel(channel);
     };
   }, [storyId]);
 

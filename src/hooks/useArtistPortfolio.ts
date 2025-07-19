@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 
@@ -30,13 +30,13 @@ export function useArtistPortfolio() {
     if (!user) return;
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from("portfolio_items")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", user.id as any)
         .order("order", { ascending: false });
       if (error) throw error;
-      setPortfolio(data ?? []);
+      setPortfolio((data as any) ?? []);
     } catch (error) {
       toast.error("Failed to load portfolio");
     } finally {
@@ -49,30 +49,30 @@ export function useArtistPortfolio() {
     setUploading(true);
     try {
       // Get the highest order number
-      const { data: orderData } = await supabase
+      const { data: orderData } = await supabaseBypass
         .from("portfolio_items")
         .select("order")
-        .eq("user_id", user.id)
+        .eq("user_id", user.id as any)
         .order("order", { ascending: false })
         .limit(1);
       
-      const newOrder = orderData && orderData.length > 0 ? orderData[0].order + 1 : 1;
+      const newOrder = orderData && orderData.length > 0 ? (orderData[0] as any)?.order + 1 : 1;
       
       // Upload to storage
       const fileExt = file.name.split('.').pop()?.toLowerCase() || "jpg";
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      const { error: storageErr } = await supabase.storage
+      const { error: storageErr } = await supabaseBypass.storage
         .from("portfolio_images")
         .upload(fileName, file);
       if (storageErr) throw storageErr;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabaseBypass.storage
         .from("portfolio_images")
         .getPublicUrl(fileName);
 
       // Insert into DB
-      const { error: dbErr } = await supabase
+      const { error: dbErr } = await supabaseBypass
         .from("portfolio_items")
         .insert({
           user_id: user.id,
@@ -80,7 +80,7 @@ export function useArtistPortfolio() {
           description: description || null,
           image_url: publicUrl,
           order: newOrder,
-        });
+        } as any);
       if (dbErr) throw dbErr;
 
       toast.success("Portfolio item added!");
@@ -99,11 +99,11 @@ export function useArtistPortfolio() {
     
     try {
       // Delete from DB
-      const { error: dbErr } = await supabase
+      const { error: dbErr } = await supabaseBypass
         .from("portfolio_items")
         .delete()
-        .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("id", id as any)
+        .eq("user_id", user.id as any);
       
       if (dbErr) throw dbErr;
       
@@ -113,7 +113,7 @@ export function useArtistPortfolio() {
       const filePath = `${user.id}/${fileName}`;
       
       // Try to delete from storage (but don't fail if this doesn't work)
-      await supabase.storage
+      await supabaseBypass.storage
         .from("portfolio_images")
         .remove([filePath]);
       
@@ -151,7 +151,7 @@ export function useArtistPortfolio() {
       // Batch update the order in the database
       // This is where the error was happening. We need to include all required fields
       // or use the onConflict option to only update the order field
-      const { error } = await supabase.from('portfolio_items')
+      const { error } = await supabaseBypass.from('portfolio_items')
         .upsert(
           updatedItems.map(({ id, order, user_id, title, image_url }) => ({ 
             id, 
@@ -159,7 +159,7 @@ export function useArtistPortfolio() {
             user_id, 
             title, 
             image_url 
-          })),
+          })) as any,
           { onConflict: 'id' }
         );
       

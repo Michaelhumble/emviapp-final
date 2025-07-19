@@ -32,7 +32,7 @@ export function useArtistUpcomingBookings() {
           .from("bookings")
           .select("id, client_name, service_type, date_requested, appointment_time, status")
           .eq("recipient_id", user.id as any)
-          .in("status", ["pending" as any, "accepted" as any, "confirmed" as any]) // Only show relevant statuses
+          .in("status", ["pending", "accepted", "confirmed"] as any) // Only show relevant statuses
           .order("date_requested", { ascending: true });
 
         if (fetchError) throw fetchError;

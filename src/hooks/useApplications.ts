@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -21,14 +21,14 @@ export const useApplications = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('applications')
         .insert({
           user_id: user.id,
           application_type: applicationType,
           target_id: targetId,
           application_data: applicationData
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -47,14 +47,14 @@ export const useApplications = () => {
     if (!user) return null;
 
     try {
-      const query = supabase
+      const query = supabaseBypass
         .from('applications')
         .select('status, submitted_at')
-        .eq('user_id', user.id)
-        .eq('application_type', applicationType);
+        .eq('user_id', user.id as any)
+        .eq('application_type', applicationType as any);
 
       if (targetId) {
-        query.eq('target_id', targetId);
+        query.eq('target_id', targetId as any);
       }
 
       const { data, error } = await query.single();

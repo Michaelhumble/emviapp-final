@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -46,17 +46,17 @@ export const useChallenges = () => {
   // Fetch current active challenge
   const fetchCurrentChallenge = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('challenges')
         .select('*')
-        .eq('status', 'active')
+        .eq('status', 'active' as any)
         .gte('end_date', new Date().toISOString())
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
-      setCurrentChallenge(data);
+      setCurrentChallenge(data as any);
     } catch (error) {
       console.error('Error fetching current challenge:', error);
     }
@@ -65,7 +65,7 @@ export const useChallenges = () => {
   // Fetch challenge entries
   const fetchChallengeEntries = async (challengeId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('challenge_entries')
         .select(`
           *,
@@ -75,11 +75,11 @@ export const useChallenges = () => {
             user_id
           )
         `)
-        .eq('challenge_id', challengeId)
+        .eq('challenge_id', challengeId as any)
         .order('votes_count', { ascending: false });
 
       if (error) throw error;
-      setEntries(data || []);
+      setEntries((data as any) || []);
     } catch (error) {
       console.error('Error fetching challenge entries:', error);
     }
@@ -88,7 +88,7 @@ export const useChallenges = () => {
   // Fetch previous winners
   const fetchWinners = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('challenge_entries')
         .select(`
           *,
@@ -99,12 +99,12 @@ export const useChallenges = () => {
           ),
           challenge:challenges(title, prize)
         `)
-        .eq('is_winner', true)
+        .eq('is_winner', true as any)
         .order('submitted_at', { ascending: false })
         .limit(5);
 
       if (error) throw error;
-      setWinners(data || []);
+      setWinners((data as any) || []);
     } catch (error) {
       console.error('Error fetching winners:', error);
     }
@@ -115,15 +115,15 @@ export const useChallenges = () => {
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('challenge_entries')
         .select('*')
-        .eq('challenge_id', challengeId)
-        .eq('user_id', user.id)
+        .eq('challenge_id', challengeId as any)
+        .eq('user_id', user.id as any)
         .maybeSingle();
 
       if (error) throw error;
-      setUserEntry(data);
+      setUserEntry(data as any);
     } catch (error) {
       console.error('Error fetching user entry:', error);
     }
@@ -137,13 +137,13 @@ export const useChallenges = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('challenge_entries')
         .insert({
           challenge_id: currentChallenge.id,
           user_id: user.id,
           post_id: postId
-        });
+        } as any);
 
       if (error) throw error;
       
@@ -167,30 +167,30 @@ export const useChallenges = () => {
 
     try {
       // Check if user already voted
-      const { data: existingVote } = await supabase
+      const { data: existingVote } = await supabaseBypass
         .from('challenge_votes')
         .select('id')
-        .eq('entry_id', entryId)
-        .eq('user_id', user.id)
+        .eq('entry_id', entryId as any)
+        .eq('user_id', user.id as any)
         .maybeSingle();
 
       if (existingVote) {
         // Remove vote
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('challenge_votes')
           .delete()
-          .eq('id', existingVote.id);
+          .eq('id', (existingVote as any).id as any);
 
         if (error) throw error;
         toast.success('Vote removed');
       } else {
         // Add vote
-        const { error } = await supabase
+        const { error } = await supabaseBypass
           .from('challenge_votes')
           .insert({
             entry_id: entryId,
             user_id: user.id
-          });
+          } as any);
 
         if (error) throw error;
         toast.success('Vote added!');

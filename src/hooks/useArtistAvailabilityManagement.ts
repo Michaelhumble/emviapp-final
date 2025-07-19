@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 import { format } from "date-fns";
@@ -43,21 +43,21 @@ export const useArtistAvailabilityManagement = (artistId?: string) => {
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('artist_availability')
         .select('*')
-        .eq('artist_id', effectiveArtistId);
+        .eq('artist_id', effectiveArtistId as any);
 
       if (error) throw error;
 
       if (data && data.length > 0) {
         // Map database days to our format
-        const mappedDays: AvailabilityDay[] = data.map(day => ({
-          id: day.id,
-          day_of_week: getDayNumber(day.day_of_week),
-          start_time: day.start_time,
-          end_time: day.end_time,
-          active: day.is_available
+        const mappedDays: AvailabilityDay[] = data.map((day: any) => ({
+          id: day?.id,
+          day_of_week: getDayNumber(day?.day_of_week || ''),
+          start_time: day?.start_time || '09:00',
+          end_time: day?.end_time || '17:00',
+          active: day?.is_available || false
         }));
         
         // Ensure we have all 7 days
@@ -118,9 +118,9 @@ export const useArtistAvailabilityManagement = (artistId?: string) => {
         ...(day.id ? { id: day.id } : {})
       }));
 
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('artist_availability')
-        .upsert(databaseRecords, { onConflict: 'artist_id,day_of_week' });
+        .upsert(databaseRecords as any, { onConflict: 'artist_id,day_of_week' });
 
       if (error) throw error;
       
