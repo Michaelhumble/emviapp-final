@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 
 export interface ArtistBooking {
@@ -28,32 +28,32 @@ export function useArtistUpcomingBookings() {
 
       try {
         // Only pull future or today bookings with non-cancelled status
-        const { data, error: fetchError } = await supabase
+        const { data, error: fetchError } = await supabaseBypass
           .from("bookings")
           .select("id, client_name, service_type, date_requested, appointment_time, status")
-          .eq("recipient_id", user.id)
-          .in("status", ["pending", "accepted", "confirmed"]) // Only show relevant statuses
+          .eq("recipient_id", user.id as any)
+          .in("status", ["pending" as any, "accepted" as any, "confirmed" as any]) // Only show relevant statuses
           .order("date_requested", { ascending: true });
 
         if (fetchError) throw fetchError;
 
         const today = new Date();
         const filtered = (data || [])
-          .filter((b) => {
-            if (!b.date_requested) return true;
+          .filter((b: any) => {
+            if (!b?.date_requested) return true;
             // Only show today or future
             const bookingDate = new Date(b.date_requested);
             bookingDate.setHours(0,0,0,0);
             today.setHours(0,0,0,0);
             return bookingDate >= today;
           })
-          .map((b) => ({
-            id: b.id,
-            client_name: b.client_name,
-            service_type: b.service_type,
-            appointment_date: b.date_requested,
-            appointment_time: b.appointment_time,
-            status: b.status,
+          .map((b: any) => ({
+            id: b?.id || '',
+            client_name: b?.client_name,
+            service_type: b?.service_type,
+            appointment_date: b?.date_requested,
+            appointment_time: b?.appointment_time,
+            status: b?.status || 'pending',
           }));
 
         if (!cancelled) setBookings(filtered);

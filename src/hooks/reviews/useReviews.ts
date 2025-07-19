@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { Review, ArtistRating } from "@/types/reviews";
@@ -22,17 +22,17 @@ export const useReviews = (artistId?: string, salonId?: string) => {
     setLoading(true);
     try {
       // We need to specify the type conversion here because 'reviews' might not be in the generated types yet
-      let query = supabase
+      let query = supabaseBypass
         .from('reviews')
         .select('*')
-        .eq('status', 'active');
+        .eq('status', 'active' as any);
 
       if (artistId) {
-        query = query.eq('artist_id', artistId);
+        query = query.eq('artist_id', artistId as any);
       }
 
       if (salonId) {
-        query = query.eq('salon_id', salonId);
+        query = query.eq('salon_id', salonId as any);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -52,16 +52,16 @@ export const useReviews = (artistId?: string, salonId?: string) => {
     
     try {
       // Query individual reviews and calculate average and count
-      const { data: reviewsData, error } = await supabase
+      const { data: reviewsData, error } = await supabaseBypass
         .from('reviews')
         .select('rating')
-        .eq('artist_id', artistId)
-        .eq('status', 'active');
+        .eq('artist_id', artistId as any)
+        .eq('status', 'active' as any);
 
       if (error) throw error;
       
       if (reviewsData && reviewsData.length > 0) {
-        const average = reviewsData.reduce((sum, review) => sum + (review.rating || 0), 0) / reviewsData.length;
+        const average = (reviewsData as any[]).reduce((sum, review) => sum + ((review as any)?.rating || 0), 0) / reviewsData.length;
         setRatingData({
           average_rating: parseFloat(average.toFixed(1)),
           review_count: reviewsData.length
@@ -82,12 +82,12 @@ export const useReviews = (artistId?: string, salonId?: string) => {
 
     try {
       // Check if user can review this booking (sender and completed status)
-      const { data: bookingData, error: bookingError } = await supabase
+      const { data: bookingData, error: bookingError } = await supabaseBypass
         .from('bookings')
         .select('*')
-        .eq('id', bookingId)
-        .eq('sender_id', user.id)
-        .eq('status', 'completed')
+        .eq('id', bookingId as any)
+        .eq('sender_id', user.id as any)
+        .eq('status', 'completed' as any)
         .single();
 
       if (bookingError || !bookingData) {
@@ -96,10 +96,10 @@ export const useReviews = (artistId?: string, salonId?: string) => {
       }
       
       // Check if review already exists
-      const { data: existingReview, error: reviewCheckError } = await supabase
+      const { data: existingReview, error: reviewCheckError } = await supabaseBypass
         .from('reviews')
         .select('id')
-        .eq('booking_id', bookingId)
+        .eq('booking_id', bookingId as any)
         .maybeSingle();
         
       if (reviewCheckError) throw reviewCheckError;
@@ -110,7 +110,7 @@ export const useReviews = (artistId?: string, salonId?: string) => {
       }
 
       // Submit the review
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('reviews')
         .insert({
           booking_id: bookingId,
@@ -119,15 +119,15 @@ export const useReviews = (artistId?: string, salonId?: string) => {
           salon_id: salonId || null,
           rating,
           comment: comment.trim() || null
-        });
+        } as any);
 
       if (error) throw error;
 
       // Update the booking status to include a review flag
-      await supabase
+      await supabaseBypass
         .from('bookings')
-        .update({ status: 'reviewed' })
-        .eq('id', bookingId);
+        .update({ status: 'reviewed' } as any)
+        .eq('id', bookingId as any);
 
       toast.success("Review submitted successfully!");
       fetchReviews();
@@ -144,10 +144,10 @@ export const useReviews = (artistId?: string, salonId?: string) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('reviews')
-        .update({ reported: true })
-        .eq('id', reviewId);
+        .update({ reported: true } as any)
+        .eq('id', reviewId as any);
 
       if (error) throw error;
       toast.success("Review reported to moderators");

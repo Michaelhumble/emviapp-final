@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 
 export const useCanReview = (bookingId?: string) => {
@@ -27,21 +27,21 @@ export const useCanReview = (bookingId?: string) => {
     setLoading(true);
     try {
       // Use a more type-safe approach for calling RPC functions
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('bookings')
         .select('*')
-        .eq('id', bookingId)
-        .eq('sender_id', user.id)
-        .eq('status', 'completed')
+        .eq('id', bookingId as any)
+        .eq('sender_id', user.id as any)
+        .eq('status', 'completed' as any)
         .single();
 
       if (error) throw error;
       
       // Check if there's already a review for this booking
-      const { data: existingReview, error: reviewError } = await supabase
+      const { data: existingReview, error: reviewError } = await supabaseBypass
         .from('reviews')
         .select('id')
-        .eq('booking_id', bookingId)
+        .eq('booking_id', bookingId as any)
         .maybeSingle();
         
       if (reviewError) throw reviewError;

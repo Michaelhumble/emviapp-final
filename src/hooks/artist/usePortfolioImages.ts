@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { PortfolioImage } from "@/types/artist";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 
 export const usePortfolioImages = (artistId?: string) => {
@@ -25,19 +25,19 @@ export const usePortfolioImages = (artistId?: string) => {
         }
         
         // First try to get from portfolio_items table
-        const { data: portfolioData, error: portfolioError } = await supabase
+        const { data: portfolioData, error: portfolioError } = await supabaseBypass
           .from('portfolio_items')
           .select('*')
-          .eq('user_id', targetUserId)
+          .eq('user_id', targetUserId as any)
           .order('order', { ascending: false });
           
         if (!portfolioError && portfolioData && portfolioData.length > 0) {
           // Transform data to PortfolioImage format
-          const transformedData: PortfolioImage[] = portfolioData.map(item => ({
-            id: item.id,
-            url: item.image_url,
-            title: item.title,
-            description: item.description,
+          const transformedData: PortfolioImage[] = portfolioData.map((item: any) => ({
+            id: item?.id || '',
+            url: item?.image_url || '',
+            title: item?.title || '',
+            description: item?.description || '',
             // Set featured to false by default since it doesn't exist in the database
             featured: false
           }));
@@ -48,14 +48,14 @@ export const usePortfolioImages = (artistId?: string) => {
         }
         
         // If no portfolio items, try to get from user profile
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await supabaseBypass
           .from('profiles')
           .select('portfolio_urls')
-          .eq('id', targetUserId)
+          .eq('id', targetUserId as any)
           .single();
           
-        if (!userError && userData && userData.portfolio_urls) {
-          const portfolioUrls = userData.portfolio_urls || [];
+        if (!userError && userData && (userData as any)?.portfolio_urls) {
+          const portfolioUrls = (userData as any)?.portfolio_urls || [];
           
           // Map to PortfolioImage format
           const portfolioImages: PortfolioImage[] = portfolioUrls.map((url: string, index: number) => ({

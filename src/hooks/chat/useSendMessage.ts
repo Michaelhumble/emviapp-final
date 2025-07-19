@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 
 export const useSendMessage = () => {
@@ -13,13 +13,13 @@ export const useSendMessage = () => {
     setSending(true);
     
     try {
-      const { error } = await supabase.from('messages').insert({
+      const { error } = await supabaseBypass.from('messages').insert({
         sender_id: user.id,
         recipient_id: recipientId,
         message_body: message,
         message_type: 'chat',
         salon_id: user.id // Using user.id as a temporary placeholder for salon_id
-      });
+      } as any);
 
       if (error) throw error;
       return true;

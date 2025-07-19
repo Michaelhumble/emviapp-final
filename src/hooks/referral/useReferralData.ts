@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { Referral } from '@/components/referral/types';
 
 export const useReferralData = () => {
@@ -33,7 +33,7 @@ export const useReferralData = () => {
         // Fetch referrals
         if (user.id) {
           // Query referrals data
-          const { data, error } = await supabase
+          const { data, error } = await supabaseBypass
             .from('referrals')
             .select(`
               id,
@@ -42,27 +42,27 @@ export const useReferralData = () => {
               status,
               verified_at
             `)
-            .eq('referrer_id', user.id)
+            .eq('referrer_id', user.id as any)
             .order('created_at', { ascending: false });
             
           if (!error && data) {
             // For each referral, fetch the user data separately
             const formattedReferrals: Referral[] = await Promise.all(
-              data.map(async (item) => {
+              (data as any[]).map(async (item: any) => {
                 // Fetch the user data for the referred user
-                const { data: userData, error: userError } = await supabase
+                const { data: userData, error: userError } = await supabaseBypass
                   .from('profiles')
                   .select('full_name, email')
-                  .eq('id', item.referred_id)
+                  .eq('id', item?.referred_id as any)
                   .single();
                 
                 return {
-                  id: item.id,
-                  referredId: item.referred_id,
-                  referredName: userData?.full_name || 'Unknown User',
-                  status: item.status === 'completed' ? 'completed' : 'pending',
-                  createdAt: item.created_at,
-                  completedAt: item.verified_at || undefined
+                  id: item?.id || '',
+                  referredId: item?.referred_id || '',
+                  referredName: (userData as any)?.full_name || 'Unknown User',
+                  status: item?.status === 'completed' ? 'completed' : 'pending',
+                  createdAt: item?.created_at || '',
+                  completedAt: item?.verified_at || undefined
                 };
               })
             );

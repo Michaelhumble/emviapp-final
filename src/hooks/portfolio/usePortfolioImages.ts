@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -34,21 +34,21 @@ export function usePortfolioImages() {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('portfolio_items')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', user.id as any)
         .order('order', { ascending: true });
       
       if (error) throw error;
       
-      setImages(data.map(item => ({
-        id: item.id,
-        url: item.image_url,
-        title: item.title,
-        description: item.description,
-        created_at: item.created_at
-      })));
+      setImages((data as any[])?.map((item: any) => ({
+        id: item?.id || '',
+        url: item?.image_url || '',
+        title: item?.title || '',
+        description: item?.description || '',
+        created_at: item?.created_at || new Date().toISOString()
+      })) || []);
     } catch (error) {
       console.error('Error fetching portfolio images:', error);
       toast.error('Failed to load portfolio images');
@@ -86,16 +86,16 @@ export function usePortfolioImages() {
     
     try {
       // Get highest order for this user
-      const { data, error: orderError } = await supabase
+      const { data, error: orderError } = await supabaseBypass
         .from('portfolio_items')
         .select('order')
-        .eq('user_id', user.id)
+        .eq('user_id', user.id as any)
         .order('order', { ascending: false })
         .limit(1);
         
       if (orderError) throw orderError;
       
-      const maxOrder = data && data.length > 0 ? data[0].order : 0;
+      const maxOrder = data && data.length > 0 ? (data as any)[0].order : 0;
 
       // 1. Upload file to Supabase Storage
       const fileName = `${user.id}/${Date.now()}-${file.name}`;
@@ -103,7 +103,7 @@ export function usePortfolioImages() {
       // Use manual progress tracking since Supabase JS client type issues with onUploadProgress
       setUploadProgress(25);
       
-      const { data: fileData, error: uploadError } = await supabase.storage
+      const { data: fileData, error: uploadError } = await supabaseBypass.storage
         .from('portfolio_images')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -115,14 +115,14 @@ export function usePortfolioImages() {
       setUploadProgress(50);
       
       // 2. Get public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabaseBypass.storage
         .from('portfolio_images')
         .getPublicUrl(fileData.path);
       
       setUploadProgress(75);
       
       // 3. Insert record in portfolio_items table
-      const { data: portfolioItem, error: insertError } = await supabase
+      const { data: portfolioItem, error: insertError } = await supabaseBypass
         .from('portfolio_items')
         .insert({
           user_id: user.id,
@@ -130,7 +130,7 @@ export function usePortfolioImages() {
           description: description || null,
           image_url: publicUrl,
           order: maxOrder + 1
-        })
+        } as any)
         .select()
         .single();
       
@@ -140,11 +140,11 @@ export function usePortfolioImages() {
       
       // 4. Add the new image to the local state
       const newImage: PortfolioImage = {
-        id: portfolioItem.id,
+        id: (portfolioItem as any)?.id || '',
         url: publicUrl,
-        title: portfolioItem.title,
-        description: portfolioItem.description,
-        created_at: portfolioItem.created_at
+        title: (portfolioItem as any)?.title || '',
+        description: (portfolioItem as any)?.description || '',
+        created_at: (portfolioItem as any)?.created_at || new Date().toISOString()
       };
       
       setImages(prev => [newImage, ...prev]);
@@ -170,11 +170,11 @@ export function usePortfolioImages() {
     
     try {
       // 1. Delete from portfolio_items table
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await supabaseBypass
         .from('portfolio_items')
         .delete()
-        .eq('id', imageId)
-        .eq('user_id', user.id);
+        .eq('id', imageId as any)
+        .eq('user_id', user.id as any);
       
       if (deleteError) throw deleteError;
       
@@ -182,7 +182,7 @@ export function usePortfolioImages() {
       // Extract path from URL (after the bucket name)
       const filePath = imageUrl.split('portfolio_images/')[1];
       if (filePath) {
-        await supabase.storage
+        await supabaseBypass.storage
           .from('portfolio_images')
           .remove([filePath]);
       }

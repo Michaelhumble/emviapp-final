@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { SalonMessage } from '@/types/SalonMessage';
 import { useAuth } from '@/context/auth';
 
@@ -61,7 +61,7 @@ export const useMessages = (recipientId: string) => {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('messages')
         .select('*')
         .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
@@ -73,12 +73,12 @@ export const useMessages = (recipientId: string) => {
         return;
       }
 
-      const transformedMessages: SalonMessage[] = (data || []).map(msg => ({
-        id: msg.id,
-        senderId: msg.sender_id,
+      const transformedMessages: SalonMessage[] = (data || []).map((msg: any) => ({
+        id: msg?.id || '',
+        senderId: msg?.sender_id || '',
         senderName: '', // This would need to be fetched separately
-        message: msg.message_body,
-        timestamp: msg.created_at
+        message: msg?.message_body || '',
+        timestamp: msg?.created_at || new Date().toISOString()
       }));
 
       setMessages(transformedMessages);
@@ -87,7 +87,7 @@ export const useMessages = (recipientId: string) => {
 
     fetchMessages();
 
-    const channel = supabase
+    const channel = supabaseBypass
       .channel('messages')
       .on(
         'postgres_changes',
@@ -100,11 +100,11 @@ export const useMessages = (recipientId: string) => {
         (payload) => {
           const newMsg = payload.new as any;
           const salonMessage: SalonMessage = {
-            id: newMsg.id,
-            senderId: newMsg.sender_id,
+            id: newMsg?.id || '',
+            senderId: newMsg?.sender_id || '',
             senderName: '', // Would need to be populated in a real app
-            message: newMsg.message_body,
-            timestamp: newMsg.created_at
+            message: newMsg?.message_body || '',
+            timestamp: newMsg?.created_at || new Date().toISOString()
           };
           setMessages(prev => [...prev, salonMessage]);
         }
@@ -112,7 +112,7 @@ export const useMessages = (recipientId: string) => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabaseBypass.removeChannel(channel);
     };
   }, [user, recipientId]);
 

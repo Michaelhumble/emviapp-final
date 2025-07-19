@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth';
@@ -37,10 +37,10 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('appointments')
         .select('*, services(title, price, duration_minutes)')
-        .eq('artist_id', user.id)
+        .eq('artist_id', user.id as any)
         .gte('start_time', startDate.toISOString())
         .lte('end_time', endDate.toISOString())
         .order('start_time', { ascending: true });
@@ -82,9 +82,9 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
         end_time: dataToSave.end_time
       };
       
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('appointments')
-        .upsert(finalData)
+        .upsert(finalData as any)
         .select()
         .single();
       
@@ -105,11 +105,11 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
     mutationFn: async (id: string) => {
       if (!user?.id) throw new Error('User not authenticated');
       
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('appointments')
         .delete()
-        .eq('id', id)
-        .eq('artist_id', user.id); // Ensure only owner can delete
+        .eq('id', id as any)
+        .eq('artist_id', user.id as any); // Ensure only owner can delete
       
       if (error) throw error;
       return id;

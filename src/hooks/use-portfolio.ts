@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -22,14 +22,14 @@ export const usePortfolio = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('portfolio_items')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', user.id as any)
         .order('order', { ascending: true });
 
       if (error) throw error;
-      setPortfolioItems(data || []);
+      setPortfolioItems((data as any) || []);
     } catch (error) {
       console.error('Error fetching portfolio:', error);
       toast.error('Failed to load portfolio');
@@ -46,7 +46,7 @@ export const usePortfolio = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabaseBypass.storage
         .from('portfolio')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -56,25 +56,25 @@ export const usePortfolio = () => {
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabaseBypass.storage
         .from('portfolio')
         .getPublicUrl(fileName);
 
       // Create portfolio item record
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('portfolio_items')
         .insert({
           user_id: user.id,
           title: file.name.split('.')[0],
           image_url: publicUrl,
           order: portfolioItems.length
-        })
+        } as any)
         .select()
         .single();
 
       if (error) throw error;
 
-      setPortfolioItems(prev => [...prev, data]);
+      setPortfolioItems(prev => [...prev, data as any]);
       toast.success('Image uploaded successfully!');
       return data;
     } catch (error) {
@@ -95,14 +95,14 @@ export const usePortfolio = () => {
         order: portfolioItems.length + index
       }));
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('portfolio_items')
-        .insert(insertData)
+        .insert(insertData as any)
         .select();
 
       if (error) throw error;
 
-      setPortfolioItems(prev => [...prev, ...data]);
+      setPortfolioItems(prev => [...prev, ...(data as any)]);
       return data;
     } catch (error) {
       console.error('Error saving portfolio items:', error);
@@ -113,10 +113,10 @@ export const usePortfolio = () => {
 
   const deletePortfolioImage = async (itemId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('portfolio_items')
         .delete()
-        .eq('id', itemId);
+        .eq('id', itemId as any);
 
       if (error) throw error;
 
