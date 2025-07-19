@@ -440,9 +440,9 @@ const SalonsPageRedesigned = () => {
             <div className="border-t border-gray-200 pt-12 mb-8">
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  🇻🇳 Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
+                  Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
                 </h2>
-                <p className="text-gray-600 text-lg">Real Vietnamese nail salon listings for our community</p>
+                <p className="text-gray-600 text-lg">Vietnamese nail salon listings for our trusted community</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

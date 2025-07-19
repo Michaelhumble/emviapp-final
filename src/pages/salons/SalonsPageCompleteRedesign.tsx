@@ -329,7 +329,7 @@ const SalonsPageCompleteRedesign = () => {
                       <h2 className="text-3xl font-bold text-gray-900">
                         Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
                       </h2>
-                      <p className="text-gray-600">Vietnamese nail salon listings for our community</p>
+                      <p className="text-gray-600">Vietnamese nail salon listings for our trusted community</p>
                     </div>
                     <Badge className="bg-orange-100 text-orange-800 text-sm font-bold px-3 py-1">
                       VIETNAMESE COMMUNITY
