@@ -2542,6 +2542,7 @@ export type Database = {
         Row: {
           accepts_bookings: boolean | null
           address: string | null
+          available_for_hire: boolean | null
           avatar_url: string | null
           badges: Json | null
           bio: string | null
@@ -2562,8 +2563,13 @@ export type Database = {
           id: string
           instagram: string | null
           invited: boolean | null
+          just_moved: boolean | null
           location: string | null
+          looking_for_work: boolean | null
           manager_for_salon_id: string | null
+          moved_date: string | null
+          moved_to_city: string | null
+          moved_to_state: string | null
           phone: string | null
           portfolio_urls: string[] | null
           preferences: string[] | null
@@ -2585,6 +2591,7 @@ export type Database = {
         Insert: {
           accepts_bookings?: boolean | null
           address?: string | null
+          available_for_hire?: boolean | null
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
@@ -2605,8 +2612,13 @@ export type Database = {
           id: string
           instagram?: string | null
           invited?: boolean | null
+          just_moved?: boolean | null
           location?: string | null
+          looking_for_work?: boolean | null
           manager_for_salon_id?: string | null
+          moved_date?: string | null
+          moved_to_city?: string | null
+          moved_to_state?: string | null
           phone?: string | null
           portfolio_urls?: string[] | null
           preferences?: string[] | null
@@ -2628,6 +2640,7 @@ export type Database = {
         Update: {
           accepts_bookings?: boolean | null
           address?: string | null
+          available_for_hire?: boolean | null
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
@@ -2648,8 +2661,13 @@ export type Database = {
           id?: string
           instagram?: string | null
           invited?: boolean | null
+          just_moved?: boolean | null
           location?: string | null
+          looking_for_work?: boolean | null
           manager_for_salon_id?: string | null
+          moved_date?: string | null
+          moved_to_city?: string | null
+          moved_to_state?: string | null
           phone?: string | null
           portfolio_urls?: string[] | null
           preferences?: string[] | null
