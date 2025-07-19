@@ -9,6 +9,7 @@ import MatchmakingToggles from '../components/MatchmakingToggles';
 import PokeOffersCard from '../components/PokeOffersCard';
 import OneClickApplyCard from '../components/OneClickApplyCard';
 import AIRecommendationsCard from '../components/AIRecommendationsCard';
+import ArtistForHire from '../components/ArtistForHire';
 
 const ArtistOverviewTab = () => {
   return (
@@ -20,6 +21,9 @@ const ArtistOverviewTab = () => {
     >
       {/* Live Activity Banner */}
       <ArtistLiveActivity />
+      
+      {/* Artist For Hire Card */}
+      <ArtistForHire />
       
       {/* Matchmaking & Visibility Controls */}
       <MatchmakingToggles />
