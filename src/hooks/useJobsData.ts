@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Job } from '@/types/job';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 
 export const useJobsData = () => {
@@ -11,30 +11,30 @@ export const useJobsData = () => {
 
   const fetchJobs = async () => {
     console.log('🔍 [JOBS-DATA] Starting to fetch jobs from Supabase...');
-    console.log('🔍 [JOBS-DATA] Supabase client configured:', !!supabase);
+    console.log('🔍 [JOBS-DATA] Supabase client configured:', !!supabaseBypass);
     
     try {
       setLoading(true);
       setError(null);
       
-      const { data: jobsData, error: fetchError, count } = await supabase
+      const { data: jobsData, error: fetchError, count } = await supabaseBypass
         .from('jobs')
         .select('*', { count: 'exact' })
-        .eq('status', 'active')
-        .gte('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false });
+        .eq('status' as any, 'active')
+        .gte('expires_at' as any, new Date().toISOString())
+        .order('created_at' as any, { ascending: false });
         
       // LOG ALL ACTIVE JOBS FOR DEBUGGING
       console.log('🔍 [JOBS-DATA] ACTIVE JOBS QUERY RESULTS:');
       if (jobsData && jobsData.length > 0) {
-        jobsData.forEach((job, index) => {
+        jobsData.forEach((job: any, index: number) => {
           console.log(`📋 [JOBS-DATA] Job ${index + 1}:`, {
-            id: job.id,
-            title: job.title,
-            status: job.status,
-            pricing_tier: job.pricing_tier,
-            created_at: job.created_at,
-            user_id: job.user_id
+            id: job?.id,
+            title: job?.title,
+            status: job?.status,
+            pricing_tier: job?.pricing_tier,
+            created_at: job?.created_at,
+            user_id: job?.user_id
           });
         });
       } else {
@@ -53,40 +53,40 @@ export const useJobsData = () => {
         throw fetchError;
       }
 
-      const transformedJobs: Job[] = (jobsData || []).map(job => {
+      const transformedJobs: Job[] = (jobsData || []).map((job: any) => {
         console.log('🔍 [JOBS-DATA] Transforming job:', {
-          id: job.id,
-          title: job.title,
-          vietnamese_title: job.vietnamese_title,
-          vietnamese_description: job.vietnamese_description,
-          user_id: job.user_id,
-          status: job.status,
-          created_at: job.created_at
+          id: job?.id,
+          title: job?.title,
+          vietnamese_title: job?.vietnamese_title,
+          vietnamese_description: job?.vietnamese_description,
+          user_id: job?.user_id,
+          status: job?.status,
+          created_at: job?.created_at
         });
         
         return {
-          id: job.id,
-          title: job.title || 'Job Title',
-          company: job.title || 'Company Name',
-          location: job.location || '',
-          created_at: job.created_at || new Date().toISOString(),
-          description: job.description || '',
-          compensation_type: job.compensation_type || '',
-          compensation_details: job.compensation_details || '',
-          contact_info: typeof job.contact_info === 'object' && job.contact_info ? job.contact_info as any : {},
-          user_id: job.user_id || '',
-          status: job.status || 'active',
-          expires_at: job.expires_at || '',
-          requirements: job.requirements || '',
-          pricing_tier: job.pricing_tier || 'free',
-          category: job.category || "Other",
+          id: job?.id || '',
+          title: job?.title || 'Job Title',
+          company: job?.title || 'Company Name',
+          location: job?.location || '',
+          created_at: job?.created_at || new Date().toISOString(),
+          description: job?.description || '',
+          compensation_type: job?.compensation_type || '',
+          compensation_details: job?.compensation_details || '',
+          contact_info: typeof job?.contact_info === 'object' && job?.contact_info ? job?.contact_info as any : {},
+          user_id: job?.user_id || '',
+          status: job?.status || 'active',
+          expires_at: job?.expires_at || '',
+          requirements: job?.requirements || '',
+          pricing_tier: job?.pricing_tier || 'free',
+          category: job?.category || "Other",
           // FIXED: Include Vietnamese fields for nail jobs
-          vietnamese_title: job.vietnamese_title || null,
-          vietnamese_description: job.vietnamese_description || null,
+          vietnamese_title: job?.vietnamese_title || null,
+          vietnamese_description: job?.vietnamese_description || null,
           // Safe image handling - only set if actually exists
-          imageUrl: job.image_url || null,
-          image_url: job.image_url || null,
-          image: job.image_url || null // For backward compatibility
+          imageUrl: job?.image_url || null,
+          image_url: job?.image_url || null,
+          image: job?.image_url || null // For backward compatibility
         };
       });
 

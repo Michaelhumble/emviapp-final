@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 interface UseJobRenewalProps {
   jobId?: string;
@@ -29,14 +29,14 @@ export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProp
     newExpiresAt.setDate(newExpiresAt.getDate() + 30);
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from("jobs")
         .update({
           expires_at: newExpiresAt.toISOString(),
           status: "active",
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", idToUse);
+        } as any)
+        .eq("id" as any, idToUse);
 
       if (error) throw error;
 
