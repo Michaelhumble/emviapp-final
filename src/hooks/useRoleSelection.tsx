@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 
 export const useRoleSelection = () => {
   const { user, userRole } = useAuth();
@@ -17,16 +17,16 @@ export const useRoleSelection = () => {
       }
       
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseBypass
           .from('profiles')
           .select('role')
-          .eq('id', user.id)
+          .eq('id' as any, user.id)
           .single();
         
         if (error) throw error;
         
         // If the user has a null role or hasn't selected one yet, show the modal
-        if (!data || !data.role) {
+        if (!data || !(data as any)?.role) {
           setHasSelectedRole(false);
           setIsRoleModalOpen(true);
         } else {

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 
 /**
@@ -21,24 +21,24 @@ export function useReferralStatsDb() {
       setLoading(true);
 
       // Get referral count from referrals table (where referrer_id = user.id)
-      const { count, error } = await supabase
+      const { count, error } = await supabaseBypass
         .from("referrals")
         .select("*", { count: "exact", head: true })
-        .eq("referrer_id", user.id);
+        .eq("referrer_id" as any, user.id);
 
       if (!error) {
         setInvitedCount(count || 0);
       }
 
       // Get user credits
-      const { data: udata, error: e2 } = await supabase
+      const { data: udata, error: e2 } = await supabaseBypass
         .from("profiles")
         .select("credits")
-        .eq("id", user.id)
+        .eq("id" as any, user.id)
         .single();
 
       if (!e2) {
-        setCreditsEarned(Number(udata?.credits) || 0);
+        setCreditsEarned(Number((udata as any)?.credits) || 0);
       }
 
       setLoading(false);

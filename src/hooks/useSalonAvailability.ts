@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { AvailabilityDay } from "@/types/availability";
 
@@ -56,11 +56,11 @@ export const useSalonAvailability = (salonId?: string) => {
     
     try {
       // Get all staff IDs for this salon
-      const { data: staffData, error: staffError } = await supabase
+      const { data: staffData, error: staffError } = await supabaseBypass
         .from('salon_staff')
         .select('id, email')
-        .eq('salon_id', effectiveSalonId)
-        .eq('status', 'active');
+        .eq('salon_id' as any, effectiveSalonId)
+        .eq('status' as any, 'active');
       
       if (staffError) throw staffError;
       
@@ -69,34 +69,34 @@ export const useSalonAvailability = (salonId?: string) => {
       
       // For each staff member, get their availability
       // Modified to use id instead of user_id, which doesn't exist on salon_staff
-      for (const staff of staffData || []) {
-        if (staff.id) {
+      for (const staff of (staffData as any) || []) {
+        if ((staff as any)?.id) {
           // Query users table to get user_id by email
-          const { data: userData, error: userError } = await supabase
+          const { data: userData, error: userError } = await supabaseBypass
             .from('profiles')
             .select('id')
-            .eq('email', staff.email)
+            .eq('email' as any, (staff as any)?.email)
             .single();
             
           if (userError || !userData) continue;
           
-          const userId = userData.id;
+          const userId = (userData as any)?.id;
           
-          const { data: availData, error: availError } = await supabase
+          const { data: availData, error: availError } = await supabaseBypass
             .from('artist_availability')
             .select('*')
-            .eq('artist_id', userId);
+            .eq('artist_id' as any, userId);
             
           if (availError) continue;
           
-          if (availData && availData.length > 0) {
+          if (availData && (availData as any).length > 0) {
             // Convert to our format
-            const mappedDays: AvailabilityDay[] = availData.map(day => ({
-              id: day.id,
-              day_of_week: getDayNumber(day.day_of_week),
-              start_time: day.start_time,
-              end_time: day.end_time,
-              active: day.is_available
+            const mappedDays: AvailabilityDay[] = (availData as any).map((day: any) => ({
+              id: day?.id,
+              day_of_week: getDayNumber(day?.day_of_week),
+              start_time: day?.start_time,
+              end_time: day?.end_time,
+              active: day?.is_available
             }));
             
             staffAvailabilityMap[userId] = mappedDays;

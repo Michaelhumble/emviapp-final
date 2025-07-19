@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -24,14 +24,14 @@ export const useQuestions = () => {
 
   const fetchQuestions = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBypass
         .from('community_questions')
         .select('*')
-        .eq('status', 'answered')
-        .order('created_at', { ascending: false });
+        .eq('status' as any, 'answered')
+        .order('created_at' as any, { ascending: false });
 
       if (error) throw error;
-      setQuestions(data || []);
+      setQuestions((data as any) || []);
     } catch (error) {
       console.error('Error fetching questions:', error);
     }
@@ -51,13 +51,13 @@ export const useQuestions = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('community_questions')
         .insert({
           user_id: user.id,
           question: question.trim(),
           category: category || 'general'
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -79,10 +79,10 @@ export const useQuestions = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await supabaseBypass
         .from('community_questions')
-        .update({ upvotes: questions.find(q => q.id === questionId)?.upvotes + 1 || 1 })
-        .eq('id', questionId);
+        .update({ upvotes: questions.find(q => q.id === questionId)?.upvotes + 1 || 1 } as any)
+        .eq('id' as any, questionId);
 
       if (error) throw error;
 
