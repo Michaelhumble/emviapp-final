@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { supabaseBypass } from "@/types/supabase-bypass";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,8 +48,11 @@ const SimpleProfileForm = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabaseBypass
-        .from('profiles' as any)
+      console.log('🔄 [PROFILE FORM] Starting profile update for user:', user.id);
+      
+      // Use the direct supabase client instead of supabaseBypass to ensure auth context
+      const { error } = await supabase
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           location: formData.location,
@@ -58,11 +61,17 @@ const SimpleProfileForm = () => {
           instagram: formData.instagram,
           website: formData.website,
           updated_at: new Date().toISOString()
-        } as any)
-        .eq('id' as any, user.id as any);
+        })
+        .eq('id', user.id);
       
-      if (error) throw error;
+      console.log('🔄 [PROFILE FORM] Update result:', { error });
       
+      if (error) {
+        console.error('❌ [PROFILE FORM] Update failed:', error);
+        throw error;
+      }
+      
+      console.log('✅ [PROFILE FORM] Profile updated successfully, refreshing...');
       await refreshUserProfile();
       toast.success("Profile updated successfully");
     } catch (error: any) {
@@ -74,7 +83,9 @@ const SimpleProfileForm = () => {
   };
 
   const handleProfilePhotoUpdate = async (url: string) => {
+    console.log('📸 [PROFILE FORM] Photo update callback triggered with URL:', url);
     await refreshUserProfile();
+    console.log('📸 [PROFILE FORM] Profile refresh completed after photo update');
   };
   
   if (!user) {

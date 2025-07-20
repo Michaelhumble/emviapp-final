@@ -14,7 +14,6 @@
 
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { supabaseBypass } from "@/types/supabase-bypass";
 import { UserRole, UserProfile } from "./types";
 import { normalizeRole } from "@/utils/roles";
 import { cleanupAuthState, detectCorruptedTokens } from "@/utils/authCleanup";
@@ -224,7 +223,7 @@ class AuthStateManager {
     try {
       console.log('👤 [AUTH MANAGER] Loading profile for user:', userId);
       
-      const { data: profileData, error } = await supabaseBypass
+      const { data: profileData, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -537,7 +536,7 @@ class AuthStateManager {
         return { success: false, error: new Error("No user logged in") };
       }
 
-      const { error } = await supabaseBypass
+      const { error } = await supabase
         .from('profiles')
         .update(data as any)
         .eq('id', this.state.user.id);
@@ -563,7 +562,7 @@ class AuthStateManager {
     try {
       if (!this.state.user?.id) return;
 
-      const { error } = await supabaseBypass
+      const { error } = await supabase
         .from('profiles')
         .update({ role } as any)
         .eq('id', this.state.user.id);

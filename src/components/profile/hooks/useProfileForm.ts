@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { supabaseBypass } from '@/types/supabase-bypass';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserProfile, getLocationString } from '@/types/profile';
 
@@ -66,8 +66,10 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
         referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
       }
       
-      const { error } = await supabaseBypass
-        .from('profiles' as any)
+      console.log('🔄 [PROFILE HOOK] Starting profile update for user:', user.id);
+      
+      const { error } = await supabase
+        .from('profiles')
         .update({
           full_name: formData.full_name,
           bio: formData.bio,
@@ -77,11 +79,17 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           website: formData.website,
           affiliate_code: referralCode,
           updated_at: new Date().toISOString()
-        } as any)
-        .eq('id' as any, user.id as any);
+        })
+        .eq('id', user.id);
       
-      if (error) throw error;
+      console.log('🔄 [PROFILE HOOK] Update result:', { error });
       
+      if (error) {
+        console.error('❌ [PROFILE HOOK] Update failed:', error);
+        throw error;
+      }
+      
+      console.log('✅ [PROFILE HOOK] Profile updated successfully, refreshing...');
       await refreshUserProfile();
       toast.success("Profile updated successfully");
       
