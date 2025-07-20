@@ -71,6 +71,20 @@ const BookingForm = ({ artistId, artistName, services, onClose }: BookingFormPro
 
     try {
       // In a real implementation, this would call an API to create the booking
+      // Include user's contact info from their profile
+      const bookingData = {
+        artistId,
+        serviceId: selectedService.id,
+        serviceName: selectedService.name,
+        date: selectedDate,
+        time: selectedTime,
+        notes,
+        // Contact info would come from authenticated user's profile
+        clientName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Customer',
+        clientPhone: user.user_metadata?.phone || '', // This would need to be collected separately if not available
+        clientEmail: user.email
+      };
+      
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API request
       
       toast.success("Booking request sent successfully!");

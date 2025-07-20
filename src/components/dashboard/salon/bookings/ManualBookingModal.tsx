@@ -48,7 +48,8 @@ interface ManualBookingModalProps {
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  email: z.string().email("Please enter a valid email").optional().or(z.literal("")),
   service_id: z.string().min(1, "Please select a service"),
   artist_id: z.string().min(1, "Please select an artist"),
   date: z.date({ required_error: "Please select a date" }),
@@ -125,7 +126,8 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
           metadata: {
             source: 'manual',
             customer_name: values.full_name,
-            customer_phone: values.phone || null,
+            customer_phone: values.phone,
+            customer_email: values.email || null,
           },
           status: 'accepted'
         } as any)
@@ -206,12 +208,34 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t(createTranslation("Phone Number (optional)", "Số điện thoại (tùy chọn)"))}
+                    {t(createTranslation("Phone Number *", "Số điện thoại *"))}
                   </FormLabel>
                   <FormControl>
                     <Input {...field} type="tel" />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t(createTranslation("Email (Optional)", "Email (Tùy chọn)"))}
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" />
+                  </FormControl>
+                  <FormMessage />
+                  <p className="text-xs text-muted-foreground">
+                    {t(createTranslation(
+                      "We'll use the phone to confirm booking. No spam—just quick updates and appointment reminders. SMS reminders coming soon!",
+                      "Chúng tôi sẽ dùng số điện thoại để xác nhận đặt lịch. Không spam—chỉ cập nhật nhanh và nhắc nhở cuộc hẹn. Nhắc nhở SMS sắp ra mắt!"
+                    ))}
+                  </p>
                 </FormItem>
               )}
             />

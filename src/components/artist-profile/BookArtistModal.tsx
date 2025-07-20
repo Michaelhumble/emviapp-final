@@ -12,7 +12,7 @@ import { format } from "date-fns";
 interface BookArtistModalProps {
   open: boolean;
   onClose: () => void;
-  onBook: (data: { clientName: string; service: string; date: string; time: string; note?: string }) => void;
+  onBook: (data: { clientName: string; clientPhone: string; clientEmail?: string; service: string; date: string; time: string; note?: string }) => void;
   services: Array<{ id: string; name: string }>;
 }
 
@@ -25,6 +25,8 @@ export const BookArtistModal: React.FC<BookArtistModalProps> = ({
   services,
 }) => {
   const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
   const [service, setService] = useState("");
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
@@ -33,13 +35,13 @@ export const BookArtistModal: React.FC<BookArtistModalProps> = ({
 
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    onBook({ clientName, service, date, time, note });
+    onBook({ clientName, clientPhone, clientEmail: clientEmail || undefined, service, date, time, note });
     setStep("success");
     setTimeout(() => {
       setStep("form");
       onClose();
       // reset fields
-      setClientName(""); setService(""); setDate(""); setTime(""); setNote("");
+      setClientName(""); setClientPhone(""); setClientEmail(""); setService(""); setDate(""); setTime(""); setNote("");
     }, 1600);
   };
 
@@ -68,6 +70,34 @@ export const BookArtistModal: React.FC<BookArtistModalProps> = ({
                 required
                 autoFocus
               />
+            </div>
+            <div>
+              <Label htmlFor="clientPhone" className="mb-1 block text-gray-700">
+                Phone Number *
+              </Label>
+              <Input
+                id="clientPhone"
+                type="tel"
+                placeholder="Your phone number"
+                value={clientPhone}
+                onChange={e => setClientPhone(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="clientEmail" className="mb-1 block text-gray-700">
+                Email (Optional)
+              </Label>
+              <Input
+                id="clientEmail"
+                type="email"
+                placeholder="Your email address"
+                value={clientEmail}
+                onChange={e => setClientEmail(e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                We'll use your phone to confirm your booking. No spam—just quick updates and appointment reminders. SMS reminders coming soon!
+              </p>
             </div>
             <div>
               <Label htmlFor="service" className="mb-1 block text-gray-700">
@@ -136,7 +166,7 @@ export const BookArtistModal: React.FC<BookArtistModalProps> = ({
             <Button
               type="submit"
               className="w-full mt-3 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 text-white font-semibold shadow-lg hover:from-purple-700 hover:to-pink-600 text-base py-2 rounded-lg transition"
-              disabled={!clientName || !service || !date || !time}
+              disabled={!clientName || !clientPhone || !service || !date || !time}
             >
               Confirm Booking
             </Button>

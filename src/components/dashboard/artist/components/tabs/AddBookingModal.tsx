@@ -26,6 +26,8 @@ export default function AddBookingModal({
   user,
 }: AddBookingModalProps) {
   const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [date, setDate] = useState<Date | undefined>();
   const [time, setTime] = useState<Date | undefined>();
@@ -33,6 +35,7 @@ export default function AddBookingModal({
 
   const canSave =
     !!clientName &&
+    !!clientPhone &&
     !!serviceType &&
     !!date &&
     !!time &&
@@ -56,10 +59,16 @@ export default function AddBookingModal({
         appointment_time: appointment_time,
         recipient_id: user.id,
         status: "confirmed",
+        metadata: {
+          client_phone: clientPhone,
+          client_email: clientEmail || null
+        }
       },
     ]);
 
     setClientName("");
+    setClientPhone("");
+    setClientEmail("");
     setServiceType("");
     setDate(undefined);
     setTime(undefined);
@@ -82,6 +91,21 @@ export default function AddBookingModal({
             onChange={e => setClientName(e.target.value)}
             autoFocus
           />
+          <Input
+            type="tel"
+            placeholder="Client Phone Number *"
+            value={clientPhone}
+            onChange={e => setClientPhone(e.target.value)}
+          />
+          <Input
+            type="email"
+            placeholder="Client Email (Optional)"
+            value={clientEmail}
+            onChange={e => setClientEmail(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground -mt-2">
+            We'll use the phone to confirm booking. No spam—just quick updates and appointment reminders. SMS reminders coming soon!
+          </p>
           <Input
             type="text"
             placeholder="Service Type"

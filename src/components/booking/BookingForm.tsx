@@ -30,6 +30,7 @@ import { useAvailableTimeSlots } from "@/hooks/useAvailableTimeSlots";
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
+  email: z.string().email("Please enter a valid email").optional().or(z.literal("")),
   service: z.string().min(1, "Please select a service"),
   date: z.date({ required_error: "Please select a date" }),
   time: z.string().min(1, "Please select a time"),
@@ -65,11 +66,28 @@ export default function BookingForm({ profile, services, onSubmit, isSubmitting 
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone</FormLabel>
+              <FormLabel>Phone Number *</FormLabel>
               <FormControl>
                 <Input type="tel" placeholder="Your phone number" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email (Optional)</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="Your email address" {...field} />
+              </FormControl>
+              <FormMessage />
+              <p className="text-xs text-muted-foreground mt-1">
+                We'll use your phone to confirm your booking. No spam—just quick updates and appointment reminders. SMS reminders coming soon!
+              </p>
             </FormItem>
           )}
         />

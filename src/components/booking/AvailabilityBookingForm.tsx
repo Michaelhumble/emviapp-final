@@ -8,6 +8,7 @@ import { useAvailableTimeSlots } from "@/hooks/useAvailableTimeSlots";
 import { useAvailabilityValidation } from "@/hooks/useAvailabilityValidation";
 import { BookingStateWrapper } from "./BookingStateWrapper";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarIcon, Clock } from "lucide-react";
 import { UserProfile } from "@/types/profile";
@@ -34,6 +35,8 @@ export const AvailabilityBookingForm = ({
 }: AvailabilityBookingFormProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -48,8 +51,8 @@ export const AvailabilityBookingForm = ({
   }, [selectedDate]);
 
   const handleSubmit = async () => {
-    if (!artistId || !selectedDate || !selectedTime || !selectedService) {
-      toast.error("Please select a date, time, and service before booking");
+    if (!artistId || !selectedDate || !selectedTime || !selectedService || !clientPhone.trim()) {
+      toast.error("Please fill in all required fields including phone number");
       return;
     }
 
@@ -80,7 +83,9 @@ export const AvailabilityBookingForm = ({
           status: "pending",
           metadata: {
             service_name: selectedService.title,
-            service_price: selectedService.price
+            service_price: selectedService.price,
+            client_phone: clientPhone,
+            client_email: clientEmail || null
           }
         });
 
@@ -160,16 +165,42 @@ export const AvailabilityBookingForm = ({
             )}
 
             {selectedTime && (
-              <div>
-                <div className="mb-2 text-sm font-medium">Notes for {profile.full_name} (optional)</div>
-                <Textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Any special requests or information?"
-                  className="resize-none"
-                  rows={3}
-                />
-              </div>
+              <>
+                <div>
+                  <div className="mb-2 text-sm font-medium">Phone Number *</div>
+                  <Input
+                    type="tel"
+                    value={clientPhone}
+                    onChange={(e) => setClientPhone(e.target.value)}
+                    placeholder="Your phone number"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 text-sm font-medium">Email (Optional)</div>
+                  <Input
+                    type="email"
+                    value={clientEmail}
+                    onChange={(e) => setClientEmail(e.target.value)}
+                    placeholder="Your email address"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    We'll use your phone to confirm your booking. No spam—just quick updates and appointment reminders. SMS reminders coming soon!
+                  </p>
+                </div>
+
+                <div>
+                  <div className="mb-2 text-sm font-medium">Notes for {profile.full_name} (optional)</div>
+                  <Textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Any special requests or information?"
+                    className="resize-none"
+                    rows={3}
+                  />
+                </div>
+              </>
             )}
           </div>
         </BookingStateWrapper>
@@ -184,7 +215,7 @@ export const AvailabilityBookingForm = ({
         </Button>
         <Button
           onClick={handleSubmit}
-          disabled={!selectedDate || !selectedTime || isSubmitting}
+          disabled={!selectedDate || !selectedTime || !clientPhone.trim() || isSubmitting}
         >
           {isSubmitting ? "Submitting..." : "Request Booking"}
         </Button>
