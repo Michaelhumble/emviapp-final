@@ -490,7 +490,7 @@ const DynamicListingGrid = () => {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
-          <Link to="/jobs">
+          <Link to="/booking-services">
             <Button variant="outline" className="min-w-[200px]">
               {language === "en" ? "Browse All Jobs" : "Xem Tất Cả Việc Làm"}
               <ArrowRight className="ml-2 h-4 w-4" />

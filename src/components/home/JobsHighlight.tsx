@@ -95,7 +95,7 @@ const JobsHighlight = () => {
         </motion.div>
 
         <div className="mt-12 text-center">
-          <Link to="/jobs">
+          <Link to="/booking-services">
             <Button size="lg" variant="outline" className="font-medium">
               Browse All Jobs
             </Button>

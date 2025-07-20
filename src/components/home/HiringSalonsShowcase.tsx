@@ -98,8 +98,8 @@ export default function HiringSalonsShowcase() {
         </div>
         
         <div className="text-center">
-          <Link to="/jobs">
-            <Button variant="outline" size="lg">View All Job Listings</Button>
+          <Link to="/booking-services">
+            <Button variant="outline" size="lg">View All Services</Button>
           </Link>
         </div>
       </Container>

@@ -339,7 +339,7 @@ const BeautyExchangeSection = () => {
             <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
               Barber, Makeup, Skincare, Tattoo, Eyebrow & Lash, Massage, and more. Discover opportunities across the entire beauty ecosystem.
             </p>
-            <Link to="/jobs">
+            <Link to="/booking-services">
               <Button variant="outline" className="border-2 border-gray-400 text-gray-700 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300">
                 Explore All Industries 🚀
               </Button>

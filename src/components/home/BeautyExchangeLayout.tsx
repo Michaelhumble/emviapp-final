@@ -157,8 +157,8 @@ const BeautyExchangeLayout = () => {
                             <span>Contact info locked</span>
                           </div>
                           
-                          <Link to="/jobs">
-                            <Button 
+                          <Link to="/booking-services">
+                            <Button
                               variant="outline" 
                               size="sm" 
                               className="flex items-center justify-center gap-1"

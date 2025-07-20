@@ -29,8 +29,8 @@ const SalonDetail = () => {
           <p className="text-blue-800 mb-4">
             Detailed salon listings are coming soon! 
           </p>
-          <Link to="/jobs">
-            <Button>Browse Available Jobs</Button>
+          <Link to="/booking-services">
+            <Button>Browse Available Services</Button>
           </Link>
         </div>
       </div>

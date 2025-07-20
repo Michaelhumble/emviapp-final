@@ -54,10 +54,10 @@ const Footer = () => {
                 Browse Salons
               </Link>
               <Link 
-                to="/jobs" 
+                to="/booking-services" 
                 className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
               >
-                Browse Jobs
+                Browse Services
               </Link>
               <Link 
                 to="/community" 

@@ -84,8 +84,8 @@ const FeaturedJobsShowcase = () => {
                       <p className="text-gray-600 mb-3">{job.salary} • {job.type}</p>
                     </div>
                     <div className="mt-4 md:mt-0">
-                      <Link to="/jobs">
-                        <Button>View Jobs</Button>
+                      <Link to="/booking-services">
+                        <Button>View Services</Button>
                       </Link>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ const FeaturedJobsShowcase = () => {
         </motion.div>
 
         <div className="mt-12 text-center">
-          <Link to="/jobs">
+          <Link to="/booking-services">
             <Button size="lg" variant="outline" className="font-medium">
               Browse All Jobs
             </Button>

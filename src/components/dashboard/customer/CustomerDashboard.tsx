@@ -510,14 +510,14 @@ const CustomerDashboard = () => {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button 
                     className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 h-auto p-4"
-                    onClick={() => handleNavigateTo('/jobs')}
+                    onClick={() => handleNavigateTo('/booking-services')}
                   >
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center">
                         <Briefcase className="h-5 w-5 mr-3" />
                         <div className="text-left">
-                          <div className="font-semibold">Explore Jobs</div>
-                          <div className="text-xs opacity-75">Advance your career</div>
+                          <div className="font-semibold">Browse Services</div>
+                          <div className="text-xs opacity-75">Find your perfect service</div>
                         </div>
                       </div>
                       <ArrowRight className="h-4 w-4" />

@@ -178,15 +178,15 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
               Home
             </Link>
             <span>/</span>
-            <Link to="/jobs" className="hover:text-purple-600 transition-colors">
-              Jobs
+            <Link to="/booking-services" className="hover:text-purple-600 transition-colors">
+              Services
             </Link>
             <span>/</span>
             <span className="text-gray-900 font-medium">{displayName}</span>
           </nav>
           
           <Link 
-            to="/jobs" 
+            to="/booking-services" 
             className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-inter font-medium text-base transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

@@ -301,7 +301,7 @@ export default function SalonJobListingsShowcase() {
         </div>
 
         <div className="text-center">
-          <Link to="/jobs">
+          <Link to="/booking-services">
             <Button size="lg" className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
               <Users className="mr-2 h-4 w-4" />
               View All Job Listings

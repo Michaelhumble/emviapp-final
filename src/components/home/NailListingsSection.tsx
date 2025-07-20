@@ -293,7 +293,7 @@ const NailListingsSection: React.FC = () => {
                               Nail
                             </Badge>
                             <Button 
-                              onClick={() => navigate("/jobs")} 
+                              onClick={() => navigate("/booking-services")}
                               size="sm" 
                               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-bold"
                             >
@@ -306,8 +306,8 @@ const NailListingsSection: React.FC = () => {
                   }
                   authenticatedContent={
                     <ValidatedLink 
-                      to="/jobs" 
-                      listingId="nails-general" 
+                      to="/booking-services" 
+                      listingId="nails-general"
                       listingType="page"
                       className="no-underline block h-full"
                     >
@@ -467,7 +467,7 @@ const NailListingsSection: React.FC = () => {
                             Nail
                           </Badge>
                           <Button 
-                            onClick={() => navigate("/jobs")} 
+                            onClick={() => navigate("/booking-services")} 
                             size="sm" 
                             className="bg-[#9B51E0] hover:bg-[#8A46C2] text-white rounded-xl ml-auto"
                           >
@@ -480,8 +480,8 @@ const NailListingsSection: React.FC = () => {
                 }
                 authenticatedContent={
                   <ValidatedLink 
-                    to="/jobs" 
-                    listingId="nails-general" 
+                    to="/booking-services" 
+                    listingId="nails-general"
                     listingType="page"
                     className="no-underline block h-full"
                   >

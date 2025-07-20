@@ -27,7 +27,7 @@ const CustomerPremiumActions = () => {
   const { user } = useAuth();
 
   const handleBookNewService = () => {
-    navigate('/search');
+    navigate('/booking-services');
     toast.success('Find your perfect beauty service!');
   };
 
@@ -38,7 +38,7 @@ const CustomerPremiumActions = () => {
       return;
     }
     
-    navigate('/search?section=favorites');
+    navigate('/booking-services?section=favorites');
     toast.info('Here are artists you might love!');
   };
 

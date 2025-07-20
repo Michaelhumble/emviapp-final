@@ -16,8 +16,8 @@ const BoothsIndex = () => {
           <p className="text-blue-800 mb-4">
             Booth rental listings are coming soon! Check back later for available spaces.
           </p>
-          <Link to="/jobs">
-            <Button>Browse Job Listings Instead</Button>
+          <Link to="/booking-services">
+            <Button>Browse Services Instead</Button>
           </Link>
         </div>
       </div>

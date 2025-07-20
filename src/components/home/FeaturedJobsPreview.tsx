@@ -107,7 +107,7 @@ const FeaturedJobsPreview = () => {
                       <p className="text-lg font-semibold text-primary">{job.salary}</p>
                       <p className="text-sm text-muted-foreground">{job.type}</p>
                     </div>
-                    <Link to="/jobs">
+                    <Link to="/booking-services">
                       <Button variant="outline" size="sm" className="group">
                         View
                         <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
@@ -121,8 +121,8 @@ const FeaturedJobsPreview = () => {
         </motion.div>
 
         <div className="text-center">
-          <Link to="/jobs">
-            <Button 
+          <Link to="/booking-services">
+            <Button
               size="lg" 
               variant="outline"
               className="group px-8 py-3 text-base font-medium hover:bg-primary hover:text-primary-foreground transition-all duration-300"

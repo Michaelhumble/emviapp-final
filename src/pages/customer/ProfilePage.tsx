@@ -366,12 +366,12 @@ const CustomerProfilePage = () => {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Card 
                     className="bg-gradient-to-br from-pink-500 to-rose-500 border-0 text-white cursor-pointer"
-                    onClick={() => handleNavigateTo('/jobs')}
+                    onClick={() => handleNavigateTo('/booking-services')}
                   >
                     <CardContent className="p-6 text-center">
                       <Award className="h-8 w-8 mx-auto mb-2" />
-                      <div className="font-semibold">Explore Jobs</div>
-                      <div className="text-xs opacity-75">Advance your career</div>
+                      <div className="font-semibold">Browse Services</div>
+                      <div className="text-xs opacity-75">Find your perfect service</div>
                     </CardContent>
                   </Card>
                 </motion.div>

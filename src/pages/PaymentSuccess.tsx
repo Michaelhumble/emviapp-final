@@ -23,11 +23,11 @@ export default function PaymentSuccess() {
   }, []);
 
   const handleViewJobs = () => {
-    navigate('/nails');
+    navigate('/booking-services');
   };
 
   const handlePostAnother = () => {
-    navigate('/nails');
+    navigate('/booking-services');
   };
 
   if (!sessionId) {

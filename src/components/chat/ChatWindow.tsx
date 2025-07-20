@@ -27,7 +27,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       timestamp: new Date(),
       actionSuggestions: [
         { id: "find-artists", label: "Find Artists", icon: "users", href: "/artists" },
-        { id: "book-now", label: "Book Now", icon: "calendar", href: "/artists" },
+        { id: "book-now", label: "Book Now", icon: "calendar", href: "/booking-services" },
         { id: "salon-sales", label: "Salon Sales", icon: "store", href: "/salon-sales" }
       ]
     };

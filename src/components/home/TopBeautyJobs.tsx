@@ -71,8 +71,8 @@ const TopBeautyJobs = () => {
                   </div>
                 </div>
 
-                <Link to="/jobs">
-                  <Button className="w-full">View Job Details</Button>
+                <Link to="/booking-services">
+                  <Button className="w-full">View Service Details</Button>
                 </Link>
               </CardContent>
             </Card>
@@ -80,7 +80,7 @@ const TopBeautyJobs = () => {
         </div>
 
         <div className="text-center">
-          <Link to="/jobs">
+          <Link to="/booking-services">
             <Button size="lg" variant="outline">
               View All Job Listings
             </Button>

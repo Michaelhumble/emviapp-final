@@ -53,7 +53,7 @@ const StableSalonPage: React.FC = () => {
                   Please try one of our other features
                 </h2>
                 <div className="flex justify-center gap-4">
-                  <a href="/jobs" className="text-primary hover:underline">Jobs</a>
+                  <a href="/booking-services" className="text-primary hover:underline">Services</a>
                   <a href="/" className="text-primary hover:underline">Homepage</a>
                   <a href="/dashboard" className="text-primary hover:underline">Dashboard</a>
                 </div>

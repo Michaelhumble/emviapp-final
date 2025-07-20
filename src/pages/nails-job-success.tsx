@@ -13,7 +13,7 @@ const NailJobSuccessPage = () => {
   const { jobId, jobData, isEdit } = location.state || {};
 
   const handleViewPost = () => {
-    navigate('/nails');
+    navigate('/booking-services');
   };
 
   const handleEditPost = () => {
@@ -32,9 +32,7 @@ const NailJobSuccessPage = () => {
           <Card className="max-w-md">
             <CardContent className="p-6 text-center">
               <p className="text-gray-600 mb-4">No job data found</p>
-              <Button onClick={() => navigate('/nails')}>
-                View Nail Jobs
-              </Button>
+              <Button onClick={() => navigate('/booking-services')}>View All Services</Button>
             </CardContent>
           </Card>
         </div>
@@ -124,7 +122,7 @@ const NailJobSuccessPage = () => {
                 size="lg"
               >
                 <Eye className="mr-2 h-5 w-5" />
-                View Your Post in Nail Jobs Feed
+                View Your Post in Services Feed
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               
