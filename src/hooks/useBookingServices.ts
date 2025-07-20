@@ -28,7 +28,7 @@ export const useBookingServices = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch artist services with profile data
+      // Fetch artist services with profile data using explicit join
       const { data: artistServices, error: artistError } = await supabase
         .from('services')
         .select(`
@@ -40,16 +40,20 @@ export const useBookingServices = () => {
           image_url,
           is_visible,
           created_at,
-          user_id,
-          profiles (
-            full_name,
-            location,
-            specialty
-          )
+          user_id
         `)
         .eq('is_visible', true);
-
+      
       if (artistError) throw artistError;
+
+      // Get unique user IDs and fetch their profiles separately
+      const userIds = [...new Set(artistServices?.map(s => s.user_id) || [])];
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, location, specialty')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
 
       // Fetch salon services with salon data (using actual schema columns)
       const { data: salonServices, error: salonError } = await supabase
@@ -71,9 +75,12 @@ export const useBookingServices = () => {
 
       if (salonError) throw salonError;
 
+      // Create a map for quick profile lookup
+      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
       // Transform artist services
       const transformedArtistServices: BookingService[] = (artistServices || []).map(service => {
-        const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
+        const profile = profilesMap.get(service.user_id);
         return {
           id: service.id,
           title: service.title,
