@@ -6,9 +6,7 @@ import { SalonDashboardContent } from '@/components/dashboard/salon/SalonDashboa
 const SalonDashboard = () => {
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <SalonDashboardContent />
-      </div>
+      <SalonDashboardContent />
     </Layout>
   );
 };

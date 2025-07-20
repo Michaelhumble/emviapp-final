@@ -27,13 +27,13 @@ export const SalonDashboardContent = () => {
   const salonName = userProfile?.salon_name ?? userProfile?.company_name ?? userProfile?.full_name ?? "Salon Owner";
 
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 min-h-screen">
-      {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="w-full max-w-7xl mx-auto space-y-6 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 min-h-screen">
+      {/* Welcome Header - Full Width and Centered */}
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
           Welcome back, {salonName}!
         </h1>
-        <p className="text-gray-600">
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Manage your salon operations and grow your business with our advanced tools
         </p>
       </div>
