@@ -13,6 +13,7 @@ import SalonTeamManager from "@/components/dashboard/salon/SalonTeamManager";
 import SalonAIFeatures from "@/components/dashboard/salon/SalonAIFeatures";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ProfileCompletionBar from "@/components/profile/ProfileCompletionBar";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -23,7 +24,8 @@ import {
   Briefcase, 
   Settings, 
   Sparkles,
-  Bell
+  Bell,
+  Building2
 } from "lucide-react";
 
 const SalonDashboardPage = () => {
@@ -42,13 +44,34 @@ const SalonDashboardPage = () => {
             {/* Premium Header - Full Width */}
             <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl p-8 text-white mb-8 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 backdrop-blur-sm"></div>
-              <div className="relative z-10 text-center">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                  Welcome back, {userProfile?.salon_name || "Salon Owner"}! ✨
-                </h1>
-                <p className="text-purple-100 text-lg max-w-2xl mx-auto">
-                  Your premium salon management hub. Build something extraordinary.
-                </p>
+              <div className="relative z-10 flex flex-col items-center">
+                {/* Salon Avatar */}
+                <div className="mb-6 relative">
+                  <Avatar className="h-24 w-24 border-4 border-white/30 shadow-xl">
+                    <AvatarImage 
+                      src={userProfile?.avatar_url || undefined} 
+                      alt={userProfile?.salon_name || "Salon Logo"}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
+                      <Building2 className="h-12 w-12" />
+                    </AvatarFallback>
+                  </Avatar>
+                  {userProfile?.premium && (
+                    <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-white">
+                      <Sparkles className="h-3 w-3 text-yellow-800" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="text-center">
+                  <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                    Welcome back, {userProfile?.salon_name || "Salon Owner"}! ✨
+                  </h1>
+                  <p className="text-purple-100 text-lg max-w-2xl mx-auto">
+                    Your premium salon management hub. Build something extraordinary.
+                  </p>
+                </div>
               </div>
               <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
               <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
