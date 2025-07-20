@@ -26,12 +26,7 @@ const ErrorLayout: React.FC<ErrorLayoutProps> = ({ children }) => {
         </div>
       </main>
       
-      {/* Simple footer */}
-      <footer className="py-6 border-t border-gray-100">
-        <div className="container mx-auto px-4 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} EmviApp. All rights reserved.</p>
-        </div>
-      </footer>
+      {/* No custom footer - use universal AppFooter system */}
     </div>
   );
 };
