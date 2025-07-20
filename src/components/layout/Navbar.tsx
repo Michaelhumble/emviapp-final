@@ -45,10 +45,16 @@ const Navbar = () => {
               Home
             </Link>
             <Link 
-              to="/jobs" 
+              to="/nails" 
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
-              Jobs
+              Nails
+            </Link>
+            <Link 
+              to="/hair" 
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              Hair
             </Link>
             <Link 
               to="/artists" 

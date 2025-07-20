@@ -63,7 +63,7 @@ const JobsCallToAction = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <Link to="/jobs">
+            <Link to="/nails">
               <motion.div
                 whileHover={{ scale: 1.05, y: -3 }}
                 whileTap={{ scale: 0.98 }}

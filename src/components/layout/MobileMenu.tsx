@@ -16,7 +16,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Info, Phone } from 'lucide-react';
+import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Info, Phone, Sparkles, Scissors } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
@@ -72,7 +72,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   // 🎯 CONSISTENT MENU LOGIC: Use shared auth state computation
   const menuItems = uiState.isAuthenticated ? [
     { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
+    { icon: Sparkles, label: 'Nails', href: '/nails' },
+    { icon: Scissors, label: 'Hair', href: '/hair' },
     { icon: Building2, label: 'Salons', href: '/salons' },
     { icon: MessageSquare, label: 'Community', href: '/community' },
     { 
@@ -84,7 +85,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Phone, label: 'Contact', href: '/contact' },
   ] : [
     { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
+    { icon: Sparkles, label: 'Nails', href: '/nails' },
+    { icon: Scissors, label: 'Hair', href: '/hair' },
     { icon: Building2, label: 'Salons', href: '/salons' },
     { icon: MessageSquare, label: 'Community', href: '/community' },
     { icon: Info, label: 'About', href: '/about' },
