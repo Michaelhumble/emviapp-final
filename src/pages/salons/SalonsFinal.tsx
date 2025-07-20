@@ -12,7 +12,8 @@ import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
 const SalonsFinalsPage = () => {
   useEffect(() => {
     // Simple debug log to confirm rendering
-    console.log('SalonsFinal page rendered - timestamp:', new Date().toISOString());
+    console.log('🔍 SalonsFinal page rendered - timestamp:', new Date().toISOString());
+    console.log('🧩 PremiumSalonHero imported:', typeof PremiumSalonHero);
     
     // Add an image loading debug
     const img = new Image();

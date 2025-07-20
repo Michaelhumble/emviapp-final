@@ -17,6 +17,7 @@ import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBounda
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
 import SalonsPageRedesigned from "@/pages/salons/SalonsPageRedesigned";
+import SalonsFinalsPage from "@/pages/salons/SalonsFinal";
 import Layout from "@/components/layout/Layout";
 import Jobs from "@/pages/Jobs";
 import About from "@/pages/About"; 
@@ -121,7 +122,7 @@ function App() {
                     <Route path="/nails-job-success" element={<NailJobSuccessPage />} />
                     
                     {/* Other pages */}
-                    <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
+                    <Route path="/salons" element={<Layout><SalonsFinalsPage /></Layout>} />
                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
                     <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     

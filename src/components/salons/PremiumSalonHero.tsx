@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Search, Star, Users, TrendingUp, Shield, Clock, Award } from 'lucide-react';
 
 const PremiumSalonHero = () => {
+  console.log('🚀 PremiumSalonHero component is rendering!');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stats, setStats] = useState({ salons: 3200, transactions: 847, listings: 156 });
