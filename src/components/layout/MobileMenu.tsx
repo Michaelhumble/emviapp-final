@@ -73,8 +73,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const menuItems = uiState.isAuthenticated ? [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Booking Services', href: '/booking-services' },
-    { icon: Sparkles, label: 'Nails', href: '/nails' },
-    { icon: Scissors, label: 'Hair', href: '/hair' },
     { icon: Building2, label: 'Salons', href: '/salons' },
     { icon: MessageSquare, label: 'Community', href: '/community' },
     { 
@@ -87,8 +85,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   ] : [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Briefcase, label: 'Booking Services', href: '/booking-services' },
-    { icon: Sparkles, label: 'Nails', href: '/nails' },
-    { icon: Scissors, label: 'Hair', href: '/hair' },
     { icon: Building2, label: 'Salons', href: '/salons' },
     { icon: MessageSquare, label: 'Community', href: '/community' },
     { icon: Info, label: 'About', href: '/about' },
