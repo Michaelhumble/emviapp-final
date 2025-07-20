@@ -20,7 +20,9 @@ import SalonsPageRedesigned from "@/pages/salons/SalonsPageRedesigned";
 import SalonsFinalsPage from "@/pages/salons/SalonsFinal";
 import Layout from "@/components/layout/Layout";
 import Jobs from "@/pages/Jobs";
-import About from "@/pages/About"; 
+import GlobalJobsPage from "@/pages/GlobalJobsPage";
+import JobDetailPage from "@/pages/JobDetailPage";
+import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Terms from "@/pages/Terms";
 import Refund from "@/pages/Refund";
@@ -121,10 +123,11 @@ function App() {
                     <Route path="/job-posted-success" element={<JobPostingSuccessPage />} />
                     <Route path="/nails-job-success" element={<NailJobSuccessPage />} />
                     
-                    {/* Other pages */}
-                    <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
-                    <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
-                    <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
+                     {/* Other pages */}
+                     <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
+                     <Route path="/jobs" element={<Layout><GlobalJobsPage /></Layout>} />
+                     <Route path="/job/:jobId" element={<Layout><JobDetailPage /></Layout>} />
+                     <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
                     {/* Industry Pages */}
                     <Route path="/nails" element={<Layout><NailsPage /></Layout>} />
