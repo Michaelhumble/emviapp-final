@@ -1,4 +1,6 @@
 
+// DO NOT DUPLICATE THIS FOOTER. Use only in Layout.tsx. All others will be removed.
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EmviLogo from '@/components/branding/EmviLogo';
@@ -156,20 +158,35 @@ const AppFooter = () => {
   );
 };
 
-// 🐛 DEBUG UTILITY: Expose footer verification in browser console
+// 🐛 EMERGENCY FOOTER CHECK: Expose footer verification in browser console
 if (typeof window !== 'undefined') {
   (window as any).emviCheckFooters = () => {
     const footers = document.querySelectorAll('[data-footer-id="emvi-global-footer"]');
+    const layoutFooters = document.querySelectorAll('footer');
     const result = {
       footerCount: footers.length,
-      isValid: footers.length === 1,
-      message: footers.length === 1 
-        ? '✅ Perfect! Exactly one footer found.' 
-        : `❌ ERROR: Found ${footers.length} footers. Should be exactly 1.`
+      totalFooterElements: layoutFooters.length,
+      isValid: footers.length === 1 && layoutFooters.length === 1,
+      message: footers.length === 1 && layoutFooters.length === 1
+        ? '✅ PERFECT! Exactly one universal footer found.' 
+        : `❌ CRITICAL ERROR: Found ${footers.length} AppFooters and ${layoutFooters.length} total footer elements. Should be exactly 1 each.`,
+      route: window.location.pathname,
+      timestamp: new Date().toISOString()
     };
-    console.log('EmviApp Footer Check:', result);
+    console.log('🚨 EmviApp Footer Security Check:', result);
+    if (!result.isValid) {
+      console.error('🚨 DUPLICATE FOOTER DETECTED! Run emergency cleanup immediately.');
+      layoutFooters.forEach((footer, index) => {
+        console.error(`Footer ${index + 1}:`, footer);
+      });
+    }
     return result;
   };
+  
+  // Auto-run check after page loads in development
+  if (process.env.NODE_ENV === 'development') {
+    setTimeout(() => (window as any).emviCheckFooters(), 2000);
+  }
 }
 
 export default AppFooter;
