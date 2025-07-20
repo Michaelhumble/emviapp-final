@@ -4,17 +4,24 @@ import { Link } from 'react-router-dom';
 import EmviLogo from '@/components/branding/EmviLogo';
 
 /* 
-⚠️ FOOTER SINGLETON WARNING ⚠️
-This Footer component must ONLY be rendered by Layout.tsx. 
-Do not import Footer in any other file to prevent duplicates.
-Only Layout.tsx should control the global footer for the entire app.
+⚠️ UNIVERSAL APPFOOTER - CRITICAL LOCKDOWN ⚠️
+
+This AppFooter component is the ONLY footer for the entire app.
+
+STRICT RULES:
+✅ Only Layout.tsx should import and render this component
+❌ NO other page, component, or layout should render this footer
+❌ NO custom footers on individual pages  
+❌ NO duplicating footer code anywhere
 
 If you see duplicate footers in development, this is React StrictMode 
 double-rendering components (see main.tsx for detailed explanation).
 Production will have exactly ONE footer.
+
+Only modify this file when you need footer changes across the ENTIRE app.
 */
 
-const Footer = () => {
+const AppFooter = () => {
   return (
     <footer 
       className="relative bg-gradient-to-br from-white via-purple-50/20 to-indigo-50/10 border-t border-gray-100"
@@ -35,12 +42,18 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Center Column - Explore */}
+          {/* Center Column - Marketplace */}
           <div className="space-y-4">
             <h3 className="font-playfair font-semibold text-lg text-gray-800">
-              Explore
+              Marketplace
             </h3>
             <nav className="flex flex-col space-y-3">
+              <Link 
+                to="/jobs" 
+                className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
+              >
+                Browse Jobs
+              </Link>
               <Link 
                 to="/artists" 
                 className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
@@ -57,7 +70,7 @@ const Footer = () => {
                 to="/booking-services" 
                 className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
               >
-                Browse Services
+                Book Services
               </Link>
               <Link 
                 to="/community" 
@@ -131,4 +144,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default AppFooter;

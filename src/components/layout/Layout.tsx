@@ -1,7 +1,7 @@
 
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
-import Footer from './Footer';
+import AppFooter from './AppFooter';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
@@ -28,14 +28,15 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       </main>
       
       {/* 
-      ⚠️  GLOBAL FOOTER CONTROL - CRITICAL LOCKDOWN ⚠️ 
+      ⚠️  UNIVERSAL APPFOOTER CONTROL - CRITICAL LOCKDOWN ⚠️ 
       
-      This is the ONLY location where <Footer /> should be rendered in the entire app.
+      This is the ONLY location where <AppFooter /> should be rendered in the entire app.
       
       STRICT RULES:
-      ✅ Only Layout.tsx imports and renders <Footer />
-      ❌ NO other page, component, or layout should render <Footer />
+      ✅ Only Layout.tsx imports and renders <AppFooter />
+      ❌ NO other page, component, or layout should render <AppFooter />
       ❌ NO duplicate Layout wrappers should exist
+      ❌ NO custom footers on individual pages
       
       If you see duplicate footers in DEVELOPMENT:
       - This is React StrictMode double-rendering (normal behavior)
@@ -43,11 +44,11 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       - Production will have exactly ONE footer
       
       If you see duplicate footers in PRODUCTION:
-      - Search codebase for unauthorized <Footer /> imports
+      - Search codebase for unauthorized <AppFooter /> imports
       - Check for multiple <Layout> wrappers
       - Verify no CSS is visually duplicating the footer
       */}
-      {!hideFooter && <Footer />}
+      {!hideFooter && <AppFooter />}
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}
