@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { SalonSale } from '@/types/salonSale';
 import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
 const SalonsPageRedesigned = () => {
   const { isSignedIn } = useAuth();
@@ -27,6 +28,11 @@ const SalonsPageRedesigned = () => {
   // Database salon sales state
   const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   
   // Filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,15 +58,23 @@ const SalonsPageRedesigned = () => {
     });
   };
 
-  // Fetch salon sales from database
+  // Fetch salon sales from database with optimized pagination
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
+        setLoading(true);
+        
+        // Use the optimized search function
         const { data, error } = await supabase
-          .from('salon_sales')
-          .select('*')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false });
+          .rpc('search_salon_sales_optimized', {
+            search_text: searchQuery,
+            location_filter: selectedLocation === 'all' ? '' : selectedLocation,
+            price_min: 0,
+            price_max: 10000000,
+            business_type_filter: selectedCategory === 'all' ? '' : selectedCategory,
+            page_limit: 20, // Production limit
+            page_offset: 0
+          });
 
         if (error) {
           console.error('Error fetching salon sales:', error);
@@ -68,9 +82,15 @@ const SalonsPageRedesigned = () => {
         }
 
         if (data) {
-          console.log('Fetched salon sales:', data);
-          console.log('Sample salon images:', data[0]?.images);
-          setSalonSales(data);
+          console.log('Fetched salon sales:', data.length, 'records');
+          // Transform the data to match SalonSale interface
+          const transformedData = data.map((item: any) => ({
+            ...item,
+            user_id: item.user_id || '',
+            status: item.status || 'active',
+            updated_at: item.updated_at || item.created_at
+          }));
+          setSalonSales(transformedData);
         }
       } catch (error) {
         console.error('Error loading salon sales:', error);
@@ -80,7 +100,7 @@ const SalonsPageRedesigned = () => {
     };
 
     fetchSalonSales();
-  }, []);
+  }, [searchQuery, selectedLocation, selectedCategory]);
 
   const handleViewDetails = (salon: RealSalonListing) => {
     setSelectedSalon(salon);
@@ -273,23 +293,17 @@ const SalonsPageRedesigned = () => {
           </section>
         )}
 
-        {/* Loading State */}
+        {/* Loading State with proper skeleton */}
         {loading && (
           <section className="mb-12">
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-2 rounded-lg">
                 <Crown className="h-6 w-6 text-purple-600" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">🔥 Latest Salon Sales</h2>
+              <h2 className="text-3xl font-bold text-gray-900">🔥 Loading Premium Salons...</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white rounded-lg border p-6 animate-pulse">
-                  <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                </div>
-              ))}
+              <LoadingSkeleton count={6} />
             </div>
           </section>
         )}
@@ -384,6 +398,20 @@ const SalonsPageRedesigned = () => {
             </div>
           </section>
         )}
+
+        {/* Pagination - temporarily commented out until we implement total count */}
+        {/*
+        {!loading && salonSales.length > 0 && totalPages > 1 && (
+          <div className="mt-12">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              className="mb-8"
+            />
+          </div>
+        )}
+        */}
 
         {/* Call to Action */}
         <section className="text-center mt-16 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-12">

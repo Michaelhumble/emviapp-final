@@ -172,6 +172,36 @@ export type Database = {
         }
         Relationships: []
       }
+      api_rate_limits: {
+        Row: {
+          blocked_until: string | null
+          created_at: string | null
+          endpoint: string
+          id: string
+          identifier: string
+          request_count: number | null
+          window_start: string | null
+        }
+        Insert: {
+          blocked_until?: string | null
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          identifier: string
+          request_count?: number | null
+          window_start?: string | null
+        }
+        Update: {
+          blocked_until?: string | null
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          identifier?: string
+          request_count?: number | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           application_data: Json | null
@@ -4521,6 +4551,15 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: Json
       }
+      check_api_rate_limit: {
+        Args: {
+          p_identifier: string
+          p_endpoint: string
+          p_max_requests?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_endpoint: string
@@ -4767,6 +4806,30 @@ export type Database = {
       sanitize_content: {
         Args: { p_content: string }
         Returns: string
+      }
+      search_salon_sales_optimized: {
+        Args: {
+          search_text?: string
+          location_filter?: string
+          price_min?: number
+          price_max?: number
+          business_type_filter?: string
+          page_limit?: number
+          page_offset?: number
+        }
+        Returns: {
+          id: string
+          salon_name: string
+          city: string
+          state: string
+          asking_price: number
+          business_type: string
+          description_combined: string
+          images: string[]
+          is_featured: boolean
+          is_urgent: boolean
+          created_at: string
+        }[]
       }
       send_team_invite: {
         Args: {
