@@ -72,6 +72,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   // 🎯 CONSISTENT MENU LOGIC: Use shared auth state computation
   const menuItems = uiState.isAuthenticated ? [
     { icon: Home, label: 'Home', href: '/' },
+    { icon: Briefcase, label: 'Booking Services', href: '/booking-services' },
     { icon: Sparkles, label: 'Nails', href: '/nails' },
     { icon: Scissors, label: 'Hair', href: '/hair' },
     { icon: Building2, label: 'Salons', href: '/salons' },
@@ -85,6 +86,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Phone, label: 'Contact', href: '/contact' },
   ] : [
     { icon: Home, label: 'Home', href: '/' },
+    { icon: Briefcase, label: 'Booking Services', href: '/booking-services' },
     { icon: Sparkles, label: 'Nails', href: '/nails' },
     { icon: Scissors, label: 'Hair', href: '/hair' },
     { icon: Building2, label: 'Salons', href: '/salons' },

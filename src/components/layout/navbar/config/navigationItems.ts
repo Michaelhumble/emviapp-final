@@ -17,10 +17,10 @@ export const mainNavigationItems: NavigationItem[] = [
     vietnameseTitle: "Trang chủ"
   },
   {
-    title: "Jobs",
-    path: "/jobs",
+    title: "Booking Services",
+    path: "/booking-services",
     icon: Briefcase,
-    vietnameseTitle: "Công việc"
+    vietnameseTitle: "Dịch vụ đặt lịch"
   },
   {
     title: "Artists",

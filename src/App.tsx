@@ -55,6 +55,7 @@ import SkincarePage from "@/pages/skincare";
 import MakeupPage from "@/pages/makeup";
 import BrowsLashesPage from "@/pages/brows-lashes";
 import TattooPage from "@/pages/tattoo";
+import BookingServices from "@/pages/BookingServices";
 
 function App() {
   const location = useLocation();
@@ -122,6 +123,7 @@ function App() {
                     {/* Other pages */}
                     <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                    <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
                     {/* Industry Pages */}
                     <Route path="/nails" element={<Layout><NailsPage /></Layout>} />
