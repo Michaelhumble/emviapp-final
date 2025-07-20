@@ -4,21 +4,33 @@ import { Link } from 'react-router-dom';
 import EmviLogo from '@/components/branding/EmviLogo';
 
 /* 
-⚠️ UNIVERSAL APPFOOTER - CRITICAL LOCKDOWN ⚠️
+🚨 CRITICAL DEVELOPER WARNING - READ BEFORE EDITING 🚨
 
-This AppFooter component is the ONLY footer for the entire app.
+⚠️ DUPLICATE FOOTER PREVENTION - UNIVERSAL LOCKDOWN ⚠️
 
-STRICT RULES:
-✅ Only Layout.tsx should import and render this component
-❌ NO other page, component, or layout should render this footer
-❌ NO custom footers on individual pages  
-❌ NO duplicating footer code anywhere
+This AppFooter component is the SINGLE, UNIVERSAL footer for the entire app.
 
-If you see duplicate footers in development, this is React StrictMode 
-double-rendering components (see main.tsx for detailed explanation).
-Production will have exactly ONE footer.
+🔒 STRICT RULES - VIOLATION WILL BREAK THE APP:
+✅ Only Layout.tsx imports and renders this component
+❌ NEVER import AppFooter in any other file
+❌ NEVER create custom footers on individual pages  
+❌ NEVER duplicate footer JSX anywhere in the codebase
+❌ NEVER render multiple <Layout> wrappers
 
-Only modify this file when you need footer changes across the ENTIRE app.
+🐛 IF YOU SEE DUPLICATE FOOTERS:
+• In DEVELOPMENT: This is React.StrictMode double-rendering (NORMAL)
+• In PRODUCTION: Search for unauthorized AppFooter imports
+
+💡 TO MODIFY FOOTER:
+• Only edit this ONE file
+• Changes apply across the ENTIRE app
+• Test on multiple pages to verify consistency
+
+🚨 EMERGENCY DEBUGGING:
+• Run: window.emviCheckFooters() in browser console
+• Should return: { footerCount: 1, isValid: true }
+
+DO NOT IGNORE THESE WARNINGS - THEY PREVENT CRITICAL UI BUGS
 */
 
 const AppFooter = () => {
@@ -143,5 +155,21 @@ const AppFooter = () => {
     </footer>
   );
 };
+
+// 🐛 DEBUG UTILITY: Expose footer verification in browser console
+if (typeof window !== 'undefined') {
+  (window as any).emviCheckFooters = () => {
+    const footers = document.querySelectorAll('[data-footer-id="emvi-global-footer"]');
+    const result = {
+      footerCount: footers.length,
+      isValid: footers.length === 1,
+      message: footers.length === 1 
+        ? '✅ Perfect! Exactly one footer found.' 
+        : `❌ ERROR: Found ${footers.length} footers. Should be exactly 1.`
+    };
+    console.log('EmviApp Footer Check:', result);
+    return result;
+  };
+}
 
 export default AppFooter;
