@@ -122,7 +122,7 @@ function App() {
                     <Route path="/nails-job-success" element={<NailJobSuccessPage />} />
                     
                     {/* Other pages */}
-                    <Route path="/salons" element={<Layout><SalonsFinalsPage /></Layout>} />
+                    <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
                     <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     

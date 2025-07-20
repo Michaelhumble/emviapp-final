@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { SalonSale } from '@/types/salonSale';
+import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
 
 const SalonsPageRedesigned = () => {
   const { isSignedIn } = useAuth();
@@ -150,105 +151,8 @@ const SalonsPageRedesigned = () => {
 
   return (
     <Layout>
-      {/* Premium Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800 py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-6 text-center text-white">
-          <div className="mb-6">
-            <h1 className="text-6xl md:text-7xl font-bold mb-4 leading-tight">
-              America's #1 Salon Marketplace
-            </h1>
-            <p className="text-xl md:text-2xl text-purple-100 mb-8 max-w-4xl mx-auto leading-relaxed">
-              Where real beauty businesses change hands. Every listing is verified, premium, and powered by love and AI.
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-            <Button size="lg" onClick={() => navigate('/sell-salon')} className="bg-white text-purple-700 hover:bg-purple-50 font-bold text-lg px-8 py-4">
-              List Your Salon
-            </Button>
-            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-purple-700 font-bold text-lg px-8 py-4">
-              Browse Premium Listings
-            </Button>
-            <Button variant="outline" size="lg" className="border-purple-300 text-purple-100 hover:bg-purple-600 font-medium text-lg px-8 py-4">
-              Why Sell on EmviApp?
-            </Button>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-6 text-purple-100">
-            <div className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-yellow-300" />
-              <span className="font-medium">3,200+ Salons Listed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-yellow-300" />
-              <span className="font-medium">Real Seller Direct</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-yellow-300" />
-              <span className="font-medium">Premium Photos Only</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Search and Filter Bar */}
-      <section className="bg-white py-6 border-b">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Search salons by name, location, or features..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12"
-              />
-            </div>
-            
-            <div className="flex gap-3">
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                <SelectTrigger className="w-48 h-12">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="All Locations" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Locations</SelectItem>
-                  <SelectItem value="georgia">Georgia</SelectItem>
-                  <SelectItem value="arkansas">Arkansas</SelectItem>
-                  <SelectItem value="florida">Florida</SelectItem>
-                  <SelectItem value="texas">Texas</SelectItem>
-                  <SelectItem value="california">California</SelectItem>
-                  <SelectItem value="new york">New York</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-48 h-12">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="nails">Nail Salons</SelectItem>
-                  <SelectItem value="hair">Hair Salons</SelectItem>
-                  <SelectItem value="barber">Barber Shops</SelectItem>
-                  <SelectItem value="massage">Massage Spas</SelectItem>
-                  <SelectItem value="makeup">Beauty Studios</SelectItem>
-                  <SelectItem value="brows">Brow & Lash</SelectItem>
-                  <SelectItem value="tattoo">Tattoo Studios</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {(searchQuery || selectedLocation !== "all" || selectedCategory !== "all") && (
-                <Button variant="outline" onClick={clearFilters} className="h-12">
-                  Clear
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* New Premium Hero Section */}
+      <PremiumSalonHero />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8" id="listings">
