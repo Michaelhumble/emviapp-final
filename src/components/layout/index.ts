@@ -1,4 +1,4 @@
 
 export { default as Layout } from './Layout';
 export { default as Navbar } from './Navbar';
-// AppFooter removed - FOOTER CLEAN STATE
+export { default as AppFooter } from './AppFooter';
