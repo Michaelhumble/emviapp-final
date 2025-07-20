@@ -1,4 +1,6 @@
 
+// DO NOT DUPLICATE. AppFooter is the universal footer — import ONLY in Layout.tsx!
+
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
 import AppFooter from './AppFooter';

@@ -1,5 +1,5 @@
 
-// DO NOT DUPLICATE THIS FOOTER. Use only in Layout.tsx. All others will be removed.
+// DO NOT DUPLICATE. AppFooter is the universal footer — import ONLY in Layout.tsx!
 
 import React from 'react';
 import { Link } from 'react-router-dom';
