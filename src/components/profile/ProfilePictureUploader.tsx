@@ -87,12 +87,12 @@ const ProfilePictureUploader = ({
         throw uploadError;
       }
 
-      // Get public URL
+      // Get public URL with cache-busting timestamp
       const { data: publicUrlData } = supabaseBypass.storage
         .from("profile_images")
         .getPublicUrl(filePath);
 
-      const publicUrl = publicUrlData.publicUrl;
+      const publicUrl = `${publicUrlData.publicUrl}?v=${Date.now()}`;
 
       // Update user record in the database
       const { error: updateError } = await supabaseBypass

@@ -5,6 +5,7 @@ import { Crown, Star, Bell, Settings, User, Camera } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
 interface CustomerDashboardHeaderProps {
@@ -51,13 +52,25 @@ const CustomerDashboardHeader: React.FC<CustomerDashboardHeaderProps> = ({ onEdi
       
       <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between">
         <div className="mb-4 md:mb-0">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-4 mb-2">
             <motion.div
-              whileHover={{ rotate: 10, scale: 1.1 }}
-              className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              className="relative cursor-pointer"
               onClick={handleViewProfile}
             >
-              <Crown className="h-6 w-6 text-white" />
+              <Avatar className="h-16 w-16 border-4 border-white/30 shadow-xl">
+                <AvatarImage 
+                  src={userProfile?.avatar_url || undefined} 
+                  alt={userProfile?.full_name || "Profile"}
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white text-lg font-bold">
+                  {firstName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+                <Crown className="h-3 w-3 text-white" />
+              </div>
             </motion.div>
             <div>
               <h1 className="text-3xl font-bold text-white font-playfair">
