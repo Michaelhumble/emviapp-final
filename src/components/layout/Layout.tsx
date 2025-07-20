@@ -1,10 +1,8 @@
 
-// WARNING: AppFooter is the only footer in the app. Never duplicate or create new footers.
-// Only Layout.tsx is allowed to import and render AppFooter.
+// CLEAN STATE: No footers in the app until universal footer is approved and built.
 
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
-import AppFooter from './AppFooter';
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
@@ -30,17 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
       </main>
-      
-      
-      {/* 🏆 UNIVERSAL APPFOOTER - BILLION-DOLLAR STANDARD 🏆
-          
-          This is the ONLY location where AppFooter is rendered.
-          ✅ Premium design with responsive layout
-          ✅ All marketplace, company, and legal links
-          ✅ Emotional branding with "Inspired by Sunshine ☀️"
-          ✅ Locked down - no duplicates allowed anywhere
-      */}
-      {!hideFooter && <AppFooter />}
+      {/* NO FOOTERS - CLEAN STATE MAINTAINED */}
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}

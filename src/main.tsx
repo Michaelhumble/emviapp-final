@@ -125,3 +125,32 @@ if (!rootElement) {
   }
 }
 
+// 🚨 ZERO FOOTER VERIFICATION - Confirms clean state
+if (typeof window !== 'undefined') {
+  (window as any).emviCheckFooters = () => {
+    const footers = document.querySelectorAll('footer');
+    const result = {
+      footerCount: footers.length,
+      isValid: footers.length === 0,
+      message: footers.length === 0 
+        ? '✅ PERFECT! Zero footers confirmed - Clean state maintained.' 
+        : `❌ VIOLATION: Found ${footers.length} footer(s). Should be ZERO until universal footer is rebuilt.`,
+      route: window.location.pathname,
+      timestamp: new Date().toISOString()
+    };
+    console.log('🚨 EmviApp Zero Footer Verification:', result);
+    if (!result.isValid) {
+      console.error('🚨 FOOTER DETECTED! Clean state violated.');
+      footers.forEach((footer, index) => {
+        console.error(`Footer ${index + 1}:`, footer);
+      });
+    }
+    return result;
+  };
+  
+  // Auto-run verification in development
+  if (process.env.NODE_ENV === 'development') {
+    setTimeout(() => (window as any).emviCheckFooters(), 2000);
+  }
+}
+
