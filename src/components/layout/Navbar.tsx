@@ -37,46 +37,46 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation - Clean Public Order */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-5">
             <Link 
               to="/" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
               Home
             </Link>
             <Link 
               to="/booking-services" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
-              Booking Services
+              Book Services
             </Link>
             <Link 
               to="/artists" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
               Artists
             </Link>
             <Link 
               to="/salons" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
               Salons
             </Link>
             <Link 
               to="/community" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
               Community
             </Link>
             <Link 
               to="/about" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
               About
             </Link>
             <Link 
               to="/contact" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
             >
               Contact
             </Link>
@@ -113,7 +113,7 @@ const Navbar = () => {
               <div className="hidden md:flex">
                 <Link 
                   to="/dashboard" 
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                  className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
                 >
                   Dashboard
                 </Link>
