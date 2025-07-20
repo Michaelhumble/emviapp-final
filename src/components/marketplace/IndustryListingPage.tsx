@@ -13,6 +13,8 @@ import { IndustryListing } from '@/types/industryListing';
 import DiamondFOMOCard from './DiamondFOMOCard';
 import MagicNailsDiamondCard from './MagicNailsDiamondCard';
 import PremiumJobModal from '@/components/jobs/PremiumJobModal';
+import IndustryExpiredSection from './IndustryExpiredSection';
+import { getExpiredListingsByIndustry } from '@/data/industryExpiredListings';
 
 interface IndustryListingPageProps {
   industryName: string;
@@ -129,6 +131,13 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   const premiumListings = listings.filter(l => l.tier === 'premium');
   const featuredListings = listings.filter(l => l.tier === 'featured');
   const freeListings = listings.filter(l => l.tier === 'free');
+  
+  // Get expired listings for this industry
+  const expiredListings = getExpiredListingsByIndustry(industryName);
+  
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -534,11 +543,20 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
           </motion.section>
         )}
 
+        {/* Expired Listings Section */}
+        <IndustryExpiredSection
+          industryName={industryName}
+          displayName={displayName}
+          expiredListings={expiredListings}
+          gradientColors={gradientColors}
+          onViewAllActive={handleScrollToTop}
+        />
+
         {/* CTA Section */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.6, delay: 1.0 }}
           className="text-center"
         >
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-8">

@@ -8,7 +8,7 @@ import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import ExpiredJobsSection from '@/components/jobs/ExpiredJobsSection';
+// Removed ExpiredJobsSection - now handled by individual industry pages
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
 import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
