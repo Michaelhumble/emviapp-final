@@ -26,7 +26,7 @@ const ErrorLayout: React.FC<ErrorLayoutProps> = ({ children }) => {
         </div>
       </main>
       
-      {/* No custom footer - use universal AppFooter system */}
+      {/* FOOTER CLEAN STATE: No footers in the app. Do not add any until instructed. */}
     </div>
   );
 };
