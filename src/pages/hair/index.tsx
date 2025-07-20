@@ -16,26 +16,14 @@ const HairPage = () => {
     
     return jobs
       .filter(job => {
-        // STRICT filtering for hair industry only - NO CROSS-POSTING
+        // STRICT category-only filtering - NO FALLBACK LOGIC
         const isHairJob = 
           job.category?.toLowerCase() === 'hair' ||
           job.category?.toLowerCase() === 'hair stylist' ||
           job.category?.toLowerCase() === 'hairstylist' ||
-          job.category?.toLowerCase() === 'cosmetology' ||
-          // Only allow general category if EXPLICITLY hair-related
-          (job.category?.toLowerCase() === 'general' && 
-           (job.title?.toLowerCase().includes('hair stylist') || 
-            job.title?.toLowerCase().includes('stylist')));
+          job.category?.toLowerCase() === 'cosmetology';
         
-        // CRITICAL: Exclude any barber, nail, or other industry terms
-        const isNotOtherIndustry = 
-          !job.title?.toLowerCase().includes('barber') &&
-          !job.title?.toLowerCase().includes('nail') &&
-          !job.title?.toLowerCase().includes('lash') &&
-          !job.title?.toLowerCase().includes('massage') &&
-          !job.title?.toLowerCase().includes('makeup');
-        
-        return isHairJob && isNotOtherIndustry && job.status === 'active';
+        return isHairJob && job.status === 'active';
       })
       .map((job: Job): IndustryListing => {
         const tierMapping: Record<string, 'free' | 'diamond' | 'premium' | 'featured'> = {

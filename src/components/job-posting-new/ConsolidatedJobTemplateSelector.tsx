@@ -21,86 +21,92 @@ interface ConsolidatedJobTemplateSelectorProps {
 
 const jobTemplates = [
   {
-    id: 'nail-tech',
+    id: 'nails',
     title: 'Nail Technician',
+    category: 'nails',
     description: 'For nail salons looking for experienced technicians with skills in manicures, pedicures, and nail art.',
     icon: Fingerprint
   },
   {
-    id: 'hair-stylist',
+    id: 'hair',
     title: 'Hair Stylist',
+    category: 'hair',
     description: 'For salons seeking professionals skilled in cutting, coloring, and styling services.',
     icon: Scissors
   },
   {
     id: 'barber',
     title: 'Barber',
+    category: 'barber',
     description: 'For barbershops looking for skilled professionals in men\'s grooming and styling.',
     icon: Scissors
   },
   {
-    id: 'lash-tech',
+    id: 'brows-lashes',
     title: 'Lash Technician',
+    category: 'brows-lashes',
     description: 'For beauty businesses seeking specialists in eyelash extensions and lash services.',
     icon: Sparkles
   },
   {
-    id: 'esthetician',
+    id: 'skincare',
     title: 'Esthetician',
+    category: 'skincare',
     description: 'For spas and salons seeking skincare specialists for facials and treatments.',
     icon: Heart
   },
   {
-    id: 'spa-tech',
+    id: 'massage',
     title: 'Spa Technician',
+    category: 'massage',
     description: 'For wellness centers seeking professionals for body treatments, wraps, and therapeutic services.',
     icon: Heart
   },
   {
-    id: 'massage-therapist',
+    id: 'massage',
     title: 'Massage Therapist',
+    category: 'massage',
     description: 'For spas and wellness centers seeking licensed therapists for massage and bodywork services.',
     icon: Heart
   },
   {
-    id: 'tattoo-artist',
+    id: 'tattoo',
     title: 'Tattoo Artist',
+    category: 'tattoo',
     description: 'For studios seeking skilled artists with strong portfolios and tattooing expertise.',
     icon: Zap
   },
   {
-    id: 'receptionist',
+    id: 'general',
     title: 'Receptionist',
+    category: 'general',
     description: 'For salons seeking front desk staff to manage scheduling, client check-ins, and salon operations.',
     icon: Users
   },
   {
-    id: 'salon-manager',
+    id: 'general',
     title: 'Salon Manager',
+    category: 'general',
     description: 'For businesses seeking experienced professionals to oversee salon operations and team leadership.',
     icon: Building
   },
   {
-    id: 'booth-rental',
+    id: 'general',
     title: 'Booth Rental',
+    category: 'general',
     description: 'For salon owners offering booth rental space to independent beauty professionals.',
     icon: Home
   },
   {
-    id: 'makeup-artist',
+    id: 'makeup',
     title: 'Makeup Artist',
+    category: 'makeup',
     description: 'For salons and studios seeking professionals skilled in makeup application for various occasions.',
     icon: Palette
-  },
-  {
-    id: 'other-beauty',
-    title: 'Other Beauty Services',
-    description: 'For businesses seeking specialized beauty services such as microblading, threading, or waxing.',
-    icon: Brush
   }
-];
+]
 
-const ConsolidatedJobTemplateSelector: React.FC<ConsolidatedJobTemplateSelectorProps> = ({ 
+const ConsolidatedJobTemplateSelector: React.FC<ConsolidatedJobTemplateSelectorProps> = ({
   onTemplateSelect, 
   isSubmitting = false 
 }) => {

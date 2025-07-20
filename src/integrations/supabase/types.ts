@@ -4842,6 +4842,16 @@ export type Database = {
     Enums: {
       application_status: "pending" | "accepted" | "rejected"
       booking_status: "pending" | "confirmed" | "canceled" | "completed"
+      job_category:
+        | "nails"
+        | "hair"
+        | "barber"
+        | "brows-lashes"
+        | "massage"
+        | "makeup"
+        | "tattoo"
+        | "skincare"
+        | "general"
       job_status: "open" | "closed"
       payment_status: "pending" | "completed" | "failed"
       user_role: "customer" | "salon_owner" | "technician"
@@ -4974,6 +4984,17 @@ export const Constants = {
     Enums: {
       application_status: ["pending", "accepted", "rejected"],
       booking_status: ["pending", "confirmed", "canceled", "completed"],
+      job_category: [
+        "nails",
+        "hair",
+        "barber",
+        "brows-lashes",
+        "massage",
+        "makeup",
+        "tattoo",
+        "skincare",
+        "general",
+      ],
       job_status: ["open", "closed"],
       payment_status: ["pending", "completed", "failed"],
       user_role: ["customer", "salon_owner", "technician"],

@@ -180,7 +180,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     // Prepare payload for update
     const updatePayload = {
       title: data.title.trim(),
-      category: 'General', // Fixed category since UI no longer shows selection
+      category: initialValues?.category || 'general', // Use category from template instead of hardcoding
       location: data.location.trim() || null,
       description: data.description.trim(),
       compensation_type: data.compensationType.trim() || null,
@@ -301,7 +301,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     // Prepare payload (matching FreeJobPostingForm structure)
     const payload = {
       title: data.title.trim(),
-      category: 'General', // Fixed category since UI no longer shows selection
+      category: initialValues?.category || 'general', // Use category from template instead of hardcoding
       location: data.location.trim() || null,
       description: data.description.trim(),
       // vietnamese_description field removed - not in database schema
