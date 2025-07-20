@@ -254,7 +254,7 @@ const FeaturedSuccessStories = () => {
                   </p>
                 </div>
                 
-                <Link to="/explore/artists">
+                <Link to="/booking-services">
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                     <Star className="mr-2 h-4 w-4" />
                     Book Similar Service

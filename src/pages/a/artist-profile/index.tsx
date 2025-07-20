@@ -79,8 +79,8 @@ const ArtistProfilePage = () => {
   };
   
   const handleBooking = () => {
-    // Booking logic would go here
-    console.log('Book with artist:', id);
+    // Navigate to booking services page
+    window.location.href = '/booking-services';
   };
   
   if (loading) {
