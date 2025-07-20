@@ -38,43 +38,21 @@ const SalonDashboardPage = () => {
     <Layout>
       <ProfileCompletionProvider>
         <SalonProvider>
-          <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Sidebar */}
-              <div className="md:col-span-1">
-                <div className="space-y-4">
-                  <ProfileCompletionBar />
-                  
-                  <Card className="border-muted shadow-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-xl font-playfair">
-                        {userProfile?.salon_name || "Your Salon"}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground font-inter">
-                        {userProfile?.bio || "Complete your salon profile to showcase your business."}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
+          <div className="max-w-7xl mx-auto px-6">
+            {/* Premium Header - Full Width */}
+            <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl p-8 text-white mb-8 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 backdrop-blur-sm"></div>
+              <div className="relative z-10 text-center">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                  Welcome back, {userProfile?.salon_name || "Salon Owner"}! ✨
+                </h1>
+                <p className="text-purple-100 text-lg max-w-2xl mx-auto">
+                  Your premium salon management hub. Build something extraordinary.
+                </p>
               </div>
-              
-              {/* Main Content */}
-              <div className="md:col-span-3">
-                {/* Premium Header */}
-                <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl p-6 text-white mb-8 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 backdrop-blur-sm"></div>
-                  <div className="relative z-10">
-                    <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                      Welcome back, {userProfile?.salon_name || "Salon Owner"}! ✨
-                    </h1>
-                    <p className="text-purple-100">
-                      Your premium salon management hub. Build something extraordinary.
-                    </p>
-                  </div>
-                  <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-                </div>
+              <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+              <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+            </div>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid w-full grid-cols-7 mb-8 h-auto p-1 bg-white/80 backdrop-blur-sm border shadow-lg">
@@ -159,9 +137,7 @@ const SalonDashboardPage = () => {
                   <TabsContent value="settings" className="space-y-4 animate-fade-in">
                     <SalonSettings />
                   </TabsContent>
-                </Tabs>
-              </div>
-            </div>
+            </Tabs>
           </div>
         </SalonProvider>
       </ProfileCompletionProvider>
