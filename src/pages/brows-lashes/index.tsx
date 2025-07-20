@@ -15,20 +15,28 @@ const BrowsLashesPage = () => {
     
     return jobs
       .filter(job => {
-        // STRICT filtering for brows & lashes industry only
+        // STRICT filtering for brows & lashes industry only - NO CROSS-POSTING
         const isBrowsLashesJob = 
           job.category?.toLowerCase() === 'brows' ||
           job.category?.toLowerCase() === 'lashes' ||
           job.category?.toLowerCase() === 'brow & lash' ||
           job.category?.toLowerCase() === 'microblading' ||
           job.category?.toLowerCase() === 'lash extensions' ||
+          // Only allow general category if EXPLICITLY brow/lash-related
           (job.category?.toLowerCase() === 'general' && 
            (job.title?.toLowerCase().includes('brow') ||
             job.title?.toLowerCase().includes('lash') ||
-            job.title?.toLowerCase().includes('microblading') ||
-            job.description?.toLowerCase().includes('brow') ||
-            job.description?.toLowerCase().includes('lash')));
-        return isBrowsLashesJob && job.status === 'active';
+            job.title?.toLowerCase().includes('microblading')));
+        
+        // CRITICAL: Exclude any hair, nail, barber, or other industry terms
+        const isNotOtherIndustry = 
+          !job.title?.toLowerCase().includes('barber') &&
+          !job.title?.toLowerCase().includes('hair stylist') &&
+          !job.title?.toLowerCase().includes('nail') &&
+          !job.title?.toLowerCase().includes('massage') &&
+          !job.title?.toLowerCase().includes('makeup');
+        
+        return isBrowsLashesJob && isNotOtherIndustry && job.status === 'active';
       })
       .map((job: Job): IndustryListing => {
         const tierMapping: Record<string, 'free' | 'diamond' | 'premium' | 'featured'> = {
