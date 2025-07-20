@@ -125,31 +125,3 @@ if (!rootElement) {
   }
 }
 
-// 🚨 FOOTER CLEAN STATE VERIFICATION - Emergency Check Function
-if (typeof window !== 'undefined') {
-  (window as any).emviCheckFooters = () => {
-    const footers = document.querySelectorAll('footer');
-    const result = {
-      footerCount: footers.length,
-      isValid: footers.length === 0,
-      message: footers.length === 0 
-        ? '✅ PERFECT! Zero footers found - Clean state maintained.' 
-        : `❌ VIOLATION: Found ${footers.length} footer(s). Should be ZERO.`,
-      route: window.location.pathname,
-      timestamp: new Date().toISOString()
-    };
-    console.log('🚨 EmviApp Footer Clean State Check:', result);
-    if (!result.isValid) {
-      console.error('🚨 FOOTER DETECTED! Clean state violated.');
-      footers.forEach((footer, index) => {
-        console.error(`Footer ${index + 1}:`, footer);
-      });
-    }
-    return result;
-  };
-  
-  // Auto-run clean state check in development
-  if (process.env.NODE_ENV === 'development') {
-    setTimeout(() => (window as any).emviCheckFooters(), 2000);
-  }
-}
