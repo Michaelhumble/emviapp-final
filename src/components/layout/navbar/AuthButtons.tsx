@@ -13,7 +13,9 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/auth";
+import { User, LogOut, Info, Phone, Settings } from "lucide-react";
 
 /**
  * 🎯 SHARED AUTH UI LOGIC
@@ -40,7 +42,7 @@ const AuthButtons = () => {
   const location = useLocation();
   const currentPath = encodeURIComponent(location.pathname + location.search);
   const authState = useAuth();
-  const { signOut } = authState;
+  const { signOut, userProfile, userRole } = authState;
   
   const uiState = getAuthUIState(authState);
   
@@ -68,14 +70,50 @@ const AuthButtons = () => {
   return (
     <div className="flex items-center gap-2">
       {uiState.isAuthenticated ? (
-        // ✅ AUTHENTICATED STATE: Show only Sign Out button
-        <Button 
-          onClick={signOut}
-          variant="outline"
-          className="border-red-200 text-red-600 hover:bg-red-50"
-        >
-          Sign Out
-        </Button>
+        // ✅ AUTHENTICATED STATE: Show profile dropdown with About/Contact
+        <div className="relative group">
+          <div className="flex items-center space-x-2 cursor-pointer">
+            <Avatar className="h-8 w-8">
+              <AvatarImage 
+                src={userProfile?.avatar_url || undefined} 
+                alt={userProfile?.full_name || userProfile?.salon_name || 'Profile'} 
+              />
+              <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold">
+                {(userProfile?.full_name || userProfile?.salon_name || 'U').charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="hidden sm:block">
+              <p className="text-xs font-medium text-gray-900 truncate max-w-24">
+                {userProfile?.full_name || userProfile?.salon_name || 'User'}
+              </p>
+            </div>
+          </div>
+          
+          {/* Profile Dropdown */}
+          <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <Link to="/dashboard" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+              <User className="w-4 h-4 mr-3" />
+              {userRole === 'artist' ? 'Artist Dashboard' : 'Dashboard'}
+            </Link>
+            <hr className="border-gray-100" />
+            <Link to="/about" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+              <Info className="w-4 h-4 mr-3" />
+              About Us
+            </Link>
+            <Link to="/contact" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+              <Phone className="w-4 h-4 mr-3" />
+              Contact
+            </Link>
+            <hr className="border-gray-100" />
+            <button 
+              onClick={signOut}
+              className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50"
+            >
+              <LogOut className="w-4 h-4 mr-3" />
+              Sign Out
+            </button>
+          </div>
+        </div>
       ) : (
         // ❌ UNAUTHENTICATED STATE: Show Sign In and Sign Up buttons
         <>
