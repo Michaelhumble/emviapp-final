@@ -11,7 +11,7 @@ interface SalonOwnerGuardProps {
 }
 
 const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
-  const { user, userProfile, loading } = useAuth();
+  const { user, userProfile, userRole, loading } = useAuth();
 
   // Show loading state while auth is being determined
   if (loading) {
@@ -60,8 +60,12 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // Check if user is a salon owner - allow "salon" or "owner" roles
-  const isSalonOwner = userProfile?.role === 'salon' || userProfile?.role === 'owner';
+  // Check if user is a salon owner - check profile first, then metadata fallback
+  const profileRole = userProfile?.role;
+  const metadataRole = user?.user_metadata?.role || userRole;
+  const effectiveRole = profileRole || metadataRole;
+  
+  const isSalonOwner = effectiveRole === 'salon' || effectiveRole === 'owner';
 
   if (!isSalonOwner) {
     return (
@@ -78,7 +82,7 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
               You are not authorized to post a salon. This feature is only available to salon owners.
             </p>
             <p className="text-sm text-gray-500">
-              Current role: {userProfile?.role || 'No role assigned'}
+              Current role: {effectiveRole || 'No role assigned'}
             </p>
             <div className="space-y-2">
               <Button asChild className="w-full">
