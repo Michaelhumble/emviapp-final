@@ -66,50 +66,21 @@ const HeroContent = ({
       {/* Main hero content */}
       <div className="space-y-6">
         <motion.h1 
-          className={`font-playfair font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-4`}
+          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-6`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          The Beauty Industry's Missing Piece — We Just Built It.
+          Chào mừng bạn đến với EmviApp — Welcome to a New Era of Beauty
         </motion.h1>
         
-        <motion.h2 
-          className={`font-playfair font-bold tracking-tight text-white/90 ${isMobile ? 'text-2xl md:text-3xl' : 'text-4xl'} mb-6`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-        >
-          Miếng ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
-        </motion.h2>
-        
         <motion.p 
-          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-3xl mx-auto text-white/90 font-inter mb-4`}
+          className={`${isMobile ? 'text-xl' : 'text-2xl'} max-w-4xl mx-auto text-white/95 font-inter font-light leading-relaxed drop-shadow-md mb-8`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Connecting salons, artists & customers with intelligent technology and a supportive, thriving community.
-        </motion.p>
-        
-        <motion.p 
-          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-3xl mx-auto text-white/90 font-inter mb-6`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-        >
-          Kết nối tiệm, thợ, khách hàng bằng công nghệ hiện đại và cộng đồng vững mạnh.
-        </motion.p>
-        
-        <motion.p 
-          className={`${isMobile ? 'text-base' : 'text-xl'} max-w-2xl mx-auto text-white/80 font-inter font-semibold`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.6 }}
-        >
-          Join the platform trusted by 50,000+ beauty professionals.
-          <br />
-          Được hơn 50,000 chuyên gia làm đẹp tin tưởng sử dụng mỗi ngày.
+          Nơi tài năng gặp cơ hội — Where dreams become reality through connection, creativity, and community
         </motion.p>
         
         <motion.div
@@ -122,9 +93,9 @@ const HeroContent = ({
           <Link to="/auth/signup">
             <Button 
               size="lg" 
-              className="font-inter font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
+              className="font-inter font-semibold px-10 py-7 text-xl bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-primary shadow-2xl shadow-black/30 hover:shadow-black/40 transition-all duration-300 transform hover:scale-105"
             >
-              Start your journey today (Đăng ký miễn phí hôm nay)
+              Bắt đầu hành trình — Start Your Journey
             </Button>
           </Link>
         </motion.div>
