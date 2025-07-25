@@ -64,38 +64,64 @@ const HeroContent = ({
       transition={{ duration: 0.5 }}
     >
       {/* Main hero content */}
-      <div className={`${isMobile ? 'space-y-6 px-6' : 'space-y-4'}`}>
+      <div className={`${isMobile ? 'space-y-8 px-6 py-12' : 'space-y-4'}`}>
+        {/* Soft gradient overlay for text readability on mobile */}
+        {isMobile && (
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-transparent pointer-events-none z-[-1]" />
+        )}
+        
         <motion.h1 
           className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-lg ${
             isMobile 
-              ? 'text-3xl sm:text-4xl leading-tight mb-6' 
+              ? 'text-3xl sm:text-4xl leading-tight mb-8' 
               : 'text-6xl mb-2'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          The Beauty Industry's Missing Piece — We Just Built It.
+          {isMobile ? (
+            <>
+              The Beauty Industry's<br />
+              Missing Piece — We Just Built It.
+            </>
+          ) : (
+            "The Beauty Industry's Missing Piece — We Just Built It."
+          )}
         </motion.h1>
         
         <motion.p 
           className={`font-inter font-light text-center text-white/95 drop-shadow-md ${
             isMobile 
-              ? 'text-lg leading-relaxed mb-8 max-w-sm mx-auto' 
+              ? 'text-lg leading-relaxed mb-6 max-w-sm mx-auto' 
               : 'text-xl max-w-4xl mx-auto mb-3'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Where every beauty professional finds their perfect opportunity.
+          Finally, a home for beauty talent to dream, connect, and grow.
         </motion.p>
         
-        <motion.div
-          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-8'}`}
+        {/* Vietnamese support line */}
+        <motion.p 
+          className={`font-playfair italic text-center text-white/80 drop-shadow-md ${
+            isMobile 
+              ? 'text-sm leading-relaxed mb-8 max-w-xs mx-auto px-4' 
+              : 'text-lg max-w-3xl mx-auto mb-4'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
+        >
+          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp. Cùng nhau kết nối, phát triển, và vươn xa.
+        </motion.p>
+
+        <motion.div
+          className={`flex justify-center ${isMobile ? 'mt-12 mb-10' : 'mt-8'}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.8 }}
         >
           {/* Bilingual CTA Button */}
           <Link to="/auth/signup">
@@ -111,20 +137,6 @@ const HeroContent = ({
             </Button>
           </Link>
         </motion.div>
-
-        {/* Vietnamese translation - subtle footnote at bottom */}
-        <motion.p 
-          className={`font-playfair italic text-center text-white/75 drop-shadow-md ${
-            isMobile 
-              ? 'text-sm leading-relaxed mt-8 max-w-xs mx-auto' 
-              : 'text-lg max-w-3xl mx-auto mb-4'
-          }`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.8 }}
-        >
-          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
-        </motion.p>
       </div>
       
       {/* Image selection dots/indicators - keeping the image slider functionality */}
