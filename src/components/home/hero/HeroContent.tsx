@@ -64,32 +64,41 @@ const HeroContent = ({
       transition={{ duration: 0.5 }}
     >
       {/* Main hero content */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <motion.h1 
-          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-4`}
+          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-2`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          Tương lai ngành làm đẹp — The Future of Beauty is Here
+          The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         
         <motion.h2 
-          className={`font-playfair font-semibold tracking-wide text-white/95 drop-shadow-md ${isMobile ? 'text-xl md:text-2xl' : 'text-3xl'} mb-6`}
+          className={`font-playfair font-medium tracking-wide text-white/85 drop-shadow-md ${isMobile ? 'text-lg md:text-xl' : 'text-2xl'} mb-4`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
         >
-          The Beauty Industry's Missing Piece — We Just Built It.
+          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
         </motion.h2>
         
         <motion.p 
-          className={`${isMobile ? 'text-lg' : 'text-xl'} max-w-4xl mx-auto text-white/90 font-inter font-light leading-relaxed drop-shadow-md mb-8`}
+          className={`${isMobile ? 'text-lg' : 'text-xl'} max-w-4xl mx-auto text-white/90 font-inter font-light leading-relaxed drop-shadow-md mb-3`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Kết nối nghệ thuật với cơ hội — Where every beauty professional finds their perfect opportunity, and every dream becomes reality through connection and community
+          Connecting salons, artists & customers through modern technology and a thriving community.
+        </motion.p>
+        
+        <motion.p 
+          className={`${isMobile ? 'text-base' : 'text-lg'} max-w-3xl mx-auto text-white/80 font-inter font-light leading-relaxed drop-shadow-md mb-6`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5 }}
+        >
+          Kết nối tiệm, thợ, khách hàng bằng công nghệ hiện đại và cộng đồng vững mạnh.
         </motion.p>
         
         <motion.div
