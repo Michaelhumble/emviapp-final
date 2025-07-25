@@ -1,65 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Briefcase, Star, TrendingUp, Crown, DollarSign } from 'lucide-react';
+import { Users, Briefcase, Star, TrendingUp, Calendar, DollarSign, Youtube, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import AnimatedNumber from '@/components/customer/AnimatedNumber';
 
 const LiveStatsBar = () => {
   const [stats, setStats] = useState({
-    economicImpact: 8200000000, // $8.2B
-    professionals: 150000,
-    weeklyJoins: 2847,
-    communityRank: 1
+    activeJobs: 12847,
+    totalMembers: 48620,
+    monthlyEarnings: 2840000,
+    reviews: 15742
   });
 
-  // Animate numbers on mount with realistic Vietnamese nail industry data
+  // Live updating counters every 3 seconds
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStats({
-        economicImpact: 8200000000 + Math.floor(Math.random() * 1000000), // Growing impact
-        professionals: 150000 + Math.floor(Math.random() * 100),
-        weeklyJoins: 2847 + Math.floor(Math.random() * 50),
-        communityRank: 1
-      });
-    }, 2000);
+    const interval = setInterval(() => {
+      setStats(prev => ({
+        activeJobs: prev.activeJobs + Math.floor(Math.random() * 5),
+        totalMembers: prev.totalMembers + (Math.random() > 0.6 ? Math.floor(Math.random() * 3) : 0),
+        monthlyEarnings: prev.monthlyEarnings + (Math.random() > 0.8 ? Math.floor(Math.random() * 10000) : 0),
+        reviews: prev.reviews + (Math.random() > 0.7 ? 1 : 0)
+      }));
+    }, 3000);
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(interval);
   }, []);
 
   const statItems = [
     {
-      icon: DollarSign,
-      value: `$${(stats.economicImpact / 1000000000).toFixed(1)}B`,
-      label: 'Vietnamese Nail Industry Impact',
-      subLabel: 'Contributed yearly in America',
-      color: 'from-green-500 to-emerald-600',
-      bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50'
-    },
-    {
-      icon: Crown,
-      value: `#${stats.communityRank}`,
-      label: 'Vietnamese Nail Community',
-      subLabel: 'Largest network in North America',
-      color: 'from-purple-500 to-violet-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50'
-    },
-    {
-      icon: Users,
-      value: `${(stats.professionals / 1000).toFixed(0)}K+`,
-      label: 'Jobs Posted This Year',
-      subLabel: 'Real opportunities, real growth',
+      icon: Calendar,
+      value: `${stats.activeJobs.toLocaleString()}+`,
+      label: 'Active Job Opportunities',
+      subLabel: 'Updated live',
       color: 'from-blue-500 to-cyan-600',
       bgColor: 'bg-gradient-to-br from-blue-50 to-cyan-50',
       animated: true
     },
     {
-      icon: TrendingUp,
-      value: `${stats.weeklyJoins.toLocaleString()}+`,
-      label: 'New Members This Week',
-      subLabel: 'Join the fastest-growing community',
-      color: 'from-pink-500 to-rose-600',
-      bgColor: 'bg-gradient-to-br from-pink-50 to-rose-50',
+      icon: Users,
+      value: `${stats.totalMembers.toLocaleString()}+`,
+      label: 'Beauty Professionals',
+      subLabel: 'Growing daily',
+      color: 'from-green-500 to-emerald-600',
+      bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
+      animated: true
+    },
+    {
+      icon: DollarSign,
+      value: `$${(stats.monthlyEarnings / 1000).toFixed(0)}K+`,
+      label: 'Earned This Month',
+      subLabel: 'By our community',
+      color: 'from-purple-500 to-violet-600',
+      bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
+      animated: true
+    },
+    {
+      icon: Star,
+      value: `${stats.reviews.toLocaleString()}+`,
+      label: '5-Star Reviews',
+      subLabel: 'Real experiences',
+      color: 'from-yellow-500 to-orange-600',
+      bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
+      animated: true,
       pulse: true
     }
   ];
@@ -75,10 +78,10 @@ const LiveStatsBar = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
-            The Vietnamese Beauty Community's <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Billion-Dollar Impact</span>
+            Where Beauty Careers <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Take Flight</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Real numbers from the heart of America's beauty industry. Join the community that's reshaping how beauty professionals connect and grow.
+            Join thousands of beauty professionals building their dream careers every day. Real opportunities, real growth, real community.
           </p>
         </motion.div>
 
@@ -125,7 +128,7 @@ const LiveStatsBar = () => {
 
         {/* CTA Section */}
         <motion.div 
-          className="text-center"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -136,7 +139,10 @@ const LiveStatsBar = () => {
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <span className="text-lg">
-                Đăng ký miễn phí — Start Earning Today
+                Sign Up Free – Start Earning Today
+              </span>
+              <span className="block text-sm font-normal opacity-90 mt-1">
+                Đăng ký miễn phí — Bắt đầu kiếm tiền hôm nay
               </span>
             </Button>
           </Link>
@@ -145,26 +151,87 @@ const LiveStatsBar = () => {
           </p>
         </motion.div>
 
-        {/* Trust indicators - Small user avatars/testimonials */}
+        {/* Social Media Trust Row */}
         <motion.div 
-          className="flex justify-center items-center mt-8 space-x-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <div className="flex -space-x-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div 
-                key={i}
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 border-white shadow-sm flex items-center justify-center text-white text-xs font-bold"
+          <p className="text-gray-600 text-lg mb-6">See our community in action</p>
+          <div className="flex justify-center items-center space-x-8">
+            {[
+              { name: "YouTube", icon: Youtube, color: "text-red-500 hover:text-red-600" },
+              { name: "TikTok", icon: TrendingUp, color: "text-gray-700 hover:text-gray-800" },
+              { name: "Instagram", icon: Instagram, color: "text-pink-500 hover:text-pink-600" },
+              { name: "LinkedIn", icon: Briefcase, color: "text-blue-600 hover:text-blue-700" }
+            ].map((social, index) => (
+              <motion.div
+                key={social.name}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                className={`${social.color} transition-all duration-300 cursor-pointer transform hover:scale-110`}
               >
-                {String.fromCharCode(64 + i)}
-              </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2 shadow-sm hover:shadow-md transition-all duration-300">
+                    <social.icon className="h-6 w-6" />
+                  </div>
+                  <span className="text-xs text-gray-600">{social.name}</span>
+                </div>
+              </motion.div>
             ))}
           </div>
-          <span className="text-sm text-gray-600 ml-3 italic">
-            "Best decision I made for my nail career" - Linh N., San Jose
-          </span>
+        </motion.div>
+
+        {/* Community Stories */}
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
+          {[
+            { name: "Maria L.", story: "Found my dream salon in 3 days", role: "Hair Stylist", city: "Miami" },
+            { name: "David K.", story: "Doubled my client base this month", role: "Barber", city: "NYC" },
+            { name: "Lily N.", story: "Finally working at a spa I love", role: "Esthetician", city: "LA" }
+          ].map((testimonial, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 + index * 0.1 }}
+              className="bg-white rounded-xl p-4 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">{testimonial.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <div className="text-gray-800 font-medium text-sm">{testimonial.name}</div>
+                  <div className="text-gray-500 text-xs">{testimonial.role} • {testimonial.city}</div>
+                </div>
+              </div>
+              <p className="text-gray-700 text-sm italic">"{testimonial.story}"</p>
+              <div className="flex text-yellow-400 text-xs mt-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-3 w-3 fill-current" />
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Subtle Vietnamese Nod */}
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
+        >
+          <p className="text-gray-400 text-sm">
+            Proudly trusted by Vietnamese and global beauty professionals
+          </p>
         </motion.div>
       </div>
     </section>
