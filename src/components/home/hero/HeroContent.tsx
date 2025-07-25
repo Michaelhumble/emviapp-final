@@ -64,9 +64,9 @@ const HeroContent = ({
       transition={{ duration: 0.5 }}
     >
       {/* Main hero content */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         <motion.h1 
-          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-2`}
+          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-2xl sm:text-3xl leading-tight' : 'text-6xl'} mb-2`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -75,7 +75,7 @@ const HeroContent = ({
         </motion.h1>
         
         <motion.h2 
-          className={`font-playfair font-medium tracking-wide text-white/85 drop-shadow-md ${isMobile ? 'text-lg md:text-xl' : 'text-2xl'} mb-4`}
+          className={`font-playfair font-medium tracking-wide text-white/85 drop-shadow-md ${isMobile ? 'text-sm sm:text-base leading-snug' : 'text-2xl'} mb-3`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
@@ -84,7 +84,7 @@ const HeroContent = ({
         </motion.h2>
         
         <motion.p 
-          className={`${isMobile ? 'text-lg' : 'text-xl'} max-w-4xl mx-auto text-white/90 font-inter font-light leading-relaxed drop-shadow-md mb-3`}
+          className={`${isMobile ? 'text-base sm:text-lg leading-relaxed' : 'text-xl'} max-w-4xl mx-auto text-white/90 font-inter font-light drop-shadow-md mb-2`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
@@ -93,7 +93,7 @@ const HeroContent = ({
         </motion.p>
         
         <motion.p 
-          className={`${isMobile ? 'text-base' : 'text-lg'} max-w-3xl mx-auto text-white/80 font-inter font-light leading-relaxed drop-shadow-md mb-6`}
+          className={`${isMobile ? 'text-sm sm:text-base leading-relaxed' : 'text-lg'} max-w-3xl mx-auto text-white/80 font-inter font-light drop-shadow-md mb-4`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
