@@ -70,11 +70,14 @@ const HeroContent = ({
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-transparent pointer-events-none z-[-1]" />
         )}
         
+        {/* Enhanced gradient overlay for perfect text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-transparent pointer-events-none z-[-1]" />
+        
         <motion.h1 
-          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-lg ${
+          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl ${
             isMobile 
-              ? 'text-3xl sm:text-4xl leading-tight mb-8' 
-              : 'text-6xl mb-2'
+              ? 'text-4xl sm:text-5xl leading-tight mb-6' 
+              : 'text-6xl xl:text-7xl mb-4 leading-tight'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -82,61 +85,61 @@ const HeroContent = ({
         >
           {isMobile ? (
             <>
-              The Beauty Industry's<br />
-              Missing Piece — We Just Built It.
+              Where Beauty Careers<br />
+              Take Flight
             </>
           ) : (
-            "The Beauty Industry's Missing Piece — We Just Built It."
+            "Where Beauty Careers Take Flight"
           )}
         </motion.h1>
         
         <motion.p 
-          className={`font-inter font-light text-center text-white/95 drop-shadow-md ${
+          className={`font-inter font-light text-center text-white/95 drop-shadow-lg ${
             isMobile 
-              ? 'text-lg leading-relaxed mb-6 max-w-sm mx-auto' 
-              : 'text-xl max-w-4xl mx-auto mb-3'
+              ? 'text-lg leading-relaxed mb-8 max-w-md mx-auto px-2' 
+              : 'text-2xl max-w-4xl mx-auto mb-6 leading-relaxed'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Finally, a home for beauty talent to dream, connect, and grow.
+          A community where talent, dreams, and opportunity meet—for every beauty professional, everywhere.
         </motion.p>
-        
-        {/* Vietnamese support line */}
-        <motion.p 
-          className={`font-playfair italic text-center text-white/80 drop-shadow-md ${
-            isMobile 
-              ? 'text-sm leading-relaxed mb-8 max-w-xs mx-auto px-4' 
-              : 'text-lg max-w-3xl mx-auto mb-4'
-          }`}
+
+        <motion.div
+          className={`flex justify-center ${isMobile ? 'mt-10 mb-6' : 'mt-10 mb-4'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp. Cùng nhau kết nối, phát triển, và vươn xa.
-        </motion.p>
-
-        <motion.div
-          className={`flex justify-center ${isMobile ? 'mt-12 mb-10' : 'mt-8'}`}
+          {/* Bilingual CTA Button with emoji */}
+          <Link to="/auth/signup">
+            <Button 
+              size="lg" 
+              className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-primary shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-xl ${
+                isMobile 
+                  ? 'px-8 py-6 text-lg' 
+                  : 'px-12 py-8 text-xl'
+              }`}
+            >
+              ✨ Bắt đầu hành trình — Start Your Journey
+            </Button>
+          </Link>
+        </motion.div>
+        
+        {/* Subtle Vietnamese line */}
+        <motion.p 
+          className={`font-inter text-center text-white/70 drop-shadow-md ${
+            isMobile 
+              ? 'text-sm leading-relaxed max-w-xs mx-auto px-2' 
+              : 'text-base max-w-2xl mx-auto'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.8 }}
         >
-          {/* Bilingual CTA Button */}
-          <Link to="/auth/signup">
-            <Button 
-              size="lg" 
-              className={`font-inter font-semibold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-primary shadow-2xl shadow-black/30 hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 ${
-                isMobile 
-                  ? 'px-8 py-6 text-lg' 
-                  : 'px-10 py-7 text-xl'
-              }`}
-            >
-              Bắt đầu hành trình — Start Your Journey
-            </Button>
-          </Link>
-        </motion.div>
+          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
+        </motion.p>
       </div>
       
       {/* Image selection dots/indicators - keeping the image slider functionality */}
