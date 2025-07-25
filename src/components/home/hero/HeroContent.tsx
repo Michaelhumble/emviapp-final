@@ -66,21 +66,30 @@ const HeroContent = ({
       {/* Main hero content */}
       <div className="space-y-6">
         <motion.h1 
-          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-6`}
+          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-4`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          Chào mừng bạn đến với EmviApp — Welcome to a New Era of Beauty
+          Tương lai ngành làm đẹp — The Future of Beauty is Here
         </motion.h1>
         
+        <motion.h2 
+          className={`font-playfair font-semibold tracking-wide text-white/95 drop-shadow-md ${isMobile ? 'text-xl md:text-2xl' : 'text-3xl'} mb-6`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+        >
+          The Beauty Industry's Missing Piece — We Just Built It.
+        </motion.h2>
+        
         <motion.p 
-          className={`${isMobile ? 'text-xl' : 'text-2xl'} max-w-4xl mx-auto text-white/95 font-inter font-light leading-relaxed drop-shadow-md mb-8`}
+          className={`${isMobile ? 'text-lg' : 'text-xl'} max-w-4xl mx-auto text-white/90 font-inter font-light leading-relaxed drop-shadow-md mb-8`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Nơi tài năng gặp cơ hội — Where dreams become reality through connection, creativity, and community
+          Kết nối nghệ thuật với cơ hội — Where every beauty professional finds their perfect opportunity, and every dream becomes reality through connection and community
         </motion.p>
         
         <motion.div
