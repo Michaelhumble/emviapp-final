@@ -64,9 +64,13 @@ const HeroContent = ({
       transition={{ duration: 0.5 }}
     >
       {/* Main hero content */}
-      <div className="space-y-3 md:space-y-4">
+      <div className={`${isMobile ? 'space-y-6 px-6' : 'space-y-4'}`}>
         <motion.h1 
-          className={`font-playfair font-bold tracking-tight text-white drop-shadow-lg ${isMobile ? 'text-2xl sm:text-3xl leading-tight' : 'text-6xl'} mb-2`}
+          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-lg ${
+            isMobile 
+              ? 'text-3xl sm:text-4xl leading-tight mb-6' 
+              : 'text-6xl mb-2'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -74,35 +78,21 @@ const HeroContent = ({
           The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         
-        <motion.h2 
-          className={`font-playfair font-medium tracking-wide text-white/85 drop-shadow-md ${isMobile ? 'text-sm sm:text-base leading-snug' : 'text-2xl'} mb-3`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-        >
-          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
-        </motion.h2>
-        
         <motion.p 
-          className={`${isMobile ? 'text-base sm:text-lg leading-relaxed' : 'text-xl'} max-w-4xl mx-auto text-white/90 font-inter font-light drop-shadow-md mb-2`}
+          className={`font-inter font-light text-center text-white/95 drop-shadow-md ${
+            isMobile 
+              ? 'text-lg leading-relaxed mb-8 max-w-sm mx-auto' 
+              : 'text-xl max-w-4xl mx-auto mb-3'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Connecting salons, artists & customers through modern technology and a thriving community.
-        </motion.p>
-        
-        <motion.p 
-          className={`${isMobile ? 'text-sm sm:text-base leading-relaxed' : 'text-lg'} max-w-3xl mx-auto text-white/80 font-inter font-light drop-shadow-md mb-4`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-        >
-          Kết nối tiệm, thợ, khách hàng bằng công nghệ hiện đại và cộng đồng vững mạnh.
+          Where every beauty professional finds their perfect opportunity.
         </motion.p>
         
         <motion.div
-          className="flex justify-center mt-8"
+          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-8'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
@@ -111,12 +101,30 @@ const HeroContent = ({
           <Link to="/auth/signup">
             <Button 
               size="lg" 
-              className="font-inter font-semibold px-10 py-7 text-xl bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-primary shadow-2xl shadow-black/30 hover:shadow-black/40 transition-all duration-300 transform hover:scale-105"
+              className={`font-inter font-semibold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-primary shadow-2xl shadow-black/30 hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 ${
+                isMobile 
+                  ? 'px-8 py-6 text-lg' 
+                  : 'px-10 py-7 text-xl'
+              }`}
             >
               Bắt đầu hành trình — Start Your Journey
             </Button>
           </Link>
         </motion.div>
+
+        {/* Vietnamese translation - subtle footnote at bottom */}
+        <motion.p 
+          className={`font-playfair italic text-center text-white/75 drop-shadow-md ${
+            isMobile 
+              ? 'text-sm leading-relaxed mt-8 max-w-xs mx-auto' 
+              : 'text-lg max-w-3xl mx-auto mb-4'
+          }`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.8 }}
+        >
+          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
+        </motion.p>
       </div>
       
       {/* Image selection dots/indicators - keeping the image slider functionality */}
