@@ -65,12 +65,8 @@ const HeroContent = ({
     >
       {/* Main hero content */}
       <div className="space-y-6">
-        {/* 
-          ⚠️ PERMANENT LOCKED TITLE - DO NOT MODIFY ⚠️
-          This title must remain exactly as written - core to EmviApp identity
-        */}
         <motion.h1 
-          className={`font-playfair font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`}
+          className={`font-playfair font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'} mb-4`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -78,16 +74,42 @@ const HeroContent = ({
           The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         
-        {/* 
-          ⚠️ PERMANENT SUBHEADLINE - DO NOT MODIFY WITHOUT PERMISSION ⚠️
-        */}
+        <motion.h2 
+          className={`font-playfair font-bold tracking-tight text-white/90 ${isMobile ? 'text-2xl md:text-3xl' : 'text-4xl'} mb-6`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+        >
+          Miếng ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
+        </motion.h2>
+        
         <motion.p 
-          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-2xl mx-auto text-white/90 font-inter`}
+          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-3xl mx-auto text-white/90 font-inter mb-4`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Connecting salons, artists & customers through intelligent AI-powered technology.
+          Connecting salons, artists & customers with intelligent technology and a supportive, thriving community.
+        </motion.p>
+        
+        <motion.p 
+          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-3xl mx-auto text-white/90 font-inter mb-6`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5 }}
+        >
+          Kết nối tiệm, thợ, khách hàng bằng công nghệ hiện đại và cộng đồng vững mạnh.
+        </motion.p>
+        
+        <motion.p 
+          className={`${isMobile ? 'text-base' : 'text-xl'} max-w-2xl mx-auto text-white/80 font-inter font-semibold`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
+        >
+          Join the platform trusted by 50,000+ beauty professionals.
+          <br />
+          Được hơn 50,000 chuyên gia làm đẹp tin tưởng sử dụng mỗi ngày.
         </motion.p>
         
         <motion.div
@@ -96,13 +118,13 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Single CTA Button - Start Your Journey */}
+          {/* Bilingual CTA Button */}
           <Link to="/auth/signup">
             <Button 
               size="lg" 
               className="font-inter font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
             >
-              Join EmviApp Today
+              Start your journey today (Đăng ký miễn phí hôm nay)
             </Button>
           </Link>
         </motion.div>
