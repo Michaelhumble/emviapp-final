@@ -81,7 +81,7 @@ const LiveStatsBar = () => {
             Where Numbers Speak for Themselves
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Real impact, real growth, real opportunities in the beauty industry.
+            The Heartbeat of the Beauty Industry — Every number represents a real story, a real dream—yours could be next.
           </p>
         </motion.div>
 
