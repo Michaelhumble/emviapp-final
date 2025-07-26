@@ -125,7 +125,7 @@ function App() {
                     
                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
-                     <Route path="/jobs" element={<Layout><GlobalJobsPage /></Layout>} />
+                     <Route path="/jobs/*" element={<Layout><Jobs /></Layout>} />
                      <Route path="/job/:jobId" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
