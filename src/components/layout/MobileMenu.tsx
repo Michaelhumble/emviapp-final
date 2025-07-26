@@ -113,7 +113,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[10000] flex flex-col"
+            className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-[10000] flex flex-col"
             style={{ 
               height: '100dvh', // Use dynamic viewport height for better mobile support
               overflowY: 'hidden' // Let the inner scroll container handle scrolling

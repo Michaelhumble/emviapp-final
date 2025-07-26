@@ -174,7 +174,7 @@ export const EnhancedSignUpForm = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#FFF3E0' }} className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-rose-50 to-amber-50">
       <div className="w-full max-w-lg">
         <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-8 bg-gradient-to-r from-rose-50 to-amber-50 rounded-t-lg">
@@ -186,7 +186,7 @@ export const EnhancedSignUpForm = () => {
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="p-8">
+          <CardContent className="p-4 md:p-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700">
@@ -240,51 +240,53 @@ export const EnhancedSignUpForm = () => {
                   I am a...
                 </Label>
                 <Tabs value={selectedRole} onValueChange={handleRoleChange} className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 gap-2 h-auto p-1 bg-gray-50 rounded-lg">
-                    <TabsTrigger 
-                      value="customer" 
-                      className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
-                    >
-                      {roleIcons.customer}
-                      <div className="text-left">
-                        <div className="font-semibold text-sm">Customer</div>
-                        <div className="text-xs opacity-70">Book & Discover</div>
-                      </div>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="artist" 
-                      className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
-                    >
-                      {roleIcons.artist}
-                      <div className="text-left">
-                        <div className="font-semibold text-sm">Artist</div>
-                        <div className="text-xs opacity-70">Showcase Skills</div>
-                      </div>
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsList className="grid w-full grid-cols-2 gap-2 h-auto p-1 bg-gray-50 rounded-lg mt-2">
-                    <TabsTrigger 
-                      value="salon" 
-                      className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
-                    >
-                      {roleIcons.salon}
-                      <div className="text-left">
-                        <div className="font-semibold text-sm">Salon Owner</div>
-                        <div className="text-xs opacity-70">Manage Business</div>
-                      </div>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="freelancer" 
-                      className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
-                    >
-                      {roleIcons.freelancer}
-                      <div className="text-left">
-                        <div className="font-semibold text-sm">Freelancer</div>
-                        <div className="text-xs opacity-70">Independent Pro</div>
-                      </div>
-                    </TabsTrigger>
-                  </TabsList>
+                  <div className="space-y-3">
+                    <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-1 bg-gray-50 rounded-lg">
+                      <TabsTrigger 
+                        value="customer" 
+                        className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
+                      >
+                        {roleIcons.customer}
+                        <div className="text-left">
+                          <div className="font-semibold text-sm">Customer</div>
+                          <div className="text-xs opacity-70">Book & Discover</div>
+                        </div>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="artist" 
+                        className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
+                      >
+                        {roleIcons.artist}
+                        <div className="text-left">
+                          <div className="font-semibold text-sm">Artist</div>
+                          <div className="text-xs opacity-70">Showcase Skills</div>
+                        </div>
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-1 bg-gray-50 rounded-lg">
+                      <TabsTrigger 
+                        value="salon" 
+                        className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
+                      >
+                        {roleIcons.salon}
+                        <div className="text-left">
+                          <div className="font-semibold text-sm">Salon Owner</div>
+                          <div className="text-xs opacity-70">Manage Business</div>
+                        </div>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="freelancer" 
+                        className="flex items-center gap-2 h-16 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-rose-600 rounded-md transition-all duration-200"
+                      >
+                        {roleIcons.freelancer}
+                        <div className="text-left">
+                          <div className="font-semibold text-sm">Freelancer</div>
+                          <div className="text-xs opacity-70">Independent Pro</div>
+                        </div>
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
                 </Tabs>
                 
                 <div className="bg-gradient-to-r from-rose-50 to-amber-50 p-4 rounded-lg border border-rose-100">

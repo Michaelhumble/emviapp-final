@@ -70,8 +70,8 @@ const HeroContent = ({
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-transparent pointer-events-none z-[-1]" />
         )}
         
-        {/* Enhanced gradient overlay for perfect text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-transparent pointer-events-none z-[-1]" />
+        {/* Enhanced gradient overlay for perfect text readability on mobile */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/20 pointer-events-none z-[-1]" />
         
         <motion.h1 
           className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-4xl mx-auto ${
@@ -107,7 +107,7 @@ const HeroContent = ({
         </motion.p>
 
         <motion.div
-          className={`flex justify-center ${isMobile ? 'mt-10 mb-6' : 'mt-10 mb-4'}`}
+          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-10 mb-6'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
@@ -158,13 +158,17 @@ const HeroContent = ({
           <button
             key={index}
             onClick={() => setActiveIndex(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
+            className={`w-11 h-11 rounded-full transition-all flex items-center justify-center ${
               activeIndex === index 
-                ? 'bg-white scale-125' 
+                ? 'bg-white/90 scale-110' 
                 : 'bg-white/40 hover:bg-white/60'
             }`}
             aria-label={`View slide ${index + 1}`}
-          />
+          >
+            <div className={`w-3 h-3 rounded-full ${
+              activeIndex === index ? 'bg-primary' : 'bg-white/80'
+            }`} />
+          </button>
         ))}
         
         {heroImages.length > 7 && activeIndex < heroImages.length - 4 && (

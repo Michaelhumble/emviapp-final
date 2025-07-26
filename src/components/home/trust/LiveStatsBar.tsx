@@ -86,7 +86,7 @@ const LiveStatsBar = () => {
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
           {statItems.map((item, index) => (
             <motion.div
               key={index}
@@ -105,7 +105,7 @@ const LiveStatsBar = () => {
               </div>
               
               <motion.div 
-                className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent font-playfair mb-2`}
+                className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent font-playfair mb-2 min-w-[120px] flex justify-center`}
                 animate={{ scale: item.pulse ? [1, 1.05, 1] : 1 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
@@ -173,7 +173,7 @@ const LiveStatsBar = () => {
                 transition={{ delay: 0.7 + index * 0.1 }}
                 className={`${social.color} transition-all duration-300 cursor-pointer transform hover:scale-110`}
               >
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center min-h-[60px] min-w-[60px] justify-center">
                   <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-2 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
                     <social.icon className="h-6 w-6" />
                   </div>

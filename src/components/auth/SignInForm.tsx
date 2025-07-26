@@ -82,17 +82,17 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
     <div className="space-y-6">
       {/* Trust Section */}
       <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <span>Secure & Private</span>
           </div>
-          <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+          <div className="w-1 h-1 bg-gray-300 rounded-full hidden sm:block"></div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
             <span>100% Free</span>
           </div>
-          <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+          <div className="w-1 h-1 bg-gray-300 rounded-full hidden sm:block"></div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
             <span>Industry Trusted</span>
@@ -107,7 +107,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
         </div>
       </div>
 
-      <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
+      <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-md w-full mx-auto">
         <CardHeader className="space-y-1 pb-6">
           <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
             Welcome Back
@@ -125,7 +125,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
-              className="py-3 px-4"
+              className="h-12 px-4"
               placeholder="your@email.com"
             />
           </div>
@@ -139,7 +139,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
-              className="py-3 px-4"
+              className="h-12 px-4"
               placeholder="••••••••"
             />
           </div>
@@ -148,7 +148,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
         <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
           <Button 
             type="submit" 
-            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
             disabled={loading}
           >
             {loading ? (

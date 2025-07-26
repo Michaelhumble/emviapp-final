@@ -122,11 +122,11 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         return (
           <div className="mb-4 -mx-6 -mt-6">
             {/* Main photo */}
-            <div className="relative">
+            <div className="relative aspect-[16/9] overflow-hidden">
               <img
                 src={jobImages[0]}
                 alt={job.title || 'Job image'}
-                className="w-full h-48 object-cover"
+                className="w-full h-full object-cover"
                 onError={(e) => {
                   console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
                   e.currentTarget.style.display = 'none';
@@ -140,11 +140,11 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             </div>
             
             {/* Thumbnail row underneath */}
-            <div className="px-6 py-2 bg-gray-50 flex gap-2">
+            <div className="px-6 py-3 bg-gray-50 flex gap-3">
               {additionalPhotos.map((imageUrl, index) => (
                 <div 
                   key={index}
-                  className="relative w-12 h-12 rounded border overflow-hidden bg-white shadow-sm"
+                  className="relative w-16 h-16 rounded border overflow-hidden bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 >
                   <img
                     src={imageUrl}
@@ -157,7 +157,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
               
               {/* +X more thumbnail if there are more than 4 photos */}
               {remainingCount > 0 && (
-                <div className="w-12 h-12 rounded border bg-gray-200 flex items-center justify-center shadow-sm">
+                <div className="w-16 h-16 rounded border bg-gray-200 flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-shadow">
                   <span className="text-gray-600 text-xs font-medium">+{remainingCount}</span>
                 </div>
               )}
@@ -169,15 +169,17 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       // For single photo, show as before
       return (
         <div className="mb-4 -mx-6 -mt-6 relative">
-          <img
-            src={jobImages[0]}
-            alt={job.title || 'Job image'}
-            className="w-full h-48 object-cover"
-            onError={(e) => {
-              console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <div className="aspect-[16/9] overflow-hidden">
+            <img
+              src={jobImages[0]}
+              alt={job.title || 'Job image'}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('❌ [BILINGUAL-JOB-CARD] Image failed to load:', jobImages[0]);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
         </div>
       );
     }
@@ -417,10 +419,10 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       })()}
 
       {/* Action Buttons */}
-      <div className="flex gap-2 pt-4 border-t border-gray-100">
+      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
         <Button 
           onClick={onViewDetails}
-          className="flex-1"
+          className="flex-1 min-w-[120px]"
           variant={isExpired ? "outline" : "default"}
         >
           View Details

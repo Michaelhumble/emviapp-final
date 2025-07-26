@@ -68,13 +68,15 @@ const Hero = () => {
       className="relative overflow-hidden"
       style={{
         width: '100%',
-        height: '100vh', // Full viewport height for impressive hero display
+        height: '100dvh', // Dynamic viewport height for mobile browsers
         maxWidth: '100vw',
-        maxHeight: '100vh',
+        maxHeight: '100dvh',
         position: 'relative',
         margin: 0,
         padding: 0,
-        border: 'none'
+        border: 'none',
+        paddingTop: 'env(safe-area-inset-top)', // Safe area for notches
+        paddingBottom: 'env(safe-area-inset-bottom)'
       }}
     >
       {/* Background image carousel with full rotation through all images */}
