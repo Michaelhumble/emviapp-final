@@ -73,7 +73,7 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
         throw uploadError;
       }
 
-      const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/portfolio_images/${filePath}`;
+      const imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/portfolio_images/${filePath}`;
 
       // 2. Update user profile with the new portfolio URL
       const { data: userData } = await supabaseBypass

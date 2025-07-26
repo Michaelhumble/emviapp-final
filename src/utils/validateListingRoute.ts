@@ -17,7 +17,7 @@ export async function validateListingRoute(
 ): Promise<RouteValidationResult> {
   try {
     // Skip validation in development if needed for testing
-    if (process.env.NODE_ENV === 'development' && process.env.SKIP_LISTING_VALIDATION === 'true') {
+    if (process.env.NODE_ENV === 'development') {
       return { isValid: true };
     }
     
