@@ -87,7 +87,6 @@ export const EditBookingModal: React.FC<EditBookingModalProps> = ({
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  initialFocus
                 />
               </PopoverContent>
             </Popover>

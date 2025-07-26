@@ -122,7 +122,6 @@ const SalonAnalytics = () => {
                   mode="single"
                   selected={calendarSelection === "from" ? dateFrom : dateTo}
                   onSelect={handleCalendarSelect}
-                  initialFocus
                 />
               </div>
             </PopoverContent>

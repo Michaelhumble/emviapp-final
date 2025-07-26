@@ -32,11 +32,11 @@ const MonthlyCalendarView = () => {
               "pointer-events-auto"
             )}
             components={{
-              DayContent: ({ date }) => {
-                const dayBookings = getBookingsForDate(date);
+              Day: ({ day }) => {
+                const dayBookings = getBookingsForDate(day.date);
                 return (
                   <div className="relative w-full h-full flex items-center justify-center">
-                    {date.getDate()}
+                    {day.date.getDate()}
                     {dayBookings.length > 0 && (
                       <Badge 
                         variant="secondary"

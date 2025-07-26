@@ -158,7 +158,6 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  initialFocus
                   className="pointer-events-auto"
                 />
               </PopoverContent>

@@ -88,7 +88,6 @@ const DateFilter: React.FC<DateFilterProps> = ({
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <CalendarComponent
-              initialFocus
               mode="range"
               defaultMonth={dateRange.from}
               selected={dateRange.from ? {

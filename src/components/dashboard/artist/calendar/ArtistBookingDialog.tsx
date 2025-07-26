@@ -252,7 +252,6 @@ const ArtistBookingDialog: React.FC<BookingDialogProps> = ({
                     mode="single"
                     selected={date}
                     onSelect={setDate}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
