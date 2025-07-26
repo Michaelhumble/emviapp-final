@@ -241,58 +241,72 @@ const JobsPage = () => {
   try {
     return (
       <div className="w-full">
-        {/* WORLD-CLASS HERO SECTION */}
-        <section className="relative w-full bg-gradient-to-br from-[hsl(var(--pearl-white))] via-[hsl(var(--emvi-offwhite))] to-white dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-32 md:py-40 overflow-hidden">
-          {/* Stunning Premium Background */}
+        {/* PREMIUM HERO SECTION - MAXIMUM IMPACT */}
+        <section className="relative w-full bg-gradient-to-br from-[hsl(var(--pearl-white))] via-white to-[hsl(var(--emvi-offwhite))]/50 dark:from-slate-900 dark:via-slate-800 dark:to-gray-900 py-24 md:py-32 lg:py-40 overflow-hidden">
+          {/* Luxury Background Elements */}
           <div className="absolute inset-0">
-            {/* Base luxury gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/3 via-[hsl(var(--pearl-white))]/95 to-[hsl(var(--emvi-offwhite))]/90 dark:from-[hsl(var(--emvi-accent))]/8 dark:via-slate-800/90 dark:to-gray-900/95"></div>
+            {/* Base luxury gradient with salon warmth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-[hsl(var(--pearl-white))]/90 to-rose-50/20 dark:from-amber-900/10 dark:via-slate-800/90 dark:to-rose-900/10"></div>
             
-            {/* Floating orbs with brand colors */}
-            <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/12 via-[hsl(var(--emvi-light))]/8 to-transparent rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-32 left-32 w-80 h-80 bg-gradient-to-tr from-[hsl(var(--emvi-light))]/10 via-[hsl(var(--emvi-accent))]/12 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-            <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/6 via-[hsl(var(--emvi-offwhite))]/20 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+            {/* Soft floating elements */}
+            <div className="absolute top-20 right-20 w-80 h-80 bg-gradient-to-br from-[hsl(var(--emvi-accent))]/8 via-amber-100/15 to-transparent rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-40 left-20 w-96 h-96 bg-gradient-to-tr from-rose-100/12 via-[hsl(var(--emvi-accent))]/6 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
             
-            {/* Subtle grid pattern for texture */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--emvi-accent)/0.03)_1px,transparent_1px)] bg-[length:60px_60px] opacity-40"></div>
+            {/* Elegant texture overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,hsl(var(--emvi-accent)/0.02)_1px,transparent_1px)] bg-[length:80px_80px] opacity-50"></div>
           </div>
           
           <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-            <div className="text-center max-w-5xl mx-auto">
+            <div className="text-center max-w-6xl mx-auto">
               {/* Trust Badge */}
-              <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-[#8A53F8]/20 dark:border-slate-700/50 rounded-full px-6 py-3 mb-8 shadow-lg">
-                <div className="w-3 h-3 bg-gradient-to-r from-[#8A53F8] to-[#8A53F8] rounded-full animate-pulse"></div>
-                <span className="text-sm font-inter font-medium text-gray-700 dark:text-gray-300">Trusted by 2,800+ Top Salons</span>
+              <div className="inline-flex items-center gap-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-[hsl(var(--emvi-accent))]/20 rounded-full px-8 py-4 mb-12 shadow-xl">
+                <div className="w-3 h-3 bg-gradient-to-r from-[hsl(var(--emvi-accent))] to-amber-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-inter font-medium text-gray-700 dark:text-gray-300">Trusted by the Vietnamese Beauty Community</span>
               </div>
               
-              {/* Hero Headline */}
-              <div className="animate-fade-in">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-playfair font-bold text-gray-900 dark:text-white mb-8 leading-[0.9] tracking-tight">
-                  <span className="block bg-gradient-to-r from-gray-900 via-[#8A53F8] to-gray-900 dark:from-white dark:via-[#8A53F8] dark:to-white bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">
-                    Finding Great Artists
+              {/* Main Headlines */}
+              <div className="animate-fade-in mb-12">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-playfair font-bold text-gray-900 dark:text-white mb-6 leading-[0.85] tracking-tight">
+                  <span className="block bg-gradient-to-r from-gray-900 via-[hsl(var(--emvi-accent))] to-gray-900 dark:from-white dark:via-[hsl(var(--emvi-accent))] dark:to-white bg-clip-text text-transparent">
+                    Where Top Beauty Careers
                   </span>
-                  <span className="block text-gray-900 dark:text-white mt-2">
-                    Is Hard—
-                  </span>
-                  <span className="block bg-gradient-to-r from-[#8A53F8] via-[#8A53F8] to-[#8A53F8] bg-clip-text text-transparent">
-                    EmviApp Makes It Easy.
+                  <span className="block mt-3 bg-gradient-to-r from-[hsl(var(--emvi-accent))] via-amber-600 to-[hsl(var(--emvi-accent))] bg-clip-text text-transparent">
+                    Find You
                   </span>
                 </h1>
+                
+                <h2 className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 font-inter mb-8 max-w-5xl mx-auto leading-relaxed">
+                  Thousands of artists and salon owners connect here daily. Real opportunities. Real success. Real community.
+                  <span className="block mt-2 text-lg md:text-xl text-amber-600 dark:text-amber-400 font-medium">
+                    Hàng nghìn thợ làm móng và chủ salon kết nối tại đây mỗi ngày
+                  </span>
+                </h2>
               </div>
               
-              {/* Emotional Subheadline */}
-              <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 font-inter mb-16 max-w-4xl mx-auto leading-relaxed font-light">
-                  Stop wasting time on job boards that don't work. Connect with top nail techs, stylists, and beauty professionals who are serious about their craft—and ready to grow with you.
-                </p>
+              {/* Metrics Row */}
+              <div className="animate-fade-in mb-12" style={{ animationDelay: '0.3s' }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
+                  <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-[hsl(var(--emvi-accent))]/10 shadow-lg">
+                    <div className="text-3xl md:text-4xl font-bold text-[hsl(var(--emvi-accent))] mb-2">15,869</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Jobs Posted</div>
+                  </div>
+                  <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-500/20 shadow-lg">
+                    <div className="text-3xl md:text-4xl font-bold text-amber-600 mb-2">12,500</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Artists Connected</div>
+                  </div>
+                  <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/20 shadow-lg">
+                    <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">$3M+</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Weekly Pay</div>
+                  </div>
+                </div>
               </div>
               
-              {/* Premium CTA Buttons */}
-              <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+              {/* CTA Buttons */}
+              <div className="animate-fade-in mb-12" style={{ animationDelay: '0.6s' }}>
+                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <button
                     onClick={() => navigate('/post-job')}
-                    className="group relative bg-gradient-to-r from-[#8A53F8] via-[#8A53F8] to-[#8A53F8] hover:from-[#8A53F8] hover:via-[#8A53F8] hover:to-[#8A53F8] text-white font-inter font-bold py-6 px-12 rounded-2xl text-xl shadow-[0_25px_50px_rgba(138,83,248,0.25)] hover:shadow-[0_35px_70px_rgba(138,83,248,0.35)] transition-all duration-700 min-w-[280px] overflow-hidden border border-white/20"
+                    className="group relative bg-gradient-to-r from-[hsl(var(--emvi-accent))] via-amber-600 to-[hsl(var(--emvi-accent))] hover:from-amber-600 hover:via-[hsl(var(--emvi-accent))] hover:to-amber-600 text-white font-inter font-bold py-6 px-12 rounded-2xl text-xl shadow-[0_25px_50px_rgba(138,83,248,0.3)] hover:shadow-[0_35px_70px_rgba(138,83,248,0.4)] transition-all duration-700 min-w-[240px] transform hover:scale-105"
                   >
                     <span className="relative z-10 flex items-center gap-3">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +314,6 @@ const JobsPage = () => {
                       </svg>
                       Post a Job
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
                   </button>
                   
                   <button
@@ -310,40 +323,59 @@ const JobsPage = () => {
                         jobsSection.scrollIntoView({ behavior: 'smooth' });
                       }
                     }}
-                    className="group relative bg-white/95 hover:bg-[#F6F6F7] dark:bg-slate-800/90 dark:hover:bg-slate-700/90 backdrop-blur-sm text-[#8A53F8] dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-xl shadow-[0_20px_40px_rgba(138,83,248,0.15)] hover:shadow-[0_30px_60px_rgba(138,83,248,0.25)] transition-all duration-700 min-w-[280px] overflow-hidden border-2 border-[#8A53F8]/20 hover:border-[#8A53F8]/40"
+                    className="group relative bg-white/95 hover:bg-white dark:bg-slate-800/90 dark:hover:bg-slate-700/90 backdrop-blur-sm text-[hsl(var(--emvi-accent))] dark:text-white font-inter font-semibold py-6 px-12 rounded-2xl text-xl shadow-[0_20px_40px_rgba(0,0,0,0.1)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] transition-all duration-700 min-w-[240px] border-2 border-[hsl(var(--emvi-accent))]/30 hover:border-[hsl(var(--emvi-accent))]/50 transform hover:scale-105"
                   >
                     <span className="relative z-10 flex items-center gap-3">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      Find My Dream Job
+                      View Featured Jobs
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#8A53F8]/5 via-[#F6F6F7]/50 to-[#8A53F8]/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
                   </button>
-                </div>
-                
-                {/* Emotional Trust Line */}
-                <div className="text-center">
-                  <p className="text-lg font-inter text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-[#8A53F8]">1,247 successful hires</span> in the last 30 days. Join the best.
-                  </p>
                 </div>
               </div>
               
-              {/* Premium Trust Indicators */}
-              <div className="animate-fade-in" style={{ animationDelay: '0.9s' }}>
-                <div className="flex flex-wrap justify-center items-center gap-12 text-sm font-inter text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-gradient-to-r from-[#8A53F8] to-[#8A53F8] rounded-full"></div>
-                    <span className="font-medium">Private & Confidential</span>
+              {/* As Seen On / Trusted By */}
+              <div className="animate-fade-in mb-8" style={{ animationDelay: '0.9s' }}>
+                <p className="text-sm font-inter text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wide">As seen on</p>
+                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-70">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    <span className="font-medium">YouTube</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-gradient-to-r from-[#8A53F8] to-[#8A53F8] rounded-full"></div>
-                    <span className="font-medium">Verified Professionals</span>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.219-5.160 1.219-5.160s-.312-.623-.312-1.545c0-1.448.839-2.529 1.884-2.529.888 0 1.317.666 1.317 1.466 0 .893-.568 2.229-.861 3.467-.245 1.04.522 1.887 1.549 1.887 1.857 0 3.285-1.958 3.285-4.782 0-2.503-1.799-4.253-4.366-4.253-2.977 0-4.727 2.234-4.727 4.546 0 .9.347 1.863.781 2.391.085.104.098.195.072.301-.079.329-.255 1.006-.289 1.148-.043.183-.142.222-.328.134-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.965-.525-2.291-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.937.29 1.931.446 2.962.446 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001.012.001z"/>
+                    </svg>
+                    <span className="font-medium">TikTok</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-gradient-to-r from-[#8A53F8] to-[#8A53F8] rounded-full"></div>
-                    <span className="font-medium">48hr Average Fill Time</span>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span className="font-medium">Instagram</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                    </svg>
+                    <span className="font-medium">Twitter</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* FOMO Ticker */}
+              <div className="animate-fade-in" style={{ animationDelay: '1.2s' }}>
+                <div className="bg-gradient-to-r from-amber-100 via-yellow-50 to-amber-100 dark:from-amber-900/20 dark:via-yellow-900/10 dark:to-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-xl px-6 py-4 text-center">
+                  <div className="flex items-center justify-center gap-3 text-amber-800 dark:text-amber-200">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                    <span className="font-inter font-medium text-sm md:text-base">
+                      🔥 Hot jobs in khu Mỹ trắng – Tip cao – Lương tuần – Apply now!
+                    </span>
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                   </div>
                 </div>
               </div>
