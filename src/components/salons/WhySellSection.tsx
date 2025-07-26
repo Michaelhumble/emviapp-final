@@ -2,6 +2,10 @@
 import React from 'react';
 import { Shield, Zap, Check } from 'lucide-react';
 
+// Import testimonial images
+import jessicaImg from '@/assets/testimonials/jessica-n.jpg';
+import michaelImg from '@/assets/testimonials/michael-t.jpg';
+
 const WhySellSection = () => {
   return (
     <div className="mb-12">
@@ -58,12 +62,23 @@ const WhySellSection = () => {
               "I sold my nail salon in just 3 weeks using EmviApp. The process was seamless and the buyers were pre-qualified."
             </p>
             <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-semibold text-sm">
-                JN
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-200">
+                <img 
+                  src={jessicaImg} 
+                  alt="Jessica N." 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="ml-2">
-                <p className="text-xs font-semibold">Jessica N.</p>
+              <div className="ml-3">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold">Jessica N.</p>
+                  <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
+                    <Shield className="w-3 h-3" />
+                    <span>Verified Owner</span>
+                  </div>
+                </div>
                 <p className="text-xs text-gray-500">Former Owner, Polished Nails</p>
+                <p className="text-xs text-gray-400">San Francisco, CA</p>
               </div>
             </div>
           </div>
@@ -73,12 +88,23 @@ const WhySellSection = () => {
               "Featured listing brought me serious buyers only. Worth every penny for the premium placement."
             </p>
             <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-semibold text-sm">
-                MT
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-200">
+                <img 
+                  src={michaelImg} 
+                  alt="Michael T." 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="ml-2">
-                <p className="text-xs font-semibold">Michael T.</p>
+              <div className="ml-3">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold">Michael T.</p>
+                  <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
+                    <Shield className="w-3 h-3" />
+                    <span>Verified Owner</span>
+                  </div>
+                </div>
                 <p className="text-xs text-gray-500">Salon & Spa Entrepreneur</p>
+                <p className="text-xs text-gray-400">Dallas, TX</p>
               </div>
             </div>
           </div>

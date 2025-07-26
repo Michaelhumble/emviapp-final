@@ -197,7 +197,7 @@ const PremiumSalonHero = () => {
               variant="outline" 
               className="border-2 border-white/60 text-white bg-white/10 backdrop-blur-md hover:bg-white/20 hover:border-white/80 px-10 py-6 text-xl rounded-2xl transition-all duration-500 hover:scale-105 min-h-[48px] font-semibold"
             >
-              <PlayCircle className="w-7 h-7 mr-3" /> See Real Success Stories
+              <PlayCircle className="w-7 h-7 mr-3" /> See Success Stories
             </Button>
           </Link>
         </motion.div>
