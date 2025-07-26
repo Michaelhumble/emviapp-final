@@ -8,6 +8,7 @@ import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 import HairBarberListingsSection from '@/components/salons/HairBarberListingsSection';
 import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
+import SuccessStoriesSection from '@/components/salons/hero/SuccessStoriesSection';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
@@ -33,6 +34,8 @@ const SalonsFinalsPage = () => {
       </Helmet>
 
       <PremiumSalonHero />
+      
+      <SuccessStoriesSection />
 
       <div className="container mx-auto px-4 py-12" id="listings">
         <div className="max-w-7xl mx-auto">

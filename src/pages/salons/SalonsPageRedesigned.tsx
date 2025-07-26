@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { SalonSale } from '@/types/salonSale';
 import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
+import SuccessStoriesSection from '@/components/salons/hero/SuccessStoriesSection';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
 const SalonsPageRedesigned = () => {
@@ -173,6 +174,9 @@ const SalonsPageRedesigned = () => {
     <Layout>
       {/* New Premium Hero Section */}
       <PremiumSalonHero />
+      
+      {/* Success Stories Section */}
+      <SuccessStoriesSection />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8" id="listings">
