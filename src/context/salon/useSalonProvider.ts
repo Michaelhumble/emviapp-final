@@ -17,7 +17,7 @@ export const useSalonProvider = (userId: string | undefined) => {
       const { data, error } = await supabaseBypass
         .from('salons')
         .select('*')
-        .eq('id', userId)
+        .eq('owner_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -43,7 +43,7 @@ export const useSalonProvider = (userId: string | undefined) => {
 
     try {
       const newSalonData = {
-        id: userId,
+        owner_id: userId,
         salon_name: salonData.salon_name || 'New Salon',
         logo_url: salonData.logo_url,
         location: salonData.location,
