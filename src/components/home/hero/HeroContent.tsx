@@ -74,10 +74,10 @@ const HeroContent = ({
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-transparent pointer-events-none z-[-1]" />
         
         <motion.h1 
-          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl ${
+          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-4xl mx-auto ${
             isMobile 
               ? 'text-4xl sm:text-5xl leading-tight mb-6' 
-              : 'text-6xl xl:text-7xl mb-4 leading-tight'
+              : 'text-6xl xl:text-7xl mb-6 leading-tight'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -112,17 +112,17 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Bilingual CTA Button with emoji */}
+          {/* Big, rounded, vibrant CTA Button */}
           <Link to="/auth/signup">
             <Button 
               size="lg" 
-              className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-primary shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-xl ${
+              className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-700 hover:to-pink-600 shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-2xl ${
                 isMobile 
-                  ? 'px-8 py-6 text-lg' 
-                  : 'px-12 py-8 text-xl'
+                  ? 'px-10 py-7 text-lg' 
+                  : 'px-14 py-10 text-2xl'
               }`}
             >
-              ✨ Bắt đầu hành trình — Start Your Journey
+              ✨ Start Your Journey
             </Button>
           </Link>
         </motion.div>

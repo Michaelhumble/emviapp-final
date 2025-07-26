@@ -30,40 +30,40 @@ const LiveStatsBar = () => {
   const statItems = [
     {
       icon: Calendar,
-      value: `${stats.activeJobs.toLocaleString()}+`,
+      value: `${stats.activeJobs.toLocaleString()}`,
       label: 'Active Job Opportunities',
       subLabel: 'Updated live',
       color: 'from-blue-500 to-cyan-600',
-      bgColor: 'bg-gradient-to-br from-blue-50 to-cyan-50',
+      bgColor: 'bg-white/80 backdrop-blur-sm border border-white/60',
       animated: true
     },
     {
       icon: Users,
-      value: `${stats.totalMembers.toLocaleString()}+`,
-      label: 'Beauty Professionals',
-      subLabel: 'Growing daily',
+      value: `${stats.totalMembers.toLocaleString()}`,
+      label: 'Beauty Pros Growing Daily',
+      subLabel: 'Joining our community',
       color: 'from-green-500 to-emerald-600',
-      bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
-      animated: true
-    },
-    {
-      icon: DollarSign,
-      value: `$${(stats.monthlyEarnings / 1000).toFixed(0)}K+`,
-      label: 'Earned This Month',
-      subLabel: 'By our community',
-      color: 'from-purple-500 to-violet-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
+      bgColor: 'bg-white/80 backdrop-blur-sm border border-white/60',
       animated: true
     },
     {
       icon: Star,
-      value: `${stats.reviews.toLocaleString()}+`,
+      value: `${stats.reviews.toLocaleString()}`,
       label: '5-Star Reviews',
-      subLabel: 'Real experiences',
+      subLabel: 'Real client feedback',
       color: 'from-yellow-500 to-orange-600',
-      bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
+      bgColor: 'bg-white/80 backdrop-blur-sm border border-white/60',
       animated: true,
       pulse: true
+    },
+    {
+      icon: DollarSign,
+      value: `$${(stats.monthlyEarnings / 1000).toFixed(0)}K`,
+      label: 'Money Earned by Pros This Month',
+      subLabel: 'Real income generated',
+      color: 'from-purple-500 to-violet-600',
+      bgColor: 'bg-white/80 backdrop-blur-sm border border-white/60',
+      animated: true
     }
   ];
 
@@ -78,10 +78,10 @@ const LiveStatsBar = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
-            Where Beauty Careers <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Take Flight</span>
+            Where Numbers Speak for Themselves
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Join thousands of beauty professionals building their dream careers every day. Real opportunities, real growth, real community.
+            Real impact, real growth, real opportunities in the beauty industry.
           </p>
         </motion.div>
 
@@ -151,15 +151,15 @@ const LiveStatsBar = () => {
           </p>
         </motion.div>
 
-        {/* Social Media Trust Row */}
+        {/* Trusted by Beauty Community */}
         <motion.div 
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <p className="text-gray-600 text-lg mb-6">See our community in action</p>
-          <div className="flex justify-center items-center space-x-8">
+          <p className="text-gray-600 text-lg mb-6 font-medium">Trusted by the Beauty Community on:</p>
+          <div className="flex justify-center items-center space-x-8 mb-8">
             {[
               { name: "YouTube", icon: Youtube, color: "text-red-500 hover:text-red-600" },
               { name: "TikTok", icon: TrendingUp, color: "text-gray-700 hover:text-gray-800" },
@@ -174,11 +174,30 @@ const LiveStatsBar = () => {
                 className={`${social.color} transition-all duration-300 cursor-pointer transform hover:scale-110`}
               >
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-2 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
                     <social.icon className="h-6 w-6" />
                   </div>
-                  <span className="text-xs text-gray-600">{social.name}</span>
+                  <span className="text-xs text-gray-600 font-medium">{social.name}</span>
                 </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Magazine-style badges */}
+          <div className="flex justify-center items-center space-x-6 opacity-60">
+            {[
+              "Modern Salon", "Nails Magazine", "Beauty Launchpad", "IECSC"
+            ].map((magazine, index) => (
+              <motion.div
+                key={magazine}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 + index * 0.1 }}
+                className="bg-white/70 px-4 py-2 rounded-lg border border-gray-200 shadow-sm"
+              >
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {magazine}
+                </span>
               </motion.div>
             ))}
           </div>
