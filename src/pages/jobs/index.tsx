@@ -602,6 +602,9 @@ const JobsPage = () => {
                         <JobsGrid 
                           jobs={allJobs}
                           onRenew={handleRenew}
+                          expirations={{}}
+                          isRenewing={false}
+                          renewalJobId={null}
                         />
                       </div>
                     );
