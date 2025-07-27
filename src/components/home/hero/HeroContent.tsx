@@ -85,11 +85,11 @@ const HeroContent = ({
         >
           {isMobile ? (
             <>
-              Where Beauty Careers<br />
-              Take Flight
+              The Beauty Industry's Missing Piece — <br />
+              We Just Built It.
             </>
           ) : (
-            "Where Beauty Careers Take Flight"
+            "The Beauty Industry's Missing Piece — We Just Built It."
           )}
         </motion.h1>
         
