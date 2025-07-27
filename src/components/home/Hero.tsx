@@ -69,6 +69,7 @@ const Hero = () => {
       style={{
         width: '100%',
         height: '100dvh', // Dynamic viewport height for mobile browsers
+        minHeight: '100svh', // Small viewport height fallback
         maxWidth: '100vw',
         maxHeight: '100dvh',
         position: 'relative',

@@ -12,7 +12,7 @@ const MobileHamburgerMenu = () => {
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden"
+        className="md:hidden min-w-[44px] min-h-[44px] touch-manipulation"
         onClick={() => setIsOpen(true)}
         aria-label="Open menu"
       >

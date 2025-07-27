@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import MobileMenu from '@/components/layout/MobileMenu';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsMobile } from "@/hooks/use-mobile";
-import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
+// Mobile navigation handled by Layout component
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -132,8 +132,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
         </div>
       </div>
 
-      {/* Add mobile bottom navbar to the PostWizardLayout */}
-      {isMobile && <MobileBottomNavBar />}
+      {/* Mobile navigation handled by Layout component */}
 
       {/* Mobile Menu */}
       <MobileMenu 

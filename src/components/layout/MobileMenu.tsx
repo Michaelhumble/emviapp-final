@@ -116,6 +116,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-[10000] flex flex-col"
             style={{ 
               height: '100dvh', // Use dynamic viewport height for better mobile support
+              minHeight: '100svh', // Small viewport height fallback
               overflowY: 'hidden' // Let the inner scroll container handle scrolling
             }}
           >
@@ -146,7 +147,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 hover:bg-gray-100 flex-shrink-0"
+                className="min-w-[44px] min-h-[44px] hover:bg-gray-100 flex-shrink-0 touch-manipulation"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -234,7 +235,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                       key={item.label}
                       to={item.href}
                       onClick={onClose}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 min-h-[44px] touch-manipulation"
                     >
                       <item.icon className="h-5 w-5" />
                       <span className="font-medium">{item.label}</span>

@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
-import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
+import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';
 
 interface LayoutProps {
   children: ReactNode;
@@ -30,8 +30,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       </main>
       {/* NO FOOTERS - CLEAN STATE MAINTAINED */}
       
-      {/* Show the bottom navbar on all pages */}
-      {showMobileNav && <MobileBottomNavBar />}
+      {/* Show the unified bottom navbar on all pages */}
+      {showMobileNav && <UnifiedMobileNavigation />}
     </div>
   );
 };

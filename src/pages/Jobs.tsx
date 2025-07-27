@@ -6,7 +6,7 @@ import { Routes, Route } from 'react-router-dom';
 import CreateJobPosting from './jobs/CreateJobPosting';
 import EditJobPage from './jobs/EditJobPage';
 import { useTranslation } from '@/hooks/useTranslation';
-import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
+// Mobile navigation handled by Layout component
 
 const Jobs = () => {
   const { isVietnamese } = useTranslation();
@@ -38,7 +38,6 @@ const Jobs = () => {
           <Route path="/edit/:jobId" element={<EditJobPage />} />
         </Routes>
       </div>
-      <MobileJobsNavBar />
     </>
   );
 };

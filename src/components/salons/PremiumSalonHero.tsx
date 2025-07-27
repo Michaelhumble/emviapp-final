@@ -61,7 +61,7 @@ const PremiumSalonHero = () => {
   }, [recentVerifications.length]);
 
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <div className="relative w-full h-[100dvh] min-h-[100svh] overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       
       {/* Cinematic Background Layer */}
       <div className="absolute inset-0">

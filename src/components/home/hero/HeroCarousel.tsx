@@ -36,9 +36,10 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
               style={{ 
                 objectPosition: isMobile ? "center center" : "center", 
                 width: "100vw",
-                height: "100vh",
+                height: "100dvh",
+                minHeight: "100svh",
                 maxWidth: "100vw",
-                maxHeight: "100vh",
+                maxHeight: "100dvh",
                 position: "absolute",
                 left: 0,
                 top: 0,
