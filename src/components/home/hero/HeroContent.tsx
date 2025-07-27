@@ -74,97 +74,71 @@ const HeroContent = ({
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/20 pointer-events-none z-[-1]" />
         
         <motion.h1 
-          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-2xl max-w-4xl mx-auto ${
+          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-4xl mx-auto ${
             isMobile 
               ? 'text-4xl sm:text-5xl leading-tight mb-6' 
-              : 'text-6xl xl:text-8xl mb-8 leading-tight'
+              : 'text-6xl xl:text-7xl mb-6 leading-tight'
           }`}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          whileHover={{ scale: 1.02 }}
-          style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))'
-          }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
           {isMobile ? (
             <>
-              Transform Your Beauty Career — <br />
-              <span className="bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text">We Made It Possible.</span>
+              The Beauty Industry's Missing Piece — <br />
+              We Just Built It.
             </>
           ) : (
-            <>Transform Your Beauty Career — <span className="bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text">We Made It Possible.</span></>
+            "The Beauty Industry's Missing Piece — We Just Built It."
           )}
         </motion.h1>
         
         <motion.p 
-          className={`font-inter font-medium text-center text-white/95 drop-shadow-lg ${
+          className={`font-inter font-light text-center text-white/95 drop-shadow-lg ${
             isMobile 
               ? 'text-lg leading-relaxed mb-8 max-w-md mx-auto px-2' 
-              : 'text-2xl max-w-4xl mx-auto mb-8 leading-relaxed'
+              : 'text-2xl max-w-4xl mx-auto mb-6 leading-relaxed'
           }`}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          whileHover={{ scale: 1.01 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Where 50,000+ beauty professionals connect, grow, and thrive in a platform designed exclusively for our industry.
+          A community where talent, dreams, and opportunity meet—for every beauty professional, everywhere.
         </motion.p>
 
         <motion.div
-          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-12 mb-8'}`}
-          initial={{ opacity: 0, y: 30 }}
+          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-10 mb-6'}`}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Premium Gradient CTA Button with Glow Effect */}
+          {/* Big, rounded, vibrant CTA Button */}
           <Link to="/auth/signup">
-            <motion.div
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2 }}
+            <Button 
+              size="lg" 
+              className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-700 hover:to-pink-600 shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-2xl ${
+                isMobile 
+                  ? 'px-10 py-7 text-lg' 
+                  : 'px-14 py-10 text-2xl'
+              }`}
             >
-              <Button 
-                size="lg" 
-                className={`font-inter font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white shadow-2xl hover:shadow-purple-500/50 transition-all duration-500 rounded-2xl group relative overflow-hidden ${
-                  isMobile 
-                    ? 'px-12 py-8 text-xl min-h-[56px]' 
-                    : 'px-16 py-10 text-2xl min-h-[64px]'
-                }`}
-                style={{
-                  boxShadow: '0 20px 40px -12px rgba(147, 51, 234, 0.4), 0 8px 16px -8px rgba(147, 51, 234, 0.3)',
-                }}
-              >
-                <span className="relative z-10 flex items-center">
-                  <span className="mr-3">🚀 Join 50,000+ Professionals</span>
-                </span>
-                
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:animate-shimmer" />
-              </Button>
-            </motion.div>
+              ✨ Start Your Journey
+            </Button>
           </Link>
         </motion.div>
         
-        {/* Trust indicator line */}
+        {/* Subtle Vietnamese line */}
         <motion.p 
-          className={`font-inter text-center text-white/80 drop-shadow-md ${
+          className={`font-inter text-center text-white/70 drop-shadow-md ${
             isMobile 
               ? 'text-sm leading-relaxed max-w-xs mx-auto px-2' 
-              : 'text-lg max-w-2xl mx-auto'
+              : 'text-base max-w-2xl mx-auto'
           }`}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.7, delay: 0.8 }}
         >
-          <span className="inline-flex items-center gap-2">
-            <span className="text-green-400">✓</span>
-            Free to join • <span className="text-green-400">✓</span> Instant access • <span className="text-green-400">✓</span> No hidden fees
-          </span>
+          Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
         </motion.p>
       </div>
       
