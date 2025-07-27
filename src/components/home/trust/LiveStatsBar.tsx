@@ -68,87 +68,131 @@ const LiveStatsBar = () => {
   ];
 
   return (
-    <section className="relative py-16 bg-gradient-to-br from-purple-50/80 via-white to-pink-50/60 w-full max-w-full">
+    <section className="relative py-20 bg-gradient-to-br from-purple-50/80 via-white to-pink-50/60 w-full max-w-full overflow-hidden">
       <div className="container mx-auto px-4 max-w-full">
+        {/* Floating background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-300/20 to-pink-300/20 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-tl from-blue-300/20 to-purple-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        </div>
+        
         {/* Section Header */}
         <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
-            Where Numbers Speak for Themselves
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            The Heartbeat of the Beauty Industry — Every number represents a real story, a real dream—yours could be next.
-          </p>
+          <motion.h2 
+            className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+          >
+            Live from the Beauty Industry
+          </motion.h2>
+          <motion.p 
+            className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Real numbers, real impact, real professionals — Every stat represents someone's career transformation on EmviApp
+          </motion.p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+        {/* Enhanced Stats Grid with Floating Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
           {statItems.map((item, index) => (
             <motion.div
               key={index}
-              className={`${item.bgColor} rounded-2xl p-6 text-center border border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
-              initial={{ opacity: 0, y: 30 }}
+              className="relative"
+              initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ y: -8, scale: 1.02 }}
             >
-              <div className="flex items-center justify-center mb-4">
-                <div className={`p-3 rounded-full bg-gradient-to-r ${item.color} shadow-lg`}>
-                  <item.icon 
-                    className={`h-6 w-6 text-white ${item.pulse ? 'animate-pulse' : ''}`} 
-                  />
+              {/* Floating card with luxury styling */}
+              <div className={`${item.bgColor} rounded-3xl p-8 text-center border border-white/60 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 relative overflow-hidden group`}>
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className="relative z-10">
+                  <motion.div 
+                    className="flex items-center justify-center mb-6"
+                    whileHover={{ rotate: 5, scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className={`p-4 rounded-2xl bg-gradient-to-r ${item.color} shadow-xl`}>
+                      <item.icon 
+                        className={`h-8 w-8 text-white ${item.pulse ? 'animate-pulse' : ''}`} 
+                      />
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className={`text-4xl md:text-5xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent font-playfair mb-4 min-w-[120px] flex justify-center`}
+                    animate={{ 
+                      scale: item.pulse ? [1, 1.05, 1] : 1,
+                      textShadow: item.pulse ? ['0 0 0px rgba(147, 51, 234, 0)', '0 0 20px rgba(147, 51, 234, 0.3)', '0 0 0px rgba(147, 51, 234, 0)'] : '0 0 0px rgba(147, 51, 234, 0)'
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    {item.animated ? (
+                      <AnimatedNumber value={parseInt(item.value.replace(/[^\d]/g, ''))} />
+                    ) : (
+                      item.value
+                    )}
+                  </motion.div>
+                  
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 font-inter">
+                    {item.label}
+                  </h3>
+                  <p className="text-gray-600 font-inter">
+                    {item.subLabel}
+                  </p>
                 </div>
               </div>
-              
-              <motion.div 
-                className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent font-playfair mb-2 min-w-[120px] flex justify-center`}
-                animate={{ scale: item.pulse ? [1, 1.05, 1] : 1 }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {item.animated ? (
-                  <AnimatedNumber value={parseInt(item.value.replace(/[^\d]/g, ''))} />
-                ) : (
-                  item.value
-                )}
-              </motion.div>
-              
-              <h3 className="text-lg font-semibold text-gray-900 mb-1 font-inter">
-                {item.label}
-              </h3>
-              <p className="text-sm text-gray-600 font-inter">
-                {item.subLabel}
-              </p>
             </motion.div>
           ))}
         </div>
 
-        {/* CTA Section */}
+        {/* Enhanced CTA Section with Premium Styling */}
         <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <Link to="/auth/signup">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
             >
-              <span className="text-lg">
-                Sign Up Free – Start Earning Today
-              </span>
-              <span className="block text-sm font-normal opacity-90 mt-1">
-                Đăng ký miễn phí — Bắt đầu kiếm tiền hôm nay
-              </span>
-            </Button>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white font-bold px-12 py-8 rounded-2xl text-xl shadow-2xl hover:shadow-purple-500/40 transition-all duration-500 group relative overflow-hidden min-h-[64px]"
+                style={{
+                  boxShadow: '0 20px 40px -12px rgba(147, 51, 234, 0.4), 0 8px 16px -8px rgba(147, 51, 234, 0.3)',
+                }}
+              >
+                <span className="relative z-10 flex items-center">
+                  <span className="text-xl">💎 Join The Elite Network — Start Free Today</span>
+                </span>
+                
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:animate-shimmer" />
+              </Button>
+            </motion.div>
           </Link>
-          <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto">
-            Join thousands of beauty professionals who've found their perfect opportunities with EmviApp
-          </p>
+          <motion.p 
+            className="text-gray-600 mt-4 max-w-md mx-auto font-inter"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+          >
+            Join 50,000+ beauty professionals who've transformed their careers with EmviApp
+          </motion.p>
         </motion.div>
 
         {/* Trusted by Beauty Community */}
