@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useCustomerConversations } from "./useCustomerConversations";
 import ConversationList from "./ConversationList";
 import ConversationThread from "./ConversationThread";
+import { useResponsive } from "@/hooks/useResponsive";
 import { useAuth } from "@/context/auth";
 
 const CustomerInbox = () => {
@@ -12,10 +13,10 @@ const CustomerInbox = () => {
 
   const activeConv = conversations.find((c) => c.id === activeId);
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 700;
+  const { isTablet } = useResponsive();
 
   // Full mobile polish: panel fills width, removes scroll bugs
-  if (isMobile && activeId && activeConv) {
+  if (isTablet && activeId && activeConv) {
     return (
       <div className="h-[72vh] w-full bg-white p-2 rounded-lg shadow border flex flex-col">
         <ConversationThread
@@ -23,7 +24,7 @@ const CustomerInbox = () => {
           otherUserId={activeConv.userId}
           otherName={activeConv.name}
           otherAvatarUrl={activeConv.avatarUrl}
-          isMobile={true}
+          isMobile={isTablet}
           onBack={() => setActiveId(null)}
         />
       </div>
@@ -46,7 +47,7 @@ const CustomerInbox = () => {
           conversations={conversations}
           activeId={activeId!}
           onSelect={setActiveId}
-          isMobile={isMobile}
+          isMobile={isTablet}
         />
       </div>
       <div className="flex-1 bg-white border-l p-0 min-w-0">
@@ -56,7 +57,7 @@ const CustomerInbox = () => {
             otherUserId={activeConv.userId}
             otherName={activeConv.name}
             otherAvatarUrl={activeConv.avatarUrl}
-            isMobile={isMobile}
+            isMobile={isTablet}
             onBack={() => setActiveId(null)}
           />
         ) : (
