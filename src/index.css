@@ -132,12 +132,13 @@
     line-height: 1.2;
   }
   
-  /* Enhanced Button animations */
+  /* Enhanced Button animations with performance optimization */
   .btn-luxury {
     transition: var(--transition-luxury);
     box-shadow: var(--shadow-luxury);
     position: relative;
     overflow: hidden;
+    will-change: transform, box-shadow; /* GPU acceleration */
   }
   
   .btn-luxury::before {
@@ -149,6 +150,17 @@
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left 0.5s;
+    will-change: transform;
+  }
+  
+  /* Respect user motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .btn-luxury {
+      transition: none;
+    }
+    .btn-luxury::before {
+      transition: none;
+    }
   }
   
   .btn-luxury:hover {
@@ -170,13 +182,20 @@
     box-shadow: var(--shadow-diamond);
   }
   
-  /* Enhanced Card animations with glassmorphism */
+  /* Enhanced Card animations with glassmorphism and performance */
   .card-luxury {
     transition: var(--transition-luxury);
     box-shadow: var(--shadow-card);
     backdrop-filter: blur(10px);
     background: var(--gradient-card);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    will-change: transform, box-shadow; /* GPU acceleration */
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .card-luxury {
+      transition: none;
+    }
   }
   
   .card-luxury:hover {
@@ -322,11 +341,20 @@
   }
 }
 
-/* Mobile navigation animations */
+/* Mobile navigation animations with performance optimization */
 .menu-item-enter {
   animation: menuItemSlideIn 0.3s ease-out forwards;
   opacity: 0;
   transform: translateX(-20px);
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes menuItemSlideIn {
@@ -378,6 +406,23 @@
   /* Add extra bottom padding on job pages for the nav bar */
   .job-content {
     padding-bottom: 5rem !important;
+  }
+  
+  /* Mobile input font size fix - prevent zoom on iOS */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Mobile input safety classes */
+  .mobile-input-safe {
+    font-size: 16px !important;
+    transform: translateZ(0); /* Force GPU layer */
+  }
+  
+  /* Keyboard visibility fixes */
+  .mobile-input-safe:focus {
+    position: relative;
+    z-index: 1000;
   }
 }
 
