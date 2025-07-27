@@ -89,7 +89,7 @@ const UnifiedMobileNavigation = () => {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl md:hidden w-full max-w-full"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {/* Premium gradient overlay for jobs page */}

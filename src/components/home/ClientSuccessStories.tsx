@@ -227,9 +227,9 @@ const ClientSuccessStories = () => {
         </motion.div>
         
         {/* Testimonial carousel */}
-        <div className="relative z-10 max-w-6xl mx-auto">
-          <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex">
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          <div className="overflow-hidden max-w-full" ref={emblaRef}>
+            <div className="flex max-w-full">
               {testimonials.map((testimonial, idx) => {
                 const professionStyle = professionStyles[testimonial.profession] || 
                                         { icon: "Sparkles", borderColor: "border-gray-400", iconBgColor: "bg-gray-100" };
@@ -237,7 +237,7 @@ const ClientSuccessStories = () => {
                 return (
                   <div 
                     key={idx} 
-                    className={`flex-grow-0 flex-shrink-0 w-full md:w-1/3 px-4 min-w-0`}
+                    className={`flex-grow-0 flex-shrink-0 w-full md:w-1/3 px-4 min-w-0 max-w-full`}
                   >
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}

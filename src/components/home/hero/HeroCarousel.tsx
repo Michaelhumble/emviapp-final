@@ -14,7 +14,7 @@ interface HeroCarouselProps {
 
 const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden">
+    <div className="absolute inset-0 w-full h-full overflow-hidden max-w-full">
       {images.map((image, index) => (
         <motion.div 
           key={index}

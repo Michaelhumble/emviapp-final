@@ -68,8 +68,8 @@ const LiveStatsBar = () => {
   ];
 
   return (
-    <section className="relative py-16 bg-gradient-to-br from-purple-50/80 via-white to-pink-50/60">
-      <div className="container mx-auto px-4">
+    <section className="relative py-16 bg-gradient-to-br from-purple-50/80 via-white to-pink-50/60 w-full max-w-full">
+      <div className="container mx-auto px-4 max-w-full">
         {/* Section Header */}
         <motion.div 
           className="text-center mb-12"

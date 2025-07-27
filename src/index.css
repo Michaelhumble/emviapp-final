@@ -116,12 +116,18 @@
   * {
     @apply border-border;
   }
+  html {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     color: hsl(var(--foreground));
     line-height: 1.6;
+    overflow-x: hidden;
+    max-width: 100%;
   }
   
   /* Typography system */

@@ -64,8 +64,8 @@ const Index = () => {
       <Hero />
       
       {/* 1.1 Live Stats Bar - Trust & Social Proof */}
-      <section className="relative -mt-16 z-20 px-4">
-        <div className="container mx-auto">
+      <section className="relative -mt-16 z-20 px-4 w-full max-w-full">
+        <div className="container mx-auto max-w-full">
           <LiveStatsBar />
         </div>
       </section>

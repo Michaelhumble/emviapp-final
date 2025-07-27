@@ -22,10 +22,10 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
   const showMobileNav = isMobile;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
       {!hideNavbar && <Navbar />}
       
-      <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
+      <main className={`flex-grow w-full max-w-full ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
       </main>
       {/* NO FOOTERS - CLEAN STATE MAINTAINED */}

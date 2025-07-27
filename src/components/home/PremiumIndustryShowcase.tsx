@@ -105,14 +105,14 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50/80 to-white relative overflow-hidden">
+    <section className="py-16 bg-gradient-to-br from-gray-50/80 to-white relative overflow-hidden w-full max-w-full">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-10 left-10 w-32 h-32 bg-purple-400 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-pink-400 rounded-full blur-3xl" />
       </div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10 max-w-full">
         <motion.div 
           className="text-center mb-14"
           initial={{ opacity: 0, y: 30 }}
@@ -148,7 +148,7 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
         </motion.div>
 
         {/* Premium Listings Grid - 5 cards wide */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12 w-full max-w-full">
           {listings.slice(0, 5).map((listing, index) => (
             <motion.div
               key={listing.id}
