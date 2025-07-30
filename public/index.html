@@ -2,6 +2,16 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RRFWGM0MPH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RRFWGM0MPH');
+    </script>
+    
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo//emvi-logo-transparent.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,24 +27,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Google Analytics 4 for EmviApp -->
-    <script>
-      // Only load GA4 in production
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.includes('.lovable.app')) {
-        (function() {
-          var script = document.createElement('script');
-          script.async = true;
-          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-RRFWGM0MPH';
-          document.head.appendChild(script);
-          
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-RRFWGM0MPH');
-        })();
-      }
-    </script>
     
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
