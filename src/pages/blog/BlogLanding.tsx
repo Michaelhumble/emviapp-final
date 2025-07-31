@@ -130,27 +130,53 @@ const BlogLanding = () => {
         }}
       />
 
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-purple-500/10 to-pink-500/5"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 right-10 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl"></div>
+        
         {/* Hero Section */}
-        <Container className="py-16 md:py-24">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 leading-tight">
-              The Beauty Industry's Power Source
+        <Container className="py-20 md:py-32 relative z-10">
+          <div className="text-center max-w-6xl mx-auto">
+            {/* Premium Badge */}
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-purple-500/10 backdrop-blur-sm border border-primary/20 rounded-full px-6 py-3 mb-8">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-primary">Trusted by 10,000+ Beauty Professionals</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent mb-8 leading-[0.9] tracking-tight">
+              The Beauty Industry's 
+              <span className="block bg-gradient-to-r from-pink-600 via-purple-600 to-primary bg-clip-text text-transparent">
+                Power Source
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              Insider secrets, growth strategies, and the latest trends trusted by thousands of salons and artists nationwide.
-            </p>
-            <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Join a community where real salon owners and artists level up, share wins, and get the inside track on every game-changing beauty innovation. Don't just keep up—get ahead, starting now.
-            </p>
+            
+            <div className="max-w-4xl mx-auto mb-12">
+              <p className="text-2xl md:text-3xl font-semibold text-foreground/80 mb-6 leading-tight">
+                Insider secrets, growth strategies, and the latest trends trusted by thousands of salons and artists nationwide.
+              </p>
+              <p className="text-xl text-muted-foreground leading-relaxed font-medium">
+                Join a community where real salon owners and artists level up, share wins, and get the inside track on every game-changing beauty innovation. 
+                <span className="text-primary font-semibold"> Don't just keep up—get ahead, starting now.</span>
+              </p>
+            </div>
 
-            {/* Search Bar */}
-            <div className="relative max-w-md mx-auto mb-16">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <Input 
-                placeholder="Search articles, tips, trends..." 
-                className="pl-10 h-12 text-lg bg-white/50 backdrop-blur-sm border-white/20"
-              />
+            {/* Enhanced Search Bar */}
+            <div className="relative max-w-lg mx-auto mb-16">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-2xl blur-xl"></div>
+              <div className="relative bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl p-1">
+                <div className="flex items-center">
+                  <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                  <Input 
+                    placeholder="Search articles, tips, trends..." 
+                    className="pl-14 pr-6 h-14 text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70"
+                  />
+                  <Button size="lg" className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 font-semibold">
+                    Search
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </Container>
@@ -287,22 +313,40 @@ const BlogLanding = () => {
           </div>
         </Container>
 
-        {/* Newsletter CTA */}
-        <Container className="py-16">
-          <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-8 md:p-12 text-center">
-            <Calendar className="h-12 w-12 text-primary mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4">Stay Ahead of the Curve</h2>
-            <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Get the latest beauty industry insights, expert tips, and exclusive content delivered to your inbox weekly.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input 
-                placeholder="Enter your email" 
-                className="flex-1 h-12 bg-white/50 backdrop-blur-sm"
-              />
-              <Button size="lg" className="h-12 px-8 rounded-lg">
-                🚀 Subscribe for free tips and exclusive insights—get the tools top pros are using, before anyone else.
-              </Button>
+        {/* Premium Newsletter CTA */}
+        <Container className="py-20">
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-600 to-pink-600 opacity-90"></div>
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="7" cy="7" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+            
+            <div className="relative bg-gradient-to-r from-primary/95 via-purple-600/95 to-pink-600/95 backdrop-blur-sm rounded-3xl p-8 md:p-16 text-center text-white">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+                <Calendar className="h-5 w-5" />
+                <span className="text-sm font-medium">Join 25,000+ Industry Leaders</span>
+              </div>
+              
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                Stay Ahead of the Curve
+              </h2>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white/90 leading-relaxed">
+                Get exclusive insider insights, breakthrough strategies, and game-changing innovations delivered weekly. The intelligence that separates industry leaders from followers.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                <div className="relative flex-1">
+                  <Input 
+                    placeholder="Enter your professional email" 
+                    className="h-14 px-6 text-lg bg-white/90 backdrop-blur-sm border-0 text-gray-900 placeholder:text-gray-600 rounded-xl"
+                  />
+                </div>
+                <Button size="lg" className="h-14 px-10 bg-white text-primary hover:bg-white/90 font-bold text-lg rounded-xl shadow-lg">
+                  🚀 Get Exclusive Access
+                </Button>
+              </div>
+              
+              <p className="text-sm text-white/70 mt-4">
+                Free forever. Unsubscribe anytime. Used by top salons worldwide.
+              </p>
             </div>
           </div>
         </Container>
