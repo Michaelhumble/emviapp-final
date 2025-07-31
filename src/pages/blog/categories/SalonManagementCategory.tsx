@@ -4,6 +4,8 @@ import { ArrowLeft, Building2, Clock, Calendar, TrendingUp } from 'lucide-react'
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
+import { getArticlesByCategory } from '@/data/blogArticles';
 import BlogImage from '@/components/blog/BlogImage';
 
 const SalonManagementCategory = () => {

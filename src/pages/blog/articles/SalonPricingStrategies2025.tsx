@@ -9,6 +9,9 @@ import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
 
 const SalonPricingStrategies2025 = () => {
+  const registryArticle = getArticleBySlug('salon-pricing-strategies-2025');
+  if (!registryArticle) return <div>Article not found</div>;
+
   const article = {
     title: "Salon Pricing Strategies That Maximize Profit in 2025",
     description: "Master profitable salon pricing with proven strategies that increase revenue by 30%+. Learn value-based pricing, premium positioning, and psychological pricing techniques.",
@@ -483,6 +486,8 @@ const SalonPricingStrategies2025 = () => {
             />
           </div>
         </Container>
+
+        <ContinueReadingSection currentArticle={registryArticle} limit={3} />
       </article>
     </>
   );
