@@ -178,7 +178,7 @@ function App() {
                     {/* Blog Routes */}
                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
                     <Route path="/blog/industry/the-beauty-industrys-missing-piece-emviapp" element={<Layout><TheBeautyIndustrysMissingPiece /></Layout>} />
-                    <Route path="/blog/salon-management/increase-salon-bookings-2024" element={<Layout><IncreaseSalonBookings2024 /></Layout>} />
+                    <Route path="/blog/salon-management/increase-salon-bookings-2025" element={<Layout><IncreaseSalonBookings2024 /></Layout>} />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />

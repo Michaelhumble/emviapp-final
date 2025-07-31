@@ -8,10 +8,10 @@ import DynamicSEO from '@/components/seo/DynamicSEO';
 
 const IncreaseSalonBookings2024 = () => {
   const article = {
-    title: "How to Increase Salon Bookings in 2024: 7 Proven Strategies That Actually Work",
-    description: "Discover the exact strategies top salon owners use to boost bookings by 40%+ in 2024. From AI-powered tools to mobile optimization, get practical tips that deliver real results.",
+    title: "How to Increase Salon Bookings in 2025: 7 Proven Strategies That Actually Work",
+    description: "Discover the exact strategies top salon owners use to boost bookings by 40%+ in 2025. From AI-powered tools to mobile optimization, get practical tips that deliver real results.",
     author: "EmviApp Editorial Team",
-    publishedAt: "March 22, 2024",
+    publishedAt: "June 30, 2025",
     readTime: "12 min read",
     category: "Salon Management",
     tags: ["Salon Bookings", "Business Growth", "Digital Marketing", "Client Retention", "Salon Technology"],
@@ -59,11 +59,11 @@ const IncreaseSalonBookings2024 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url={`https://emviapp.com/blog/salon-management/increase-salon-bookings-2024`}
+        url={`https://emviapp.com/blog/salon-management/increase-salon-bookings-2025`}
         type="article"
         image={article.image}
         author={article.author}
-        publishedTime="2024-03-22T09:00:00Z"
+        publishedTime="2025-06-30T09:00:00Z"
         tags={article.tags}
         structuredData={{
           "@context": "https://schema.org",
@@ -83,8 +83,8 @@ const IncreaseSalonBookings2024 = () => {
               "url": "https://emviapp.com/logo.png"
             }
           },
-          "datePublished": "2024-03-22T09:00:00Z",
-          "dateModified": "2024-03-22T09:00:00Z"
+          "datePublished": "2025-06-30T09:00:00Z",
+          "dateModified": "2025-06-30T09:00:00Z"
         }}
       />
 
@@ -168,7 +168,7 @@ const IncreaseSalonBookings2024 = () => {
               
               {/* Introduction */}
               <p className="text-xl leading-relaxed mb-8 text-muted-foreground">
-                If you're a salon owner watching your booking calendar with more gaps than appointments, you're not alone. The beauty industry has shifted dramatically in 2024, and the strategies that worked five years ago are leaving money on the table today.
+                If you're a salon owner watching your booking calendar with more gaps than appointments, you're not alone. The beauty industry has shifted dramatically in 2025, and the strategies that worked five years ago are leaving money on the table today.
               </p>
 
               <p className="text-xl leading-relaxed mb-12 text-muted-foreground">
@@ -296,14 +296,14 @@ const IncreaseSalonBookings2024 = () => {
               <h2 className="text-3xl font-bold mb-6 text-foreground">6. Optimize Your Online Presence for Discovery</h2>
 
               <p className="mb-6">
-                Having a great booking system means nothing if clients can't find you. In 2024, salon discovery happens across multiple channels, and you need to dominate them all.
+                Having a great booking system means nothing if clients can't find you. In 2025, salon discovery happens across multiple channels, and you need to dominate them all.
               </p>
 
               <p className="mb-6">
                 The key is creating a unified presence that drives traffic to your optimized booking system from every touchpoint.
               </p>
 
-              <h3 className="text-2xl font-semibold mb-4">2024 Discovery Channels:</h3>
+              <h3 className="text-2xl font-semibold mb-4">2025 Discovery Channels:</h3>
               <ul className="list-disc pl-6 mb-8 space-y-2">
                 <li><strong>Google My Business Optimization:</strong> Ensure your booking link is prominent and your photos showcase recent work</li>
                 <li><strong>Instagram/TikTok Integration:</strong> Link directly to specific services in your bio and stories</li>
