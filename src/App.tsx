@@ -53,6 +53,18 @@ import NailJobSuccessPage from "@/pages/nails-job-success";
 import BlogLanding from "@/pages/blog/BlogLanding";
 import TheBeautyIndustrysMissingPiece from "@/pages/blog/articles/TheBeautyIndustrysMissingPiece";
 import IncreaseSalonBookings2024 from "@/pages/blog/articles/IncreasealonBookings2024";
+import SocialMediaMarketingSalons2025 from "@/pages/blog/articles/SocialMediaMarketingSalons2025";
+import ClientRetentionSecrets2025 from "@/pages/blog/articles/ClientRetentionSecrets2025";
+import SalonPricingStrategies2025 from "@/pages/blog/articles/SalonPricingStrategies2025";
+import HiringManagingSalonStaff2025 from "@/pages/blog/articles/HiringManagingSalonStaff2025";
+import MobileFirstBeautyBusiness2025 from "@/pages/blog/articles/MobileFirstBeautyBusiness2025";
+
+// Blog Category Pages
+import TrendsCategory from "@/pages/blog/categories/TrendsCategory";
+import BeautyTipsCategory from "@/pages/blog/categories/BeautyTipsCategory";
+import IndustryCategory from "@/pages/blog/categories/IndustryCategory";
+import ArtistSpotlightsCategory from "@/pages/blog/categories/ArtistSpotlightsCategory";
+import SuccessStoriesCategory from "@/pages/blog/categories/SuccessStoriesCategory";
 
 // Industry Pages
 import NailsPage from "@/pages/nails";
@@ -179,6 +191,18 @@ function App() {
                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
                     <Route path="/blog/industry/the-beauty-industrys-missing-piece-emviapp" element={<Layout><TheBeautyIndustrysMissingPiece /></Layout>} />
                     <Route path="/blog/salon-management/increase-salon-bookings-2025" element={<Layout><IncreaseSalonBookings2024 /></Layout>} />
+                    <Route path="/blog/salon-management/social-media-marketing-salons-2025" element={<Layout><SocialMediaMarketingSalons2025 /></Layout>} />
+                    <Route path="/blog/salon-management/client-retention-secrets-2025" element={<Layout><ClientRetentionSecrets2025 /></Layout>} />
+                    <Route path="/blog/salon-management/salon-pricing-strategies-2025" element={<Layout><SalonPricingStrategies2025 /></Layout>} />
+                    <Route path="/blog/salon-management/hiring-managing-salon-staff-2025" element={<Layout><HiringManagingSalonStaff2025 /></Layout>} />
+                    <Route path="/blog/salon-management/mobile-first-beauty-business-2025" element={<Layout><MobileFirstBeautyBusiness2025 /></Layout>} />
+                    
+                    {/* Blog Category Routes */}
+                    <Route path="/blog/category/trends" element={<Layout><TrendsCategory /></Layout>} />
+                    <Route path="/blog/category/beauty-tips" element={<Layout><BeautyTipsCategory /></Layout>} />
+                    <Route path="/blog/category/industry" element={<Layout><IndustryCategory /></Layout>} />
+                    <Route path="/blog/category/artist-spotlights" element={<Layout><ArtistSpotlightsCategory /></Layout>} />
+                    <Route path="/blog/category/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
