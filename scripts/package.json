@@ -1,0 +1,16 @@
+{
+  "name": "emviapp-blog-scripts",
+  "version": "1.0.0",
+  "description": "Blog maintenance and validation scripts for EmviApp",
+  "scripts": {
+    "audit:og": "ts-node auditOpenGraph.ts",
+    "test:social": "ts-node testSocialSharing.ts",
+    "validate:blog": "ts-node validateBlogLinks.ts",
+    "add:article": "ts-node addNewArticle.ts",
+    "fix:urls": "ts-node fixArticleUrls.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}

@@ -29,11 +29,13 @@ const SocialShare: React.FC<SocialShareProps> = ({
   );
   const { toast } = useToast();
 
-  const encodedUrl = encodeURIComponent(url);
+  // Ensure URL is absolute for social sharing
+  const absoluteURL = url.startsWith('http') ? url : `https://emviapp.com${url}`;
+  const encodedUrl = encodeURIComponent(absoluteURL);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description);
-  const encodedImage = image ? encodeURIComponent(image) : '';
-  const hashtagText = hashtags.length > 0 ? encodeURIComponent(hashtags.join(' ')) : '';
+  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `https://emviapp.com${image}`) : '';
+  const hashtagText = hashtags.length > 0 ? hashtags.join(',') : '';
 
   const shareLinks = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
@@ -52,7 +54,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
       await navigator.share({
         title,
         text: description,
-        url
+        url: absoluteURL
       });
     } catch (err) {
       // User cancelled or error occurred, fall back to copy link
@@ -62,7 +64,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(absoluteURL);
       toast({
         title: "Link copied!",
         description: "The article link has been copied to your clipboard.",

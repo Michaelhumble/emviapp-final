@@ -125,7 +125,7 @@ const SalonPricingStrategies2025 = () => {
             <BlogArticleActions
               articleSlug="salon-pricing-strategies-2025"
               articleTitle={article.title}
-              articleUrl={`${window.location.origin}/blog/salon-management/salon-pricing-strategies-2025`}
+              articleUrl="https://emviapp.com/blog/salon-management/salon-pricing-strategies-2025"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -479,7 +479,7 @@ const SalonPricingStrategies2025 = () => {
             <BlogArticleActions
               articleSlug="salon-pricing-strategies-2025"
               articleTitle={article.title}
-              articleUrl={`${window.location.origin}/blog/salon-management/salon-pricing-strategies-2025`}
+              articleUrl="https://emviapp.com/blog/salon-management/salon-pricing-strategies-2025"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
