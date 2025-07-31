@@ -135,13 +135,13 @@ const BlogLanding = () => {
         <Container className="py-16 md:py-24">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 leading-tight">
-              Discover the Future of Beauty
+              The Beauty Industry's Power Source
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              Expert Tips, Industry News & Success Stories
+              Insider secrets, growth strategies, and the latest trends trusted by thousands of salons and artists nationwide.
             </p>
             <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Your ultimate resource for staying ahead in the beauty industry. From cutting-edge techniques to business insights that drive growth.
+              Join a community where real salon owners and artists level up, share wins, and get the inside track on every game-changing beauty innovation. Don't just keep up—get ahead, starting now.
             </p>
 
             {/* Search Bar */}
@@ -301,7 +301,7 @@ const BlogLanding = () => {
                 className="flex-1 h-12 bg-white/50 backdrop-blur-sm"
               />
               <Button size="lg" className="h-12 px-8 rounded-lg">
-                Subscribe
+                🚀 Subscribe for free tips and exclusive insights—get the tools top pros are using, before anyone else.
               </Button>
             </div>
           </div>
