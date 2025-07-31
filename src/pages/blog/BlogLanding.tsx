@@ -311,14 +311,6 @@ const BlogLanding = () => {
             showImage={true}
           />
           
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/blog/all">
-                View All Articles
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
         </Container>
 
         {/* Newsletter Signup */}
