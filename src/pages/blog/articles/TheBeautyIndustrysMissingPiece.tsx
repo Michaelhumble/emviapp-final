@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Share2, Bookmark, Clock, Calendar, Tag, Star, TrendingUp, Users, Zap, Shield, Heart } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Tag, Star, TrendingUp, Users, Zap, Shield, Heart } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const TheBeautyIndustrysMissingPiece = () => {
   const article = {
@@ -138,17 +139,19 @@ const TheBeautyIndustrysMissingPiece = () => {
                   <p className="text-sm text-muted-foreground">Beauty Industry Experts</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bookmark className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-              </div>
             </div>
+
+            {/* Top Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="the-beauty-industrys-missing-piece-emviapp"
+              articleTitle={article.title}
+              articleUrl="https://emviapp.com/blog/industry/the-beauty-industrys-missing-piece-emviapp"
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="top"
+              variant="full"
+            />
 
             {/* Hero Image */}
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
@@ -454,6 +457,18 @@ const TheBeautyIndustrysMissingPiece = () => {
                 </Link>
               ))}
             </div>
+
+            {/* Bottom Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="the-beauty-industrys-missing-piece-emviapp"
+              articleTitle={article.title}
+              articleUrl="https://emviapp.com/blog/industry/the-beauty-industrys-missing-piece-emviapp"
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="bottom"
+              variant="full"
+            />
           </div>
         </Container>
       </article>
