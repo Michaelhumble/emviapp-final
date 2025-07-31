@@ -49,6 +49,10 @@ import FreelancerProfile from "@/pages/FreelancerProfile";
 
 import NailJobSuccessPage from "@/pages/nails-job-success";
 
+// Blog Pages
+import BlogLanding from "@/pages/blog/BlogLanding";
+import TheBeautyIndustrysMissingPiece from "@/pages/blog/articles/TheBeautyIndustrysMissingPiece";
+
 // Industry Pages
 import NailsPage from "@/pages/nails";
 import HairPage from "@/pages/hair";
@@ -169,6 +173,10 @@ function App() {
                         <Layout><ArtistInbox /></Layout>
                       </ProtectedRoute>
                     } />
+                    
+                    {/* Blog Routes */}
+                    <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                    <Route path="/blog/industry/the-beauty-industrys-missing-piece-emviapp" element={<Layout><TheBeautyIndustrysMissingPiece /></Layout>} />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
