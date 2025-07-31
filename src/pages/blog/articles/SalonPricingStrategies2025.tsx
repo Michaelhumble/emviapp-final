@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Share2, Bookmark, Clock, Calendar, DollarSign, TrendingUp, Calculator, Target, Award, BarChart3, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, DollarSign, TrendingUp, Calculator, Target, Award, BarChart3, CheckCircle } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
 
 const SalonPricingStrategies2025 = () => {

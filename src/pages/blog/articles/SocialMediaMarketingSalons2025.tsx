@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Share2, Bookmark, Clock, Calendar, Instagram, Facebook, TrendingUp, Users, Camera, Target, Heart, MessageCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Instagram, Facebook, TrendingUp, Users, Camera, Target, Heart, MessageCircle, CheckCircle } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const SocialMediaMarketingSalons2025 = () => {
   const article = {
