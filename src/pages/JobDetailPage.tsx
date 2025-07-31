@@ -5,6 +5,7 @@ import { useJobsData } from '@/hooks/useJobsData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
+import UniversalShareButton from '@/components/shared/UniversalShareButton';
 import { Job } from '@/types/job';
 import { ArrowLeft, MapPin, Briefcase, Clock, User, ExternalLink, PlusCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -101,14 +102,35 @@ const JobDetailPage = () => {
     );
   }
 
+  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
+  const jobUrl = `${currentDomain}/job/${job.id}`;
+  const jobDescription = `${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`;
+  
   return (
     <>
       <Helmet>
         <title>{job.title} - Beauty Industry Job | EmviApp</title>
-        <meta 
-          name="description" 
-          content={`${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`} 
-        />
+        <meta name="description" content={jobDescription} />
+        <meta name="keywords" content={`${job.title}, ${job.category || 'beauty'}, jobs, career, hiring, ${job.location || ''}`} />
+        
+        {/* OpenGraph Tags */}
+        <meta property="og:title" content={`${job.title} | EmviApp`} />
+        <meta property="og:description" content={jobDescription} />
+        <meta property="og:url" content={jobUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="EmviApp" />
+        <meta property="og:image" content={`${currentDomain}/og-job-image.jpg`} />
+        <meta property="og:image:alt" content={`${job.title} - Beauty Industry Job`} />
+        
+        {/* Twitter Cards */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${job.title} | EmviApp`} />
+        <meta name="twitter:description" content={jobDescription} />
+        <meta name="twitter:image" content={`${currentDomain}/og-job-image.jpg`} />
+        <meta name="twitter:site" content="@EmviApp" />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={jobUrl} />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
@@ -174,8 +196,8 @@ const JobDetailPage = () => {
                 </div>
               </div>
 
-              {/* Apply Button */}
-              <div className="lg:w-64">
+              {/* Apply & Share Buttons */}
+              <div className="lg:w-64 flex flex-col gap-3">
                 <Button 
                   onClick={handleApply}
                   size="lg"
@@ -183,6 +205,16 @@ const JobDetailPage = () => {
                 >
                   Apply Now
                 </Button>
+                
+                <UniversalShareButton
+                  title={job.title}
+                  description={`${job.title} position ${job.location ? `in ${job.location}` : ''}. Apply now on EmviApp!`}
+                  hashtags={['EmviApp', 'BeautyJobs', job.category || 'Beauty']}
+                  utmSource="job_detail_header"
+                  variant="button"
+                  size="lg"
+                  className="w-full"
+                />
               </div>
             </div>
           </div>

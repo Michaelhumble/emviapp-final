@@ -38,19 +38,27 @@ const ContactSection: React.FC<ContactSectionProps> = ({ profile, onBookingReque
   };
 
   const handleShareClick = () => {
-    const url = window.location.href;
+    // Get current page URL with UTM tracking
+    const currentDomain = window.location.origin;
+    const currentPath = window.location.pathname;
+    const utmParams = new URLSearchParams({
+      utm_source: 'profile_share',
+      utm_medium: 'social',
+      utm_campaign: 'artist_profile_sharing'
+    });
+    const shareUrl = `${currentDomain}${currentPath}?${utmParams.toString()}`;
     
     if (navigator.share) {
       navigator.share({
         title: `${profile.full_name} - ${profile.specialty || 'Artist Profile'}`,
         text: `Check out ${profile.full_name}'s profile on EmviApp!`,
-        url: url,
+        url: shareUrl,
       }).catch(error => {
         console.log('Error sharing', error);
-        copyToClipboard(url);
+        copyToClipboard(shareUrl);
       });
     } else {
-      copyToClipboard(url);
+      copyToClipboard(shareUrl);
     }
   };
 

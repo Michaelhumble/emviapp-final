@@ -19,7 +19,7 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
   title = 'EmviApp - Premium Beauty Community',
   description = 'Join the most exclusive beauty community. Share your work, learn from pros, and grow your beauty career with EmviApp.',
   image = 'https://emviapp.com/og-image.jpg',
-  url = 'https://emviapp.com',
+  url,
   type = 'website',
   author,
   publishedTime,
@@ -30,7 +30,12 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
 }) => {
   const siteName = 'EmviApp';
   const fullTitle = title.includes('EmviApp') ? title : `${title} | ${siteName}`;
-  const finalCanonicalUrl = canonicalUrl || url;
+  
+  // Generate dynamic URL if not provided
+  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  const dynamicUrl = url || `${currentDomain}${currentPath}`;
+  const finalCanonicalUrl = canonicalUrl || dynamicUrl;
   
   return (
     <Helmet>
@@ -48,7 +53,7 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
-      <meta property="og:url" content={url} />
+      <meta property="og:url" content={dynamicUrl} />
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="en_US" />
