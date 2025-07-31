@@ -6,17 +6,26 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
+import ContinueReadingSection from '@/components/blog/ContinueReadingSection';
+import { getArticleBySlug } from '@/data/blogArticles';
 
 const TheBeautyIndustrysMissingPiece = () => {
+  // Get article data from registry
+  const registryArticle = getArticleBySlug('the-beauty-industrys-missing-piece-emviapp');
+  
+  if (!registryArticle) {
+    return <div>Article not found</div>;
+  }
+
   const article = {
-    title: "The Beauty Industry's Missing Piece: How EmviApp is Revolutionizing Salons Worldwide",
-    description: "Discover why EmviApp is redefining success for nail, hair, and beauty salons—AI-powered, free booking, unlimited talent. See why the industry is making the switch.",
-    author: "EmviApp Editorial Team",
-    publishedAt: "March 15, 2024",
-    readTime: "8 min read",
-    category: "Industry News",
-    tags: ["Beauty Industry", "Salon Management", "Technology", "AI", "EmviApp"],
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+    title: registryArticle.title,
+    description: registryArticle.description,
+    author: registryArticle.author,
+    publishedAt: registryArticle.publishedAt,
+    readTime: registryArticle.readTime,
+    category: registryArticle.category,
+    tags: registryArticle.tags,
+    image: registryArticle.image
   };
 
   const relatedArticles = [
@@ -438,26 +447,6 @@ const TheBeautyIndustrysMissingPiece = () => {
           </div>
         </Container>
 
-        {/* Related Articles */}
-        <Container className="py-16 bg-muted/20">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-8 text-center">Continue Reading</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              {relatedArticles.map((related, index) => (
-                <Link
-                  key={index}
-                  to={`/blog/${related.category.toLowerCase()}/${related.slug}`}
-                  className="bg-white rounded-lg p-6 hover:shadow-lg transition-all duration-300 group"
-                >
-                  <span className="text-sm text-primary font-medium">{related.category}</span>
-                  <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                    {related.title}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">{related.readTime}</p>
-                </Link>
-              ))}
-            </div>
-
             {/* Bottom Share/Save Actions */}
             <BlogArticleActions
               articleSlug="the-beauty-industrys-missing-piece-emviapp"
@@ -469,8 +458,13 @@ const TheBeautyIndustrysMissingPiece = () => {
               position="bottom"
               variant="full"
             />
-          </div>
-        </Container>
+
+        {/* Continue Reading Section */}
+        <ContinueReadingSection 
+          currentArticle={registryArticle}
+          limit={3}
+          title="Continue Reading"
+        />
       </article>
     </>
   );
