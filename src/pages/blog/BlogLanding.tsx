@@ -8,13 +8,13 @@ import DynamicSEO from '@/components/seo/DynamicSEO';
 
 const BlogLanding = () => {
   const featuredArticle = {
-    title: "The Beauty Industry's Missing Piece: How EmviApp is Revolutionizing Salons Worldwide",
-    slug: "the-beauty-industrys-missing-piece-emviapp",
-    category: "industry",
-    excerpt: "Discover why EmviApp is redefining success for nail, hair, and beauty salons—AI-powered, free booking, unlimited talent. See why the industry is making the switch.",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    readTime: "8 min read",
-    publishedAt: "March 15, 2024",
+    title: "How to Increase Salon Bookings in 2025: 7 Proven Strategies That Actually Work",
+    slug: "increase-salon-bookings-2025",
+    category: "salon-management",
+    excerpt: "Discover the exact strategies top salon owners use to boost bookings by 40%+ in 2025. From AI-powered tools to mobile optimization, get practical tips that deliver real results.",
+    image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    readTime: "12 min read",
+    publishedAt: "June 30, 2025",
     featured: true
   };
 
@@ -195,7 +195,7 @@ const BlogLanding = () => {
             {categories.map((category) => (
               <Link
                 key={category.slug}
-                to={`/blog/category/${category.slug}`}
+                to={category.slug === 'salon-management' ? '/blog/salon-management/increase-salon-bookings-2025' : `/blog/category/${category.slug}`}
                 className={`${category.color} p-6 rounded-xl hover:scale-105 transition-all duration-300 group`}
               >
                 <div className="text-3xl mb-3">{category.icon}</div>
