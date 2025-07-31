@@ -16,7 +16,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Info, Phone, Sparkles, Scissors } from 'lucide-react';
+import { X, Home, Briefcase, Users, MessageSquare, User, Building2, Info, Phone, Sparkles, Scissors, BookOpen } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
@@ -76,6 +76,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Scissors, label: 'Book Services', href: '/booking-services' },
     { icon: Building2, label: 'Salons', href: '/salons' },
     { icon: MessageSquare, label: 'Community', href: '/community' },
+    { icon: BookOpen, label: 'Blog', href: '/blog' },
     { 
       icon: User, 
       label: userRole === 'artist' ? 'Artist Dashboard' : 'Dashboard', 
@@ -89,6 +90,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Scissors, label: 'Book Services', href: '/booking-services' },
     { icon: Building2, label: 'Salons', href: '/salons' },
     { icon: MessageSquare, label: 'Community', href: '/community' },
+    { icon: BookOpen, label: 'Blog', href: '/blog' },
     { icon: Info, label: 'About', href: '/about' },
     { icon: Phone, label: 'Contact', href: '/contact' },
   ];
