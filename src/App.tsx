@@ -4,7 +4,7 @@ import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
-import { AnalyticsProvider } from '@/context/AnalyticsContext';
+// Analytics now handled by unified system in RouteLogger
 import { RecommendationProvider } from '@/context/RecommendationContext';
 import { OnboardingProvider } from '@/context/OnboardingContext';
 import { SecurityProvider } from '@/components/security/SecurityProvider';
@@ -91,7 +91,6 @@ function App() {
             <SalonProvider>
               <SubscriptionProvider>
                 <NotificationProvider>
-                  <AnalyticsProvider>
                     <RecommendationProvider>
                       <OnboardingProvider>
                       <RouteLogger />
@@ -206,7 +205,6 @@ function App() {
                       <Toaster />
                     </OnboardingProvider>
                   </RecommendationProvider>
-                </AnalyticsProvider>
               </NotificationProvider>
             </SubscriptionProvider>
           </SalonProvider>
