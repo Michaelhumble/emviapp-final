@@ -6,14 +6,14 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NetworkErrorUI } from "@/components/NetworkErrorUI";
 
 export default function TeamOverviewCard() {
-  const { teamMembers, loading, error, retry } = useTeamMembers();
+  const { teamMembers, loading, error, fetchTeamMembers } = useTeamMembers();
 
   if (error) {
     return (
       <ErrorBoundary>
         <NetworkErrorUI
           error={error}
-          onRetry={retry}
+          onRetry={fetchTeamMembers}
           title="Failed to Load Team"
           description="Unable to fetch team member information."
         />

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
+import { performanceMonitor } from '@/lib/performanceMonitor';
 import './index.css';
 
 // Global error handler
@@ -11,16 +12,26 @@ window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
 });
 
-// Create query client with optimized settings for mobile
+// Create query client with aggressive performance optimizations
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      staleTime: 60000, // 1 minute
-      retry: 1
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: 1,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+    mutations: {
+      retry: 1,
     }
   }
 });
+
+// Initialize performance monitoring
+performanceMonitor.init();
 
 // Set favicon
 const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
