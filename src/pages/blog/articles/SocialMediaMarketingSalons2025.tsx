@@ -111,17 +111,19 @@ const SocialMediaMarketingSalons2025 = () => {
                   <p className="text-sm text-muted-foreground">Digital Marketing Experts</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bookmark className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-              </div>
             </div>
+
+            {/* Top Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="social-media-marketing-salons-2025"
+              articleTitle={article.title}
+              articleUrl={`${window.location.origin}/blog/salon-management/social-media-marketing-salons-2025`}
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="top"
+              variant="full"
+            />
 
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
               <img 
@@ -391,6 +393,18 @@ const SocialMediaMarketingSalons2025 = () => {
                 ))}
               </div>
             </div>
+
+            {/* Bottom Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="social-media-marketing-salons-2025"
+              articleTitle={article.title}
+              articleUrl={`${window.location.origin}/blog/salon-management/social-media-marketing-salons-2025`}
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="bottom"
+              variant="full"
+            />
           </div>
         </Container>
       </article>

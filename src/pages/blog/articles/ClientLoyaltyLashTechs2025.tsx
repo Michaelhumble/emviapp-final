@@ -6,8 +6,20 @@ import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const ClientLoyaltyLashTechs2025 = () => {
+  const article = {
+    title: "Building Client Loyalty: Proven Strategies for Lash Technicians",
+    description: "Master the art of client retention with strategies that turn first-time customers into lifelong advocates for your lash business.",
+    author: "EmviApp Team",
+    publishedAt: "January 31, 2025",
+    readTime: "7 min read",
+    category: "Artist Spotlights",
+    tags: ['lash technician', 'client loyalty', 'retention strategies', 'lash business', 'customer service'],
+    image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+  };
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -82,6 +94,18 @@ const ClientLoyaltyLashTechs2025 = () => {
                 Master the art of client retention with strategies that turn first-time customers into lifelong advocates for your lash business.
               </p>
             </div>
+
+            {/* Top Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="client-loyalty-lash-techs-2025"
+              articleTitle={article.title}
+              articleUrl={`${window.location.origin}/blog/artist-spotlights/client-loyalty-lash-techs`}
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="top"
+              variant="full"
+            />
 
             {/* Featured Image */}
             <div className="mb-12 rounded-2xl overflow-hidden">
@@ -526,6 +550,17 @@ const ClientLoyaltyLashTechs2025 = () => {
               </div>
             </div>
 
+            {/* Bottom Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="client-loyalty-lash-techs-2025"
+              articleTitle={article.title}
+              articleUrl={`${window.location.origin}/blog/artist-spotlights/client-loyalty-lash-techs`}
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="bottom"
+              variant="full"
+            />
           </div>
         </Container>
       </div>
