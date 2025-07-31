@@ -1912,6 +1912,50 @@ export type Database = {
         }
         Relationships: []
       }
+      error_logs: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          error_type: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          route: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          error_type: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          route?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          error_type?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          route?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       followers: {
         Row: {
           artist_id: string
