@@ -499,7 +499,7 @@ const HiringManagingSalonStaff2025 = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <Link to="/signup">
+                    <Link to="/auth/signup">
                       Start Building Your Team Today
                     </Link>
                   </Button>
@@ -536,7 +536,7 @@ const HiringManagingSalonStaff2025 = () => {
               <div className="text-center py-8 border-t border-gray-200">
                 <p className="text-lg mb-4">Ready to reduce turnover by 60%+ with strategic team management?</p>
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                  <Link to="/signup">
+                  <Link to="/auth/signup">
                     Start Your Team Transformation Free
                   </Link>
                 </Button>

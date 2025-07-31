@@ -359,7 +359,7 @@ const ClientLoyaltyLashTechs2025 = () => {
                       </div>
                     </div>
 
-                    <Link to="/signup" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
+                    <Link to="/auth/signup" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
                       Start Building Loyalty with EmviApp
                       <ChevronRight className="h-4 w-4" />
                     </Link>
@@ -470,7 +470,7 @@ const ClientLoyaltyLashTechs2025 = () => {
                   EmviApp provides the tools and insights you need to build lasting client loyalty. Join thousands of lash technicians who've transformed their businesses with our platform.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link to="/signup" className="bg-white text-rose-600 px-8 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors">
+                  <Link to="/auth/signup" className="bg-white text-rose-600 px-8 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors">
                     Start Building Loyalty Today - Free
                   </Link>
                   <Link to="/blog/salon-management/client-retention-secrets-2025" className="border border-white/30 text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors">

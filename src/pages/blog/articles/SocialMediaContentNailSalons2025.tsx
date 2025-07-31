@@ -586,7 +586,7 @@ const SocialMediaContentNailSalons2025 = () => {
                       </div>
                     </div>
 
-                    <Link to="/signup" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
+                    <Link to="/auth/signup" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
                       Boost Your Social Media Impact
                       <ChevronRight className="h-4 w-4" />
                     </Link>
@@ -613,7 +613,7 @@ const SocialMediaContentNailSalons2025 = () => {
                   Transform your social media presence into a booking powerhouse with EmviApp's integrated marketing tools and business management platform.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link to="/signup" className="bg-white text-pink-600 px-8 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors">
+                  <Link to="/auth/signup" className="bg-white text-pink-600 px-8 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors">
                     Get Started Free - Boost Your Bookings
                   </Link>
                   <Link to="/blog/salon-management/social-media-marketing-salons-2025" className="border border-white/30 text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors">

@@ -370,7 +370,7 @@ const TheBeautyIndustrysMissingPiece = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-100">
-                    <Link to="/signup">Start Free Today</Link>
+                    <Link to="/auth/signup">Start Free Today</Link>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
                     <Link to="/artists">Explore Artists</Link>
@@ -425,7 +425,7 @@ const TheBeautyIndustrysMissingPiece = () => {
                   Join thousands of beauty professionals who've already discovered the EmviApp advantage.
                 </p>
                 <Button asChild size="lg" className="rounded-full">
-                  <Link to="/signup">
+                  <Link to="/auth/signup">
                     Get Started Free
                     <ArrowLeft className="h-5 w-5 ml-2 rotate-180" />
                   </Link>

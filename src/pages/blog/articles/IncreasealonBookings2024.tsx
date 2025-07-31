@@ -374,7 +374,7 @@ const IncreaseSalonBookings2024 = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <Link to="/signup">
+                    <Link to="/auth/signup">
                       Start Free Today - No Credit Card Required
                     </Link>
                   </Button>
@@ -418,7 +418,7 @@ const IncreaseSalonBookings2024 = () => {
               <div className="text-center py-8 border-t border-gray-200">
                 <p className="text-lg mb-4">Ready to see what 40%+ more bookings feels like?</p>
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                  <Link to="/signup">
+                  <Link to="/auth/signup">
                     Get Started Free - Takes Less Than 2 Minutes
                   </Link>
                 </Button>

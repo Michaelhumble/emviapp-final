@@ -382,7 +382,7 @@ const ClientRetentionSecrets2025 = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <Link to="/signup">
+                    <Link to="/auth/signup">
                       Start Building Loyalty Today
                     </Link>
                   </Button>
@@ -419,7 +419,7 @@ const ClientRetentionSecrets2025 = () => {
               <div className="text-center py-8 border-t border-gray-200">
                 <p className="text-lg mb-4">Ready to keep 90%+ of your clients coming back?</p>
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                  <Link to="/signup">
+                  <Link to="/auth/signup">
                     Start Your Retention Journey Free
                   </Link>
                 </Button>
