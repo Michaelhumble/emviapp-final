@@ -5,18 +5,17 @@ import { Container } from '@/components/ui/container';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
+import { getFeaturedArticles, getTrendingArticles, getRecentArticles, getAllCategories } from '@/data/blogArticles';
 
 const BlogLanding = () => {
-  const featuredArticle = {
-    title: "The Beauty Industry's Missing Piece: How EmviApp is Revolutionizing Salons Worldwide",
-    slug: "the-beauty-industrys-missing-piece-emviapp",
-    category: "industry",
-    excerpt: "Discover why EmviApp is redefining success for nail, hair, and beauty salons—AI-powered, free booking, unlimited talent. See why the industry is making the switch.",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    readTime: "8 min read",
-    publishedAt: "March 15, 2024",
-    featured: true
-  };
+  const featuredArticles = getFeaturedArticles();
+  const trendingArticles = getTrendingArticles();
+  const recentArticles = getRecentArticles(6);
+  const dynamicCategories = getAllCategories();
+  
+  // Fallback featured article if none marked as featured
+  const heroArticle = featuredArticles[0] || recentArticles[0];
 
   const categories = [
     { 
@@ -186,14 +185,14 @@ const BlogLanding = () => {
           <div className="mb-12">
             <h2 className="text-3xl font-bold mb-8 text-center">Featured Story</h2>
             <Link 
-              to={`/blog/${featuredArticle.category}/${featuredArticle.slug}`}
+              to={heroArticle?.url || '/blog'}
               className="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
             >
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="aspect-[4/3] overflow-hidden">
                   <img 
-                    src={featuredArticle.image}
-                    alt={featuredArticle.title}
+                    src={heroArticle?.image || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                    alt={heroArticle?.title || 'Featured Article'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
                       e.currentTarget.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
@@ -205,16 +204,16 @@ const BlogLanding = () => {
                     <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
                       Featured
                     </span>
-                    <span className="text-muted-foreground text-sm">{featuredArticle.readTime}</span>
+                    <span className="text-muted-foreground text-sm">{heroArticle?.readTime || '5 min read'}</span>
                   </div>
                   <h3 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-primary transition-colors">
-                    {featuredArticle.title}
+                    {heroArticle?.title || 'Latest Beauty Industry Insights'}
                   </h3>
                   <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                    {featuredArticle.excerpt}
+                    {heroArticle?.description || 'Discover the latest trends and strategies in the beauty industry.'}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{featuredArticle.publishedAt}</span>
+                    <span className="text-sm text-muted-foreground">{heroArticle?.publishedAt || 'Recently'}</span>
                     <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>

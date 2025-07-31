@@ -51,16 +51,7 @@ import NailJobSuccessPage from "@/pages/nails-job-success";
 
 // Blog Pages
 import BlogLanding from "@/pages/blog/BlogLanding";
-import TheBeautyIndustrysMissingPiece from "@/pages/blog/articles/TheBeautyIndustrysMissingPiece";
-import IncreaseSalonBookings2024 from "@/pages/blog/articles/IncreasealonBookings2024";
-import SocialMediaMarketingSalons2025 from "@/pages/blog/articles/SocialMediaMarketingSalons2025";
-import ClientRetentionSecrets2025 from "@/pages/blog/articles/ClientRetentionSecrets2025";
-import SalonPricingStrategies2025 from "@/pages/blog/articles/SalonPricingStrategies2025";
-import HiringManagingSalonStaff2025 from "@/pages/blog/articles/HiringManagingSalonStaff2025";
-import MobileFirstBeautyBusiness2025 from "@/pages/blog/articles/MobileFirstBeautyBusiness2025";
-import AIToolsForMakeupArtists2025 from "@/pages/blog/articles/AIToolsForMakeupArtists2025";
-import ClientLoyaltyLashTechs2025 from "@/pages/blog/articles/ClientLoyaltyLashTechs2025";
-import SocialMediaContentNailSalons2025 from "@/pages/blog/articles/SocialMediaContentNailSalons2025";
+import BlogArticlePage from "@/pages/blog/[slug]";
 
 // Blog Category Pages
 import TrendsCategory from "@/pages/blog/categories/TrendsCategory";
@@ -193,24 +184,17 @@ function App() {
                     
                     {/* Blog Routes */}
                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
-                    <Route path="/blog/industry/the-beauty-industrys-missing-piece-emviapp" element={<Layout><TheBeautyIndustrysMissingPiece /></Layout>} />
-                    <Route path="/blog/salon-management/increase-salon-bookings-2025" element={<Layout><IncreaseSalonBookings2024 /></Layout>} />
-                    <Route path="/blog/salon-management/social-media-marketing-salons-2025" element={<Layout><SocialMediaMarketingSalons2025 /></Layout>} />
-                    <Route path="/blog/salon-management/client-retention-secrets-2025" element={<Layout><ClientRetentionSecrets2025 /></Layout>} />
-                    <Route path="/blog/salon-management/salon-pricing-strategies-2025" element={<Layout><SalonPricingStrategies2025 /></Layout>} />
-                    <Route path="/blog/salon-management/hiring-managing-salon-staff-2025" element={<Layout><HiringManagingSalonStaff2025 /></Layout>} />
-                    <Route path="/blog/salon-management/mobile-first-beauty-business-2025" element={<Layout><MobileFirstBeautyBusiness2025 /></Layout>} />
-                    <Route path="/blog/beauty-tips/ai-tools-for-makeup-artists" element={<Layout><AIToolsForMakeupArtists2025 /></Layout>} />
-                    <Route path="/blog/artist-spotlights/client-loyalty-lash-techs" element={<Layout><ClientLoyaltyLashTechs2025 /></Layout>} />
-                    <Route path="/blog/salon-management/social-media-content-nail-salons" element={<Layout><SocialMediaContentNailSalons2025 /></Layout>} />
+                    
+                    {/* Dynamic blog article routes */}
+                    <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />
 
                     {/* Blog Category Routes */}
-                    <Route path="/blog/category/trends" element={<Layout><TrendsCategory /></Layout>} />
-                    <Route path="/blog/category/beauty-tips" element={<Layout><BeautyTipsCategory /></Layout>} />
-                    <Route path="/blog/category/industry" element={<Layout><IndustryCategory /></Layout>} />
-                    <Route path="/blog/category/artist-spotlights" element={<Layout><ArtistSpotlightsCategory /></Layout>} />
-                    <Route path="/blog/category/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
-                    <Route path="/blog/category/salon-management" element={<Layout><SalonManagementCategory /></Layout>} />
+                    <Route path="/blog/categories/trends" element={<Layout><TrendsCategory /></Layout>} />
+                    <Route path="/blog/categories/beauty-tips" element={<Layout><BeautyTipsCategory /></Layout>} />
+                    <Route path="/blog/categories/industry" element={<Layout><IndustryCategory /></Layout>} />
+                    <Route path="/blog/categories/artist-spotlights" element={<Layout><ArtistSpotlightsCategory /></Layout>} />
+                    <Route path="/blog/categories/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
+                    <Route path="/blog/categories/salon-management" element={<Layout><SalonManagementCategory /></Layout>} />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
