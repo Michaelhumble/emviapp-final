@@ -215,7 +215,7 @@ export class UnifiedBookingEngine {
         date_requested: bookingData.date_requested,
         time_requested: bookingData.time_requested,
         note: bookingData.note,
-        status: (payment_intent ? 'pending' : 'pending') as 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show',
+        status: 'pending',
         metadata: {
           payment_intent_id: payment_intent?.id,
           service_price: service?.price,
@@ -237,7 +237,7 @@ export class UnifiedBookingEngine {
       service_id: bookingData.service_id,
       date_requested: bookingData.date_requested,
       time_requested: bookingData.time_requested,
-      status: booking.status,
+      status: booking.status as 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show',
       payment_status: payment_intent ? 'pending' : undefined,
       payment_intent_id: payment_intent?.id,
       amount: service?.price,
@@ -277,22 +277,23 @@ export class UnifiedBookingEngine {
   // 🤖 AI/ML LOGGING
   private async logBookingEvent(event: BookingEvent): Promise<void> {
     try {
-      // Use a direct insert query since the table is new
-      const { error } = await supabase.rpc('log_booking_event', {
-        p_event_id: event.id,
-        p_event_type: event.type,
-        p_booking_id: event.booking_id,
-        p_customer_id: event.customer_id,
-        p_artist_id: event.artist_id,
-        p_event_data: {
+      // Log to activity_log table for now since booking_events_log doesn't exist yet
+      const { error } = await supabase.from('activity_log').insert([{
+        user_id: event.customer_id,
+        activity_type: event.type,
+        description: `Booking ${event.type.replace('booking_', '')} for ${event.date_requested} at ${event.time_requested}`,
+        metadata: {
+          booking_id: event.booking_id,
+          artist_id: event.artist_id,
+          service_id: event.service_id,
           date_requested: event.date_requested,
           time_requested: event.time_requested,
           status: event.status,
           payment_status: event.payment_status,
           amount: event.amount,
-          metadata: event.metadata
+          ...event.metadata
         }
-      });
+      }]);
 
       if (error) {
         console.error('🤖 Event logging error:', error);
