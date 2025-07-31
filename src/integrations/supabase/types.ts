@@ -3809,6 +3809,36 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_articles: {
+        Row: {
+          article_slug: string
+          article_title: string
+          article_url: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          article_title: string
+          article_url: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          article_title?: string
+          article_url?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       saved_artists: {
         Row: {
           artist_id: string

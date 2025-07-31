@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Share2, Bookmark, Clock, Calendar, Tag, Star, TrendingUp, Users, Smartphone, CheckCircle, Target, Zap } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Tag, Star, TrendingUp, Users, Smartphone, CheckCircle, Target, Zap } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';

@@ -99,6 +99,7 @@ const AIToolsForMakeupArtists2025 = () => {
                 image={featuredImage}
                 hashtags={['AITools', 'MakeupArtist', 'BeautyBusiness', 'EmviApp']}
                 position="top"
+                articleSlug="ai-tools-for-makeup-artists-2025"
               />
             </div>
 
@@ -479,6 +480,7 @@ const AIToolsForMakeupArtists2025 = () => {
               image={featuredImage}
               hashtags={['AITools', 'MakeupArtist', 'BeautyBusiness', 'EmviApp']}
               position="bottom"
+              articleSlug="ai-tools-for-makeup-artists-2025"
             />
 
           </div>

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Share2, Bookmark, Clock, Calendar, Users, Award, Target, Heart, Star, TrendingUp, CheckCircle, UserCheck } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Users, Award, Target, Heart, Star, TrendingUp, CheckCircle, UserCheck } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const HiringManagingSalonStaff2025 = () => {
   const article = {
@@ -111,17 +112,19 @@ const HiringManagingSalonStaff2025 = () => {
                   <p className="text-sm text-muted-foreground">Team Management Experts</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bookmark className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-              </div>
             </div>
+
+            {/* Top Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="hiring-managing-salon-staff-2025"
+              articleTitle={article.title}
+              articleUrl="https://emviapp.com/blog/management/hiring-managing-salon-staff-2025"
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="top"
+              variant="compact"
+            />
 
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
               <BlogImage 
@@ -550,6 +553,17 @@ const HiringManagingSalonStaff2025 = () => {
                   </span>
                 ))}
               </div>
+              {/* Bottom Share/Save Actions */}
+              <BlogArticleActions
+                articleSlug="hiring-managing-salon-staff-2025"
+                articleTitle={article.title}
+                articleUrl="https://emviapp.com/blog/management/hiring-managing-salon-staff-2025"
+                articleDescription={article.description}
+                articleImage={article.image}
+                hashtags={article.tags}
+                position="bottom"
+                variant="full"
+              />
             </div>
           </div>
         </Container>
