@@ -8,6 +8,18 @@ import DynamicSEO from '@/components/seo/DynamicSEO';
 const ArtistSpotlightsCategory = () => {
   const articles = [
     {
+      title: "Building Client Loyalty: Proven Strategies for Lash Technicians",
+      slug: "client-loyalty-lash-techs",
+      category: "artist-spotlights",
+      excerpt: "Master the art of client retention with strategies that turn first-time customers into lifelong advocates for your lash business.",
+      image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "7 min read",
+      publishedAt: "January 31, 2025",
+      artistName: "Industry Expert",
+      specialty: "Lash Technician",
+      rating: 5.0
+    },
+    {
       title: "Rising Star: Maria Rodriguez's Journey from Apprentice to Award-Winning Nail Artist",
       slug: "maria-rodriguez-nail-artist-spotlight",
       category: "artist-spotlights",

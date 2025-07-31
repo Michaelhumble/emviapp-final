@@ -8,6 +8,15 @@ import DynamicSEO from '@/components/seo/DynamicSEO';
 const BeautyTipsCategory = () => {
   const articles = [
     {
+      title: "Leveraging AI for Freelance Makeup Artists: Tools to Boost Your Business",
+      slug: "ai-tools-for-makeup-artists",
+      category: "beauty-tips",
+      excerpt: "Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation to grow their beauty business.",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "8 min read",
+      publishedAt: "January 31, 2025"
+    },
+    {
       title: "The Ultimate Guide to Long-Lasting Nail Art: Pro Tips from Top Artists",
       slug: "long-lasting-nail-art-guide",
       category: "beauty-tips",

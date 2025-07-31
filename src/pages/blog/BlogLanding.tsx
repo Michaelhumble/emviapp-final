@@ -229,7 +229,7 @@ const BlogLanding = () => {
               return (
                 <Link
                   key={category.slug}
-                  to={category.slug === 'salon-management' ? '/blog/salon-management/increase-salon-bookings-2025' : `/blog/category/${category.slug}`}
+                  to={`/blog/category/${category.slug}`}
                   className={`${category.color} p-6 rounded-xl hover:scale-105 transition-all duration-300 group border border-white/20 backdrop-blur-sm`}
                 >
                   <div className="mb-4">
@@ -315,11 +315,11 @@ const BlogLanding = () => {
 
         {/* Premium Newsletter CTA */}
         <Container className="py-20">
-          <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-600 to-pink-600 opacity-90"></div>
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="7" cy="7" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+          <div className="relative overflow-hidden rounded-3xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-600 to-pink-600"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent"></div>
             
-            <div className="relative bg-gradient-to-r from-primary/95 via-purple-600/95 to-pink-600/95 backdrop-blur-sm rounded-3xl p-8 md:p-16 text-center text-white">
+            <div className="relative bg-gradient-to-r from-primary/95 via-purple-600/95 to-pink-600/95 backdrop-blur-sm p-8 md:p-16 text-center text-white rounded-3xl">
               <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
                 <Calendar className="h-5 w-5" />
                 <span className="text-sm font-medium">Join 25,000+ Industry Leaders</span>

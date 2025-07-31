@@ -68,6 +68,7 @@ import BeautyTipsCategory from "@/pages/blog/categories/BeautyTipsCategory";
 import IndustryCategory from "@/pages/blog/categories/IndustryCategory";
 import ArtistSpotlightsCategory from "@/pages/blog/categories/ArtistSpotlightsCategory";
 import SuccessStoriesCategory from "@/pages/blog/categories/SuccessStoriesCategory";
+import SalonManagementCategory from "@/pages/blog/categories/SalonManagementCategory";
 
 // Industry Pages
 import NailsPage from "@/pages/nails";
@@ -209,6 +210,7 @@ function App() {
                     <Route path="/blog/category/industry" element={<Layout><IndustryCategory /></Layout>} />
                     <Route path="/blog/category/artist-spotlights" element={<Layout><ArtistSpotlightsCategory /></Layout>} />
                     <Route path="/blog/category/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
+                    <Route path="/blog/category/salon-management" element={<Layout><SalonManagementCategory /></Layout>} />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
