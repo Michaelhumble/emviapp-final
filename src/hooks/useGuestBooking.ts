@@ -71,10 +71,11 @@ export const useGuestBooking = () => {
       }
 
       // Track analytics for guest booking
-      analytics.trackCustomEvent('guest_booking_submitted', {
-        service_name: bookingData.service_name,
-        price: bookingData.price,
-        has_notes: !!bookingData.notes
+      analytics.trackBookingCreated({
+        bookingId: data.id,
+        serviceType: bookingData.service_name,
+        servicePrice: bookingData.price || 0,
+        artistId: bookingData.artist_id
       });
 
       toast.success('Booking request sent successfully!', {

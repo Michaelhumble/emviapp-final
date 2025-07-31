@@ -142,10 +142,15 @@ export const useArtistBookings = () => {
       ));
 
       // Track analytics
-      analytics.trackCustomEvent('booking_status_updated', {
-        booking_id: bookingId,
-        new_status: newStatus,
-        user_type: 'artist'
+      analytics.trackEvent({
+        action: 'booking_status_updated',
+        category: 'booking_management',
+        label: newStatus,
+        custom_parameters: {
+          booking_id: bookingId,
+          new_status: newStatus,
+          user_type: 'artist'
+        }
       });
 
       toast.success(`Booking ${newStatus} successfully`);
@@ -195,9 +200,15 @@ export const useArtistBookings = () => {
       await fetchBookings();
 
       // Track analytics
-      analytics.trackCustomEvent('manual_booking_created', {
-        service_name: bookingData.service_name,
-        duration_minutes: bookingData.duration_minutes || 60
+      analytics.trackEvent({
+        action: 'manual_booking_created',
+        category: 'booking_management',
+        label: bookingData.service_name,
+        custom_parameters: {
+          service_name: bookingData.service_name,
+          duration_minutes: bookingData.duration_minutes || 60,
+          is_manual: true
+        }
       });
 
       toast.success('Manual booking created successfully');

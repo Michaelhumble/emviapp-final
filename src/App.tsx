@@ -11,6 +11,7 @@ import { SecurityProvider } from '@/components/security/SecurityProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
+import BookingCalendarNew from "@/pages/dashboard/artist/BookingCalendarNew";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
@@ -173,6 +174,11 @@ function App() {
                     <Route path="/dashboard/artist/booking-calendar" element={
                       <ProtectedRoute>
                         <Layout><BookingCalendar /></Layout>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/dashboard/artist/booking-calendar-new" element={
+                      <ProtectedRoute>
+                        <Layout><BookingCalendarNew /></Layout>
                       </ProtectedRoute>
                     } />
                     <Route path="/dashboard/artist/inbox" element={

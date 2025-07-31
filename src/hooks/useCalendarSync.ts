@@ -69,9 +69,14 @@ export const useCalendarSync = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      analytics.trackCustomEvent('calendar_export', {
-        format: 'ical',
-        events_count: events.length
+      analytics.trackEvent({
+        action: 'calendar_export',
+        category: 'calendar_integration',
+        label: 'ical',
+        custom_parameters: {
+          format: 'ical',
+          events_count: events.length
+        }
       });
 
       toast.success('Calendar exported successfully!', {
@@ -108,9 +113,14 @@ export const useCalendarSync = () => {
       const url = generateGoogleCalendarUrl(booking);
       window.open(url, '_blank');
 
-      analytics.trackCustomEvent('google_calendar_add', {
-        booking_id: booking.id,
-        service_name: booking.service_name
+      analytics.trackEvent({
+        action: 'google_calendar_add',
+        category: 'calendar_integration',
+        label: 'google',
+        custom_parameters: {
+          booking_id: booking.id,
+          service_name: booking.service_name
+        }
       });
 
       toast.success('Opening Google Calendar...');
