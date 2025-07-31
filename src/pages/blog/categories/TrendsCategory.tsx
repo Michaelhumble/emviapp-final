@@ -4,6 +4,7 @@ import { ArrowLeft, TrendingUp, Clock, Calendar } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
 
 const TrendsCategory = () => {
   const articles = [

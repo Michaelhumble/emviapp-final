@@ -4,6 +4,7 @@ import { ArrowLeft, BarChart3, Clock, Calendar } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
 
 const IndustryCategory = () => {
   const articles = [

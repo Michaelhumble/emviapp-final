@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
+import EnhancedSEO from '@/components/seo/EnhancedSEO';
+import BlogSocialShare from '@/components/blog/BlogSocialShare';
 
 const AIToolsForMakeupArtists2025 = () => {
   const articleSchema = {
@@ -34,13 +36,20 @@ const AIToolsForMakeupArtists2025 = () => {
     "description": "Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation. Learn how EmviApp empowers your beauty business."
   };
 
+  const currentUrl = "https://emviapp.com/blog/beauty-tips/ai-tools-for-makeup-artists";
+  const featuredImage = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
+
   return (
     <>
-      <DynamicSEO
+      <EnhancedSEO
         title="Best AI Tools for Freelance Makeup Artists | Boost Your Business with EmviApp"
         description="Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation. Learn how EmviApp empowers your beauty business."
-        url="https://emviapp.com/blog/beauty-tips/ai-tools-for-makeup-artists"
+        url={currentUrl}
+        image={featuredImage}
         type="article"
+        author="EmviApp Editorial Team"
+        publishedTime="2025-01-31T12:00:00Z"
+        modifiedTime="2025-01-31T12:00:00Z"
         tags={['AI tools', 'makeup artists', 'freelance beauty', 'business automation', 'beauty technology']}
         structuredData={articleSchema}
       />
@@ -81,6 +90,16 @@ const AIToolsForMakeupArtists2025 = () => {
               <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                 Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation to grow their beauty business.
               </p>
+
+              {/* Top Social Share */}
+              <BlogSocialShare
+                url={currentUrl}
+                title="Leveraging AI for Freelance Makeup Artists: Tools to Boost Your Business"
+                description="Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation to grow their beauty business."
+                image={featuredImage}
+                hashtags={['AITools', 'MakeupArtist', 'BeautyBusiness', 'EmviApp']}
+                position="top"
+              />
             </div>
 
             {/* Featured Image */}
@@ -451,6 +470,16 @@ const AIToolsForMakeupArtists2025 = () => {
                 </div>
               </div>
             </div>
+
+            {/* Bottom Social Share */}
+            <BlogSocialShare
+              url={currentUrl}
+              title="Leveraging AI for Freelance Makeup Artists: Tools to Boost Your Business"
+              description="Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation to grow their beauty business."
+              image={featuredImage}
+              hashtags={['AITools', 'MakeupArtist', 'BeautyBusiness', 'EmviApp']}
+              position="bottom"
+            />
 
           </div>
         </Container>

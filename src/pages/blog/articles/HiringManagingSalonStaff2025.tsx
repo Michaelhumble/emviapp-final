@@ -4,6 +4,7 @@ import { ArrowLeft, Share2, Bookmark, Clock, Calendar, Users, Award, Target, Hea
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
 
 const HiringManagingSalonStaff2025 = () => {
   const article = {
