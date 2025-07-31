@@ -7,6 +7,8 @@ import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
+import { getArticleBySlug } from '@/data/blogArticles';
+import ContinueReadingSection from '@/components/blog/ContinueReadingSection';
 
 const SalonPricingStrategies2025 = () => {
   const registryArticle = getArticleBySlug('salon-pricing-strategies-2025');
