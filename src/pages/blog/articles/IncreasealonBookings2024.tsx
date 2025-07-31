@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const IncreaseSalonBookings2024 = () => {
   const article = {
@@ -138,17 +139,19 @@ const IncreaseSalonBookings2024 = () => {
                   <p className="text-sm text-muted-foreground">Salon Growth Experts</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bookmark className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-              </div>
             </div>
+
+            {/* Top Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="increase-salon-bookings-2024"
+              articleTitle={article.title}
+              articleUrl="https://emviapp.com/blog/marketing/increase-salon-bookings-2024"
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="top"
+              variant="compact"
+            />
 
             {/* Hero Image */}
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
@@ -464,6 +467,17 @@ const IncreaseSalonBookings2024 = () => {
                   View All Articles
                 </Link>
               </Button>
+              {/* Bottom Share/Save Actions */}
+              <BlogArticleActions
+                articleSlug="increase-salon-bookings-2024"
+                articleTitle={article.title}
+                articleUrl="https://emviapp.com/blog/marketing/increase-salon-bookings-2024"
+                articleDescription={article.description}
+                articleImage={article.image}
+                hashtags={article.tags}
+                position="bottom"
+                variant="full"
+              />
             </div>
           </div>
         </Container>

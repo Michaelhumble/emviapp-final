@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Calendar, Smartphone, Zap, TrendingUp, Users, Target,
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const MobileFirstBeautyBusiness2025 = () => {
   const article = {
@@ -110,17 +111,19 @@ const MobileFirstBeautyBusiness2025 = () => {
                   <p className="text-sm text-muted-foreground">Digital Innovation Experts</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bookmark className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-              </div>
             </div>
+
+            {/* Top Share/Save Actions */}
+            <BlogArticleActions
+              articleSlug="mobile-first-beauty-business-2025"
+              articleTitle={article.title}
+              articleUrl="https://emviapp.com/blog/trends/mobile-first-beauty-business-2025"
+              articleDescription={article.description}
+              articleImage={article.image}
+              hashtags={article.tags}
+              position="top"
+              variant="compact"
+            />
 
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
               <img 
@@ -478,6 +481,17 @@ const MobileFirstBeautyBusiness2025 = () => {
                   </span>
                 ))}
               </div>
+              {/* Bottom Share/Save Actions */}
+              <BlogArticleActions
+                articleSlug="mobile-first-beauty-business-2025"
+                articleTitle={article.title}
+                articleUrl="https://emviapp.com/blog/trends/mobile-first-beauty-business-2025"
+                articleDescription={article.description}
+                articleImage={article.image}
+                hashtags={article.tags}
+                position="bottom"
+                variant="full"
+              />
             </div>
           </div>
         </Container>
