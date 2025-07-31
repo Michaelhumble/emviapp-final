@@ -195,6 +195,9 @@ const BlogLanding = () => {
                     src={featuredArticle.image}
                     alt={featuredArticle.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                    }}
                   />
                 </div>
                 <div className="p-8 md:p-12 flex flex-col justify-center">
@@ -288,7 +291,10 @@ const BlogLanding = () => {
                 <img 
                   src={artist.image}
                   alt={artist.name}
-                  className="w-20 h-20 rounded-full mx-auto mb-4 group-hover:scale-110 transition-transform"
+                  className="w-20 h-20 rounded-full mx-auto mb-4 group-hover:scale-110 transition-transform object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80';
+                  }}
                 />
                 <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
                   {artist.name}

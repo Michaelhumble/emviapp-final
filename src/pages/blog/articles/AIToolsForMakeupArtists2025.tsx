@@ -4,6 +4,8 @@ import { ArrowLeft, Sparkles, Bot, Calendar, Clock, Users, ChevronRight, Star, Z
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
+import AuthorAvatar from '@/components/blog/AuthorAvatar';
 
 const AIToolsForMakeupArtists2025 = () => {
   const articleSchema = {
@@ -83,10 +85,11 @@ const AIToolsForMakeupArtists2025 = () => {
 
             {/* Featured Image */}
             <div className="mb-12 rounded-2xl overflow-hidden">
-              <img 
+              <BlogImage 
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
                 alt="Professional makeup artist using AI tools on laptop for business growth"
-                className="w-full h-[400px] md:h-[500px] object-cover"
+                className="w-full h-[400px] md:h-[500px]"
+                priority={true}
               />
             </div>
           </div>

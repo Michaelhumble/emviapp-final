@@ -12,6 +12,8 @@ interface OptimizedImageProps {
   priority?: boolean;
   onLoad?: () => void;
   onError?: () => void;
+  fallbackImage?: string;
+  showShimmer?: boolean;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -24,7 +26,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
   priority = false,
   onLoad,
-  onError
+  onError,
+  fallbackImage,
+  showShimmer = true
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -54,9 +58,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Handle error event
   const handleError = () => {
     setHasError(true);
-    // Fallback to a default image or placeholder
-    setImgSrc('/placeholder.svg');
+    // Use provided fallback or a premium default
+    const fallback = fallbackImage || getDefaultFallback();
+    setImgSrc(fallback);
     onError?.();
+  };
+
+  // Get a premium fallback image
+  const getDefaultFallback = () => {
+    // Use a professional beauty industry image as fallback
+    return 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
   };
 
   // Intersection Observer for lazy loading
@@ -90,16 +101,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     'data-src': lazy && !priority ? src : undefined,
     alt: alt || generateImageAlt(title || 'Image'),
     title,
-    className: `${className} ${!isLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 ${lazy && !priority ? 'lazy' : ''}`,
+    className: `${className} ${!isLoaded && showShimmer ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 ${lazy && !priority ? 'lazy' : ''}`,
     sizes,
-    srcSet: generateSrcSet(src),
+    srcSet: generateSrcSet(imgSrc),
     loading: lazy && !priority ? 'lazy' as const : 'eager' as const,
     onLoad: handleLoad,
     onError: handleError,
     style: {
-      backgroundImage: !isLoaded ? 'linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%)' : undefined,
-      backgroundSize: !isLoaded ? '200% 100%' : undefined,
-      animation: !isLoaded ? 'shimmer 1.5s infinite linear' : undefined,
+      backgroundImage: !isLoaded && showShimmer ? 'linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%)' : undefined,
+      backgroundSize: !isLoaded && showShimmer ? '200% 100%' : undefined,
+      animation: !isLoaded && showShimmer ? 'shimmer 1.5s infinite linear' : undefined,
     }
   };
 

@@ -4,6 +4,8 @@ import { ArrowLeft, Share2, Bookmark, Clock, Calendar, DollarSign, TrendingUp, C
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
+import AuthorAvatar from '@/components/blog/AuthorAvatar';
 
 const SalonPricingStrategies2025 = () => {
   const article = {
@@ -101,10 +103,11 @@ const SalonPricingStrategies2025 = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-12">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                  E
-                </div>
+            <div className="flex items-center gap-3">
+                <AuthorAvatar 
+                  name={article.author}
+                  size="md"
+                />
                 <div>
                   <p className="font-semibold">{article.author}</p>
                   <p className="text-sm text-muted-foreground">Business Strategy Experts</p>
@@ -123,10 +126,11 @@ const SalonPricingStrategies2025 = () => {
             </div>
 
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
-              <img 
+              <BlogImage 
                 src={article.image}
                 alt="Elegant salon pricing strategy chart with profit calculations and value propositions"
-                className="w-full h-full object-cover"
+                className="w-full h-full"
+                priority={true}
               />
             </div>
           </div>

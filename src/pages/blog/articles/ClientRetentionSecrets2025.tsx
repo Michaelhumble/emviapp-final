@@ -123,10 +123,11 @@ const ClientRetentionSecrets2025 = () => {
             </div>
 
             <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12 shadow-2xl">
-              <img 
+              <BlogImage 
                 src={article.image}
                 alt="Happy salon clients enjoying personalized service and building relationships"
-                className="w-full h-full object-cover"
+                className="w-full h-full"
+                priority={true}
               />
             </div>
           </div>

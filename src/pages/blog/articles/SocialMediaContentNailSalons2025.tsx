@@ -4,6 +4,8 @@ import { ArrowLeft, Camera, TrendingUp, Users, Heart, Calendar, Clock, Share2, T
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
+import AuthorAvatar from '@/components/blog/AuthorAvatar';
 
 const SocialMediaContentNailSalons2025 = () => {
   const articleSchema = {
@@ -83,10 +85,11 @@ const SocialMediaContentNailSalons2025 = () => {
 
             {/* Featured Image */}
             <div className="mb-12 rounded-2xl overflow-hidden">
-              <img 
+              <BlogImage 
                 src="https://images.unsplash.com/photo-1487058792275-0ad442f7d0c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
                 alt="Creative digital content creation and social media marketing for nail salons"
-                className="w-full h-[400px] md:h-[500px] object-cover"
+                className="w-full h-[400px] md:h-[500px]"
+                priority={true}
               />
             </div>
           </div>

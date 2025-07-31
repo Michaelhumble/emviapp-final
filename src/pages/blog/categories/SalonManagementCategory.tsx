@@ -4,6 +4,7 @@ import { ArrowLeft, Building2, Clock, Calendar, TrendingUp } from 'lucide-react'
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BlogImage from '@/components/blog/BlogImage';
 
 const SalonManagementCategory = () => {
   const articles = [
@@ -119,7 +120,7 @@ const SalonManagementCategory = () => {
               >
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="aspect-[4/3] overflow-hidden">
-                    <img 
+                    <BlogImage 
                       src={article.image}
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
