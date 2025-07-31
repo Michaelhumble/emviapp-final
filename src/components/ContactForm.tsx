@@ -7,6 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Lightbulb, Bug, Star, TrendingUp, MessageCircle, MoreHorizontal, User, Mail, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { analytics } from '@/lib/analytics';
+import { ContactConversionTracker } from '@/components/analytics/ConversionTracking';
 
 interface ContactReason {
   id: string;
@@ -71,6 +73,7 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,8 +131,14 @@ const ContactForm = () => {
         // Don't show error to user as email was sent successfully
       }
 
-      // Success feedback
+      // Success feedback with analytics tracking
+      const submissionTimestamp = Date.now().toString();
+      setSubmissionId(submissionTimestamp);
       setIsSubmitted(true);
+      
+      // Track conversion with GA4
+      analytics.trackContactSubmission(reasonText, 'contact_page');
+      
       toast({
         title: "Message Sent! 🎉",
         description: "We've received your message and will get back to you within 24 hours.",
@@ -317,6 +326,14 @@ const ContactForm = () => {
             )}
           </Button>
         </div>
+        
+        {/* Analytics Conversion Tracking */}
+        {isSubmitted && submissionId && (
+          <ContactConversionTracker 
+            formType={contactReasons.find(r => r.id === formData.reason)?.title || 'General Inquiry'} 
+            source="contact_page" 
+          />
+        )}
       </form>
     </div>
   );
