@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, TrendingUp, Star, Users, Calendar, ArrowRight } from 'lucide-react';
+import { Search, TrendingUp, Star, Users, Calendar, ArrowRight, Sparkles, BarChart3, Award, Building2, Palette, Trophy } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,42 +24,48 @@ const BlogLanding = () => {
       slug: "beauty-tips",
       count: 47,
       color: "bg-gradient-to-br from-pink-500/10 to-purple-500/10",
-      icon: "💄"
+      icon: Sparkles,
+      iconColor: "text-pink-600"
     },
     { 
       name: "Industry News", 
       slug: "industry",
       count: 23,
       color: "bg-gradient-to-br from-blue-500/10 to-cyan-500/10",
-      icon: "📈"
+      icon: BarChart3,
+      iconColor: "text-blue-600"
     },
     { 
       name: "Artist Spotlights", 
       slug: "artist-spotlights",
       count: 31,
       color: "bg-gradient-to-br from-yellow-500/10 to-orange-500/10",
-      icon: "⭐"
+      icon: Award,
+      iconColor: "text-yellow-600"
     },
     { 
       name: "Salon Management", 
       slug: "salon-management",
       count: 19,
       color: "bg-gradient-to-br from-green-500/10 to-emerald-500/10",
-      icon: "🏢"
+      icon: Building2,
+      iconColor: "text-green-600"
     },
     { 
       name: "Trends", 
       slug: "trends",
       count: 56,
       color: "bg-gradient-to-br from-violet-500/10 to-purple-500/10",
-      icon: "🎨"
+      icon: Palette,
+      iconColor: "text-violet-600"
     },
     { 
       name: "Success Stories", 
       slug: "success-stories",
       count: 12,
       color: "bg-gradient-to-br from-rose-500/10 to-pink-500/10",
-      icon: "🏆"
+      icon: Trophy,
+      iconColor: "text-rose-600"
     }
   ];
 
@@ -192,22 +198,27 @@ const BlogLanding = () => {
         <Container className="py-16">
           <h2 className="text-3xl font-bold mb-12 text-center">Explore Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category) => (
-              <Link
-                key={category.slug}
-                to={category.slug === 'salon-management' ? '/blog/salon-management/increase-salon-bookings-2025' : `/blog/category/${category.slug}`}
-                className={`${category.color} p-6 rounded-xl hover:scale-105 transition-all duration-300 group`}
-              >
-                <div className="text-3xl mb-3">{category.icon}</div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                  {category.name}
-                </h3>
-                <p className="text-muted-foreground text-sm mb-3">
-                  {category.count} articles
-                </p>
-                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-              </Link>
-            ))}
+            {categories.map((category) => {
+              const IconComponent = category.icon;
+              return (
+                <Link
+                  key={category.slug}
+                  to={category.slug === 'salon-management' ? '/blog/salon-management/increase-salon-bookings-2025' : `/blog/category/${category.slug}`}
+                  className={`${category.color} p-6 rounded-xl hover:scale-105 transition-all duration-300 group border border-white/20 backdrop-blur-sm`}
+                >
+                  <div className="mb-4">
+                    <IconComponent className={`h-8 w-8 ${category.iconColor}`} />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                    {category.name}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-3">
+                    {category.count} articles
+                  </p>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </Link>
+              );
+            })}
           </div>
         </Container>
 
