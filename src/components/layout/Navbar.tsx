@@ -82,6 +82,12 @@ const Navbar = () => {
             >
               Community
             </Link>
+            <Link 
+              to="/blog" 
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
+            >
+              Blog
+            </Link>
           </div>
 
           {/* Right side items */}
