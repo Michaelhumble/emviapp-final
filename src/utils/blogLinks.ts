@@ -110,7 +110,7 @@ export const generateSocialShareUrls = (slug: string) => {
     return {};
   }
   
-  const fullUrl = `https://emviapp.com${article.url}`;
+  const fullUrl = `https://emvi.app${article.url}`;
   const encodedTitle = encodeURIComponent(article.title);
   const encodedDescription = encodeURIComponent(article.description);
   

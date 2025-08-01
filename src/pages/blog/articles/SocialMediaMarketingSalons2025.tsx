@@ -38,7 +38,7 @@ const SocialMediaMarketingSalons2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emviapp.com/blog/marketing/social-media-marketing-salons-2025"
+        url="https://emvi.app/blog/marketing/social-media-marketing-salons-2025"
         type="article"
         image={article.image}
         author={article.author}
@@ -59,7 +59,7 @@ const SocialMediaMarketingSalons2025 = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emviapp.com/logo.png"
+              "url": "https://emvi.app/logo.png"
             }
           },
           "datePublished": "2025-07-01T10:00:00Z",

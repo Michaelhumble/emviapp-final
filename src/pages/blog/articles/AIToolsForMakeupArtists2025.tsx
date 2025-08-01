@@ -15,7 +15,7 @@ const AIToolsForMakeupArtists2025 = () => {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emviapp.com/blog/beauty-tips/ai-tools-for-makeup-artists"
+      "@id": "https://emvi.app/blog/beauty-tips/ai-tools-for-makeup-artists"
     },
     "headline": "Leveraging AI for Freelance Makeup Artists: Tools to Boost Your Business",
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -30,13 +30,13 @@ const AIToolsForMakeupArtists2025 = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emviapp.com/logo.png"
+        "url": "https://emvi.app/logo.png"
       }
     },
     "description": "Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation. Learn how EmviApp empowers your beauty business."
   };
 
-  const currentUrl = "https://emviapp.com/blog/beauty-tips/ai-tools-for-makeup-artists";
+  const currentUrl = "https://emvi.app/blog/beauty-tips/ai-tools-for-makeup-artists";
   const featuredImage = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
 
   return (

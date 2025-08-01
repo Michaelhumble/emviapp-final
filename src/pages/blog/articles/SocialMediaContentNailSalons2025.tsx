@@ -14,7 +14,7 @@ const SocialMediaContentNailSalons2025 = () => {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emviapp.com/blog/salon-management/social-media-content-nail-salons"
+      "@id": "https://emvi.app/blog/salon-management/social-media-content-nail-salons"
     },
     "headline": "Social Media Content Ideas for Nail Salons in 2025",
     "image": "https://images.unsplash.com/photo-1487058792275-0ad442f7d0c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -29,7 +29,7 @@ const SocialMediaContentNailSalons2025 = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emviapp.com/logo.png"
+        "url": "https://emvi.app/logo.png"
       }
     },
     "description": "Get fresh, effective social media content ideas for nail salons to attract clients, showcase work, and grow your brand in 2025. Learn from EmviApp's expert tips."
@@ -40,7 +40,7 @@ const SocialMediaContentNailSalons2025 = () => {
       <DynamicSEO
         title="Nail Salon Social Media Content Ideas for 2025 | EmviApp"
         description="Get fresh, effective social media content ideas for nail salons to attract clients, showcase work, and grow your brand in 2025. Learn from EmviApp's expert tips."
-        url="https://emviapp.com/blog/salon-management/social-media-content-nail-salons"
+        url="https://emvi.app/blog/salon-management/social-media-content-nail-salons"
         type="article"
         tags={['nail salon marketing', 'social media content', 'nail art promotion', 'salon business', 'beauty marketing']}
         structuredData={articleSchema}

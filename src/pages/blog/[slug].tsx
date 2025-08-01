@@ -24,7 +24,7 @@ const BlogArticlePage: React.FC = () => {
         <DynamicSEO
           title="Article Not Found | EmviApp Blog"
           description="The blog article you're looking for could not be found."
-          url={`https://emviapp.com/blog/${articleSlug}`}
+          url={`https://emvi.app/blog/${articleSlug}`}
           type="website"
         />
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 flex items-center justify-center">
@@ -61,7 +61,7 @@ const BlogArticlePage: React.FC = () => {
       <DynamicSEO
         title={`${article.title} | EmviApp Blog`}
         description={article.description}
-        url={`https://emviapp.com${article.url}`}
+        url={`https://emvi.app${article.url}`}
         type="article"
         image={article.image}
         author={article.author}
@@ -71,7 +71,7 @@ const BlogArticlePage: React.FC = () => {
           "@type": "BlogPosting",
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": `https://emviapp.com${article.url}`
+            "@id": `https://emvi.app${article.url}`
           },
           "headline": article.title,
           "image": article.image,
@@ -85,7 +85,7 @@ const BlogArticlePage: React.FC = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emviapp.com/logo.png"
+              "url": "https://emvi.app/logo.png"
             }
           },
           "description": article.description

@@ -38,7 +38,7 @@ const MobileFirstBeautyBusiness2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emviapp.com/blog/technology/mobile-first-beauty-business-2025"
+        url="https://emvi.app/blog/technology/mobile-first-beauty-business-2025"
         type="article"
         image={article.image}
         author={article.author}
@@ -59,7 +59,7 @@ const MobileFirstBeautyBusiness2025 = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emviapp.com/logo.png"
+              "url": "https://emvi.app/logo.png"
             }
           },
           "datePublished": "2025-07-01T14:00:00Z",
@@ -117,7 +117,7 @@ const MobileFirstBeautyBusiness2025 = () => {
             <BlogArticleActions
               articleSlug="mobile-first-beauty-business-2025"
               articleTitle={article.title}
-              articleUrl="https://emviapp.com/blog/trends/mobile-first-beauty-business-2025"
+              articleUrl="https://emvi.app/blog/trends/mobile-first-beauty-business-2025"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -485,7 +485,7 @@ const MobileFirstBeautyBusiness2025 = () => {
               <BlogArticleActions
                 articleSlug="mobile-first-beauty-business-2025"
                 articleTitle={article.title}
-                articleUrl="https://emviapp.com/blog/trends/mobile-first-beauty-business-2025"
+                articleUrl="https://emvi.app/blog/trends/mobile-first-beauty-business-2025"
                 articleDescription={article.description}
                 articleImage={article.image}
                 hashtags={article.tags}

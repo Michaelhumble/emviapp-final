@@ -37,7 +37,7 @@ const SuccessStoriesCategory = () => {
       <DynamicSEO
         title="Success Stories | Real Beauty Business Transformations"
         description="Read inspiring success stories from beauty professionals who transformed their careers and businesses. Discover proven strategies for building a thriving beauty business."
-        url="https://emviapp.com/blog/category/success-stories"
+        url="https://emvi.app/blog/category/success-stories"
         type="website"
         tags={['success stories', 'beauty business', 'entrepreneur stories', 'salon success']}
       />

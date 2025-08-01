@@ -15,7 +15,7 @@ export interface OGImageConfig {
 export class OGImageGenerator {
   private static readonly OPTIMAL_WIDTH = 1200;
   private static readonly OPTIMAL_HEIGHT = 630;
-  private static readonly BASE_URL = 'https://emviapp.com';
+  private static readonly BASE_URL = 'https://emvi.app';
 
   /**
    * Generate optimized Unsplash URL for OG images

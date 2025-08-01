@@ -25,7 +25,7 @@ const ClientLoyaltyLashTechs2025 = () => {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emviapp.com/blog/artist-spotlights/client-loyalty-lash-techs"
+      "@id": "https://emvi.app/blog/artist-spotlights/client-loyalty-lash-techs"
     },
     "headline": "Building Client Loyalty: Proven Strategies for Lash Technicians",
     "image": "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -40,7 +40,7 @@ const ClientLoyaltyLashTechs2025 = () => {
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emviapp.com/logo.png"
+        "url": "https://emvi.app/logo.png"
       }
     },
     "description": "Learn how lash technicians can build a loyal client base with exceptional service, personalized experiences, and smart retention strategies. Boost your lash business with EmviApp."
@@ -51,7 +51,7 @@ const ClientLoyaltyLashTechs2025 = () => {
       <DynamicSEO
         title="Client Loyalty for Lash Techs: Proven Strategies | EmviApp"
         description="Learn how lash technicians can build a loyal client base with exceptional service, personalized experiences, and smart retention strategies. Boost your lash business with EmviApp."
-        url="https://emviapp.com/blog/artist-spotlights/client-loyalty-lash-techs"
+        url="https://emvi.app/blog/artist-spotlights/client-loyalty-lash-techs"
         type="article"
         tags={['lash technician', 'client loyalty', 'retention strategies', 'lash business', 'customer service']}
         structuredData={articleSchema}

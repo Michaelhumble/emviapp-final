@@ -45,7 +45,7 @@ const SalonPricingStrategies2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emviapp.com/blog/business/salon-pricing-strategies-2025"
+        url="https://emvi.app/blog/business/salon-pricing-strategies-2025"
         type="article"
         image={article.image}
         author={article.author}
@@ -66,7 +66,7 @@ const SalonPricingStrategies2025 = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emviapp.com/logo.png"
+              "url": "https://emvi.app/logo.png"
             }
           },
           "datePublished": "2025-07-01T12:00:00Z",
@@ -125,7 +125,7 @@ const SalonPricingStrategies2025 = () => {
             <BlogArticleActions
               articleSlug="salon-pricing-strategies-2025"
               articleTitle={article.title}
-              articleUrl="https://emviapp.com/blog/salon-management/salon-pricing-strategies-2025"
+              articleUrl="https://emvi.app/blog/salon-management/salon-pricing-strategies-2025"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -479,7 +479,7 @@ const SalonPricingStrategies2025 = () => {
             <BlogArticleActions
               articleSlug="salon-pricing-strategies-2025"
               articleTitle={article.title}
-              articleUrl="https://emviapp.com/blog/salon-management/salon-pricing-strategies-2025"
+              articleUrl="https://emvi.app/blog/salon-management/salon-pricing-strategies-2025"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}

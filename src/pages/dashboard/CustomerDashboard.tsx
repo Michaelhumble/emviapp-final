@@ -26,7 +26,7 @@ const CustomerDashboard: React.FC = () => {
 
   // Referral link logic
   const referralLink = userProfile?.referral_code
-    ? `https://emviapp.com/invite/${userProfile.referral_code}`
+    ? `https://emvi.app/invite/${userProfile.referral_code}`
     : "";
 
   const handleCopyReferral = () => {

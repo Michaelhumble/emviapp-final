@@ -60,7 +60,7 @@ const IncreaseSalonBookings2024 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url={`https://emviapp.com/blog/salon-management/increase-salon-bookings-2025`}
+        url={`https://emvi.app/blog/salon-management/increase-salon-bookings-2025`}
         type="article"
         image={article.image}
         author={article.author}
@@ -81,7 +81,7 @@ const IncreaseSalonBookings2024 = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emviapp.com/logo.png"
+              "url": "https://emvi.app/logo.png"
             }
           },
           "datePublished": "2025-06-30T09:00:00Z",
@@ -145,7 +145,7 @@ const IncreaseSalonBookings2024 = () => {
             <BlogArticleActions
               articleSlug="increase-salon-bookings-2024"
               articleTitle={article.title}
-              articleUrl="https://emviapp.com/blog/marketing/increase-salon-bookings-2024"
+              articleUrl="https://emvi.app/blog/marketing/increase-salon-bookings-2024"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -471,7 +471,7 @@ const IncreaseSalonBookings2024 = () => {
               <BlogArticleActions
                 articleSlug="increase-salon-bookings-2024"
                 articleTitle={article.title}
-                articleUrl="https://emviapp.com/blog/marketing/increase-salon-bookings-2024"
+                articleUrl="https://emvi.app/blog/marketing/increase-salon-bookings-2024"
                 articleDescription={article.description}
                 articleImage={article.image}
                 hashtags={article.tags}

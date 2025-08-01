@@ -79,7 +79,7 @@ export function generateImageAlt(title: string, category?: string): string {
   return `${title}${categoryText} | EmviApp`;
 }
 
-export function generateStructuredBreadcrumb(path: string, baseUrl: string = 'https://emviapp.com') {
+export function generateStructuredBreadcrumb(path: string, baseUrl: string = 'https://emvi.app') {
   const segments = path.split('/').filter(Boolean);
   const breadcrumbs = [
     {

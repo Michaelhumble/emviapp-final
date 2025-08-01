@@ -42,7 +42,7 @@ const BeautyTipsCategory = () => {
       <DynamicSEO
         title="Beauty Tips & Tutorials | Expert Advice for Professional Results"
         description="Get professional beauty tips and tutorials from industry experts. Learn techniques for hair, nails, makeup, and skincare that deliver salon-quality results at home."
-        url="https://emviapp.com/blog/category/beauty-tips"
+        url="https://emvi.app/blog/category/beauty-tips"
         type="website"
         tags={['beauty tips', 'beauty tutorials', 'professional techniques', 'beauty advice']}
       />

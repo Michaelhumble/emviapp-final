@@ -69,7 +69,7 @@ const TheBeautyIndustrysMissingPiece = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url={`https://emviapp.com/blog/industry/the-beauty-industrys-missing-piece-emviapp`}
+        url={`https://emvi.app/blog/industry/the-beauty-industrys-missing-piece-emviapp`}
         type="article"
         image={article.image}
         author={article.author}
@@ -90,7 +90,7 @@ const TheBeautyIndustrysMissingPiece = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emviapp.com/logo.png"
+              "url": "https://emvi.app/logo.png"
             }
           },
           "datePublished": "2024-03-15T10:00:00Z",
@@ -154,7 +154,7 @@ const TheBeautyIndustrysMissingPiece = () => {
             <BlogArticleActions
               articleSlug="the-beauty-industrys-missing-piece-emviapp"
               articleTitle={article.title}
-              articleUrl="https://emviapp.com/blog/industry/the-beauty-industrys-missing-piece-emviapp"
+              articleUrl="https://emvi.app/blog/industry/the-beauty-industrys-missing-piece-emviapp"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -451,7 +451,7 @@ const TheBeautyIndustrysMissingPiece = () => {
             <BlogArticleActions
               articleSlug="the-beauty-industrys-missing-piece-emviapp"
               articleTitle={article.title}
-              articleUrl="https://emviapp.com/blog/industry/the-beauty-industrys-missing-piece-emviapp"
+              articleUrl="https://emvi.app/blog/industry/the-beauty-industrys-missing-piece-emviapp"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}

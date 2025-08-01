@@ -33,7 +33,7 @@ const TrendsCategory = () => {
       <DynamicSEO
         title="Beauty Trends 2025 | Latest Industry Insights & Innovations"
         description="Stay ahead of the latest beauty industry trends. Discover emerging techniques, technology innovations, and consumer preferences shaping the beauty world in 2025."
-        url="https://emviapp.com/blog/category/trends"
+        url="https://emvi.app/blog/category/trends"
         type="website"
         tags={['beauty trends', 'industry trends', 'beauty innovation', '2025 trends']}
       />
