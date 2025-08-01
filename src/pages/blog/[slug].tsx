@@ -9,14 +9,26 @@ const BlogArticlePage: React.FC = () => {
   const { slug, category } = useParams<{ slug: string; category: string }>();
   const location = useLocation();
   
+  // Debug logging
+  console.log('BlogArticlePage Debug:', {
+    slug,
+    category,
+    pathname: location.pathname,
+    extractedSlug: extractSlugFromUrl(location.pathname)
+  });
+  
   // Try to get slug from params first, then from URL path
   const articleSlug = slug || extractSlugFromUrl(location.pathname);
   
+  console.log('Article lookup:', { articleSlug });
+  
   if (!articleSlug) {
+    console.log('No article slug found, redirecting to /blog');
     return <Navigate to="/blog" replace />;
   }
   
   const article = getArticleBySlug(articleSlug);
+  console.log('Found article:', article?.title || 'NOT FOUND');
   
   if (!article) {
     return (
