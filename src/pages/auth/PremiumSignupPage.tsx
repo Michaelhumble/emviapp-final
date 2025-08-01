@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+const VISITOR_KEY = 'emviapp_first_visit_completed';
+
 // FOMO data generators
 const generateRandomSignup = () => {
   const names = ['Jessica M.', 'Marcus T.', 'Sarah K.', 'Amanda R.', 'David L.', 'Maria G.', 'Chris P.', 'Lauren B.'];
@@ -57,12 +59,23 @@ const PremiumSignupPage = () => {
     { name: 'Sarah K.', city: 'NYC', time: '4 min ago' },
   ]);
 
-  const { signUp } = useAuth();
+  const { signUp, isSignedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect');
+
+  // Mark that visitor has seen this page and redirect authenticated users
+  useEffect(() => {
+    // Mark that visitor has seen the premium signup page
+    localStorage.setItem(VISITOR_KEY, 'true');
+    
+    // If user is already signed in, redirect to home
+    if (isSignedIn) {
+      navigate('/', { replace: true });
+    }
+  }, [isSignedIn, navigate]);
 
   // Live counter and recent signups effect
   useEffect(() => {
@@ -175,31 +188,9 @@ const PremiumSignupPage = () => {
           });
         }
         
-        // Navigate based on role or redirect URL
-        let targetUrl = '/dashboard';
-        
-        switch (role) {
-          case 'artist':
-            targetUrl = '/dashboard/artist';
-            break;
-          case 'salon':
-            targetUrl = '/dashboard/salon';
-            break;
-          case 'customer':
-            targetUrl = '/dashboard/customer';
-            break;
-          case 'freelancer':
-            targetUrl = '/dashboard/freelancer';
-            break;
-          default:
-            if (redirectUrl) {
-              targetUrl = decodeURIComponent(redirectUrl);
-            }
-            break;
-        }
-        
+        // Redirect to main page after successful signup
         setTimeout(() => {
-          navigate(targetUrl, { replace: true });
+          navigate('/', { replace: true });
         }, 2000);
       }
       
