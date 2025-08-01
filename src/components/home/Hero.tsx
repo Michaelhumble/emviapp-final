@@ -68,10 +68,10 @@ const Hero = () => {
       className="relative overflow-hidden w-full max-w-full"
       style={{
         width: '100%',
-        height: '100dvh', // Dynamic viewport height for mobile browsers
-        minHeight: '100svh', // Small viewport height fallback
+        height: isMobile ? '85vh' : '90vh', // Reduced height for better above-fold CTA visibility
+        minHeight: isMobile ? '600px' : '700px', // Ensure minimum usable height
         maxWidth: '100vw',
-        maxHeight: '100dvh',
+        maxHeight: isMobile ? '85vh' : '90vh',
         position: 'relative',
         margin: 0,
         padding: 0,

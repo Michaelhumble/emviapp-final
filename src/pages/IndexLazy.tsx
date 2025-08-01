@@ -7,6 +7,15 @@ import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
+// Import conversion optimization components
+import StickySignUpButton from "@/components/ui/StickySignUpButton";
+import MicroConversionTop from "@/components/home/MicroConversionTop";
+import CTARepeater from "@/components/home/CTARepeater";
+import CompactTestimonials from "@/components/home/CompactTestimonials";
+
+// Import analytics
+import "@/utils/analytics/scrollTracking";
+
 // Lazy load non-critical components
 const ClientSuccessStories = lazy(() => import("@/components/home/ClientSuccessStories"));
 const AIMatchmakerSection = lazy(() => import("@/components/home/ai-matchmaker"));
@@ -65,6 +74,9 @@ const Index = () => {
   
   return (
     <Layout>
+      {/* Micro-conversion banner at top */}
+      <MicroConversionTop />
+      
       {/* 1. Hero section - Critical, not lazy loaded */}
       <Hero />
       
@@ -111,6 +123,9 @@ const Index = () => {
         <JobsCallToAction />
       </Suspense>
       
+      {/* CTA Repeater after hero/jobs section */}
+      <CTARepeater variant="primary" />
+      
       {/* 1.6 Real-time Activity Feed */}
       <section className="py-8 bg-white">
         <div className="container mx-auto px-4 text-center">
@@ -148,6 +163,9 @@ const Index = () => {
         <WhyTrustSection />
       </Suspense>
       
+      {/* CTA Repeater after trust section */}
+      <CTARepeater variant="secondary" />
+      
       <Suspense fallback={<SectionSkeleton />}>
         <AIMatchmakerSection />
       </Suspense>
@@ -156,13 +174,15 @@ const Index = () => {
         <SalonClientGrowthSystem />
       </Suspense>
       
-      <Suspense fallback={<SectionSkeleton />}>
-        <ClientSuccessStories />
-      </Suspense>
+      {/* Replace original testimonials with compact version */}
+      <CompactTestimonials />
       
       <Suspense fallback={<SectionSkeleton />}>
         <MissingPieceSection />
       </Suspense>
+      
+      {/* CTA Repeater after missing piece section */}
+      <CTARepeater variant="jobs" />
       
       <Suspense fallback={<SectionSkeleton />}>
         <FounderMessage />
@@ -179,6 +199,12 @@ const Index = () => {
       <Suspense fallback={<SectionSkeleton />}>
         <JobsFooterCTA />
       </Suspense>
+      
+      {/* Final CTA before footer */}
+      <CTARepeater variant="minimal" />
+      
+      {/* Sticky Sign Up Button */}
+      <StickySignUpButton />
       
       {user && userId && (
         <RoleSelectionModal 
