@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { useParams, Navigate, useLocation } from 'react-router-dom';
 import { Container } from '@/components/ui/container';
-import { getArticleBySlug } from '@/data/blogArticles';
+import { getArticleBySlug, BLOG_ARTICLES } from '@/data/blogArticles';
 import { extractSlugFromUrl } from '@/utils/blogLinks';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 
@@ -21,6 +21,7 @@ const BlogArticlePage: React.FC = () => {
   const articleSlug = slug || extractSlugFromUrl(location.pathname);
   
   console.log('🎯 Looking for article with slug:', articleSlug);
+  console.log('📚 Available articles:', BLOG_ARTICLES.map(a => ({ slug: a.slug, title: a.title })));
   
   if (!articleSlug) {
     console.log('❌ No article slug found');
@@ -29,6 +30,14 @@ const BlogArticlePage: React.FC = () => {
   
   const article = getArticleBySlug(articleSlug);
   console.log('📰 Article lookup result:', article ? `Found: ${article.title}` : 'NOT FOUND');
+  
+  // Add additional debugging for the lookup
+  if (!article) {
+    console.log('🔍 Debug: Checking all articles for exact match...');
+    BLOG_ARTICLES.forEach(a => {
+      console.log(`- ${a.slug} === ${articleSlug}? ${a.slug === articleSlug}`);
+    });
+  }
   
   if (!article) {
     return (
