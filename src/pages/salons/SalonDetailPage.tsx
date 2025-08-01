@@ -63,7 +63,7 @@ const SalonDetailPage = () => {
 
   // Back button component with share functionality
   const BackToListings = () => {
-    const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emvi.app';
+    const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
     const salonUrl = `${currentDomain}/salon/${id}`;
     
     return (
@@ -110,7 +110,7 @@ const SalonDetailPage = () => {
               title={`${salon.title} - Salon for Sale | EmviApp`}
               description={`${salon.title} salon for sale ${salon.location ? `in ${salon.location}` : ''}. ${salon.description?.substring(0, 150) || 'Explore this salon business opportunity.'}`}
               type="website"
-              image={salon.image || 'https://emvi.app/og-salon-image.jpg'}
+              image={salon.image || 'https://emviapp.com/og-salon-image.jpg'}
               tags={['salon', 'business', 'sale', salon.location || '', salon.category || '']}
             />
           )}

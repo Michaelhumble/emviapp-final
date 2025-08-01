@@ -81,8 +81,7 @@ function App() {
     window.scrollTo(0, 0);
     
     // Log route for debugging
-    console.log('🚀 [APP] Current route:', location.pathname);
-    console.log('🚀 [APP] All providers loaded successfully');
+    console.log('Current route:', location.pathname);
   }, [location.pathname]);
 
   return (
