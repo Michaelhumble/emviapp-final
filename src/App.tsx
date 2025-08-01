@@ -36,6 +36,7 @@ import PostJobBillion from "@/pages/PostJobBillion";
 import PostJobExperimental from "@/pages/PostJobExperimental";
 import SignIn from "@/pages/auth/SignIn";
 import NewSignUp from "@/pages/auth/NewSignUp";
+import SignupFastFomo from "@/pages/SignupFastFomo";
 import AuthPage from "@/pages/auth/AuthPage";
 import Onboarding from "@/pages/Onboarding";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
@@ -102,6 +103,7 @@ function App() {
                     <Route path="/login" element={<SignIn />} />
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/signup" element={<NewSignUp />} />
+                    <Route path="/signup-fast-fomo" element={<SignupFastFomo />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/onboarding" element={
                       <ProtectedRoute>
