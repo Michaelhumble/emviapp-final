@@ -1,20 +1,19 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { CustomerBooking } from './types';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { useOptimizedQuery } from '@/hooks/useOptimizedQuery';
+import { useSafeAsync } from '@/hooks/useSafeHook';
 
 export const useCustomerBookings = () => {
   const { user } = useAuth();
 
-  const { data: bookings, isLoading: loading, error, refetch: refreshBookings } = useOptimizedQuery({
-    queryKey: ['customer-bookings', user?.id],
-    queryFn: async () => {
+  const { data: bookings, isLoading: loading, error, execute: refreshBookings } = useSafeAsync<CustomerBooking[]>(
+    async () => {
       if (!user) throw new Error("User not authenticated");
       
-      // Get bookings with optimized query
+      // Get bookings directly without trying to join with artist
       const { data, error } = await supabaseBypass
         .from('bookings')
         .select(`
@@ -29,60 +28,61 @@ export const useCustomerBookings = () => {
           recipient_id
         `)
         .eq('sender_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50); // Limit results for performance
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       
-      if (!data || data.length === 0) {
+      if (!data) {
         return [];
       }
       
-      // Batch fetch artist details to reduce requests
-      const recipientIds = [...new Set(data.map((booking: any) => booking.recipient_id).filter(Boolean))];
-      let artistsMap = new Map();
-      
-      if (recipientIds.length > 0) {
-        try {
-          const { data: artists, error: artistError } = await supabaseBypass
-            .from('profiles')
-            .select('id, full_name, avatar_url')
-            .in('id', recipientIds);
-            
-          if (!artistError && artists) {
-            artists.forEach(artist => artistsMap.set(artist.id, artist));
+      // Now we need to fetch artist details separately
+      const enhancedBookings = await Promise.all(data.map(async (booking) => {
+        let artistData = null;
+        
+        // Fetch artist (recipient) details
+        if ((booking as any).recipient_id) {
+          try {
+            const { data: artist, error: artistError } = await supabaseBypass
+              .from('profiles')
+              .select('id, full_name, avatar_url')
+              .eq('id', (booking as any).recipient_id)
+              .single();
+              
+            if (!artistError && artist) {
+              artistData = artist;
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch artist data for booking ${booking.id}:`, error);
+            // Don't throw here, just continue with null artist data
           }
-        } catch (error) {
-          console.warn('Failed to fetch artist data:', error);
         }
-      }
+        
+        // Create the booking object with the right structure
+        return {
+          id: booking.id,
+          created_at: booking.created_at,
+          date_requested: booking.date_requested,
+          time_requested: booking.time_requested,
+          status: booking.status || undefined,
+          note: booking.note || undefined,
+          service_id: booking.service_id || undefined,
+          service: booking.service,
+          artist: artistData // May be null if not found
+        } as CustomerBooking;
+      }));
       
-      // Map bookings with artist data
-      return data.map((booking: any) => ({
-        id: booking.id,
-        created_at: booking.created_at,
-        date_requested: booking.date_requested,
-        time_requested: booking.time_requested,
-        status: booking.status || undefined,
-        note: booking.note || undefined,
-        service_id: booking.service_id || undefined,
-        service: booking.service,
-        artist: artistsMap.get(booking.recipient_id) || null
-      } as CustomerBooking));
+      return enhancedBookings;
     },
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    dedupe: true,
-    throttle: 200,
-  });
-
-  // Handle errors with toast
-  React.useEffect(() => {
-    if (error) {
-      console.error('Error fetching bookings:', error);
-      toast.error('Could not load your bookings. Please try again later.');
+    [user?.id],
+    {
+      fallbackData: [],
+      onError: (error) => {
+        console.error('Error fetching bookings:', error);
+        toast.error('Could not load your bookings. Please try again later.');
+      }
     }
-  }, [error]);
+  );
 
   return { 
     bookings: bookings || [], 

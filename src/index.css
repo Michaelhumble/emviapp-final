@@ -155,8 +155,6 @@
     position: relative;
     overflow: hidden;
     will-change: transform, box-shadow; /* GPU acceleration */
-    transform: translateZ(0); /* Force GPU layer */
-    backface-visibility: hidden; /* Prevent flickering */
   }
   
   .btn-luxury::before {
@@ -208,8 +206,6 @@
     background: var(--gradient-card);
     border: 1px solid rgba(255, 255, 255, 0.2);
     will-change: transform, box-shadow; /* GPU acceleration */
-    transform: translateZ(0); /* Force GPU layer */
-    backface-visibility: hidden; /* Prevent flickering */
   }
   
   @media (prefers-reduced-motion: reduce) {
