@@ -276,24 +276,52 @@ const PremiumSignupPage = () => {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="inline-block bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-2 rounded-xl mb-3"
+                    className="mb-3"
                   >
-                    <span className="text-xl font-bold text-white">Join 1,200+ Pros</span>
+                    <span className="text-xl font-semibold text-purple-600">Join 1,200+ Pros - </span>
+                    <span className="text-3xl font-bold text-green-600">100% FREE</span>
                   </motion.div>
                   
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="inline-block bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-2 rounded-xl mb-4"
+                    className="inline-block bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl mb-4"
                   >
-                    <span className="text-2xl font-bold text-white">100% FREE</span>
+                    <span className="text-lg font-bold text-orange-600">"Post your first job FREE — limited spots available!"</span>
+                  </motion.div>
+
+                  {/* Free Features Checkmarks */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="space-y-2 mb-4"
+                  >
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                      <span className="text-green-800 font-medium">No Hidden Fees</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                      <span className="text-green-800 font-medium">No Credit Card Needed</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                      <span className="text-green-800 font-medium">Cancel Anytime</span>
+                    </div>
                   </motion.div>
                   
                   <motion.p 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
+                    transition={{ delay: 0.5 }}
                     className="text-base text-gray-600 leading-relaxed"
                   >
                     The exclusive platform where beauty professionals get discovered, 
@@ -418,12 +446,27 @@ const PremiumSignupPage = () => {
                   </motion.div>
                 )}
 
-                {/* Trust Signals */}
+                {/* Live Counter in Modal */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
-                  className="mt-6 space-y-2"
+                  className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4 text-center"
+                >
+                  <div className="text-green-800 font-semibold text-sm mb-2">
+                    ✨ Recent Sign-Ups • {liveCounter.toLocaleString()} professionals joined • Live counter
+                  </div>
+                  <div className="text-green-700 text-sm animate-pulse">
+                    {recentSignups[0]?.name} from {recentSignups[0]?.city} just joined
+                  </div>
+                </motion.div>
+
+                {/* Trust Signals */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="mt-4 space-y-2"
                 >
                   <div className="flex items-center justify-center gap-3 text-gray-600">
                     <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
