@@ -41,7 +41,7 @@ const UniversalShareButton: React.FC<UniversalShareButtonProps> = ({
 
   // Generate the share URL with proper tracking
   const generateShareUrl = (medium: string) => {
-    const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
+    const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emvi.app';
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
     const baseUrl = customUrl || `${currentDomain}${currentPath}`;
     
@@ -60,7 +60,7 @@ const UniversalShareButton: React.FC<UniversalShareButtonProps> = ({
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description);
-  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `${typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com'}${image}`) : '';
+  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `${typeof window !== 'undefined' ? window.location.origin : 'https://emvi.app'}${image}`) : '';
   const hashtagText = hashtags.length > 0 ? hashtags.join(',') : '';
 
   const shareLinks = {

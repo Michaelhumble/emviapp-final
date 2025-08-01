@@ -102,7 +102,7 @@ const JobDetailPage = () => {
     );
   }
 
-  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
+  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emvi.app';
   const jobUrl = `${currentDomain}/job/${job.id}`;
   const jobDescription = `${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`;
   

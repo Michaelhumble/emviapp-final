@@ -30,7 +30,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
   const { toast } = useToast();
 
   // Ensure URL is absolute for social sharing
-  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
+  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emvi.app';
   const absoluteURL = url.startsWith('http') ? url : `${currentDomain}${url}`;
   
   // Add UTM tracking parameters for analytics

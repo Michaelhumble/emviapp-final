@@ -18,7 +18,7 @@ interface DynamicSEOProps {
 const DynamicSEO: React.FC<DynamicSEOProps> = ({
   title = 'EmviApp - Premium Beauty Community',
   description = 'Join the most exclusive beauty community. Share your work, learn from pros, and grow your beauty career with EmviApp.',
-  image = 'https://emviapp.com/og-image.jpg',
+  image = 'https://emvi.app/og-image.jpg',
   url,
   type = 'website',
   author,
@@ -32,7 +32,7 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
   const fullTitle = title.includes('EmviApp') ? title : `${title} | ${siteName}`;
   
   // Generate dynamic URL if not provided
-  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
+  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emvi.app';
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const dynamicUrl = url || `${currentDomain}${currentPath}`;
   const finalCanonicalUrl = canonicalUrl || dynamicUrl;
