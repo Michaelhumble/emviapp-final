@@ -6,41 +6,36 @@ import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFall
 
 interface AuthenticationGateProps {
   children: React.ReactNode;
+  onMobileBypass: () => void;
+  isMobileBypassed: boolean;
 }
 
 /**
  * Authentication Gate that forces unauthenticated users to see only the signup page
  * and blocks access to all other app content until signup is complete.
- * On mobile, allows bypassing with hamburger menu but FOMO persists on revisits.
+ * Now uses global mobile bypass state management.
  */
-const AuthenticationGate: React.FC<AuthenticationGateProps> = ({ children }) => {
+const AuthenticationGate: React.FC<AuthenticationGateProps> = ({ 
+  children, 
+  onMobileBypass, 
+  isMobileBypassed 
+}) => {
   const { isSignedIn, loading } = useAuth();
   const location = useLocation();
-  const [isMobileBypassed, setIsMobileBypassed] = useState(false);
 
   // Debug logging
   useEffect(() => {
     console.log('🔐 AuthenticationGate state:', { isSignedIn, loading, isMobileBypassed });
   }, [isSignedIn, loading, isMobileBypassed]);
 
-  // Reset bypass state on page reload/revisit for unsigned users
-  useEffect(() => {
-    if (!isSignedIn) {
-      setIsMobileBypassed(false);
-    }
-  }, [isSignedIn]);
-
   // Show loading while auth state is being determined
   if (loading) {
     return <SimpleLoadingFallback message="Loading..." />;
   }
 
-  // If user is not signed in, show premium signup page unless bypassed on mobile
+  // If user is not signed in and hasn't bypassed on mobile, show premium signup page
   if (!isSignedIn && !isMobileBypassed) {
-    return <PremiumSignupPage onMobileBypass={() => {
-      console.log('🔄 Mobile bypass triggered!');
-      setIsMobileBypassed(true);
-    }} />;
+    return <PremiumSignupPage />;
   }
 
   // If user is signed in or has bypassed on mobile, allow access to the main app
