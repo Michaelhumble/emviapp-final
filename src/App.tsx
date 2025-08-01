@@ -38,6 +38,7 @@ import SignIn from "@/pages/auth/SignIn";
 import NewSignUp from "@/pages/auth/NewSignUp";
 import SignupFastFomo from "@/pages/SignupFastFomo";
 import AuthPage from "@/pages/auth/AuthPage";
+import PremiumSignupPage from "@/pages/auth/PremiumSignupPage";
 import Onboarding from "@/pages/Onboarding";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
@@ -105,6 +106,7 @@ function App() {
                     <Route path="/signup" element={<NewSignUp />} />
                     <Route path="/signup-fast-fomo" element={<SignupFastFomo />} />
                     <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/auth/premium-signup" element={<PremiumSignupPage />} />
                     <Route path="/onboarding" element={
                       <ProtectedRoute>
                         <Onboarding />
