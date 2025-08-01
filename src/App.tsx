@@ -40,6 +40,7 @@ import SignupFastFomo from "@/pages/SignupFastFomo";
 import AuthPage from "@/pages/auth/AuthPage";
 import PremiumSignupPage from "@/pages/auth/PremiumSignupPage";
 import FirstTimeVisitorRedirect from "@/components/routing/FirstTimeVisitorRedirect";
+import GlobalPremiumSignupModalProvider from "@/components/modals/GlobalPremiumSignupModalProvider";
 import Onboarding from "@/pages/Onboarding";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
@@ -96,10 +97,11 @@ function App() {
               <SubscriptionProvider>
                 <NotificationProvider>
                     <RecommendationProvider>
-                      <OnboardingProvider>
-                       <RouteLogger />
-                       <FirstTimeVisitorRedirect>
-                         <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                       <OnboardingProvider>
+                        <RouteLogger />
+                        <FirstTimeVisitorRedirect>
+                          <GlobalPremiumSignupModalProvider>
+                            <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                            <Routes>
                     
                     {/* Auth routes */}
@@ -214,6 +216,7 @@ function App() {
                     <Route path="/freelancer/:profileId" element={<FreelancerProfile />} />
                         </Routes>
                        </Suspense>
+                       </GlobalPremiumSignupModalProvider>
                        </FirstTimeVisitorRedirect>
                        <Toaster />
                      </OnboardingProvider>
