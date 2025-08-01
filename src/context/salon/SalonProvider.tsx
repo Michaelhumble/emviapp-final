@@ -1,5 +1,5 @@
 
-import { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { useSalonProvider } from './useSalonProvider';
 import { useAuth } from '@/context/auth';
 import { Salon, SalonContextType } from './types';
