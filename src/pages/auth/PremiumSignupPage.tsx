@@ -330,94 +330,106 @@ const PremiumSignupPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                     onSubmit={handleSubmit} 
-                    className="space-y-4"
+                    className="space-y-6"
                   >
-                    <div>
-                      <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1 block">
-                        Email *
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email address"
-                        value={email}
-                        onChange={handleEmailChange}
-                        className={`h-12 text-base border-2 rounded-xl transition-all ${
-                          emailError 
-                            ? 'border-red-300 focus:border-red-500' 
-                            : 'border-gray-200 focus:border-purple-500'
-                        }`}
-                        required
-                      />
-                      {emailError && (
-                        <p className="text-red-500 text-sm mt-1">{emailError}</p>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1 block">
-                        Password *
-                      </Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Create a password (min 6 characters)"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="h-12 text-base border-2 border-gray-200 focus:border-purple-500 rounded-xl transition-all"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="fullName" className="text-sm font-medium text-gray-700 mb-1 block">
-                        Full Name *
-                      </Label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        placeholder="Your full name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="h-12 text-base border-2 border-gray-200 focus:border-purple-500 rounded-xl transition-all"
-                        required
-                      />
+                    {/* Form Section 1: Contact Details */}
+                    <div className="space-y-5">
+                      <div>
+                        <Label htmlFor="email" className="text-sm font-semibold text-gray-800 mb-2 block">
+                          Email Address *
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your best email address"
+                          value={email}
+                          onChange={handleEmailChange}
+                          className={`h-12 text-base border-2 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md ${
+                            emailError 
+                              ? 'border-red-300 focus:border-red-500' 
+                              : 'border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100'
+                          }`}
+                          required
+                        />
+                        {emailError && (
+                          <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                            <span className="w-4 h-4 rounded-full bg-red-100 text-red-600 text-xs flex items-center justify-center">!</span>
+                            {emailError}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="password" className="text-sm font-semibold text-gray-800 mb-2 block">
+                          Create Password *
+                        </Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Create a secure password (minimum 6 characters)"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="h-12 text-base border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
+                          required
+                        />
+                      </div>
                     </div>
 
-                    <div>
-                      <Label htmlFor="role" className="text-sm font-medium text-gray-700 mb-1 block">
-                        I am a *
-                      </Label>
-                      <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                        <SelectTrigger className="h-12 text-base border-2 border-gray-200 focus:border-purple-500 rounded-xl">
-                          <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 rounded-xl shadow-lg z-[150]">
-                          <SelectItem value="customer">Customer</SelectItem>
-                          <SelectItem value="artist">Artist</SelectItem>
-                          <SelectItem value="salon">Salon Owner</SelectItem>
-                          <SelectItem value="freelancer">Freelancer</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    {/* Form Section 2: Personal Details */}
+                    <div className="space-y-5 pt-2">
+                      <div>
+                        <Label htmlFor="fullName" className="text-sm font-semibold text-gray-800 mb-2 block">
+                          Full Name *
+                        </Label>
+                        <Input
+                          id="fullName"
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="h-12 text-base border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="role" className="text-sm font-semibold text-gray-800 mb-2 block">
+                          I am a *
+                        </Label>
+                        <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
+                          <SelectTrigger className="h-12 text-base border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white shadow-sm hover:shadow-md">
+                            <SelectValue placeholder="Choose your professional role" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white border border-gray-200 rounded-2xl shadow-xl z-[150]">
+                            <SelectItem value="customer" className="rounded-xl">Customer Looking for Services</SelectItem>
+                            <SelectItem value="artist" className="rounded-xl">Beauty Artist</SelectItem>
+                            <SelectItem value="salon" className="rounded-xl">Salon Owner</SelectItem>
+                            <SelectItem value="freelancer" className="rounded-xl">Freelance Professional</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting || !!emailError}
-                      className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-[1.02] disabled:transform-none mt-6"
-                    >
-                      {isSubmitting ? (
-                        <div className="flex items-center gap-3">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Creating your account...
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center gap-2">
-                          <Heart className="h-5 w-5" />
-                          ♡ Get My Spot FREE →
-                        </div>
-                      )}
-                    </Button>
+                    {/* CTA Button */}
+                    <div className="pt-4">
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting || !!emailError}
+                        className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none"
+                      >
+                        {isSubmitting ? (
+                          <div className="flex items-center gap-3">
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                            <span>Creating your free account...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-3">
+                            <Heart className="h-6 w-6 text-pink-200" />
+                            <span>♡ ♡ Get My Spot FREE →</span>
+                          </div>
+                        )}
+                      </Button>
+                    </div>
                   </motion.form>
                 ) : (
                   <motion.div
