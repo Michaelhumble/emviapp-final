@@ -5,8 +5,6 @@ import Layout from '@/components/layout/Layout';
 import SalonDetailContent from '@/components/salons/SalonDetailContent';
 import SalonListingCta from '@/components/salons/SalonListingCta';
 import SalonNotFound from '@/components/salon/SalonNotFound';
-import UniversalShareButton from '@/components/shared/UniversalShareButton';
-import DynamicSEO from '@/components/seo/DynamicSEO';
 import { Job } from '@/types/job';
 import ListingRouteGuard from '@/components/common/ListingRouteGuard';
 import { ArrowLeft } from 'lucide-react';
@@ -61,35 +59,17 @@ const SalonDetailPage = () => {
     </div>
   );
 
-  // Back button component with share functionality
-  const BackToListings = () => {
-    const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
-    const salonUrl = `${currentDomain}/salon/${id}`;
-    
-    return (
-      <div className="container mx-auto pt-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-          <Link to="/salons">
-            <Button variant="outline" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Listings</span>
-            </Button>
-          </Link>
-          
-          {salon && (
-            <UniversalShareButton
-              title={`${salon.title} - Salon for Sale`}
-              description={`Check out this salon opportunity: ${salon.title} ${salon.location ? `in ${salon.location}` : ''}. View details on EmviApp!`}
-              hashtags={['EmviApp', 'SalonForSale', 'BeautyBusiness']}
-              utmSource="salon_detail"
-              variant="button"
-              size="default"
-            />
-          )}
-        </div>
-      </div>
-    );
-  };
+  // Back button component
+  const BackToListings = () => (
+    <div className="container mx-auto pt-6">
+      <Link to="/salons">
+        <Button variant="outline" className="mb-4 flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Listings</span>
+        </Button>
+      </Link>
+    </div>
+  );
 
   return (
     <ListingRouteGuard 
@@ -105,16 +85,6 @@ const SalonDetailPage = () => {
     >
       <Layout>
         <div className="min-h-screen bg-background">
-          {salon && (
-            <DynamicSEO
-              title={`${salon.title} - Salon for Sale | EmviApp`}
-              description={`${salon.title} salon for sale ${salon.location ? `in ${salon.location}` : ''}. ${salon.description?.substring(0, 150) || 'Explore this salon business opportunity.'}`}
-              type="website"
-              image={salon.image || 'https://emviapp.com/og-salon-image.jpg'}
-              tags={['salon', 'business', 'sale', salon.location || '', salon.category || '']}
-            />
-          )}
-          
           {loading ? (
             <LoadingState />
           ) : error ? (

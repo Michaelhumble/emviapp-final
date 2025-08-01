@@ -30,21 +30,11 @@ const SocialShare: React.FC<SocialShareProps> = ({
   const { toast } = useToast();
 
   // Ensure URL is absolute for social sharing
-  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://emviapp.com';
-  const absoluteURL = url.startsWith('http') ? url : `${currentDomain}${url}`;
-  
-  // Add UTM tracking parameters for analytics
-  const utmParams = new URLSearchParams({
-    utm_source: 'social_share',
-    utm_medium: 'social',
-    utm_campaign: 'content_sharing'
-  });
-  
-  const trackedURL = `${absoluteURL}${absoluteURL.includes('?') ? '&' : '?'}${utmParams.toString()}`;
-  const encodedUrl = encodeURIComponent(trackedURL);
+  const absoluteURL = url.startsWith('http') ? url : `https://emviapp.com${url}`;
+  const encodedUrl = encodeURIComponent(absoluteURL);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description);
-  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `${currentDomain}${image}`) : '';
+  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `https://emviapp.com${image}`) : '';
   const hashtagText = hashtags.length > 0 ? hashtags.join(',') : '';
 
   const shareLinks = {
@@ -64,7 +54,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
       await navigator.share({
         title,
         text: description,
-        url: trackedURL
+        url: absoluteURL
       });
     } catch (err) {
       // User cancelled or error occurred, fall back to copy link
@@ -74,7 +64,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(trackedURL);
+      await navigator.clipboard.writeText(absoluteURL);
       toast({
         title: "Link copied!",
         description: "The article link has been copied to your clipboard.",
