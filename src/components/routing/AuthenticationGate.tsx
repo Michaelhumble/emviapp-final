@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useLocation } from 'react-router-dom';
 import PremiumSignupPage from '@/pages/auth/PremiumSignupPage';
@@ -11,23 +11,31 @@ interface AuthenticationGateProps {
 /**
  * Authentication Gate that forces unauthenticated users to see only the signup page
  * and blocks access to all other app content until signup is complete.
+ * On mobile, allows bypassing with hamburger menu but FOMO persists on revisits.
  */
 const AuthenticationGate: React.FC<AuthenticationGateProps> = ({ children }) => {
   const { isSignedIn, loading } = useAuth();
   const location = useLocation();
+  const [isMobileBypassed, setIsMobileBypassed] = useState(false);
+
+  // Reset bypass state on page reload/revisit for unsigned users
+  useEffect(() => {
+    if (!isSignedIn) {
+      setIsMobileBypassed(false);
+    }
+  }, [isSignedIn]);
 
   // Show loading while auth state is being determined
   if (loading) {
     return <SimpleLoadingFallback message="Loading..." />;
   }
 
-  // If user is not signed in, show only the premium signup page
-  // regardless of what route they're trying to access
-  if (!isSignedIn) {
-    return <PremiumSignupPage />;
+  // If user is not signed in, show premium signup page unless bypassed on mobile
+  if (!isSignedIn && !isMobileBypassed) {
+    return <PremiumSignupPage onMobileBypass={() => setIsMobileBypassed(true)} />;
   }
 
-  // If user is signed in, allow access to the main app
+  // If user is signed in or has bypassed on mobile, allow access to the main app
   return <>{children}</>;
 };
 

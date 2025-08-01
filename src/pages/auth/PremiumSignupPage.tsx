@@ -18,7 +18,8 @@ import {
   Globe,
   Users,
   Star,
-  Loader2
+  Loader2,
+  Menu
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -36,11 +37,15 @@ const generateRandomSignup = () => {
   };
 };
 
+interface PremiumSignupPageProps {
+  onMobileBypass?: () => void;
+}
+
 /**
  * PremiumSignupPage - Ultra-Premium Signup Page
  * Billion-dollar design with instant signup modal and emphasis on FREE
  */
-const PremiumSignupPage = () => {
+const PremiumSignupPage: React.FC<PremiumSignupPageProps> = ({ onMobileBypass }) => {
   // State management
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -555,6 +560,17 @@ const PremiumSignupPage = () => {
         <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
+              {/* Mobile Bypass Menu Button (Only on Mobile) */}
+              {onMobileBypass && (
+                <button
+                  onClick={onMobileBypass}
+                  className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 hover:bg-purple-200 transition-colors touch-manipulation"
+                  aria-label="Access main app"
+                >
+                  <Menu className="h-5 w-5 text-purple-600" />
+                </button>
+              )}
+              
               {/* Logo */}
               <Link to="/" className="text-2xl font-bold text-purple-600 font-serif">
                 EmviApp
