@@ -309,7 +309,7 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-gray-500" />
-                      <span>{salon.contact_info?.email || 'inquiries@emviapp.com'}</span>
+                      <span>{salon.contact_info?.email || 'inquiries@emvi.app'}</span>
                     </div>
                   </div>
                 ) : (

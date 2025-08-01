@@ -7,7 +7,7 @@ interface JobSEOProps {
   baseUrl?: string;
 }
 
-const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://emviapp.com' }) => {
+const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://emvi.app' }) => {
   const jobUrl = `${baseUrl}/${job.category}/${job.id}`;
   
   // Create SEO-friendly title

@@ -67,7 +67,7 @@ const ViralSharingSystem: React.FC<ViralSharingSystemProps> = ({
   ];
 
   const generateShareUrl = () => {
-    const baseUrl = 'https://emviapp.com';
+    const baseUrl = 'https://emvi.app';
     return `${baseUrl}/community/post/${post.id}`;
   };
 

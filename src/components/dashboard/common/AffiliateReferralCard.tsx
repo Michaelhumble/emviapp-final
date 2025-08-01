@@ -17,7 +17,7 @@ const AffiliateReferralCard = () => {
   
   // Generate a referral code if none exists
   const referralCode = userProfile?.affiliate_code || userProfile?.referral_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
-  const referralLink = `https://emviapp.com/sign-up?ref=${referralCode}`;
+  const referralLink = `https://emvi.app/sign-up?ref=${referralCode}`;
   
   // Fetch referral stats from Supabase
   useEffect(() => {

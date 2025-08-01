@@ -12,7 +12,7 @@ const CategorySEO: React.FC<CategorySEOProps> = ({
   category, 
   title,
   description,
-  baseUrl = 'https://emviapp.com' 
+  baseUrl = 'https://emvi.app' 
 }) => {
   const categoryData = getCategoryData(category);
   const categoryUrl = `${baseUrl}/${category}`;

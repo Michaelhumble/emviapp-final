@@ -30,11 +30,11 @@ const SocialShare: React.FC<SocialShareProps> = ({
   const { toast } = useToast();
 
   // Ensure URL is absolute for social sharing
-  const absoluteURL = url.startsWith('http') ? url : `https://emviapp.com${url}`;
+  const absoluteURL = url.startsWith('http') ? url : `https://emvi.app${url}`;
   const encodedUrl = encodeURIComponent(absoluteURL);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description);
-  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `https://emviapp.com${image}`) : '';
+  const encodedImage = image ? encodeURIComponent(image.startsWith('http') ? image : `https://emvi.app${image}`) : '';
   const hashtagText = hashtags.length > 0 ? hashtags.join(',') : '';
 
   const shareLinks = {

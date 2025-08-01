@@ -54,7 +54,7 @@ const SalonReferralCard = () => {
     setTimeout(() => setCopied(false), 2000);
   };
   
-  const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
+  const referralLink = `https://emvi.app/join?ref=${referralCode}`;
   
   return (
     <Card className="border-blue-100" id="referral-card">

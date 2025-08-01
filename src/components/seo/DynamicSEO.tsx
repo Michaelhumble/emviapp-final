@@ -18,8 +18,8 @@ interface DynamicSEOProps {
 const DynamicSEO: React.FC<DynamicSEOProps> = ({
   title = 'EmviApp - Premium Beauty Community',
   description = 'Join the most exclusive beauty community. Share your work, learn from pros, and grow your beauty career with EmviApp.',
-  image = 'https://emviapp.com/og-image.jpg',
-  url = 'https://emviapp.com',
+  image = 'https://emvi.app/og-image.jpg',
+  url = 'https://emvi.app',
   type = 'website',
   author,
   publishedTime,

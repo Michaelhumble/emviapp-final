@@ -12,7 +12,7 @@ const CustomerReferralPanel: React.FC = () => {
 
   // Use referral_code if present, else fallback to user id short
   const code = userProfile?.referral_code || userProfile?.id?.substring(0,8) || '---';
-  const referralLink = `https://emviapp.com/join?ref=${code}`;
+  const referralLink = `https://emvi.app/join?ref=${code}`;
   const credits = userProfile?.credits ?? 0;
   // Simulate history count for now, can be replaced with actual referrals
   const referralCount = userProfile?.referral_count ?? 0;

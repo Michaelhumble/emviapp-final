@@ -21,7 +21,7 @@ const EnhancedSEO: React.FC<EnhancedSEOProps> = ({
   title,
   description,
   url,
-  image = 'https://emviapp.com/og-image.jpg',
+  image = 'https://emvi.app/og-image.jpg',
   type = 'article',
   author = 'EmviApp',
   publishedTime,
@@ -33,7 +33,7 @@ const EnhancedSEO: React.FC<EnhancedSEOProps> = ({
   structuredData
 }) => {
   const canonical = url;
-  const imageUrl = image.startsWith('http') ? image : `https://emviapp.com${image}`;
+  const imageUrl = image.startsWith('http') ? image : `https://emvi.app${image}`;
 
   return (
     <Helmet>

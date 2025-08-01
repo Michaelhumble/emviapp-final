@@ -11,7 +11,7 @@ const ArtistViralShareCard = () => {
   const { user, userProfile } = useAuth();
   const [copied, setCopied] = useState(false);
   
-  const artistUrl = `https://emviapp.com/artist/${user?.id}`;
+  const artistUrl = `https://emvi.app/artist/${user?.id}`;
   
   const handleCopy = async () => {
     await navigator.clipboard.writeText(artistUrl);

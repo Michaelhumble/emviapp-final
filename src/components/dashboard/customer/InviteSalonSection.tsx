@@ -29,7 +29,7 @@ const InviteSalonSection = () => {
   };
   
   const handleCopyLink = () => {
-    const inviteLink = "https://emviapp.com/invite-salon";
+    const inviteLink = "https://emvi.app/invite-salon";
     navigator.clipboard.writeText(inviteLink);
     toast.success("Invite link copied to clipboard!");
   };

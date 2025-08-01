@@ -9,14 +9,14 @@ import { toast } from 'sonner';
 const ViralGrowthButtons = () => {
   const handleInviteFriend = () => {
     // Simulate invite functionality
-    navigator.clipboard.writeText('Join me on EmviApp - the exclusive beauty community! https://emviapp.com/invite')
+    navigator.clipboard.writeText('Join me on EmviApp - the exclusive beauty community! https://emvi.app/invite')
       .then(() => toast.success('Invite link copied! Share with your beauty friends 💅'))
       .catch(() => toast.success('Invite your friends to join EmviApp!'));
   };
 
   const handleSocialShare = (platform: string) => {
     const message = encodeURIComponent('Just discovered EmviApp - the most exclusive beauty community! 💄✨');
-    const url = encodeURIComponent('https://emviapp.com');
+    const url = encodeURIComponent('https://emvi.app');
     
     let shareUrl = '';
     switch (platform) {

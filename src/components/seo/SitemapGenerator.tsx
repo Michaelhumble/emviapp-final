@@ -7,7 +7,7 @@ export interface SitemapUrl {
   priority: number;
 }
 
-export async function generateSitemap(baseUrl: string = 'https://emviapp.com'): Promise<string> {
+export async function generateSitemap(baseUrl: string = 'https://emvi.app'): Promise<string> {
   const urls: SitemapUrl[] = [];
 
   // Static pages

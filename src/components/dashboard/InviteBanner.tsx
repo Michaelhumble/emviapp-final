@@ -14,7 +14,7 @@ const InviteBanner = ({ className }: InviteBannerProps) => {
   const [copied, setCopied] = useState(false);
   
   // Generate a referral link based on user ID
-  const referralLink = `https://emviapp.com/invite/${user?.id?.substring(0, 8)}`;
+  const referralLink = `https://emvi.app/invite/${user?.id?.substring(0, 8)}`;
   
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink);

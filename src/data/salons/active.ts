@@ -17,7 +17,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Sarah Chen",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["12 Pedicure Chairs", "10 Manicure Stations", "VIP Room", "Parking Available"],
     image_url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
@@ -39,7 +39,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Isabella Rodriguez",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Celebrity Clientele", "Full Service", "Prime Location", "High Revenue"],
     image_url: "https://images.unsplash.com/photo-1622287162716-f311baa1d300?w=800&h=600&fit=crop",
@@ -61,7 +61,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Michelle Johnson",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Award Winner", "Organic Focus", "15K Social Media", "Prime Austin Location"],
     image_url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
@@ -83,7 +83,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Victoria Sterling",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["$2M+ Revenue", "Celebrity Clients", "VIP Suites", "Champagne Service"],
     image_url: "https://images.unsplash.com/photo-1562322140-8d73dd88f5fa?w=800&h=600&fit=crop",
@@ -105,7 +105,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Carlos Martinez",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Ocean Views", "Tourist Area", "Influencer Clients", "Year-Round Traffic"],
     image_url: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&h=600&fit=crop",
@@ -127,7 +127,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Emma Thompson",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Eco-Friendly", "Vogue Featured", "Non-Toxic", "Modern Design"],
     image_url: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
@@ -149,7 +149,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Jennifer Kim",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Tech Clientele", "App Booking", "Industrial Design", "High Paying"],
     image_url: "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800&h=600&fit=crop",
@@ -171,7 +171,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Ashley Davis",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Celebrity Clients", "LED Therapy", "Instagram Ready", "Music City"],
     image_url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
@@ -193,7 +193,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Sophia Alexandra",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["$3M+ Revenue", "24/7 Service", "Vegas Strip", "Gold Fixtures"],
     image_url: "https://images.unsplash.com/photo-1562322140-8d73dd88f5fa?w=800&h=600&fit=crop",
@@ -215,7 +215,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Madison Walsh",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Nail Art Focus", "Minimalist Design", "Magazine Featured", "Lincoln Park"],
     image_url: "https://images.unsplash.com/photo-1522338140262-f46f5913618e?w=800&h=600&fit=crop",
@@ -237,7 +237,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Mia Rodriguez",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["Ocean Views", "Outdoor Patio", "Beach Theme", "Santa Monica"],
     image_url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
@@ -259,7 +259,7 @@ export const activeSalons: Job[] = [
     contact_info: {
       owner_name: "Penelope Whitmore",
       phone: "Request via EmviApp",
-      email: "inquiries@emviapp.com"
+      email: "inquiries@emvi.app"
     },
     salon_features: ["$4M+ Revenue", "Helicopter Access", "Estate Setting", "Generational Clients"],
     image_url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop",

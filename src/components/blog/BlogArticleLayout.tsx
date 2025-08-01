@@ -53,7 +53,7 @@ const BlogArticleLayout: React.FC<BlogArticleLayoutProps> = ({
       "name": "EmviApp",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emviapp.com/logo.png"
+        "url": "https://emvi.app/logo.png"
       }
     },
     "description": article.description

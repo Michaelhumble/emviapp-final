@@ -15,7 +15,7 @@ const ArtistReferralCenter = () => {
   const isVietnamese = userProfile?.preferred_language?.toLowerCase() === 'vietnamese';
 
   // Generate a referral link based on the user ID
-  const referralLink = user ? `https://emviapp.com/join?ref=${user.id.substring(0, 8)}` : '';
+  const referralLink = user ? `https://emvi.app/join?ref=${user.id.substring(0, 8)}` : '';
 
   const handleCopyLink = () => {
     if (referralLink) {

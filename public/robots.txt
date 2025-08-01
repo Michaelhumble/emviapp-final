@@ -42,5 +42,5 @@ Disallow: /post-success
 Disallow: /post-canceled
 
 # Sitemap location
-Sitemap: https://emviapp.com/sitemap.xml
+Sitemap: https://emvi.app/sitemap.xml
 

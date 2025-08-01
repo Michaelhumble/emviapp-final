@@ -10,7 +10,7 @@ const ShareJourneyCard: React.FC = () => {
   const [shareText] = useState("Check out my EmviApp beauty journey! 💅✨ I've earned 145 credits and unlocked 3 badges. Join me on EmviApp! #BeautyJourney #EmviApp");
 
   const handleShare = (platform: string) => {
-    const url = "https://emviapp.com"; // Replace with actual app URL
+    const url = "https://emvi.app"; // Replace with actual app URL
     
     switch (platform) {
       case 'instagram':

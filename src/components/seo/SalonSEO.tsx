@@ -7,7 +7,7 @@ interface SalonSEOProps {
   baseUrl?: string;
 }
 
-const SalonSEO: React.FC<SalonSEOProps> = ({ salon, baseUrl = 'https://emviapp.com' }) => {
+const SalonSEO: React.FC<SalonSEOProps> = ({ salon, baseUrl = 'https://emvi.app' }) => {
   const salonUrl = `${baseUrl}/salons/${salon.id}`;
   
   // Create SEO-friendly title

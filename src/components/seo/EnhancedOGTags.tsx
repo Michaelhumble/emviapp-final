@@ -27,7 +27,7 @@ interface EnhancedOGTagsProps {
 const EnhancedOGTags: React.FC<EnhancedOGTagsProps> = ({
   title,
   description,
-  image = 'https://emviapp.com/og-default.jpg',
+  image = 'https://emvi.app/og-default.jpg',
   url,
   type = 'website',
   author,
@@ -50,8 +50,8 @@ const EnhancedOGTags: React.FC<EnhancedOGTagsProps> = ({
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
   
   // Ensure URL is absolute
-  const absoluteURL = url.startsWith('http') ? url : `https://emviapp.com${url}`;
-  const absoluteImage = image.startsWith('http') ? image : `https://emviapp.com${image}`;
+  const absoluteURL = url.startsWith('http') ? url : `https://emvi.app${url}`;
+  const absoluteImage = image.startsWith('http') ? image : `https://emvi.app${image}`;
   const finalCanonicalUrl = canonicalUrl || absoluteURL;
   
   // Generate structured data for articles
@@ -80,7 +80,7 @@ const EnhancedOGTags: React.FC<EnhancedOGTagsProps> = ({
       "name": siteName,
       "logo": {
         "@type": "ImageObject",
-        "url": "https://emviapp.com/logo.png",
+        "url": "https://emvi.app/logo.png",
         "width": 200,
         "height": 60
       }

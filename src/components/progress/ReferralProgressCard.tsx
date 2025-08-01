@@ -34,7 +34,7 @@ const ReferralProgressCard = ({ referralStats = {}, loading = false }: ReferralP
   
   // Handle copy referral link
   const handleCopyReferralLink = () => {
-    const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
+    const referralLink = `https://emvi.app/join?ref=${referralCode}`;
     navigator.clipboard.writeText(referralLink);
     // Use toast to show success message
   };

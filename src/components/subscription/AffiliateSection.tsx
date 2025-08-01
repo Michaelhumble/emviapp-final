@@ -13,7 +13,7 @@ const AffiliateSection = () => {
   const [copied, setCopied] = useState(false);
   
   // Generate a placeholder affiliate link
-  const affiliateLink = `https://emviapp.com/ref/${user?.id?.substring(0, 8) || "yourcode"}`;
+  const affiliateLink = `https://emvi.app/ref/${user?.id?.substring(0, 8) || "yourcode"}`;
   
   const handleCopy = () => {
     navigator.clipboard.writeText(affiliateLink).then(() => {

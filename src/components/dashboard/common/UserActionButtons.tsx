@@ -11,7 +11,7 @@ const UserActionButtons = () => {
   const { user } = useAuth();
   
   // Generate a shareable affiliate link (in production this would come from backend)
-  const affiliateLink = user ? `https://emviapp.com/invite?ref=${user.id?.substring(0, 8)}` : "";
+  const affiliateLink = user ? `https://emvi.app/invite?ref=${user.id?.substring(0, 8)}` : "";
   
   const handleCopyLink = () => {
     if (!affiliateLink) return;

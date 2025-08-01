@@ -25,7 +25,7 @@ const ExternalShareButtons: React.FC<ExternalShareButtonsProps> = ({
       return;
     }
 
-    const shareUrl = `https://emviapp.com/post/${postId}`;
+    const shareUrl = `https://emvi.app/post/${postId}`;
     const shareText = `${content.slice(0, 100)}${content.length > 100 ? '...' : ''} 
 
 Check out this amazing beauty post on EmviApp! 💄✨
