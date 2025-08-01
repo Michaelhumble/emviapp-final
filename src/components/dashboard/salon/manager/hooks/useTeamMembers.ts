@@ -72,6 +72,7 @@ export const useTeamMembers = () => {
     fetchTeamMembers,
     sendInvite,
     removeTeamMember,
-    toggleMemberStatus
+    toggleMemberStatus,
+    retry: fetchTeamMembers
   };
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import Index from './pages/Index';
+import IndexLazy from './pages/IndexLazy';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
@@ -85,7 +85,7 @@ const routes = [
   },
   {
     path: '/',
-    element: <Index />,
+    element: <IndexLazy />,
   },
   {
     path: '/welcome',

@@ -49,18 +49,18 @@ const Hero = () => {
     }, 500);
   };
 
-  // Preload next few images for smoother transitions
+  // Preload only next image for smoother transitions (reduced from 3 to 1)
   useEffect(() => {
-    const preloadNextImages = () => {
-      const imagesToPreload = 3; // Number of images to preload
-      for (let i = 1; i <= imagesToPreload; i++) {
-        const nextIndex = (currentImageIndex + i) % heroImages.length;
-        const img = new Image();
-        img.src = heroImages[nextIndex].url;
-      }
+    const preloadNextImage = () => {
+      const nextIndex = (currentImageIndex + 1) % heroImages.length;
+      const img = new Image();
+      img.src = heroImages[nextIndex].url;
     };
     
-    preloadNextImages();
+    // Debounce preloading to avoid excessive requests
+    const timeoutId = setTimeout(preloadNextImage, 500);
+    
+    return () => clearTimeout(timeoutId);
   }, [currentImageIndex]);
 
   return (
