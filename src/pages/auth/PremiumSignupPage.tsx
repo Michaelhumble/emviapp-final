@@ -251,194 +251,200 @@ const PremiumSignupPage = () => {
               initial={{ scale: 0.9, opacity: 0, y: 50 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl"
+              className="bg-white rounded-3xl max-w-lg w-full relative shadow-2xl max-h-[85vh] overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setShowSignupModal(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              
-              <div className="text-center mb-8">
-                <motion.h1 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif"
+              {/* Fixed Header with Close Button */}
+              <div className="relative flex-shrink-0 p-6 pb-4">
+                <button
+                  onClick={() => setShowSignupModal(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
                 >
-                  Get Booked 3x Faster
-                </motion.h1>
+                  <X className="h-6 w-6" />
+                </button>
                 
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="inline-block bg-gradient-to-r from-yellow-400 to-orange-400 px-6 py-3 rounded-2xl mb-4"
-                >
-                  <span className="text-2xl font-bold text-white">Join 1,200+ Pros</span>
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="inline-block bg-gradient-to-r from-green-500 to-emerald-500 px-8 py-4 rounded-2xl mb-6"
-                >
-                  <span className="text-3xl font-bold text-white">100% FREE</span>
-                </motion.div>
-                
-                <motion.p 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-lg text-gray-600 leading-relaxed"
-                >
-                  The exclusive platform where beauty professionals get discovered, 
-                  build their client base, and earn more. Limited spots available.
-                </motion.p>
+                <div className="text-center pr-8">
+                  <motion.h1 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 font-serif"
+                  >
+                    Get Booked 3x Faster
+                  </motion.h1>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="inline-block bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-2 rounded-xl mb-3"
+                  >
+                    <span className="text-xl font-bold text-white">Join 1,200+ Pros</span>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="inline-block bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-2 rounded-xl mb-4"
+                  >
+                    <span className="text-2xl font-bold text-white">100% FREE</span>
+                  </motion.div>
+                  
+                  <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-base text-gray-600 leading-relaxed"
+                  >
+                    The exclusive platform where beauty professionals get discovered, 
+                    build their client base, and earn more. Limited spots available.
+                  </motion.p>
+                </div>
               </div>
 
-              {/* Signup Form */}
-              {!isSubmitted ? (
-                <motion.form 
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto px-6 pb-6">
+                {/* Signup Form */}
+                {!isSubmitted ? (
+                  <motion.form 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    onSubmit={handleSubmit} 
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1 block">
+                        Email *
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email address"
+                        value={email}
+                        onChange={handleEmailChange}
+                        className={`h-12 text-base border-2 rounded-xl transition-all ${
+                          emailError 
+                            ? 'border-red-300 focus:border-red-500' 
+                            : 'border-gray-200 focus:border-purple-500'
+                        }`}
+                        required
+                      />
+                      {emailError && (
+                        <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1 block">
+                        Password *
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Create a password (min 6 characters)"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="h-12 text-base border-2 border-gray-200 focus:border-purple-500 rounded-xl transition-all"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="fullName" className="text-sm font-medium text-gray-700 mb-1 block">
+                        Full Name *
+                      </Label>
+                      <Input
+                        id="fullName"
+                        type="text"
+                        placeholder="Your full name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="h-12 text-base border-2 border-gray-200 focus:border-purple-500 rounded-xl transition-all"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="role" className="text-sm font-medium text-gray-700 mb-1 block">
+                        I am a *
+                      </Label>
+                      <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
+                        <SelectTrigger className="h-12 text-base border-2 border-gray-200 focus:border-purple-500 rounded-xl">
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 rounded-xl shadow-lg z-[150]">
+                          <SelectItem value="customer">Customer</SelectItem>
+                          <SelectItem value="artist">Artist</SelectItem>
+                          <SelectItem value="salon">Salon Owner</SelectItem>
+                          <SelectItem value="freelancer">Freelancer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !!emailError}
+                      className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-[1.02] disabled:transform-none mt-6"
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-3">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Creating your account...
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <Heart className="h-5 w-5" />
+                          ♡ Get My Spot FREE →
+                        </div>
+                      )}
+                    </Button>
+                  </motion.form>
+                ) : (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", duration: 0.6 }}
+                    className="text-center py-6"
+                  >
+                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3 font-serif">You're In! 🎉</h3>
+                    <p className="text-lg text-gray-600 mb-3">
+                      Welcome to EmviApp! Check your email for verification.
+                    </p>
+                    <p className="text-base text-purple-600 font-semibold">
+                      Redirecting to your dashboard...
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* Trust Signals */}
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  onSubmit={handleSubmit} 
-                  className="space-y-4"
+                  transition={{ delay: 0.6 }}
+                  className="mt-6 space-y-2"
                 >
-                  <div>
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2 block">
-                      Email *
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email address"
-                      value={email}
-                      onChange={handleEmailChange}
-                      className={`h-14 text-lg border-2 rounded-xl transition-all ${
-                        emailError 
-                          ? 'border-red-300 focus:border-red-500' 
-                          : 'border-gray-200 focus:border-purple-500'
-                      }`}
-                      required
-                    />
-                    {emailError && (
-                      <p className="text-red-500 text-sm mt-1">{emailError}</p>
-                    )}
+                  <div className="flex items-center justify-center gap-3 text-gray-600">
+                    <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                    <span className="font-medium text-sm">No spam. Unsubscribe anytime.</span>
                   </div>
-                  
-                  <div>
-                    <Label htmlFor="password" className="text-sm font-medium text-gray-700 mb-2 block">
-                      Password *
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Create a password (min 6 characters)"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-14 text-lg border-2 border-gray-200 focus:border-purple-500 rounded-xl transition-all"
-                      required
-                    />
+                  <div className="flex items-center justify-center gap-3 text-gray-600">
+                    <Shield className="h-4 w-4 text-green-500 flex-shrink-0" />
+                    <span className="font-medium text-sm">Your data is secure & encrypted.</span>
                   </div>
-                  
-                  <div>
-                    <Label htmlFor="fullName" className="text-sm font-medium text-gray-700 mb-2 block">
-                      Full Name *
-                    </Label>
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder="Your full name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="h-14 text-lg border-2 border-gray-200 focus:border-purple-500 rounded-xl transition-all"
-                      required
-                    />
+                  <div className="text-center pt-2">
+                    <a 
+                      href="/privacy-policy" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-purple-600 hover:text-purple-700 underline font-medium text-sm"
+                    >
+                      Privacy Policy
+                    </a>
                   </div>
-
-                  <div>
-                    <Label htmlFor="role" className="text-sm font-medium text-gray-700 mb-2 block">
-                      I am a *
-                    </Label>
-                    <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                      <SelectTrigger className="h-14 text-lg border-2 border-gray-200 focus:border-purple-500 rounded-xl">
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="customer">Customer</SelectItem>
-                        <SelectItem value="artist">Artist</SelectItem>
-                        <SelectItem value="salon">Salon Owner</SelectItem>
-                        <SelectItem value="freelancer">Freelancer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || !!emailError}
-                    className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-[1.02] disabled:transform-none mt-6"
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="w-6 h-6 animate-spin" />
-                        Creating your account...
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-2">
-                        <Heart className="h-6 w-6" />
-                        ♡ Get My Spot FREE →
-                      </div>
-                    )}
-                  </Button>
-                </motion.form>
-              ) : (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", duration: 0.6 }}
-                  className="text-center py-8"
-                >
-                  <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-6" />
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4 font-serif">You're In! 🎉</h3>
-                  <p className="text-xl text-gray-600 mb-4">
-                    Welcome to EmviApp! Check your email for verification.
-                  </p>
-                  <p className="text-lg text-purple-600 font-semibold">
-                    Redirecting to your dashboard...
-                  </p>
                 </motion.div>
-              )}
-
-              {/* Trust Signals */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="mt-6 space-y-3"
-              >
-                <div className="flex items-center justify-center gap-3 text-gray-600">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="font-medium">No spam. Unsubscribe anytime.</span>
-                </div>
-                <div className="flex items-center justify-center gap-3 text-gray-600">
-                  <Shield className="h-5 w-5 text-green-500" />
-                  <span className="font-medium">Your data is secure & encrypted.</span>
-                </div>
-                <div className="text-center pt-2">
-                  <a 
-                    href="/privacy-policy" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-purple-600 hover:text-purple-700 underline font-medium"
-                  >
-                    Privacy Policy
-                  </a>
-                </div>
-              </motion.div>
+              </div>
             </motion.div>
           </motion.div>
         )}
