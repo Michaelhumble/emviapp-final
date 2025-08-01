@@ -560,21 +560,27 @@ const PremiumSignupPage: React.FC<PremiumSignupPageProps> = ({ onMobileBypass })
         <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              {/* Mobile Bypass Menu Button (Only on Mobile) */}
-              {onMobileBypass && (
-                <button
-                  onClick={onMobileBypass}
-                  className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 hover:bg-purple-200 transition-colors touch-manipulation"
-                  aria-label="Access main app"
-                >
-                  <Menu className="h-5 w-5 text-purple-600" />
-                </button>
-              )}
-              
-              {/* Logo */}
-              <Link to="/" className="text-2xl font-bold text-purple-600 font-serif">
-                EmviApp
-              </Link>
+              {/* Mobile Bypass Menu Button (Always visible on mobile for debugging) */}
+              <div className="flex items-center">
+                {onMobileBypass && (
+                  <button
+                    onClick={() => {
+                      console.log('🔄 Mobile bypass button clicked');
+                      onMobileBypass();
+                    }}
+                    className="md:hidden flex items-center justify-center w-12 h-12 mr-3 rounded-lg bg-purple-100 hover:bg-purple-200 transition-colors touch-manipulation border-2 border-purple-300"
+                    aria-label="Access main app"
+                    title="Skip to main app"
+                  >
+                    <Menu className="h-6 w-6 text-purple-600" />
+                  </button>
+                )}
+                
+                {/* Logo */}
+                <Link to="/" className="text-2xl font-bold text-purple-600 font-serif">
+                  EmviApp
+                </Link>
+              </div>
               
               {/* Navigation Links */}
               <div className="hidden md:flex items-center gap-8">

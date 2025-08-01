@@ -18,6 +18,11 @@ const AuthenticationGate: React.FC<AuthenticationGateProps> = ({ children }) => 
   const location = useLocation();
   const [isMobileBypassed, setIsMobileBypassed] = useState(false);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🔐 AuthenticationGate state:', { isSignedIn, loading, isMobileBypassed });
+  }, [isSignedIn, loading, isMobileBypassed]);
+
   // Reset bypass state on page reload/revisit for unsigned users
   useEffect(() => {
     if (!isSignedIn) {
@@ -32,7 +37,10 @@ const AuthenticationGate: React.FC<AuthenticationGateProps> = ({ children }) => 
 
   // If user is not signed in, show premium signup page unless bypassed on mobile
   if (!isSignedIn && !isMobileBypassed) {
-    return <PremiumSignupPage onMobileBypass={() => setIsMobileBypassed(true)} />;
+    return <PremiumSignupPage onMobileBypass={() => {
+      console.log('🔄 Mobile bypass triggered!');
+      setIsMobileBypassed(true);
+    }} />;
   }
 
   // If user is signed in or has bypassed on mobile, allow access to the main app
