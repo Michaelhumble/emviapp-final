@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import Logo from '@/components/ui/Logo';
+import { markUserSignedUp } from '@/utils/signupFunnelTracking';
 
 const NewSignUp = () => {
   const [fullName, setFullName] = useState('');
@@ -96,6 +97,9 @@ const NewSignUp = () => {
         console.log('User ID:', data.user.id);
         console.log('User email:', data.user.email);
         console.log('User metadata:', data.user.user_metadata);
+        
+        // Mark user as signed up in tracking system
+        markUserSignedUp();
         
         toast.success('Account created successfully! Redirecting...');
         

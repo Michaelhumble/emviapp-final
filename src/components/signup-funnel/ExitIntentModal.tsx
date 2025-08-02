@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 
 interface ExitIntentModalProps {
   enabled?: boolean;
+  onSignUpClick?: () => void;
 }
 
-const ExitIntentModal: React.FC<ExitIntentModalProps> = ({ enabled = true }) => {
+const ExitIntentModal: React.FC<ExitIntentModalProps> = ({ enabled = true, onSignUpClick }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -37,6 +38,9 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({ enabled = true }) => 
   };
 
   const handleSignUp = () => {
+    if (onSignUpClick) {
+      onSignUpClick();
+    }
     handleClose();
   };
 
