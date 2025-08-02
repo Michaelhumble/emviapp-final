@@ -2,6 +2,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import BlogArticleLayout from '@/components/blog/BlogArticleLayout';
 import { Link } from 'react-router-dom';
+import aiSalonDashboardMain from '@/assets/ai-salon-dashboard-main.jpg';
+import aiSchedulingInterface from '@/assets/ai-scheduling-interface.jpg';
+import salonOwnerAnalytics from '@/assets/salon-owner-analytics.jpg';
+import smartInventorySystem from '@/assets/smart-inventory-system.jpg';
 
 const AIPoweredSalonManagement2025: React.FC = () => {
   const article = {
@@ -14,7 +18,7 @@ const AIPoweredSalonManagement2025: React.FC = () => {
     readTime: '12 min read',
     category: 'Technology',
     tags: ['AI', 'Salon Management', 'Automation', 'Technology', 'Business'],
-    image: '/placeholder.svg',
+    image: aiSalonDashboardMain,
     featured: true
   };
 
@@ -37,7 +41,7 @@ const AIPoweredSalonManagement2025: React.FC = () => {
     },
     "datePublished": article.publishedAt,
     "dateModified": article.publishedAt,
-    "image": `https://emvi.app${article.image}`,
+    "image": article.image,
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https://emvi.app/blog/technology/ai-powered-salon-management-2025"
@@ -96,12 +100,12 @@ const AIPoweredSalonManagement2025: React.FC = () => {
         <meta name="description" content="Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon's efficiency." />
         <meta property="og:title" content="AI-Powered Salon Management: Streamlining Operations for 2025" />
         <meta property="og:description" content="Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon's efficiency." />
-        <meta property="og:image" content={`https://emvi.app${article.image}`} />
+        <meta property="og:image" content={article.image} />
         <meta property="og:url" content="https://emvi.app/blog/technology/ai-powered-salon-management-2025" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="AI-Powered Salon Management: Streamlining Operations for 2025" />
         <meta name="twitter:description" content="Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon's efficiency." />
-        <meta name="twitter:image" content={`https://emvi.app${article.image}`} />
+        <meta name="twitter:image" content={article.image} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
@@ -177,14 +181,24 @@ const AIPoweredSalonManagement2025: React.FC = () => {
           {/* Featured Image - AI Dashboard */}
           <div className="my-12">
             <img 
-              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-              alt="AI-powered salon management dashboard showing smart scheduling and client analytics interface"
+              src={aiSalonDashboardMain}
+              alt="Modern luxury salon interior with AI dashboard interface displayed on tablets and computers, showing smart scheduling calendar, client management system, and analytics charts"
               className="w-full h-64 md:h-80 rounded-lg shadow-lg object-cover"
               loading="lazy"
             />
           </div>
 
           <h3>Automated Scheduling: The End of Double-Bookings and No-Shows</h3>
+
+          {/* AI Scheduling Interface Image */}
+          <div className="my-8">
+            <img 
+              src={aiSchedulingInterface}
+              alt="Professional nail salon scheduling app interface on tablet showing automated appointment booking system with Vietnamese and English language options, smart calendar optimization features"
+              className="w-full h-48 md:h-64 rounded-lg shadow-md object-cover"
+              loading="lazy"
+            />
+          </div>
 
           <p>
             Perhaps the most immediately visible benefit of AI salon management is intelligent scheduling automation. Traditional appointment booking systems rely on human oversight and manual coordination, leading to conflicts, inefficiencies, and frustrated clients. AI-powered scheduling eliminates these problems through sophisticated algorithms that consider multiple variables simultaneously.
@@ -221,6 +235,16 @@ const AIPoweredSalonManagement2025: React.FC = () => {
           </p>
 
           <h3>Smart Inventory Tracking: Never Run Out, Never Overstock</h3>
+
+          {/* Smart Inventory System Image */}
+          <div className="my-8">
+            <img 
+              src={smartInventorySystem}
+              alt="Smart inventory management system interface showing automated product tracking, reorder alerts, and usage analytics for salon beauty products and supplies"
+              className="w-full h-48 md:h-64 rounded-lg shadow-md object-cover"
+              loading="lazy"
+            />
+          </div>
 
           <p>
             Inventory management represents one of the most complex challenges in salon operations, requiring precise balance between product availability and cash flow management. AI-powered inventory tracking systems eliminate guesswork by continuously monitoring product usage patterns and automatically predicting reorder points.
@@ -298,6 +322,16 @@ const AIPoweredSalonManagement2025: React.FC = () => {
           </p>
 
           <h3>Smart Business Intelligence Dashboard</h3>
+
+          {/* Salon Owner Analytics Image */}
+          <div className="my-8">
+            <img 
+              src={salonOwnerAnalytics}
+              alt="Asian salon owner using AI analytics dashboard on laptop showing client retention metrics, revenue optimization charts, and inventory tracking data in modern salon environment"
+              className="w-full h-48 md:h-64 rounded-lg shadow-md object-cover"
+              loading="lazy"
+            />
+          </div>
 
           <p>
             EmviApp's AI analytics dashboard transforms complex business data into clear, actionable insights that salon owners can use to make informed decisions. The system continuously monitors key performance indicators and provides real-time alerts when attention is needed.
