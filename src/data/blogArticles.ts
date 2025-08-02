@@ -37,9 +37,43 @@ const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBro
 const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AIPoweredSalonManagement2025'));
 const Top7AITrendsBeautySalons2025 = lazy(() => import('@/pages/blog/articles/Top7AITrendsBeautySalons2025'));
 const VietnameseNailTechHiring2025 = lazy(() => import('@/pages/blog/articles/VietnameseNailTechHiring2025'));
+const SocialMediaMarketingSalonsGuide2025 = lazy(() => import('@/pages/blog/articles/SocialMediaMarketingSalonsGuide2025'));
+const IncreaseSalonBookings300Percent2024 = lazy(() => import('@/pages/blog/articles/IncreaseSalonBookings300Percent2024'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'social-media-marketing-salons-guide-2025',
+    slug: 'social-media-marketing-salons-guide-2025',
+    title: 'Social Media Marketing for Salons: The Complete 2025 Guide',
+    description: 'Master social media marketing strategies that increase salon bookings by 70%. Complete guide with proven tactics for content creation, client engagement, and revenue growth.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 15, 2025',
+    readTime: '10 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['social media', 'marketing', 'salon growth', 'content creation', 'client engagement'],
+    image: '/src/assets/social-media-marketing-salons-guide.jpg',
+    featured: true,
+    component: SocialMediaMarketingSalonsGuide2025,
+    url: '/blog/salon-management/social-media-marketing-salons-guide-2025'
+  },
+  {
+    id: 'increase-salon-bookings-300-percent-2024',
+    slug: 'increase-salon-bookings-300-percent-2024',
+    title: 'How to Increase Your Salon Bookings by 300% in 2024',
+    description: 'Discover proven strategies used by top salons to triple their bookings. Mobile-first systems, AI client matching, retention tactics, and growth marketing that actually works.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 20, 2025',
+    readTime: '10 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['salon growth', 'booking increase', 'client retention', 'mobile booking', 'AI technology'],
+    image: '/src/assets/increase-salon-bookings-300-percent.jpg',
+    trending: true,
+    component: IncreaseSalonBookings300Percent2024,
+    url: '/blog/salon-management/increase-salon-bookings-300-percent-2024'
+  },
   {
     id: 'vietnamese-nail-tech-hiring-2025',
     slug: 'vietnamese-nail-tech-hiring-2025',
