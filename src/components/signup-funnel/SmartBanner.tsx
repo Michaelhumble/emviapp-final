@@ -33,10 +33,14 @@ const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
   }, []);
 
   useEffect(() => {
+    console.log('🔍 SmartBanner: Checking if banner should show...');
     // Check if banner should be shown
     if (shouldShowBanner()) {
+      console.log('✅ SmartBanner: Banner should show, making visible');
       setIsVisible(true);
       setIsAnimating(true);
+    } else {
+      console.log('❌ SmartBanner: Banner should NOT show');
     }
   }, []);
 

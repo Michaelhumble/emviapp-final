@@ -82,14 +82,23 @@ export const saveTrackingData = (data: Partial<UserTrackingData>): void => {
 export const shouldShowBanner = (): boolean => {
   const data = getTrackingData();
   
+  console.log('🔍 shouldShowBanner: data =', data);
+  
   // Never show if user is signed up
-  if (data.isSignedUp) return false;
+  if (data.isSignedUp) {
+    console.log('❌ shouldShowBanner: User is signed up');
+    return false;
+  }
   
   // If never dismissed, show it
-  if (!data.bannerDismissedAt) return true;
+  if (!data.bannerDismissedAt) {
+    console.log('✅ shouldShowBanner: Never dismissed, should show');
+    return true;
+  }
   
   // Check if enough time has passed since dismissal
   const hoursSinceDismissal = (Date.now() - data.bannerDismissedAt) / (1000 * 60 * 60);
+  console.log('🔍 shouldShowBanner: Hours since dismissal =', hoursSinceDismissal);
   return hoursSinceDismissal >= BANNER_REAPPEAR_HOURS;
 };
 
@@ -108,18 +117,32 @@ export const shouldShowExitIntent = (): boolean => {
 export const shouldShowReturnVisitor = (): boolean => {
   const data = getTrackingData();
   
+  console.log('🔍 shouldShowReturnVisitor: data =', data);
+  
   // Never show if user is signed up
-  if (data.isSignedUp) return false;
+  if (data.isSignedUp) {
+    console.log('❌ shouldShowReturnVisitor: User is signed up');
+    return false;
+  }
   
   // Check if this is a return visit (not first time)
   const hoursSinceLastVisit = (Date.now() - data.lastVisit) / (1000 * 60 * 60);
   const isReturnVisitor = hoursSinceLastVisit > 1; // Consider return visitor if more than 1 hour
   
+  console.log('🔍 shouldShowReturnVisitor: Hours since last visit =', hoursSinceLastVisit);
+  console.log('🔍 shouldShowReturnVisitor: Is return visitor =', isReturnVisitor);
+  
   // Check if already shown in this session
   const currentSessionId = getCurrentSessionId();
   const hasShownInSession = sessionStorage.getItem(`return_visitor_shown_${currentSessionId}`);
   
-  return isReturnVisitor && !hasShownInSession && data.returnVisitorShown < 1;
+  console.log('🔍 shouldShowReturnVisitor: Has shown in session =', hasShownInSession);
+  console.log('🔍 shouldShowReturnVisitor: Return visitor shown count =', data.returnVisitorShown);
+  
+  const shouldShow = isReturnVisitor && !hasShownInSession && data.returnVisitorShown < 1;
+  console.log('🔍 shouldShowReturnVisitor: Final result =', shouldShow);
+  
+  return shouldShow;
 };
 
 // Mark exit intent as shown

@@ -19,10 +19,14 @@ const ReturnVisitorModal: React.FC<ReturnVisitorModalProps> = ({ enabled = true 
   const { t, currentLanguage } = useFunnelTranslation();
 
   const handleReturnVisitor = () => {
+    console.log('🔍 ReturnVisitorModal: Checking if should show...');
     if (shouldShowReturnVisitor()) {
+      console.log('✅ ReturnVisitorModal: Should show, making visible');
       setIsVisible(true);
       setIsAnimating(true);
       markReturnVisitorShown();
+    } else {
+      console.log('❌ ReturnVisitorModal: Should NOT show');
     }
   };
 

@@ -15,10 +15,14 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({ enabled = true, onSig
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleExitIntent = () => {
+    console.log('🔍 ExitIntentModal: Checking if should show...');
     if (shouldShowExitIntent()) {
+      console.log('✅ ExitIntentModal: Should show, making visible');
       setIsVisible(true);
       setIsAnimating(true);
       markExitIntentShown();
+    } else {
+      console.log('❌ ExitIntentModal: Should NOT show');
     }
   };
 
