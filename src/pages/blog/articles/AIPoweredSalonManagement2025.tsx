@@ -519,7 +519,7 @@ const AIPoweredSalonManagement2025: React.FC = () => {
             <p className="text-center mb-4">
               Join thousands of successful salon owners who have transformed their operations with EmviApp's intelligent management tools. 
               <Link 
-                to="/pricing" 
+                to="/pricing/salon-management?utm_source=blog&utm_medium=ai-management&utm_campaign=cta" 
                 className="text-orange-600 hover:text-orange-800 underline font-medium ml-1"
               >
                 Start your free trial today and see the difference AI can make!

@@ -80,6 +80,11 @@ import BrowsLashesPage from "@/pages/brows-lashes";
 import TattooPage from "@/pages/tattoo";
 import BookingServices from "@/pages/BookingServices";
 
+// Pricing Pages
+import JobPostingPricing from "@/pages/pricing/JobPosting";
+import SalonManagementPricing from "@/pages/pricing/SalonManagement";
+import MarketingPackagesPricing from "@/pages/pricing/MarketingPackages";
+
 function App() {
   const location = useLocation();
 
@@ -171,6 +176,11 @@ function App() {
                      <Route path="/features" element={<Layout><Features /></Layout>} />
                      <Route path="/jobs/nail-technician" element={<Layout><NailTechnician /></Layout>} />
                      <Route path="/salons-for-sale" element={<Layout><SalonsForSale /></Layout>} />
+                     
+                     {/* Pricing Routes */}
+                     <Route path="/pricing/job-posting" element={<Layout><JobPostingPricing /></Layout>} />
+                     <Route path="/pricing/salon-management" element={<Layout><SalonManagementPricing /></Layout>} />
+                     <Route path="/pricing/marketing-packages" element={<Layout><MarketingPackagesPricing /></Layout>} />
                     
                     {/* ... keep existing code (other routes) the same */}
                     {routes.map((route, index) => (

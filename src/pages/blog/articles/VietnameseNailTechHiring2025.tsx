@@ -137,7 +137,7 @@ const VietnameseNailTechHiring2025 = () => {
 
           <div className="bg-blue-50 border-l-4 border-blue-400 p-6 my-8">
             <p className="text-blue-800 font-medium">
-              💡 <strong>Quick Start:</strong> Ready to find qualified Vietnamese nail technicians now? <Link to="/jobs/nail-technician" className="text-blue-600 hover:text-blue-800 underline">Explore EmviApp's pre-screened talent pool</Link> or <Link to="/pricing" className="text-blue-600 hover:text-blue-800 underline">start your free trial</Link> to access our AI-powered matching system.
+              💡 <strong>Quick Start:</strong> Ready to find qualified Vietnamese nail technicians now? <Link to="/jobs/nail-technician?utm_source=blog&utm_medium=vietnamese-hiring&utm_campaign=quick-start" className="text-blue-600 hover:text-blue-800 underline">Explore EmviApp's pre-screened talent pool</Link> or <Link to="/pricing/job-posting?utm_source=blog&utm_medium=vietnamese-hiring&utm_campaign=trial" className="text-blue-600 hover:text-blue-800 underline">start your free trial</Link> to access our AI-powered matching system.
             </p>
           </div>
         </section>
@@ -651,9 +651,9 @@ const VietnameseNailTechHiring2025 = () => {
               Join hundreds of Vietnamese salon owners who've streamlined their hiring with EmviApp's AI-powered platform. Find, hire, and retain top Vietnamese nail technicians faster than ever before.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/pricing" className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors text-center">
-                Start Free Trial
-              </Link>
+               <Link to="/pricing/job-posting?utm_source=blog&utm_medium=vietnamese-hiring&utm_campaign=cta-primary" className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors text-center">
+                 Start Hiring Today
+               </Link>
               <Link to="/about" className="border border-primary text-primary px-6 py-3 rounded-lg font-medium hover:bg-primary/5 transition-colors text-center">
                 Learn More About EmviApp
               </Link>
@@ -721,9 +721,9 @@ const VietnameseNailTechHiring2025 = () => {
               Join successful salon owners who've transformed their hiring with EmviApp's proven platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <Link to="/pricing" className="bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
-                Start Free Trial
-              </Link>
+               <Link to="/pricing/job-posting?utm_source=blog&utm_medium=vietnamese-hiring&utm_campaign=final-cta" className="bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                 Start Your Free Trial
+               </Link>
               <Link to="/salons-for-sale" className="border border-primary text-primary px-8 py-4 rounded-lg font-semibold hover:bg-primary/5 transition-colors">
                 Explore Salon Opportunities
               </Link>
