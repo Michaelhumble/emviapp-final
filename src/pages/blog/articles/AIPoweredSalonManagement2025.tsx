@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import BlogArticleLayout from '@/components/blog/BlogArticleLayout';
+import BlogImage from '@/components/blog/BlogImage';
 import { Link } from 'react-router-dom';
 
 const AIPoweredSalonManagement2025: React.FC = () => {
@@ -173,6 +174,16 @@ const AIPoweredSalonManagement2025: React.FC = () => {
           </p>
 
           <h2>Key Benefits of AI-Powered Salon Management Tools</h2>
+
+          {/* Featured Image - AI Dashboard */}
+          <div className="my-12">
+            <BlogImage 
+              src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+              alt="AI-powered salon management dashboard showing scheduling and analytics"
+              className="w-full h-64 md:h-80 rounded-lg shadow-lg"
+              priority={false}
+            />
+          </div>
 
           <h3>Automated Scheduling: The End of Double-Bookings and No-Shows</h3>
 
