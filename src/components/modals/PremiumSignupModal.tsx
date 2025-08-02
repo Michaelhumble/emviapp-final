@@ -267,13 +267,13 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
           >
             {/* Fixed Header with Close Button and Language Toggle */}
             <div className="relative flex-shrink-0 p-6 pb-4">
-              {/* Language Toggle Button - Top Right */}
+              {/* Language Toggle Button - Top Left Corner */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'vi' : 'en')}
-                className="absolute top-4 right-16 flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors z-10"
+                className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 bg-purple-50/80 hover:bg-purple-100/80 rounded-lg transition-colors z-10"
               >
-                <Globe className="h-4 w-4" />
-                {language === 'en' ? 'Tiếng Việt' : 'English'}
+                <Globe className="h-3.5 w-3.5" />
+                <span className="text-xs">{language === 'en' ? 'VI' : 'EN'}</span>
               </button>
               
               <button
@@ -283,7 +283,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
                 <X className="h-6 w-6" />
               </button>
               
-              <div className="text-center pr-20">
+              <div className="text-center pl-16 pr-8">
                 <motion.h1 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
