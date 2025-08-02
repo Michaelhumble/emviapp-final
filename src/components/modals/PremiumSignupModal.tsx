@@ -262,11 +262,11 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
             initial={{ scale: 0.9, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 50 }}
-            className="bg-white rounded-3xl max-w-lg w-full relative shadow-2xl max-h-[85vh] overflow-hidden flex flex-col"
+            className="bg-white rounded-3xl max-w-lg w-full relative shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Fixed Header with Close Button and Language Toggle */}
-            <div className="relative flex-shrink-0 p-6 pb-4">
+            <div className="relative flex-shrink-0 p-4 pb-3">
               {/* Language Toggle Button - Top Right Corner with proper spacing */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'vi' : 'en')}
@@ -283,11 +283,11 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
                 <X className="h-6 w-6" />
               </button>
               
-              <div className="text-center px-2 pt-6">
+              <div className="text-center px-2 pt-4">
                 <motion.h1 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 font-serif"
+                  className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-serif"
                 >
                   {t.title}
                 </motion.h1>
@@ -296,19 +296,19 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="mb-3"
+                  className="mb-2"
                 >
-                  <span className="text-xl font-semibold text-purple-600">{t.joinPros}</span>
-                  <span className="text-3xl font-bold text-green-600">{t.free}</span>
+                  <span className="text-lg font-semibold text-purple-600">{t.joinPros}</span>
+                  <span className="text-2xl font-bold text-green-600">{t.free}</span>
                 </motion.div>
                 
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="inline-block bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl mb-4"
+                  className="inline-block bg-orange-50 border border-orange-200 px-3 py-1.5 rounded-xl mb-3"
                 >
-                  <span className="text-lg font-bold text-orange-600">"{t.limitedOffer}"</span>
+                  <span className="text-base font-bold text-orange-600">"{t.limitedOffer}"</span>
                 </motion.div>
 
                 {/* Free Features Checkmarks */}
@@ -316,7 +316,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="space-y-2 mb-4"
+                  className="space-y-1.5 mb-3"
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
@@ -342,7 +342,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="text-base text-gray-600 leading-relaxed"
+                  className="text-sm text-gray-600 leading-relaxed"
                 >
                   {t.description}
                 </motion.p>
@@ -350,7 +350,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto px-6 pb-6">
+            <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
               {/* Signup Form */}
               <motion.form 
                 initial={{ opacity: 0, y: 20 }}
