@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MessageCircle, X, Send } from 'lucide-react';
+import { MessageCircle, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSunshineChat } from '@/hooks/useSunshineChat';
 import { useAuth } from '@/context/auth';
@@ -10,6 +10,7 @@ interface Message {
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
+  feedback?: 'up' | 'down' | null;
 }
 
 export const SunshineWidget = () => {
@@ -43,7 +44,7 @@ export const SunshineWidget = () => {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: Message = {
         id: 'welcome',
-        content: "Hi, I'm Sunshine! How can I help you run your beauty business smarter?",
+        content: "Chào bạn! Mình là Sunshine - trợ lý AI của EmviApp. Mình có thể giúp bạn phát triển salon làm đẹp một cách thông minh hơn! 🌟",
         role: 'assistant',
         timestamp: new Date()
       };
@@ -118,6 +119,26 @@ export const SunshineWidget = () => {
     }
   };
 
+  const handleFeedback = (messageId: string, feedback: 'up' | 'down') => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId 
+        ? { ...msg, feedback }
+        : msg
+    ));
+    
+    // Save feedback to localStorage for analytics
+    const feedbackData = {
+      messageId,
+      feedback,
+      timestamp: new Date(),
+      userId: user?.id || 'anonymous'
+    };
+    
+    const existingFeedback = JSON.parse(localStorage.getItem('sunshine_feedback') || '[]');
+    existingFeedback.push(feedbackData);
+    localStorage.setItem('sunshine_feedback', JSON.stringify(existingFeedback));
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -167,14 +188,38 @@ export const SunshineWidget = () => {
                   key={message.id}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div
-                    className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-foreground'
-                    }`}
-                  >
-                    {message.content}
+                  <div className={`max-w-[80%] ${message.role === 'assistant' ? 'space-y-2' : ''}`}>
+                    <div
+                      className={`p-3 rounded-lg text-sm ${
+                        message.role === 'user'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground'
+                      }`}
+                    >
+                      {message.content}
+                    </div>
+                    
+                    {/* Feedback buttons for assistant messages */}
+                    {message.role === 'assistant' && message.id !== 'welcome' && (
+                      <div className="flex gap-1 justify-start">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`h-6 w-6 ${message.feedback === 'up' ? 'text-green-600' : 'text-gray-400'}`}
+                          onClick={() => handleFeedback(message.id, 'up')}
+                        >
+                          <ThumbsUp className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`h-6 w-6 ${message.feedback === 'down' ? 'text-red-600' : 'text-gray-400'}`}
+                          onClick={() => handleFeedback(message.id, 'down')}
+                        >
+                          <ThumbsDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -200,7 +245,7 @@ export const SunshineWidget = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask me anything..."
+                  placeholder="Hỏi mình bất cứ điều gì..."
                   className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={isLoading}
                 />

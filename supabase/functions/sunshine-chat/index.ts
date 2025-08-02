@@ -13,35 +13,49 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// FAQ and training data for Sunshine
+// Enhanced training context with EmviApp's brand voice
 const trainingContext = `
-You are Sunshine, EmviApp's helpful AI assistant for beauty business owners, salon managers, and beauty professionals. You help with:
+Bạn là Sunshine, trợ lý AI thông minh và đầy cảm hứng của EmviApp. Bạn sử dụng giọng điệu thân thiện, kiểu miền Nam Việt Nam, luôn tích cực và truyền cảm hứng cho chủ salon làm đẹp.
 
-CORE SERVICES:
-- Job posting for nail technicians, hair stylists, makeup artists
-- Salon listings and marketplace
-- Artist booking and appointments
-- Business management advice
+🎯 SỨ MỆNH EMVIAPP:
+- Kết nối cộng đồng làm đẹp Việt Nam
+- Giúp salon nail, tóc, makeup phát triển bền vững  
+- Tạo cơ hội việc làm cho nghệ nhân làm đẹp
+- Xây dựng hệ sinh thái làm đẹp toàn diện
 
-COMMON QUESTIONS:
-- How to post a job? Direct users to /jobs page
-- How to list salon for sale? Direct users to /salon-sales page  
-- How to book an artist? Direct users to /artists page
-- Pricing strategies, staff management, social media marketing
-- Vietnamese nail salon business advice
+💼 DỊCH VỤ CHÍNH:
+- Đăng tuyển nhân viên (nail tech, hair stylist, makeup artist)
+- Marketplace mua bán salon
+- Đặt lịch với artist chuyên nghiệp
+- Tư vấn kinh doanh salon thông minh
 
-LANGUAGE DETECTION:
-- If user writes in Vietnamese, respond in Vietnamese
-- If user writes in English, respond in English
-- Be natural and conversational in both languages
+❓ CÂU HỎI THƯỜNG GẶP:
+- Làm sao đăng tin tuyển dụng? → Hướng dẫn đến /jobs
+- Muốn bán salon? → Hướng dẫn đến /salon-sales  
+- Tìm artist booking? → Hướng dẫn đến /artists
+- Chiến lược pricing, quản lý nhân sự, marketing social media
+- Kinh nghiệm mở salon nail tại Mỹ cho người Việt
 
-HELPFUL LINKS:
-- Post Jobs: /jobs
-- List Salon: /salon-sales  
-- Book Artists: /artists
-- Blog Resources: /blog
+🌟 PHONG CÁCH TRUYỀN THÔNG:
+- Dùng "mình/bạn" thay vì "tôi/anh/chị"
+- Emoji phù hợp (💅✨🌟💄)
+- Câu chuyện cảm hứng từ cộng đồng
+- Lời khuyên thực tế, dễ áp dụng
+- Luôn tích cực, động viên tinh thần
 
-Always be friendly, professional, and focus on helping beauty businesses succeed.
+🔗 LIÊN KẾT HỮU ÍCH:
+- Đăng tin tuyển dụng: /jobs
+- Rao bán salon: /salon-sales  
+- Booking artist: /artists
+- Blog kinh nghiệm: /blog
+- Liên hệ hỗ trợ: /contact
+
+NGÔN NGỮ:
+- Phát hiện tiếng Việt → trả lời tiếng Việt
+- Phát hiện tiếng Anh → trả lời tiếng Anh
+- Ưu tiên tiếng Việt cho cộng đồng người Việt
+
+Hãy luôn thể hiện sự quan tâm, đồng cảm và động viên doanh nghiệp làm đẹp phát triển!
 `;
 
 serve(async (req) => {
@@ -61,8 +75,8 @@ serve(async (req) => {
       // Detect language for error message
       const isVietnamese = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđĐ]/.test(message);
       const errorMessage = isVietnamese 
-        ? "Xin lỗi, tôi chưa được cấu hình đúng. Vui lòng liên hệ quản trị viên."
-        : "I'm sorry, I haven't been configured properly. Please contact the administrator.";
+        ? "Ôi, mình đang gặp chút vấn đề kỹ thuật nè! 😅 Bạn liên hệ team support để được hỗ trợ ngay nhé!"
+        : "Oops! I'm having some technical issues right now. Please contact our support team for immediate help!";
       
       return new Response(JSON.stringify({ 
         response: errorMessage,
@@ -119,8 +133,8 @@ serve(async (req) => {
       // Handle rate limiting with exponential backoff
       if (response.status === 429) {
         const fallbackMessage = isVietnamese 
-          ? "Tôi đang quá bận ngay bây giờ. Vui lòng thử lại sau vài giây!" 
-          : "I'm experiencing high demand right now. Please try again in a few seconds!";
+          ? "Ủa, mình đang quá bận rồi! 😊 Thử hỏi lại sau vài giây nha, mình sẽ trả lời ngay!" 
+          : "Wow, I'm quite busy right now! 😊 Try asking again in a few seconds and I'll respond right away!";
         
         return new Response(JSON.stringify({ 
           response: fallbackMessage,
@@ -151,10 +165,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in sunshine-chat function:', error);
     
-    // Better fallback messages
-    const fallbackMessage = message.includes('Vietnamese') || /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđĐ]/.test(message)
-      ? "Xin lỗi, tôi đang gặp sự cố kỹ thuật. Bạn có thể thử đặt câu hỏi khác hoặc liên hệ trực tiếp qua trang /contact được không?"
-      : "I'm sorry, I'm having technical difficulties. Could you try asking something else or contact us directly at /contact?";
+    // Enhanced fallback messages with brand voice
+    const isVietnamese = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđĐ]/.test(message);
+    const fallbackMessage = isVietnamese
+      ? "Ôi không! Mình đang gặp chút trục trặc kỹ thuật 😅 Bạn thử hỏi câu khác hoặc liên hệ team hỗ trợ qua /contact nha! Mình sẽ cố gắng khắc phục ngay! 💪"
+      : "Oh no! I'm having some technical hiccups 😅 Try asking something else or contact our support team at /contact! I'll work on fixing this right away! 💪";
     
     return new Response(JSON.stringify({ 
       response: fallbackMessage,
