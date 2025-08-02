@@ -9,8 +9,8 @@ import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const HiringManagingSalonStaff2025 = () => {
   const article = {
-    title: "The Ultimate Guide to Hiring and Managing Salon Staff",
-    description: "Build a dream salon team with proven hiring and management strategies. Reduce turnover by 60%+ and create a culture that attracts top talent in the beauty industry.",
+    title: "The Ultimate Guide to Hiring and Managing Salon Staff in 2025",
+    description: "Build dream salon teams with proven hiring strategies that reduce turnover 60%+. Expert management tips, culture building & retention tactics for beauty professionals.",
     author: "EmviApp Editorial Team",
     publishedAt: "July 1, 2025",
     readTime: "16 min read",
@@ -145,9 +145,9 @@ const HiringManagingSalonStaff2025 = () => {
                 Your team is your salon's greatest asset—and potentially its biggest liability. The difference between a thriving salon and a struggling one often comes down to one factor: the quality and commitment of your staff.
               </p>
 
-              <p className="text-xl leading-relaxed mb-12 text-muted-foreground">
-                With salon staff turnover averaging 75-80% annually, most owners are trapped in an exhausting cycle of hiring, training, and replacing. But the top-performing salons have cracked the code. They maintain teams where stylists stay for years, grow their skills, and become genuine partners in business success.
-              </p>
+               <p className="text-xl leading-relaxed mb-12 text-muted-foreground">
+                 With salon staff turnover averaging 75-80% annually, most owners are trapped in an exhausting cycle of hiring, training, and replacing. But the top-performing salons have cracked the code. They maintain teams where stylists stay for years, grow their skills, and become genuine partners in business success. <Link to="/jobs/nail-technician" className="text-primary font-semibold hover:underline">Smart hiring platforms</Link> are helping ambitious salon owners find and retain exceptional beauty professionals.
+               </p>
 
               <h2 className="text-3xl font-bold mb-6 text-foreground">The True Cost of Staff Turnover</h2>
               
