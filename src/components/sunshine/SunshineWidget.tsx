@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MessageCircle, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { MessageCircle, X, Send, ThumbsUp, ThumbsDown, Sun, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSunshineChat } from '@/hooks/useSunshineChat';
 import { useAuth } from '@/context/auth';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Message {
   id: string;
@@ -11,20 +12,30 @@ interface Message {
   role: 'user' | 'assistant';
   timestamp: Date;
   feedback?: 'up' | 'down' | null;
+  language?: 'en' | 'vi';
 }
+
+type Language = 'en' | 'vi';
 
 export const SunshineWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [language, setLanguage] = useState<Language>('en');
+  const [isFirstMessage, setIsFirstMessage] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { sendMessage, isLoading } = useSunshineChat();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
 
-  // Show widget after 3 seconds
+  // Detect user language and show widget after 3 seconds
   useEffect(() => {
+    // Detect browser language
+    const detectedLanguage = navigator.language.toLowerCase().includes('vi') ? 'vi' : 'en';
+    setLanguage(detectedLanguage);
+    
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 3000);
@@ -42,15 +53,21 @@ export const SunshineWidget = () => {
   // Add welcome message when opening
   useEffect(() => {
     if (isOpen && messages.length === 0) {
+      const welcomeMessages = {
+        en: "Hello there! 👋 I'm Sunshine - your AI beauty business assistant created by Michael with love for the beauty community! ☀️ I'm here to help your salon shine and succeed. How can I brighten your day? ✨",
+        vi: "Chào bạn! 👋 Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ☀️ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? ✨"
+      };
+
       const welcomeMessage: Message = {
         id: 'welcome',
-        content: "Chào bạn! Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ☀️ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? 💫",
+        content: welcomeMessages[language],
         role: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        language
       };
       setMessages([welcomeMessage]);
     }
-  }, [isOpen]);
+  }, [isOpen, language]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -83,21 +100,29 @@ export const SunshineWidget = () => {
       id: Date.now().toString(),
       content: input.trim(),
       role: 'user',
-      timestamp: new Date()
+      timestamp: new Date(),
+      language
     };
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput('');
+    
+    if (isFirstMessage) {
+      setIsFirstMessage(false);
+    }
 
     try {
-      const response = await sendMessage(input, messages);
+      // Add language context to the message
+      const messageWithLanguage = `[User Language: ${language}] ${input.trim()}`;
+      const response = await sendMessage(messageWithLanguage, messages);
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: response,
         role: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        language
       };
 
       const finalMessages = [...newMessages, assistantMessage];
@@ -107,11 +132,17 @@ export const SunshineWidget = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       
+      const errorMessages = {
+        en: "I'm sorry, I'm having trouble right now. Please try again in a moment. 🌤️",
+        vi: "Xin lỗi bạn, mình đang gặp một chút vấn đề. Vui lòng thử lại sau một lát nhé! 🌤️"
+      };
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I'm sorry, I'm having trouble right now. Please try again in a moment.",
+        content: errorMessages[language],
         role: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        language
       };
       
       const finalMessages = [...newMessages, errorMessage];
@@ -157,106 +188,175 @@ export const SunshineWidget = () => {
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-80 h-96 bg-background border border-border rounded-lg shadow-lg z-50 flex flex-col"
+            transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
+            className={`fixed z-50 flex flex-col ${
+              isMobile 
+                ? 'inset-4 rounded-2xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50' 
+                : 'bottom-24 right-6 w-80 h-96 rounded-xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50'
+            } shadow-2xl border border-orange-200/50 backdrop-blur-sm`}
+            style={{
+              background: isMobile 
+                ? 'linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #fef9c3 100%)'
+                : 'linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #fef9c3 100%)'
+            }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">☀️</span>
-                </div>
+            <div className="flex items-center justify-between p-4 border-b border-orange-200/30">
+              <div className="flex items-center gap-3">
+                <motion.div 
+                  className="relative"
+                  animate={isFirstMessage ? { rotate: [0, 15, -15, 0] } : {}}
+                  transition={{ duration: 2, repeat: isFirstMessage ? Infinity : 0 }}
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 rounded-full flex items-center justify-center shadow-lg">
+                    <Sun className="h-5 w-5 text-white animate-pulse" />
+                  </div>
+                  {isFirstMessage && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 opacity-20"
+                      animate={{ scale: [1, 1.4, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  )}
+                </motion.div>
                 <div>
-                  <h3 className="font-medium text-foreground">Sunshine</h3>
-                  <p className="text-xs text-muted-foreground">Beauty Business Assistant</p>
+                  <h3 className="font-semibold text-amber-900">Sunshine ☀️</h3>
+                  <p className="text-xs text-amber-700">
+                    {language === 'vi' ? 'Trợ lý làm đẹp' : 'Beauty Business Assistant'}
+                  </p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="h-8 w-8"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              
+              <div className="flex items-center gap-2">
+                {/* Language Toggle */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const newLang = language === 'en' ? 'vi' : 'en';
+                    setLanguage(newLang);
+                    setMessages([]); // Reset to get new welcome message
+                  }}
+                  className="h-8 px-2 text-xs font-medium text-amber-700 hover:text-amber-900 hover:bg-orange-100/50"
+                >
+                  <Globe className="h-3 w-3 mr-1" />
+                  {language === 'en' ? 'VI' : 'EN'}
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="h-8 w-8 text-amber-700 hover:text-amber-900 hover:bg-orange-100/50"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {messages.map((message) => (
-                <div
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
+              {messages.map((message, index) => (
+                <motion.div
                   key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[80%] ${message.role === 'assistant' ? 'space-y-2' : ''}`}>
-                    <div
-                      className={`p-3 rounded-lg text-sm ${
+                  <div className={`max-w-[85%] ${message.role === 'assistant' ? 'space-y-2' : ''}`}>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      className={`p-3 rounded-2xl text-sm shadow-sm ${
                         message.role === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground'
+                          ? 'bg-gradient-to-r from-orange-400 to-amber-400 text-white rounded-br-md'
+                          : 'bg-white/80 text-amber-900 border border-orange-200/50 rounded-bl-md'
                       }`}
                     >
                       {message.content}
-                    </div>
+                    </motion.div>
                     
                     {/* Feedback buttons for assistant messages */}
                     {message.role === 'assistant' && message.id !== 'welcome' && (
                       <div className="flex gap-1 justify-start">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={`h-6 w-6 ${message.feedback === 'up' ? 'text-green-600' : 'text-gray-400'}`}
-                          onClick={() => handleFeedback(message.id, 'up')}
-                        >
-                          <ThumbsUp className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={`h-6 w-6 ${message.feedback === 'down' ? 'text-red-600' : 'text-gray-400'}`}
-                          onClick={() => handleFeedback(message.id, 'down')}
-                        >
-                          <ThumbsDown className="h-3 w-3" />
-                        </Button>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-7 w-7 rounded-full ${
+                              message.feedback === 'up' 
+                                ? 'text-green-600 bg-green-50' 
+                                : 'text-amber-600 hover:text-green-600 hover:bg-green-50'
+                            }`}
+                            onClick={() => handleFeedback(message.id, 'up')}
+                          >
+                            <ThumbsUp className="h-3 w-3" />
+                          </Button>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-7 w-7 rounded-full ${
+                              message.feedback === 'down' 
+                                ? 'text-red-600 bg-red-50' 
+                                : 'text-amber-600 hover:text-red-600 hover:bg-red-50'
+                            }`}
+                            onClick={() => handleFeedback(message.id, 'down')}
+                          >
+                            <ThumbsDown className="h-3 w-3" />
+                          </Button>
+                        </motion.div>
                       </div>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))}
               {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-muted text-foreground p-3 rounded-lg text-sm">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-current rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-75"></div>
-                      <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-150"></div>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex justify-start"
+                >
+                  <div className="bg-white/80 border border-orange-200/50 p-3 rounded-2xl rounded-bl-md text-sm">
+                    <div className="flex items-center gap-2">
+                      <Sun className="h-3 w-3 text-yellow-500 animate-spin" />
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-100"></div>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce delay-200"></div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-border">
-              <div className="flex gap-2">
+            <div className="p-4 border-t border-orange-200/30 bg-white/60 backdrop-blur-sm">
+              <div className="flex gap-3">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Hỏi mình bất cứ điều gì..."
-                  className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder={language === 'vi' ? 'Hỏi mình bất cứ điều gì... ✨' : 'Ask me anything... ✨'}
+                  className="flex-1 px-4 py-3 text-sm border border-orange-200 rounded-2xl bg-white/80 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent placeholder-amber-600/70 text-amber-900 mobile-input-safe"
                   disabled={isLoading}
                 />
-                <Button
-                  onClick={handleSend}
-                  disabled={!input.trim() || isLoading}
-                  size="icon"
-                  className="h-10 w-10"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={handleSend}
+                    disabled={!input.trim() || isLoading}
+                    size="icon"
+                    className={`h-12 w-12 rounded-2xl bg-gradient-to-r from-orange-400 to-amber-400 hover:from-orange-500 hover:to-amber-500 text-white shadow-lg ${
+                      isMobile ? 'h-12 w-12' : 'h-10 w-10'
+                    }`}
+                  >
+                    <Send className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
+                  </Button>
+                </motion.div>
               </div>
             </div>
           </motion.div>
@@ -267,15 +367,49 @@ export const SunshineWidget = () => {
       <AnimatePresence>
         {!isOpen && (
           <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.05 }}
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              y: 0,
+              rotate: [0, 10, -10, 0]
+            }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            whileHover={{ 
+              scale: 1.1,
+              rotate: 5,
+              boxShadow: "0 10px 30px rgba(255, 165, 0, 0.4)"
+            }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:shadow-xl transition-shadow"
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+              rotate: { duration: 2, repeat: Infinity, repeatDelay: 3 }
+            }}
+            className={`fixed z-50 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 text-white rounded-full shadow-xl flex items-center justify-center hover:shadow-2xl transition-all duration-300 ${
+              isMobile 
+                ? 'bottom-20 right-4 w-16 h-16' 
+                : 'bottom-6 right-6 w-14 h-14'
+            }`}
+            style={{
+              filter: 'drop-shadow(0 0 20px rgba(255, 165, 0, 0.3))',
+            }}
           >
-            <MessageCircle className="h-6 w-6" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            >
+              <Sun className={`${isMobile ? 'h-8 w-8' : 'h-6 w-6'} text-white`} />
+            </motion.div>
+            
+            {/* Pulsing ring effect */}
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-orange-300"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0, 0.8] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
           </motion.button>
         )}
       </AnimatePresence>
