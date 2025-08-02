@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useSunshineChat } from '@/hooks/useSunshineChat';
 import { useAuth } from '@/context/auth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { EmbeddedPageModal } from './EmbeddedPageModal';
+import { ChatMessage } from './ChatMessage';
 
 interface Message {
   id: string;
@@ -24,6 +26,9 @@ export const SunshineWidget = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [language, setLanguage] = useState<Language>('en');
   const [isFirstMessage, setIsFirstMessage] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalUrl, setModalUrl] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { sendMessage, isLoading } = useSunshineChat();
@@ -170,6 +175,12 @@ export const SunshineWidget = () => {
     localStorage.setItem('sunshine_feedback', JSON.stringify(existingFeedback));
   };
 
+  const handleLinkClick = (url: string, title: string) => {
+    setModalUrl(url);
+    setModalTitle(title);
+    setModalOpen(true);
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -257,60 +268,13 @@ export const SunshineWidget = () => {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
               {messages.map((message, index) => (
-                <motion.div
+                <ChatMessage
                   key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-[85%] ${message.role === 'assistant' ? 'space-y-2' : ''}`}>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className={`p-3 rounded-2xl text-sm shadow-sm ${
-                        message.role === 'user'
-                          ? 'bg-gradient-to-r from-orange-400 to-amber-400 text-white rounded-br-md'
-                          : 'bg-white/80 text-amber-900 border border-orange-200/50 rounded-bl-md'
-                      }`}
-                    >
-                      {message.content}
-                    </motion.div>
-                    
-                    {/* Feedback buttons for assistant messages */}
-                    {message.role === 'assistant' && message.id !== 'welcome' && (
-                      <div className="flex gap-1 justify-start">
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={`h-7 w-7 rounded-full ${
-                              message.feedback === 'up' 
-                                ? 'text-green-600 bg-green-50' 
-                                : 'text-amber-600 hover:text-green-600 hover:bg-green-50'
-                            }`}
-                            onClick={() => handleFeedback(message.id, 'up')}
-                          >
-                            <ThumbsUp className="h-3 w-3" />
-                          </Button>
-                        </motion.div>
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={`h-7 w-7 rounded-full ${
-                              message.feedback === 'down' 
-                                ? 'text-red-600 bg-red-50' 
-                                : 'text-amber-600 hover:text-red-600 hover:bg-red-50'
-                            }`}
-                            onClick={() => handleFeedback(message.id, 'down')}
-                          >
-                            <ThumbsDown className="h-3 w-3" />
-                          </Button>
-                        </motion.div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
+                  message={message}
+                  index={index}
+                  onFeedback={handleFeedback}
+                  onLinkClick={handleLinkClick}
+                />
               ))}
               {isLoading && (
                 <motion.div 
@@ -413,6 +377,14 @@ export const SunshineWidget = () => {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* Embedded Page Modal */}
+      <EmbeddedPageModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        url={modalUrl}
+        title={modalTitle}
+      />
     </>
   );
 };
