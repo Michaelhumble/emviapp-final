@@ -15,6 +15,7 @@ import {
   searchArticles,
   getAllTags 
 } from '@/data/blogArticles';
+import { TestSunshineConnection } from '@/components/sunshine/TestConnection';
 
 const BlogLanding = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -311,6 +312,10 @@ const BlogLanding = () => {
             showImage={true}
           />
           
+          {/* Temporary Debug Section */}
+          <div className="mt-16 pt-8 border-t border-gray-200">
+            <TestSunshineConnection />
+          </div>
         </Container>
 
         {/* Newsletter Signup */}

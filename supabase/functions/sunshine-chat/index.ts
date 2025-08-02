@@ -3,6 +3,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
+console.log('=== SUNSHINE CHAT DEBUG ===');
+console.log('OpenAI API Key configured:', openAIApiKey ? 'YES' : 'NO');
+console.log('Key length:', openAIApiKey ? openAIApiKey.length : 0);
+console.log('Key starts with sk-:', openAIApiKey ? openAIApiKey.startsWith('sk-') : false);
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -49,6 +54,24 @@ serve(async (req) => {
     const { message, conversationHistory = [], userId } = await req.json();
     
     console.log('Sunshine chat request:', { userId, messageLength: message.length });
+    
+    // Check if API key is missing
+    if (!openAIApiKey || !openAIApiKey.startsWith('sk-')) {
+      console.error('❌ OpenAI API key is missing or invalid');
+      // Detect language for error message
+      const isVietnamese = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđĐ]/.test(message);
+      const errorMessage = isVietnamese 
+        ? "Xin lỗi, tôi chưa được cấu hình đúng. Vui lòng liên hệ quản trị viên."
+        : "I'm sorry, I haven't been configured properly. Please contact the administrator.";
+      
+      return new Response(JSON.stringify({ 
+        response: errorMessage,
+        error: 'missing_api_key'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Detect language (simple detection)
     const isVietnamese = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđĐ]/.test(message);
@@ -69,6 +92,9 @@ serve(async (req) => {
       }
     ];
 
+    console.log('🚀 Making OpenAI API request...');
+    console.log('Model: gpt-4o-mini, Messages count:', messages.length);
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -83,9 +109,12 @@ serve(async (req) => {
       }),
     });
 
+    console.log('📡 OpenAI Response Status:', response.status);
+    console.log('📡 OpenAI Response Headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
       const errorData = await response.text();
-      console.error(`OpenAI API error: ${response.status}`, errorData);
+      console.error(`❌ OpenAI API error: ${response.status}`, errorData);
       
       // Handle rate limiting with exponential backoff
       if (response.status === 429) {
@@ -102,13 +131,15 @@ serve(async (req) => {
         });
       }
       
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorData}`);
     }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    console.log('Sunshine response generated:', { responseLength: aiResponse.length, language: isVietnamese ? 'vi' : 'en' });
+    console.log('✅ OpenAI response generated successfully');
+    console.log('Response length:', aiResponse.length, 'Language:', isVietnamese ? 'vi' : 'en');
+    console.log('Usage:', data.usage);
 
     return new Response(JSON.stringify({ 
       response: aiResponse,
