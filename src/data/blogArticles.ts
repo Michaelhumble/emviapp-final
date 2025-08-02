@@ -29,6 +29,11 @@ const SalonPricingStrategies2025 = lazy(() => import('@/pages/blog/articles/Salo
 const SocialMediaContentNailSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaContentNailSalons2025'));
 const SocialMediaMarketingSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaMarketingSalons2025'));
 const TheBeautyIndustrysMissingPiece = lazy(() => import('@/pages/blog/articles/TheBeautyIndustrysMissingPiece'));
+const WinterSkincareTips2025 = lazy(() => import('@/pages/blog/articles/WinterSkincareTips2025'));
+const PerfectWingEyeliner2025 = lazy(() => import('@/pages/blog/articles/PerfectWingEyeliner2025'));
+const NailArtTrends2025 = lazy(() => import('@/pages/blog/articles/NailArtTrends2025'));
+const HairMaskDIYRecipes2025 = lazy(() => import('@/pages/blog/articles/HairMaskDIYRecipes2025'));
+const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBrows2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
@@ -189,6 +194,85 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     featured: true,
     component: TheBeautyIndustrysMissingPiece,
     url: '/blog/industry/the-beauty-industrys-missing-piece-emviapp'
+  },
+  {
+    id: 'winter-skincare-tips-2025',
+    slug: 'winter-skincare-tips-2025',
+    title: 'Winter Skincare Tips: 10 Essential Beauty Secrets for 2025',
+    description: 'Master winter skincare with expert tips that will keep your skin glowing all season long. Professional-grade advice for beauty enthusiasts.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 1, 2025',
+    readTime: '7 min read',
+    category: 'Beauty Tips',
+    categorySlug: 'beauty-tips',
+    tags: ['winter skincare', 'beauty tips', 'skin health', 'seasonal beauty', 'skincare routine'],
+    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    featured: true,
+    component: WinterSkincareTips2025,
+    url: '/blog/beauty-tips/winter-skincare-tips-2025'
+  },
+  {
+    id: 'perfect-winged-eyeliner-2025',
+    slug: 'perfect-winged-eyeliner-2025',
+    title: 'Perfect Winged Eyeliner: Master the Art in 5 Simple Steps',
+    description: 'Learn the professional techniques makeup artists use to create flawless winged eyeliner every time. Step-by-step guide with expert tips.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 1, 2025',
+    readTime: '6 min read',
+    category: 'Beauty Tips',
+    categorySlug: 'beauty-tips',
+    tags: ['eyeliner', 'makeup tutorial', 'winged eyeliner', 'eye makeup', 'beauty techniques'],
+    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80',
+    trending: true,
+    component: PerfectWingEyeliner2025,
+    url: '/blog/beauty-tips/perfect-winged-eyeliner-2025'
+  },
+  {
+    id: 'nail-art-trends-2025',
+    slug: 'nail-art-trends-2025',
+    title: '2025 Nail Art Trends: 12 Designs That Will Dominate This Year',
+    description: 'Discover the hottest nail art trends for 2025, from minimalist designs to bold statements. Professional techniques and inspiration for nail technicians.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 1, 2025',
+    readTime: '9 min read',
+    category: 'Beauty Tips',
+    categorySlug: 'beauty-tips',
+    tags: ['nail art', 'nail trends', '2025 trends', 'nail design', 'manicure'],
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
+    featured: true,
+    component: NailArtTrends2025,
+    url: '/blog/beauty-tips/nail-art-trends-2025'
+  },
+  {
+    id: 'hair-mask-diy-recipes-2025',
+    slug: 'hair-mask-diy-recipes-2025',
+    title: 'DIY Hair Masks: 8 Professional-Grade Recipes You Can Make at Home',
+    description: 'Transform your hair with these expert-approved DIY hair mask recipes using natural ingredients. Professional results without the salon price tag.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 1, 2025',
+    readTime: '10 min read',
+    category: 'Beauty Tips',
+    categorySlug: 'beauty-tips',
+    tags: ['hair care', 'DIY beauty', 'hair masks', 'natural ingredients', 'hair treatment'],
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80',
+    trending: true,
+    component: HairMaskDIYRecipes2025,
+    url: '/blog/beauty-tips/hair-mask-diy-recipes-2025'
+  },
+  {
+    id: 'contoured-brows-2025',
+    slug: 'contoured-brows-2025',
+    title: 'Contoured Brows: The Ultimate Guide to Professional Eyebrow Shaping',
+    description: 'Master the art of eyebrow contouring with professional techniques that create perfectly sculpted brows for any face shape. Step-by-step guide included.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 1, 2025',
+    readTime: '8 min read',
+    category: 'Beauty Tips',
+    categorySlug: 'beauty-tips',
+    tags: ['eyebrows', 'brow shaping', 'contouring', 'makeup techniques', 'face shaping'],
+    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    component: ContouredBrows2025,
+    url: '/blog/beauty-tips/contoured-brows-2025'
   }
 ];
 
