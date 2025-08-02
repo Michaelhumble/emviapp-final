@@ -44,7 +44,7 @@ export const SunshineWidget = () => {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: Message = {
         id: 'welcome',
-        content: "Chào bạn! Mình là Sunshine - trợ lý AI của EmviApp. Mình có thể giúp bạn phát triển salon làm đẹp một cách thông minh hơn! 🌟",
+        content: "Chào bạn! Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ☀️ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? 💫",
         role: 'assistant',
         timestamp: new Date()
       };
