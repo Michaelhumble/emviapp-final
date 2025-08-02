@@ -1,8 +1,7 @@
 name: EmviApp Deployment Pipeline
 
 on:
-  push:
-    branches: [staging]
+  # Removed automatic push trigger - MANUAL ONLY
   workflow_dispatch:
     inputs:
       environment:
@@ -19,43 +18,43 @@ on:
         default: ''
 
 jobs:
-  # Auto-deploy to staging on every push to staging branch
-  deploy-staging:
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test:ci || true
-
-      - name: Build for staging
-        run: npm run build
-        env:
-          VITE_ENVIRONMENT: staging
-          VITE_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.STAGING_GOOGLE_MAPS_API_KEY }}
-
-      - name: Deploy to Vercel Staging
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
-          scope: ${{ secrets.VERCEL_ORG_ID }}
+  # DISABLED - Manual deployment only
+  # deploy-staging:
+  #   if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+  #   runs-on: ubuntu-latest
+  #   environment: staging
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '18'
+  #         cache: 'npm'
+  #
+  #     - name: Install dependencies
+  #       run: npm ci
+  #
+  #     - name: Run tests
+  #       run: npm run test:ci || true
+  #
+  #     - name: Build for staging
+  #       run: npm run build
+  #       env:
+  #         VITE_ENVIRONMENT: staging
+  #         VITE_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+  #         VITE_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+  #         VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.STAGING_GOOGLE_MAPS_API_KEY }}
+  #
+  #     - name: Deploy to Vercel Staging
+  #       uses: amondnet/vercel-action@v25
+  #       with:
+  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
+  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+  #         working-directory: ./
+  #         scope: ${{ secrets.VERCEL_ORG_ID }}
 
   # Manual production deployment with confirmation
   deploy-production:
