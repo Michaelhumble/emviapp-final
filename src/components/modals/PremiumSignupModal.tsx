@@ -88,19 +88,26 @@ const translations = {
   }
 };
 
-const generateRandomSignup = (language: 'en' | 'vi' = 'en') => {
-  const names = language === 'vi' 
-    ? ['Nguyễn H.', 'Trần M.', 'Lê T.', 'Phạm L.', 'Hoàng N.', 'Vũ A.', 'Đặng K.', 'Bùi T.']
-    : ['Jessica M.', 'Marcus T.', 'Sarah K.', 'Amanda R.', 'David L.', 'Maria G.', 'Chris P.', 'Lauren B.'];
+const generateRandomSignup = () => {
+  const westernNames = [
+    'Vivian Pham', 'Lily Nguyen', 'Jayson Nguyen', 'Emma Wilson', 'Olivia Brown', 
+    'Mason Lee', 'Ava Smith', 'Jessica Martinez', 'Sarah Johnson', 'Amanda Rodriguez',
+    'David Kim', 'Maria Garcia', 'Chris Patterson', 'Lauren Bailey', 'Marcus Thompson',
+    'Isabella Chen', 'Sophia Davis', 'Madison Taylor', 'Charlotte Anderson', 'Grace Miller'
+  ];
   
-  const cities = language === 'vi'
-    ? ['TP.HCM', 'Hà Nội', 'Đà Nẵng', 'Cần Thơ', 'Hải Phòng', 'Nha Trang', 'Huế', 'Vũng Tàu']
-    : ['Miami', 'LA', 'NYC', 'Chicago', 'Dallas', 'Atlanta', 'Phoenix', 'Seattle'];
+  const westernCities = [
+    'Montage, California', 'San Diego, California', 'Los Angeles, California', 'Miami, Florida',
+    'New York, New York', 'Chicago, Illinois', 'Dallas, Texas', 'Atlanta, Georgia',
+    'London, UK', 'Manchester, UK', 'Birmingham, UK', 'Edinburgh, UK',
+    'Toronto, Canada', 'Vancouver, Canada', 'Montreal, Canada', 'Calgary, Canada',
+    'Sydney, Australia', 'Melbourne, Australia', 'Brisbane, Australia', 'Perth, Australia'
+  ];
   
   return {
-    name: names[Math.floor(Math.random() * names.length)],
-    city: cities[Math.floor(Math.random() * cities.length)],
-    time: language === 'vi' ? 'vừa xong' : 'just now'
+    name: westernNames[Math.floor(Math.random() * westernNames.length)],
+    city: westernCities[Math.floor(Math.random() * westernCities.length)],
+    time: 'just now'
   };
 };
 
@@ -119,24 +126,26 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
   const [language, setLanguage] = useState<'en' | 'vi'>('en');
   const [liveCounter, setLiveCounter] = useState(1247);
   const [recentSignups, setRecentSignups] = useState([
-    { name: 'Jessica M.', city: 'Miami', time: 'just now' },
-    { name: 'Marcus T.', city: 'LA', time: '2 min ago' },
-    { name: 'Sarah K.', city: 'NYC', time: '4 min ago' },
+    generateRandomSignup(),
+    generateRandomSignup(),
+    generateRandomSignup(),
   ]);
 
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const t = translations[language];
 
-  // Initialize language-specific signups
+  // Initialize random signups on modal open
   useEffect(() => {
-    const initialSignups = [
-      generateRandomSignup(language),
-      generateRandomSignup(language),
-      generateRandomSignup(language)
-    ];
-    setRecentSignups(initialSignups);
-  }, [language]);
+    if (isOpen) {
+      const initialSignups = [
+        generateRandomSignup(),
+        generateRandomSignup(),
+        generateRandomSignup()
+      ];
+      setRecentSignups(initialSignups);
+    }
+  }, [isOpen]);
 
   // Live counter and recent signups effect
   useEffect(() => {
@@ -150,7 +159,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
     // Update recent signups every 8-15 seconds
     const signupsInterval = setInterval(() => {
       setRecentSignups(prev => {
-        const newSignup = generateRandomSignup(language);
+        const newSignup = generateRandomSignup();
         return [newSignup, ...prev.slice(0, 2)];
       });
     }, Math.random() * 7000 + 8000);
@@ -159,7 +168,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
       clearInterval(counterInterval);
       clearInterval(signupsInterval);
     };
-  }, [isOpen, language]);
+  }, [isOpen]);
 
   // Email validation
   const isValidEmail = (email: string) => {
@@ -258,10 +267,10 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
           >
             {/* Fixed Header with Close Button and Language Toggle */}
             <div className="relative flex-shrink-0 p-6 pb-4">
-              {/* Language Toggle Button */}
+              {/* Language Toggle Button - Top Right */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'vi' : 'en')}
-                className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors z-10"
+                className="absolute top-4 right-16 flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors z-10"
               >
                 <Globe className="h-4 w-4" />
                 {language === 'en' ? 'Tiếng Việt' : 'English'}
@@ -274,7 +283,7 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
                 <X className="h-6 w-6" />
               </button>
               
-              <div className="text-center pr-8">
+              <div className="text-center pr-20">
                 <motion.h1 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
