@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import BlogArticleLayout from '@/components/blog/BlogArticleLayout';
 import BlogImage from '@/components/blog/BlogImage';
+import aiSalonDashboard from '@/assets/ai-salon-management-dashboard.jpg';
 import { Link } from 'react-router-dom';
 
 const AIPoweredSalonManagement2025: React.FC = () => {
@@ -178,8 +179,8 @@ const AIPoweredSalonManagement2025: React.FC = () => {
           {/* Featured Image - AI Dashboard */}
           <div className="my-12">
             <BlogImage 
-              src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-              alt="AI-powered salon management dashboard showing scheduling and analytics"
+              src={aiSalonDashboard}
+              alt="AI-powered salon management dashboard showing smart scheduling and client analytics interface"
               className="w-full h-64 md:h-80 rounded-lg shadow-lg"
               priority={false}
             />
