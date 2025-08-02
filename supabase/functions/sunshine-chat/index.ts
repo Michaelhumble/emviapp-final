@@ -84,6 +84,24 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      const errorData = await response.text();
+      console.error(`OpenAI API error: ${response.status}`, errorData);
+      
+      // Handle rate limiting with exponential backoff
+      if (response.status === 429) {
+        const fallbackMessage = isVietnamese 
+          ? "Tôi đang quá bận ngay bây giờ. Vui lòng thử lại sau vài giây!" 
+          : "I'm experiencing high demand right now. Please try again in a few seconds!";
+        
+        return new Response(JSON.stringify({ 
+          response: fallbackMessage,
+          language: isVietnamese ? 'vi' : 'en',
+          retry_after: 5
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
@@ -102,12 +120,15 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in sunshine-chat function:', error);
     
-    // Fallback response
-    const fallbackMessage = "I'm sorry, I'm having trouble right now. Please try again in a moment.";
+    // Better fallback messages
+    const fallbackMessage = message.includes('Vietnamese') || /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđĐ]/.test(message)
+      ? "Xin lỗi, tôi đang gặp sự cố kỹ thuật. Bạn có thể thử đặt câu hỏi khác hoặc liên hệ trực tiếp qua trang /contact được không?"
+      : "I'm sorry, I'm having technical difficulties. Could you try asking something else or contact us directly at /contact?";
     
     return new Response(JSON.stringify({ 
       response: fallbackMessage,
-      error: true 
+      error: true,
+      contact_link: '/contact'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
