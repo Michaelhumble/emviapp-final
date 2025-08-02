@@ -8,8 +8,8 @@ import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const MobileFirstBeautyBusiness2025 = () => {
   const article = {
-    title: "Mobile-First Beauty Business: Why Your Salon Needs to Go Digital Now",
-    description: "Discover why mobile-first approaches are essential for beauty businesses in 2025. Learn how to capture 78% of clients who research and book on mobile devices.",
+    title: "Going Mobile-First: Beauty Business Strategies for 2025",
+    description: "Transform your beauty business with mobile-first strategies. Capture 78% of clients who book on mobile & increase revenue 40% with smart booking tech.",
     author: "EmviApp Editorial Team",
     publishedAt: "July 1, 2025",
     readTime: "12 min read",
@@ -20,16 +20,24 @@ const MobileFirstBeautyBusiness2025 = () => {
 
   const faqData = [
     {
-      question: "What percentage of salon bookings now happen on mobile devices?",
-      answer: "78% of beauty service bookings now originate from mobile devices, with this number increasing to 85% for clients under 35. Salons without mobile-optimized booking lose 40%+ of potential bookings."
+      question: "What percentage of salon bookings happen on mobile devices in 2025?",
+      answer: "78% of beauty service bookings originate from mobile devices, with 85% for clients under 35. Salons without mobile-optimized booking systems lose 40%+ of potential bookings to competitors with seamless mobile experiences."
     },
     {
-      question: "How much can mobile optimization improve booking conversion rates?",
-      answer: "Salons see 35-50% improvement in booking conversion rates with proper mobile optimization. The key is reducing friction - every extra tap or form field decreases completion by 7%."
+      question: "How much revenue increase can mobile-first strategies deliver?",
+      answer: "Salons implementing mobile-first strategies see 35-50% booking conversion improvements and 40% overall revenue increases. The key is creating frictionless mobile experiences that convert browsers into paying clients."
     },
     {
-      question: "Do I need a mobile app or is a mobile website enough?",
-      answer: "For most salons, a mobile-optimized website is sufficient and more cost-effective. Focus on progressive web app features for an app-like experience without development costs."
+      question: "Do beauty businesses need mobile apps or mobile websites?",
+      answer: "Most salons benefit more from mobile-optimized websites with progressive web app features. This provides app-like experiences without development costs, focusing budget on booking optimization and client experience."
+    },
+    {
+      question: "What's the biggest mobile booking mistake salons make?",
+      answer: "The most costly mistake is requiring too many form fields during booking. Every extra tap or required field decreases completion by 7%. Successful salons use auto-fill technology and minimal required information."
+    },
+    {
+      question: "How quickly can salons see results from mobile optimization?",
+      answer: "Most salons see booking improvements within 30 days of mobile optimization. Key metrics improve fast: 15% bounce rate reduction in week 1, 25% booking increase by week 4, and 40% client retention improvement by month 3."
     }
   ];
 
@@ -320,12 +328,12 @@ const MobileFirstBeautyBusiness2025 = () => {
                 Mobile devices enable hyper-local marketing that can capture clients when they're nearby and ready to book.
               </p>
 
-              <ul className="list-disc pl-6 mb-8 space-y-2">
-                <li><strong>Google My Business Optimization:</strong> Keep hours, services, and photos updated</li>
-                <li><strong>Local SEO Focus:</strong> Optimize for "near me" searches</li>
-                <li><strong>Geofencing Campaigns:</strong> Target people near competitor locations</li>
-                <li><strong>Walk-in Availability:</strong> Promote last-minute openings on social</li>
-              </ul>
+               <ul className="list-disc pl-6 mb-8 space-y-2">
+                 <li><strong>Google My Business Optimization:</strong> Keep hours, services, and photos updated</li>
+                 <li><strong>Local SEO Focus:</strong> Optimize for <Link to="/jobs/nail-technician" className="text-primary hover:underline">"nail salon near me"</Link> searches</li>
+                 <li><strong>Geofencing Campaigns:</strong> Target people near competitor locations</li>
+                 <li><strong>Walk-in Availability:</strong> Promote last-minute openings on <Link to="/salons-for-sale" className="text-primary hover:underline">professional platforms</Link></li>
+               </ul>
 
               <h2 className="text-3xl font-bold mb-6 text-foreground">Technology Stack for Mobile Success</h2>
 
@@ -380,7 +388,7 @@ const MobileFirstBeautyBusiness2025 = () => {
               </div>
 
               <p className="mb-8">
-                <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> is specifically designed for mobile-first beauty businesses, providing all these features in a single platform that makes it easy for salons to compete in the digital age.
+                <Link to="/pricing" className="text-primary font-semibold hover:underline">EmviApp</Link> is specifically designed for mobile-first beauty businesses, providing all these features in a single platform that makes it easy for salons to compete in the digital age.
               </p>
 
               <h2 className="text-3xl font-bold mb-6 text-foreground">Measuring Mobile Success</h2>
@@ -425,20 +433,20 @@ const MobileFirstBeautyBusiness2025 = () => {
 
               <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-8 mb-12 text-center">
                 <h2 className="text-3xl font-bold mb-4">Ready to Go Mobile-First?</h2>
-                <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
-                  Don't let outdated technology hold your salon back. <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> provides everything you need to build a mobile-first beauty business that attracts and retains modern clients.
-                </p>
+                 <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
+                   Don't let outdated technology hold your salon back. <Link to="/about" className="text-primary font-semibold hover:underline">EmviApp</Link> provides everything you need to build a mobile-first beauty business that attracts and retains modern clients.
+                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
                     <Link to="/auth/signup">
                       Start Your Mobile Transformation
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg">
-                    <Link to="/features">
-                      See Mobile Features →
-                    </Link>
-                  </Button>
+                   <Button asChild variant="outline" size="lg">
+                     <Link to="/features">
+                       See Mobile Features →
+                     </Link>
+                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground mt-4">
                   Join 10,000+ beauty professionals succeeding with mobile-first strategies
