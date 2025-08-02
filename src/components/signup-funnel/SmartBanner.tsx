@@ -93,9 +93,17 @@ const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
       <div 
         className={`
           fixed ${isMobile ? 'bottom-4 left-4 right-4' : 'bottom-6 left-6 right-6 max-w-md mx-auto'} 
-          z-50 transform transition-all duration-300 ease-out
+          z-[9999] transform transition-all duration-300 ease-out
           ${isAnimating ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-full opacity-0 scale-95'}
         `}
+        style={{ 
+          zIndex: 9999,
+          bottom: isMobile ? '16px' : '24px',
+          left: isMobile ? '16px' : '24px',
+          right: isMobile ? '16px' : '24px',
+          maxWidth: isMobile ? 'calc(100vw - 32px)' : '448px',
+          margin: isMobile ? '0' : '0 auto'
+        }}
       >
         <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white rounded-xl shadow-2xl border border-white/20 backdrop-blur-sm relative">
           {/* Language toggle */}

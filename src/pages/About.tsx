@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import SmartBanner from '@/components/signup-funnel/SmartBanner';
 import ExitIntentModal from '@/components/signup-funnel/ExitIntentModal';
 import ReturnVisitorModal from '@/components/signup-funnel/ReturnVisitorModal';
+import TestVisibilityBanner from '@/components/signup-funnel/TestVisibilityBanner';
 import { updateLastVisit } from '@/utils/signupFunnelTracking';
 
 const About = () => {
@@ -504,6 +505,7 @@ const About = () => {
       </div>
 
       {/* Smart Sign-Up Funnel Components */}
+      <TestVisibilityBanner />
       <SmartBanner onSignUpClick={() => navigate('/signup')} />
       <ExitIntentModal onSignUpClick={() => navigate('/signup')} />
       <ReturnVisitorModal />

@@ -74,7 +74,7 @@ const ReturnVisitorModal: React.FC<ReturnVisitorModalProps> = ({ enabled = true 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-start justify-center pt-20 p-4 pointer-events-none">
+    <div className="fixed inset-0 z-[9997] flex items-start justify-center pt-20 p-4 pointer-events-none" style={{ zIndex: 9997 }}>
       {/* Modal */}
       <div 
         className={`
