@@ -39,6 +39,22 @@ const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AI
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
+    id: 'ai-powered-salon-management-2025',
+    slug: 'ai-powered-salon-management-2025',
+    title: '🚀 NEW: AI-Powered Salon Management: Streamlining Operations for 2025',
+    description: 'Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon\'s efficiency.',
+    author: 'EmviApp Team',
+    publishedAt: 'January 1, 2025',
+    readTime: '12 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['AI', 'Salon Management', 'Automation', 'Technology', 'Business'],
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    featured: true,
+    component: AIPoweredSalonManagement2025,
+    url: '/blog/salon-management/ai-powered-salon-management-2025'
+  },
+  {
     id: 'ai-tools-makeup-artists-2025',
     slug: 'ai-tools-makeup-artists-2025',
     title: 'AI Tools Every Makeup Artist Should Use in 2025',
@@ -274,22 +290,6 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     component: ContouredBrows2025,
     url: '/blog/beauty-tips/contoured-brows-2025'
-  },
-  {
-    id: 'ai-powered-salon-management-2025',
-    slug: 'ai-powered-salon-management-2025',
-    title: 'AI-Powered Salon Management: Streamlining Operations for 2025',
-    description: 'Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon\'s efficiency.',
-    author: 'EmviApp Team',
-    publishedAt: 'December 30, 2024',
-    readTime: '12 min read',
-    category: 'Salon Management',
-    categorySlug: 'salon-management',
-    tags: ['AI', 'Salon Management', 'Automation', 'Technology', 'Business'],
-    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    featured: true,
-    component: AIPoweredSalonManagement2025,
-    url: '/blog/salon-management/ai-powered-salon-management-2025'
   }
 ];
 
