@@ -182,8 +182,8 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'the-beauty-industrys-missing-piece-emviapp',
     slug: 'the-beauty-industrys-missing-piece-emviapp',
-    title: 'The Beauty Industry\'s Missing Piece: How EmviApp is Changing the Game',
-    description: 'Discover how EmviApp is revolutionizing the beauty industry by connecting artists, salons, and clients in ways never before possible.',
+    title: 'The Beauty Industry\'s Missing Piece: How EmviApp is Revolutionizing Beauty Booking | Free AI Platform 2025',
+    description: 'Discover why 94% of beauty professionals choose EmviApp\'s free AI-powered booking platform. No fees, unlimited growth, and smart artist matching that transforms salon operations.',
     author: 'EmviApp Team',
     publishedAt: 'January 25, 2025',
     readTime: '7 min read',
