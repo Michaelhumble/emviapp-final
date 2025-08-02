@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
@@ -39,8 +39,8 @@ import NewSignUp from "@/pages/auth/NewSignUp";
 import SignupFastFomo from "@/pages/SignupFastFomo";
 import AuthPage from "@/pages/auth/AuthPage";
 import PremiumSignupPage from "@/pages/auth/PremiumSignupPage";
-import AuthenticationGate from "@/components/routing/AuthenticationGate";
-import GlobalMobileBypass from "@/components/global/GlobalMobileBypass";
+import FirstTimeVisitorRedirect from "@/components/routing/FirstTimeVisitorRedirect";
+import GlobalPremiumSignupModalProvider from "@/components/modals/GlobalPremiumSignupModalProvider";
 import Onboarding from "@/pages/Onboarding";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
@@ -51,7 +51,6 @@ import CustomerProfilePage from "@/pages/customer/ProfilePage";
 import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
 import InviteAcceptance from "@/pages/InviteAcceptance";
 import FreelancerProfile from "@/pages/FreelancerProfile";
-import WelcomePage from "@/pages/Welcome";
 
 import NailJobSuccessPage from "@/pages/nails-job-success";
 
@@ -80,7 +79,6 @@ import BookingServices from "@/pages/BookingServices";
 
 function App() {
   const location = useLocation();
-  const [isMobileBypassed, setIsMobileBypassed] = useState(false);
 
   useEffect(() => {
     // Scroll to top on route change
@@ -89,16 +87,6 @@ function App() {
     // Log route for debugging
     console.log('Current route:', location.pathname);
   }, [location.pathname]);
-
-  // Reset mobile bypass on page reload for unsigned users
-  useEffect(() => {
-    setIsMobileBypassed(false);
-  }, [location.pathname]);
-
-  const handleMobileBypass = () => {
-    console.log('🚀 Global mobile bypass activated');
-    setIsMobileBypassed(true);
-  };
 
   return (
     <HelmetProvider>
@@ -111,11 +99,9 @@ function App() {
                     <RecommendationProvider>
                        <OnboardingProvider>
                         <RouteLogger />
-                        <AuthenticationGate 
-                          onMobileBypass={handleMobileBypass}
-                          isMobileBypassed={isMobileBypassed}
-                        >
-                          <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                        <FirstTimeVisitorRedirect>
+                          <GlobalPremiumSignupModalProvider>
+                            <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                            <Routes>
                     
                     {/* Auth routes */}
@@ -123,7 +109,6 @@ function App() {
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/signup" element={<NewSignUp />} />
                     <Route path="/signup-fast-fomo" element={<SignupFastFomo />} />
-                    <Route path="/welcome" element={<Layout><WelcomePage /></Layout>} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/auth/premium-signup" element={<PremiumSignupPage />} />
                     <Route path="/onboarding" element={
@@ -231,14 +216,8 @@ function App() {
                     <Route path="/freelancer/:profileId" element={<FreelancerProfile />} />
                         </Routes>
                        </Suspense>
-                       </AuthenticationGate>
-                       
-                       {/* Global Mobile Bypass Component */}
-                       <GlobalMobileBypass 
-                         onBypass={handleMobileBypass}
-                         isActive={!isMobileBypassed}
-                       />
-                       
+                       </GlobalPremiumSignupModalProvider>
+                       </FirstTimeVisitorRedirect>
                        <Toaster />
                      </OnboardingProvider>
                   </RecommendationProvider>

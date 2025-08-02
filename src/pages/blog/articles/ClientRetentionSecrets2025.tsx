@@ -39,7 +39,7 @@ const ClientRetentionSecrets2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emvi.app/blog/success-stories/client-retention-secrets-2025"
+        url="https://emvi.app/blog/business/client-retention-secrets-2025"
         type="article"
         image={article.image}
         author={article.author}
@@ -118,7 +118,7 @@ const ClientRetentionSecrets2025 = () => {
             <BlogArticleActions
               articleSlug="client-retention-secrets-2025"
               articleTitle={article.title}
-              articleUrl="https://emvi.app/blog/success-stories/client-retention-secrets-2025"
+              articleUrl="https://emvi.app/blog/business/client-retention-secrets-2025"
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -440,7 +440,7 @@ const ClientRetentionSecrets2025 = () => {
               <BlogArticleActions
                 articleSlug="client-retention-secrets-2025"
                 articleTitle={article.title}
-                articleUrl="https://emvi.app/blog/success-stories/client-retention-secrets-2025"
+                articleUrl="https://emvi.app/blog/business/client-retention-secrets-2025"
                 articleDescription={article.description}
                 articleImage={article.image}
                 hashtags={article.tags}

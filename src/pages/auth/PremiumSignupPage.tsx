@@ -18,8 +18,7 @@ import {
   Globe,
   Users,
   Star,
-  Loader2,
-  Menu
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 

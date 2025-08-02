@@ -38,7 +38,7 @@ const SocialMediaMarketingSalons2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emvi.app/blog/salon-management/social-media-marketing-salons-2025"
+        url="https://emvi.app/blog/marketing/social-media-marketing-salons-2025"
         type="article"
         image={article.image}
         author={article.author}

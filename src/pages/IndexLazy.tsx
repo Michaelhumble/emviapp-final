@@ -16,12 +16,6 @@ import CompactTestimonials from "@/components/home/CompactTestimonials";
 // Import analytics
 import "@/utils/analytics/scrollTracking";
 
-// Import smart sign-up funnel components
-import SmartBanner from "@/components/signup-funnel/SmartBanner";
-import ExitIntentModal from "@/components/signup-funnel/ExitIntentModal";
-import ReturnVisitorModal from "@/components/signup-funnel/ReturnVisitorModal";
-import { updateLastVisit } from "@/utils/signupFunnelTracking";
-
 // Lazy load non-critical components
 const ClientSuccessStories = lazy(() => import("@/components/home/ClientSuccessStories"));
 const AIMatchmakerSection = lazy(() => import("@/components/home/ai-matchmaker"));
@@ -71,9 +65,6 @@ const Index = () => {
   useEffect(() => {
     document.title = "EmviApp | The Beauty Industry Platform";
     console.log("Index page loaded");
-    
-    // Update last visit for smart tracking
-    updateLastVisit();
     
     // Run verification to ensure all listings have proper routing
     runListingsVerification()
@@ -214,11 +205,6 @@ const Index = () => {
       
       {/* Sticky Sign Up Button */}
       <StickySignUpButton />
-      
-      {/* Smart Sign-Up Funnel Components */}
-      <SmartBanner onSignUpClick={() => navigate('/signup')} />
-      <ExitIntentModal onSignUpClick={() => navigate('/signup')} />
-      <ReturnVisitorModal />
       
       {user && userId && (
         <RoleSelectionModal 

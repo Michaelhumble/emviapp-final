@@ -1,25 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useNavigate } from 'react-router-dom';
-
-// Import smart signup funnel components
-import SmartBanner from '@/components/signup-funnel/SmartBanner';
-import ExitIntentModal from '@/components/signup-funnel/ExitIntentModal';
-import ReturnVisitorModal from '@/components/signup-funnel/ReturnVisitorModal';
-import TestVisibilityBanner from '@/components/signup-funnel/TestVisibilityBanner';
-import { updateLastVisit } from '@/utils/signupFunnelTracking';
 
 const About = () => {
   const { isVietnamese, toggleLanguage } = useTranslation();
-  const navigate = useNavigate();
-
-  // Initialize tracking
-  useEffect(() => {
-    updateLastVisit();
-    console.log('🔍 About page: Signup funnel components should be loading...');
-  }, []);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -503,12 +488,6 @@ const About = () => {
           </div>
         </motion.section>
       </div>
-
-      {/* Smart Sign-Up Funnel Components */}
-      <TestVisibilityBanner />
-      <SmartBanner onSignUpClick={() => navigate('/signup')} />
-      <ExitIntentModal onSignUpClick={() => navigate('/signup')} />
-      <ReturnVisitorModal />
     </div>
   );
 };

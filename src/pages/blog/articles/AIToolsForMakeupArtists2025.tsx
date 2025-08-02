@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
+import EnhancedSEO from '@/components/seo/EnhancedSEO';
 import BlogSocialShare from '@/components/blog/BlogSocialShare';
 
 const AIToolsForMakeupArtists2025 = () => {
@@ -14,7 +15,7 @@ const AIToolsForMakeupArtists2025 = () => {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/beauty-tips/ai-tools-makeup-artists-2025"
+      "@id": "https://emvi.app/blog/beauty-tips/ai-tools-for-makeup-artists"
     },
     "headline": "Leveraging AI for Freelance Makeup Artists: Tools to Boost Your Business",
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -35,20 +36,21 @@ const AIToolsForMakeupArtists2025 = () => {
     "description": "Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation. Learn how EmviApp empowers your beauty business."
   };
 
-  const currentUrl = "https://emvi.app/blog/beauty-tips/ai-tools-makeup-artists-2025";
+  const currentUrl = "https://emvi.app/blog/beauty-tips/ai-tools-for-makeup-artists";
   const featuredImage = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
 
   return (
     <>
-      <DynamicSEO
-        title="AI Tools Every Makeup Artist Should Use in 2025 | EmviApp"
-        description="Discover the cutting-edge AI tools that are revolutionizing the makeup industry and helping artists create stunning looks with unprecedented precision."
+      <EnhancedSEO
+        title="Best AI Tools for Freelance Makeup Artists | Boost Your Business with EmviApp"
+        description="Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation. Learn how EmviApp empowers your beauty business."
         url={currentUrl}
         image={featuredImage}
         type="article"
-        author="EmviApp Team"
+        author="EmviApp Editorial Team"
         publishedTime="2025-01-31T12:00:00Z"
-        tags={['AI tools', 'makeup artistry', 'technology', 'innovation', 'beauty tech']}
+        modifiedTime="2025-01-31T12:00:00Z"
+        tags={['AI tools', 'makeup artists', 'freelance beauty', 'business automation', 'beauty technology']}
         structuredData={articleSchema}
       />
 
@@ -97,7 +99,7 @@ const AIToolsForMakeupArtists2025 = () => {
                 image={featuredImage}
                 hashtags={['AITools', 'MakeupArtist', 'BeautyBusiness', 'EmviApp']}
                 position="top"
-                articleSlug="ai-tools-makeup-artists-2025"
+                articleSlug="ai-tools-for-makeup-artists-2025"
               />
             </div>
 
@@ -478,7 +480,7 @@ const AIToolsForMakeupArtists2025 = () => {
               image={featuredImage}
               hashtags={['AITools', 'MakeupArtist', 'BeautyBusiness', 'EmviApp']}
               position="bottom"
-              articleSlug="ai-tools-makeup-artists-2025"
+              articleSlug="ai-tools-for-makeup-artists-2025"
             />
 
           </div>

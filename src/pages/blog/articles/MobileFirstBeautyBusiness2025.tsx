@@ -38,7 +38,7 @@ const MobileFirstBeautyBusiness2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emvi.app/blog/trends/mobile-first-beauty-business-2025"
+        url="https://emvi.app/blog/technology/mobile-first-beauty-business-2025"
         type="article"
         image={article.image}
         author={article.author}
