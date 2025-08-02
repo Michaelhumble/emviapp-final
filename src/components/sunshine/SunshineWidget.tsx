@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useSunshineChat } from '@/hooks/useSunshineChat';
 import { useAuth } from '@/context/auth';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { EmbeddedPageModal } from './EmbeddedPageModal';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChatMessage } from './ChatMessage';
 
 interface Message {
@@ -26,14 +26,14 @@ export const SunshineWidget = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [language, setLanguage] = useState<Language>('en');
   const [isFirstMessage, setIsFirstMessage] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalUrl, setModalUrl] = useState('');
-  const [modalTitle, setModalTitle] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   
   const { sendMessage, isLoading } = useSunshineChat();
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Detect user language and show widget after 3 seconds
   useEffect(() => {
@@ -176,9 +176,17 @@ export const SunshineWidget = () => {
   };
 
   const handleLinkClick = (url: string, title: string) => {
-    setModalUrl(url);
-    setModalTitle(title);
-    setModalOpen(true);
+    // Check if it's an internal route (starts with /)
+    if (url.startsWith('/')) {
+      navigate(url);
+      // Auto-focus chat input after navigation with a slight delay
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    } else {
+      // External link - open in new tab
+      window.open(url, '_blank');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -202,8 +210,8 @@ export const SunshineWidget = () => {
             transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
             className={`fixed z-50 flex flex-col ${
               isMobile 
-                ? 'inset-4 rounded-2xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50' 
-                : 'bottom-24 right-6 w-80 h-96 rounded-xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50'
+                ? 'inset-4 rounded-3xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50' 
+                : 'bottom-20 right-6 w-[420px] h-[600px] rounded-3xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50'
             } shadow-2xl border border-orange-200/50 backdrop-blur-sm`}
             style={{
               background: isMobile 
@@ -212,7 +220,7 @@ export const SunshineWidget = () => {
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-orange-200/30">
+            <div className="flex items-center justify-between p-6 border-b border-orange-200/30">
               <div className="flex items-center gap-3">
                 <motion.div 
                   className="relative"
@@ -266,7 +274,7 @@ export const SunshineWidget = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-6 space-y-5 scrollbar-hide">
               {messages.map((message, index) => (
                 <ChatMessage
                   key={message.id}
@@ -298,15 +306,16 @@ export const SunshineWidget = () => {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-orange-200/30 bg-white/60 backdrop-blur-sm">
-              <div className="flex gap-3">
+            <div className="p-6 border-t border-orange-200/30 bg-white/60 backdrop-blur-sm">
+              <div className="flex gap-4">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={language === 'vi' ? 'Hỏi mình bất cứ điều gì... ✨' : 'Ask me anything... ✨'}
-                  className="flex-1 px-4 py-3 text-sm border border-orange-200 rounded-2xl bg-white/80 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent placeholder-amber-600/70 text-amber-900 mobile-input-safe"
+                  className="flex-1 px-5 py-4 text-sm border border-orange-200 rounded-3xl bg-white/80 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent placeholder-amber-600/70 text-amber-900 mobile-input-safe"
                   disabled={isLoading}
                 />
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -314,11 +323,11 @@ export const SunshineWidget = () => {
                     onClick={handleSend}
                     disabled={!input.trim() || isLoading}
                     size="icon"
-                    className={`h-12 w-12 rounded-2xl bg-gradient-to-r from-orange-400 to-amber-400 hover:from-orange-500 hover:to-amber-500 text-white shadow-lg ${
-                      isMobile ? 'h-12 w-12' : 'h-10 w-10'
+                    className={`h-14 w-14 rounded-3xl bg-gradient-to-r from-orange-400 to-amber-400 hover:from-orange-500 hover:to-amber-500 text-white shadow-lg ${
+                      isMobile ? 'h-12 w-12 rounded-2xl' : 'h-14 w-14'
                     }`}
                   >
-                    <Send className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
+                    <Send className={`${isMobile ? 'h-5 w-5' : 'h-5 w-5'}`} />
                   </Button>
                 </motion.div>
               </div>
@@ -378,13 +387,6 @@ export const SunshineWidget = () => {
         )}
       </AnimatePresence>
 
-      {/* Embedded Page Modal */}
-      <EmbeddedPageModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        url={modalUrl}
-        title={modalTitle}
-      />
     </>
   );
 };

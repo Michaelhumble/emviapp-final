@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, ExternalLink } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, ExternalLink, ArrowRight } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -42,6 +42,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       // Add link button
       const linkText = match[1];
       const linkUrl = match[2];
+      const isInternalLink = linkUrl.startsWith('/');
       
       parts.push(
         <Button
@@ -51,7 +52,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           className="mx-1 my-1 bg-white/80 border-orange-300 text-amber-800 hover:bg-orange-50 hover:border-orange-400 text-xs px-3 py-1 h-auto rounded-lg inline-flex items-center gap-1"
           onClick={() => onLinkClick(linkUrl, linkText)}
         >
-          <ExternalLink className="h-3 w-3" />
+          {isInternalLink ? <ArrowRight className="h-3 w-3" /> : <ExternalLink className="h-3 w-3" />}
           {linkText}
         </Button>
       );
