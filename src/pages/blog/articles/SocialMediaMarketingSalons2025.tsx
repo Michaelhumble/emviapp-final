@@ -8,8 +8,8 @@ import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const SocialMediaMarketingSalons2025 = () => {
   const article = {
-    title: "Social Media Marketing for Salons: 2025 Complete Guide",
-    description: "Master social media marketing for your salon with proven strategies that drive bookings. From Instagram to TikTok, learn what works in 2025 for beauty businesses.",
+    title: "Social Media Marketing for Salons: The Complete 2025 Guide",
+    description: "Master salon social media marketing with proven strategies that increase bookings 70%+. Platform optimization, content tactics & client acquisition for beauty pros.",
     author: "EmviApp Editorial Team",
     publishedAt: "July 1, 2025",
     readTime: "14 min read",
@@ -20,16 +20,24 @@ const SocialMediaMarketingSalons2025 = () => {
 
   const faqData = [
     {
-      question: "Which social media platform is best for salons in 2025?",
-      answer: "Instagram remains the top platform for beauty businesses, with 89% of salons seeing the highest engagement there. TikTok is essential for reaching younger demographics, while Facebook excels for local discovery and booking conversions."
+      question: "Which social media platform delivers the best ROI for salons in 2025?",
+      answer: "Instagram delivers the highest ROI for beauty businesses, with 89% of salons seeing optimal engagement. TikTok generates 45% more bookings among Gen Z clients, while Facebook excels for local discovery and conversions among clients 30+."
     },
     {
-      question: "How often should salons post on social media?",
-      answer: "Post daily on Instagram Stories, 3-4 times per week on your main feed, and 2-3 TikTok videos weekly. Consistency matters more than frequency - establish a schedule you can maintain long-term."
+      question: "How often should beauty salons post on social media for maximum impact?",
+      answer: "Post daily on Instagram Stories with 3-4 main feed posts weekly, and 2-3 TikTok videos per week. Consistency beats frequency - maintain a sustainable schedule you can execute long-term rather than sporadic bursts."
     },
     {
-      question: "What's the ROI of social media marketing for salons?",
-      answer: "Well-executed salon social media strategies typically generate 3-5x ROI within 6 months. Top-performing salons see 40-60% of new clients discovering them through social platforms."
+      question: "What's the typical ROI of social media marketing for beauty salons?",
+      answer: "Strategic salon social media campaigns typically generate 3-5x ROI within 6 months. Top-performing salons attribute 40-60% of new client acquisition to social platforms, with average customer lifetime value 30% higher than other channels."
+    },
+    {
+      question: "How can salons convert social media followers into paying clients effectively?",
+      answer: "Use strategic bio optimization with direct booking links, create compelling CTAs in posts, showcase pricing transparency, share authentic client testimonials, and integrate seamless booking systems like EmviApp for instant appointment conversion."
+    },
+    {
+      question: "What content types generate the most bookings for beauty salons?",
+      answer: "Transformation videos (before/during/after) generate 12x more engagement than static photos. Behind-the-scenes content builds trust, educational tutorials establish expertise, and client testimonials provide crucial social proof for booking decisions."
     }
   ];
 
@@ -285,9 +293,9 @@ const SocialMediaMarketingSalons2025 = () => {
                 <li><strong>Social Proof Integration:</strong> Client reviews and testimonials in posts</li>
               </ul>
 
-              <p className="mb-8">
-                Smart salons are integrating platforms like <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> directly into their social media strategy, creating seamless booking experiences that convert social followers into paying clients instantly.
-              </p>
+               <p className="mb-8">
+                 Smart salons are integrating platforms like <Link to="/pricing" className="text-primary font-semibold hover:underline">EmviApp</Link> directly into their social media strategy, creating seamless booking experiences that convert social followers into paying clients instantly.
+               </p>
 
               <h2 className="text-3xl font-bold mb-6 text-foreground">Measuring Success: KPIs That Matter</h2>
 
@@ -336,9 +344,9 @@ const SocialMediaMarketingSalons2025 = () => {
 
               <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-8 mb-12 text-center">
                 <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Salon's Social Media Strategy?</h2>
-                <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
-                  Stop treating social media like a side project. <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> helps you integrate social media marketing with seamless booking experiences that turn followers into loyal clients.
-                </p>
+                 <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
+                   Stop treating social media like a side project. <Link to="/about" className="text-primary font-semibold hover:underline">EmviApp</Link> helps you integrate social media marketing with seamless booking experiences that turn followers into loyal clients.
+                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
                     <Link to="/auth/signup">
@@ -371,9 +379,9 @@ const SocialMediaMarketingSalons2025 = () => {
                 Social media success doesn't happen overnight, but with consistent execution of these strategies, you'll see measurable results within 90 days. Start with one platform, master it, then expand.
               </p>
 
-              <p className="mb-6">
-                For more strategies on building a successful beauty business, check out our guides on <Link to="/blog/salon-management/increase-salon-bookings-2025" className="text-primary font-semibold hover:underline">increasing salon bookings</Link> and <Link to="/blog/business/client-retention-secrets-2025" className="text-primary font-semibold hover:underline">client retention strategies</Link>.
-              </p>
+               <p className="mb-6">
+                 For strategic business growth, explore <Link to="/features" className="text-primary font-semibold hover:underline">advanced booking features</Link> and <Link to="/jobs/nail-technician" className="text-primary font-semibold hover:underline">nail technician opportunities</Link> plus discover <Link to="/salons-for-sale" className="text-primary font-semibold hover:underline">salon marketplace benefits</Link>.
+               </p>
 
               <div className="text-center py-8 border-t border-gray-200">
                 <p className="text-lg mb-4">Ready to see 40%+ more bookings from social media?</p>
