@@ -36,9 +36,27 @@ const HairMaskDIYRecipes2025 = lazy(() => import('@/pages/blog/articles/HairMask
 const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBrows2025'));
 const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AIPoweredSalonManagement2025'));
 const Top7AITrendsBeautySalons2025 = lazy(() => import('@/pages/blog/articles/Top7AITrendsBeautySalons2025'));
+const VietnameseNailTechHiring2025 = lazy(() => import('@/pages/blog/articles/VietnameseNailTechHiring2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'vietnamese-nail-tech-hiring-2025',
+    slug: 'vietnamese-nail-tech-hiring-2025',
+    title: 'How to Attract and Retain High-Paying Vietnamese Nail Technicians in 2025',
+    description: 'Discover proven strategies to hire and keep top Vietnamese nail techs. Use EmviApp\'s AI-powered platform to build a winning salon team.',
+    author: 'EmviApp Team',
+    publishedAt: 'February 2, 2025',
+    readTime: '12 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['Vietnamese nail technician hiring', 'nail tech recruitment 2025', 'salon staff retention', 'EmviApp recruitment platform', 'Vietnamese nail salon staffing'],
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
+    featured: true,
+    trending: true,
+    component: VietnameseNailTechHiring2025,
+    url: '/blog/salon-management/vietnamese-nail-tech-hiring-2025'
+  },
   {
     id: 'top-7-ai-trends-beauty-salons-2025',
     slug: 'top-7-ai-trends-beauty-salons-2025',
