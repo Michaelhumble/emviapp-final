@@ -267,10 +267,10 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
           >
             {/* Fixed Header with Close Button and Language Toggle */}
             <div className="relative flex-shrink-0 p-6 pb-4">
-              {/* Language Toggle Button - Top Left Corner */}
+              {/* Language Toggle Button - Top Right Corner with proper spacing */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'vi' : 'en')}
-                className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 bg-purple-50/80 hover:bg-purple-100/80 rounded-lg transition-colors z-10"
+                className="absolute top-3 right-12 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 bg-purple-50/80 hover:bg-purple-100/80 rounded-lg transition-colors z-10"
               >
                 <Globe className="h-3.5 w-3.5" />
                 <span className="text-xs">{language === 'en' ? 'VI' : 'EN'}</span>
@@ -278,12 +278,12 @@ const PremiumSignupModal: React.FC<PremiumSignupModalProps> = ({ isOpen, onClose
               
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors z-10"
               >
                 <X className="h-6 w-6" />
               </button>
               
-              <div className="text-center pl-16 pr-8">
+              <div className="text-center px-2 pt-6">
                 <motion.h1 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
