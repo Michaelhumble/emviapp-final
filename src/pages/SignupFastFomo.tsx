@@ -95,12 +95,15 @@ const SignupFastFomo = () => {
     e.preventDefault();
     
     if (!email.trim()) {
-      setEmailError('Email is required');
+      setEmailError(isVietnamese ? 'Email là bắt buộc' : 'Email is required');
       return;
     }
     
     if (!isValidEmail(email)) {
-      setEmailError('Please enter a valid email address');
+      setEmailError(isVietnamese 
+        ? 'Vui lòng nhập địa chỉ email hợp lệ'
+        : 'Please enter a valid email address'
+      );
       return;
     }
 
@@ -135,7 +138,10 @@ const SignupFastFomo = () => {
       
     } catch (error: any) {
       console.error('Signup error:', error);
-      setEmailError(error.message || "Something went wrong. Please try again.");
+      setEmailError(error.message || (isVietnamese 
+        ? "Có lỗi xảy ra. Vui lòng thử lại."
+        : "Something went wrong. Please try again."
+      ));
     } finally {
       setIsSubmitting(false);
     }
@@ -214,18 +220,19 @@ const SignupFastFomo = () => {
               
               <div className="text-center">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4 font-serif">
-                  Wait! Don't Miss Out!
+                  {isVietnamese ? "Chờ đã! Đừng bỏ lỡ!" : "Wait! Don't Miss Out!"}
                 </h3>
                 <p className="text-gray-600 mb-6 text-lg">
-                  Join 1,200+ professionals getting 3x more bookings.
-                  <br />
-                  <span className="font-semibold text-purple-600">100% FREE</span> — no hidden fees!
+                  {isVietnamese 
+                    ? "Tham gia cùng 1,200+ thợ nail có gấp 3 lần lượt đặt lịch. HOÀN TOÀN MIỄN PHÍ!"
+                    : "Join 1,200+ professionals getting 3x more bookings. 100% FREE — no hidden fees!"
+                  }
                 </p>
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <Input
                     type="email"
-                    placeholder="Enter your email for instant access"
+                    placeholder={isVietnamese ? "Nhập email để truy cập ngay" : "Enter your email for instant access"}
                     value={email}
                     onChange={handleEmailChange}
                     className="h-14 text-lg border-2 border-purple-200 focus:border-purple-500 rounded-xl"
@@ -236,12 +243,12 @@ const SignupFastFomo = () => {
                     disabled={isSubmitting}
                     className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all"
                   >
-                    {isSubmitting ? 'Securing...' : '♡ Get My Spot FREE →'}
+                    {isSubmitting ? (isVietnamese ? 'Đang xử lý...' : 'Securing...') : (isVietnamese ? '♡ Đăng Ký MIỄN PHÍ →' : '♡ Get My Spot FREE →')}
                   </Button>
                 </form>
                 
                 <p className="text-sm text-gray-500 mt-4">
-                  No spam. Unsubscribe anytime. Data protected.
+                  {isVietnamese ? "Không spam. Hủy đăng ký bất cứ lúc nào. Dữ liệu được bảo vệ." : "No spam. Unsubscribe anytime. Data protected."}
                 </p>
               </div>
             </motion.div>
@@ -335,7 +342,7 @@ const SignupFastFomo = () => {
                   <div>
                     <Input
                       type="email"
-                      placeholder="Enter your email address"
+                      placeholder={isVietnamese ? "Nhập địa chỉ email của bạn" : "Enter your email address"}
                       value={email}
                       onChange={handleEmailChange}
                       className={`h-16 text-lg border-2 rounded-2xl transition-all ${
@@ -353,7 +360,7 @@ const SignupFastFomo = () => {
                   <div>
                     <Input
                       type="text"
-                      placeholder="Your name (optional)"
+                      placeholder={isVietnamese ? "Tên của bạn (không bắt buộc)" : "Your name (optional)"}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="h-16 text-lg border-2 border-gray-200 focus:border-purple-500 rounded-2xl transition-all"
@@ -368,12 +375,12 @@ const SignupFastFomo = () => {
                     {isSubmitting ? (
                       <div className="flex items-center gap-3">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Securing your spot...
+                        {isVietnamese ? 'Đang xử lý...' : 'Securing your spot...'}
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-2">
                         <Heart className="h-6 w-6" />
-                        ♡ Get Early Access FREE →
+                        {isVietnamese ? '♡ Truy Cập Miễn Phí →' : '♡ Get Early Access FREE →'}
                       </div>
                     )}
                   </Button>
@@ -387,9 +394,14 @@ const SignupFastFomo = () => {
                   >
                     <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-6" />
                   </motion.div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4 font-serif">You're In! 🎉</h3>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4 font-serif">
+                    {isVietnamese ? "Bạn đã tham gia! 🎉" : "You're In! 🎉"}
+                  </h3>
                   <p className="text-xl text-gray-600">
-                    Welcome to EmviApp! Check your email for your early access invitation.
+                    {isVietnamese 
+                      ? "Chào mừng đến với EmviApp! Kiểm tra email để nhận lời mời truy cập sớm."
+                      : "Welcome to EmviApp! Check your email for your early access invitation."
+                    }
                   </p>
                 </div>
               )}
@@ -398,18 +410,18 @@ const SignupFastFomo = () => {
               <div className="mt-8 space-y-4">
                 <div className="flex items-center justify-center gap-3 text-gray-600">
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="font-medium">No spam. Unsubscribe anytime.</span>
+                  <span className="font-medium">{t.common.noSpam}</span>
                 </div>
                 <div className="flex items-center justify-center gap-3 text-gray-600">
                   <Shield className="h-5 w-5 text-green-500" />
-                  <span className="font-medium">Your data is secure & encrypted.</span>
+                  <span className="font-medium">{t.common.secure}</span>
                 </div>
                 <div className="text-center pt-2">
                   <Link 
                     to="/privacy" 
                     className="text-purple-600 hover:text-purple-700 underline font-medium"
                   >
-                    Privacy Policy
+                    {t.common.privacyPolicy}
                   </Link>
                 </div>
               </div>

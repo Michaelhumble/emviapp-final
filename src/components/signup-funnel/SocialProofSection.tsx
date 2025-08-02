@@ -18,7 +18,7 @@ const SocialProofSection: React.FC<SocialProofSectionProps> = ({
       <div className={`text-center ${className}`}>
         <div className="flex items-center justify-center gap-2 text-sm text-white/80 mb-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          <span>{t.socialProof.onlineIndicator}</span>
+          <span>{t.socialProof.verifiedProfessionals}</span>
         </div>
         <div className="text-xs text-white/60">
           {t.socialProof.joinedToday}
