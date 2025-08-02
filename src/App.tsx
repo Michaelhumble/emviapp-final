@@ -29,6 +29,9 @@ import Terms from "@/pages/Terms";
 import Refund from "@/pages/Refund";
 import Privacy from "@/pages/Privacy";
 import Cookies from "@/pages/Cookies";
+import Features from "@/pages/Features";
+import NailTechnician from "@/pages/jobs/NailTechnician";
+import SalonsForSale from "@/pages/SalonsForSale";
 import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
 import PostCanceled from "@/pages/post-canceled";
@@ -159,12 +162,15 @@ function App() {
                     <Route path="/brows-lashes" element={<Layout><BrowsLashesPage /></Layout>} />
                     <Route path="/tattoo" element={<Layout><TattooPage /></Layout>} />
                     
-                    <Route path="/about" element={<Layout><About /></Layout>} />
-                    <Route path="/contact" element={<Layout><Contact /></Layout>} />
-                    <Route path="/terms" element={<Layout><Terms /></Layout>} />
-                    <Route path="/refund" element={<Layout><Refund /></Layout>} />
-                    <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-                    <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                     <Route path="/about" element={<Layout><About /></Layout>} />
+                     <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                     <Route path="/terms" element={<Layout><Terms /></Layout>} />
+                     <Route path="/refund" element={<Layout><Refund /></Layout>} />
+                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                     <Route path="/features" element={<Layout><Features /></Layout>} />
+                     <Route path="/jobs/nail-technician" element={<Layout><NailTechnician /></Layout>} />
+                     <Route path="/salons-for-sale" element={<Layout><SalonsForSale /></Layout>} />
                     
                     {/* ... keep existing code (other routes) the same */}
                     {routes.map((route, index) => (
