@@ -9,71 +9,8 @@ import { getArticlesByCategory } from '@/data/blogArticles';
 import BlogImage from '@/components/blog/BlogImage';
 
 const SalonManagementCategory = () => {
-  const articles = [
-    {
-      title: "Social Media Content Ideas for Nail Salons in 2025",
-      slug: "social-media-content-nail-salons",
-      category: "salon-management",
-      excerpt: "Transform your nail salon's social media presence with fresh, engaging content strategies that attract clients and showcase your artistry.",
-      image: "https://images.unsplash.com/photo-1487058792275-0ad442f7d0c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "9 min read",
-      publishedAt: "January 31, 2025"
-    },
-    {
-      title: "How to Increase Salon Bookings in 2025: 7 Proven Strategies That Actually Work",
-      slug: "increase-salon-bookings-2025",
-      category: "salon-management",
-      excerpt: "Discover the data-driven strategies that top salons use to consistently fill their calendars and maximize revenue in 2025.",
-      image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "10 min read",
-      publishedAt: "January 25, 2025"
-    },
-    {
-      title: "Social Media Marketing for Salons: 2025 Complete Guide",
-      slug: "social-media-marketing-salons-2025",
-      category: "salon-management",
-      excerpt: "Master social media marketing with proven strategies that attract clients, build brand loyalty, and drive bookings for your beauty business.",
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "12 min read",
-      publishedAt: "January 20, 2025"
-    },
-    {
-      title: "Client Retention Secrets: How Top Salons Keep 90%+ of Their Customers",
-      slug: "client-retention-secrets-2025",
-      category: "salon-management",
-      excerpt: "Learn the proven retention strategies that elite salons use to build unbreakable client loyalty and sustainable revenue growth.",
-      image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "8 min read",
-      publishedAt: "January 18, 2025"
-    },
-    {
-      title: "Salon Pricing Strategies That Maximize Profit in 2025",
-      slug: "salon-pricing-strategies-2025",
-      category: "salon-management",
-      excerpt: "Stop undercharging for your services. Learn the psychology-backed pricing strategies that premium salons use to increase profits without losing clients.",
-      image: "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "9 min read",
-      publishedAt: "January 15, 2025"
-    },
-    {
-      title: "The Ultimate Guide to Hiring and Managing Salon Staff",
-      slug: "hiring-managing-salon-staff-2025",
-      category: "salon-management",
-      excerpt: "Build a world-class team with proven hiring, training, and management strategies that reduce turnover and maximize performance.",
-      image: "https://images.unsplash.com/photo-1522182245047-d1b5d4da6147?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "11 min read",
-      publishedAt: "January 12, 2025"
-    },
-    {
-      title: "Mobile-First Beauty Business: Why Your Salon Needs to Go Digital Now",
-      slug: "mobile-first-beauty-business-2025",
-      category: "salon-management",
-      excerpt: "The beauty industry is rapidly shifting toward mobile-first experiences. Learn why salons that don't adapt risk losing 60% of potential clients.",
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "7 min read",
-      publishedAt: "January 10, 2025"
-    }
-  ];
+  // Use actual articles from the registry instead of hardcoded data
+  const articles = getArticlesByCategory('salon-management');
 
   return (
     <>
@@ -117,7 +54,7 @@ const SalonManagementCategory = () => {
             {articles.map((article, index) => (
               <Link
                 key={index}
-                to={`/blog/${article.category}/${article.slug}`}
+                to={`/blog/${article.categorySlug}/${article.slug}`}
                 className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               >
                 <div className="grid md:grid-cols-2 gap-0">
@@ -146,7 +83,7 @@ const SalonManagementCategory = () => {
                       {article.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      {article.excerpt}
+                      {article.description}
                     </p>
                   </div>
                 </div>
