@@ -7,6 +7,7 @@ import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
+import lashLoyaltyHero from '@/assets/lash-client-loyalty-hero.jpg';
 
 const ClientLoyaltyLashTechs2025 = () => {
   const article = {
@@ -110,8 +111,8 @@ const ClientLoyaltyLashTechs2025 = () => {
             {/* Featured Image */}
             <div className="mb-12 rounded-2xl overflow-hidden">
               <BlogImage 
-                src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-                alt="Creative ideas and innovation for building client loyalty in lash business"
+                src={lashLoyaltyHero}
+                alt="Professional lash technician providing personalized eyelash extension service to loyal client in luxury salon setting with client loyalty program benefits"
                 className="w-full h-[400px] md:h-[500px]"
                 priority={true}
               />
