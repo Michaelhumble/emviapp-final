@@ -25,7 +25,7 @@ const IndustryCategory = () => {
       <DynamicSEO
         title="Beauty Industry News & Analysis | Market Trends & Insights"
         description="Stay informed with the latest beauty industry news, market analysis, and professional insights. Get data-driven perspectives on trends shaping the beauty business."
-        url="https://emvi.app/blog/category/industry"
+        url="https://emvi.app/blog/categories/industry"
         type="website"
         tags={['beauty industry', 'market analysis', 'industry news', 'beauty business']}
       />

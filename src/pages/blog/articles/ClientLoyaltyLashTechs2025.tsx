@@ -73,7 +73,7 @@ const ClientLoyaltyLashTechs2025 = () => {
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
-                <Link to="/blog/category/artist-spotlights" className="bg-yellow-500/10 text-yellow-600 px-3 py-1 rounded-full font-medium hover:bg-yellow-500/20 transition-colors">
+                <Link to="/blog/categories/artist-spotlights" className="bg-yellow-500/10 text-yellow-600 px-3 py-1 rounded-full font-medium hover:bg-yellow-500/20 transition-colors">
                   Artist Spotlights
                 </Link>
                 <div className="flex items-center gap-1">

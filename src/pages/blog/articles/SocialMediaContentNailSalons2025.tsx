@@ -62,7 +62,7 @@ const SocialMediaContentNailSalons2025 = () => {
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
-                <Link to="/blog/category/salon-management" className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full font-medium hover:bg-green-500/20 transition-colors">
+                <Link to="/blog/categories/salon-management" className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full font-medium hover:bg-green-500/20 transition-colors">
                   Salon Management
                 </Link>
                 <div className="flex items-center gap-1">

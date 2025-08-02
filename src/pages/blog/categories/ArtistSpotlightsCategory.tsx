@@ -27,7 +27,7 @@ const ArtistSpotlightsCategory = () => {
       <DynamicSEO
         title="Artist Spotlights | Meet the Beauty Industry's Rising Stars"
         description="Discover inspiring stories from talented beauty professionals making their mark in the industry. Get behind-the-scenes insights from artists who are redefining beauty standards."
-        url="https://emvi.app/blog/category/artist-spotlights"
+        url="https://emvi.app/blog/categories/artist-spotlights"
         type="website"
         tags={['artist spotlights', 'beauty professionals', 'success stories', 'artist interviews']}
       />

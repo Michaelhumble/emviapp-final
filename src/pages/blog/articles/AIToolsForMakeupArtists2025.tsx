@@ -70,7 +70,7 @@ const AIToolsForMakeupArtists2025 = () => {
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
-                <Link to="/blog/category/beauty-tips" className="bg-pink-500/10 text-pink-600 px-3 py-1 rounded-full font-medium hover:bg-pink-500/20 transition-colors">
+                <Link to="/blog/categories/beauty-tips" className="bg-pink-500/10 text-pink-600 px-3 py-1 rounded-full font-medium hover:bg-pink-500/20 transition-colors">
                   Beauty Tips
                 </Link>
                 <div className="flex items-center gap-1">
@@ -440,7 +440,7 @@ const AIToolsForMakeupArtists2025 = () => {
                   <span className="text-primary font-medium">Read Article →</span>
                 </Link>
                 
-                <Link to="/blog/category/beauty-tips" className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
+                <Link to="/blog/categories/beauty-tips" className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
                   <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">More Beauty Tips</h4>
                   <p className="text-muted-foreground mb-3">Explore expert tips and tutorials for beauty professionals.</p>
                   <span className="text-primary font-medium">Browse Category →</span>
