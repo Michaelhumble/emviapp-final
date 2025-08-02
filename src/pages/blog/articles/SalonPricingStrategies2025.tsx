@@ -45,7 +45,7 @@ const SalonPricingStrategies2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emvi.app/blog/business/salon-pricing-strategies-2025"
+        url="https://emvi.app/blog/salon-management/salon-pricing-strategies-2025"
         type="article"
         image={article.image}
         author={article.author}

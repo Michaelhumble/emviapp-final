@@ -25,7 +25,7 @@ const ClientLoyaltyLashTechs2025 = () => {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://emvi.app/blog/artist-spotlights/client-loyalty-lash-techs"
+      "@id": "https://emvi.app/blog/artist-spotlights/client-loyalty-lash-techs-2025"
     },
     "headline": "Building Client Loyalty: Proven Strategies for Lash Technicians",
     "image": "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -51,7 +51,7 @@ const ClientLoyaltyLashTechs2025 = () => {
       <DynamicSEO
         title="Client Loyalty for Lash Techs: Proven Strategies | EmviApp"
         description="Learn how lash technicians can build a loyal client base with exceptional service, personalized experiences, and smart retention strategies. Boost your lash business with EmviApp."
-        url="https://emvi.app/blog/artist-spotlights/client-loyalty-lash-techs"
+        url="https://emvi.app/blog/artist-spotlights/client-loyalty-lash-techs-2025"
         type="article"
         tags={['lash technician', 'client loyalty', 'retention strategies', 'lash business', 'customer service']}
         structuredData={articleSchema}
@@ -99,7 +99,7 @@ const ClientLoyaltyLashTechs2025 = () => {
             <BlogArticleActions
               articleSlug="client-loyalty-lash-techs-2025"
               articleTitle={article.title}
-              articleUrl={`${window.location.origin}/blog/artist-spotlights/client-loyalty-lash-techs`}
+              articleUrl={`${window.location.origin}/blog/artist-spotlights/client-loyalty-lash-techs-2025`}
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
@@ -554,7 +554,7 @@ const ClientLoyaltyLashTechs2025 = () => {
             <BlogArticleActions
               articleSlug="client-loyalty-lash-techs-2025"
               articleTitle={article.title}
-              articleUrl={`${window.location.origin}/blog/artist-spotlights/client-loyalty-lash-techs`}
+              articleUrl={`${window.location.origin}/blog/artist-spotlights/client-loyalty-lash-techs-2025`}
               articleDescription={article.description}
               articleImage={article.image}
               hashtags={article.tags}
