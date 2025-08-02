@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { shouldShowBanner, markBannerDismissed, isMobileDevice } from '@/utils/signupFunnelTracking';
 import { Link } from 'react-router-dom';
+import { useFunnelTranslation, detectUserLanguage } from '@/hooks/useFunnelTranslation';
+import { setLanguagePreference, getLanguagePreference } from '@/utils/languagePreference';
+import CountdownTimer from './CountdownTimer';
+import SocialProofSection from './SocialProofSection';
 
 interface SmartBannerProps {
   onSignUpClick?: () => void;
@@ -11,7 +15,22 @@ interface SmartBannerProps {
 const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showLanguageToggle, setShowLanguageToggle] = useState(false);
   const isMobile = isMobileDevice();
+  const { t, isVietnamese, currentLanguage } = useFunnelTranslation();
+
+  // Auto-detect and set language on first visit
+  useEffect(() => {
+    const hasSetLanguage = localStorage.getItem('emvi_language_detected');
+    if (!hasSetLanguage) {
+      const detectedLang = detectUserLanguage();
+      if (detectedLang !== getLanguagePreference()) {
+        setLanguagePreference(detectedLang);
+        localStorage.setItem('emvi_language_detected', 'true');
+        window.location.reload();
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Check if banner should be shown
@@ -30,10 +49,26 @@ const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
   };
 
   const handleSignUpClick = () => {
+    // Track button click
+    if (typeof (window as any).gtag !== 'undefined') {
+      (window as any).gtag('event', 'click', {
+        event_category: 'Smart Banner',
+        event_label: `Language: ${currentLanguage}`,
+        value: 1
+      });
+    }
+    
     if (onSignUpClick) {
       onSignUpClick();
     }
     handleDismiss();
+  };
+
+  const toggleLanguage = () => {
+    const newLang = currentLanguage === 'en' ? 'vi' : 'en';
+    setLanguagePreference(newLang);
+    setShowLanguageToggle(false);
+    window.location.reload();
   };
 
   if (!isVisible) return null;
@@ -58,7 +93,27 @@ const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
           ${isAnimating ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-full opacity-0 scale-95'}
         `}
       >
-        <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white rounded-xl shadow-2xl border border-white/20 backdrop-blur-sm">
+        <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white rounded-xl shadow-2xl border border-white/20 backdrop-blur-sm relative">
+          {/* Language toggle */}
+          <button
+            onClick={() => setShowLanguageToggle(!showLanguageToggle)}
+            className="absolute -top-2 -left-2 w-6 h-6 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg"
+            aria-label="Change language"
+          >
+            <Globe className="w-3 h-3" />
+          </button>
+
+          {showLanguageToggle && (
+            <div className="absolute -top-12 left-0 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-200 overflow-hidden z-10">
+              <button
+                onClick={toggleLanguage}
+                className="px-3 py-2 hover:bg-gray-100 transition-colors text-sm font-medium w-full text-left"
+              >
+                {currentLanguage === 'en' ? '🇻🇳 Tiếng Việt' : '🇺🇸 English'}
+              </button>
+            </div>
+          )}
+
           {/* Close button */}
           <button
             onClick={handleDismiss}
@@ -72,10 +127,10 @@ const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white/90 mb-1">
-                  Ready to grow your beauty business?
+                  {t.smartBanner.title}
                 </p>
                 <p className="text-xs text-white/75">
-                  Join 1,200+ pros — 100% FREE to start!
+                  {t.smartBanner.subtitle}
                 </p>
               </div>
               
@@ -86,26 +141,20 @@ const SmartBanner: React.FC<SmartBannerProps> = ({ onSignUpClick }) => {
                     variant="secondary"
                     className="bg-white text-primary hover:bg-white/90 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                   >
-                    Sign Up FREE
+                    {t.smartBanner.ctaButton}
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Progress indicator */}
-            <div className="mt-3 flex items-center gap-2">
-              <div className="flex gap-1">
-                {[1, 2, 3].map((dot) => (
-                  <div 
-                    key={dot}
-                    className="w-1.5 h-1.5 bg-white/40 rounded-full animate-pulse"
-                    style={{ animationDelay: `${dot * 0.2}s` }}
-                  />
-                ))}
-              </div>
-              <p className="text-xs text-white/60">
-                Limited time offer
-              </p>
+            {/* Countdown Timer */}
+            <div className="mt-4">
+              <CountdownTimer className="text-xs" />
+            </div>
+
+            {/* Social Proof */}
+            <div className="mt-3">
+              <SocialProofSection variant="compact" />
             </div>
           </div>
 

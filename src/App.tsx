@@ -51,6 +51,7 @@ import CustomerProfilePage from "@/pages/customer/ProfilePage";
 import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
 import InviteAcceptance from "@/pages/InviteAcceptance";
 import FreelancerProfile from "@/pages/FreelancerProfile";
+import WelcomePage from "@/pages/Welcome";
 
 import NailJobSuccessPage from "@/pages/nails-job-success";
 
@@ -122,6 +123,7 @@ function App() {
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/signup" element={<NewSignUp />} />
                     <Route path="/signup-fast-fomo" element={<SignupFastFomo />} />
+                    <Route path="/welcome" element={<Layout><WelcomePage /></Layout>} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/auth/premium-signup" element={<PremiumSignupPage />} />
                     <Route path="/onboarding" element={
