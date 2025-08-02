@@ -283,13 +283,13 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     author: 'EmviApp Team',
     publishedAt: 'December 30, 2024',
     readTime: '12 min read',
-    category: 'Technology',
-    categorySlug: 'technology',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
     tags: ['AI', 'Salon Management', 'Automation', 'Technology', 'Business'],
     image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     featured: true,
     component: AIPoweredSalonManagement2025,
-    url: '/blog/technology/ai-powered-salon-management-2025'
+    url: '/blog/salon-management/ai-powered-salon-management-2025'
   }
 ];
 
