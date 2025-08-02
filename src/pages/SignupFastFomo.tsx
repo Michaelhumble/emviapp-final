@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useAuthState } from '@/hooks/useAuthState';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, Shield, X, Heart } from 'lucide-react';
+import { markUserSignedUp } from '@/utils/signupFunnelTracking';
 
 /**
  * SignupFastFomo - Ultra-Conversion Signup Page
@@ -88,6 +89,9 @@ const SignupFastFomo = () => {
         full_name: name.trim() || undefined,
         user_type: 'artist'
       });
+      
+      // Mark user as signed up in tracking system
+      markUserSignedUp();
       
       setIsSubmitted(true);
       setShowExitIntent(false);
@@ -340,14 +344,12 @@ const SignupFastFomo = () => {
                   <span className="font-medium">Your data is secure & encrypted.</span>
                 </div>
                 <div className="text-center pt-2">
-                  <a 
-                    href="/privacy-policy" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <Link 
+                    to="/privacy" 
                     className="text-purple-600 hover:text-purple-700 underline font-medium"
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
