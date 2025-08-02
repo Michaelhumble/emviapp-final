@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Clock, User, Calendar, Heart, Star, Users, TrendingUp, Award } from 'lucide-react';
 import BlogSocialShare from '@/components/blog/BlogSocialShare';
+import vietnameseNailTechHero from '@/assets/vietnamese-nail-tech-hiring-hero.jpg';
 
 const VietnameseNailTechHiring2025 = () => {
   const currentUrl = "https://emvi.app/blog/salon-management/vietnamese-nail-tech-hiring-2025";
@@ -105,8 +106,8 @@ const VietnameseNailTechHiring2025 = () => {
           </div>
 
           <img 
-            src="https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80"
-            alt="Vietnamese nail technician working with precision and artistry in a modern salon"
+            src={vietnameseNailTechHero}
+            alt="Professional Vietnamese nail salon with skilled technicians providing exceptional manicure and nail art services"
             className="w-full h-64 md:h-96 object-cover rounded-xl mb-8"
           />
 
