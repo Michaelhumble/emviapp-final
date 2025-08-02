@@ -9,26 +9,15 @@ import BlogImage from '@/components/blog/BlogImage';
 const SuccessStoriesCategory = () => {
   const articles = [
     {
-      title: "From Zero to 6-Figure Salon: How EmviApp Transformed One Entrepreneur's Dream",
-      slug: "zero-to-six-figure-salon-success",
+      title: "Client Retention Secrets: Keep Them Coming Back",
+      slug: "client-retention-secrets-2025",
       category: "success-stories",
-      excerpt: "Follow Jessica's incredible journey from a one-chair startup to a thriving 6-figure salon empire, and discover the strategies that made it possible.",
-      image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "9 min read",
-      publishedAt: "January 20, 2025",
-      businessName: "Luxe Beauty Studio",
-      growth: "400% increase in bookings"
-    },
-    {
-      title: "Mobile Nail Artist Goes Viral: 50K Followers in 3 Months",
-      slug: "mobile-nail-artist-viral-success",
-      category: "success-stories", 
-      excerpt: "Discover how one creative nail artist leveraged EmviApp's platform to build a massive social following and turn her passion into a 6-figure business.",
-      image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      excerpt: "Learn the insider strategies that top beauty professionals use to build lasting relationships and ensure clients return again and again.",
+      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2126&q=80",
       readTime: "6 min read",
-      publishedAt: "January 16, 2025",
-      businessName: "Nails by Natalie",
-      growth: "50K social media followers"
+      publishedAt: "January 30, 2025",
+      businessName: "Industry Best Practices",
+      growth: "90%+ client retention"
     }
   ];
 

@@ -11,20 +11,11 @@ const TrendsCategory = () => {
     {
       title: "Mobile-First Beauty Business: Why Your Salon Needs to Go Digital Now",
       slug: "mobile-first-beauty-business-2025",
-      category: "salon-management",
+      category: "trends",
       excerpt: "The beauty industry is rapidly shifting toward mobile-first experiences. Learn why salons that don't adapt risk losing 60% of potential clients and how to make the transition seamlessly.",
       image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
       readTime: "7 min read",
       publishedAt: "January 15, 2025"
-    },
-    {
-      title: "AI in Beauty: 2025 Trends Reshaping the Industry",
-      slug: "ai-beauty-trends-2025",
-      category: "trends",
-      excerpt: "From personalized skin analysis to AI-powered booking systems, discover how artificial intelligence is revolutionizing the beauty industry in 2025.",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "6 min read",
-      publishedAt: "January 10, 2025"
     }
   ];
 

@@ -17,15 +17,6 @@ const IndustryCategory = () => {
       readTime: "8 min read",
       publishedAt: "March 15, 2024",
       featured: true
-    },
-    {
-      title: "Beauty Industry Report 2025: Market Trends and Growth Opportunities", 
-      slug: "beauty-industry-report-2025",
-      category: "industry",
-      excerpt: "Comprehensive analysis of the global beauty market, emerging trends, and the most promising growth opportunities for beauty professionals in 2025.",
-      image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "12 min read",
-      publishedAt: "January 5, 2025"
     }
   ];
 
