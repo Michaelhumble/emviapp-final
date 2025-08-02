@@ -51,7 +51,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['Vietnamese nail technician hiring', 'nail tech recruitment 2025', 'salon staff retention', 'EmviApp recruitment platform', 'Vietnamese nail salon staffing'],
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80', // Already updated to custom in article
     featured: true,
     trending: true,
     component: VietnameseNailTechHiring2025,
