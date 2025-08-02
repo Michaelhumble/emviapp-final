@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, Sparkles, TrendingUp, Users, Calendar, ShoppingBag, Target, BarChart3, Lightbulb } from 'lucide-react';
 import BlogImage from '@/components/blog/BlogImage';
+import aiTrendsHero from '@/assets/ai-trends-beauty-salon-hero.jpg';
 
 const Top7AITrendsBeautySalons2025 = () => {
   const currentDate = new Date().toISOString();
@@ -90,8 +91,8 @@ const Top7AITrendsBeautySalons2025 = () => {
       {/* Hero Image */}
       <div className="mb-12">
         <BlogImage 
-          src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-          alt="AI technology circuit board representing artificial intelligence trends in beauty salon management"
+          src={aiTrendsHero}
+          alt="Modern beauty salon with AI technology integration, smart scheduling systems, and Vietnamese nail technicians using AI-powered booking platforms for enhanced salon management"
           className="w-full h-64 md:h-80 rounded-lg shadow-lg"
           priority={true}
         />
