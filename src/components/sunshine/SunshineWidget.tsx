@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ export const SunshineWidget = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { sendMessage, isLoading } = useSunshineChat();
   const { user } = useAuth();
@@ -49,6 +50,11 @@ export const SunshineWidget = () => {
       setMessages([welcomeMessage]);
     }
   }, [isOpen]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
 
   const loadConversationHistory = () => {
     // Load from localStorage for now
@@ -183,6 +189,7 @@ export const SunshineWidget = () => {
                   </div>
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
