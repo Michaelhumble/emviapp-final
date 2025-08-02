@@ -35,9 +35,26 @@ const NailArtTrends2025 = lazy(() => import('@/pages/blog/articles/NailArtTrends
 const HairMaskDIYRecipes2025 = lazy(() => import('@/pages/blog/articles/HairMaskDIYRecipes2025'));
 const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBrows2025'));
 const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AIPoweredSalonManagement2025'));
+const Top7AITrendsBeautySalons2025 = lazy(() => import('@/pages/blog/articles/Top7AITrendsBeautySalons2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'top-7-ai-trends-beauty-salons-2025',
+    slug: 'top-7-ai-trends-beauty-salons-2025',
+    title: '🔥 PINNED: Top 7 AI Trends Revolutionizing Beauty Salons in 2025',
+    description: 'Discover 7 game-changing AI trends transforming beauty salons in 2025. Learn how EmviApp leverages AI to boost bookings, sales, and client loyalty.',
+    author: 'EmviApp Team',
+    publishedAt: 'January 2, 2025',
+    readTime: '15 min read',
+    category: 'AI Technology',
+    categorySlug: 'ai-technology',
+    tags: ['AI', 'Beauty Trends', 'Salon Management', 'Technology', 'Innovation', '2025'],
+    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    featured: true,
+    component: Top7AITrendsBeautySalons2025,
+    url: '/blog/ai-technology/top-7-ai-trends-beauty-salons-2025'
+  },
   {
     id: 'ai-powered-salon-management-2025',
     slug: 'ai-powered-salon-management-2025',
