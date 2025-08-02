@@ -34,6 +34,7 @@ const PerfectWingEyeliner2025 = lazy(() => import('@/pages/blog/articles/Perfect
 const NailArtTrends2025 = lazy(() => import('@/pages/blog/articles/NailArtTrends2025'));
 const HairMaskDIYRecipes2025 = lazy(() => import('@/pages/blog/articles/HairMaskDIYRecipes2025'));
 const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBrows2025'));
+const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AIPoweredSalonManagement2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
@@ -273,6 +274,22 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     component: ContouredBrows2025,
     url: '/blog/beauty-tips/contoured-brows-2025'
+  },
+  {
+    id: 'ai-powered-salon-management-2025',
+    slug: 'ai-powered-salon-management-2025',
+    title: 'AI-Powered Salon Management: Streamlining Operations for 2025',
+    description: 'Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon\'s efficiency.',
+    author: 'EmviApp Team',
+    publishedAt: 'December 30, 2024',
+    readTime: '12 min read',
+    category: 'Technology',
+    categorySlug: 'technology',
+    tags: ['AI', 'Salon Management', 'Automation', 'Technology', 'Business'],
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    featured: true,
+    component: AIPoweredSalonManagement2025,
+    url: '/blog/technology/ai-powered-salon-management-2025'
   }
 ];
 
