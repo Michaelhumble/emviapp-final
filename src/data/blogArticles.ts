@@ -29,9 +29,26 @@ const SalonPricingStrategies2025 = lazy(() => import('@/pages/blog/articles/Salo
 const SocialMediaContentNailSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaContentNailSalons2025'));
 const SocialMediaMarketingSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaMarketingSalons2025'));
 const TheBeautyIndustrysMissingPiece = lazy(() => import('@/pages/blog/articles/TheBeautyIndustrysMissingPiece'));
+const NailCareSecretsArticle = lazy(() => import('@/components/blog/articles/NailCareSecretsArticle'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'nail-care-secrets-2025',
+    slug: 'nail-care-secrets-healthy-beautiful-nails',
+    title: 'Top 7 Secrets for Beautiful, Healthy Nails All Year Long',
+    description: 'Discover expert nail care secrets that beauty professionals swear by. Learn proven techniques for stronger, healthier nails that look salon-perfect year-round.',
+    url: '/blog/beautiful-tips/nail-care-secrets-healthy-beautiful-nails',
+    image: '/src/assets/blog/nail-care-secrets-hero.jpg',
+    author: 'EmviApp Beauty Team',
+    publishedAt: '2025-01-08',
+    readTime: '8 min read',
+    category: 'Beautiful Tips',
+    categorySlug: 'beautiful-tips',
+    tags: ['nail care', 'beauty tips', 'nail health', 'manicure', 'salon tips', 'beauty professionals', 'nail strengthening', 'cuticle care'],
+    component: NailCareSecretsArticle,
+    featured: true
+  },
   {
     id: 'ai-tools-makeup-artists-2025',
     slug: 'ai-tools-makeup-artists-2025',
