@@ -17,7 +17,7 @@ export const ChatSystem = () => {
     // Delay appearance of chat icon to improve initial page load
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 1500);
+    }, 3000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -41,7 +41,8 @@ export const ChatSystem = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className={`fixed ${isMobile ? 'inset-0 m-4' : 'bottom-24 right-8 w-[400px]'} z-50`}
+            className={`fixed ${isMobile ? 'inset-0 m-4' : 'bottom-24 right-8 w-[400px]'}`}
+            style={{ zIndex: 9998 }}
           >
             <ChatWindow onClose={toggleChat} />
           </motion.div>
@@ -58,8 +59,8 @@ export const ChatSystem = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleChat}
-            className={`fixed ${position} z-50 bg-purple-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center focus:outline-none`}
-            style={{ zIndex: 1000 }}
+            className={`fixed ${position} bg-purple-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center focus:outline-none`}
+            style={{ zIndex: 9999 }}
             aria-label="Open chat"
           >
             <MessageSquare size={24} />
@@ -74,7 +75,8 @@ export const ChatSystem = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed top-6 right-6 z-[60] bg-gray-800 text-white p-2 rounded-full shadow-lg"
+            className="fixed top-6 right-6 bg-gray-800 text-white p-2 rounded-full shadow-lg"
+            style={{ zIndex: 9999 }}
             onClick={toggleChat}
             aria-label="Close chat"
           >
