@@ -908,6 +908,36 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_logs: {
+        Row: {
+          id: string
+          language: string | null
+          message: string
+          response: string
+          timestamp: string
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          id?: string
+          language?: string | null
+          message: string
+          response: string
+          timestamp?: string
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          id?: string
+          language?: string | null
+          message?: string
+          response?: string
+          timestamp?: string
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       community_comment_mentions: {
         Row: {
           comment_id: string | null
