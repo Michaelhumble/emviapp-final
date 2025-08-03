@@ -29,7 +29,7 @@ export function ChatToggleButton({ isOpen, onClick }: ChatToggleButtonProps) {
           }}
           className="fixed bottom-4 right-4 z-[1000] chat-toggle-safe-bottom"
           style={{
-            ...(isMobile && { bottom: '100px' }) // Higher position to avoid covering chat input
+            ...(isMobile && { bottom: '120px' }) // Higher position to avoid covering chat input - increased from 100px to 120px
           }}
         >
           <Button
