@@ -21,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, userName, language, isAuthenticated } = await req.json();
+  const { message, userId, userName, language, isAuthenticated } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -33,10 +33,10 @@ serve(async (req) => {
 
     const cleanMessage = message.trim();
     
-    // Enhanced language detection
+    // Enhanced language detection - matches frontend logic
     function detectLanguage(text: string): 'vi' | 'en' {
       const vietnamesePattern = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-      const vietnameseWords = /\b(em|anh|chị|dạ|ạ|là|của|với|trong|nè|nha|không|gì|tại|sao|như|thế|này|kia|đó|đây|có|được|rồi|thì|mà|hay|hoặc|và|cũng|vì|nên|để|cho|về|từ|trên|dưới|giữa|sau|trước)\b/i;
+      const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|ghé|vui|cảm|ơn|xin|chào|dạ|muốn|tìm|việc|salon|tiệm)\b/i;
       return vietnamesePattern.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
     }
 
@@ -57,7 +57,7 @@ serve(async (req) => {
       return null;
     }
 
-    const detectedLanguage = userLanguage || detectLanguage(cleanMessage);
+    const detectedLanguage = language || detectLanguage(cleanMessage);
     const extractedName = extractUserName(cleanMessage);
 
     // Get or create user session
@@ -108,7 +108,8 @@ serve(async (req) => {
       messageLength: cleanMessage.length,
       detectedLanguage,
       userName: userSession?.name || extractedName,
-      isReturningUser: !!userSession?.last_question
+      isReturningUser: !!userSession?.last_question,
+      isAuthenticated: !!isAuthenticated
     });
 
     // Build personalized system prompt

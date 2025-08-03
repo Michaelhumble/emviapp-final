@@ -7,6 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useChatRouting } from '@/hooks/useChatRouting';
 import { ChatFloatingBadge } from './ChatFloatingBadge';
 import { ChatAuthFlow } from './ChatAuthFlow';
+import { detectLanguage, extractName } from '@/utils/languageDetection';
+import { trackChatEvent, chatEvents } from '@/utils/chatAnalytics';
 
 interface Message {
   id: string;
@@ -126,36 +128,19 @@ export const ChatSystem = () => {
     }
   }, [messages, userName, language]);
 
-  const detectLanguage = (text: string): 'en' | 'vi' => {
-    const vietnameseChars = /[ăâêôơưđàáảãạằắẳẵặầấẩẫậềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i;
-    const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|ghé|vui|cảm|ơn|xin|chào|dạ)\b/i;
-    
-    return vietnameseChars.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
+  // Use shared language detection
+  const detectAndSetLanguage = (text: string) => {
+    const detectedLang = detectLanguage(text);
+    setLanguage(detectedLang);
+    return detectedLang;
   };
 
-  const extractName = (text: string): string => {
-    const patterns = [
-      // Vietnamese patterns
-      /(?:tên|name)(?:\s+(?:là|is))?\s+([a-zA-ZÀ-ỹ]+)/i,
-      /(?:anh|chị|em|tôi|mình)(?:\s+tên)?\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)/i,
-      // English patterns  
-      /(?:i'?m|my\s+name\s+is|call\s+me)\s+([a-zA-Z]+)/i,
-      // Simple single word names
-      /^([a-zA-ZÀ-ỹ]{2,})$/i
-    ];
-    
-    for (const pattern of patterns) {
-      const match = text.match(pattern);
-      if (match && match[1] && match[1].length > 1) {
-        const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
-        const excludeWords = ['anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me'];
-        if (!excludeWords.includes(name.toLowerCase())) {
-          return name;
-        }
-      }
+  const extractAndSetName = (text: string) => {
+    const extractedName = extractName(text);
+    if (extractedName && !userName) {
+      setUserName(extractedName);
     }
-    
-    return '';
+    return extractedName;
   };
 
   const getInitialGreeting = () => {
@@ -172,6 +157,7 @@ export const ChatSystem = () => {
     setMessages([]);
     setUserName('');
     setLanguage('en');
+    trackChatEvent(chatEvents.CHAT_CLEARED);
     
     const greeting: Message = {
       id: Date.now().toString(),
@@ -186,6 +172,7 @@ export const ChatSystem = () => {
   const openChat = () => {
     setIsOpen(true);
     setShowButton(false);
+    trackChatEvent(chatEvents.CHAT_OPENED, { userName, language });
     
     if (messages.length === 0) {
       const greeting: Message = {
@@ -239,12 +226,24 @@ export const ChatSystem = () => {
       };
 
       setMessages(prev => [...prev, botMessage]);
-      saveSession();
+      saveSession([...messages, botMessage]);
     } catch (error) {
       console.error('Error generating response:', error);
+      
+      // Detailed error logging for debugging
+      const errorDetails = {
+        message: error.message,
+        type: error.name,
+        userId,
+        userName,
+        language,
+        timestamp: new Date().toISOString()
+      };
+      console.error('Chat error details:', errorDetails);
+      
       const fallbackResponse = language === 'vi' 
-        ? "Em xin lỗi, có lỗi xảy ra. Em có thể giúp anh/chị tìm việc làm nail, thông tin salon, hoặc hỗ trợ khác!"
-        : "Sorry, something went wrong. I can help you find nail jobs, salon info, or other support!";
+        ? "Em xin lỗi, có lỗi xảy ra với kết nối. Em có thể giúp anh/chị tìm việc làm nail, thông tin salon, hoặc hỗ trợ khác!"
+        : "Sorry, there was a connection error. I can still help you find nail jobs, salon info, or other support!";
       
       const botMessage: Message = {
         id: Date.now().toString(),
@@ -254,8 +253,9 @@ export const ChatSystem = () => {
       };
 
       setMessages(prev => [...prev, botMessage]);
-      saveSession();
+      saveSession([...messages, botMessage]);
     } finally {
+      // Always clear loading state
       setIsLoading(false);
     }
   };
@@ -300,19 +300,37 @@ export const ChatSystem = () => {
     return null;
   };
 
-  // Generate quick actions based on response
+  // Generate contextual quick actions based on conversation flow
   const generateQuickActions = (response: string, userMessage: string) => {
     const actions = [];
     const lowerResponse = response.toLowerCase();
     const lowerMessage = userMessage.toLowerCase();
     
-    // Only show contextual actions based on conversation
-    if (lowerResponse.includes('job') || lowerResponse.includes('việc') || 
-        lowerMessage.includes('work') || lowerMessage.includes('làm')) {
+    // Only show actions when conversation context calls for them
+    if ((lowerResponse.includes('job') && lowerResponse.includes('find')) || 
+        (lowerMessage.includes('tìm việc') || lowerMessage.includes('find job'))) {
       if (language === 'vi') {
-        actions.push({ id: 'jobs', label: '💅 Tìm việc nail', action: () => handleQuickAction('Em muốn tìm việc nail') });
+        actions.push({ id: 'jobs', label: '🔍 Xem việc làm', action: () => handleQuickAction('Em muốn xem các việc làm có sẵn') });
       } else {
-        actions.push({ id: 'jobs', label: '💅 Find Jobs', action: () => handleQuickAction('I want to find nail jobs') });
+        actions.push({ id: 'jobs', label: '🔍 Browse Jobs', action: () => handleQuickAction('I want to browse available jobs') });
+      }
+    }
+    
+    if ((lowerResponse.includes('post') && lowerResponse.includes('job')) || 
+        (lowerMessage.includes('đăng việc') || lowerMessage.includes('post job'))) {
+      if (language === 'vi') {
+        actions.push({ id: 'post', label: '📝 Đăng việc', action: () => handleQuickAction('Em muốn đăng tin tuyển dụng') });
+      } else {
+        actions.push({ id: 'post', label: '📝 Post Job', action: () => handleQuickAction('I want to post a job') });
+      }
+    }
+    
+    // Help action only when user explicitly asks for help
+    if (lowerMessage.includes('help') || lowerMessage.includes('giúp') || lowerMessage.includes('hỗ trợ')) {
+      if (language === 'vi') {
+        actions.push({ id: 'help', label: '💬 Trò chuyện thêm', action: () => handleQuickAction('Em cần hỗ trợ thêm') });
+      } else {
+        actions.push({ id: 'help', label: '💬 Get More Help', action: () => handleQuickAction('I need more help') });
       }
     }
     
@@ -387,14 +405,15 @@ export const ChatSystem = () => {
       };
       
       setMessages(prev => [...prev, confirmMsg]);
+      saveSession([...messages, confirmMsg]);
     }
   };
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    const detectedLang = detectLanguage(inputValue);
-    setLanguage(detectedLang);
+    const detectedLang = detectAndSetLanguage(inputValue);
+    const extractedName = extractAndSetName(inputValue);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -405,12 +424,6 @@ export const ChatSystem = () => {
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
-
-    // Check for name in message
-    const extractedName = extractName(inputValue);
-    if (extractedName && !userName) {
-      setUserName(extractedName);
-    }
 
     const messageToSend = inputValue;
     setInputValue('');
@@ -512,7 +525,7 @@ export const ChatSystem = () => {
               className={`${isMobile ? 'h-14 w-14' : 'h-12 w-12'} rounded-full shadow-lg bg-gradient-to-br from-amber-400 via-orange-400 to-pink-400 hover:from-amber-500 hover:via-orange-500 hover:to-pink-500 border-2 border-white/20 backdrop-blur-sm relative overflow-hidden`}
               aria-label="Chat with Little Sunshine AI"
             >
-              {/* Floating sparkles background */}
+              {/* Optimized floating sparkles - fewer animations */}
               <div className="absolute inset-0 pointer-events-none">
                 <motion.div
                   animate={{ 
@@ -520,30 +533,19 @@ export const ChatSystem = () => {
                     scale: [1, 1.1, 1]
                   }}
                   transition={{ 
-                    rotate: { repeat: Infinity, duration: 8, ease: "linear" },
-                    scale: { repeat: Infinity, duration: 3 }
+                    rotate: { repeat: Infinity, duration: 12, ease: "linear" },
+                    scale: { repeat: Infinity, duration: 6 }
                   }}
                   className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-300 rounded-full opacity-60"
                 />
                 <motion.div
                   animate={{ 
                     rotate: -360,
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{ 
-                    rotate: { repeat: Infinity, duration: 6, ease: "linear" },
-                    scale: { repeat: Infinity, duration: 4, delay: 1 }
-                  }}
-                  className="absolute bottom-2 left-2 w-1 h-1 bg-pink-300 rounded-full opacity-60"
-                />
-                <motion.div
-                  animate={{ 
-                    rotate: 360,
                     scale: [1, 1.15, 1]
                   }}
                   transition={{ 
-                    rotate: { repeat: Infinity, duration: 10, ease: "linear" },
-                    scale: { repeat: Infinity, duration: 5, delay: 2 }
+                    rotate: { repeat: Infinity, duration: 15, ease: "linear" },
+                    scale: { repeat: Infinity, duration: 8, delay: 2 }
                   }}
                   className="absolute top-3 left-1 w-0.5 h-0.5 bg-white rounded-full opacity-80"
                 />
@@ -572,10 +574,11 @@ export const ChatSystem = () => {
             }}
             className={`fixed ${
               isMobile 
-                ? 'bottom-0 left-0 right-0 h-[70vh] max-h-[70vh]' 
+                ? 'bottom-0 left-0 right-0 h-[65vh] max-h-[65vh]' 
                 : 'bottom-6 right-6 w-[380px] h-[60vh] max-h-[500px]'
             } z-[9998] overflow-hidden rounded-t-3xl ${isMobile ? '' : 'rounded-b-3xl'}`}
             style={{ 
+              ...(isMobile && { paddingBottom: '140px' }), // Extra mobile padding
               background: isDarkMode ? `
                 linear-gradient(145deg, 
                   rgba(30, 30, 40, 0.98) 0%, 
@@ -706,8 +709,8 @@ export const ChatSystem = () => {
             <div 
               className={`flex-1 px-6 py-4 overflow-y-auto space-y-4 ${isDarkMode ? 'bg-black/5' : 'bg-white/5'}`}
               style={{ 
-                maxHeight: isMobile ? 'calc(70vh - 140px)' : '320px',
-                paddingBottom: '1rem'
+                maxHeight: isMobile ? 'calc(65vh - 200px)' : '320px', // More space for mobile keyboard
+                paddingBottom: isMobile ? '2rem' : '1rem'
               }}
             >
               {messages.map((message, index) => (
@@ -862,7 +865,9 @@ export const ChatSystem = () => {
                     onKeyPress={(e) => e.key === 'Enter' && !isLoading && sendMessage()}
                     placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Type a message...'}
                     disabled={isLoading}
-                    className={`w-full py-3 px-4 ${isDarkMode ? 'bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-orange-200 text-gray-800 placeholder-gray-500'} rounded-2xl focus:border-orange-400 focus:outline-none ${fontSizeClasses[fontSize]} disabled:opacity-50 transition-all shadow-inner`}
+                    aria-label={language === 'vi' ? 'Nhập tin nhắn chat' : 'Type chat message'}
+                    aria-describedby="chat-input-help"
+                    className={`w-full py-3 px-4 ${isDarkMode ? 'bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-orange-200 text-gray-800 placeholder-gray-500'} rounded-2xl focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 ${fontSizeClasses[fontSize]} disabled:opacity-50 transition-all shadow-inner`}
                   />
                 </div>
                 <motion.button
@@ -870,7 +875,8 @@ export const ChatSystem = () => {
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
                   disabled={isLoading || !inputValue.trim()}
-                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-white/20"
+                  aria-label={language === 'vi' ? 'Gửi tin nhắn' : 'Send message'}
+                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-white/20 focus:ring-2 focus:ring-orange-400/50 focus:outline-none"
                 >
                   {isLoading ? (
                     <motion.div
