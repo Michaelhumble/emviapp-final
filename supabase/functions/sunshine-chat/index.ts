@@ -21,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, userLanguage } = await req.json();
+    const { message, userId, userName, language, isAuthenticated } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');

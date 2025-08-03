@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Send, X, Sun, Sparkles, RotateCcw, Type, Moon, Settings } from 'lucide-react';
+import { Send, X, Sun, Sparkles, RotateCcw, Type, Moon, Settings, ArrowRight, ExternalLink } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { useChatRouting } from '@/hooks/useChatRouting';
+import { ChatFloatingBadge } from './ChatFloatingBadge';
+import { ChatAuthFlow } from './ChatAuthFlow';
 
 interface Message {
   id: string;
@@ -14,6 +18,12 @@ interface Message {
     label: string;
     action: () => void;
   }>;
+  routeConfirmation?: {
+    destination: string;
+    title: string;
+    requiresAuth?: boolean;
+  };
+  authFlow?: boolean;
 }
 
 interface ChatSession {
@@ -35,8 +45,18 @@ export const ChatSystem = () => {
   const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showAuthFlow, setShowAuthFlow] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const { 
+    pendingRoute, 
+    isMinimized, 
+    confirmRoute, 
+    executeRoute, 
+    cancelRoute, 
+    restoreChat 
+  } = useChatRouting();
   
   const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
   
@@ -184,6 +204,192 @@ export const ChatSystem = () => {
     setShowMenu(false);
   };
 
+  // Generate AI response with conversational routing
+  const generateResponse = async (userMessage: string) => {
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
+        body: {
+          message: userMessage,
+          userId: userId,
+          userName: userName || null,
+          language: language,
+          isAuthenticated: !!user
+        }
+      });
+
+      if (error) throw error;
+
+      const response = data?.response || (language === 'vi' 
+        ? "Em ở đây để giúp anh/chị! Anh/chị muốn biết gì về EmviApp?"
+        : "I'm here to help! What would you like to know about EmviApp?");
+      
+      // Check for routing intent and auth requirements
+      const routeInfo = detectRouteIntent(userMessage, response);
+      const quickActions = routeInfo ? [] : generateQuickActions(response, userMessage);
+      
+      const botMessage: Message = {
+        id: Date.now().toString(),
+        text: response,
+        isUser: false,
+        timestamp: new Date(),
+        quickActions,
+        routeConfirmation: routeInfo
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+      saveSession();
+    } catch (error) {
+      console.error('Error generating response:', error);
+      const fallbackResponse = language === 'vi' 
+        ? "Em xin lỗi, có lỗi xảy ra. Em có thể giúp anh/chị tìm việc làm nail, thông tin salon, hoặc hỗ trợ khác!"
+        : "Sorry, something went wrong. I can help you find nail jobs, salon info, or other support!";
+      
+      const botMessage: Message = {
+        id: Date.now().toString(),
+        text: fallbackResponse,
+        isUser: false,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+      saveSession();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Detect route intent from user message and AI response
+  const detectRouteIntent = (userMessage: string, aiResponse: string) => {
+    const message = userMessage.toLowerCase();
+    const response = aiResponse.toLowerCase();
+    
+    // Job posting intent
+    if (message.includes('đăng việc') || message.includes('post job') || 
+        message.includes('tuyển') || message.includes('hiring') ||
+        response.includes('post') || response.includes('đăng việc')) {
+      return {
+        destination: '/post-job',
+        title: language === 'vi' ? 'Đăng tin tuyển dụng' : 'Post a Job',
+        requiresAuth: true
+      };
+    }
+    
+    // Job search intent
+    if (message.includes('tìm việc') || message.includes('find job') || 
+        message.includes('làm việc') || message.includes('work') ||
+        response.includes('jobs') || response.includes('việc làm')) {
+      return {
+        destination: '/jobs',
+        title: language === 'vi' ? 'Tìm việc làm' : 'Find Jobs',
+        requiresAuth: false
+      };
+    }
+    
+    // Salon listing intent
+    if (message.includes('salon') || message.includes('tiệm') ||
+        message.includes('list salon') || message.includes('đăng salon')) {
+      return {
+        destination: '/sell-salon',
+        title: language === 'vi' ? 'Đăng thông tin salon' : 'List Your Salon',
+        requiresAuth: true
+      };
+    }
+    
+    return null;
+  };
+
+  // Generate quick actions based on response
+  const generateQuickActions = (response: string, userMessage: string) => {
+    const actions = [];
+    const lowerResponse = response.toLowerCase();
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // Only show contextual actions based on conversation
+    if (lowerResponse.includes('job') || lowerResponse.includes('việc') || 
+        lowerMessage.includes('work') || lowerMessage.includes('làm')) {
+      if (language === 'vi') {
+        actions.push({ id: 'jobs', label: '💅 Tìm việc nail', action: () => handleQuickAction('Em muốn tìm việc nail') });
+      } else {
+        actions.push({ id: 'jobs', label: '💅 Find Jobs', action: () => handleQuickAction('I want to find nail jobs') });
+      }
+    }
+    
+    return actions;
+  };
+
+  // Handle route confirmation
+  const handleRouteConfirm = async (destination: string, requiresAuth: boolean) => {
+    if (requiresAuth && !user) {
+      // Need authentication - start auth flow
+      setShowAuthFlow(true);
+      
+      const authMessage = language === 'vi'
+        ? `Để ${destination.includes('post') ? 'đăng tin' : 'sử dụng tính năng này'}, anh/chị cần có tài khoản EmviApp. Em sẽ giúp anh/chị tạo nhanh nhé!`
+        : `To ${destination.includes('post') ? 'post' : 'use this feature'}, you'll need a free EmviApp account. Let me help you sign up quickly!`;
+      
+      const authFlowMessage: Message = {
+        id: Date.now().toString(),
+        text: authMessage,
+        isUser: false,
+        timestamp: new Date(),
+        authFlow: true
+      };
+      
+      setMessages(prev => [...prev, authFlowMessage]);
+      return;
+    }
+    
+    // User is authenticated or auth not required - proceed with route
+    confirmRoute({
+      destination,
+      title: destination.includes('post') ? 'Post Job' : 'Browse Jobs',
+      message: language === 'vi' 
+        ? `Anh/chị có muốn em dẫn qua trang này không? Em sẽ ở đây chờ để giúp tiếp!`
+        : `Would you like me to take you there? I'll be here waiting to help when you return!`,
+      requiresAuth
+    });
+  };
+
+  // Handle auth success
+  const handleAuthSuccess = () => {
+    setShowAuthFlow(false);
+    
+    const successMessage = language === 'vi'
+      ? `Tuyệt vời! Tài khoản của ${userName} đã sẵn sàng. Bây giờ em có thể giúp anh/chị với tất cả tính năng rồi!`
+      : `Perfect! ${userName}'s account is ready. Now I can help you with all features!`;
+    
+    const successMsg: Message = {
+      id: Date.now().toString(),
+      text: successMessage,
+      isUser: false,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, successMsg]);
+  };
+
+  // Handle route execution after confirmation
+  const handleExecuteRoute = () => {
+    const success = executeRoute();
+    if (success) {
+      // Route executed successfully - chat will minimize
+      const confirmMessage = language === 'vi'
+        ? `Đang dẫn anh/chị qua đó! Em sẽ ở đây nếu anh/chị cần giúp gì thêm 😊`
+        : `Taking you there now! I'll be here if you need any more help 😊`;
+      
+      const confirmMsg: Message = {
+        id: Date.now().toString(),
+        text: confirmMessage,
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, confirmMsg]);
+    }
+  };
+
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
@@ -199,7 +405,6 @@ export const ChatSystem = () => {
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
-    setIsLoading(true);
 
     // Check for name in message
     const extractedName = extractName(inputValue);
@@ -210,70 +415,7 @@ export const ChatSystem = () => {
     const messageToSend = inputValue;
     setInputValue('');
 
-    try {
-      // Call the Sunshine AI edge function
-      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
-        body: {
-          message: messageToSend,
-          userId: userId,
-          userLanguage: detectedLang,
-          userName: userName || extractedName
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: data.response || (detectedLang === 'vi' ? 'Em xin lỗi, có lỗi xảy ra. Vui lòng thử lại! 😅' : 'Sorry, something went wrong. Please try again! 😅'),
-        isUser: false,
-        timestamp: new Date()
-      };
-
-      // Add contextual quick actions if relevant
-      const hasJobIntent = messageToSend.toLowerCase().includes('job') || messageToSend.toLowerCase().includes('việc') || messageToSend.toLowerCase().includes('tìm việc');
-      const hasSalonIntent = messageToSend.toLowerCase().includes('salon') || messageToSend.toLowerCase().includes('đăng') || messageToSend.toLowerCase().includes('list');
-      
-      if (hasJobIntent || hasSalonIntent) {
-        const contextualActions = detectedLang === 'vi' ? [
-          ...(hasJobIntent ? [{ id: 'find-jobs', label: '💅 Tìm việc nail', action: () => handleQuickAction('Em muốn tìm việc làm nail') }] : []),
-          ...(hasSalonIntent ? [{ id: 'list-salon', label: '🏪 Đăng salon', action: () => handleQuickAction('Em muốn đăng tin salon') }] : [])
-        ] : [
-          ...(hasJobIntent ? [{ id: 'find-jobs', label: '💅 Find Jobs', action: () => handleQuickAction('I want to find nail jobs') }] : []),
-          ...(hasSalonIntent ? [{ id: 'list-salon', label: '🏪 List Salon', action: () => handleQuickAction('I want to list my salon') }] : [])
-        ];
-        
-        if (contextualActions.length > 0) {
-          aiResponse.quickActions = contextualActions;
-        }
-      }
-
-      const finalMessages = [...newMessages, aiResponse];
-      setMessages(finalMessages);
-
-      // Update language if AI detected it differently
-      if (data.language && data.language !== language) {
-        setLanguage(data.language);
-      }
-
-    } catch (error) {
-      console.error('Error calling AI:', error);
-      
-      const errorResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: language === 'vi' 
-          ? 'Em đang gặp chút vấn đề kỹ thuật. Anh/chị thử lại sau chút nha! 🥰'
-          : 'Having some technical issues. Please try again in a moment! 🥰',
-        isUser: false,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, errorResponse]);
-    } finally {
-      setIsLoading(false);
-    }
+    await generateResponse(messageToSend);
   };
 
   const handleQuickAction = (actionText: string) => {
@@ -292,102 +434,132 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* Floating Sparkles Background Animation */}
-      <div className="fixed inset-0 pointer-events-none z-[9990] overflow-hidden">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-yellow-300/20"
-            initial={{ 
-              x: Math.random() * window.innerWidth,
-              y: window.innerHeight + 50,
-              scale: 0
-            }}
-            animate={{
-              y: -50,
-              scale: [0, 1, 0],
-              rotate: [0, 180, 360]
-            }}
-            transition={{
-              duration: 8 + Math.random() * 4,
-              repeat: Infinity,
-              delay: i * 2,
-              ease: "linear"
-            }}
-          >
-            ✨
-          </motion.div>
-        ))}
-      </div>
+      {/* Floating Badge for Minimized Chat */}
+      {isMinimized && (
+        <ChatFloatingBadge
+          onClick={restoreChat}
+          userName={userName}
+          hasUnreadMessages={false}
+        />
+      )}
 
-      {/* Sunshine Chat Bubble - Only shows when chat is closed */}
+      {/* Pending Route Confirmation Dialog */}
       <AnimatePresence>
-        {showButton && !isOpen && (
-          <motion.button
-            initial={{ scale: 0, y: 50 }}
-            animate={{ 
-              scale: 1, 
-              y: 0,
-              boxShadow: [
-                "0 8px 25px rgba(251, 191, 36, 0.3)",
-                "0 12px 35px rgba(251, 191, 36, 0.5)",
-                "0 8px 25px rgba(251, 191, 36, 0.3)"
-              ]
-            }}
-            exit={{ scale: 0, y: 50 }}
-            transition={{ 
-              duration: 0.5, 
-              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            }}
-            onClick={openChat}
-            className={`fixed ${isMobile ? 'bottom-6 right-6' : 'bottom-8 right-8'} z-[9997]`}
+        {pendingRoute && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1001] flex items-center justify-center p-4"
           >
-            {/* Floating sparkles */}
             <motion.div
-              animate={{ y: [-8, -16, -8], x: [-2, 2, -2] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-6 -left-2 text-lg pointer-events-none"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl"
             >
-              ✨
+              <div className="text-center space-y-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto">
+                  <ExternalLink className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg">{pendingRoute.title}</h3>
+                <p className="text-gray-600 text-sm">{pendingRoute.message}</p>
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleExecuteRoute}
+                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2.5 rounded-xl font-medium hover:from-blue-600 hover:to-purple-600 transition-all duration-200"
+                  >
+                    {language === 'vi' ? 'Đi thôi!' : 'Let\'s go!'}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={cancelRoute}
+                    className="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-medium hover:bg-gray-300 transition-all duration-200"
+                  >
+                    {language === 'vi' ? 'Hủy' : 'Cancel'}
+                  </motion.button>
+                </div>
+              </div>
             </motion.div>
-            <motion.div
-              animate={{ y: [-6, -14, -6], x: [1, -1, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -top-4 -right-3 text-sm pointer-events-none"
-            >
-              💫
-            </motion.div>
-            
-            {/* Main sunshine button */}
-            <div className={`relative ${isMobile ? 'w-16 h-16' : 'w-14 h-14'} rounded-full bg-gradient-to-br from-yellow-300 via-orange-400 to-pink-500 shadow-2xl flex items-center justify-center border-2 border-white/40 overflow-hidden backdrop-blur-sm`}>
-              {/* Inner glow */}
-              <div className="absolute inset-1 bg-gradient-to-br from-yellow-200/80 to-orange-300/80 rounded-full blur-sm" />
-              
-              {/* Rotating sun */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="relative z-10"
-              >
-                <Sun size={isMobile ? 24 : 20} className="text-white drop-shadow-lg" />
-              </motion.div>
-              
-              {/* Sparkle overlay */}
-              <motion.div
-                animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1 right-1 z-20"
-              >
-                <Sparkles size={6} className="text-yellow-100" />
-              </motion.div>
-            </div>
-          </motion.button>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Chat Window - Premium Messenger-style */}
+      {/* Chat Toggle Button */}
       <AnimatePresence>
-        {isOpen && (
+        {showButton && !isOpen && !isMinimized && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{
+              type: "spring",
+              stiffness: 350,
+              damping: 25,
+            }}
+            className="fixed bottom-4 right-4 z-[1000]"
+            style={{
+              ...(isMobile && { bottom: '140px' })
+            }}
+          >
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={openChat}
+              className={`${isMobile ? 'h-14 w-14' : 'h-12 w-12'} rounded-full shadow-lg bg-gradient-to-br from-amber-400 via-orange-400 to-pink-400 hover:from-amber-500 hover:via-orange-500 hover:to-pink-500 border-2 border-white/20 backdrop-blur-sm relative overflow-hidden`}
+              aria-label="Chat with Little Sunshine AI"
+            >
+              {/* Floating sparkles background */}
+              <div className="absolute inset-0 pointer-events-none">
+                <motion.div
+                  animate={{ 
+                    rotate: 360,
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ 
+                    rotate: { repeat: Infinity, duration: 8, ease: "linear" },
+                    scale: { repeat: Infinity, duration: 3 }
+                  }}
+                  className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-300 rounded-full opacity-60"
+                />
+                <motion.div
+                  animate={{ 
+                    rotate: -360,
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{ 
+                    rotate: { repeat: Infinity, duration: 6, ease: "linear" },
+                    scale: { repeat: Infinity, duration: 4, delay: 1 }
+                  }}
+                  className="absolute bottom-2 left-2 w-1 h-1 bg-pink-300 rounded-full opacity-60"
+                />
+                <motion.div
+                  animate={{ 
+                    rotate: 360,
+                    scale: [1, 1.15, 1]
+                  }}
+                  transition={{ 
+                    rotate: { repeat: Infinity, duration: 10, ease: "linear" },
+                    scale: { repeat: Infinity, duration: 5, delay: 2 }
+                  }}
+                  className="absolute top-3 left-1 w-0.5 h-0.5 bg-white rounded-full opacity-80"
+                />
+              </div>
+              
+              <div className="relative z-10">
+                <Sparkles size={isMobile ? 24 : 20} className="text-white drop-shadow-sm" />
+              </div>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Chat Window */}
+      <AnimatePresence>
+        {(isOpen && !isMinimized) && (
           <motion.div
             initial={{ y: "100%", opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -563,18 +735,66 @@ export const ChatSystem = () => {
                       {message.text}
                     </p>
                     
-                    {/* Show contextual quick actions inline */}
+                    {/* Route confirmation */}
+                    {message.routeConfirmation && (
+                      <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                        <p className="text-sm text-gray-700 mb-3">
+                          {language === 'vi' 
+                            ? `Anh/chị có muốn em dẫn qua "${message.routeConfirmation.title}" không?`
+                            : `Would you like me to take you to "${message.routeConfirmation.title}"?`
+                          }
+                        </p>
+                        <div className="flex gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleRouteConfirm(message.routeConfirmation!.destination, message.routeConfirmation!.requiresAuth || false)}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-md"
+                          >
+                            <ArrowRight className="h-3 w-3" />
+                            {language === 'vi' ? 'Đồng ý' : 'Yes, take me there'}
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                              // Remove route confirmation from this message
+                              setMessages(prev => prev.map(m => 
+                                m.id === message.id 
+                                  ? { ...m, routeConfirmation: undefined }
+                                  : m
+                              ));
+                            }}
+                            className="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs rounded-full hover:bg-gray-300 transition-all duration-200"
+                          >
+                            {language === 'vi' ? 'Không, cảm ơn' : 'No, thanks'}
+                          </motion.button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Auth flow */}
+                    {message.authFlow && showAuthFlow && (
+                      <div className="mt-3">
+                        <ChatAuthFlow
+                          userName={userName}
+                          language={language}
+                          onAuthSuccess={handleAuthSuccess}
+                          onCancel={() => setShowAuthFlow(false)}
+                        />
+                      </div>
+                    )}
+
+                    {/* Quick actions */}
                     {message.quickActions && message.quickActions.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 mt-3">
                         {message.quickActions.map((action) => (
                           <motion.button
                             key={action.id}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={action.action}
-                            className={`px-3 py-1.5 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full ${fontSizeClasses[fontSize]} font-medium shadow-md border border-white/20 backdrop-blur-sm`}
+                            className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-md"
                           >
                             {action.label}
                           </motion.button>
