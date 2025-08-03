@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MessageSquare, X } from 'lucide-react';
+import { Sun, X } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
@@ -59,11 +59,11 @@ export const ChatSystem = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleChat}
-            className={`fixed ${position} bg-purple-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center focus:outline-none`}
+            className={`fixed ${position} bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center focus:outline-none transition-all duration-200`}
             style={{ zIndex: 9999 }}
-            aria-label="Open chat"
+            aria-label="Chat with Sunshine AI"
           >
-            <MessageSquare size={24} />
+            <Sun size={24} />
           </motion.button>
         )}
       </AnimatePresence>

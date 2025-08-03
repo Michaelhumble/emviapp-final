@@ -4,27 +4,27 @@ export const mockAssistantResponses = [
     category: 'booking',
     keywords: ['book', 'appointment', 'schedule', 'reserve'],
     responses: [
-      "I can help you book an appointment! Let me know what service you're looking for, and when you'd like to schedule it.",
-      "Looking to book an appointment? I can help with that. What type of nail service are you interested in?",
-      "I'd be happy to help you schedule an appointment. When are you thinking of coming in, and what service would you like?"
+      "I'd absolutely love to help you book an appointment! ✨ What kind of nail service are you dreaming of? Maybe a classic manicure, some gorgeous gel nails, or perhaps you're thinking of trying something fun with nail art?",
+      "Booking an appointment sounds perfect! I'm here to make it super easy for you. What type of service catches your eye, and do you have any preferred dates in mind?",
+      "Oh, how exciting! I can definitely help you schedule something amazing. Tell me what kind of nail treatment you're in the mood for, and we'll find you the perfect artist and time slot! 💅"
     ]
   },
   {
     category: 'prices',
     keywords: ['price', 'cost', 'how much', 'fee', 'pricing'],
     responses: [
-      "Our pricing varies by service and artist experience level. Basic manicures start at $25, gel manicures at $35, and full sets starting at $45. Would you like to see the full price list?",
-      "I'd be happy to share our pricing information! Was there a specific service you were interested in?",
-      "Our prices range depending on the service and artist you choose. Can I help you find pricing for a specific service?"
+      "Great question! Pricing really depends on what you're looking for and which talented artist you choose. Generally, basic manicures start around $25, gel services around $35, and full sets begin at $45. But honestly, each artist has their own unique pricing based on their expertise and specialties. What kind of service were you thinking about? I can help you find options that fit your budget! 💰",
+      "I'd love to help you with pricing! The beauty of our platform is that we have artists at different price points, so there's something for everyone. What specific service are you curious about? That way I can give you a more tailored answer!",
+      "Absolutely! Prices vary quite a bit depending on the service complexity and the artist's experience level. Think of it like choosing between a cozy local spot and a high-end salon - both are amazing, just different vibes and price points. What were you hoping to get done?"
     ]
   },
   {
     category: 'services',
     keywords: ['service', 'offer', 'provide', 'treatment', 'do you do'],
     responses: [
-      "We offer a full range of nail services including manicures, pedicures, gel polish, acrylics, dipping powder, nail art, and more. Is there something specific you're looking for?",
-      "Our salon provides comprehensive nail care services, from basic treatments to advanced techniques and artistic designs. What kind of service are you interested in?",
-      "We offer everything from quick polish changes to full spa pedicures and elaborate nail art. How can we help beautify your nails today?"
+      "Oh, we have SO many amazing services! 💅 From classic manicures and relaxing pedicures to stunning gel polish, gorgeous acrylics, trendy dipping powder, and incredible nail art - basically everything to make your nails absolutely fabulous! What's calling to you today?",
+      "I love this question! Our talented artists offer everything from simple, elegant treatments to elaborate artistic masterpieces. Whether you want something quick and polished or you're ready to go all-out with some serious nail art, we've got you covered! What vibe are you going for?",
+      "The variety is incredible! We've got artists who can do everything from a classic French tip to the most intricate nail art you've ever seen. Thinking spa day with a luxurious pedicure? Or maybe some bold acrylics to make a statement? Tell me what's inspiring you! ✨"
     ]
   },
   {
@@ -76,18 +76,18 @@ export const mockAssistantResponses = [
     category: 'greeting',
     keywords: ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'],
     responses: [
-      "Hello! Welcome to EmviApp. I'm here to help you with booking appointments, finding salons, or answering any questions about our services. How can I assist you today?",
-      "Hi there! How can I help you today? I can assist with finding nail artists, booking appointments, or answering questions about our services.",
-      "Hello! I'm your EmviApp assistant. Whether you're looking to book a nail appointment, find a salon, or learn more about our services, I'm here to help!"
+      "Hey there! ☀️ Welcome to EmviApp! I'm Sunshine, and I'm absolutely thrilled you're here! Whether you're looking to treat yourself to some gorgeous nails, find an amazing artist, or just browsing for inspiration, I'm here to make your beauty journey fantastic. What's on your mind today?",
+      "Hi, beautiful! 🌟 I'm Sunshine, your friendly beauty companion! I love helping people discover incredible nail artists and book their dream appointments. Plus, I'm full of tips and answers about all things beauty. How can I brighten your day?",
+      "Hello, gorgeous! ✨ I'm Sunshine, and I'm so excited to meet you! Think of me as your personal beauty concierge - I'm here to help you find amazing artists, book appointments, or answer any beauty questions you have. What adventure are we going on today?"
     ]
   },
   {
     category: 'thanks',
     keywords: ['thanks', 'thank you', 'appreciate', 'helpful', 'great'],
     responses: [
-      "You're welcome! Is there anything else I can help you with today?",
-      "Happy to help! Let me know if you need assistance with anything else.",
-      "My pleasure! Is there anything else you'd like to know about our services or platform?"
+      "Aww, you're so sweet! ☀️ I absolutely love helping you out! Is there anything else I can do to make your beauty journey even more amazing today?",
+      "You're totally welcome! It makes me so happy to help! 🌟 Feel free to ask me anything else - I'm here and ready to chat about all things beauty!",
+      "It's honestly my pleasure! I could talk about beauty and nails all day! 💕 Is there anything else you're curious about? I'm here for you!"
     ]
   }
 ];

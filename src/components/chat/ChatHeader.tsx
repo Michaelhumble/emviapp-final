@@ -9,13 +9,13 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ onClose, isSupport = false }: ChatHeaderProps) => {
   return (
-    <div className="border-b py-3 px-4 flex items-center justify-between bg-primary/5">
+    <div className="border-b py-3 px-4 flex items-center justify-between bg-gradient-to-r from-orange-50 to-yellow-50">
       <div>
-        <h3 className="font-medium text-primary">
-          {isSupport ? 'EmviApp Assistant' : 'Message Center'}
+        <h3 className="font-medium bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+          ☀️ Sunshine AI
         </h3>
         <p className="text-xs text-muted-foreground">
-          {isSupport ? 'Ask me anything about beauty services' : 'Send and receive messages'}
+          Your friendly beauty assistant
         </p>
       </div>
       <Button 

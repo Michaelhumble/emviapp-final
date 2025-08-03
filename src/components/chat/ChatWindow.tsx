@@ -22,13 +22,13 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   useEffect(() => {
     const initialMessage: MessageType = {
       id: 'welcome-1',
-      content: "Hi there! I'm your EmviApp assistant. How can I help you today? I can find artists, book appointments, or answer questions about salon services.",
+      content: "Hi! I'm Sunshine, your friendly beauty assistant! ☀️ I'm here to help you discover amazing nail artists, book your perfect appointment, or find answers to any beauty questions you have. What would you like to explore today?",
       sender: 'assistant',
       timestamp: new Date(),
       actionSuggestions: [
-        { id: "find-artists", label: "Find Artists", icon: "users", href: "/artists" },
-        { id: "book-now", label: "Book Now", icon: "calendar", href: "/booking-services" },
-        { id: "salon-sales", label: "Salon Sales", icon: "store", href: "/salon-sales" }
+        { id: "find-artists", label: "Find Artists Near Me", icon: "users", href: "/artists" },
+        { id: "book-now", label: "Book an Appointment", icon: "calendar", href: "/booking-services" },
+        { id: "explore-salons", label: "Explore Salons", icon: "store", href: "/salon-sales" }
       ]
     };
     
