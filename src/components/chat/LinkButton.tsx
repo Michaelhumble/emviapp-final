@@ -14,12 +14,8 @@ export const LinkButton = ({ href, label, icon, description, onClick }: LinkButt
     if (onClick) {
       onClick();
     } else {
-      // For internal routes, use direct navigation instead of opening new window
-      if (href.startsWith('/')) {
-        window.location.href = href;
-      } else {
-        window.open(href, '_blank', 'noopener,noreferrer');
-      }
+      // Always open hardcoded external links in new window
+      window.open(href, '_blank', 'noopener,noreferrer');
     }
   };
 

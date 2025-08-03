@@ -271,118 +271,132 @@ export const ChatSystem = () => {
     }
   };
 
-  // Detect route intent from user message and AI response  
+  // Detect route intent from user message and AI response - ONLY HARDCODED LINKS  
   const detectRouteIntent = (userMessage: string, aiResponse: string) => {
     const message = userMessage.toLowerCase();
     const response = aiResponse.toLowerCase();
     
-    // Job posting intent - always route to official signup if not authenticated
+    // Job posting intent - HARDCODED LINK
     if (message.includes('đăng việc') || message.includes('post job') || 
         message.includes('tuyển') || message.includes('hiring') ||
         response.includes('post') || response.includes('đăng việc')) {
       return {
-        destination: user ? '/post-job' : '/auth/signup?redirect=/post-job',
+        destination: 'https://preview--emviapp-final.lovable.app/post-job',
         title: language === 'vi' ? 'Đăng tin tuyển dụng' : 'Post a Job',
-        requiresAuth: true
-      };
-    }
-    
-    // Job search intent
-    if (message.includes('tìm việc') || message.includes('find job') || 
-        message.includes('làm việc') || message.includes('work') ||
-        response.includes('jobs') || response.includes('việc làm')) {
-      return {
-        destination: '/jobs',
-        title: language === 'vi' ? 'Tìm việc làm' : 'Browse Jobs',
         requiresAuth: false
       };
     }
     
-    // Artist search intent
-    if (message.includes('nail artist') || message.includes('nghệ sĩ') ||
-        message.includes('find artist') || message.includes('tìm thợ')) {
+    // Salon selling intent - HARDCODED LINK
+    if (message.includes('sell salon') || message.includes('bán salon') ||
+        message.includes('đăng salon') || message.includes('list salon')) {
       return {
-        destination: '/artists',
-        title: language === 'vi' ? 'Tìm nghệ sĩ nail' : 'Browse Artists',
+        destination: 'https://preview--emviapp-final.lovable.app/sell-salon',
+        title: language === 'vi' ? 'Bán salon' : 'Sell Salon',
         requiresAuth: false
       };
     }
     
-    // Salon search intent  
-    if (message.includes('salon') || message.includes('tiệm') ||
-        message.includes('find salon') || message.includes('tìm salon')) {
+    // Sign up intent - HARDCODED LINK
+    if (message.includes('sign up') || message.includes('đăng ký') || 
+        message.includes('tạo tài khoản') || message.includes('join') ||
+        response.includes('sign up') || response.includes('đăng ký')) {
       return {
-        destination: '/salons',
-        title: language === 'vi' ? 'Tìm salon' : 'Browse Salons',
+        destination: 'https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F',
+        title: language === 'vi' ? 'Tham gia cộng đồng' : 'Join Our Beauty Community',
         requiresAuth: false
       };
     }
     
-    // Salon listing intent
-    if (message.includes('list salon') || message.includes('sell salon') ||
-        message.includes('đăng salon')) {
+    // Blog intent - HARDCODED LINK
+    if (message.includes('blog') || message.includes('tin tức') || 
+        message.includes('bài viết') || response.includes('blog')) {
       return {
-        destination: user ? '/sell-salon' : '/auth/signup?redirect=/sell-salon',
-        title: language === 'vi' ? 'Đăng thông tin salon' : 'List Your Salon',
-        requiresAuth: true
+        destination: 'https://preview--emviapp-final.lovable.app/blog',
+        title: language === 'vi' ? 'Đọc blog' : 'Read Blog',
+        requiresAuth: false
       };
     }
     
     return null;
   };
 
-  // Generate contextual quick actions based on conversation flow
+  // Generate contextual quick actions - ONLY HARDCODED LINKS
   const generateQuickActions = (response: string, userMessage: string) => {
     const actions = [];
     const lowerResponse = response.toLowerCase();
     const lowerMessage = userMessage.toLowerCase();
     
-    // Only show actions when conversation context calls for them - route directly
-    if ((lowerResponse.includes('job') && lowerResponse.includes('find')) || 
-        (lowerMessage.includes('tìm việc') || lowerMessage.includes('find job'))) {
-      if (language === 'vi') {
-        actions.push({ id: 'jobs', label: '🔍 Xem việc làm', action: () => handleRouteAction('/jobs') });
-      } else {
-        actions.push({ id: 'jobs', label: '🔍 Browse Jobs', action: () => handleRouteAction('/jobs') });
-      }
-    }
-    
+    // Post job action - HARDCODED LINK
     if ((lowerResponse.includes('post') && lowerResponse.includes('job')) || 
         (lowerMessage.includes('đăng việc') || lowerMessage.includes('post job'))) {
       if (language === 'vi') {
-        actions.push({ id: 'post', label: '📝 Đăng việc', action: () => handleRouteAction('/post-job') });
+        actions.push({ 
+          id: 'post', 
+          label: '📝 Đăng việc', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/post-job', '_blank')
+        });
       } else {
-        actions.push({ id: 'post', label: '📝 Post Job', action: () => handleRouteAction('/post-job') });
+        actions.push({ 
+          id: 'post', 
+          label: '📝 Post Job', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/post-job', '_blank')
+        });
       }
     }
     
-    // Add other direct route actions based on context
-    if ((lowerResponse.includes('artist') || lowerResponse.includes('nghệ sĩ')) && 
-        (lowerMessage.includes('find') || lowerMessage.includes('tìm'))) {
+    // Sell salon action - HARDCODED LINK
+    if ((lowerResponse.includes('sell') || lowerResponse.includes('bán')) && 
+        (lowerResponse.includes('salon') || lowerResponse.includes('tiệm'))) {
       if (language === 'vi') {
-        actions.push({ id: 'artists', label: '💅 Xem nghệ sĩ', action: () => handleRouteAction('/artists') });
+        actions.push({ 
+          id: 'sell', 
+          label: '🏪 Bán salon', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/sell-salon', '_blank')
+        });
       } else {
-        actions.push({ id: 'artists', label: '💅 Browse Artists', action: () => handleRouteAction('/artists') });
+        actions.push({ 
+          id: 'sell', 
+          label: '🏪 Sell Salon', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/sell-salon', '_blank')
+        });
       }
     }
     
-    if ((lowerResponse.includes('salon') || lowerResponse.includes('tiệm')) && 
-        (lowerMessage.includes('find') || lowerMessage.includes('tìm'))) {
-      if (language === 'vi') {
-        actions.push({ id: 'salons', label: '🏪 Xem salon', action: () => handleRouteAction('/salons') });
-      } else {
-        actions.push({ id: 'salons', label: '🏪 Browse Salons', action: () => handleRouteAction('/salons') });
-      }
-    }
-    
-    // Add signup action when user shows interest
+    // Sign up action - HARDCODED LINK
     if ((lowerResponse.includes('sign') && lowerResponse.includes('up')) || 
         (lowerResponse.includes('join') || lowerResponse.includes('tham gia')) ||
         (lowerMessage.includes('sign up') || lowerMessage.includes('đăng ký'))) {
       if (language === 'vi') {
-        actions.push({ id: 'signup', label: '🌟 Tham gia cộng đồng', action: () => handleRouteAction('/auth/signup') });
+        actions.push({ 
+          id: 'signup', 
+          label: '🌟 Tham gia cộng đồng', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F', '_blank')
+        });
       } else {
-        actions.push({ id: 'signup', label: '🌟 Join Our Beauty Community', action: () => handleRouteAction('/auth/signup') });
+        actions.push({ 
+          id: 'signup', 
+          label: '🌟 Join Our Beauty Community', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F', '_blank')
+        });
+      }
+    }
+    
+    // Blog action - HARDCODED LINK
+    if (lowerResponse.includes('blog') || lowerResponse.includes('tin tức') ||
+        lowerMessage.includes('blog') || lowerMessage.includes('tin tức')) {
+      if (language === 'vi') {
+        actions.push({ 
+          id: 'blog', 
+          label: '📖 Đọc blog', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/blog', '_blank')
+        });
+      } else {
+        actions.push({ 
+          id: 'blog', 
+          label: '📖 Read Blog', 
+          action: () => window.open('https://preview--emviapp-final.lovable.app/blog', '_blank')
+        });
       }
     }
     
@@ -398,49 +412,24 @@ export const ChatSystem = () => {
     return actions;
   };
 
-  // Handle route confirmation - NO EMAIL COLLECTION, DIRECT ROUTING
+  // Handle route confirmation - HARDCODED LINKS ONLY
   const handleRouteConfirm = async (destination: string, requiresAuth: boolean) => {
-    if (requiresAuth && !user) {
-      // Track signup initiation
-      trackChatEvent(chatEvents.SIGNUP_INITIATED, {
-        userId,
-        userName,
-        route: destination,
-        language
-      });
-      
-      // Direct signup message with proper routing - NO EMAIL COLLECTION
-      const signupMessage = language === 'vi'
-        ? `Để tiếp tục, anh/chị cần tài khoản EmviApp. Sẵn sàng tham gia cộng đồng làm đẹp chưa?`
-        : `You'll need an account to continue. Ready to join our beauty community?`;
-      
-      const signupMsg: Message = {
-        id: Date.now().toString(),
-        text: signupMessage,
-        isUser: false,
-        timestamp: new Date(),
-        routeConfirmation: {
-          destination,
-          title: language === 'vi' ? 'Tham Gia Cộng Đồng Làm Đẹp' : 'Join Our Beauty Community',
-          requiresAuth: false
-        }
-      };
-      
-      setMessages(prev => [...prev, signupMsg]);
-      return;
-    }
+    // Always open hardcoded external links - no auth required
+    window.open(destination, '_blank', 'noopener,noreferrer');
     
-    // User is authenticated or auth not required - proceed with route
-    confirmRoute({
-      destination,
-      title: destination.includes('post') ? (language === 'vi' ? 'Đăng việc' : 'Post Job') : 
-             destination.includes('jobs') ? (language === 'vi' ? 'Tìm việc' : 'Browse Jobs') :
-             destination.includes('artists') ? (language === 'vi' ? 'Tìm nghệ sĩ' : 'Browse Artists') : 'Continue',
-      message: language === 'vi' 
-        ? `Anh/chị có muốn em dẫn qua trang này không? Em sẽ ở đây chờ để giúp tiếp!`
-        : `Would you like me to take you there? I'll be here waiting to help when you return!`,
-      requiresAuth
-    });
+    const confirmMessage = language === 'vi'
+      ? `Đang mở trang mới! Em sẽ ở đây nếu anh/chị cần giúp gì thêm 😊`
+      : `Opening new page! I'll be here if you need any more help 😊`;
+    
+    const confirmMsg: Message = {
+      id: Date.now().toString(),
+      text: confirmMessage,
+      isUser: false,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, confirmMsg]);
+    saveSession([...messages, confirmMsg]);
   };
 
   // Handle auth success

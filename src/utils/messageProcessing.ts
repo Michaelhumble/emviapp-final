@@ -24,46 +24,38 @@ export interface ProcessedMessage {
   authFlow?: boolean;
 }
 
-// Extract URLs from text and convert to link objects
+// Extract URLs from text and convert to link objects - ONLY HARDCODED LINKS ALLOWED
 export const extractLinks = (text: string): Array<{ url: string; label: string; description?: string }> => {
+  const allowedLinks = [
+    {
+      url: 'https://preview--emviapp-final.lovable.app/post-job',
+      label: '📝 Post Job',
+      description: 'Create a job listing'
+    },
+    {
+      url: 'https://preview--emviapp-final.lovable.app/sell-salon',
+      label: '🏪 Sell Salon',
+      description: 'List your salon for sale'
+    },
+    {
+      url: 'https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F',
+      label: '🌟 Join Our Beauty Community',
+      description: 'Create your account and get started'
+    },
+    {
+      url: 'https://preview--emviapp-final.lovable.app/blog',
+      label: '📖 Read Blog',
+      description: 'Latest news and tips from EmviApp'
+    }
+  ];
+
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const urls = text.match(urlRegex) || [];
   
-  return urls.map(url => {
-    // Generate friendly labels based on URL patterns
-    let label = 'View Link';
-    let description = '';
-    
-    if (url.includes('/jobs')) {
-      label = '🔍 Browse Jobs';
-      description = 'Find nail jobs and beauty opportunities';
-    } else if (url.includes('/artists')) {
-      label = '💅 Browse Artists'; 
-      description = 'Discover talented nail artists';
-    } else if (url.includes('/salons')) {
-      label = '🏪 Browse Salons';
-      description = 'Find beauty salons near you';
-    } else if (url.includes('/post-job')) {
-      label = '📝 Post Job';
-      description = 'Create a job listing';
-    } else if (url.includes('/sell-salon')) {
-      label = '🏪 List Salon';
-      description = 'Sell or list your salon';
-    } else if (url.includes('/auth/signup')) {
-      label = '🌟 Join Our Beauty Community';
-      description = 'Create your account and get started';
-    } else {
-      // Extract domain name for generic links
-      try {
-        const domain = new URL(url).hostname.replace('www.', '');
-        label = `Visit ${domain}`;
-      } catch (e) {
-        label = 'Open Link';
-      }
-    }
-    
-    return { url, label, description };
-  });
+  // Only return links that match our allowed hardcoded links
+  return urls
+    .map(url => allowedLinks.find(link => url.includes(link.url.split('?')[0])))
+    .filter(Boolean) as Array<{ url: string; label: string; description?: string }>;
 };
 
 // Remove URLs from text and return clean text
@@ -84,23 +76,31 @@ export const processMessage = (message: any): ProcessedMessage => {
   };
 };
 
-// Generate contextual introduction for links
+// Generate contextual introduction for links - ONLY HARDCODED LINKS
 export const getLinkIntroText = (links: Array<{ url: string; label: string }>, language: 'en' | 'vi'): string => {
   if (links.length === 0) return '';
   
   if (language === 'vi') {
-    if (links.some(l => l.url.includes('jobs'))) {
-      return 'Em đã tìm được những việc làm này cho anh/chị:';
-    } else if (links.some(l => l.url.includes('artists'))) {
-      return 'Đây là những nghệ sĩ nail mà em gợi ý:';
+    if (links.some(l => l.url.includes('post-job'))) {
+      return 'Anh/chị có thể đăng tin tuyển dụng tại đây:';
+    } else if (links.some(l => l.url.includes('sell-salon'))) {
+      return 'Anh/chị có thể đăng bán salon tại đây:';
+    } else if (links.some(l => l.url.includes('auth/signup'))) {
+      return 'Tham gia cộng đồng EmviApp:';
+    } else if (links.some(l => l.url.includes('blog'))) {
+      return 'Đọc những bài viết mới nhất:';
     } else {
       return 'Đây là những đường link hữu ích:';
     }
   } else {
-    if (links.some(l => l.url.includes('jobs'))) {
-      return 'Here are some great job opportunities I found:';
-    } else if (links.some(l => l.url.includes('artists'))) {
-      return 'Here are some talented artists I recommend:';
+    if (links.some(l => l.url.includes('post-job'))) {
+      return 'You can post a job here:';
+    } else if (links.some(l => l.url.includes('sell-salon'))) {
+      return 'You can list your salon here:';
+    } else if (links.some(l => l.url.includes('auth/signup'))) {
+      return 'Join the EmviApp community:';
+    } else if (links.some(l => l.url.includes('blog'))) {
+      return 'Read the latest articles:';
     } else {
       return 'Here are some helpful links:';
     }
