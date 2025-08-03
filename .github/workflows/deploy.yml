@@ -1,54 +1,73 @@
 name: EmviApp Deployment Pipeline
 
 on:
-  push:
-    branches:
-      - main
+  # Manual deployment only - no automatic deployments
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      confirm_production:
+        description: 'Type "DEPLOY-TO-PRODUCTION" to confirm production deployment'
+        required: false
+        default: ''
 
 jobs:
-  # DISABLED - Manual deployment only
-  # deploy-staging:
-  #   if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
-  #   runs-on: ubuntu-latest
-  #   environment: staging
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '18'
-  #         cache: 'npm'
-  #
-  #     - name: Install dependencies
-  #       run: npm ci
-  #
-  #     - name: Run tests
-  #       run: npm run test:ci || true
-  #
-  #     - name: Build for staging
-  #       run: npm run build
-  #       env:
-  #         VITE_ENVIRONMENT: staging
-  #         VITE_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
-  #         VITE_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-  #         VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.STAGING_GOOGLE_MAPS_API_KEY }}
-  #
-  #     - name: Deploy to Vercel Staging
-  #       uses: amondnet/vercel-action@v25
-  #       with:
-  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-  #         working-directory: ./
-  #         scope: ${{ secrets.VERCEL_ORG_ID }}
+  # Manual staging deployment
+  deploy-staging:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  # Automatic production deployment on push to main
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Build for staging
+        run: npm run build
+        env:
+          VITE_ENVIRONMENT: staging
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+
+      - name: Deploy to Vercel Staging
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+  # Manual production deployment with confirmation
   deploy-production:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - name: Validate production deployment confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm_production }}" != "DEPLOY-TO-PRODUCTION" ]; then
+            echo "❌ Production deployment requires confirmation text: DEPLOY-TO-PRODUCTION"
+            exit 1
+          fi
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -70,9 +89,9 @@ jobs:
         run: npm run build
         env:
           VITE_ENVIRONMENT: production
-          VITE_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.PROD_GOOGLE_MAPS_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
       - name: Deploy to Vercel Production
         uses: amondnet/vercel-action@v25
