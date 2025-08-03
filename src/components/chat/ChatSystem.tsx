@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Send, X, Sun, Sparkles } from 'lucide-react';
+import { Send, X, Sun, Sparkles, RotateCcw, Type, Moon, Settings } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,6 +16,13 @@ interface Message {
   }>;
 }
 
+interface ChatSession {
+  userName: string;
+  language: 'en' | 'vi';
+  lastActive: number;
+  messages: Message[];
+}
+
 export const ChatSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -25,16 +32,53 @@ export const ChatSystem = () => {
   const [language, setLanguage] = useState<'en' | 'vi'>('en');
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string>('');
+  const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
+  const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+  
+  // Load session from localStorage on mount
   useEffect(() => {
+    const savedSession = localStorage.getItem('sunshine-chat-session');
+    if (savedSession) {
+      try {
+        const session: ChatSession = JSON.parse(savedSession);
+        const timeSinceLastActive = Date.now() - session.lastActive;
+        
+        if (timeSinceLastActive < IDLE_TIMEOUT) {
+          // Resume session
+          setUserName(session.userName);
+          setLanguage(session.language);
+          setMessages(session.messages || []);
+        } else {
+          // Session expired, clear it
+          localStorage.removeItem('sunshine-chat-session');
+        }
+      } catch (e) {
+        localStorage.removeItem('sunshine-chat-session');
+      }
+    }
+    
     const timer = setTimeout(() => {
       setShowButton(true);
     }, 3000);
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Save session to localStorage
+  const saveSession = (updatedMessages?: Message[]) => {
+    const session: ChatSession = {
+      userName,
+      language,
+      lastActive: Date.now(),
+      messages: updatedMessages || messages
+    };
+    localStorage.setItem('sunshine-chat-session', JSON.stringify(session));
+  };
 
   useEffect(() => {
     // Get user ID from auth
@@ -54,6 +98,13 @@ export const ChatSystem = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Save session when messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveSession(messages);
+    }
+  }, [messages, userName, language]);
 
   const detectLanguage = (text: string): 'en' | 'vi' => {
     const vietnameseChars = /[ăâêôơưđàáảãạằắẳẵặầấẩẫậềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i;
@@ -88,7 +139,28 @@ export const ChatSystem = () => {
   };
 
   const getInitialGreeting = () => {
+    if (userName) {
+      return language === 'vi' 
+        ? `Chào ${userName}, rất vui được gặp lại anh/chị! Em có thể giúp gì cho anh/chị hôm nay? 😊`
+        : `Hi ${userName}, welcome back! Need any help today? 😊`;
+    }
     return "Hi, I'm Sunshine! 🌞 What's your name? I can chat in Vietnamese or English—whatever you prefer! 😊";
+  };
+
+  const clearChat = () => {
+    localStorage.removeItem('sunshine-chat-session');
+    setMessages([]);
+    setUserName('');
+    setLanguage('en');
+    
+    const greeting: Message = {
+      id: Date.now().toString(),
+      text: getInitialGreeting(),
+      isUser: false,
+      timestamp: new Date()
+    };
+    setMessages([greeting]);
+    setShowMenu(false);
   };
 
   const openChat = () => {
@@ -109,6 +181,7 @@ export const ChatSystem = () => {
   const closeChat = () => {
     setIsOpen(false);
     setShowButton(true);
+    setShowMenu(false);
   };
 
   const sendMessage = async () => {
@@ -124,7 +197,8 @@ export const ChatSystem = () => {
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setIsLoading(true);
 
     // Check for name in message
@@ -159,18 +233,25 @@ export const ChatSystem = () => {
       };
 
       // Add contextual quick actions if relevant
-      if (data.response && (data.response.includes('job') || data.response.includes('việc') || data.response.includes('salon') || data.response.includes('help') || data.response.includes('hỗ trợ'))) {
+      const hasJobIntent = messageToSend.toLowerCase().includes('job') || messageToSend.toLowerCase().includes('việc') || messageToSend.toLowerCase().includes('tìm việc');
+      const hasSalonIntent = messageToSend.toLowerCase().includes('salon') || messageToSend.toLowerCase().includes('đăng') || messageToSend.toLowerCase().includes('list');
+      
+      if (hasJobIntent || hasSalonIntent) {
         const contextualActions = detectedLang === 'vi' ? [
-          { id: 'find-jobs', label: '💅 Tìm việc nail', action: () => handleQuickAction('Em muốn tìm việc làm nail') },
-          { id: 'list-salon', label: '🏪 Đăng salon', action: () => handleQuickAction('Em muốn đăng tin salon') }
+          ...(hasJobIntent ? [{ id: 'find-jobs', label: '💅 Tìm việc nail', action: () => handleQuickAction('Em muốn tìm việc làm nail') }] : []),
+          ...(hasSalonIntent ? [{ id: 'list-salon', label: '🏪 Đăng salon', action: () => handleQuickAction('Em muốn đăng tin salon') }] : [])
         ] : [
-          { id: 'find-jobs', label: '💅 Find Jobs', action: () => handleQuickAction('I want to find nail jobs') },
-          { id: 'list-salon', label: '🏪 List Salon', action: () => handleQuickAction('I want to list my salon') }
+          ...(hasJobIntent ? [{ id: 'find-jobs', label: '💅 Find Jobs', action: () => handleQuickAction('I want to find nail jobs') }] : []),
+          ...(hasSalonIntent ? [{ id: 'list-salon', label: '🏪 List Salon', action: () => handleQuickAction('I want to list my salon') }] : [])
         ];
-        aiResponse.quickActions = contextualActions;
+        
+        if (contextualActions.length > 0) {
+          aiResponse.quickActions = contextualActions;
+        }
       }
 
-      setMessages(prev => [...prev, aiResponse]);
+      const finalMessages = [...newMessages, aiResponse];
+      setMessages(finalMessages);
 
       // Update language if AI detected it differently
       if (data.language && data.language !== language) {
@@ -203,8 +284,42 @@ export const ChatSystem = () => {
     }, 100);
   };
 
+  const fontSizeClasses = {
+    small: 'text-xs',
+    normal: 'text-sm',
+    large: 'text-base'
+  };
+
   return (
     <>
+      {/* Floating Sparkles Background Animation */}
+      <div className="fixed inset-0 pointer-events-none z-[9990] overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-yellow-300/20"
+            initial={{ 
+              x: Math.random() * window.innerWidth,
+              y: window.innerHeight + 50,
+              scale: 0
+            }}
+            animate={{
+              y: -50,
+              scale: [0, 1, 0],
+              rotate: [0, 180, 360]
+            }}
+            transition={{
+              duration: 8 + Math.random() * 4,
+              repeat: Infinity,
+              delay: i * 2,
+              ease: "linear"
+            }}
+          >
+            ✨
+          </motion.div>
+        ))}
+      </div>
+
       {/* Sunshine Chat Bubble - Only shows when chat is closed */}
       <AnimatePresence>
         {showButton && !isOpen && (
@@ -270,7 +385,7 @@ export const ChatSystem = () => {
         )}
       </AnimatePresence>
 
-      {/* Chat Window - Messenger-style sliding from bottom */}
+      {/* Chat Window - Premium Messenger-style */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -285,11 +400,18 @@ export const ChatSystem = () => {
             }}
             className={`fixed ${
               isMobile 
-                ? 'bottom-0 left-0 right-0 h-[65vh] max-h-[65vh]' 
-                : 'bottom-6 right-6 w-[400px] h-[60vh] max-h-[500px]'
+                ? 'bottom-0 left-0 right-0 h-[70vh] max-h-[70vh]' 
+                : 'bottom-6 right-6 w-[380px] h-[60vh] max-h-[500px]'
             } z-[9998] overflow-hidden rounded-t-3xl ${isMobile ? '' : 'rounded-b-3xl'}`}
             style={{ 
-              background: `
+              background: isDarkMode ? `
+                linear-gradient(145deg, 
+                  rgba(30, 30, 40, 0.98) 0%, 
+                  rgba(25, 25, 35, 0.96) 30%, 
+                  rgba(20, 20, 30, 0.98) 60%, 
+                  rgba(15, 15, 25, 0.98) 100%
+                )
+              ` : `
                 linear-gradient(145deg, 
                   rgba(255, 252, 247, 0.98) 0%, 
                   rgba(254, 249, 242, 0.96) 30%, 
@@ -301,26 +423,28 @@ export const ChatSystem = () => {
               `,
               backdropFilter: 'blur(30px) saturate(200%)',
               boxShadow: isMobile 
-                ? '0 -15px 60px rgba(0,0,0,0.08), 0 -8px 30px rgba(251,146,60,0.12), inset 0 1px 0 rgba(255,255,255,0.8)' 
-                : '0 30px 80px rgba(0,0,0,0.08), 0 15px 40px rgba(251,146,60,0.12), inset 0 1px 0 rgba(255,255,255,0.8)',
+                ? '0 -15px 60px rgba(0,0,0,0.1), 0 -8px 30px rgba(251,146,60,0.15), inset 0 1px 0 rgba(255,255,255,0.8)' 
+                : '0 30px 80px rgba(0,0,0,0.1), 0 15px 40px rgba(251,146,60,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
               border: '1px solid rgba(255,255,255,0.8)'
             }}
           >
-            {/* Premium Header with animated rays */}
+            {/* Premium Header with Controls */}
             <div className="relative overflow-hidden">
               <div 
                 className="p-4 flex items-center justify-between relative z-10"
                 style={{
-                  background: 'linear-gradient(135deg, #ff8a00 0%, #ffa500 30%, #ffb347 60%, #ffd700 100%)',
+                  background: isDarkMode 
+                    ? 'linear-gradient(135deg, #4a5568 0%, #2d3748 30%, #1a202c 60%, #171923 100%)'
+                    : 'linear-gradient(135deg, #ff8a00 0%, #ffa500 30%, #ffb347 60%, #ffd700 100%)',
                 }}
               >
                 {/* Animated light rays */}
                 <motion.div
                   animate={{ 
                     background: [
-                      "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 70%)",
-                      "radial-gradient(circle at 70% 60%, rgba(255,255,255,0.3) 0%, transparent 70%)",
-                      "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 70%)"
+                      `radial-gradient(circle at 30% 40%, rgba(255,255,255,${isDarkMode ? '0.1' : '0.3'}) 0%, transparent 70%)`,
+                      `radial-gradient(circle at 70% 60%, rgba(255,255,255,${isDarkMode ? '0.1' : '0.3'}) 0%, transparent 70%)`,
+                      `radial-gradient(circle at 30% 40%, rgba(255,255,255,${isDarkMode ? '0.1' : '0.3'}) 0%, transparent 70%)`
                     ]
                   }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -337,26 +461,80 @@ export const ChatSystem = () => {
                   </motion.div>
                   <div>
                     <h3 className="text-white font-bold text-lg drop-shadow">Sunshine</h3>
-                    <p className="text-white/90 text-xs drop-shadow">Your EmviApp assistant</p>
+                    <p className="text-white/90 text-xs drop-shadow">
+                      {userName ? `Chatting with ${userName}` : 'Your EmviApp assistant'}
+                    </p>
                   </div>
                 </div>
                 
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={closeChat}
-                  className="w-8 h-8 bg-white/25 rounded-full flex items-center justify-center text-white hover:bg-white/35 transition-all backdrop-blur-sm relative z-10"
-                >
-                  <X size={16} />
-                </motion.button>
+                <div className="flex items-center gap-2 relative z-10">
+                  {/* Settings Menu */}
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="w-8 h-8 bg-white/25 rounded-full flex items-center justify-center text-white hover:bg-white/35 transition-all backdrop-blur-sm"
+                  >
+                    <Settings size={14} />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={closeChat}
+                    className="w-8 h-8 bg-white/25 rounded-full flex items-center justify-center text-white hover:bg-white/35 transition-all backdrop-blur-sm"
+                  >
+                    <X size={16} />
+                  </motion.button>
+                </div>
               </div>
+              
+              {/* Settings Menu */}
+              <AnimatePresence>
+                {showMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full right-4 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-white/50 p-3 space-y-2 z-20"
+                    style={{ minWidth: '180px' }}
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      onClick={clearChat}
+                      className="w-full flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-all"
+                    >
+                      <RotateCcw size={14} />
+                      Clear Chat & Start Over
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => setFontSize(fontSize === 'small' ? 'normal' : fontSize === 'normal' ? 'large' : 'small')}
+                      className="w-full flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-all"
+                    >
+                      <Type size={14} />
+                      Font: {fontSize}
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                      className="w-full flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-all"
+                    >
+                      {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+                      {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Messages Container - Optimized for mobile */}
+            {/* Messages Container - Glassmorphism */}
             <div 
-              className="flex-1 px-4 py-2 overflow-y-auto space-y-3" 
+              className={`flex-1 px-6 py-4 overflow-y-auto space-y-4 ${isDarkMode ? 'bg-black/5' : 'bg-white/5'}`}
               style={{ 
-                maxHeight: isMobile ? 'calc(65vh - 140px)' : '320px',
+                maxHeight: isMobile ? 'calc(70vh - 140px)' : '320px',
                 paddingBottom: '1rem'
               }}
             >
@@ -365,15 +543,25 @@ export const ChatSystem = () => {
                   key={message.id}
                   initial={{ opacity: 0, y: 10, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: index * 0.05, duration: 0.3 }}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                  transition={{ 
+                    delay: index * 0.05, 
+                    duration: 0.3,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25
+                  }}
+                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
                 >
-                  <div className={`max-w-[80%] p-3 rounded-2xl shadow-md relative ${
+                  <div className={`max-w-[75%] p-4 rounded-2xl shadow-lg relative backdrop-blur-sm ${
                     message.isUser 
-                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' 
-                      : 'bg-white/90 text-gray-800 border border-orange-100 backdrop-blur-sm'
+                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border border-blue-400/30' 
+                      : isDarkMode
+                        ? 'bg-gray-800/90 text-gray-100 border border-gray-600/30'
+                        : 'bg-white/90 text-gray-800 border border-orange-100/50'
                   }`}>
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                    <p className={`${fontSizeClasses[fontSize]} leading-relaxed whitespace-pre-wrap`}>
+                      {message.text}
+                    </p>
                     
                     {/* Show contextual quick actions inline */}
                     {message.quickActions && message.quickActions.length > 0 && (
@@ -386,7 +574,7 @@ export const ChatSystem = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={action.action}
-                            className="px-3 py-1.5 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full text-xs font-medium shadow-md border border-white/20"
+                            className={`px-3 py-1.5 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full ${fontSizeClasses[fontSize]} font-medium shadow-md border border-white/20 backdrop-blur-sm`}
                           >
                             {action.label}
                           </motion.button>
@@ -395,39 +583,44 @@ export const ChatSystem = () => {
                     )}
                     
                     {!message.isUser && (
-                      <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-sm">
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="absolute -bottom-1 -left-1 w-5 h-5 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-sm border border-white/30"
+                      >
                         <Sun size={10} className="text-white" />
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 </motion.div>
               ))}
               
-              {/* AI Thinking Indicator */}
+              {/* AI Thinking Indicator - Enhanced */}
               {isLoading && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start"
+                  className="flex justify-start mb-4"
                 >
-                  <div className="bg-white/90 text-gray-800 border border-orange-100 p-3 rounded-2xl shadow-md backdrop-blur-sm">
-                    <div className="flex items-center gap-2">
+                  <div className={`${isDarkMode ? 'bg-gray-800/90 text-gray-100 border-gray-600/30' : 'bg-white/90 text-gray-800 border-orange-100/50'} border p-4 rounded-2xl shadow-lg backdrop-blur-sm`}>
+                    <div className="flex items-center gap-3">
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                       >
-                        <Sun size={14} className="text-orange-400" />
+                        <Sun size={16} className="text-orange-400" />
                       </motion.div>
-                      <span className="text-xs text-gray-600">
+                      <span className={`${fontSizeClasses[fontSize]} ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                         {language === 'vi' ? 'Sunshine đang suy nghĩ...' : 'Sunshine is thinking...'}
                       </span>
                       <div className="flex gap-1">
                         {[0, 1, 2].map((i) => (
                           <motion.div
                             key={i}
-                            animate={{ y: [0, -2, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
-                            className="w-1 h-1 bg-orange-400 rounded-full"
+                            animate={{ y: [0, -3, 0] }}
+                            transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                            className="w-1.5 h-1.5 bg-orange-400 rounded-full"
                           />
                         ))}
                       </div>
@@ -438,9 +631,9 @@ export const ChatSystem = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area - Fixed at bottom, always accessible */}
-            <div className="p-4 bg-white/50 backdrop-blur-md border-t border-orange-200/30">
-              <div className="flex gap-2 items-end">
+            {/* Input Area - Always accessible, premium design */}
+            <div className={`p-4 ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-md border-t ${isDarkMode ? 'border-gray-700/30' : 'border-orange-200/30'}`}>
+              <div className="flex gap-3 items-end">
                 <div className="flex-1">
                   <input
                     type="text"
@@ -449,7 +642,7 @@ export const ChatSystem = () => {
                     onKeyPress={(e) => e.key === 'Enter' && !isLoading && sendMessage()}
                     placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Type a message...'}
                     disabled={isLoading}
-                    className="w-full py-3 px-4 bg-white border border-orange-200 rounded-2xl focus:border-orange-400 focus:outline-none text-sm disabled:opacity-50 transition-all placeholder-gray-500"
+                    className={`w-full py-3 px-4 ${isDarkMode ? 'bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-orange-200 text-gray-800 placeholder-gray-500'} rounded-2xl focus:border-orange-400 focus:outline-none ${fontSizeClasses[fontSize]} disabled:opacity-50 transition-all shadow-inner`}
                   />
                 </div>
                 <motion.button
@@ -457,7 +650,7 @@ export const ChatSystem = () => {
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
                   disabled={isLoading || !inputValue.trim()}
-                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-white/20"
                 >
                   {isLoading ? (
                     <motion.div
