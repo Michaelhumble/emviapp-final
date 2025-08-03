@@ -88,7 +88,7 @@ export const ChatSystem = () => {
   };
 
   const getInitialGreeting = () => {
-    return "Hi! I'm Sunshine. What's your name? I can chat in Vietnamese or English—whatever you prefer! 😊";
+    return "Hi, I'm Sunshine! 🌞 What's your name? I can chat in Vietnamese or English—whatever you prefer! 😊";
   };
 
   const openChat = () => {
@@ -286,15 +286,24 @@ export const ChatSystem = () => {
             className={`fixed ${
               isMobile 
                 ? 'bottom-0 left-0 right-0 h-[65vh] max-h-[65vh]' 
-                : 'bottom-6 right-6 w-96 h-[500px]'
+                : 'bottom-6 right-6 w-[400px] h-[60vh] max-h-[500px]'
             } z-[9998] overflow-hidden rounded-t-3xl ${isMobile ? '' : 'rounded-b-3xl'}`}
             style={{ 
-              background: 'linear-gradient(145deg, rgba(255,252,248,0.95) 0%, rgba(254,247,237,0.95) 50%, rgba(255,243,235,0.95) 100%)',
-              backdropFilter: 'blur(25px) saturate(180%)',
+              background: `
+                linear-gradient(145deg, 
+                  rgba(255, 252, 247, 0.98) 0%, 
+                  rgba(254, 249, 242, 0.96) 30%, 
+                  rgba(255, 245, 237, 0.98) 60%, 
+                  rgba(254, 243, 232, 0.98) 100%
+                ),
+                radial-gradient(circle at 30% 20%, rgba(255, 165, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(255, 193, 7, 0.04) 0%, transparent 50%)
+              `,
+              backdropFilter: 'blur(30px) saturate(200%)',
               boxShadow: isMobile 
-                ? '0 -10px 40px rgba(0,0,0,0.1), 0 -4px 20px rgba(251,146,60,0.1)' 
-                : '0 25px 50px rgba(0,0,0,0.1), 0 10px 30px rgba(251,146,60,0.15)',
-              border: '1px solid rgba(255,255,255,0.7)'
+                ? '0 -15px 60px rgba(0,0,0,0.08), 0 -8px 30px rgba(251,146,60,0.12), inset 0 1px 0 rgba(255,255,255,0.8)' 
+                : '0 30px 80px rgba(0,0,0,0.08), 0 15px 40px rgba(251,146,60,0.12), inset 0 1px 0 rgba(255,255,255,0.8)',
+              border: '1px solid rgba(255,255,255,0.8)'
             }}
           >
             {/* Premium Header with animated rays */}
