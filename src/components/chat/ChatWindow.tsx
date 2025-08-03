@@ -1,170 +1,205 @@
-import { useState, useRef, useEffect } from 'react';
-import { OldMessageBubble } from './OldMessageBubble';
-import { ChatInput } from './ChatInput';
-import { ChatHeader } from './ChatHeader';
-import { LanguageToggle } from './LanguageToggle';
-import { useAssistant } from '@/hooks/useAssistant';
-import { BookingMatch } from '@/services/assistantService';
-import { processAiResponse } from '@/utils/aiResponseProcessor';
-import { useAuth } from '@/context/auth';
-import { MessageType } from './types';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, X, Sun, Settings, RotateCcw, Moon } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ChatWindowProps {
   onClose: () => void;
+  children: React.ReactNode;
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  sendMessage: () => void;
+  isLoading: boolean;
+  language: 'en' | 'vi';
+  fontSize: 'small' | 'normal' | 'large';
+  isDarkMode: boolean;
+  setFontSize: (size: 'small' | 'normal' | 'large') => void;
+  setIsDarkMode: (isDark: boolean) => void;
+  onClearChat: () => void;
 }
 
-const ChatWindow = ({ onClose }: ChatWindowProps) => {
-  const [messages, setMessages] = useState<MessageType[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'vi'>('en');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { generateResponse, isLoading, matches, createBooking } = useAssistant();
-  const { user } = useAuth();
-  
-  useEffect(() => {
-    // Detect user's preferred language (you can enhance this with user settings)
-    const userLanguage = navigator.language.startsWith('vi') ? 'vi' : 'en';
-    setCurrentLanguage(userLanguage);
-    
-    const welcomeMessages = {
-      vi: "Chào anh/chị! Em là Sunshine — trợ lý AI của EmviApp. Anh/chị cho em biết tên để tiện xưng hô và hỗ trợ tốt hơn được không ạ? 😊",
-      en: "Hi there! I'm Sunshine — EmviApp's AI assistant. Could you tell me your name so I can provide better support? 😊"
-    };
-    
-    const initialMessage: MessageType = {
-      id: 'welcome-1',
-      content: welcomeMessages[userLanguage as keyof typeof welcomeMessages],
-      sender: 'assistant',
-      timestamp: new Date()
-    };
-    
-    setMessages([initialMessage]);
-  }, []);
-  
-  const handleLanguageChange = (language: 'en' | 'vi') => {
-    setCurrentLanguage(language);
-    
-    const welcomeMessages = {
-      vi: "Chào anh/chị! Em là Sunshine — trợ lý AI của EmviApp. Anh/chị cho em biết tên để tiện xưng hô và hỗ trợ tốt hơn được không ạ? 😊",
-      en: "Hi there! I'm Sunshine — EmviApp's AI assistant. Could you tell me your name so I can provide better support? 😊"
-    };
-    
-    // Update welcome message with new language - NO automatic sales buttons
-    const newWelcomeMessage: MessageType = {
-      id: 'welcome-' + Date.now(),
-      content: welcomeMessages[language],
-      sender: 'assistant',
-      timestamp: new Date()
-      // Removed actionSuggestions completely
-    };
-    
-    setMessages([newWelcomeMessage]);
-  };
-  
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-  
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim()) return;
-    
-    const userMessage: MessageType = {
-      id: Date.now().toString(),
-      content,
-      sender: 'user',
-      timestamp: new Date()
-    };
-    
-    setMessages(prevMessages => [...prevMessages, userMessage]);
-    
-    setIsTyping(true);
-    const typingMessage: MessageType = {
-      id: 'typing',
-      content: '',
-      sender: 'assistant',
-      timestamp: new Date(),
-      isTyping: true
-    };
-    
-    setMessages(prevMessages => [...prevMessages, typingMessage]);
-    
-    try {
-      const aiResponse = await generateResponse(content, currentLanguage);
-      const processedResponse = processAiResponse(aiResponse);
-      
-      setMessages(prevMessages => {
-        const filteredMessages = prevMessages.filter(msg => msg.id !== 'typing');
-        
-        const assistantMessage: MessageType = {
-          id: Date.now().toString(),
-          content: processedResponse.message,
-          sender: 'assistant',
-          timestamp: new Date(),
-          // Only show action suggestions if the AI specifically decides to include them
-          // based on the user's request, not automatically
-          bookingMatches: matches
-        };
-        
-        return [...filteredMessages, assistantMessage];
-      });
-    } catch (error) {
-      console.error('Error generating response:', error);
-      
-      setMessages(prevMessages => {
-        const filteredMessages = prevMessages.filter(msg => msg.id !== 'typing');
-        
-        const errorMessage: MessageType = {
-          id: Date.now().toString(),
-          content: "Sorry, I'm having trouble processing your request right now. Please try again later.",
-          sender: 'assistant',
-          timestamp: new Date()
-        };
-        
-        return [...filteredMessages, errorMessage];
-      });
-    } finally {
-      setIsTyping(false);
-    }
-  };
-  
-  const handleBookingConfirm = (match: BookingMatch) => {
-    createBooking(match);
-    
-    const confirmationMessage: MessageType = {
-      id: Date.now().toString(),
-      content: `Booking request sent to ${match.name} for ${match.service} on ${match.date} at ${match.time}. You'll receive a notification when they confirm.`,
-      sender: 'assistant',
-      timestamp: new Date()
-    };
-    
-    setMessages(prevMessages => [...prevMessages, confirmationMessage]);
-  };
+const ChatWindow = ({ 
+  onClose, 
+  children, 
+  inputValue, 
+  setInputValue, 
+  sendMessage, 
+  isLoading, 
+  language, 
+  fontSize, 
+  isDarkMode, 
+  setFontSize, 
+  setIsDarkMode, 
+  onClearChat 
+}: ChatWindowProps) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const isMobile = useIsMobile();
   
   return (
-    <div className="flex flex-col h-full bg-white border-0 rounded-2xl shadow-xl overflow-hidden chat-window">
-      {/* Simple header */}
-      <div className="bg-gradient-to-r from-orange-400 to-yellow-400 p-3 flex items-center justify-between rounded-t-2xl">
-        <ChatHeader onClose={onClose} />
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      className={`fixed ${isMobile ? 'inset-4 top-8' : 'bottom-4 right-4 w-[420px] h-[65vh] max-h-[600px]'} bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden ${
+        isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+      }`}
+    >
+      {/* Compact Header */}
+      <div className={`p-3 border-b flex items-center justify-between ${
+        isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gradient-to-r from-orange-50 to-yellow-50'
+      }`}>
+        <div className="flex items-center gap-2">
+          <motion.div 
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-6 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center"
+          >
+            <Sun size={12} className="text-white" />
+          </motion.div>
+          <div>
+            <h3 className={`font-semibold text-xs ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+              Sunshine AI
+            </h3>
+            <p className={`text-[10px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Your beauty industry guide ☀️
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-1">
+          {/* Compact Settings Menu */}
+          <div className="relative">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowMenu(!showMenu)}
+              className={`p-1.5 rounded-lg transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-gray-700 text-gray-300' 
+                  : 'hover:bg-white/50 text-gray-600'
+              }`}
+            >
+              <Settings size={14} />
+            </motion.button>
+            
+            <AnimatePresence>
+              {showMenu && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  className={`absolute top-full right-0 mt-1 w-40 rounded-lg shadow-lg border z-10 ${
+                    isDarkMode 
+                      ? 'bg-gray-800 border-gray-700' 
+                      : 'bg-white border-gray-200'
+                  }`}
+                >
+                  <div className="p-2 space-y-1">
+                    {/* Font Size */}
+                    <div className={`px-2 py-1 text-[10px] font-medium ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                      Font Size
+                    </div>
+                    <div className="flex gap-1">
+                      {(['small', 'normal', 'large'] as const).map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setFontSize(size)}
+                          className={`flex-1 px-1.5 py-1 text-[10px] rounded ${
+                            fontSize === size
+                              ? (isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white')
+                              : (isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600')
+                          }`}
+                        >
+                          {size === 'small' ? 'S' : size === 'normal' ? 'M' : 'L'}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Dark Mode Toggle */}
+                    <button
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded transition-colors ${
+                        isDarkMode 
+                          ? 'hover:bg-gray-700 text-gray-300' 
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {isDarkMode ? <Sun size={12} /> : <Moon size={12} />}
+                      {isDarkMode ? 'Light' : 'Dark'}
+                    </button>
+                    
+                    {/* Clear Chat */}
+                    <button
+                      onClick={onClearChat}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded transition-colors ${
+                        isDarkMode 
+                          ? 'hover:bg-gray-700 text-gray-300' 
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      <RotateCcw size={12} />
+                      Clear
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            className={`p-1.5 rounded-lg transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-gray-700 text-gray-300' 
+                : 'hover:bg-white/50 text-gray-600'
+            }`}
+          >
+            <X size={14} />
+          </motion.button>
+        </div>
       </div>
-      
-      {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 chat-messages">
-        {messages.map((message) => (
-          <OldMessageBubble 
-            key={message.id} 
-            message={message} 
-            onBookingConfirm={handleBookingConfirm} 
+
+      {/* Messages Container - Optimized for mobile */}
+      <div className={`flex-1 overflow-y-auto p-3 space-y-2 ${
+        isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-gray-50 to-white'
+      }`}>
+        {children}
+      </div>
+
+      {/* Fixed Input at Bottom */}
+      <div className={`p-3 border-t ${
+        isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
+      }`}>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Type a message...'}
+            disabled={isLoading}
+            className={`flex-1 px-3 py-2 text-sm rounded-lg border resize-none ${
+              isDarkMode 
+                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500' 
+                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-orange-500'
+            } focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-50`}
           />
-        ))}
-        <div ref={messagesEndRef} />
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={sendMessage}
+            disabled={!inputValue.trim() || isLoading}
+            className="px-3 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+          >
+            <Send size={16} />
+          </motion.button>
+        </div>
       </div>
-      
-      {/* Input area with enhanced mobile safety */}
-      <div className="border-t p-4 bg-white chat-input safe-area-bottom" 
-           style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-        <ChatInput onSendMessage={handleSendMessage} isProcessing={isLoading} />
-      </div>
-    </div>
+    </motion.div>
   );
 };
 

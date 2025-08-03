@@ -34,18 +34,21 @@ export const extractLinks = (text: string): Array<{ url: string; label: string; 
     let label = 'View Link';
     let description = '';
     
-    if (url.includes('emvi.app/jobs')) {
+    if (url.includes('/jobs')) {
       label = '🔍 Browse Jobs';
       description = 'Find nail jobs and beauty opportunities';
-    } else if (url.includes('emvi.app/artists')) {
-      label = '💅 Find Artists'; 
+    } else if (url.includes('/artists')) {
+      label = '💅 Browse Artists'; 
       description = 'Discover talented nail artists';
-    } else if (url.includes('emvi.app/post-job')) {
+    } else if (url.includes('/post-job')) {
       label = '📝 Post Job';
       description = 'Create a job listing';
-    } else if (url.includes('emvi.app/sell-salon')) {
+    } else if (url.includes('/sell-salon')) {
       label = '🏪 List Salon';
       description = 'Sell or list your salon';
+    } else if (url.includes('/signup')) {
+      label = '📝 Sign Up & Continue';
+      description = 'Create your account and complete your task';
     } else if (url.includes('emvi.app')) {
       label = '🌟 Visit EmviApp';
       description = 'Go to EmviApp platform';

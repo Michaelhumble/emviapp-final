@@ -6,11 +6,11 @@ import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useChatRouting } from '@/hooks/useChatRouting';
 import { ChatFloatingBadge } from './ChatFloatingBadge';
-import { ChatAuthFlow } from './ChatAuthFlow';
+
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { detectLanguage, extractName } from '@/utils/languageDetection';
-import { trackChatEvent, chatEvents } from '@/utils/chatAnalytics';
+import { trackChatEvent, chatEvents, trackSignupInitiated } from '@/utils/chatAnalytics';
 import { processMessage } from '@/utils/messageProcessing';
 
 interface Message {
@@ -271,17 +271,17 @@ export const ChatSystem = () => {
     }
   };
 
-  // Detect route intent from user message and AI response
+  // Detect route intent from user message and AI response  
   const detectRouteIntent = (userMessage: string, aiResponse: string) => {
     const message = userMessage.toLowerCase();
     const response = aiResponse.toLowerCase();
     
-    // Job posting intent
+    // Job posting intent - always route to signup first if not authenticated
     if (message.includes('đăng việc') || message.includes('post job') || 
         message.includes('tuyển') || message.includes('hiring') ||
         response.includes('post') || response.includes('đăng việc')) {
       return {
-        destination: '/post-job',
+        destination: user ? '/post-job' : '/signup?redirect=/post-job',
         title: language === 'vi' ? 'Đăng tin tuyển dụng' : 'Post a Job',
         requiresAuth: true
       };
@@ -293,7 +293,17 @@ export const ChatSystem = () => {
         response.includes('jobs') || response.includes('việc làm')) {
       return {
         destination: '/jobs',
-        title: language === 'vi' ? 'Tìm việc làm' : 'Find Jobs',
+        title: language === 'vi' ? 'Tìm việc làm' : 'Browse Jobs',
+        requiresAuth: false
+      };
+    }
+    
+    // Artist search intent
+    if (message.includes('nail artist') || message.includes('nghệ sĩ') ||
+        message.includes('find artist') || message.includes('tìm thợ')) {
+      return {
+        destination: '/artists',
+        title: language === 'vi' ? 'Tìm nghệ sĩ nail' : 'Browse Artists',
         requiresAuth: false
       };
     }
@@ -302,7 +312,7 @@ export const ChatSystem = () => {
     if (message.includes('salon') || message.includes('tiệm') ||
         message.includes('list salon') || message.includes('đăng salon')) {
       return {
-        destination: '/sell-salon',
+        destination: user ? '/sell-salon' : '/signup?redirect=/sell-salon',
         title: language === 'vi' ? 'Đăng thông tin salon' : 'List Your Salon',
         requiresAuth: true
       };
@@ -348,32 +358,44 @@ export const ChatSystem = () => {
     return actions;
   };
 
-  // Handle route confirmation
+  // Handle route confirmation - NO EMAIL COLLECTION, DIRECT ROUTING
   const handleRouteConfirm = async (destination: string, requiresAuth: boolean) => {
     if (requiresAuth && !user) {
-      // Need authentication - start auth flow
-      setShowAuthFlow(true);
+      // Track signup initiation
+      trackChatEvent(chatEvents.SIGNUP_INITIATED, {
+        userId,
+        userName,
+        route: destination,
+        language
+      });
       
-      const authMessage = language === 'vi'
-        ? `Để ${destination.includes('post') ? 'đăng tin' : 'sử dụng tính năng này'}, anh/chị cần có tài khoản EmviApp. Em sẽ giúp anh/chị tạo nhanh nhé!`
-        : `To ${destination.includes('post') ? 'post' : 'use this feature'}, you'll need a free EmviApp account. Let me help you sign up quickly!`;
+      // Direct signup message with button
+      const signupMessage = language === 'vi'
+        ? `Để tiếp tục, anh/chị cần tài khoản EmviApp. Sẵn sàng đăng ký chưa?`
+        : `You'll need an account to continue. Ready to sign up now?`;
       
-      const authFlowMessage: Message = {
+      const signupMsg: Message = {
         id: Date.now().toString(),
-        text: authMessage,
+        text: signupMessage,
         isUser: false,
         timestamp: new Date(),
-        authFlow: true
+        links: [{
+          url: destination, // This will be processed to show the signup button
+          label: language === 'vi' ? '📝 Đăng ký & Tiếp tục' : '📝 Sign Up & Continue',
+          description: language === 'vi' ? 'Tạo tài khoản và hoàn thành tác vụ' : 'Create account and complete your task'
+        }]
       };
       
-      setMessages(prev => [...prev, authFlowMessage]);
+      setMessages(prev => [...prev, signupMsg]);
       return;
     }
     
     // User is authenticated or auth not required - proceed with route
     confirmRoute({
       destination,
-      title: destination.includes('post') ? 'Post Job' : 'Browse Jobs',
+      title: destination.includes('post') ? (language === 'vi' ? 'Đăng việc' : 'Post Job') : 
+             destination.includes('jobs') ? (language === 'vi' ? 'Tìm việc' : 'Browse Jobs') :
+             destination.includes('artists') ? (language === 'vi' ? 'Tìm nghệ sĩ' : 'Browse Artists') : 'Continue',
       message: language === 'vi' 
         ? `Anh/chị có muốn em dẫn qua trang này không? Em sẽ ở đây chờ để giúp tiếp!`
         : `Would you like me to take you there? I'll be here waiting to help when you return!`,

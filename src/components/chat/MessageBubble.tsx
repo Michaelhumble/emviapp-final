@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Sun } from 'lucide-react';
 import { RouteConfirmation } from './RouteConfirmation';
-import { ChatAuthFlow } from './ChatAuthFlow';
+
 import { LinkButton } from './LinkButton';
 
 interface Message {
@@ -120,17 +120,6 @@ export const MessageBubble = ({
           />
         )}
 
-        {/* Auth Flow */}
-        {message.authFlow && showAuthFlow && (
-          <div className="mt-3">
-            <ChatAuthFlow
-              userName={userName}
-              language={language}
-              onAuthSuccess={onAuthSuccess}
-              onCancel={onAuthCancel}
-            />
-          </div>
-        )}
 
         {/* Quick Actions */}
         {message.quickActions && message.quickActions.length > 0 && (
