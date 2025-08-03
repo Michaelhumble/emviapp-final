@@ -337,22 +337,52 @@ export const ChatSystem = () => {
     const lowerResponse = response.toLowerCase();
     const lowerMessage = userMessage.toLowerCase();
     
-    // Only show actions when conversation context calls for them
+    // Only show actions when conversation context calls for them - route directly
     if ((lowerResponse.includes('job') && lowerResponse.includes('find')) || 
         (lowerMessage.includes('tìm việc') || lowerMessage.includes('find job'))) {
       if (language === 'vi') {
-        actions.push({ id: 'jobs', label: '🔍 Xem việc làm', action: () => handleQuickAction('Em muốn xem các việc làm có sẵn') });
+        actions.push({ id: 'jobs', label: '🔍 Xem việc làm', action: () => handleRouteAction('/jobs') });
       } else {
-        actions.push({ id: 'jobs', label: '🔍 Browse Jobs', action: () => handleQuickAction('I want to browse available jobs') });
+        actions.push({ id: 'jobs', label: '🔍 Browse Jobs', action: () => handleRouteAction('/jobs') });
       }
     }
     
     if ((lowerResponse.includes('post') && lowerResponse.includes('job')) || 
         (lowerMessage.includes('đăng việc') || lowerMessage.includes('post job'))) {
       if (language === 'vi') {
-        actions.push({ id: 'post', label: '📝 Đăng việc', action: () => handleQuickAction('Em muốn đăng tin tuyển dụng') });
+        actions.push({ id: 'post', label: '📝 Đăng việc', action: () => handleRouteAction('/post-job') });
       } else {
-        actions.push({ id: 'post', label: '📝 Post Job', action: () => handleQuickAction('I want to post a job') });
+        actions.push({ id: 'post', label: '📝 Post Job', action: () => handleRouteAction('/post-job') });
+      }
+    }
+    
+    // Add other direct route actions based on context
+    if ((lowerResponse.includes('artist') || lowerResponse.includes('nghệ sĩ')) && 
+        (lowerMessage.includes('find') || lowerMessage.includes('tìm'))) {
+      if (language === 'vi') {
+        actions.push({ id: 'artists', label: '💅 Xem nghệ sĩ', action: () => handleRouteAction('/artists') });
+      } else {
+        actions.push({ id: 'artists', label: '💅 Browse Artists', action: () => handleRouteAction('/artists') });
+      }
+    }
+    
+    if ((lowerResponse.includes('salon') || lowerResponse.includes('tiệm')) && 
+        (lowerMessage.includes('find') || lowerMessage.includes('tìm'))) {
+      if (language === 'vi') {
+        actions.push({ id: 'salons', label: '🏪 Xem salon', action: () => handleRouteAction('/salons') });
+      } else {
+        actions.push({ id: 'salons', label: '🏪 Browse Salons', action: () => handleRouteAction('/salons') });
+      }
+    }
+    
+    // Add signup action when user shows interest
+    if ((lowerResponse.includes('sign') && lowerResponse.includes('up')) || 
+        (lowerResponse.includes('join') || lowerResponse.includes('tham gia')) ||
+        (lowerMessage.includes('sign up') || lowerMessage.includes('đăng ký'))) {
+      if (language === 'vi') {
+        actions.push({ id: 'signup', label: '🌟 Tham gia cộng đồng', action: () => handleRouteAction('/auth/signup') });
+      } else {
+        actions.push({ id: 'signup', label: '🌟 Join Our Beauty Community', action: () => handleRouteAction('/auth/signup') });
       }
     }
     
@@ -379,7 +409,7 @@ export const ChatSystem = () => {
         language
       });
       
-      // Direct signup message with button - NO EMAIL COLLECTION
+      // Direct signup message with proper routing - NO EMAIL COLLECTION
       const signupMessage = language === 'vi'
         ? `Để tiếp tục, anh/chị cần tài khoản EmviApp. Sẵn sàng tham gia cộng đồng làm đẹp chưa?`
         : `You'll need an account to continue. Ready to join our beauty community?`;
@@ -389,11 +419,11 @@ export const ChatSystem = () => {
         text: signupMessage,
         isUser: false,
         timestamp: new Date(),
-        links: [{
-          url: destination, // This will be processed to show the signup button
-          label: language === 'vi' ? '🌟 Tham Gia Cộng Đồng Làm Đẹp' : '🌟 Join Our Beauty Community',
-          description: language === 'vi' ? 'Tạo tài khoản và hoàn thành tác vụ' : 'Create account and complete your task'
-        }]
+        routeConfirmation: {
+          destination,
+          title: language === 'vi' ? 'Tham Gia Cộng Đồng Làm Đẹp' : 'Join Our Beauty Community',
+          requiresAuth: false
+        }
       };
       
       setMessages(prev => [...prev, signupMsg]);
@@ -480,6 +510,29 @@ export const ChatSystem = () => {
     setTimeout(() => {
       sendMessage();
     }, 100);
+  };
+
+  // Handle direct route navigation for quick actions
+  const handleRouteAction = (route: string) => {
+    // Check if route requires authentication
+    const authRequiredRoutes = ['/post-job'];
+    const requiresAuth = authRequiredRoutes.includes(route);
+    
+    if (requiresAuth && !user) {
+      // Route to signup with redirect
+      const destination = `/auth/signup?redirect=${route}`;
+      confirmRoute({
+        destination,
+        title: language === 'vi' ? 'Tham Gia Cộng Đồng Làm Đẹp' : 'Join Our Beauty Community',
+        message: language === 'vi' 
+          ? 'Để tiếp tục, anh/chị cần tài khoản EmviApp. Sẵn sàng tham gia cộng đồng làm đẹp chưa?'
+          : 'You need an account to continue. Ready to join our beauty community?',
+        requiresAuth: false
+      });
+    } else {
+      // Direct navigation for authenticated users or public routes
+      window.location.href = route;
+    }
   };
 
   const fontSizeClasses = {

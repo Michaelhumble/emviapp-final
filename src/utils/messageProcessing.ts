@@ -52,9 +52,6 @@ export const extractLinks = (text: string): Array<{ url: string; label: string; 
     } else if (url.includes('/auth/signup')) {
       label = '🌟 Join Our Beauty Community';
       description = 'Create your account and get started';
-    } else if (url.includes('emvi.app')) {
-      label = '🌟 Visit EmviApp';
-      description = 'Go to EmviApp platform';
     } else {
       // Extract domain name for generic links
       try {
