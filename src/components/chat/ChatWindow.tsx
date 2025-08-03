@@ -27,29 +27,15 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(userLanguage);
     
     const welcomeMessages = {
-      vi: "Chào anh/chị! Em là Sunshine—trợ lý AI của EmviApp. Em nói tiếng Việt. Em có thể giúp gì cho anh/chị hôm nay? ✨",
-      en: "Hi there! I'm Sunshine—EmviApp's AI assistant. I speak English and Vietnamese. How can I help you today? ✨"
-    };
-    
-    const actionSuggestions = {
-      vi: [
-        { id: "post-jobs", label: "Đăng việc làm", icon: "briefcase", href: "/jobs" },
-        { id: "list-salons", label: "Rao bán salon", icon: "store", href: "/salon-sales" },
-        { id: "book-appointments", label: "Đặt lịch hẹn", icon: "calendar", href: "/artists" }
-      ],
-      en: [
-        { id: "post-jobs", label: "Post Jobs", icon: "briefcase", href: "/jobs" },
-        { id: "list-salons", label: "List Salon for Sale", icon: "store", href: "/salon-sales" },
-        { id: "book-appointments", label: "Book Appointments", icon: "calendar", href: "/artists" }
-      ]
+      vi: "Chào bạn! 👋 Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ⭐ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? ✨",
+      en: "Hello there! 👋 I'm Sunshine - your AI beauty business assistant created by Michael with love for the beauty community! ⭐ I'm here to help your salon shine and succeed. How can I brighten your day? ✨"
     };
     
     const initialMessage: MessageType = {
       id: 'welcome-1',
       content: welcomeMessages[userLanguage as keyof typeof welcomeMessages],
       sender: 'assistant',
-      timestamp: new Date(),
-      actionSuggestions: actionSuggestions[userLanguage as keyof typeof actionSuggestions]
+      timestamp: new Date()
     };
     
     setMessages([initialMessage]);
@@ -59,21 +45,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(language);
     
     const welcomeMessages = {
-      vi: "Chào anh/chị! Em là Sunshine—trợ lý AI của EmviApp. Em nói tiếng Việt. Em có thể giúp gì cho anh/chị hôm nay? ✨",
-      en: "Hi there! I'm Sunshine—EmviApp's AI assistant. I speak English and Vietnamese. How can I help you today? ✨"
-    };
-    
-    const actionSuggestions = {
-      vi: [
-        { id: "post-jobs", label: "Đăng việc làm", icon: "briefcase", href: "/jobs" },
-        { id: "list-salons", label: "Rao bán salon", icon: "store", href: "/salon-sales" },
-        { id: "book-appointments", label: "Đặt lịch hẹn", icon: "calendar", href: "/artists" }
-      ],
-      en: [
-        { id: "post-jobs", label: "Post Jobs", icon: "briefcase", href: "/jobs" },
-        { id: "list-salons", label: "List Salon for Sale", icon: "store", href: "/salon-sales" },
-        { id: "book-appointments", label: "Book Appointments", icon: "calendar", href: "/artists" }
-      ]
+      vi: "Chào bạn! 👋 Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ⭐ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? ✨",
+      en: "Hello there! 👋 I'm Sunshine - your AI beauty business assistant created by Michael with love for the beauty community! ⭐ I'm here to help your salon shine and succeed. How can I brighten your day? ✨"
     };
     
     // Update welcome message with new language
@@ -81,8 +54,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       id: 'welcome-' + Date.now(),
       content: welcomeMessages[language],
       sender: 'assistant',
-      timestamp: new Date(),
-      actionSuggestions: actionSuggestions[language]
+      timestamp: new Date()
     };
     
     setMessages([newWelcomeMessage]);
@@ -167,27 +139,14 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   };
   
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-orange-50 via-yellow-50 to-white border-0 rounded-xl shadow-2xl overflow-hidden backdrop-blur-sm">
-      {/* Header with gradient and language toggle */}
-      <div className="bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 p-4 flex items-center justify-between rounded-t-xl">
+    <div className="flex flex-col h-full bg-white border-0 rounded-2xl shadow-xl overflow-hidden">
+      {/* Simple header */}
+      <div className="bg-gradient-to-r from-orange-400 to-yellow-400 p-3 flex items-center justify-between rounded-t-2xl">
         <ChatHeader onClose={onClose} />
       </div>
       
-      {/* Language Toggle */}
-      <div className="px-4 py-3 bg-gradient-to-r from-orange-100 to-yellow-100 border-b border-orange-200">
-        <LanguageToggle 
-          currentLanguage={currentLanguage} 
-          onLanguageChange={handleLanguageChange} 
-        />
-      </div>
-      
-      {/* Messages Container with beautiful gradient background */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-orange-50/30 via-yellow-50/20 to-white/80">
-        {/* Floating decoration elements */}
-        <div className="absolute top-20 left-4 text-xl opacity-20 animate-bounce">✨</div>
-        <div className="absolute top-32 right-6 text-lg opacity-30 animate-pulse">🌟</div>
-        <div className="absolute top-48 left-8 text-lg opacity-25 animate-bounce delay-300">💫</div>
-        
+      {/* Messages Container */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
         {messages.map((message) => (
           <MessageBubble 
             key={message.id} 
@@ -198,8 +157,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Input Area with warm gradient */}
-      <div className="border-t border-orange-200 p-4 bg-gradient-to-r from-orange-50 to-yellow-50">
+      {/* Simple input area */}
+      <div className="border-t p-4 bg-white">
         <ChatInput onSendMessage={handleSendMessage} isProcessing={isLoading} />
       </div>
     </div>
