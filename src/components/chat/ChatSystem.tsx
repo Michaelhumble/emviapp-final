@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Send, X, Sparkles, Sun } from 'lucide-react';
+import { Send, X, Sun, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ActionSuggestion, MessageType } from './types';
 import { supabase } from '@/integrations/supabase/client';
-
-export type { ActionSuggestion, MessageType };
 
 interface Message {
   id: string;
   text: string;
   isUser: boolean;
   timestamp: Date;
+  quickActions?: Array<{
+    id: string;
+    label: string;
+    action: () => void;
+  }>;
 }
 
 export const ChatSystem = () => {
@@ -21,10 +23,9 @@ export const ChatSystem = () => {
   const [inputValue, setInputValue] = useState('');
   const [userName, setUserName] = useState('');
   const [language, setLanguage] = useState<'en' | 'vi'>('en');
-  const [showQuickActions, setShowQuickActions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string>('');
-  const [hasGreeted, setHasGreeted] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -49,8 +50,12 @@ export const ChatSystem = () => {
     getUser();
   }, []);
 
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const detectLanguage = (text: string): 'en' | 'vi' => {
-    // Enhanced Vietnamese detection
     const vietnameseChars = /[ăâêôơưđàáảãạằắẳẵặầấẩẫậềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i;
     const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|ghé|vui|cảm|ơn|xin|chào|dạ)\b/i;
     
@@ -58,7 +63,6 @@ export const ChatSystem = () => {
   };
 
   const extractName = (text: string): string => {
-    // Enhanced name extraction patterns
     const patterns = [
       // Vietnamese patterns
       /(?:tên|name)(?:\s+(?:là|is))?\s+([a-zA-ZÀ-ỹ]+)/i,
@@ -73,7 +77,6 @@ export const ChatSystem = () => {
       const match = text.match(pattern);
       if (match && match[1] && match[1].length > 1) {
         const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
-        // Filter out common words that aren't names
         const excludeWords = ['anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me'];
         if (!excludeWords.includes(name.toLowerCase())) {
           return name;
@@ -85,16 +88,7 @@ export const ChatSystem = () => {
   };
 
   const getInitialGreeting = () => {
-    // Auto-detect preferred language based on browser/location
-    const browserLang = navigator.language.toLowerCase();
-    const isVietnamese = browserLang.includes('vi') || browserLang.includes('vn');
-    
-    if (isVietnamese) {
-      setLanguage('vi');
-      return "Chào anh/chị, em là Sunshine ☀️. Anh/chị có thể cho em biết tên để em hỗ trợ chu đáo hơn không ạ? Em cũng nói được tiếng Việt hoặc tiếng Anh nha! 😊";
-    } else {
-      return "Hi, I'm Sunshine! ☀️ What's your name? I can chat in Vietnamese or English—whatever you prefer! 😊";
-    }
+    return "Hi! I'm Sunshine. What's your name? I can chat in Vietnamese or English—whatever you prefer! 😊";
   };
 
   const openChat = () => {
@@ -109,7 +103,6 @@ export const ChatSystem = () => {
         timestamp: new Date()
       };
       setMessages([greeting]);
-      setHasGreeted(true);
     }
   };
 
@@ -138,7 +131,6 @@ export const ChatSystem = () => {
     const extractedName = extractName(inputValue);
     if (extractedName && !userName) {
       setUserName(extractedName);
-      setShowQuickActions(true);
     }
 
     const messageToSend = inputValue;
@@ -150,7 +142,8 @@ export const ChatSystem = () => {
         body: {
           message: messageToSend,
           userId: userId,
-          userLanguage: detectedLang
+          userLanguage: detectedLang,
+          userName: userName || extractedName
         }
       });
 
@@ -164,6 +157,18 @@ export const ChatSystem = () => {
         isUser: false,
         timestamp: new Date()
       };
+
+      // Add contextual quick actions if relevant
+      if (data.response && (data.response.includes('job') || data.response.includes('việc') || data.response.includes('salon') || data.response.includes('help') || data.response.includes('hỗ trợ'))) {
+        const contextualActions = detectedLang === 'vi' ? [
+          { id: 'find-jobs', label: '💅 Tìm việc nail', action: () => handleQuickAction('Em muốn tìm việc làm nail') },
+          { id: 'list-salon', label: '🏪 Đăng salon', action: () => handleQuickAction('Em muốn đăng tin salon') }
+        ] : [
+          { id: 'find-jobs', label: '💅 Find Jobs', action: () => handleQuickAction('I want to find nail jobs') },
+          { id: 'list-salon', label: '🏪 List Salon', action: () => handleQuickAction('I want to list my salon') }
+        ];
+        aiResponse.quickActions = contextualActions;
+      }
 
       setMessages(prev => [...prev, aiResponse]);
 
@@ -198,209 +203,192 @@ export const ChatSystem = () => {
     }, 100);
   };
 
-  const quickActions = language === 'vi' ? [
-    { 
-      text: '💅 Tìm việc nail', 
-      action: () => handleQuickAction('Em muốn tìm việc làm nail'),
-      color: 'from-purple-400 to-pink-400'
-    },
-    { 
-      text: '🏪 Đăng salon', 
-      action: () => handleQuickAction('Em muốn đăng tin salon'), 
-      color: 'from-blue-400 to-cyan-400'
-    },
-    { 
-      text: '💬 Tư vấn', 
-      action: () => handleQuickAction('Em cần tư vấn về ngành làm đẹp'), 
-      color: 'from-green-400 to-emerald-400'
-    },
-    { 
-      text: '🌍 English', 
-      action: () => { setLanguage('en'); handleQuickAction('Please speak English'); },
-      color: 'from-orange-400 to-red-400'
-    }
-  ] : [
-    { 
-      text: '💅 Find Jobs', 
-      action: () => handleQuickAction('I want to find nail jobs'),
-      color: 'from-purple-400 to-pink-400' 
-    },
-    { 
-      text: '🏪 List Salon', 
-      action: () => handleQuickAction('I want to list my salon'),
-      color: 'from-blue-400 to-cyan-400'
-    },
-    { 
-      text: '💬 Get Help', 
-      action: () => handleQuickAction('I need help with beauty business'),
-      color: 'from-green-400 to-emerald-400'
-    },
-    { 
-      text: '🇻🇳 Tiếng Việt', 
-      action: () => { setLanguage('vi'); handleQuickAction('Xin chào, nói tiếng Việt'); },
-      color: 'from-orange-400 to-red-400'
-    }
-  ];
-
   return (
     <>
       {/* Sunshine Chat Bubble - Only shows when chat is closed */}
       <AnimatePresence>
         {showButton && !isOpen && (
           <motion.button
-            initial={{ scale: 0, rotate: -180 }}
+            initial={{ scale: 0, y: 50 }}
             animate={{ 
               scale: 1, 
-              rotate: 0,
+              y: 0,
               boxShadow: [
-                "0 0 30px rgba(251, 191, 36, 0.5)",
-                "0 0 50px rgba(251, 191, 36, 0.7)",
-                "0 0 30px rgba(251, 191, 36, 0.5)"
+                "0 8px 25px rgba(251, 191, 36, 0.3)",
+                "0 12px 35px rgba(251, 191, 36, 0.5)",
+                "0 8px 25px rgba(251, 191, 36, 0.3)"
               ]
             }}
-            exit={{ scale: 0, rotate: 180 }}
+            exit={{ scale: 0, y: 50 }}
             transition={{ 
-              duration: 0.8, 
+              duration: 0.5, 
               boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
             }}
             onClick={openChat}
-            className={`fixed ${isMobile ? 'bottom-24 right-6' : 'bottom-8 right-8'} z-[9997]`}
+            className={`fixed ${isMobile ? 'bottom-6 right-6' : 'bottom-8 right-8'} z-[9997]`}
           >
             {/* Floating sparkles */}
             <motion.div
-              animate={{ y: [-10, -20, -10], x: [0, 5, 0] }}
+              animate={{ y: [-8, -16, -8], x: [-2, 2, -2] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-8 -left-3 text-xl pointer-events-none"
+              className="absolute -top-6 -left-2 text-lg pointer-events-none"
             >
               ✨
             </motion.div>
             <motion.div
-              animate={{ y: [-8, -18, -8], x: [0, -3, 0] }}
+              animate={{ y: [-6, -14, -6], x: [1, -1, 1] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -top-6 -right-4 text-lg pointer-events-none"
+              className="absolute -top-4 -right-3 text-sm pointer-events-none"
             >
               💫
             </motion.div>
             
             {/* Main sunshine button */}
-            <div className={`relative ${isMobile ? 'w-16 h-16' : 'w-14 h-14'} rounded-full bg-gradient-to-br from-yellow-300 via-orange-400 to-pink-500 shadow-2xl flex items-center justify-center border-4 border-white/30 overflow-hidden backdrop-blur-sm`}>
+            <div className={`relative ${isMobile ? 'w-16 h-16' : 'w-14 h-14'} rounded-full bg-gradient-to-br from-yellow-300 via-orange-400 to-pink-500 shadow-2xl flex items-center justify-center border-2 border-white/40 overflow-hidden backdrop-blur-sm`}>
               {/* Inner glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/60 to-orange-300/60 rounded-full blur-sm" />
+              <div className="absolute inset-1 bg-gradient-to-br from-yellow-200/80 to-orange-300/80 rounded-full blur-sm" />
               
-              {/* Rotating rays */}
+              {/* Rotating sun */}
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0"
+                className="relative z-10"
               >
-                <Sun size={isMobile ? 28 : 24} className="text-white relative z-10 w-full h-full p-3 drop-shadow-lg" />
+                <Sun size={isMobile ? 24 : 20} className="text-white drop-shadow-lg" />
               </motion.div>
               
               {/* Sparkle overlay */}
               <motion.div
-                animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.5, 1, 0.5] }}
+                animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute top-1 right-1 z-20"
               >
-                <Sparkles size={8} className="text-yellow-100 drop-shadow" />
+                <Sparkles size={6} className="text-yellow-100" />
               </motion.div>
             </div>
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* Chat Window - Premium Design */}
+      {/* Chat Window - Messenger-style sliding from bottom */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ 
+              type: "spring", 
+              damping: 25, 
+              stiffness: 300,
+              duration: 0.4
+            }}
             className={`fixed ${
               isMobile 
-                ? 'inset-4 top-16 bottom-4' 
-                : 'bottom-6 right-6 w-96 h-[650px]'
-            } z-[9998] overflow-hidden`}
+                ? 'bottom-0 left-0 right-0 h-[65vh] max-h-[65vh]' 
+                : 'bottom-6 right-6 w-96 h-[500px]'
+            } z-[9998] overflow-hidden rounded-t-3xl ${isMobile ? '' : 'rounded-b-3xl'}`}
             style={{ 
-              background: 'linear-gradient(145deg, rgba(255,248,240,0.95) 0%, rgba(254,243,230,0.95) 50%, rgba(255,237,213,0.95) 100%)',
-              backdropFilter: 'blur(20px) saturate(180%)',
-              borderRadius: '24px',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.1), 0 8px 25px rgba(251,146,60,0.15)',
-              border: '1px solid rgba(255,255,255,0.6)'
+              background: 'linear-gradient(145deg, rgba(255,252,248,0.95) 0%, rgba(254,247,237,0.95) 50%, rgba(255,243,235,0.95) 100%)',
+              backdropFilter: 'blur(25px) saturate(180%)',
+              boxShadow: isMobile 
+                ? '0 -10px 40px rgba(0,0,0,0.1), 0 -4px 20px rgba(251,146,60,0.1)' 
+                : '0 25px 50px rgba(0,0,0,0.1), 0 10px 30px rgba(251,146,60,0.15)',
+              border: '1px solid rgba(255,255,255,0.7)'
             }}
           >
-            {/* Premium Header */}
+            {/* Premium Header with animated rays */}
             <div className="relative overflow-hidden">
               <div 
-                className="p-6 flex items-center justify-between relative z-10"
+                className="p-4 flex items-center justify-between relative z-10"
                 style={{
-                  background: 'linear-gradient(135deg, #ff8a00 0%, #ffa500 25%, #ffb347 50%, #ffd700 75%, #ffeb99 100%)',
+                  background: 'linear-gradient(135deg, #ff8a00 0%, #ffa500 30%, #ffb347 60%, #ffd700 100%)',
                 }}
               >
-                {/* Animated light rays background */}
+                {/* Animated light rays */}
                 <motion.div
                   animate={{ 
                     background: [
-                      "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)",
-                      "radial-gradient(circle at 80% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)",
-                      "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)"
+                      "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 70%)",
+                      "radial-gradient(circle at 70% 60%, rgba(255,255,255,0.3) 0%, transparent 70%)",
+                      "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 70%)"
                     ]
                   }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute inset-0"
                 />
                 
                 <div className="flex items-center gap-3 relative z-10">
                   <motion.div
                     animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                    className="w-10 h-10 bg-white/25 rounded-full flex items-center justify-center backdrop-blur-sm"
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm"
                   >
-                    <Sun size={22} className="text-white drop-shadow-lg" />
+                    <Sun size={18} className="text-white drop-shadow" />
                   </motion.div>
                   <div>
-                    <h3 className="text-white font-bold text-xl drop-shadow-md">Sunshine AI</h3>
-                    <p className="text-white/90 text-sm font-medium drop-shadow">Your beauty business companion</p>
+                    <h3 className="text-white font-bold text-lg drop-shadow">Sunshine</h3>
+                    <p className="text-white/90 text-xs drop-shadow">Your EmviApp assistant</p>
                   </div>
                 </div>
                 
                 <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={closeChat}
-                  className="w-10 h-10 bg-white/25 rounded-full flex items-center justify-center text-white hover:bg-white/35 transition-all duration-200 backdrop-blur-sm relative z-10"
+                  className="w-8 h-8 bg-white/25 rounded-full flex items-center justify-center text-white hover:bg-white/35 transition-all backdrop-blur-sm relative z-10"
                 >
-                  <X size={20} className="drop-shadow" />
+                  <X size={16} />
                 </motion.button>
               </div>
             </div>
 
-            {/* Messages Container */}
-            <div className="flex-1 p-5 overflow-y-auto space-y-4" style={{ maxHeight: isMobile ? 'calc(100vh - 280px)' : '420px' }}>
+            {/* Messages Container - Optimized for mobile */}
+            <div 
+              className="flex-1 px-4 py-2 overflow-y-auto space-y-3" 
+              style={{ 
+                maxHeight: isMobile ? 'calc(65vh - 140px)' : '320px',
+                paddingBottom: '1rem'
+              }}
+            >
               {messages.map((message, index) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
+                  transition={{ delay: index * 0.05, duration: 0.3 }}
                   className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[85%] p-4 rounded-2xl shadow-lg relative ${
+                  <div className={`max-w-[80%] p-3 rounded-2xl shadow-md relative ${
                     message.isUser 
-                      ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white ml-4' 
-                      : 'bg-white/80 text-gray-800 border border-orange-100/50 mr-4 backdrop-blur-sm'
+                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' 
+                      : 'bg-white/90 text-gray-800 border border-orange-100 backdrop-blur-sm'
                   }`}>
-                    <p className="text-base leading-relaxed font-medium whitespace-pre-wrap">{message.text}</p>
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                    
+                    {/* Show contextual quick actions inline */}
+                    {message.quickActions && message.quickActions.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {message.quickActions.map((action) => (
+                          <motion.button
+                            key={action.id}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={action.action}
+                            className="px-3 py-1.5 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full text-xs font-medium shadow-md border border-white/20"
+                          >
+                            {action.label}
+                          </motion.button>
+                        ))}
+                      </div>
+                    )}
+                    
                     {!message.isUser && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.3, duration: 0.2 }}
-                        className="absolute -bottom-1 -left-1 w-6 h-6 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-lg"
-                      >
-                        <Sun size={12} className="text-white" />
-                      </motion.div>
+                      <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-sm">
+                        <Sun size={10} className="text-white" />
+                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -409,28 +397,28 @@ export const ChatSystem = () => {
               {/* AI Thinking Indicator */}
               {isLoading && (
                 <motion.div
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex justify-start"
                 >
-                  <div className="bg-white/80 text-gray-800 border border-orange-100/50 p-4 rounded-2xl shadow-lg mr-4 backdrop-blur-sm">
-                    <div className="flex items-center gap-3">
+                  <div className="bg-white/90 text-gray-800 border border-orange-100 p-3 rounded-2xl shadow-md backdrop-blur-sm">
+                    <div className="flex items-center gap-2">
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                       >
-                        <Sun size={18} className="text-orange-400" />
+                        <Sun size={14} className="text-orange-400" />
                       </motion.div>
-                      <span className="text-sm text-gray-600 font-medium">
+                      <span className="text-xs text-gray-600">
                         {language === 'vi' ? 'Sunshine đang suy nghĩ...' : 'Sunshine is thinking...'}
                       </span>
                       <div className="flex gap-1">
                         {[0, 1, 2].map((i) => (
                           <motion.div
                             key={i}
-                            animate={{ y: [0, -4, 0] }}
+                            animate={{ y: [0, -2, 0] }}
                             transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
-                            className="w-1.5 h-1.5 bg-orange-400 rounded-full"
+                            className="w-1 h-1 bg-orange-400 rounded-full"
                           />
                         ))}
                       </div>
@@ -438,67 +426,39 @@ export const ChatSystem = () => {
                   </div>
                 </motion.div>
               )}
+              <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Actions - Fixed at bottom */}
-            <AnimatePresence>
-              {showQuickActions && !isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="px-5 pb-3"
-                >
-                  <div className="grid grid-cols-2 gap-3">
-                    {quickActions.map((action, index) => (
-                      <motion.button
-                        key={index}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1, duration: 0.3 }}
-                        whileHover={{ scale: 1.03, y: -2 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={action.action}
-                        className={`bg-gradient-to-r ${action.color} text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 text-sm shadow-lg backdrop-blur-sm border border-white/20`}
-                      >
-                        {action.text}
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Premium Input Area - Always visible at bottom */}
-            <div className="p-5 bg-white/40 backdrop-blur-md border-t border-white/30">
-              <div className="flex gap-3 items-end">
-                <div className="flex-1 relative">
+            {/* Input Area - Fixed at bottom, always accessible */}
+            <div className="p-4 bg-white/50 backdrop-blur-md border-t border-orange-200/30">
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
                   <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && !isLoading && sendMessage()}
-                    placeholder={language === 'vi' ? 'Nhập tin nhắn của anh/chị...' : 'Type your message...'}
+                    placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Type a message...'}
                     disabled={isLoading}
-                    className="w-full py-4 px-5 bg-white/80 border-2 border-orange-200/50 rounded-2xl focus:border-orange-400 focus:outline-none text-base resize-none disabled:opacity-50 backdrop-blur-sm shadow-lg transition-all duration-200 placeholder-gray-500"
-                    style={{ minHeight: '52px' }}
+                    className="w-full py-3 px-4 bg-white border border-orange-200 rounded-2xl focus:border-orange-400 focus:outline-none text-sm disabled:opacity-50 transition-all placeholder-gray-500"
                   />
                 </div>
                 <motion.button
-                  whileHover={{ scale: 1.05, rotateZ: 15 }}
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
                   disabled={isLoading || !inputValue.trim()}
-                  className="w-14 h-14 bg-gradient-to-br from-orange-400 via-orange-500 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border-2 border-white/20"
+                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                     >
-                      <Sun size={22} />
+                      <Sun size={18} />
                     </motion.div>
                   ) : (
-                    <Send size={22} className="drop-shadow" />
+                    <Send size={18} />
                   )}
                 </motion.button>
               </div>
