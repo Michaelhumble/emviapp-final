@@ -165,7 +165,7 @@ export const MessageBubble = ({
         <div className={`text-xs mt-2 ${
           message.isUser ? 'text-blue-100' : isDarkMode ? 'text-gray-400' : 'text-gray-500'
         }`}>
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
     </motion.div>
