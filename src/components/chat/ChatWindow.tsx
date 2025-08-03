@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageBubble } from './MessageBubble';
+import { OldMessageBubble } from './OldMessageBubble';
 import { ChatInput } from './ChatInput';
 import { ChatHeader } from './ChatHeader';
 import { LanguageToggle } from './LanguageToggle';
@@ -150,7 +150,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 chat-messages">
         {messages.map((message) => (
-          <MessageBubble 
+          <OldMessageBubble 
             key={message.id} 
             message={message} 
             onBookingConfirm={handleBookingConfirm} 

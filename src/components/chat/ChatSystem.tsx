@@ -7,14 +7,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useChatRouting } from '@/hooks/useChatRouting';
 import { ChatFloatingBadge } from './ChatFloatingBadge';
 import { ChatAuthFlow } from './ChatAuthFlow';
+import { MessageBubble } from './MessageBubble';
+import { TypingIndicator } from './TypingIndicator';
 import { detectLanguage, extractName } from '@/utils/languageDetection';
 import { trackChatEvent, chatEvents } from '@/utils/chatAnalytics';
+import { processMessage } from '@/utils/messageProcessing';
 
 interface Message {
   id: string;
   text: string;
   isUser: boolean;
   timestamp: Date;
+  links?: Array<{
+    url: string;
+    label: string;
+    description?: string;
+  }>;
   quickActions?: Array<{
     id: string;
     label: string;
@@ -216,7 +224,7 @@ export const ChatSystem = () => {
       const routeInfo = detectRouteIntent(userMessage, response);
       const quickActions = routeInfo ? [] : generateQuickActions(response, userMessage);
       
-      const botMessage: Message = {
+      let botMessage: Message = {
         id: Date.now().toString(),
         text: response,
         isUser: false,
@@ -224,6 +232,9 @@ export const ChatSystem = () => {
         quickActions,
         routeConfirmation: routeInfo
       };
+
+      // Process message to extract and format links
+      botMessage = processMessage(botMessage);
 
       setMessages(prev => [...prev, botMessage]);
       saveSession([...messages, botMessage]);
@@ -574,11 +585,11 @@ export const ChatSystem = () => {
             }}
             className={`fixed ${
               isMobile 
-                ? 'bottom-0 left-0 right-0 h-[65vh] max-h-[65vh]' 
-                : 'bottom-6 right-6 w-[380px] h-[60vh] max-h-[500px]'
-            } z-[9998] overflow-hidden rounded-t-3xl ${isMobile ? '' : 'rounded-b-3xl'}`}
+                ? 'bottom-0 left-0 right-0 top-0 h-screen' 
+                : 'bottom-6 right-6 w-[500px] h-[80vh] max-h-[700px]'
+            } z-[9998] overflow-hidden ${isMobile ? 'rounded-none' : 'rounded-3xl'}`}
             style={{ 
-              ...(isMobile && { paddingBottom: '140px' }), // Extra mobile padding
+              paddingBottom: isMobile ? 'env(safe-area-inset-bottom, 24px)' : '0',
               background: isDarkMode ? `
                 linear-gradient(145deg, 
                   rgba(30, 30, 40, 0.98) 0%, 
@@ -709,153 +720,52 @@ export const ChatSystem = () => {
             <div 
               className={`flex-1 px-6 py-4 overflow-y-auto space-y-4 ${isDarkMode ? 'bg-black/5' : 'bg-white/5'}`}
               style={{ 
-                maxHeight: isMobile ? 'calc(65vh - 200px)' : '320px', // More space for mobile keyboard
-                paddingBottom: isMobile ? '2rem' : '1rem'
+                maxHeight: isMobile ? 'calc(100vh - 240px)' : 'calc(80vh - 200px)',
+                paddingBottom: isMobile ? '1rem' : '1rem'
               }}
             >
               {messages.map((message, index) => (
-                <motion.div
+                <MessageBubble
                   key={message.id}
-                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ 
-                    delay: index * 0.05, 
-                    duration: 0.3,
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25
+                  message={message}
+                  index={index}
+                  isDarkMode={isDarkMode}
+                  fontSize={fontSize}
+                  language={language}
+                  userName={userName}
+                  showAuthFlow={showAuthFlow}
+                  onRouteConfirm={handleRouteConfirm}
+                  onRemoveRouteConfirm={(messageId) => {
+                    setMessages(prev => prev.map(m => 
+                      m.id === messageId 
+                        ? { ...m, routeConfirmation: undefined }
+                        : m
+                    ));
                   }}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
-                >
-                  <div className={`max-w-[75%] p-4 rounded-2xl shadow-lg relative backdrop-blur-sm ${
-                    message.isUser 
-                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border border-blue-400/30' 
-                      : isDarkMode
-                        ? 'bg-gray-800/90 text-gray-100 border border-gray-600/30'
-                        : 'bg-white/90 text-gray-800 border border-orange-100/50'
-                  }`}>
-                    <p className={`${fontSizeClasses[fontSize]} leading-relaxed whitespace-pre-wrap`}>
-                      {message.text}
-                    </p>
-                    
-                    {/* Route confirmation */}
-                    {message.routeConfirmation && (
-                      <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                        <p className="text-sm text-gray-700 mb-3">
-                          {language === 'vi' 
-                            ? `Anh/chị có muốn em dẫn qua "${message.routeConfirmation.title}" không?`
-                            : `Would you like me to take you to "${message.routeConfirmation.title}"?`
-                          }
-                        </p>
-                        <div className="flex gap-2">
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleRouteConfirm(message.routeConfirmation!.destination, message.routeConfirmation!.requiresAuth || false)}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-md"
-                          >
-                            <ArrowRight className="h-3 w-3" />
-                            {language === 'vi' ? 'Đồng ý' : 'Yes, take me there'}
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              // Remove route confirmation from this message
-                              setMessages(prev => prev.map(m => 
-                                m.id === message.id 
-                                  ? { ...m, routeConfirmation: undefined }
-                                  : m
-                              ));
-                            }}
-                            className="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs rounded-full hover:bg-gray-300 transition-all duration-200"
-                          >
-                            {language === 'vi' ? 'Không, cảm ơn' : 'No, thanks'}
-                          </motion.button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Auth flow */}
-                    {message.authFlow && showAuthFlow && (
-                      <div className="mt-3">
-                        <ChatAuthFlow
-                          userName={userName}
-                          language={language}
-                          onAuthSuccess={handleAuthSuccess}
-                          onCancel={() => setShowAuthFlow(false)}
-                        />
-                      </div>
-                    )}
-
-                    {/* Quick actions */}
-                    {message.quickActions && message.quickActions.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {message.quickActions.map((action) => (
-                          <motion.button
-                            key={action.id}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={action.action}
-                            className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-md"
-                          >
-                            {action.label}
-                          </motion.button>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {!message.isUser && (
-                      <motion.div 
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="absolute -bottom-1 -left-1 w-5 h-5 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-sm border border-white/30"
-                      >
-                        <Sun size={10} className="text-white" />
-                      </motion.div>
-                    )}
-                  </div>
-                </motion.div>
+                  onAuthSuccess={handleAuthSuccess}
+                  onAuthCancel={() => setShowAuthFlow(false)}
+                />
               ))}
               
               {/* AI Thinking Indicator - Enhanced */}
               {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start mb-4"
-                >
-                  <div className={`${isDarkMode ? 'bg-gray-800/90 text-gray-100 border-gray-600/30' : 'bg-white/90 text-gray-800 border-orange-100/50'} border p-4 rounded-2xl shadow-lg backdrop-blur-sm`}>
-                    <div className="flex items-center gap-3">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                      >
-                        <Sun size={16} className="text-orange-400" />
-                      </motion.div>
-                      <span className={`${fontSizeClasses[fontSize]} ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {language === 'vi' ? 'Sunshine đang suy nghĩ...' : 'Sunshine is thinking...'}
-                      </span>
-                      <div className="flex gap-1">
-                        {[0, 1, 2].map((i) => (
-                          <motion.div
-                            key={i}
-                            animate={{ y: [0, -3, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
-                            className="w-1.5 h-1.5 bg-orange-400 rounded-full"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                <TypingIndicator 
+                  isDarkMode={isDarkMode}
+                  language={language}
+                  fontSize={fontSize}
+                />
               )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area - Always accessible, premium design */}
-            <div className={`p-4 ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-md border-t ${isDarkMode ? 'border-gray-700/30' : 'border-orange-200/30'}`}>
+            <div 
+              className={`p-4 ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-md border-t ${isDarkMode ? 'border-gray-700/30' : 'border-orange-200/30'} sticky bottom-0`}
+              style={{
+                paddingBottom: isMobile ? 'calc(env(safe-area-inset-bottom, 24px) + 16px)' : '16px',
+                zIndex: 10
+              }}
+            >
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
                   <input

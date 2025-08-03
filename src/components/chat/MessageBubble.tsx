@@ -1,164 +1,173 @@
+import { motion } from 'framer-motion';
+import { Sun } from 'lucide-react';
+import { RouteConfirmation } from './RouteConfirmation';
+import { ChatAuthFlow } from './ChatAuthFlow';
+import { LinkButton } from './LinkButton';
 
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Check, ChevronRight } from "lucide-react";
-import { BookingMatch } from "@/services/assistantService";
-import { Link } from "react-router-dom";
-import { MessageType, ActionSuggestion } from "./types";
-
-interface MessageBubbleProps {
-  message: MessageType;
-  onBookingConfirm?: (match: BookingMatch) => void;
+interface Message {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+  links?: Array<{
+    url: string;
+    label: string;
+    description?: string;
+  }>;
+  quickActions?: Array<{
+    id: string;
+    label: string;
+    action: () => void;
+  }>;
+  routeConfirmation?: {
+    destination: string;
+    title: string;
+    requiresAuth?: boolean;
+  };
+  authFlow?: boolean;
 }
 
-export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps) {
-  // Format timestamp to display time
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString(undefined, {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+interface MessageBubbleProps {
+  message: Message;
+  index: number;
+  isDarkMode: boolean;
+  fontSize: 'small' | 'normal' | 'large';
+  language: 'en' | 'vi';
+  userName: string;
+  showAuthFlow: boolean;
+  onRouteConfirm: (destination: string, requiresAuth: boolean) => void;
+  onRemoveRouteConfirm: (messageId: string) => void;
+  onAuthSuccess: () => void;
+  onAuthCancel: () => void;
+}
 
-  // Format date for display
-  const formatDate = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    } catch (e) {
-      return dateString;
-    }
-  };
+const fontSizeClasses = {
+  small: 'text-xs',
+  normal: 'text-sm',
+  large: 'text-base'
+};
 
-  // Format time for display
-  const formatTimeString = (timeString: string): string => {
-    try {
-      const [hours, minutes] = timeString.split(':');
-      const hour = parseInt(hours);
-      const period = hour >= 12 ? 'PM' : 'AM';
-      const hour12 = hour % 12 || 12;
-      return `${hour12}:${minutes} ${period}`;
-    } catch (e) {
-      return timeString;
-    }
-  };
-
-  // Get icon component for action suggestion
-  const getIconComponent = (iconName?: string) => {
-    switch (iconName) {
-      case 'calendar':
-        return <Calendar className="h-4 w-4 mr-1.5" />;
-      case 'briefcase':
-        return <Clock className="h-4 w-4 mr-1.5" />;
-      case 'store':
-        return <User className="h-4 w-4 mr-1.5" />;
-      case 'users':
-        return <User className="h-4 w-4 mr-1.5" />;
-      default:
-        return <ChevronRight className="h-4 w-4 mr-1.5" />;
-    }
-  };
-
+export const MessageBubble = ({
+  message,
+  index,
+  isDarkMode,
+  fontSize,
+  language,
+  userName,
+  showAuthFlow,
+  onRouteConfirm,
+  onRemoveRouteConfirm,
+  onAuthSuccess,
+  onAuthCancel
+}: MessageBubbleProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className={cn(
-        "max-w-[80%] group",
-        message.sender === "user" ? "ml-auto" : "mr-auto"
-      )}
+      key={message.id}
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        delay: index * 0.02, 
+        duration: 0.3,
+        type: "spring",
+        stiffness: 300,
+        damping: 25
+      }}
+      className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
     >
-      <div 
-        className={cn(
-          "rounded-2xl px-4 py-2.5",
-          message.sender === "user" 
-            ? "bg-primary text-primary-foreground" 
-            : "bg-muted text-foreground"
-        )}
-      >
-        {message.isTyping ? (
-          <div className="flex space-x-1 items-center py-1 px-1">
-            <div className="typing-dot"></div>
-            <div className="typing-dot"></div>
-            <div className="typing-dot"></div>
+      <div className={`max-w-[85%] p-4 rounded-2xl shadow-lg relative backdrop-blur-sm ${
+        message.isUser 
+          ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border border-blue-400/30' 
+          : isDarkMode
+            ? 'bg-gray-800/90 text-gray-100 border border-gray-600/30'
+            : 'bg-white/90 text-gray-800 border border-orange-100/50'
+      }`}>
+        {/* Message Text */}
+        <p className={`${fontSizeClasses[fontSize]} leading-relaxed whitespace-pre-wrap`}>
+          {message.text}
+        </p>
+        
+        {/* Links */}
+        {message.links && message.links.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {message.links.map((link, index) => (
+              <LinkButton
+                key={index}
+                href={link.url}
+                label={link.label}
+                description={link.description}
+              />
+            ))}
           </div>
-        ) : (
-          <>
-            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-            
-            {/* Show booking options if available */}
-            {message.bookingMatches && message.bookingMatches.length > 0 && (
-              <div className="mt-3 space-y-2">
-                {message.bookingMatches.map((match, index) => (
-                  <div key={`booking-${index}`} className="bg-background rounded-lg p-3 shadow-sm">
-                    <div className="flex items-start gap-3">
-                      {match.avatar ? (
-                        <img src={match.avatar} alt={match.name} className="h-10 w-10 rounded-full object-cover" />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <User className="h-5 w-5 text-primary" />
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{match.name}</p>
-                        <p className="text-sm text-muted-foreground">{match.service}</p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" /> 
-                          {formatDate(match.date)}
-                          <Clock className="h-3 w-3 ml-2" /> 
-                          {formatTimeString(match.time)}
-                        </div>
-                      </div>
-                    </div>
-                    {onBookingConfirm && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full mt-2 bg-primary/5 hover:bg-primary/10"
-                        onClick={() => onBookingConfirm(match)}
-                      >
-                        <Check className="h-4 w-4 mr-1" /> Book with {match.name}
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* Show action suggestions if available */}
-            {message.sender === "assistant" && message.actionSuggestions && message.actionSuggestions.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {message.actionSuggestions.map((action: ActionSuggestion) => (
-                  <Link 
-                    key={action.id} 
-                    to={action.href}
-                    className="no-underline"
-                  >
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="bg-background hover:bg-background/90 border-primary/20"
-                    >
-                      {getIconComponent(action.icon)}
-                      {action.label}
-                    </Button>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </>
         )}
-      </div>
-      <div 
-        className={cn(
-          "text-xs text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity",
-          message.sender === "user" ? "text-right" : "text-left"
+        
+        {/* Route Confirmation */}
+        {message.routeConfirmation && (
+          <RouteConfirmation
+            title={language === 'vi' 
+              ? `Chuyển đến "${message.routeConfirmation.title}"`
+              : `Go to "${message.routeConfirmation.title}"`
+            }
+            description={language === 'vi' 
+              ? 'Anh/chị có muốn em dẫn qua trang này không? Em sẽ ở đây chờ để giúp tiếp!'
+              : 'Would you like me to take you there? I\'ll be here waiting to help when you return!'
+            }
+            onConfirm={() => onRouteConfirm(
+              message.routeConfirmation!.destination, 
+              message.routeConfirmation!.requiresAuth || false
+            )}
+            onCancel={() => onRemoveRouteConfirm(message.id)}
+            language={language}
+          />
         )}
-      >
-        {formatTime(message.timestamp)}
+
+        {/* Auth Flow */}
+        {message.authFlow && showAuthFlow && (
+          <div className="mt-3">
+            <ChatAuthFlow
+              userName={userName}
+              language={language}
+              onAuthSuccess={onAuthSuccess}
+              onCancel={onAuthCancel}
+            />
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        {message.quickActions && message.quickActions.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {message.quickActions.map((action) => (
+              <motion.button
+                key={action.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={action.action}
+                className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-md font-medium"
+              >
+                {action.label}
+              </motion.button>
+            ))}
+          </div>
+        )}
+        
+        {/* Sunshine Avatar for Bot Messages */}
+        {!message.isUser && (
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="absolute -bottom-1 -left-1 w-5 h-5 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-sm border border-white/30"
+          >
+            <Sun size={10} className="text-white" />
+          </motion.div>
+        )}
+        
+        {/* Timestamp */}
+        <div className={`text-xs mt-2 ${
+          message.isUser ? 'text-blue-100' : isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}>
+          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
       </div>
     </motion.div>
   );
-}
+};
