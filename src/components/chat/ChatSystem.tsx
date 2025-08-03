@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Sun, X } from 'lucide-react';
+import { Sun, X, Sparkles } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
@@ -51,20 +51,79 @@ export const ChatSystem = () => {
       
       <AnimatePresence>
         {isVisible && !isOpen && (
-          <motion.button
+          <motion.div
             key="chat-button"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleChat}
-            className={`fixed ${position} bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center focus:outline-none transition-all duration-200`}
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              y: 0,
+              boxShadow: [
+                "0 10px 30px rgba(251, 146, 60, 0.3)",
+                "0 10px 40px rgba(251, 146, 60, 0.5)",
+                "0 10px 30px rgba(251, 146, 60, 0.3)"
+              ]
+            }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ 
+              duration: 0.5,
+              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className={`fixed ${position} group`}
             style={{ zIndex: 9999 }}
-            aria-label="Chat with Sunshine AI"
           >
-            <Sun size={24} />
-          </motion.button>
+            {/* Floating emojis */}
+            <motion.div
+              animate={{ y: [-10, -20, -10] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-8 -left-2 text-xl"
+            >
+              ✨
+            </motion.div>
+            <motion.div
+              animate={{ y: [-15, -25, -15] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -top-6 -right-3 text-lg"
+            >
+              🧡
+            </motion.div>
+            <motion.div
+              animate={{ y: [-8, -18, -8] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute -top-10 left-1/2 text-lg"
+            >
+              👋
+            </motion.div>
+            
+            {/* Main chat button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleChat}
+              className="relative bg-gradient-to-br from-orange-400 via-yellow-400 to-orange-500 hover:from-orange-500 hover:via-yellow-500 hover:to-orange-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:outline-none transition-all duration-300 w-16 h-16 group-hover:shadow-orange-500/50"
+              aria-label="Chat with Sunshine AI"
+            >
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300" />
+              
+              {/* Sun icon with subtle animation */}
+              <motion.div
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Sun size={28} className="relative z-10" />
+              </motion.div>
+              
+              {/* Sparkle effect */}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-1 right-1"
+              >
+                <Sparkles size={12} className="text-yellow-200" />
+              </motion.div>
+            </motion.button>
+          </motion.div>
         )}
       </AnimatePresence>
       
