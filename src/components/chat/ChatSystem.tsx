@@ -44,19 +44,19 @@ export const ChatSystem = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`fixed ${isMobile ? 'inset-4' : 'bottom-28 right-6 w-96 h-[500px]'} z-[9998]`}
+            className={`fixed ${isMobile ? 'inset-4' : 'bottom-28 left-6 w-96 h-[500px]'} z-[9998]`}
           >
             <ChatWindow onClose={toggleChat} />
           </motion.div>
         )}
       </AnimatePresence>
       
-      {/* Main Chat Bubble Container */}
+      {/* Main Chat Bubble Container - Positioned on LEFT side */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        className={`fixed ${isMobile ? 'bottom-6 right-6' : 'bottom-6 right-6'} z-[9999] group`}
+        className={`fixed ${isMobile ? 'bottom-6 left-6' : 'bottom-6 left-6'} z-[9999] group`}
       >
         {/* Ambient Glow Background */}
         <motion.div
