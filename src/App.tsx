@@ -55,6 +55,7 @@ import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
 import InviteAcceptance from "@/pages/InviteAcceptance";
 import FreelancerProfile from "@/pages/FreelancerProfile";
 import { SunshineWidget } from "@/components/sunshine/SunshineWidget";
+import { ProductionTest } from "@/components/sunshine/ProductionTest";
 
 import NailJobSuccessPage from "@/pages/nails-job-success";
 
@@ -235,8 +236,9 @@ function App() {
                        </Suspense>
                        </GlobalPremiumSignupModalProvider>
                        </FirstTimeVisitorRedirect>
-                        <Toaster />
-                        <SunshineWidget />
+                         <Toaster />
+                         <SunshineWidget />
+                         <ProductionTest />
                      </OnboardingProvider>
                   </RecommendationProvider>
               </NotificationProvider>
