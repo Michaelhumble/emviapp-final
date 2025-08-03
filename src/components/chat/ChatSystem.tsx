@@ -23,9 +23,7 @@ export const ChatSystem = () => {
   }, []);
   
   const toggleChat = () => {
-    console.log('Before toggle - isOpen:', isOpen, 'isVisible:', isVisible);
     setIsOpen(!isOpen);
-    console.log('After toggle - isOpen will be:', !isOpen);
   };
   
   // Mobile adjustments for layout
