@@ -23,6 +23,7 @@ export const ChatSystem = () => {
   }, []);
   
   const toggleChat = () => {
+    console.log('🔄 Chat toggle clicked, current state:', { isOpen, isVisible });
     setIsOpen(!isOpen);
   };
   
