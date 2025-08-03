@@ -27,8 +27,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(userLanguage);
     
     const welcomeMessages = {
-      vi: "Chào bạn! 👋 Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ⭐ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? ✨",
-      en: "Hello there! 👋 I'm Sunshine - your AI beauty business assistant created by Michael with love for the beauty community! ⭐ I'm here to help your salon shine and succeed. How can I brighten your day? ✨"
+      vi: "Em là Sunshine, em có thể giúp anh/chị gì được không ạ? Xin đừng ngại nhé! Em cảm ơn anh/chị đã dành thời gian ghé thăm EmviApp! ✨",
+      en: "Hi, I'm Sunshine. How can I help you today? Please don't hesitate to ask! Thank you so much for stopping by—your time means a lot to me. ✨"
     };
     
     const initialMessage: MessageType = {
@@ -46,8 +46,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(language);
     
     const welcomeMessages = {
-      vi: "Chào bạn! 👋 Mình là Sunshine - trợ lý AI được Michael tạo ra với tình yêu dành cho cộng đồng làm đẹp! ⭐ Mình ở đây để giúp salon của bạn tỏa sáng và thành công. Bạn muốn mình hỗ trợ gì hôm nay? ✨",
-      en: "Hello there! 👋 I'm Sunshine - your AI beauty business assistant created by Michael with love for the beauty community! ⭐ I'm here to help your salon shine and succeed. How can I brighten your day? ✨"
+      vi: "Em là Sunshine, em có thể giúp anh/chị gì được không ạ? Xin đừng ngại nhé! Em cảm ơn anh/chị đã dành thời gian ghé thăm EmviApp! ✨",
+      en: "Hi, I'm Sunshine. How can I help you today? Please don't hesitate to ask! Thank you so much for stopping by—your time means a lot to me. ✨"
     };
     
     // Update welcome message with new language - NO automatic sales buttons
