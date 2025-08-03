@@ -58,7 +58,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'vietnamese-nail-tech-hiring-2025',
     slug: 'vietnamese-nail-tech-hiring-2025',
-    title: 'How to Attract and Retain High-Paying Vietnamese Nail Technicians in 2025',
+    title: '🚀 PUBLISH TEST - Title Changed Successfully!',
     description: 'Discover proven strategies to hire and keep top Vietnamese nail techs. Use EmviApp\'s AI-powered platform to build a winning salon team.',
     author: 'EmviApp Team',
     publishedAt: 'February 2, 2025',
