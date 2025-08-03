@@ -23,7 +23,9 @@ export const ChatSystem = () => {
   }, []);
   
   const toggleChat = () => {
+    console.log('Before toggle - isOpen:', isOpen, 'isVisible:', isVisible);
     setIsOpen(!isOpen);
+    console.log('After toggle - isOpen will be:', !isOpen);
   };
   
   // Mobile adjustments for layout
@@ -69,8 +71,8 @@ export const ChatSystem = () => {
               duration: 0.5,
               boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
             }}
-            className={`fixed ${position} group`}
-            style={{ zIndex: 9999 }}
+            className={`fixed ${position} group ${isOpen ? 'hidden' : ''}`}
+            style={{ zIndex: 9999, display: isOpen ? 'none' : 'block' }}
           >
             {/* Floating emojis */}
             <motion.div
