@@ -36,6 +36,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       content: welcomeMessages[userLanguage as keyof typeof welcomeMessages],
       sender: 'assistant',
       timestamp: new Date()
+      // Removed actionSuggestions - no more automatic sales buttons!
     };
     
     setMessages([initialMessage]);
@@ -49,12 +50,13 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       en: "Hello there! 👋 I'm Sunshine - your AI beauty business assistant created by Michael with love for the beauty community! ⭐ I'm here to help your salon shine and succeed. How can I brighten your day? ✨"
     };
     
-    // Update welcome message with new language
+    // Update welcome message with new language - NO automatic sales buttons
     const newWelcomeMessage: MessageType = {
       id: 'welcome-' + Date.now(),
       content: welcomeMessages[language],
       sender: 'assistant',
       timestamp: new Date()
+      // Removed actionSuggestions completely
     };
     
     setMessages([newWelcomeMessage]);
@@ -99,7 +101,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
           content: processedResponse.message,
           sender: 'assistant',
           timestamp: new Date(),
-          actionSuggestions: processedResponse.suggestedActions,
+          // Only show action suggestions if the AI specifically decides to include them
+          // based on the user's request, not automatically
           bookingMatches: matches
         };
         

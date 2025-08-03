@@ -141,31 +141,26 @@ Remember: You're not an AI chatbot - you're Sunshine, a real friend to the beaut
       const data = await response.json();
       let aiResponse = data.choices[0].message.content;
 
-      // Add relevant links based on response content
-      const linkSuggestions = [];
+      // Only add helpful links when the user specifically asks for something
+      // No pushy automatic suggestions - only when contextually requested
       const responseLower = aiResponse.toLowerCase();
       
-      if (responseLower.includes('job') || responseLower.includes('hiring') || responseLower.includes('staff') || responseLower.includes('employee')) {
-        linkSuggestions.push('📝 [Post a Job](/jobs)');
+      if (responseLower.includes('tuyển') || responseLower.includes('hiring') || responseLower.includes('tìm nhân viên') || responseLower.includes('staff') || responseLower.includes('job')) {
+        aiResponse += '\n\nNếu bạn muốn đăng tin tuyển dụng: [Đăng việc làm tại đây](/jobs)';
       }
       
-      if (responseLower.includes('salon') && (responseLower.includes('sell') || responseLower.includes('buy') || responseLower.includes('sale'))) {
-        linkSuggestions.push('🏪 [List Your Salon for Sale](/salon-sales)');
+      if ((responseLower.includes('bán salon') || responseLower.includes('sell salon') || responseLower.includes('rao bán')) && responseLower.includes('salon')) {
+        aiResponse += '\n\nNếu bạn muốn rao bán salon: [Đăng bán salon tại đây](/salon-sales)';
       }
       
-      if (responseLower.includes('book') || responseLower.includes('appointment') || responseLower.includes('artist') || responseLower.includes('nail')) {
-        linkSuggestions.push('💅 [Find & Book Artists](/artists)');
-      }
-
-      // Add link suggestions to response if any were found
-      if (linkSuggestions.length > 0) {
-        aiResponse += '\n\n' + linkSuggestions.join(' | ');
+      if (responseLower.includes('tìm thợ') || responseLower.includes('find artist') || responseLower.includes('đặt lịch') || responseLower.includes('book')) {
+        aiResponse += '\n\nNếu bạn muốn tìm thợ: [Tìm nghệ sĩ tại đây](/artists)';
       }
 
       console.log('Sunshine Chat response generated:', { 
         responseLength: aiResponse.length,
         language: detectedLanguage,
-        linksAdded: linkSuggestions.length,
+        hasLinks: aiResponse.includes('](/'),
         userId 
       });
 
