@@ -142,14 +142,14 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   };
   
   return (
-    <div className="flex flex-col h-full bg-white border-0 rounded-2xl shadow-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-white border-0 rounded-2xl shadow-xl overflow-hidden chat-window">
       {/* Simple header */}
       <div className="bg-gradient-to-r from-orange-400 to-yellow-400 p-3 flex items-center justify-between rounded-t-2xl">
         <ChatHeader onClose={onClose} />
       </div>
       
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 chat-messages">
         {messages.map((message) => (
           <MessageBubble 
             key={message.id} 
@@ -160,8 +160,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Simple input area */}
-      <div className="border-t p-4 bg-white">
+      {/* Input area with safe bottom padding */}
+      <div className="border-t p-4 bg-white chat-input safe-area-bottom">
         <ChatInput onSendMessage={handleSendMessage} isProcessing={isLoading} />
       </div>
     </div>
