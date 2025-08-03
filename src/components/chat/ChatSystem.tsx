@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MessageCircle, X } from 'lucide-react';
+import { Bot, X } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
@@ -13,22 +13,21 @@ export const ChatSystem = () => {
   const isMobile = useIsMobile();
   
   useEffect(() => {
-    // Show button after 3 seconds
+    // Show smart engagement after user has been on page for a bit
     const timer = setTimeout(() => {
       setShowButton(true);
-    }, 3000);
+    }, 5000);
     
     return () => clearTimeout(timer);
   }, []);
   
   const openChat = () => {
     setIsOpen(true);
-    setShowButton(false); // Hide button completely when chat opens
+    setShowButton(false);
   };
   
   const closeChat = () => {
     setIsOpen(false);
-    // Button stays hidden - cleaner UX
   };
   
   return (
@@ -37,28 +36,39 @@ export const ChatSystem = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className={`fixed ${isMobile ? 'inset-4' : 'bottom-6 right-6 w-96 h-[500px]'} z-[9998]`}
+            className={`fixed ${isMobile ? 'top-4 left-4 right-4 bottom-20' : 'top-20 right-6 w-80 h-96'} z-[9999] bg-white rounded-lg shadow-2xl border`}
           >
             <ChatWindow onClose={closeChat} />
           </motion.div>
         )}
       </AnimatePresence>
       
-      {/* Simple Chat Button - ONLY shows when showButton is true */}
-      {showButton && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={openChat}
-          className={`fixed ${isMobile ? 'bottom-6 left-6' : 'bottom-6 left-6'} z-[9999] bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 ${isMobile ? 'w-14 h-14' : 'w-12 h-12'} flex items-center justify-center`}
-          aria-label="Open chat"
+      {/* Smart Engagement Tab - Top Right Corner */}
+      {showButton && !isOpen && (
+        <motion.div
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className={`fixed ${isMobile ? 'top-20 right-0' : 'top-32 right-0'} z-[9998]`}
         >
-          <MessageCircle size={isMobile ? 24 : 20} />
-        </motion.button>
+          <motion.button
+            onClick={openChat}
+            whileHover={{ x: -5 }}
+            className="bg-gradient-to-l from-blue-600 to-purple-600 text-white px-4 py-3 rounded-l-lg shadow-lg flex items-center gap-2 font-medium"
+            style={{ 
+              writingMode: isMobile ? 'horizontal-tb' : 'vertical-rl',
+              textOrientation: isMobile ? 'mixed' : 'mixed'
+            }}
+          >
+            <Bot size={20} />
+            <span className={isMobile ? '' : 'rotate-180'}>
+              AI Help
+            </span>
+          </motion.button>
+        </motion.div>
       )}
     </>
   );
