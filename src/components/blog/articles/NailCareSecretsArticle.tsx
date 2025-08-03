@@ -1,12 +1,11 @@
 import React from 'react';
 import BlogImage from '../BlogImage';
-import nailCareHero from '@/assets/blog/nail-care-secrets-hero.jpg';
 
 const NailCareSecretsArticle: React.FC = () => {
   return (
     <article className="prose prose-lg max-w-none">
       <BlogImage 
-        src={nailCareHero}
+        src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/blog-images/nail-care-secrets-hero.jpg"
         alt="Professional nail care at luxury salon - healthy manicured nails with natural polish"
         className="mb-8"
       />

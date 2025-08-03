@@ -58,13 +58,7 @@ import NailJobSuccessPage from "@/pages/nails-job-success";
 import BlogLanding from "@/pages/blog/BlogLanding";
 import BlogArticlePage from "@/pages/blog/[slug]";
 
-// Blog Category Pages
-import TrendsCategory from "@/pages/blog/categories/TrendsCategory";
-import BeautyTipsCategory from "@/pages/blog/categories/BeautyTipsCategory";
-import IndustryCategory from "@/pages/blog/categories/IndustryCategory";
-import ArtistSpotlightsCategory from "@/pages/blog/categories/ArtistSpotlightsCategory";
-import SuccessStoriesCategory from "@/pages/blog/categories/SuccessStoriesCategory";
-import SalonManagementCategory from "@/pages/blog/categories/SalonManagementCategory";
+// Blog Category Pages - Now handled by dynamic routing
 
 // Industry Pages
 import NailsPage from "@/pages/nails";
@@ -201,13 +195,8 @@ function App() {
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />
 
-                    {/* Blog Category Routes */}
-                    <Route path="/blog/categories/trends" element={<Layout><TrendsCategory /></Layout>} />
-                    <Route path="/blog/categories/beauty-tips" element={<Layout><BeautyTipsCategory /></Layout>} />
-                    <Route path="/blog/categories/industry" element={<Layout><IndustryCategory /></Layout>} />
-                    <Route path="/blog/categories/artist-spotlights" element={<Layout><ArtistSpotlightsCategory /></Layout>} />
-                    <Route path="/blog/categories/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
-                    <Route path="/blog/categories/salon-management" element={<Layout><SalonManagementCategory /></Layout>} />
+                    {/* Legacy category route redirects - redirect old /blog/categories/* to /blog */}
+                    <Route path="/blog/categories/*" element={<Navigate to="/blog" replace />} />
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />
