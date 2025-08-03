@@ -10,7 +10,7 @@ const ArtistSpotlightsCategory = () => {
   const articles = [
     {
       title: "Building Client Loyalty: Proven Strategies for Lash Technicians",
-      slug: "client-loyalty-lash-techs-2025",
+      slug: "client-loyalty-lash-techs",
       category: "artist-spotlights",
       excerpt: "Master the art of client retention with strategies that turn first-time customers into lifelong advocates for your lash business.",
       image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -19,6 +19,30 @@ const ArtistSpotlightsCategory = () => {
       artistName: "Industry Expert",
       specialty: "Lash Technician",
       rating: 5.0
+    },
+    {
+      title: "Rising Star: Maria Rodriguez's Journey from Apprentice to Award-Winning Nail Artist",
+      slug: "maria-rodriguez-nail-artist-spotlight",
+      category: "artist-spotlights",
+      excerpt: "From struggling to find clients to winning national nail art competitions, Maria's inspiring journey shows how dedication and the right platform can transform a career.",
+      image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "5 min read",
+      publishedAt: "January 18, 2025",
+      artistName: "Maria Rodriguez",
+      specialty: "Nail Artist",
+      rating: 5.0
+    },
+    {
+      title: "Master Colorist Sarah Chen: Redefining Hair Color Artistry in Beverly Hills",
+      slug: "sarah-chen-hair-colorist-spotlight",
+      category: "artist-spotlights",
+      excerpt: "Meet the innovative colorist whose unique techniques have celebrities flying across the country for her signature color transformations.",
+      image: "https://images.unsplash.com/photo-1560264280-88b68371db39?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "7 min read",
+      publishedAt: "January 14, 2025",
+      artistName: "Sarah Chen",
+      specialty: "Hair Colorist",
+      rating: 4.9
     }
   ];
 
@@ -27,7 +51,7 @@ const ArtistSpotlightsCategory = () => {
       <DynamicSEO
         title="Artist Spotlights | Meet the Beauty Industry's Rising Stars"
         description="Discover inspiring stories from talented beauty professionals making their mark in the industry. Get behind-the-scenes insights from artists who are redefining beauty standards."
-        url="https://emvi.app/blog/categories/artist-spotlights"
+        url="https://emvi.app/blog/category/artist-spotlights"
         type="website"
         tags={['artist spotlights', 'beauty professionals', 'success stories', 'artist interviews']}
       />

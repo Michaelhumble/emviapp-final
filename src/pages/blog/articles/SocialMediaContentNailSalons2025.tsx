@@ -38,8 +38,8 @@ const SocialMediaContentNailSalons2025 = () => {
   return (
     <>
       <DynamicSEO
-        title="Social Media Content Ideas for Nail Salons in 2025"
-        description="Transform nail salon social media with 50+ content ideas that boost bookings 85%. Trending nail art posts, client engagement & revenue-driving strategies."
+        title="Nail Salon Social Media Content Ideas for 2025 | EmviApp"
+        description="Get fresh, effective social media content ideas for nail salons to attract clients, showcase work, and grow your brand in 2025. Learn from EmviApp's expert tips."
         url="https://emvi.app/blog/salon-management/social-media-content-nail-salons"
         type="article"
         tags={['nail salon marketing', 'social media content', 'nail art promotion', 'salon business', 'beauty marketing']}
@@ -62,7 +62,7 @@ const SocialMediaContentNailSalons2025 = () => {
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
-                <Link to="/blog/categories/salon-management" className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full font-medium hover:bg-green-500/20 transition-colors">
+                <Link to="/blog/category/salon-management" className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full font-medium hover:bg-green-500/20 transition-colors">
                   Salon Management
                 </Link>
                 <div className="flex items-center gap-1">
@@ -79,9 +79,9 @@ const SocialMediaContentNailSalons2025 = () => {
                 Social Media Content Ideas for Nail Salons in 2025
               </h1>
               
-               <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                 Transform your nail salon's social media presence with 50+ content ideas that boost bookings 85%. Trending nail art posts, client engagement & revenue-driving strategies.
-               </p>
+              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+                Transform your nail salon's social media presence with fresh, engaging content strategies that attract clients and showcase your artistry.
+              </p>
             </div>
 
             {/* Featured Image */}
@@ -587,10 +587,10 @@ const SocialMediaContentNailSalons2025 = () => {
                       </div>
                     </div>
 
-                     <Link to="/pricing" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
-                       Boost Your Social Media Impact
-                       <ChevronRight className="h-4 w-4" />
-                     </Link>
+                    <Link to="/auth/signup" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
+                      Boost Your Social Media Impact
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -625,63 +625,49 @@ const SocialMediaContentNailSalons2025 = () => {
             </div>
 
             {/* Internal Links Section */}
-             <div className="mb-12">
-               <h3 className="text-2xl font-bold mb-6">Continue Your Marketing Education</h3>
-               <div className="grid md:grid-cols-2 gap-6">
-                 <Link to="/features" className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
-                   <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">Advanced Booking Features for Social Media</h4>
-                   <p className="text-muted-foreground mb-3">Discover how <Link to="/about" className="text-primary hover:underline">EmviApp's features</Link> support your social media marketing.</p>
-                   <span className="text-primary font-medium">Explore Features →</span>
-                 </Link>
-                 
-                 <Link to="/jobs/nail-technician" className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
-                   <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">Find Nail Technician Opportunities</h4>
-                   <p className="text-muted-foreground mb-3">Browse nail technician jobs and <Link to="/salons-for-sale" className="text-primary hover:underline">salon opportunities</Link> on our platform.</p>
-                   <span className="text-primary font-medium">Browse Jobs →</span>
-                 </Link>
-               </div>
-             </div>
+            <div className="mb-12">
+              <h3 className="text-2xl font-bold mb-6">Continue Your Marketing Education</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Link to="/blog/salon-management/social-media-marketing-salons-2025" className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
+                  <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">Complete Social Media Marketing Guide</h4>
+                  <p className="text-muted-foreground mb-3">Comprehensive strategies for salon social media success in 2025.</p>
+                  <span className="text-primary font-medium">Read Guide →</span>
+                </Link>
+                
+                <Link to="/blog/salon-management/salon-pricing-strategies-2025" className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
+                  <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">Salon Pricing Strategies</h4>
+                  <p className="text-muted-foreground mb-3">Learn how to price your services for maximum profitability.</p>
+                  <span className="text-primary font-medium">Read Article →</span>
+                </Link>
+              </div>
+            </div>
 
             {/* FAQ Section */}
             <div className="mb-12">
               <h2 className="text-3xl font-bold mb-8">Frequently Asked Questions</h2>
               
-               <div className="space-y-6">
-                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                   <h3 className="font-semibold text-lg mb-3">What type of nail salon content gets the most engagement on social media?</h3>
-                   <p className="text-muted-foreground">
-                     Time-lapse nail art videos, before/after transformations, and client reaction content perform best. Interactive polls, trending nail challenges, and educational tutorials also drive high engagement. Visual content with bright colors and clear nail art details attracts 75% more engagement than text-only posts.
-                   </p>
-                 </div>
-                 
-                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                   <h3 className="font-semibold text-lg mb-3">How often should nail salons post on social media platforms?</h3>
-                   <p className="text-muted-foreground">
-                     Post 1-2 times daily on Instagram with 3-5 stories, 3-5 TikTok videos weekly, 3-4 Facebook posts per week, and 5-10 Pinterest pins daily. Consistency matters more than frequency - maintain a regular schedule your audience can expect rather than sporadic posting bursts.
-                   </p>
-                 </div>
-
-                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                   <h3 className="font-semibold text-lg mb-3">How can nail salons convert social media followers into paying clients?</h3>
-                   <p className="text-muted-foreground">
-                     Include clear CTAs in posts, showcase pricing transparently, share client testimonials and reviews, offer exclusive social media promotions, use direct booking links in bio/stories, and engage personally with comments and DMs. Track which content types drive the most bookings using analytics.
-                   </p>
-                 </div>
-                 
-                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                   <h3 className="font-semibold text-lg mb-3">What hashtags work best for nail salon social media marketing?</h3>
-                   <p className="text-muted-foreground">
-                     Use a mix of 10-15 hashtags: 3-5 broad beauty tags (#nails #nailart #manicure), 5-8 specific technique tags (#gelmanicure #nailextensions #handpainted), and 2-4 local tags (#yourcitynails #localnailsalon). Research and rotate hashtags weekly, including 2-3 trending tags relevant to your content.
-                   </p>
-                 </div>
-                 
-                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                   <h3 className="font-semibold text-lg mb-3">Does EmviApp integrate with social media marketing for nail salons?</h3>
-                   <p className="text-muted-foreground">
-                     Yes, EmviApp provides comprehensive social media support including portfolio management for easy content creation, direct booking links for social profiles, client photo galleries with permission management, analytics to track social media ROI, and automated systems that encourage client-generated content sharing.
-                   </p>
-                 </div>
-               </div>
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-3">What kind of content should a nail salon post on social media?</h3>
+                  <p className="text-muted-foreground">
+                    Focus on five content pillars: service showcases (nail art photos/videos), behind-the-scenes content, educational nail care tips, client features and testimonials, and business updates/promotions. Mix high-quality photos, time-lapse videos, tutorials, and interactive content to keep your audience engaged.
+                  </p>
+                </div>
+                
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-3">How can I make my nail salon's social media stand out from competitors?</h3>
+                  <p className="text-muted-foreground">
+                    Develop your unique brand voice and aesthetic, share your personal story and expertise, create educational content that provides real value, engage authentically with your community, and use high-quality visuals with consistent editing style. Focus on building relationships, not just showcasing work.
+                  </p>
+                </div>
+                
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-3">Does EmviApp help with salon marketing and social media?</h3>
+                  <p className="text-muted-foreground">
+                    Yes, EmviApp provides integrated marketing tools including portfolio management for easy content creation, direct booking links for social media, client photo galleries with permission management, analytics to track social media ROI, and automated systems that encourage client-generated content sharing.
+                  </p>
+                </div>
+              </div>
             </div>
 
           </div>

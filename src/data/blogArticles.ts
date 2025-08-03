@@ -29,86 +29,14 @@ const SalonPricingStrategies2025 = lazy(() => import('@/pages/blog/articles/Salo
 const SocialMediaContentNailSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaContentNailSalons2025'));
 const SocialMediaMarketingSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaMarketingSalons2025'));
 const TheBeautyIndustrysMissingPiece = lazy(() => import('@/pages/blog/articles/TheBeautyIndustrysMissingPiece'));
-const WinterSkincareTips2025 = lazy(() => import('@/pages/blog/articles/WinterSkincareTips2025'));
-const PerfectWingEyeliner2025 = lazy(() => import('@/pages/blog/articles/PerfectWingEyeliner2025'));
-const NailArtTrends2025 = lazy(() => import('@/pages/blog/articles/NailArtTrends2025'));
-const HairMaskDIYRecipes2025 = lazy(() => import('@/pages/blog/articles/HairMaskDIYRecipes2025'));
-const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBrows2025'));
-const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AIPoweredSalonManagement2025'));
-const Top7AITrendsBeautySalons2025 = lazy(() => import('@/pages/blog/articles/Top7AITrendsBeautySalons2025'));
-const VietnameseNailTechHiring2025 = lazy(() => import('@/pages/blog/articles/VietnameseNailTechHiring2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
-    id: 'mobile-first-beauty-business-2025',
-    slug: 'mobile-first-beauty-business-2025',
-    title: 'Going Mobile-First: Beauty Business Strategies for 2025',
-    description: 'Transform your beauty business with mobile-first strategies. Capture 78% of clients who book on mobile & increase revenue 40% with smart booking tech.',
-    author: 'EmviApp Team',
-    publishedAt: 'January 29, 2025',
-    readTime: '9 min read',
-    category: 'Trends',
-    categorySlug: 'trends',
-    tags: ['mobile business', 'digital transformation', 'beauty trends', 'technology', 'mobile apps'],
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    component: MobileFirstBeautyBusiness2025,
-    url: '/blog/trends/mobile-first-beauty-business-2025'
-  },
-  {
-    id: 'vietnamese-nail-tech-hiring-2025',
-    slug: 'vietnamese-nail-tech-hiring-2025',
-    title: '🚀 PUBLISH TEST - Title Changed Successfully!',
-    description: 'Discover proven strategies to hire and keep top Vietnamese nail techs. Use EmviApp\'s AI-powered platform to build a winning salon team.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 2, 2025',
-    readTime: '12 min read',
-    category: 'Salon Management',
-    categorySlug: 'salon-management',
-    tags: ['Vietnamese nail technician hiring', 'nail tech recruitment 2025', 'salon staff retention', 'EmviApp recruitment platform', 'Vietnamese nail salon staffing'],
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
-    featured: true,
-    trending: true,
-    component: VietnameseNailTechHiring2025,
-    url: '/blog/salon-management/vietnamese-nail-tech-hiring-2025'
-  },
-  {
-    id: 'top-7-ai-trends-beauty-salons-2025',
-    slug: 'top-7-ai-trends-beauty-salons-2025',
-    title: '🔥 PINNED: Top 7 AI Trends Revolutionizing Beauty Salons in 2025',
-    description: 'Discover 7 game-changing AI trends transforming beauty salons in 2025. Learn how EmviApp leverages AI to boost bookings, sales, and client loyalty.',
-    author: 'EmviApp Team',
-    publishedAt: 'January 2, 2025',
-    readTime: '15 min read',
-    category: 'AI Technology',
-    categorySlug: 'ai-technology',
-    tags: ['AI', 'Beauty Trends', 'Salon Management', 'Technology', 'Innovation', '2025'],
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    featured: true,
-    component: Top7AITrendsBeautySalons2025,
-    url: '/blog/ai-technology/top-7-ai-trends-beauty-salons-2025'
-  },
-  {
-    id: 'ai-powered-salon-management-2025',
-    slug: 'ai-powered-salon-management-2025',
-    title: '🚀 NEW: AI-Powered Salon Management: Streamlining Operations for 2025',
-    description: 'Discover how AI-driven tools revolutionize salon operations in 2025. Learn about automated scheduling, client management, and data analytics to boost your salon\'s efficiency.',
-    author: 'EmviApp Team',
-    publishedAt: 'January 1, 2025',
-    readTime: '12 min read',
-    category: 'Salon Management',
-    categorySlug: 'salon-management',
-    tags: ['AI', 'Salon Management', 'Automation', 'Technology', 'Business'],
-    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    featured: true,
-    component: AIPoweredSalonManagement2025,
-    url: '/blog/salon-management/ai-powered-salon-management-2025'
-  },
-  {
     id: 'ai-tools-makeup-artists-2025',
     slug: 'ai-tools-makeup-artists-2025',
     title: 'AI Tools Every Makeup Artist Should Use in 2025',
-    description: 'Discover 8 essential AI tools every makeup artist needs in 2025. Free platforms, smart booking, automated marketing & client management that transform beauty businesses.',
+    description: 'Discover the cutting-edge AI tools that are revolutionizing the makeup industry and helping artists create stunning looks with unprecedented precision.',
     author: 'EmviApp Team',
     publishedAt: 'January 31, 2025',
     readTime: '8 min read',
@@ -125,7 +53,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     id: 'client-loyalty-lash-techs-2025',
     slug: 'client-loyalty-lash-techs-2025',
     title: 'Building Client Loyalty: Proven Strategies for Lash Technicians',
-    description: 'Master proven strategies that turn first-time lash clients into lifelong advocates. Free tools, retention programs & personalized service techniques that boost revenue 3x.',
+    description: 'Master the art of client retention with strategies that turn first-time customers into lifelong advocates for your lash business.',
     author: 'EmviApp Team',
     publishedAt: 'January 31, 2025',
     readTime: '7 min read',
@@ -140,8 +68,8 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'client-retention-secrets-2025',
     slug: 'client-retention-secrets-2025',
-    title: 'Client Retention Secrets: How Top Salons Keep 90%+ of Their Customers',
-    description: 'Discover proven retention strategies that top salons use to keep 90%+ customers coming back. Boost lifetime value 3x with systematic client loyalty programs & smart follow-ups.',
+    title: 'Client Retention Secrets: Keep Them Coming Back',
+    description: 'Learn the insider strategies that top beauty professionals use to build lasting relationships and ensure clients return again and again.',
     author: 'EmviApp Team',
     publishedAt: 'January 30, 2025',
     readTime: '6 min read',
@@ -156,7 +84,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     id: 'hiring-managing-salon-staff-2025',
     slug: 'hiring-managing-salon-staff-2025',
     title: 'The Ultimate Guide to Hiring and Managing Salon Staff in 2025',
-    description: 'Build dream salon teams with proven hiring strategies that reduce turnover 60%+. Expert management tips, culture building & retention tactics for beauty professionals.',
+    description: 'Build your dream team with proven strategies for recruiting, training, and retaining top talent in the competitive beauty industry.',
     author: 'EmviApp Team',
     publishedAt: 'January 30, 2025',
     readTime: '12 min read',
@@ -172,7 +100,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     id: 'increase-salon-bookings-2024',
     slug: 'increase-salon-bookings-2024',
     title: 'How to Increase Your Salon Bookings by 300% in 2024',
-    description: 'Boost salon bookings 300% with proven strategies used by top salons. Mobile-first booking, AI matching & retention tactics that increase revenue instantly.',
+    description: 'Proven strategies and actionable tips that successful salon owners use to dramatically boost their booking rates and revenue.',
     author: 'EmviApp Team',
     publishedAt: 'December 15, 2024',
     readTime: '10 min read',
@@ -185,10 +113,25 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     url: '/blog/salon-management/increase-salon-bookings-2024'
   },
   {
+    id: 'mobile-first-beauty-business-2025',
+    slug: 'mobile-first-beauty-business-2025',
+    title: 'Going Mobile-First: Beauty Business Strategies for 2025',
+    description: 'Discover how to build a thriving mobile-first beauty business that meets clients where they are and drives unprecedented growth.',
+    author: 'EmviApp Team',
+    publishedAt: 'January 29, 2025',
+    readTime: '9 min read',
+    category: 'Trends',
+    categorySlug: 'trends',
+    tags: ['mobile business', 'digital transformation', 'beauty trends', 'technology', 'mobile apps'],
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    component: MobileFirstBeautyBusiness2025,
+    url: '/blog/trends/mobile-first-beauty-business-2025'
+  },
+  {
     id: 'salon-pricing-strategies-2025',
     slug: 'salon-pricing-strategies-2025',
     title: 'Salon Pricing Strategies That Maximize Revenue in 2025',
-    description: 'Master salon pricing strategies that boost revenue 30%+. Value-based pricing, psychological techniques & premium positioning that transform salon profits.',
+    description: 'Master the art and science of salon pricing with strategies that boost your bottom line while maintaining client satisfaction.',
     author: 'EmviApp Team',
     publishedAt: 'January 28, 2025',
     readTime: '11 min read',
@@ -204,7 +147,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     id: 'social-media-content-nail-salons-2025',
     slug: 'social-media-content-nail-salons-2025',
     title: 'Social Media Content Ideas for Nail Salons in 2025',
-    description: 'Transform nail salon social media with 50+ content ideas that boost bookings 85%. Trending nail art posts, client engagement & revenue-driving strategies.',
+    description: 'Transform your nail salon\'s social media presence with creative content ideas that engage followers and drive bookings.',
     author: 'EmviApp Team',
     publishedAt: 'January 27, 2025',
     readTime: '8 min read',
@@ -220,7 +163,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     id: 'social-media-marketing-salons-2025',
     slug: 'social-media-marketing-salons-2025',
     title: 'Social Media Marketing for Salons: The Complete 2025 Guide',
-    description: 'Master salon social media marketing with proven strategies that increase bookings 70%+. Platform optimization, content tactics & client acquisition for beauty pros.',
+    description: 'Master social media marketing with our comprehensive guide designed specifically for salon owners and beauty professionals.',
     author: 'EmviApp Team',
     publishedAt: 'January 26, 2025',
     readTime: '14 min read',
@@ -234,8 +177,8 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'the-beauty-industrys-missing-piece-emviapp',
     slug: 'the-beauty-industrys-missing-piece-emviapp',
-    title: 'The Beauty Industry\'s Missing Piece: How EmviApp is Revolutionizing Beauty Booking | Free AI Platform 2025',
-    description: 'Discover why 94% of beauty professionals choose EmviApp\'s free AI-powered booking platform. No fees, unlimited growth, and smart artist matching that transforms salon operations.',
+    title: 'The Beauty Industry\'s Missing Piece: How EmviApp is Changing the Game',
+    description: 'Discover how EmviApp is revolutionizing the beauty industry by connecting artists, salons, and clients in ways never before possible.',
     author: 'EmviApp Team',
     publishedAt: 'January 25, 2025',
     readTime: '7 min read',
@@ -246,85 +189,6 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     featured: true,
     component: TheBeautyIndustrysMissingPiece,
     url: '/blog/industry/the-beauty-industrys-missing-piece-emviapp'
-  },
-  {
-    id: 'winter-skincare-tips-2025',
-    slug: 'winter-skincare-tips-2025',
-    title: 'Winter Skincare Tips: 10 Essential Beauty Secrets for 2025',
-    description: 'Master winter skincare with 10 expert-approved tips that prevent dryness & maintain glowing skin. Professional techniques for cold weather beauty routines that work.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 1, 2025',
-    readTime: '7 min read',
-    category: 'Beauty Tips',
-    categorySlug: 'beauty-tips',
-    tags: ['winter skincare', 'beauty tips', 'skin health', 'seasonal beauty', 'skincare routine'],
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    featured: true,
-    component: WinterSkincareTips2025,
-    url: '/blog/beauty-tips/winter-skincare-tips-2025'
-  },
-  {
-    id: 'perfect-winged-eyeliner-2025',
-    slug: 'perfect-winged-eyeliner-2025',
-    title: 'Perfect Winged Eyeliner: Master the Art in 5 Simple Steps',
-    description: 'Learn professional winged eyeliner techniques in 5 easy steps. Makeup artist secrets for flawless wings every time - beginner to expert tips included.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 1, 2025',
-    readTime: '6 min read',
-    category: 'Beauty Tips',
-    categorySlug: 'beauty-tips',
-    tags: ['eyeliner', 'makeup tutorial', 'winged eyeliner', 'eye makeup', 'beauty techniques'],
-    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80',
-    trending: true,
-    component: PerfectWingEyeliner2025,
-    url: '/blog/beauty-tips/perfect-winged-eyeliner-2025'
-  },
-  {
-    id: 'nail-art-trends-2025',
-    slug: 'nail-art-trends-2025',
-    title: '2025 Nail Art Trends: 12 Designs That Will Dominate This Year',
-    description: 'Discover 12 hottest nail art trends for 2025. From minimalist designs to bold statements - professional techniques & inspiration for nail technicians.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 1, 2025',
-    readTime: '9 min read',
-    category: 'Beauty Tips',
-    categorySlug: 'beauty-tips',
-    tags: ['nail art', 'nail trends', '2025 trends', 'nail design', 'manicure'],
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
-    featured: true,
-    component: NailArtTrends2025,
-    url: '/blog/beauty-tips/nail-art-trends-2025'
-  },
-  {
-    id: 'hair-mask-diy-recipes-2025',
-    slug: 'hair-mask-diy-recipes-2025',
-    title: 'DIY Hair Masks: 8 Professional-Grade Recipes You Can Make at Home',
-    description: 'Transform hair with 8 expert-approved DIY mask recipes using natural ingredients. Professional salon results at home - all hair types covered.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 1, 2025',
-    readTime: '10 min read',
-    category: 'Beauty Tips',
-    categorySlug: 'beauty-tips',
-    tags: ['hair care', 'DIY beauty', 'hair masks', 'natural ingredients', 'hair treatment'],
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80',
-    trending: true,
-    component: HairMaskDIYRecipes2025,
-    url: '/blog/beauty-tips/hair-mask-diy-recipes-2025'
-  },
-  {
-    id: 'contoured-brows-2025',
-    slug: 'contoured-brows-2025',
-    title: 'Contoured Brows: The Ultimate Guide to Professional Eyebrow Shaping',
-    description: 'Master professional eyebrow contouring techniques for every face shape. Step-by-step guide to perfectly sculpted brows with expert shaping tips.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 1, 2025',
-    readTime: '8 min read',
-    category: 'Beauty Tips',
-    categorySlug: 'beauty-tips',
-    tags: ['eyebrows', 'brow shaping', 'contouring', 'makeup techniques', 'face shaping'],
-    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    component: ContouredBrows2025,
-    url: '/blog/beauty-tips/contoured-brows-2025'
   }
 ];
 

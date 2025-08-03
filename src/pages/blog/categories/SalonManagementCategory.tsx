@@ -80,7 +80,7 @@ const SalonManagementCategory = () => {
       <DynamicSEO
         title="Salon Management | Business Growth & Operations Guide"
         description="Master salon management with expert strategies for operations, marketing, staff management, and growth. Get the insights successful salon owners use to thrive."
-        url="https://emvi.app/blog/categories/salon-management"
+        url="https://emvi.app/blog/category/salon-management"
         type="website"
         tags={['salon management', 'business operations', 'salon marketing', 'staff management']}
       />

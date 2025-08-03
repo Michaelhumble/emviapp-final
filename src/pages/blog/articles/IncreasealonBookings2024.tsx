@@ -9,8 +9,8 @@ import BlogArticleActions from '@/components/blog/BlogArticleActions';
 
 const IncreaseSalonBookings2024 = () => {
   const article = {
-    title: "How to Increase Your Salon Bookings by 300% in 2024: 7 Proven Strategies That Work",
-    description: "Boost salon bookings 300% with proven strategies used by top salons. Mobile-first booking, AI matching & retention tactics that increase revenue instantly.",
+    title: "How to Increase Salon Bookings in 2025: 7 Proven Strategies That Actually Work",
+    description: "Discover the exact strategies top salon owners use to boost bookings by 40%+ in 2025. From AI-powered tools to mobile optimization, get practical tips that deliver real results.",
     author: "EmviApp Editorial Team",
     publishedAt: "June 30, 2025",
     readTime: "12 min read",
@@ -302,17 +302,17 @@ const IncreaseSalonBookings2024 = () => {
                 Having a great booking system means nothing if clients can't find you. In 2025, salon discovery happens across multiple channels, and you need to dominate them all.
               </p>
 
-               <p className="mb-6">
-                 The key is creating a unified presence that drives traffic to your optimized booking system from every touchpoint. <Link to="/pricing" className="text-primary font-semibold hover:underline">Advanced booking features</Link> can automatically sync your availability across all platforms.
-               </p>
+              <p className="mb-6">
+                The key is creating a unified presence that drives traffic to your optimized booking system from every touchpoint.
+              </p>
 
               <h3 className="text-2xl font-semibold mb-4">2025 Discovery Channels:</h3>
-               <ul className="list-disc pl-6 mb-8 space-y-2">
-                 <li><strong>Google My Business Optimization:</strong> Ensure your booking link is prominent and your photos showcase recent work</li>
-                 <li><strong>Instagram/TikTok Integration:</strong> Link directly to specific services in your bio and stories</li>
-                 <li><strong>Local SEO Dominance:</strong> Optimize for <Link to="/jobs/nail-technician" className="text-primary hover:underline">"nail salon near me"</Link> and service-specific searches</li>
-                 <li><strong>Platform Presence:</strong> List on <Link to="/salons-for-sale" className="text-primary hover:underline">professional beauty platforms</Link> where your ideal clients are already searching</li>
-               </ul>
+              <ul className="list-disc pl-6 mb-8 space-y-2">
+                <li><strong>Google My Business Optimization:</strong> Ensure your booking link is prominent and your photos showcase recent work</li>
+                <li><strong>Instagram/TikTok Integration:</strong> Link directly to specific services in your bio and stories</li>
+                <li><strong>Local SEO Dominance:</strong> Optimize for "nail salon near me" and service-specific searches</li>
+                <li><strong>Platform Presence:</strong> List on platforms where your ideal clients are already searching</li>
+              </ul>
 
               {/* Strategy 7 */}
               <h2 className="text-3xl font-bold mb-6 text-foreground">7. Build a Retention-Focused Rebooking System</h2>
@@ -372,9 +372,9 @@ const IncreaseSalonBookings2024 = () => {
               {/* CTA Section */}
               <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-8 mb-12 text-center">
                 <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Salon's Booking Success?</h2>
-                 <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
-                   Don't let outdated booking systems hold your salon back. <Link to="/about" className="text-primary font-semibold hover:underline">EmviApp</Link> combines all these strategies in one powerful, free platform that's already helping salons increase bookings by 300%+.
-                 </p>
+                <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
+                  Don't let outdated booking systems hold your salon back. <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> combines all these strategies in one powerful, free platform that's already helping salons increase bookings by 40%+.
+                </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
                     <Link to="/auth/signup">
@@ -393,32 +393,14 @@ const IncreaseSalonBookings2024 = () => {
               </div>
 
               {/* FAQ Section */}
-               <h2 className="text-3xl font-bold mb-8 text-foreground">Frequently Asked Questions</h2>
-               
-               <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-                 <h3 className="text-xl font-semibold mb-3 text-foreground">What's the fastest way to increase salon bookings in 2024?</h3>
-                 <p className="text-muted-foreground leading-relaxed">The fastest method is optimizing your mobile booking experience with AI-powered matching. 73% of clients book on mobile, and salons using smart booking systems see 35% booking increases within 30 days.</p>
-               </div>
-
-               <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-                 <h3 className="text-xl font-semibold mb-3 text-foreground">How much can I realistically expect to increase my salon bookings?</h3>
-                 <p className="text-muted-foreground leading-relaxed">Salons implementing all 7 strategies typically achieve 200-300% booking increases within 90 days. The key is systematic implementation focusing on mobile-first experiences and retention automation.</p>
-               </div>
-
-               <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-                 <h3 className="text-xl font-semibold mb-3 text-foreground">Do I need expensive software to boost salon bookings?</h3>
-                 <p className="text-muted-foreground leading-relaxed">No. Many strategies focus on process improvements and client experience optimization. Free platforms like EmviApp offer enterprise-level features including AI matching and automation without monthly fees.</p>
-               </div>
-
-               <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-                 <h3 className="text-xl font-semibold mb-3 text-foreground">Which booking strategy delivers results fastest for new salons?</h3>
-                 <p className="text-muted-foreground leading-relaxed">Mobile-first booking with irresistible first-time offers. New salons using strategic welcome packages and seamless mobile booking see client acquisition rates increase 150% in the first month.</p>
-               </div>
-
-               <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-                 <h3 className="text-xl font-semibold mb-3 text-foreground">How do top salons maintain 90%+ client retention rates?</h3>
-                 <p className="text-muted-foreground leading-relaxed">They use systematic rebooking processes with personalized follow-ups, loyalty programs, and AI-powered service recommendations. The key is building retention into every client touchpoint, not just the service itself.</p>
-               </div>
+              <h2 className="text-3xl font-bold mb-8 text-foreground">Frequently Asked Questions</h2>
+              
+              {faqData.map((faq, index) => (
+                <div key={index} className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+                  <h3 className="text-xl font-semibold mb-3 text-foreground">{faq.question}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
 
               {/* Conclusion */}
               <h2 className="text-3xl font-bold mb-6 text-foreground">Your Next Steps</h2>

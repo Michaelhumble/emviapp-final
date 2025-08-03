@@ -27,24 +27,16 @@ const SalonPricingStrategies2025 = () => {
 
   const faqData = [
     {
-      question: "How often should salons review and adjust pricing in 2025?",
-      answer: "Review pricing quarterly and adjust annually with market analysis. Monitor competitor pricing, track profit margins, and assess client feedback regularly. Major price adjustments should be planned 6-8 weeks in advance with strategic client communication."
+      question: "How often should salons review and adjust their pricing?",
+      answer: "Review pricing quarterly and adjust annually. Monitor competitor pricing, track profit margins, and assess client feedback regularly. Major adjustments should be planned 6-8 weeks in advance with proper client communication."
     },
     {
-      question: "What's the most effective way to communicate price increases without losing clients?",
-      answer: "Give 4-6 weeks advance notice, explain specific value improvements clients will receive, and offer grandfathered rates for their next appointment. Focus messaging on enhanced experience and quality rather than just cost justification."
+      question: "What's the best way to communicate price increases to existing clients?",
+      answer: "Give 4-6 weeks notice, explain the value improvements they'll receive, and offer grandfathered rates for their next appointment. Focus on enhanced experience and quality rather than just costs."
     },
     {
-      question: "Should new salons start with lower prices to attract initial clients?",
-      answer: "No. Starting with discounted pricing creates a 'budget' brand perception that's extremely difficult to change. Instead, offer exceptional value at fair market rates and focus on building reputation through quality service and client experience."
-    },
-    {
-      question: "What pricing strategy maximizes salon revenue most effectively?",
-      answer: "Value-based tiered pricing with package bundling delivers highest revenue increases. This strategy captures different client segments while encouraging upsells and increasing average transaction values by 30-50%."
-    },
-    {
-      question: "How can salons justify premium pricing to price-sensitive clients?",
-      answer: "Focus on transformation outcomes rather than time or materials. Emphasize expertise, personalized consultation, quality products, and ongoing support. Document before/after results and collect testimonials showing long-term value delivered."
+      question: "Should new salons start with lower prices to attract clients?",
+      answer: "No. Starting too low creates a 'discount' brand perception that's hard to change. Instead, offer exceptional value at fair market rates and focus on building reputation through quality service."
     }
   ];
 
@@ -391,9 +383,9 @@ const SalonPricingStrategies2025 = () => {
                 Modern salons use technology to optimize pricing decisions, test different strategies, and measure results. The right tools can help you implement sophisticated pricing strategies without complex manual processes.
               </p>
 
-               <p className="mb-8">
-                 Platforms like <Link to="/pricing" className="text-primary font-semibold hover:underline">EmviApp</Link> provide analytics that help you understand which services are most profitable, which time slots command premium pricing, and how different client segments respond to various price points.
-               </p>
+              <p className="mb-8">
+                Platforms like <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> provide analytics that help you understand which services are most profitable, which time slots command premium pricing, and how different client segments respond to various price points.
+              </p>
 
               <h2 className="text-3xl font-bold mb-6 text-foreground">Measuring Pricing Success</h2>
 
@@ -425,9 +417,9 @@ const SalonPricingStrategies2025 = () => {
 
               <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-8 mb-12 text-center">
                 <h2 className="text-3xl font-bold mb-4">Ready to Maximize Your Salon's Profitability?</h2>
-                 <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
-                   Stop leaving money on the table with outdated pricing. <Link to="/about" className="text-primary font-semibold hover:underline">EmviApp</Link> provides the insights and tools you need to implement profitable pricing strategies that clients love.
-                 </p>
+                <p className="text-lg mb-6 max-w-2xl mx-auto text-muted-foreground">
+                  Stop leaving money on the table with outdated pricing. <Link to="/" className="text-primary font-semibold hover:underline">EmviApp</Link> provides the insights and tools you need to implement profitable pricing strategies that clients love.
+                </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
                     <Link to="/auth/signup">
@@ -460,9 +452,9 @@ const SalonPricingStrategies2025 = () => {
                 Profitable pricing isn't about charging the most—it's about charging what you're worth while delivering exceptional value. Start with one service, test the strategies, and measure the results.
               </p>
 
-               <p className="mb-6">
-                 For more business growth insights, explore our guides on <Link to="/blog/success-stories/client-retention-secrets-2025" className="text-primary font-semibold hover:underline">client retention</Link> and <Link to="/features" className="text-primary font-semibold hover:underline">advanced booking features</Link> that support premium pricing strategies.
-               </p>
+              <p className="mb-6">
+                For more business growth insights, explore our guides on <Link to="/blog/business/client-retention-secrets-2025" className="text-primary font-semibold hover:underline">client retention</Link> and <Link to="/blog/salon-management/increase-salon-bookings-2025" className="text-primary font-semibold hover:underline">increasing bookings</Link>.
+              </p>
 
               <div className="text-center py-8 border-t border-gray-200">
                 <p className="text-lg mb-4">Ready to increase your revenue by 30%+ with strategic pricing?</p>

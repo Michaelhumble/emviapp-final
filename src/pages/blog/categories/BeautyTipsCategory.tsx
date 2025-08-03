@@ -1,28 +1,48 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Clock, Calendar } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogImage from '@/components/blog/BlogImage';
-import { getArticlesByCategory } from '@/data/blogArticles';
 
 const BeautyTipsCategory = () => {
-  const [visibleArticles, setVisibleArticles] = useState(6);
-  const allArticles = getArticlesByCategory('beauty-tips');
-  const displayedArticles = allArticles.slice(0, visibleArticles);
-  const hasMoreArticles = allArticles.length > visibleArticles;
-
-  const loadMoreArticles = () => {
-    setVisibleArticles(prev => Math.min(prev + 6, allArticles.length));
-  };
+  const articles = [
+    {
+      title: "Leveraging AI for Freelance Makeup Artists: Tools to Boost Your Business",
+      slug: "ai-tools-for-makeup-artists",
+      category: "beauty-tips",
+      excerpt: "Discover essential AI tools that help freelance makeup artists streamline client booking, marketing, and content creation to grow their beauty business.",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "8 min read",
+      publishedAt: "January 31, 2025"
+    },
+    {
+      title: "The Ultimate Guide to Long-Lasting Nail Art: Pro Tips from Top Artists",
+      slug: "long-lasting-nail-art-guide",
+      category: "beauty-tips",
+      excerpt: "Master the techniques that professional nail artists use to create stunning, durable nail art that lasts weeks, not days.",
+      image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "8 min read",
+      publishedAt: "January 12, 2025"
+    },
+    {
+      title: "Hair Color Maintenance: Keep Your Color Vibrant for Months",
+      slug: "hair-color-maintenance-guide",
+      category: "beauty-tips", 
+      excerpt: "Professional colorists share their secrets for maintaining vibrant hair color, from the right products to styling techniques that preserve your investment.",
+      image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      readTime: "6 min read",
+      publishedAt: "January 8, 2025"
+    }
+  ];
 
   return (
     <>
       <DynamicSEO
         title="Beauty Tips & Tutorials | Expert Advice for Professional Results"
         description="Get professional beauty tips and tutorials from industry experts. Learn techniques for hair, nails, makeup, and skincare that deliver salon-quality results at home."
-        url="https://emvi.app/blog/categories/beauty-tips"
+        url="https://emvi.app/blog/category/beauty-tips"
         type="website"
         tags={['beauty tips', 'beauty tutorials', 'professional techniques', 'beauty advice']}
       />
@@ -56,10 +76,10 @@ const BeautyTipsCategory = () => {
         {/* Articles Grid */}
         <Container className="py-8">
           <div className="grid gap-8 max-w-4xl mx-auto">
-            {displayedArticles.map((article, index) => (
+            {articles.map((article, index) => (
               <Link
-                key={article.id}
-                to={article.url}
+                key={index}
+                to={`/blog/${article.category}/${article.slug}`}
                 className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               >
                 <div className="grid md:grid-cols-2 gap-0">
@@ -88,7 +108,7 @@ const BeautyTipsCategory = () => {
                       {article.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      {article.description}
+                      {article.excerpt}
                     </p>
                   </div>
                 </div>
@@ -97,18 +117,11 @@ const BeautyTipsCategory = () => {
           </div>
 
           {/* Load More */}
-          {hasMoreArticles && (
-            <div className="text-center mt-16">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="rounded-full"
-                onClick={loadMoreArticles}
-              >
-                Load More Articles ({allArticles.length - visibleArticles} remaining)
-              </Button>
-            </div>
-          )}
+          <div className="text-center mt-16">
+            <Button size="lg" variant="outline" className="rounded-full">
+              Load More Articles
+            </Button>
+          </div>
         </Container>
       </div>
     </>
