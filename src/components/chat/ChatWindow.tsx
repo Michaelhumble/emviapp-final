@@ -22,13 +22,13 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   useEffect(() => {
     const initialMessage: MessageType = {
       id: 'welcome-1',
-      content: "Hi! I'm Sunshine, your friendly beauty assistant! ☀️ I'm here to help you discover amazing nail artists, book your perfect appointment, or find answers to any beauty questions you have. What would you like to explore today?",
+      content: "Hi, I'm Sunshine! How can I help you run your beauty business smarter?",
       sender: 'assistant',
       timestamp: new Date(),
       actionSuggestions: [
-        { id: "find-artists", label: "Find Artists Near Me", icon: "users", href: "/artists" },
-        { id: "book-now", label: "Book an Appointment", icon: "calendar", href: "/booking-services" },
-        { id: "explore-salons", label: "Explore Salons", icon: "store", href: "/salon-sales" }
+        { id: "post-jobs", label: "Post Jobs", icon: "briefcase", href: "/jobs" },
+        { id: "list-salons", label: "List Salon for Sale", icon: "store", href: "/salon-sales" },
+        { id: "book-appointments", label: "Book Appointments", icon: "calendar", href: "/artists" }
       ]
     };
     
