@@ -21,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, userLanguage } = await req.json();
+    const { message, userId, userLanguage, userName } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -107,20 +107,22 @@ serve(async (req) => {
       userId, 
       messageLength: cleanMessage.length,
       detectedLanguage,
-      userName: userSession?.name || extractedName,
+      userName: userName || userSession?.name || extractedName,
       isReturningUser: !!userSession?.last_question
     });
 
     // Build personalized system prompt
     let personalizedContext = '';
-    if (userSession?.name) {
-      if (userSession.last_question && userSession.last_question !== cleanMessage) {
-        personalizedContext = `User's name: ${userSession.name}. This is a returning user. Last time they asked: "${userSession.last_question}". Greet them warmly by name and reference their previous question if relevant.`;
+    const knownName = userName || userSession?.name || extractedName;
+    
+    if (knownName) {
+      if (userSession?.last_question && userSession.last_question !== cleanMessage) {
+        personalizedContext = `User's name: ${knownName}. This is a returning user. Last time they asked: "${userSession.last_question}". Greet them warmly by name and reference their previous question if relevant.`;
+      } else if (extractedName) {
+        personalizedContext = `User just introduced themselves as: ${knownName}. Greet them warmly by name and remember it for future conversations.`;
       } else {
-        personalizedContext = `User's name: ${userSession.name}. Use their name naturally in conversation.`;
+        personalizedContext = `User's name: ${knownName}. Use their name naturally in conversation.`;
       }
-    } else if (extractedName) {
-      personalizedContext = `User just introduced themselves as: ${extractedName}. Greet them warmly by name and remember it for future conversations.`;
     }
 
     // LITTLE SUNSHINE AI – ENHANCED BIG SISTER SYSTEM PROMPT
@@ -269,7 +271,8 @@ Remember: You represent the best of Vietnamese hospitality and care - always war
       }
 
       return new Response(JSON.stringify({ 
-        response: aiResponse,
+        message: aiResponse,
+        response: aiResponse, // Keep both for compatibility
         language: detectedLanguage,
         success: true 
       }), {
@@ -294,7 +297,8 @@ Cảm ơn anh/chị đã ghé thăm. Khi nào rảnh tìm em nói chuyện cho v
 Thank you for visiting. Come chat anytime! ✨`;
     
     return new Response(JSON.stringify({ 
-      response: fallbackResponse,
+      message: fallbackResponse,
+      response: fallbackResponse, // Keep both for compatibility
       language: detectedLanguage || 'en',
       success: false,
       error: error.message 

@@ -52,7 +52,7 @@
 /* Fix chat toggle button positioning on safe areas */
 @supports (padding: max(0px)) {
   .chat-toggle-safe-bottom {
-    bottom: max(80px, calc(80px + env(safe-area-inset-bottom))) !important;
+    bottom: max(140px, calc(140px + env(safe-area-inset-bottom))) !important;
   }
 }
 
