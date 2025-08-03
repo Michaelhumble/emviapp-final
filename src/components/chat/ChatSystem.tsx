@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Sun, X, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Sparkles } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
@@ -10,140 +10,149 @@ export type { ActionSuggestion, MessageType };
 
 export const ChatSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showButton, setShowButton] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const isMobile = useIsMobile();
   
   useEffect(() => {
-    // Show button after 3 seconds
+    // Load chat system after page is ready
     const timer = setTimeout(() => {
-      setShowButton(true);
-    }, 3000);
+      setIsLoaded(true);
+    }, 2000);
     
     return () => clearTimeout(timer);
   }, []);
   
-  const openChat = () => {
-    setIsOpen(true);
-    setShowButton(false); // Hide button immediately when chat opens
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
   };
   
-  const closeChat = () => {
-    setIsOpen(false);
-    // Don't show button again - user has discovered the chat
-  };
-  
+  if (!isLoaded) return null;
+
   return (
     <>
       {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            key="chat-window"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-            className={`fixed ${isMobile ? 'inset-0 m-4' : 'bottom-20 right-4 w-[400px] max-h-[500px]'} z-[9998]`}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className={`fixed ${isMobile ? 'inset-4' : 'bottom-24 right-6 w-96 h-[500px]'} z-[9998]`}
           >
-            <ChatWindow onClose={closeChat} />
+            <ChatWindow onClose={toggleChat} />
           </motion.div>
         )}
       </AnimatePresence>
       
-      {/* Floating Chat Button - Only shows once, disappears forever when clicked */}
-      <AnimatePresence>
-        {showButton && (
+      {/* Persistent Chat Button */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className={`fixed ${isMobile ? 'bottom-6 right-6' : 'bottom-6 right-6'} z-[9999]`}
+      >
+        {/* Notification Pulse (only when closed) */}
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: [1, 1.4, 1] }}
+              exit={{ scale: 0 }}
+              transition={{ 
+                duration: 2, 
+                repeat: Infinity, 
+                repeatDelay: 3,
+                ease: "easeInOut"
+              }}
+              className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-full z-10"
+            >
+              <motion.div
+                animate={{ scale: [0.8, 1.2, 0.8] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-full h-full bg-white rounded-full opacity-60"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Main Chat Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleChat}
+          className={`relative ${
+            isOpen 
+              ? 'bg-gray-600 hover:bg-gray-700' 
+              : 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600'
+          } text-white rounded-full shadow-lg transition-all duration-300 ${
+            isMobile ? 'w-14 h-14' : 'w-12 h-12'
+          } flex items-center justify-center group`}
+          aria-label={isOpen ? "Close chat" : "Open chat"}
+        >
+          {/* Glow Effect */}
+          <div className={`absolute inset-0 rounded-full ${
+            isOpen 
+              ? 'bg-gray-500' 
+              : 'bg-gradient-to-br from-blue-400 to-pink-400'
+          } opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300`} />
+          
+          {/* Icon with smooth transition */}
           <motion.div
-            key="floating-button"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1, 
-              y: 0,
-              boxShadow: [
-                "0 10px 30px rgba(251, 146, 60, 0.3)",
-                "0 10px 40px rgba(251, 146, 60, 0.5)", 
-                "0 10px 30px rgba(251, 146, 60, 0.3)"
-              ]
-            }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ 
-              duration: 0.5,
-              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            }}
-            className={`fixed ${isMobile ? 'bottom-6 right-6' : 'bottom-8 right-8'} z-[9999] group`}
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="relative z-10"
           >
-            {/* Floating Emojis */}
-            <motion.div
-              animate={{ y: [-10, -20, -10] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-8 -left-2 text-xl pointer-events-none"
-            >
-              ✨
-            </motion.div>
-            <motion.div
-              animate={{ y: [-15, -25, -15] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute -top-6 -right-3 text-lg pointer-events-none"
-            >
-              🧡
-            </motion.div>
-            <motion.div
-              animate={{ y: [-8, -18, -8] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -top-10 left-1/2 text-lg pointer-events-none"
-            >
-              👋
-            </motion.div>
-            
-            {/* Main Button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={openChat}
-              className="relative bg-gradient-to-br from-orange-400 via-yellow-400 to-orange-500 hover:from-orange-500 hover:via-yellow-500 hover:to-orange-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:outline-none transition-all duration-300 w-16 h-16"
-              aria-label="Chat with Sunshine AI"
-            >
-              {/* Glow Effect */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300" />
-              
-              {/* Sun Icon */}
-              <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <Sun size={28} className="relative z-10" />
-              </motion.div>
-              
-              {/* Sparkle Effect */}
-              <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1 right-1"
-              >
-                <Sparkles size={12} className="text-yellow-200" />
-              </motion.div>
-            </motion.button>
+            {isOpen ? (
+              <X size={isMobile ? 24 : 20} />
+            ) : (
+              <MessageCircle size={isMobile ? 24 : 20} />
+            )}
           </motion.div>
-        )}
-      </AnimatePresence>
-      
-      {/* Mobile Close Button */}
-      <AnimatePresence>
-        {isOpen && isMobile && (
-          <motion.button
-            key="close-button"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed top-6 right-6 bg-gray-800 text-white p-2 rounded-full shadow-lg z-[9999]"
-            onClick={closeChat}
-            aria-label="Close chat"
-          >
-            <X size={20} />
-          </motion.button>
-        )}
-      </AnimatePresence>
+          
+          {/* Sparkle Effect - only when closed */}
+          <AnimatePresence>
+            {!isOpen && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ 
+                  opacity: [0.5, 1, 0.5], 
+                  scale: [0.8, 1.2, 0.8],
+                  rotate: [0, 180, 360]
+                }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  repeatDelay: 2
+                }}
+                className="absolute -top-1 -right-1"
+              >
+                <Sparkles size={12} className="text-yellow-300" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
+        
+        {/* Welcome Message - only shows first time */}
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.div
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 20, scale: 0.9 }}
+              transition={{ duration: 0.4, delay: 1 }}
+              className={`absolute ${isMobile ? 'right-16 top-0' : 'right-14 top-0'} bg-white rounded-lg shadow-lg p-3 max-w-xs pointer-events-none`}
+            >
+              <div className="text-sm text-gray-800 font-medium">
+                👋 Hi! Need help? Click to chat!
+              </div>
+              <div className="absolute top-3 -left-2 w-0 h-0 border-t-4 border-b-4 border-r-8 border-transparent border-r-white"></div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </>
   );
 };
