@@ -27,8 +27,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(userLanguage);
     
     const welcomeMessages = {
-      vi: "Dạ em chào anh/chị ạ, em là Sunshine. Anh/chị cần em giúp gì không nè? ✨",
-      en: "Hi! I'm Sunshine. What can I help you with today? ✨"
+      vi: "Chào anh/chị! Em là Sunshine — trợ lý AI của EmviApp. Anh/chị cho em biết tên để tiện xưng hô và hỗ trợ tốt hơn được không ạ? 😊",
+      en: "Hi there! I'm Sunshine — EmviApp's AI assistant. Could you tell me your name so I can provide better support? 😊"
     };
     
     const initialMessage: MessageType = {
@@ -36,7 +36,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       content: welcomeMessages[userLanguage as keyof typeof welcomeMessages],
       sender: 'assistant',
       timestamp: new Date()
-      // Removed actionSuggestions - no more automatic sales buttons!
     };
     
     setMessages([initialMessage]);
@@ -46,8 +45,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(language);
     
     const welcomeMessages = {
-      vi: "Dạ em chào anh/chị ạ, em là Sunshine. Anh/chị cần em giúp gì không nè? ✨",
-      en: "Hi! I'm Sunshine. What can I help you with today? ✨"
+      vi: "Chào anh/chị! Em là Sunshine — trợ lý AI của EmviApp. Anh/chị cho em biết tên để tiện xưng hô và hỗ trợ tốt hơn được không ạ? 😊",
+      en: "Hi there! I'm Sunshine — EmviApp's AI assistant. Could you tell me your name so I can provide better support? 😊"
     };
     
     // Update welcome message with new language - NO automatic sales buttons
@@ -90,7 +89,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setMessages(prevMessages => [...prevMessages, typingMessage]);
     
     try {
-      const aiResponse = await generateResponse(content);
+      const aiResponse = await generateResponse(content, currentLanguage);
       const processedResponse = processAiResponse(aiResponse);
       
       setMessages(prevMessages => {
@@ -160,8 +159,9 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Input area with safe bottom padding */}
-      <div className="border-t p-4 bg-white chat-input safe-area-bottom">
+      {/* Input area with enhanced mobile safety */}
+      <div className="border-t p-4 bg-white chat-input safe-area-bottom" 
+           style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
         <ChatInput onSendMessage={handleSendMessage} isProcessing={isLoading} />
       </div>
     </div>

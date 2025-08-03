@@ -19,14 +19,16 @@ export interface AssistantResponse {
 // Process user input using real AI
 export const processUserInput = async (
   userInput: string,
-  userId?: string
+  userId?: string,
+  userLanguage?: string
 ): Promise<AssistantResponse> => {
   try {
     // Call our Sunshine chat edge function for real AI responses
     const response = await supabase.functions.invoke('sunshine-chat', {
       body: {
         message: userInput,
-        userId: userId
+        userId: userId,
+        userLanguage: userLanguage
       }
     });
 

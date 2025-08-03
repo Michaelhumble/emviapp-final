@@ -15,7 +15,7 @@ export const useAssistant = () => {
   const [matches, setMatches] = useState<BookingMatch[]>([]);
   const { user } = useAuth();
 
-  const generateResponse = async (userInput: string): Promise<string> => {
+  const generateResponse = async (userInput: string, userLanguage?: string): Promise<string> => {
     setIsLoading(true);
     
     try {
@@ -25,8 +25,8 @@ export const useAssistant = () => {
       const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
       const startTime = Date.now();
       
-      // Process the user input
-      const response = await processUserInput(userInput, user?.id);
+      // Process the user input with language preference
+      const response = await processUserInput(userInput, user?.id, userLanguage);
       
       // If we got booking matches, update the state
       if (response.bookingMatches && response.bookingMatches.length > 0) {
