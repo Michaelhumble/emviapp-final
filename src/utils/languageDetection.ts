@@ -23,7 +23,15 @@ export const extractName = (text: string): string => {
     const match = text.trim().match(pattern);
     if (match && match[1] && match[1].length > 1) {
       const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
-      const excludeWords = ['anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me', 'muốn', 'cần', 'tìm', 'want', 'need', 'find', 'help', 'giúp'];
+      
+      // Exclude Vietnamese keywords and intent words that are NOT names
+      const excludeWords = [
+        'anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me',
+        // Vietnamese intent keywords that should NEVER be treated as names
+        'muốn', 'cần', 'tìm', 'việc', 'thợ', 'tiệm', 'salon', 'tuyển', 'bán', 'đăng', 'làm',
+        'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list'
+      ];
+      
       if (!excludeWords.includes(name.toLowerCase())) {
         return name;
       }

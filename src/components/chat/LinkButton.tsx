@@ -14,8 +14,8 @@ export const LinkButton = ({ href, label, icon, description, onClick }: LinkButt
     if (onClick) {
       onClick();
     } else {
-      // Always open hardcoded external links in new window
-      window.open(href, '_blank', 'noopener,noreferrer');
+      // Use internal navigation for same-tab routing
+      window.location.href = href;
     }
   };
 

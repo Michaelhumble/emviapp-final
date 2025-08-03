@@ -24,37 +24,44 @@ export interface ProcessedMessage {
   authFlow?: boolean;
 }
 
-// Extract URLs from text and convert to link objects - ONLY HARDCODED LINKS ALLOWED
+// Extract URLs from text and convert to link objects - ONLY INTERNAL ROUTES ALLOWED
 export const extractLinks = (text: string): Array<{ url: string; label: string; description?: string }> => {
-  const allowedLinks = [
+  const allowedRoutes = [
     {
-      url: 'https://preview--emviapp-final.lovable.app/post-job',
-      label: '📝 Post Job',
+      url: '/post-job',
+      label: 'Đăng tin tuyển thợ tại đây',
+      labelEn: 'Post a Job Here',
       description: 'Create a job listing'
     },
     {
-      url: 'https://preview--emviapp-final.lovable.app/sell-salon',
-      label: '🏪 Sell Salon',
+      url: '/sell-salon',
+      label: 'Bán tiệm tại đây',
+      labelEn: 'Sell a Salon Here',
       description: 'List your salon for sale'
     },
     {
-      url: 'https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F',
-      label: '🌟 Join Our Beauty Community',
+      url: '/auth/signup?redirect=%2F',
+      label: 'Tham gia cộng đồng làm đẹp',
+      labelEn: 'Join Our Beauty Community',
       description: 'Create your account and get started'
     },
     {
-      url: 'https://preview--emviapp-final.lovable.app/blog',
-      label: '📖 Read Blog',
+      url: '/blog',
+      label: 'Xem bài viết mới',
+      labelEn: 'Read Latest Blog',
       description: 'Latest news and tips from EmviApp'
     }
   ];
 
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urlRegex = /(\/[^\s]+)/g;
   const urls = text.match(urlRegex) || [];
   
-  // Only return links that match our allowed hardcoded links
+  // Only return links that match our allowed internal routes
   return urls
-    .map(url => allowedLinks.find(link => url.includes(link.url.split('?')[0])))
+    .map(url => {
+      const route = allowedRoutes.find(route => url.includes(route.url.split('?')[0]));
+      return route ? { url: route.url, label: route.labelEn, description: route.description } : null;
+    })
     .filter(Boolean) as Array<{ url: string; label: string; description?: string }>;
 };
 

@@ -271,49 +271,50 @@ export const ChatSystem = () => {
     }
   };
 
-  // Detect route intent from user message and AI response - ONLY HARDCODED LINKS  
+  // Detect route intent from user message and AI response - INTERNAL ROUTING ONLY
   const detectRouteIntent = (userMessage: string, aiResponse: string) => {
     const message = userMessage.toLowerCase();
     const response = aiResponse.toLowerCase();
     
-    // Job posting intent - HARDCODED LINK
+    // Job posting intent - INTERNAL ROUTE
     if (message.includes('đăng việc') || message.includes('post job') || 
         message.includes('tuyển') || message.includes('hiring') ||
         response.includes('post') || response.includes('đăng việc')) {
       return {
-        destination: 'https://preview--emviapp-final.lovable.app/post-job',
-        title: language === 'vi' ? 'Đăng tin tuyển dụng' : 'Post a Job',
+        destination: '/post-job',
+        title: language === 'vi' ? 'Đăng tin tuyển thợ' : 'Post a Job',
         requiresAuth: false
       };
     }
     
-    // Salon selling intent - HARDCODED LINK
+    // Salon selling intent - INTERNAL ROUTE
     if (message.includes('sell salon') || message.includes('bán salon') ||
-        message.includes('đăng salon') || message.includes('list salon')) {
+        message.includes('đăng salon') || message.includes('list salon') ||
+        message.includes('bán tiệm')) {
       return {
-        destination: 'https://preview--emviapp-final.lovable.app/sell-salon',
-        title: language === 'vi' ? 'Bán salon' : 'Sell Salon',
+        destination: '/sell-salon',
+        title: language === 'vi' ? 'Bán tiệm' : 'Sell Salon',
         requiresAuth: false
       };
     }
     
-    // Sign up intent - HARDCODED LINK
+    // Sign up intent - INTERNAL ROUTE
     if (message.includes('sign up') || message.includes('đăng ký') || 
         message.includes('tạo tài khoản') || message.includes('join') ||
         response.includes('sign up') || response.includes('đăng ký')) {
       return {
-        destination: 'https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F',
-        title: language === 'vi' ? 'Tham gia cộng đồng' : 'Join Our Beauty Community',
+        destination: '/auth/signup?redirect=%2F',
+        title: language === 'vi' ? 'Tham gia cộng đồng làm đẹp' : 'Join Our Beauty Community',
         requiresAuth: false
       };
     }
     
-    // Blog intent - HARDCODED LINK
+    // Blog intent - INTERNAL ROUTE
     if (message.includes('blog') || message.includes('tin tức') || 
         message.includes('bài viết') || response.includes('blog')) {
       return {
-        destination: 'https://preview--emviapp-final.lovable.app/blog',
-        title: language === 'vi' ? 'Đọc blog' : 'Read Blog',
+        destination: '/blog',
+        title: language === 'vi' ? 'Xem bài viết mới' : 'Read Latest Blog',
         requiresAuth: false
       };
     }
@@ -321,81 +322,81 @@ export const ChatSystem = () => {
     return null;
   };
 
-  // Generate contextual quick actions - ONLY HARDCODED LINKS
+  // Generate contextual quick actions - INTERNAL ROUTING ONLY
   const generateQuickActions = (response: string, userMessage: string) => {
     const actions = [];
     const lowerResponse = response.toLowerCase();
     const lowerMessage = userMessage.toLowerCase();
     
-    // Post job action - HARDCODED LINK
+    // Post job action - INTERNAL ROUTE
     if ((lowerResponse.includes('post') && lowerResponse.includes('job')) || 
         (lowerMessage.includes('đăng việc') || lowerMessage.includes('post job'))) {
       if (language === 'vi') {
         actions.push({ 
           id: 'post', 
-          label: '📝 Đăng việc', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/post-job', '_blank')
+          label: 'Đăng tin tuyển thợ tại đây', 
+          action: () => handleRouteAction('/post-job')
         });
       } else {
         actions.push({ 
           id: 'post', 
-          label: '📝 Post Job', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/post-job', '_blank')
+          label: 'Post a Job Here', 
+          action: () => handleRouteAction('/post-job')
         });
       }
     }
     
-    // Sell salon action - HARDCODED LINK
+    // Sell salon action - INTERNAL ROUTE
     if ((lowerResponse.includes('sell') || lowerResponse.includes('bán')) && 
         (lowerResponse.includes('salon') || lowerResponse.includes('tiệm'))) {
       if (language === 'vi') {
         actions.push({ 
           id: 'sell', 
-          label: '🏪 Bán salon', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/sell-salon', '_blank')
+          label: 'Bán tiệm tại đây', 
+          action: () => handleRouteAction('/sell-salon')
         });
       } else {
         actions.push({ 
           id: 'sell', 
-          label: '🏪 Sell Salon', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/sell-salon', '_blank')
+          label: 'Sell a Salon Here', 
+          action: () => handleRouteAction('/sell-salon')
         });
       }
     }
     
-    // Sign up action - HARDCODED LINK
+    // Sign up action - INTERNAL ROUTE
     if ((lowerResponse.includes('sign') && lowerResponse.includes('up')) || 
         (lowerResponse.includes('join') || lowerResponse.includes('tham gia')) ||
         (lowerMessage.includes('sign up') || lowerMessage.includes('đăng ký'))) {
       if (language === 'vi') {
         actions.push({ 
           id: 'signup', 
-          label: '🌟 Tham gia cộng đồng', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F', '_blank')
+          label: 'Tham gia cộng đồng làm đẹp', 
+          action: () => handleRouteAction('/auth/signup?redirect=%2F')
         });
       } else {
         actions.push({ 
           id: 'signup', 
-          label: '🌟 Join Our Beauty Community', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/auth/signup?redirect=%2F', '_blank')
+          label: 'Join Our Beauty Community', 
+          action: () => handleRouteAction('/auth/signup?redirect=%2F')
         });
       }
     }
     
-    // Blog action - HARDCODED LINK
+    // Blog action - INTERNAL ROUTE
     if (lowerResponse.includes('blog') || lowerResponse.includes('tin tức') ||
         lowerMessage.includes('blog') || lowerMessage.includes('tin tức')) {
       if (language === 'vi') {
         actions.push({ 
           id: 'blog', 
-          label: '📖 Đọc blog', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/blog', '_blank')
+          label: 'Xem bài viết mới', 
+          action: () => handleRouteAction('/blog')
         });
       } else {
         actions.push({ 
           id: 'blog', 
-          label: '📖 Read Blog', 
-          action: () => window.open('https://preview--emviapp-final.lovable.app/blog', '_blank')
+          label: 'Read Latest Blog', 
+          action: () => handleRouteAction('/blog')
         });
       }
     }
@@ -412,14 +413,14 @@ export const ChatSystem = () => {
     return actions;
   };
 
-  // Handle route confirmation - HARDCODED LINKS ONLY
+  // Handle route confirmation - INTERNAL ROUTING ONLY
   const handleRouteConfirm = async (destination: string, requiresAuth: boolean) => {
-    // Always open hardcoded external links - no auth required
-    window.open(destination, '_blank', 'noopener,noreferrer');
+    // Use internal navigation with window.location.href for same-tab navigation
+    window.location.href = destination;
     
     const confirmMessage = language === 'vi'
-      ? `Đang mở trang mới! Em sẽ ở đây nếu anh/chị cần giúp gì thêm 😊`
-      : `Opening new page! I'll be here if you need any more help 😊`;
+      ? `Đang chuyển trang! Em sẽ ở đây nếu anh/chị cần giúp gì thêm 😊`
+      : `Navigating now! I'll be here if you need any more help 😊`;
     
     const confirmMsg: Message = {
       id: Date.now().toString(),
