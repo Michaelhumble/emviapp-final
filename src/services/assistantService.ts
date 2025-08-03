@@ -16,28 +16,46 @@ export interface AssistantResponse {
   bookingMatches?: BookingMatch[];
 }
 
-// Process user input and return a response
+// Process user input using real AI
 export const processUserInput = async (
   userInput: string,
   userId?: string
 ): Promise<AssistantResponse> => {
-  // Check if this is a booking request
-  const bookingKeywords = ['book', 'appointment', 'schedule', 'reserve'];
-  const isBookingRequest = bookingKeywords.some(keyword => 
-    userInput.toLowerCase().includes(keyword)
-  );
-  
-  // If this is a booking request, try to find matching artists
-  if (isBookingRequest) {
-    try {
-      // This would normally call an AI service to extract booking intent
-      // For now, we'll use mock data for demonstration
-      const mockMatches: BookingMatch[] = [
+  try {
+    // Call our Sunshine chat edge function for real AI responses
+    const response = await supabase.functions.invoke('sunshine-chat', {
+      body: {
+        message: userInput,
+        userId: userId
+      }
+    });
+
+    if (response.error) {
+      throw new Error(response.error.message || 'Failed to get AI response');
+    }
+
+    const aiResponse = response.data?.response;
+    
+    if (!aiResponse) {
+      throw new Error('No response received from AI');
+    }
+
+    // Check if this might be a booking request and should show booking options
+    const bookingKeywords = ['book', 'appointment', 'schedule', 'reserve', 'availability'];
+    const isBookingRequest = bookingKeywords.some(keyword => 
+      userInput.toLowerCase().includes(keyword)
+    );
+    
+    let bookingMatches: BookingMatch[] = [];
+    
+    // If this seems like a booking request, provide some example artists
+    if (isBookingRequest) {
+      bookingMatches = [
         {
           id: '1',
           name: 'Sarah Johnson',
           service: 'Gel Manicure',
-          date: '2025-04-18',
+          date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
           time: '14:00',
           avatar: '/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png',
           artistId: '123456'
@@ -46,28 +64,26 @@ export const processUserInput = async (
           id: '2',
           name: 'Michael Chen',
           service: 'Nail Art Design',
-          date: '2025-04-19',
+          date: new Date(Date.now() + 172800000).toISOString().split('T')[0], // Day after tomorrow
           time: '10:30',
           artistId: '789012'
         }
       ];
-      
-      return {
-        message: "I've found some available artists that match your request. Would you like to book with any of them?",
-        bookingMatches: mockMatches
-      };
-    } catch (error) {
-      console.error('Error processing booking request:', error);
-      return {
-        message: "I'm having trouble finding booking options right now. Could you try again or specify more details about what type of appointment you're looking for?"
-      };
     }
+
+    return {
+      message: aiResponse,
+      bookingMatches: bookingMatches.length > 0 ? bookingMatches : undefined
+    };
+    
+  } catch (error) {
+    console.error('Error calling Sunshine AI:', error);
+    
+    // Return a fallback response that still feels like Sunshine
+    return {
+      message: "I'm having a little trouble with my AI connection right now, but I'm still here to help! ☀️ Could you try asking your question again? I love chatting about all things beauty and helping you find the perfect nail artist or service! 💅✨"
+    };
   }
-  
-  // For non-booking requests, return a default response
-  return {
-    message: "I'm here to help with bookings, finding salons, or answering any questions about EmviApp. What would you like to know?"
-  };
 };
 
 // Create a booking from a match
