@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
-import { runListingsVerification } from "@/utils/runListingsVerification";
+
 
 // Import conversion optimization components
 import StickySignUpButton from "@/components/ui/StickySignUpButton";
@@ -65,11 +65,6 @@ const Index = () => {
   useEffect(() => {
     document.title = "EmviApp | The Beauty Industry Platform";
     console.log("Index page loaded");
-    
-    // Run verification to ensure all listings have proper routing
-    runListingsVerification()
-      .then(() => console.log("Listings verification completed"))
-      .catch(err => console.error("Error in listings verification:", err));
   }, []);
   
   return (

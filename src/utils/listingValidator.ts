@@ -18,8 +18,8 @@ export const validateListingExists = async (id: string, type: ListingType): Prom
 
   switch (type) {
     case 'salon':
-      // For now, only validate magic nails listing
-      return id === 'magic-nails-featured';
+      // Accept standard salon IDs and magic nails listing
+      return id.startsWith('salon-') || id === 'magic-nails-featured';
     
     case 'job':
     case 'opportunity':
