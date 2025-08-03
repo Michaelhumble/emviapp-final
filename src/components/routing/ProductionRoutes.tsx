@@ -82,7 +82,7 @@ const ProductionRoutes: React.FC = () => {
         />
 
         {/* Legacy redirects */}
-        {/* <Route path="/jobs" element={<Navigate to="/booking-services" replace />} /> */}
+        <Route path="/jobs" element={<Navigate to="/booking-services" replace />} />
         <Route path="/salon-owners" element={<Navigate to="/salons" replace />} />
         <Route path="/customers" element={<Navigate to="/booking-services" replace />} />
 

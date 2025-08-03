@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
-import BlogErrorBoundary from '@/components/blog/BlogErrorBoundary';
+import BlogArticleCard from '@/components/blog/BlogArticleCard';
 import { 
   getFeaturedArticles, 
   getTrendingArticles, 
@@ -69,7 +69,7 @@ const BlogLanding = () => {
   };
 
   return (
-    <BlogErrorBoundary>
+    <>
       <DynamicSEO
         title="EmviApp Blog - Beauty Industry Insights & Tips"
         description="Discover the latest beauty industry trends, salon management tips, artist spotlights, and success stories. Expert insights for beauty professionals."
@@ -335,7 +335,7 @@ const BlogLanding = () => {
           </div>
         </Container>
       </div>
-    </BlogErrorBoundary>
+    </>
   );
 };
 

@@ -20,8 +20,7 @@ export interface AssistantResponse {
 export const processUserInput = async (
   userInput: string,
   userId?: string,
-  userLanguage?: string,
-  userName?: string
+  userLanguage?: string
 ): Promise<AssistantResponse> => {
   try {
     // Call our Sunshine chat edge function for real AI responses
@@ -29,8 +28,7 @@ export const processUserInput = async (
       body: {
         message: userInput,
         userId: userId,
-        userLanguage: userLanguage,
-        userName: userName
+        userLanguage: userLanguage
       }
     });
 
@@ -38,7 +36,7 @@ export const processUserInput = async (
       throw new Error(response.error.message || 'Failed to get AI response');
     }
 
-    const aiResponse = response.data?.response || response.data?.message;
+    const aiResponse = response.data?.response;
     
     if (!aiResponse) {
       throw new Error('No response received from AI');

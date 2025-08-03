@@ -13,54 +13,6 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps) {
-  
-  // Function to render message content with clickable links
-  const renderMessageWithLinks = (content: string) => {
-    // URL pattern for detecting links
-    const urlPattern = /(https?:\/\/[^\s]+|\/[^\s]*)/g;
-    const parts = content.split(urlPattern);
-    
-    return parts.map((part, index) => {
-      if (part.match(urlPattern)) {
-        const isInternalLink = part.startsWith('/');
-        if (isInternalLink) {
-          return (
-            <Link 
-              key={index}
-              to={part}
-              className="inline-flex items-center gap-1 bg-primary/10 hover:bg-primary/20 text-primary font-medium px-2 py-1 rounded-md text-sm transition-colors duration-200 mx-1"
-            >
-              <ChevronRight className="h-3 w-3" />
-              {getLinkLabel(part)}
-            </Link>
-          );
-        } else {
-          return (
-            <a 
-              key={index}
-              href={part}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 bg-primary/10 hover:bg-primary/20 text-primary font-medium px-2 py-1 rounded-md text-sm transition-colors duration-200 mx-1"
-            >
-              <ChevronRight className="h-3 w-3" />
-              Visit Link
-            </a>
-          );
-        }
-      }
-      return part;
-    });
-  };
-
-  // Function to get a friendly label for internal links
-  const getLinkLabel = (path: string): string => {
-    if (path.includes('/artists')) return 'Browse Artists';
-    if (path.includes('/jobs')) return 'View Jobs';
-    if (path.includes('/salon-sales')) return 'Salon Sales';
-    if (path.includes('/blog')) return 'Read Blog';
-    return 'Visit Page';
-  };
   // Format timestamp to display time
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString(undefined, {
@@ -134,9 +86,7 @@ export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps)
           </div>
         ) : (
           <>
-            <div className="text-sm whitespace-pre-wrap break-words">
-              {message.sender === "assistant" ? renderMessageWithLinks(message.content) : message.content}
-            </div>
+            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
             
             {/* Show booking options if available */}
             {message.bookingMatches && message.bookingMatches.length > 0 && (
@@ -187,9 +137,9 @@ export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps)
                     className="no-underline"
                   >
                     <Button 
-                      variant="default" 
+                      variant="outline" 
                       size="sm" 
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-sm font-medium"
+                      className="bg-background hover:bg-background/90 border-primary/20"
                     >
                       {getIconComponent(action.icon)}
                       {action.label}

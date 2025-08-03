@@ -17,8 +17,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'vi'>('en');
-  const [userName, setUserName] = useState<string>('');
-  const [hasAskedForName, setHasAskedForName] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { generateResponse, isLoading, matches, createBooking } = useAssistant();
   const { user } = useAuth();
@@ -29,8 +27,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(userLanguage);
     
     const welcomeMessages = {
-      vi: "Chào anh/chị! Em là Sunshine — trợ lý AI của EmviApp. Anh/chị cho em biết tên để tiện xưng hô và hỗ trợ tốt hơn được không ạ? 😊💛",
-      en: "Hi there! I'm Sunshine — EmviApp's AI assistant. Could you tell me your name so I can provide better support? 😊💛"
+      vi: "Chào anh/chị! Em là Sunshine — trợ lý AI của EmviApp. Anh/chị cho em biết tên để tiện xưng hô và hỗ trợ tốt hơn được không ạ? 😊",
+      en: "Hi there! I'm Sunshine — EmviApp's AI assistant. Could you tell me your name so I can provide better support? 😊"
     };
     
     const initialMessage: MessageType = {
@@ -41,7 +39,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     };
     
     setMessages([initialMessage]);
-    setHasAskedForName(true);
   }, []);
   
   const handleLanguageChange = (language: 'en' | 'vi') => {
@@ -70,20 +67,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return;
-
-    // Auto-detect language from user input
-    const detectedLanguage = detectLanguage(content);
-    if (detectedLanguage !== currentLanguage) {
-      setCurrentLanguage(detectedLanguage);
-    }
-
-    // Check if this is a name response (first interaction without a name)
-    if (!userName && hasAskedForName && messages.length <= 2) {
-      const extractedName = extractNameFromMessage(content);
-      if (extractedName) {
-        setUserName(extractedName);
-      }
-    }
     
     const userMessage: MessageType = {
       id: Date.now().toString(),
@@ -106,7 +89,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setMessages(prevMessages => [...prevMessages, typingMessage]);
     
     try {
-      const aiResponse = await generateResponse(content, detectedLanguage, userName);
+      const aiResponse = await generateResponse(content, currentLanguage);
       const processedResponse = processAiResponse(aiResponse);
       
       setMessages(prevMessages => {
@@ -117,7 +100,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
           content: processedResponse.message,
           sender: 'assistant',
           timestamp: new Date(),
-          actionSuggestions: processedResponse.suggestedActions,
+          // Only show action suggestions if the AI specifically decides to include them
+          // based on the user's request, not automatically
           bookingMatches: matches
         };
         
@@ -129,14 +113,9 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       setMessages(prevMessages => {
         const filteredMessages = prevMessages.filter(msg => msg.id !== 'typing');
         
-        const errorMessages = {
-          vi: "Xin lỗi anh/chị, em đang gặp chút trục trặc. Anh/chị thử lại sau nhé! 😅",
-          en: "Sorry, I'm having trouble processing your request right now. Please try again later! 😅"
-        };
-        
         const errorMessage: MessageType = {
           id: Date.now().toString(),
-          content: errorMessages[detectedLanguage],
+          content: "Sorry, I'm having trouble processing your request right now. Please try again later.",
           sender: 'assistant',
           timestamp: new Date()
         };
@@ -146,38 +125,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     } finally {
       setIsTyping(false);
     }
-  };
-
-  // Helper functions for language detection and name extraction
-  const detectLanguage = (text: string): 'en' | 'vi' => {
-    const vietnameseChars = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-    const vietnameseWords = /\b(tôi|em|anh|chị|là|tên|xin|chào|cảm|ơn|không|có|được|làm|gì|như|thế|nào|đây|kia|này|ạ)\b/i;
-    
-    return vietnameseChars.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
-  };
-
-  const extractNameFromMessage = (message: string): string => {
-    // Common patterns for name extraction
-    const patterns = [
-      /(?:tôi là|em là|tên tôi là|tên em là|mình là)\s+([a-zA-ZÀ-ÿ\u0100-\u017F\u1EA0-\u1EF9\s]+)/i,
-      /(?:i'm|i am|my name is|call me)\s+([a-zA-ZÀ-ÿ\u0100-\u017F\u1EA0-\u1EF9\s]+)/i,
-      /^([a-zA-ZÀ-ÿ\u0100-\u017F\u1EA0-\u1EF9]+)$/i // Single word response (likely a name)
-    ];
-    
-    for (const pattern of patterns) {
-      const match = message.trim().match(pattern);
-      if (match && match[1]) {
-        return match[1].trim().split(' ')[0]; // Take first word as name
-      }
-    }
-    
-    // If the entire message is a short response (likely a name)
-    const trimmed = message.trim();
-    if (trimmed.length <= 20 && trimmed.split(' ').length <= 2 && /^[a-zA-ZÀ-ÿ\u0100-\u017F\u1EA0-\u1EF9\s]+$/.test(trimmed)) {
-      return trimmed.split(' ')[0];
-    }
-    
-    return '';
   };
   
   const handleBookingConfirm = (match: BookingMatch) => {

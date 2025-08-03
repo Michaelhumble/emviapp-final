@@ -4,20 +4,40 @@ import { Container } from '@/components/ui/container';
 import { getArticleBySlug, BLOG_ARTICLES } from '@/data/blogArticles';
 import { extractSlugFromUrl } from '@/utils/blogLinks';
 import DynamicSEO from '@/components/seo/DynamicSEO';
-import BlogErrorBoundary from '@/components/blog/BlogErrorBoundary';
 
 const BlogArticlePage: React.FC = () => {
   const { slug, category } = useParams<{ slug: string; category: string }>();
   const location = useLocation();
   
+  // Debug the routing
+  console.log('🔍 Blog Route Debug:', {
+    slug,
+    category,
+    pathname: location.pathname,
+    extractedSlug: extractSlugFromUrl(location.pathname)
+  });
+  
   // Try to get slug from params first, then from URL path
   const articleSlug = slug || extractSlugFromUrl(location.pathname);
   
+  console.log('🎯 Looking for article with slug:', articleSlug);
+  console.log('📚 Available articles:', BLOG_ARTICLES.map(a => ({ slug: a.slug, title: a.title })));
+  
   if (!articleSlug) {
+    console.log('❌ No article slug found');
     return <Navigate to="/blog" replace />;
   }
   
   const article = getArticleBySlug(articleSlug);
+  console.log('📰 Article lookup result:', article ? `Found: ${article.title}` : 'NOT FOUND');
+  
+  // Add additional debugging for the lookup
+  if (!article) {
+    console.log('🔍 Debug: Checking all articles for exact match...');
+    BLOG_ARTICLES.forEach(a => {
+      console.log(`- ${a.slug} === ${articleSlug}? ${a.slug === articleSlug}`);
+    });
+  }
   
   if (!article) {
     return (
@@ -105,9 +125,7 @@ const BlogArticlePage: React.FC = () => {
           </div>
         }
       >
-        <BlogErrorBoundary>
-          <ArticleComponent />
-        </BlogErrorBoundary>
+        <ArticleComponent />
       </Suspense>
     </>
   );
