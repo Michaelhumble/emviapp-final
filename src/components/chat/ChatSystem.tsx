@@ -41,7 +41,7 @@ export const ChatSystem = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className={`fixed ${isMobile ? 'inset-0 m-4' : 'bottom-24 right-8 w-[400px]'}`}
+            className={`fixed ${isMobile ? 'inset-0 m-4' : 'bottom-20 right-4 w-[400px] max-h-[500px]'}`}
             style={{ zIndex: 9998 }}
           >
             <ChatWindow onClose={toggleChat} />
