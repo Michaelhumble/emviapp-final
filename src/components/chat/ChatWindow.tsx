@@ -27,8 +27,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(userLanguage);
     
     const welcomeMessages = {
-      vi: "Em là Sunshine, em có thể giúp anh/chị gì được không ạ? Xin đừng ngại nhé! Em cảm ơn anh/chị đã dành thời gian ghé thăm EmviApp! ✨",
-      en: "Hi, I'm Sunshine. How can I help you today? Please don't hesitate to ask! Thank you so much for stopping by—your time means a lot to me. ✨"
+      vi: "Em là Sunshine, em có thể giúp anh/chị gì được không ạ? Xin đừng ngại nhé! ✨",
+      en: "Hi, I'm Sunshine. How can I help you today? Please don't hesitate to ask! ✨"
     };
     
     const initialMessage: MessageType = {
@@ -46,8 +46,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setCurrentLanguage(language);
     
     const welcomeMessages = {
-      vi: "Em là Sunshine, em có thể giúp anh/chị gì được không ạ? Xin đừng ngại nhé! Em cảm ơn anh/chị đã dành thời gian ghé thăm EmviApp! ✨",
-      en: "Hi, I'm Sunshine. How can I help you today? Please don't hesitate to ask! Thank you so much for stopping by—your time means a lot to me. ✨"
+      vi: "Em là Sunshine, em có thể giúp anh/chị gì được không ạ? Xin đừng ngại nhé! ✨",
+      en: "Hi, I'm Sunshine. How can I help you today? Please don't hesitate to ask! ✨"
     };
     
     // Update welcome message with new language - NO automatic sales buttons
