@@ -107,7 +107,7 @@ function App() {
                     {/* Auth routes */}
                     <Route path="/login" element={<SignIn />} />
                     <Route path="/signin" element={<SignIn />} />
-                    <Route path="/signup" element={<NewSignUp />} />
+                    {/* Remove legacy /signup route - use /auth/signup only */}
                     <Route path="/signup-fast-fomo" element={<SignupFastFomo />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/auth/premium-signup" element={<PremiumSignupPage />} />

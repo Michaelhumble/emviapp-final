@@ -40,15 +40,18 @@ export const extractLinks = (text: string): Array<{ url: string; label: string; 
     } else if (url.includes('/artists')) {
       label = '💅 Browse Artists'; 
       description = 'Discover talented nail artists';
+    } else if (url.includes('/salons')) {
+      label = '🏪 Browse Salons';
+      description = 'Find beauty salons near you';
     } else if (url.includes('/post-job')) {
       label = '📝 Post Job';
       description = 'Create a job listing';
     } else if (url.includes('/sell-salon')) {
       label = '🏪 List Salon';
       description = 'Sell or list your salon';
-    } else if (url.includes('/signup')) {
-      label = '📝 Sign Up & Continue';
-      description = 'Create your account and complete your task';
+    } else if (url.includes('/auth/signup')) {
+      label = '🌟 Join Our Beauty Community';
+      description = 'Create your account and get started';
     } else if (url.includes('emvi.app')) {
       label = '🌟 Visit EmviApp';
       description = 'Go to EmviApp platform';

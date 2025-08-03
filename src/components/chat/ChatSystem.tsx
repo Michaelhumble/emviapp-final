@@ -276,12 +276,12 @@ export const ChatSystem = () => {
     const message = userMessage.toLowerCase();
     const response = aiResponse.toLowerCase();
     
-    // Job posting intent - always route to signup first if not authenticated
+    // Job posting intent - always route to official signup if not authenticated
     if (message.includes('đăng việc') || message.includes('post job') || 
         message.includes('tuyển') || message.includes('hiring') ||
         response.includes('post') || response.includes('đăng việc')) {
       return {
-        destination: user ? '/post-job' : '/signup?redirect=/post-job',
+        destination: user ? '/post-job' : '/auth/signup?redirect=/post-job',
         title: language === 'vi' ? 'Đăng tin tuyển dụng' : 'Post a Job',
         requiresAuth: true
       };
@@ -308,11 +308,21 @@ export const ChatSystem = () => {
       };
     }
     
-    // Salon listing intent
+    // Salon search intent  
     if (message.includes('salon') || message.includes('tiệm') ||
-        message.includes('list salon') || message.includes('đăng salon')) {
+        message.includes('find salon') || message.includes('tìm salon')) {
       return {
-        destination: user ? '/sell-salon' : '/signup?redirect=/sell-salon',
+        destination: '/salons',
+        title: language === 'vi' ? 'Tìm salon' : 'Browse Salons',
+        requiresAuth: false
+      };
+    }
+    
+    // Salon listing intent
+    if (message.includes('list salon') || message.includes('sell salon') ||
+        message.includes('đăng salon')) {
+      return {
+        destination: user ? '/sell-salon' : '/auth/signup?redirect=/sell-salon',
         title: language === 'vi' ? 'Đăng thông tin salon' : 'List Your Salon',
         requiresAuth: true
       };
@@ -369,10 +379,10 @@ export const ChatSystem = () => {
         language
       });
       
-      // Direct signup message with button
+      // Direct signup message with button - NO EMAIL COLLECTION
       const signupMessage = language === 'vi'
-        ? `Để tiếp tục, anh/chị cần tài khoản EmviApp. Sẵn sàng đăng ký chưa?`
-        : `You'll need an account to continue. Ready to sign up now?`;
+        ? `Để tiếp tục, anh/chị cần tài khoản EmviApp. Sẵn sàng tham gia cộng đồng làm đẹp chưa?`
+        : `You'll need an account to continue. Ready to join our beauty community?`;
       
       const signupMsg: Message = {
         id: Date.now().toString(),
@@ -381,7 +391,7 @@ export const ChatSystem = () => {
         timestamp: new Date(),
         links: [{
           url: destination, // This will be processed to show the signup button
-          label: language === 'vi' ? '📝 Đăng ký & Tiếp tục' : '📝 Sign Up & Continue',
+          label: language === 'vi' ? '🌟 Tham Gia Cộng Đồng Làm Đẹp' : '🌟 Join Our Beauty Community',
           description: language === 'vi' ? 'Tạo tài khoản và hoàn thành tác vụ' : 'Create account and complete your task'
         }]
       };
