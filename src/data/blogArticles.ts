@@ -37,43 +37,9 @@ const ContouredBrows2025 = lazy(() => import('@/pages/blog/articles/ContouredBro
 const AIPoweredSalonManagement2025 = lazy(() => import('@/pages/blog/articles/AIPoweredSalonManagement2025'));
 const Top7AITrendsBeautySalons2025 = lazy(() => import('@/pages/blog/articles/Top7AITrendsBeautySalons2025'));
 const VietnameseNailTechHiring2025 = lazy(() => import('@/pages/blog/articles/VietnameseNailTechHiring2025'));
-const SocialMediaMarketingSalonsGuide2025 = lazy(() => import('@/pages/blog/articles/SocialMediaMarketingSalonsGuide2025'));
-const IncreaseSalonBookings300Percent2024 = lazy(() => import('@/pages/blog/articles/IncreaseSalonBookings300Percent2024'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  {
-    id: 'social-media-marketing-salons-guide-2025',
-    slug: 'social-media-marketing-salons-guide-2025',
-    title: 'Social Media Marketing for Salons: The Complete 2025 Guide',
-    description: 'Master social media marketing strategies that increase salon bookings by 70%. Complete guide with proven tactics for content creation, client engagement, and revenue growth.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 15, 2025',
-    readTime: '10 min read',
-    category: 'Salon Management',
-    categorySlug: 'salon-management',
-    tags: ['social media', 'marketing', 'salon growth', 'content creation', 'client engagement'],
-    image: '/src/assets/social-media-marketing-salons-guide.jpg',
-    featured: true,
-    component: SocialMediaMarketingSalonsGuide2025,
-    url: '/blog/salon-management/social-media-marketing-salons-guide-2025'
-  },
-  {
-    id: 'increase-salon-bookings-300-percent-2024',
-    slug: 'increase-salon-bookings-300-percent-2024',
-    title: 'How to Increase Your Salon Bookings by 300% in 2024',
-    description: 'Discover proven strategies used by top salons to triple their bookings. Mobile-first systems, AI client matching, retention tactics, and growth marketing that actually works.',
-    author: 'EmviApp Team',
-    publishedAt: 'February 20, 2025',
-    readTime: '10 min read',
-    category: 'Salon Management',
-    categorySlug: 'salon-management',
-    tags: ['salon growth', 'booking increase', 'client retention', 'mobile booking', 'AI technology'],
-    image: '/src/assets/increase-salon-bookings-300-percent.jpg',
-    trending: true,
-    component: IncreaseSalonBookings300Percent2024,
-    url: '/blog/salon-management/increase-salon-bookings-300-percent-2024'
-  },
   {
     id: 'vietnamese-nail-tech-hiring-2025',
     slug: 'vietnamese-nail-tech-hiring-2025',
@@ -85,7 +51,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['Vietnamese nail technician hiring', 'nail tech recruitment 2025', 'salon staff retention', 'EmviApp recruitment platform', 'Vietnamese nail salon staffing'],
-    image: '/src/assets/vietnamese-nail-tech-article.jpg',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
     featured: true,
     trending: true,
     component: VietnameseNailTechHiring2025,
@@ -134,7 +100,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['AI tools', 'makeup artistry', 'technology', 'innovation', 'beauty tech'],
-    image: '/src/assets/ai-tools-makeup-article.jpg',
+    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     featured: true,
     trending: true,
     component: AIToolsForMakeupArtists2025,
@@ -151,7 +117,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Artist Spotlights',
     categorySlug: 'artist-spotlights',
     tags: ['lash technician', 'client loyalty', 'retention strategies', 'lash business', 'customer service'],
-    image: '/src/assets/lash-client-loyalty-article.jpg',
+    image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     trending: true,
     component: ClientLoyaltyLashTechs2025,
     url: '/blog/artist-spotlights/client-loyalty-lash-techs-2025'
@@ -182,7 +148,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['salon management', 'hiring', 'staff management', 'team building', 'HR'],
-    image: '/src/assets/salon-staff-hiring-article.jpg',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80',
     featured: true,
     component: HiringManagingSalonStaff2025,
     url: '/blog/salon-management/hiring-managing-salon-staff-2025'
@@ -198,7 +164,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['salon growth', 'bookings', 'marketing', 'business strategy', 'revenue'],
-    image: '/src/assets/increase-bookings-article.jpg',
+    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2126&q=80',
     trending: true,
     component: IncreaseSalonBookings2024,
     url: '/blog/salon-management/increase-salon-bookings-2024'
@@ -214,7 +180,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Trends',
     categorySlug: 'trends',
     tags: ['mobile business', 'digital transformation', 'beauty trends', 'technology', 'mobile apps'],
-    image: '/src/assets/mobile-beauty-business-article.jpg',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     component: MobileFirstBeautyBusiness2025,
     url: '/blog/trends/mobile-first-beauty-business-2025'
   },
@@ -229,7 +195,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['pricing strategy', 'revenue optimization', 'salon business', 'profit margins', 'value pricing'],
-    image: '/src/assets/salon-pricing-article.jpg',
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80',
     featured: true,
     component: SalonPricingStrategies2025,
     url: '/blog/salon-management/salon-pricing-strategies-2025'
@@ -245,7 +211,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['social media', 'content marketing', 'nail salon', 'Instagram', 'TikTok'],
-    image: '/src/assets/nail-salon-social-media-article.jpg',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
     trending: true,
     component: SocialMediaContentNailSalons2025,
     url: '/blog/salon-management/social-media-content-nail-salons-2025'
@@ -261,7 +227,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['social media marketing', 'salon promotion', 'digital marketing', 'brand building', 'client acquisition'],
-    image: '/src/assets/salon-social-marketing-article.jpg',
+    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2339&q=80',
     component: SocialMediaMarketingSalons2025,
     url: '/blog/salon-management/social-media-marketing-salons-2025'
   },
@@ -292,7 +258,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['winter skincare', 'beauty tips', 'skin health', 'seasonal beauty', 'skincare routine'],
-    image: '/src/assets/winter-skincare-article.jpg',
+    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     featured: true,
     component: WinterSkincareTips2025,
     url: '/blog/beauty-tips/winter-skincare-tips-2025'
@@ -308,7 +274,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['eyeliner', 'makeup tutorial', 'winged eyeliner', 'eye makeup', 'beauty techniques'],
-    image: '/src/assets/winged-eyeliner-article.jpg',
+    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80',
     trending: true,
     component: PerfectWingEyeliner2025,
     url: '/blog/beauty-tips/perfect-winged-eyeliner-2025'
@@ -324,7 +290,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['nail art', 'nail trends', '2025 trends', 'nail design', 'manicure'],
-    image: '/src/assets/nail-art-trends-article.jpg',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=2127&q=80',
     featured: true,
     component: NailArtTrends2025,
     url: '/blog/beauty-tips/nail-art-trends-2025'
@@ -340,7 +306,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['hair care', 'DIY beauty', 'hair masks', 'natural ingredients', 'hair treatment'],
-    image: '/src/assets/diy-hair-masks-article.jpg',
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80',
     trending: true,
     component: HairMaskDIYRecipes2025,
     url: '/blog/beauty-tips/hair-mask-diy-recipes-2025'
@@ -356,7 +322,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['eyebrows', 'brow shaping', 'contouring', 'makeup techniques', 'face shaping'],
-    image: '/src/assets/contoured-brows-article.jpg',
+    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     component: ContouredBrows2025,
     url: '/blog/beauty-tips/contoured-brows-2025'
   }

@@ -15,7 +15,6 @@ import {
   searchArticles,
   getAllTags 
 } from '@/data/blogArticles';
-import { TestSunshineConnection } from '@/components/sunshine/TestConnection';
 
 const BlogLanding = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,7 +75,7 @@ const BlogLanding = () => {
         description="Discover the latest beauty industry trends, salon management tips, artist spotlights, and success stories. Expert insights for beauty professionals."
         url="https://emvi.app/blog"
         type="website"
-        image="/assets/blog-landing-hero.jpg"
+        image="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "Blog",
@@ -312,10 +311,6 @@ const BlogLanding = () => {
             showImage={true}
           />
           
-          {/* Temporary Debug Section */}
-          <div className="mt-16 pt-8 border-t border-gray-200">
-            <TestSunshineConnection />
-          </div>
         </Container>
 
         {/* Newsletter Signup */}

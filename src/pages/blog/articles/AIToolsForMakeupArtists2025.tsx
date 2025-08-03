@@ -8,7 +8,6 @@ import BlogImage from '@/components/blog/BlogImage';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
 import EnhancedSEO from '@/components/seo/EnhancedSEO';
 import BlogSocialShare from '@/components/blog/BlogSocialShare';
-import aiMakeupWorkspaceHero from '@/assets/ai-makeup-artist-workspace-hero.jpg';
 
 const AIToolsForMakeupArtists2025 = () => {
   const articleSchema = {
@@ -107,8 +106,8 @@ const AIToolsForMakeupArtists2025 = () => {
             {/* Featured Image */}
             <div className="mb-12 rounded-2xl overflow-hidden">
               <BlogImage 
-                src={aiMakeupWorkspaceHero}
-                alt="Professional makeup artist workspace with AI color matching tools, smart beauty apps, and digital makeup technology for enhanced artistry and business growth"
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+                alt="Professional makeup artist using AI tools on laptop for business growth"
                 className="w-full h-[400px] md:h-[500px]"
                 priority={true}
               />
