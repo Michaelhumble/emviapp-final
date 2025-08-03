@@ -41,6 +41,21 @@ const VietnameseNailTechHiring2025 = lazy(() => import('@/pages/blog/articles/Vi
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
+    id: 'mobile-first-beauty-business-2025',
+    slug: 'mobile-first-beauty-business-2025',
+    title: 'Going Mobile-First: Beauty Business Strategies for 2025',
+    description: 'Transform your beauty business with mobile-first strategies. Capture 78% of clients who book on mobile & increase revenue 40% with smart booking tech.',
+    author: 'EmviApp Team',
+    publishedAt: 'January 29, 2025',
+    readTime: '9 min read',
+    category: 'Trends',
+    categorySlug: 'trends',
+    tags: ['mobile business', 'digital transformation', 'beauty trends', 'technology', 'mobile apps'],
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    component: MobileFirstBeautyBusiness2025,
+    url: '/blog/trends/mobile-first-beauty-business-2025'
+  },
+  {
     id: 'vietnamese-nail-tech-hiring-2025',
     slug: 'vietnamese-nail-tech-hiring-2025',
     title: 'How to Attract and Retain High-Paying Vietnamese Nail Technicians in 2025',
@@ -168,21 +183,6 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     trending: true,
     component: IncreaseSalonBookings2024,
     url: '/blog/salon-management/increase-salon-bookings-2024'
-  },
-  {
-    id: 'mobile-first-beauty-business-2025',
-    slug: 'mobile-first-beauty-business-2025',
-    title: 'Going Mobile-First: Beauty Business Strategies for 2025',
-    description: 'Transform your beauty business with mobile-first strategies. Capture 78% of clients who book on mobile & increase revenue 40% with smart booking tech.',
-    author: 'EmviApp Team',
-    publishedAt: 'January 29, 2025',
-    readTime: '9 min read',
-    category: 'Trends',
-    categorySlug: 'trends',
-    tags: ['mobile business', 'digital transformation', 'beauty trends', 'technology', 'mobile apps'],
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    component: MobileFirstBeautyBusiness2025,
-    url: '/blog/trends/mobile-first-beauty-business-2025'
   },
   {
     id: 'salon-pricing-strategies-2025',
