@@ -14,7 +14,7 @@ export const LinkButton = ({ href, label, icon, description, onClick }: LinkButt
     if (onClick) {
       onClick();
     } else {
-      // Use internal navigation for same-tab routing
+      // Use internal navigation for same-tab routing - never open new tabs
       window.location.href = href;
     }
   };

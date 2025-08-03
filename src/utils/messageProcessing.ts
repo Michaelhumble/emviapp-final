@@ -36,7 +36,7 @@ export const extractLinks = (text: string): Array<{ url: string; label: string; 
     {
       url: '/sell-salon',
       label: 'Bán tiệm tại đây',
-      labelEn: 'Sell a Salon Here',
+      labelEn: 'Sell a Salon Here', 
       description: 'List your salon for sale'
     },
     {
@@ -53,10 +53,11 @@ export const extractLinks = (text: string): Array<{ url: string; label: string; 
     }
   ];
 
-  const urlRegex = /(\/[^\s]+)/g;
-  const urls = text.match(urlRegex) || [];
+  // Check for internal route patterns in the text
+  const routeRegex = /(\/[a-zA-Z0-9\-?&=%]+)/g;
+  const urls = text.match(routeRegex) || [];
   
-  // Only return links that match our allowed internal routes
+  // Only return links that match our hardcoded allowed internal routes
   return urls
     .map(url => {
       const route = allowedRoutes.find(route => url.includes(route.url.split('?')[0]));
@@ -89,9 +90,9 @@ export const getLinkIntroText = (links: Array<{ url: string; label: string }>, l
   
   if (language === 'vi') {
     if (links.some(l => l.url.includes('post-job'))) {
-      return 'Anh/chị có thể đăng tin tuyển dụng tại đây:';
+      return 'Anh có thể đăng tin tuyển dụng tại đây:';
     } else if (links.some(l => l.url.includes('sell-salon'))) {
-      return 'Anh/chị có thể đăng bán salon tại đây:';
+      return 'Anh có thể đăng bán salon tại đây:';
     } else if (links.some(l => l.url.includes('auth/signup'))) {
       return 'Tham gia cộng đồng EmviApp:';
     } else if (links.some(l => l.url.includes('blog'))) {

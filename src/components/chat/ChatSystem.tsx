@@ -143,6 +143,46 @@ export const ChatSystem = () => {
     return detectedLang;
   };
 
+  // Generate contextual follow-up suggestions for better conversation flow
+  const generateFollowUpSuggestion = (userMessage: string, botResponse: string) => {
+    const lowerMessage = userMessage.toLowerCase();
+    const lowerResponse = botResponse.toLowerCase();
+    
+    // Follow-up after job posting intent
+    if (lowerMessage.includes('đăng việc') || lowerMessage.includes('post job') || 
+        lowerMessage.includes('tuyển') || lowerResponse.includes('post')) {
+      return language === 'vi' 
+        ? "\n\nAnh có cần em hướng dẫn những thông tin cần thiết để đăng tin không? Hoặc anh muốn biết về giá cả?" 
+        : "\n\nWould you like to know what info you need to post a job, or do you have any questions about pricing?";
+    }
+    
+    // Follow-up after salon selling intent
+    if (lowerMessage.includes('bán salon') || lowerMessage.includes('sell salon') ||
+        lowerMessage.includes('bán tiệm') || lowerResponse.includes('sell')) {
+      return language === 'vi'
+        ? "\n\nThat's exciting! Em có thể đưa anh một số tips về định giá salon hoặc chuẩn bị hồ sơ bán. Anh muốn biết gì?"
+        : "\n\nThat's exciting! I can give you some tips on pricing your salon or preparing the listing. What would you like to know?";
+    }
+    
+    // Follow-up after signup intent
+    if (lowerMessage.includes('đăng ký') || lowerMessage.includes('sign up') ||
+        lowerMessage.includes('join') || lowerResponse.includes('sign up')) {
+      return language === 'vi'
+        ? "\n\nRất vui khi anh tham gia! Sau khi đăng ký, anh sẽ có thể đăng tin tuyển dụng, quản lý ứng viên và nhiều tính năng khác nữa."
+        : "\n\nSo glad you're joining! After signing up, you'll be able to post jobs, manage applicants, and access many more features.";
+    }
+    
+    // Follow-up after blog intent
+    if (lowerMessage.includes('blog') || lowerMessage.includes('tin tức') ||
+        lowerMessage.includes('bài viết') || lowerResponse.includes('blog')) {
+      return language === 'vi'
+        ? "\n\nCó nhiều bài viết hay về ngành làm đẹp và kinh doanh salon đấy! Anh có muốn em giới thiệu loại bài viết nào đặc biệt không?"
+        : "\n\nThere are lots of great articles about the beauty industry and salon business! Would you like me to recommend any specific type of content?";
+    }
+    
+    return '';
+  };
+
   const extractAndSetName = (text: string) => {
     const extractedName = extractName(text);
     if (extractedName && !userName) {
@@ -154,10 +194,10 @@ export const ChatSystem = () => {
   const getInitialGreeting = () => {
     if (userName) {
       return language === 'vi' 
-        ? `Chào ${userName}, rất vui được gặp lại anh/chị! Em có thể giúp gì cho anh/chị hôm nay? 😊`
-        : `Hi ${userName}, welcome back! Need any help today? 😊`;
+        ? `Chào anh ${userName}, rất vui được gặp lại anh! Em có thể giúp gì cho anh hôm nay? 😊`
+        : `Hi ${userName}, welcome back! How can I help you today? 😊`;
     }
-    return "Hi, I'm Sunshine! 🌞 What's your name? I can chat in Vietnamese or English—whatever you prefer! 😊";
+    return "Hi there! I'm Sunshine 😊 What's your name? I can chat in Vietnamese or English—whatever you prefer!";
   };
 
   const clearChat = () => {
@@ -235,6 +275,12 @@ export const ChatSystem = () => {
 
       // Process message to extract and format links
       botMessage = processMessage(botMessage);
+      
+      // Add contextual follow-up suggestions
+      const followUp = generateFollowUpSuggestion(userMessage, botMessage.text);
+      if (followUp) {
+        botMessage.text += followUp;
+      }
 
       setMessages(prev => [...prev, botMessage]);
       saveSession([...messages, botMessage]);
@@ -253,8 +299,8 @@ export const ChatSystem = () => {
       console.error('Chat error details:', errorDetails);
       
       const fallbackResponse = language === 'vi' 
-        ? "Em xin lỗi, có lỗi xảy ra với kết nối. Em có thể giúp anh/chị tìm việc làm nail, thông tin salon, hoặc hỗ trợ khác!"
-        : "Sorry, there was a connection error. I can still help you find nail jobs, salon info, or other support!";
+        ? "Em xin lỗi, có chút vấn đề kỹ thuật! Nhưng em vẫn có thể giúp anh đăng việc, bán salon, hoặc tham gia cộng đồng. Anh cần gì ạ?"
+        : "Sorry, there's a small technical hiccup! But I can still help you post jobs, sell salons, or join our community. What do you need?";
       
       const botMessage: Message = {
         id: Date.now().toString(),
@@ -419,8 +465,8 @@ export const ChatSystem = () => {
     window.location.href = destination;
     
     const confirmMessage = language === 'vi'
-      ? `Đang chuyển trang! Em sẽ ở đây nếu anh/chị cần giúp gì thêm 😊`
-      : `Navigating now! I'll be here if you need any more help 😊`;
+      ? `Đang dẫn anh qua đó! Em sẽ ở đây nếu anh cần giúp gì thêm 😊`
+      : `Taking you there now! I'll be here if you need any more help 😊`;
     
     const confirmMsg: Message = {
       id: Date.now().toString(),
@@ -457,8 +503,8 @@ export const ChatSystem = () => {
     if (success) {
       // Route executed successfully - chat will minimize
       const confirmMessage = language === 'vi'
-        ? `Đang dẫn anh/chị qua đó! Em sẽ ở đây nếu anh/chị cần giúp gì thêm 😊`
-        : `Taking you there now! I'll be here if you need any more help 😊`;
+        ? `Perfect! Đang dẫn anh qua đó. Em sẽ ở đây hỗ trợ anh bất cứ lúc nào! 😊`
+        : `Perfect! Taking you there now. I'll be here to help anytime you need! 😊`;
       
       const confirmMsg: Message = {
         id: Date.now().toString(),
@@ -491,24 +537,24 @@ export const ChatSystem = () => {
     const messageToSend = inputValue;
     setInputValue("");
 
-    // If this is a name introduction, respond with proper greeting
-    if (extractedName && !userName) {
-      const greetingResponse = detectedLang === 'vi' 
-        ? `Chào ${extractedName}! Em là Sunshine, trợ lý AI của EmviApp. Em có thể giúp anh/chị đăng tin tuyển dụng, bán salon, đăng ký tài khoản, hoặc đọc blog. Anh/chị cần em hỗ trợ gì ạ?`
-        : `Hi ${extractedName}! I'm Sunshine, EmviApp's AI assistant. I can help you post jobs, sell salons, sign up for an account, or read our blog. How can I assist you today?`;
+  // If this is a name introduction, respond with proper greeting
+  if (extractedName && !userName) {
+    const greetingResponse = detectedLang === 'vi' 
+      ? `Chào anh ${extractedName}, rất vui được gặp anh! Em có thể giúp gì cho anh hôm nay? 😊`
+      : `Hi ${extractedName}, so glad you're here! How can I help you today? 😊`;
 
-      const greetingMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: greetingResponse,
-        isUser: false,
-        timestamp: new Date()
-      };
+    const greetingMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      text: greetingResponse,
+      isUser: false,
+      timestamp: new Date()
+    };
 
-      const finalMessages = [...newMessages, greetingMessage];
-      setMessages(finalMessages);
-      saveSession(finalMessages);
-      return;
-    }
+    const finalMessages = [...newMessages, greetingMessage];
+    setMessages(finalMessages);
+    saveSession(finalMessages);
+    return;
+  }
 
     // For all other messages, generate normal AI response
     await generateResponse(messageToSend);

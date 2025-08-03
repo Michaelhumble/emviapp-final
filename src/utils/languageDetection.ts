@@ -29,7 +29,10 @@ export const extractName = (text: string): string => {
         'anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me',
         // Vietnamese intent keywords that should NEVER be treated as names
         'muốn', 'cần', 'tìm', 'việc', 'thợ', 'tiệm', 'salon', 'tuyển', 'bán', 'đăng', 'làm',
-        'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list'
+        'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list',
+        // Additional protection against misinterpreting action words as names
+        'hôm', 'nay', 'today', 'now', 'here', 'where', 'what', 'how', 'why', 'when',
+        'đây', 'đó', 'ở', 'về', 'từ', 'cho', 'với', 'trong', 'ngoài', 'trên', 'dưới'
       ];
       
       if (!excludeWords.includes(name.toLowerCase())) {
