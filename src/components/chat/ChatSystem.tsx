@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Send, X, Sparkles, Sun, Heart, MessageCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
+import { supabase } from '@/integrations/supabase/client';
 
 export type { ActionSuggestion, MessageType };
 
@@ -21,6 +22,8 @@ export const ChatSystem = () => {
   const [userName, setUserName] = useState('');
   const [language, setLanguage] = useState<'en' | 'vi'>('en');
   const [showQuickActions, setShowQuickActions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string>('');
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -31,10 +34,24 @@ export const ChatSystem = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Get user ID from auth
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      } else {
+        // Generate a temporary ID for anonymous users
+        setUserId(`anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+      }
+    };
+    getUser();
+  }, []);
+
   const detectLanguage = (text: string): 'en' | 'vi' => {
     // Simple Vietnamese detection
     const vietnameseChars = /[ăâêôơưđàáảãạằắẳẵặầấẩẫậềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i;
-    const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi)\b/i;
+    const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về)\b/i;
     
     return vietnameseChars.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
   };
@@ -73,12 +90,6 @@ export const ChatSystem = () => {
       : "Hi! I'm Sunshine, your EmviApp assistant 🌞. May I know your name to make this chat more personal?";
   };
 
-  const getNameResponse = (name: string) => {
-    return language === 'vi'
-      ? `Cảm ơn ${name}! Em có thể giúp gì cho anh/chị hôm nay nè? 💅✨`
-      : `Thank you, ${name}! How can I help you today? 😊`;
-  };
-
   const openChat = () => {
     setIsOpen(true);
     setShowButton(false);
@@ -99,8 +110,8 @@ export const ChatSystem = () => {
     setShowButton(true);
   };
 
-  const sendMessage = () => {
-    if (!inputValue.trim()) return;
+  const sendMessage = async () => {
+    if (!inputValue.trim() || isLoading) return;
 
     const detectedLang = detectLanguage(inputValue);
     if (detectedLang !== language) {
@@ -115,59 +126,80 @@ export const ChatSystem = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
 
     // Check for name in message
-    if (!userName) {
-      const extractedName = extractName(inputValue);
-      if (extractedName) {
-        setUserName(extractedName);
-        setTimeout(() => {
-          const response: Message = {
-            id: (Date.now() + 1).toString(),
-            text: getNameResponse(extractedName),
-            isUser: false,
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, response]);
-          setShowQuickActions(true);
-        }, 1000);
-      }
-    } else {
-      // Regular response with name
-      setTimeout(() => {
-        const responses = language === 'vi' ? [
-          `${userName}, em hiểu rồi! Em sẽ giúp anh/chị ngay 💖`,
-          `Được rồi ${userName}! Để em xem em có thể hỗ trợ gì cho anh/chị nha 🌟`,
-          `${userName} ơi, em sẽ tìm hiểu và trả lời anh/chị ngay! ✨`
-        ] : [
-          `${userName}, I understand! Let me help you with that 💖`,
-          `Got it ${userName}! Let me see how I can assist you 🌟`,
-          `${userName}, I'll look into that for you right away! ✨`
-        ];
-        
-        const response: Message = {
-          id: (Date.now() + 1).toString(),
-          text: responses[Math.floor(Math.random() * responses.length)],
-          isUser: false,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, response]);
-      }, 1000);
+    const extractedName = extractName(inputValue);
+    if (extractedName && !userName) {
+      setUserName(extractedName);
+      setShowQuickActions(true);
     }
 
+    const messageToSend = inputValue;
     setInputValue('');
+
+    try {
+      // Call the Sunshine AI edge function
+      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
+        body: {
+          message: messageToSend,
+          userId: userId,
+          userLanguage: detectedLang
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: data.response || 'Em xin lỗi, có lỗi xảy ra. Vui lòng thử lại! 😅',
+        isUser: false,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiResponse]);
+
+      // Update language if AI detected it differently
+      if (data.language && data.language !== language) {
+        setLanguage(data.language);
+      }
+
+    } catch (error) {
+      console.error('Error calling AI:', error);
+      
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: language === 'vi' 
+          ? 'Em đang gặp chút vấn đề kỹ thuật. Anh/chị thử lại sau chút nha! 🥰'
+          : 'Having some technical issues. Please try again in a moment! 🥰',
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickAction = async (actionText: string) => {
+    // Treat quick action as a user message
+    setInputValue(actionText);
+    await sendMessage();
   };
 
   const quickActions = language === 'vi' ? [
-    { text: '💅 Tìm việc nail', action: () => {} },
-    { text: '🏪 Đăng salon', action: () => {} },
-    { text: '💬 Hỗ trợ', action: () => {} },
-    { text: '🇺🇸 Switch to English', action: () => setLanguage('en') }
+    { text: '💅 Tìm việc làm nail', action: () => handleQuickAction('Tôi muốn tìm việc làm nail') },
+    { text: '🏪 Đăng tin salon', action: () => handleQuickAction('Tôi muốn đăng tin salon') },
+    { text: '💬 Hỗ trợ khác', action: () => handleQuickAction('Tôi cần hỗ trợ') },
+    { text: '🇺🇸 Switch to English', action: () => { setLanguage('en'); handleQuickAction('Please speak English'); } }
   ] : [
-    { text: '💅 Find Nail Jobs', action: () => {} },
-    { text: '🏪 List My Salon', action: () => {} },
-    { text: '💬 Contact Support', action: () => {} },
-    { text: '🇻🇳 Chuyển sang tiếng Việt', action: () => setLanguage('vi') }
+    { text: '💅 Find Nail Jobs', action: () => handleQuickAction('I want to find nail jobs') },
+    { text: '🏪 List My Salon', action: () => handleQuickAction('I want to list my salon') },
+    { text: '💬 Get Support', action: () => handleQuickAction('I need help') },
+    { text: '🇻🇳 Chuyển sang tiếng Việt', action: () => { setLanguage('vi'); handleQuickAction('Xin chào, nói tiếng Việt'); } }
   ];
 
   return (
@@ -307,15 +339,36 @@ export const ChatSystem = () => {
                       ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white ml-4' 
                       : 'bg-white text-gray-800 border border-orange-100 mr-4'
                   }`}>
-                    <p className="text-base leading-relaxed font-medium">{message.text}</p>
+                    <p className="text-base leading-relaxed font-medium whitespace-pre-wrap">{message.text}</p>
                   </div>
                 </motion.div>
               ))}
+              
+              {/* Loading indicator */}
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-start"
+                >
+                  <div className="bg-white text-gray-800 border border-orange-100 p-4 rounded-2xl shadow-lg mr-4">
+                    <div className="flex items-center gap-2">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Sun size={16} className="text-orange-400" />
+                      </motion.div>
+                      <span className="text-sm text-gray-600">Sunshine đang suy nghĩ...</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             {/* Quick Actions */}
             <AnimatePresence>
-              {showQuickActions && (
+              {showQuickActions && !isLoading && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -349,9 +402,10 @@ export const ChatSystem = () => {
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    onKeyPress={(e) => e.key === 'Enter' && !isLoading && sendMessage()}
                     placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Type a message...'}
-                    className="w-full py-3 px-4 bg-white border-2 border-orange-200 rounded-2xl focus:border-orange-400 focus:outline-none text-base resize-none"
+                    disabled={isLoading}
+                    className="w-full py-3 px-4 bg-white border-2 border-orange-200 rounded-2xl focus:border-orange-400 focus:outline-none text-base resize-none disabled:opacity-50"
                     style={{ minHeight: '48px' }}
                   />
                 </div>
@@ -359,9 +413,19 @@ export const ChatSystem = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
-                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-200"
+                  disabled={isLoading || !inputValue.trim()}
+                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send size={20} />
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Sun size={20} />
+                    </motion.div>
+                  ) : (
+                    <Send size={20} />
+                  )}
                 </motion.button>
               </div>
             </div>
@@ -370,4 +434,3 @@ export const ChatSystem = () => {
       </AnimatePresence>
     </>
   );
-};
