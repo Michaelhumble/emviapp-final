@@ -488,8 +488,28 @@ export const ChatSystem = () => {
     setMessages(newMessages);
 
     const messageToSend = inputValue;
-    setInputValue('');
+    setInputValue("");
 
+    // If this is a name introduction, respond with proper greeting
+    if (extractedName && !userName) {
+      const greetingResponse = detectedLang === 'vi' 
+        ? `Chào ${extractedName}! Em là Sunshine, trợ lý AI của EmviApp. Em có thể giúp anh/chị đăng tin tuyển dụng, bán salon, đăng ký tài khoản, hoặc đọc blog. Anh/chị cần em hỗ trợ gì ạ?`
+        : `Hi ${extractedName}! I'm Sunshine, EmviApp's AI assistant. I can help you post jobs, sell salons, sign up for an account, or read our blog. How can I assist you today?`;
+
+      const greetingMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: greetingResponse,
+        isUser: false,
+        timestamp: new Date()
+      };
+
+      const finalMessages = [...newMessages, greetingMessage];
+      setMessages(finalMessages);
+      saveSession(finalMessages);
+      return;
+    }
+
+    // For all other messages, generate normal AI response
     await generateResponse(messageToSend);
   };
 
