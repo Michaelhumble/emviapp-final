@@ -209,12 +209,16 @@ export const ChatSystem = () => {
   };
 
   const extractAndSetName = (text: string) => {
-    const extractedName = extractName(text);
-    if (extractedName && !userName) {
-      setUserName(extractedName);
-      console.log('✅ Name extracted and saved:', extractedName);
+    // Only extract name if we don't already have one in session
+    if (!userName) {
+      const extractedName = extractName(text);
+      if (extractedName) {
+        setUserName(extractedName);
+        console.log('✅ Name extracted and saved for session:', extractedName);
+      }
+      return extractedName;
     }
-    return extractedName;
+    return userName; // Return existing name if already set
   };
 
   // Generate randomized conversion-focused greetings that don't repeat
@@ -252,14 +256,15 @@ export const ChatSystem = () => {
   };
 
   const getInitialGreeting = () => {
-    // If we know the user's name from session, simple friendly greeting
+    // NEVER use names in greetings - just be friendly
     if (userName) {
+      // If we know the user's name, just be friendly without using it
       return language === 'vi' 
-        ? `Xin chào ${userName}! 😊`
-        : `Hi ${userName}! 😊`;
+        ? `Xin chào! 😊`
+        : `Hi there! 😊`;
     }
     
-    // For new users without a name, simple introduction - ASK ONLY ONCE
+    // For new users without a name, ask EXACTLY as user requested
     return "Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸";
   };
 
