@@ -31,9 +31,27 @@ const SocialMediaMarketingSalons2025 = lazy(() => import('@/pages/blog/articles/
 const TheBeautyIndustrysMissingPiece = lazy(() => import('@/pages/blog/articles/TheBeautyIndustrysMissingPiece'));
 const NailCareSecretsArticle = lazy(() => import('@/components/blog/articles/NailCareSecretsArticle'));
 const AISalonTools2025 = lazy(() => import('@/pages/blog/AISalonTools2025'));
+const SalonStaffingCrisis2025 = lazy(() => import('@/pages/blog/SalonStaffingCrisis2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'salon-staffing-crisis-2025',
+    slug: 'salon-staffing-crisis-2025',
+    title: 'The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can\'t Find Qualified Staff',
+    description: '73% of salon owners struggle to find qualified beauty professionals. Discover why the beauty industry faces a talent shortage and proven solutions that work.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-04',
+    readTime: '8 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['salon staffing crisis', 'beauty industry hiring', 'salon recruitment', 'hire beauty staff', 'salon staff shortage 2025', 'beauty professional jobs', 'talent acquisition', 'staffing solutions'],
+    image: '/src/assets/blog/salon-staffing-crisis-2025.jpg',
+    featured: true,
+    trending: true,
+    component: SalonStaffingCrisis2025,
+    url: '/blog/salon-management/salon-staffing-crisis-2025'
+  },
   {
     id: 'ai-salon-tools-2025',
     slug: 'ai-salon-tools-2025',
