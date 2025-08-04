@@ -4,18 +4,24 @@ import { Container } from '@/components/ui/container';
 import { getArticleBySlug, BLOG_ARTICLES } from '@/data/blogArticles';
 import { extractSlugFromUrl } from '@/utils/blogLinks';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import { runBlogDiagnostics } from '@/utils/blogDiagnostics';
 
 const BlogArticlePage: React.FC = () => {
   const { slug, category } = useParams<{ slug: string; category: string }>();
   const location = useLocation();
   
-  // Debug the routing
+  // Debug the routing and run diagnostics
   console.log('🔍 Blog Route Debug:', {
     slug,
     category,
     pathname: location.pathname,
     extractedSlug: extractSlugFromUrl(location.pathname)
   });
+  
+  // Run blog system diagnostics in development
+  if (import.meta.env.DEV) {
+    runBlogDiagnostics();
+  }
   
   // Try to get slug from params first, then from URL path
   const articleSlug = slug || extractSlugFromUrl(location.pathname);

@@ -41,6 +41,11 @@ export default defineConfig(({ mode }) => ({
             '@/components/chat/ChatSystem',
             '@/components/chat/MessageBubble',
             '@/components/chat/ChatInput'
+          ],
+          'blog': [
+            '@/pages/blog/BlogLanding',
+            '@/pages/blog/[slug]',
+            '@/data/blogArticles'
           ]
         }
       }
@@ -48,6 +53,7 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
-    chunkSizeWarningLimit: 300
+    chunkSizeWarningLimit: 500,
+    assetsInlineLimit: 4096
   }
 }));

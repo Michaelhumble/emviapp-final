@@ -60,7 +60,6 @@ const NailJobSuccessPage = lazy(() => import("@/pages/nails-job-success"));
 // Blog Pages
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
-const AISalonTools2025 = lazy(() => import("@/pages/blog/AISalonTools2025"));
 
 // Blog Category Pages
 const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
@@ -215,8 +214,8 @@ function App() {
                     <Route path="/blog/categories/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
                     <Route path="/blog/categories/salon-management" element={<Layout><SalonManagementCategory /></Layout>} />
                     
-                    {/* High-Traffic Blog Articles */}
-                    <Route path="/blog/ai-salon-tools-2025" element={<Layout><AISalonTools2025 /></Layout>} />
+                    {/* REMOVED: Hardcoded blog routes that conflict with dynamic routing */}
+                    {/* All blog articles now use dynamic /blog/:category/:slug pattern */}
                     
                     {/* Team Invite Routes */}
                     <Route path="/invite/:inviteCode" element={<InviteAcceptance />} />

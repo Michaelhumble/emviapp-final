@@ -1,5 +1,20 @@
 import { lazy } from 'react';
 
+// Import ALL blog images as ES6 modules for proper bundling
+import salonStaffingCrisisImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
+import aiSalonToolsImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
+import nailCareSecretsImage from '@/assets/blog/nail-care-secrets-hero.jpg';
+import aiMakeupToolsImage from '@/assets/blog/ai-makeup-tools-2025.jpg';
+import lashClientLoyaltyImage from '@/assets/blog/lash-client-loyalty-2025.jpg';
+import clientRetentionSecretsImage from '@/assets/blog/client-retention-secrets.jpg';
+import salonStaffManagementImage from '@/assets/blog/salon-staff-management.jpg';
+import salonBookingsIncreaseImage from '@/assets/blog/salon-bookings-increase.jpg';
+import mobileFirstBeautyImage from '@/assets/blog/mobile-first-beauty.jpg';
+import salonPricingStrategiesImage from '@/assets/blog/salon-pricing-strategies.jpg';
+import nailSalonSocialMediaImage from '@/assets/blog/nail-salon-social-media.jpg';
+import salonSocialMediaMarketingImage from '@/assets/blog/salon-social-media-marketing.jpg';
+import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
+
 export interface BlogArticle {
   id: string;
   slug: string;
@@ -46,7 +61,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['salon staffing crisis', 'beauty industry hiring', 'salon recruitment', 'hire beauty staff', 'salon staff shortage 2025', 'beauty professional jobs', 'talent acquisition', 'staffing solutions'],
-    image: '/src/assets/blog/salon-staffing-crisis-2025.jpg',
+    image: salonStaffingCrisisImage,
     featured: true,
     trending: true,
     component: SalonStaffingCrisis2025,
@@ -63,7 +78,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['AI tools', 'salon owners 2025', 'salon management software', 'AI booking system', 'beauty industry AI', 'salon automation', 'revenue optimization', 'business growth'],
-    image: '/src/assets/blog/ai-salon-tools-2025-real.jpg',
+    image: aiSalonToolsImage,
     featured: true,
     trending: true,
     component: AISalonTools2025,
@@ -75,7 +90,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     title: 'Top 7 Secrets for Beautiful, Healthy Nails All Year Long',
     description: 'Discover expert nail care secrets that beauty professionals swear by. Learn proven techniques for stronger, healthier nails that look salon-perfect year-round.',
     url: '/blog/beautiful-tips/nail-care-secrets-healthy-beautiful-nails',
-    image: '/src/assets/blog/nail-care-secrets-hero.jpg',
+    image: nailCareSecretsImage,
     author: 'EmviApp Beauty Team',
     publishedAt: '2025-01-08',
     readTime: '8 min read',
@@ -96,7 +111,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Beauty Tips',
     categorySlug: 'beauty-tips',
     tags: ['AI tools', 'makeup artistry', 'technology', 'innovation', 'beauty tech'],
-    image: '/src/assets/blog/ai-makeup-tools-2025.jpg',
+    image: aiMakeupToolsImage,
     featured: true,
     trending: true,
     component: AIToolsForMakeupArtists2025,
@@ -113,7 +128,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Artist Spotlights',
     categorySlug: 'artist-spotlights',
     tags: ['lash technician', 'client loyalty', 'retention strategies', 'lash business', 'customer service'],
-    image: '/src/assets/blog/lash-client-loyalty-2025.jpg',
+    image: lashClientLoyaltyImage,
     trending: true,
     component: ClientLoyaltyLashTechs2025,
     url: '/blog/artist-spotlights/client-loyalty-lash-techs-2025'
@@ -129,7 +144,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Success Stories',
     categorySlug: 'success-stories',
     tags: ['client retention', 'customer loyalty', 'beauty business', 'relationship building'],
-    image: '/src/assets/blog/client-retention-secrets.jpg',
+    image: clientRetentionSecretsImage,
     component: ClientRetentionSecrets2025,
     url: '/blog/success-stories/client-retention-secrets-2025'
   },
@@ -144,7 +159,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['salon management', 'hiring', 'staff management', 'team building', 'HR'],
-    image: '/src/assets/blog/salon-staff-management.jpg',
+    image: salonStaffManagementImage,
     featured: true,
     component: HiringManagingSalonStaff2025,
     url: '/blog/salon-management/hiring-managing-salon-staff-2025'
@@ -160,7 +175,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['salon growth', 'bookings', 'marketing', 'business strategy', 'revenue'],
-    image: '/src/assets/blog/salon-bookings-increase.jpg',
+    image: salonBookingsIncreaseImage,
     trending: true,
     component: IncreaseSalonBookings2024,
     url: '/blog/salon-management/increase-salon-bookings-2024'
@@ -176,7 +191,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Trends',
     categorySlug: 'trends',
     tags: ['mobile business', 'digital transformation', 'beauty trends', 'technology', 'mobile apps'],
-    image: '/src/assets/blog/mobile-first-beauty.jpg',
+    image: mobileFirstBeautyImage,
     component: MobileFirstBeautyBusiness2025,
     url: '/blog/trends/mobile-first-beauty-business-2025'
   },
@@ -191,7 +206,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['pricing strategy', 'revenue optimization', 'salon business', 'profit margins', 'value pricing'],
-    image: '/src/assets/blog/salon-pricing-strategies.jpg',
+    image: salonPricingStrategiesImage,
     featured: true,
     component: SalonPricingStrategies2025,
     url: '/blog/salon-management/salon-pricing-strategies-2025'
@@ -207,7 +222,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['social media', 'content marketing', 'nail salon', 'Instagram', 'TikTok'],
-    image: '/src/assets/blog/nail-salon-social-media.jpg',
+    image: nailSalonSocialMediaImage,
     trending: true,
     component: SocialMediaContentNailSalons2025,
     url: '/blog/salon-management/social-media-content-nail-salons-2025'
@@ -223,7 +238,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['social media marketing', 'salon promotion', 'digital marketing', 'brand building', 'client acquisition'],
-    image: '/src/assets/blog/salon-social-media-marketing.jpg',
+    image: salonSocialMediaMarketingImage,
     component: SocialMediaMarketingSalons2025,
     url: '/blog/salon-management/social-media-marketing-salons-2025'
   },
@@ -238,7 +253,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Industry',
     categorySlug: 'industry',
     tags: ['EmviApp', 'beauty industry', 'innovation', 'technology', 'marketplace'],
-    image: '/src/assets/blog/beauty-industry-missing-piece.jpg',
+    image: beautyIndustryMissingPieceImage,
     featured: true,
     component: TheBeautyIndustrysMissingPiece,
     url: '/blog/industry/the-beauty-industrys-missing-piece-emviapp'
