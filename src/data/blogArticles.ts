@@ -45,7 +45,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Management',
     categorySlug: 'salon-management',
     tags: ['AI tools', 'salon owners 2025', 'salon management software', 'AI booking system', 'beauty industry AI', 'salon automation', 'revenue optimization', 'business growth'],
-    image: '/src/assets/blog/ai-salon-tools-2025.jpg',
+    image: '/src/assets/blog/ai-salon-tools-2025-real.jpg',
     featured: true,
     trending: true,
     component: AISalonTools2025,

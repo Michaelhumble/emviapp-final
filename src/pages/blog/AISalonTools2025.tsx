@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, TrendingUp, Users, Calendar, BarChart3 } from 'lucide-react';
-import aiSalonImage from '@/assets/blog/ai-salon-tools-2025.jpg';
+import aiSalonImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
 
 const AISalonTools2025 = () => {
   return (
