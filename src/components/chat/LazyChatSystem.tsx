@@ -65,6 +65,7 @@ export const LazyChatSystem = () => {
       <ChatToggleButton 
         isOpen={false} 
         onClick={handleToggleChat}
+        hasUnreadMessages={false}
       />
     }>
       <ChatSystem />

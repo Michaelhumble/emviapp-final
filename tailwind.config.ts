@@ -21,6 +21,25 @@ const config: Config = {
         luxury: ["'Cormorant Garamond'", "'Playfair Display'", "serif"],
         premium: ["'Manrope'", "'Inter'", "sans-serif"],
       },
+      keyframes: {
+        "gradient-shift": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" }
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" }
+        },
+        "sparkle": {
+          "0%, 100%": { opacity: "0", transform: "scale(0)" },
+          "50%": { opacity: "1", transform: "scale(1)" }
+        }
+      },
+      animation: {
+        "gradient-shift": "gradient-shift 4s ease infinite",
+        "float": "float 3s ease-in-out infinite",
+        "sparkle": "sparkle 2s ease-in-out infinite"
+      }
     },
   },
   plugins: [

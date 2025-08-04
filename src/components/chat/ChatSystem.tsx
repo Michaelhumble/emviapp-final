@@ -5,6 +5,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useChatRouting } from '@/hooks/useChatRouting';
+import { ChatToggleButton } from './ChatToggleButton';
 import { ChatFloatingBadge } from './ChatFloatingBadge';
 
 import { MessageBubble } from './MessageBubble';
@@ -665,63 +666,13 @@ export const ChatSystem = () => {
         )}
       </AnimatePresence>
 
-      {/* Chat Toggle Button */}
-      <AnimatePresence>
-        {showButton && !isOpen && !isMinimized && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{
-              type: "spring",
-              stiffness: 350,
-              damping: 25,
-            }}
-            className="fixed bottom-4 right-4 z-[1000]"
-            style={{
-              ...(isMobile && { bottom: '140px' })
-            }}
-          >
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={openChat}
-              className={`${isMobile ? 'h-14 w-14' : 'h-12 w-12'} rounded-full shadow-lg bg-gradient-to-br from-amber-400 via-orange-400 to-pink-400 hover:from-amber-500 hover:via-orange-500 hover:to-pink-500 border-2 border-white/20 backdrop-blur-sm relative overflow-hidden`}
-              aria-label="Chat with Little Sunshine AI"
-            >
-              {/* Optimized floating sparkles - fewer animations */}
-              <div className="absolute inset-0 pointer-events-none">
-                <motion.div
-                  animate={{ 
-                    rotate: 360,
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{ 
-                    rotate: { repeat: Infinity, duration: 12, ease: "linear" },
-                    scale: { repeat: Infinity, duration: 6 }
-                  }}
-                  className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-300 rounded-full opacity-60"
-                />
-                <motion.div
-                  animate={{ 
-                    rotate: -360,
-                    scale: [1, 1.15, 1]
-                  }}
-                  transition={{ 
-                    rotate: { repeat: Infinity, duration: 15, ease: "linear" },
-                    scale: { repeat: Infinity, duration: 8, delay: 2 }
-                  }}
-                  className="absolute top-3 left-1 w-0.5 h-0.5 bg-white rounded-full opacity-80"
-                />
-              </div>
-              
-              <div className="relative z-10">
-                <Sparkles size={isMobile ? 24 : 20} className="text-white drop-shadow-sm" />
-              </div>
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Enhanced Sunshine Chat Toggle Button */}
+      <ChatToggleButton
+        isOpen={isOpen}
+        onClick={openChat}
+        hasUnreadMessages={false} // You can add logic here to detect unread messages
+        userName={userName}
+      />
 
       {/* Chat Window */}
       <AnimatePresence>
