@@ -374,7 +374,7 @@ const SalonStaffingCrisis2025 = () => {
               <p className="text-purple-100 mb-6 text-lg">
                 Join thousands of successful salon owners who've discovered the power of connecting with pre-vetted beauty professionals on specialized platforms.
               </p>
-              <Link to="/signup">
+              <Link to="/auth">
                 <Button size="lg" variant="secondary" className="bg-white text-purple-600 hover:bg-gray-100">
                   <Users className="h-5 w-5 mr-2" />
                   Find Your Next Team Member
