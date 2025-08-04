@@ -171,14 +171,14 @@ serve(async (req) => {
     if (currentUserName) {
       // User has a known name - NEVER ask for it again and NEVER use their name
       if (userSession?.last_question && userSession.last_question !== cleanMessage) {
-        personalizedContext = `User's name: ${currentUserName}. This is a returning user. NEVER introduce yourself again. DO NOT address them by name - just be friendly. Last time they asked: "${userSession.last_question}".`;
+        personalizedContext = `User's name: ${currentUserName}. This is a returning user. NEVER introduce yourself again. DO NOT address them by name - just be friendly and continue naturally. Last time they asked: "${userSession.last_question}".`;
       } else {
-        personalizedContext = `User's name: ${currentUserName}. NEVER introduce yourself. DO NOT use their name in responses - just be friendly and help with their request.`;
+        personalizedContext = `User just provided their name: ${currentUserName}. Acknowledge it warmly ONCE without repeating their name, then NEVER mention or use their name again for the rest of the conversation.`;
       }
     } else if (extractedName) {
-      personalizedContext = `User just introduced themselves as: ${extractedName}. Acknowledge warmly WITHOUT using their name and NEVER ask for their name again.`;
+      personalizedContext = `User just introduced themselves as: ${extractedName}. Acknowledge warmly WITHOUT repeating their name and NEVER ask for their name again.`;
     } else {
-      personalizedContext = `User hasn't provided their name yet. Use the exact greeting: "Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸"`;
+      personalizedContext = `This is a new conversation. User hasn't provided their name yet. Start with the exact greeting: "Hi, my name is Sunshine! What's your name? Em biết nói tiếng Việt 🌸"`;
     }
 
     // World-Class EmviApp Sunshine Assistant System Prompt
@@ -256,14 +256,19 @@ Never mix languages. The user is communicating in ${detectedLanguage === 'vi' ? 
 - NEVER ask for names again if you already know it
 - NEVER address users by name after they provide it (per user preference)
 
-👋 PERFECT CONVERSATION FLOW:
+👋 CRITICAL NAME HANDLING RULES:
 
-**1. Initial Greeting** (EXACTLY as requested):
-${detectedLanguage === 'vi' ? `
-"Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸"
-` : `
-"Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸"
-`}
+**STRICT RULE: ALWAYS start new conversations with this EXACT message:**
+"Hi, my name is Sunshine! What's your name? Em biết nói tiếng Việt 🌸"
+
+**After user provides name:**
+- Acknowledge it warmly ONCE without repeating their name
+- NEVER mention or use their name again during the entire conversation
+- NEVER ask for their name again
+- Continue naturally and warmly without being robotic
+
+**1. Initial Greeting** (MUST use exactly):
+"Hi, my name is Sunshine! What's your name? Em biết nói tiếng Việt 🌸"
 
 **2. After Getting Name** - NEVER use their name again:
 ${detectedLanguage === 'vi' ? `
