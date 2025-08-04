@@ -329,6 +329,12 @@ export const ChatSystem = () => {
     setIsOpen(false);
     setShowButton(true);
     setShowMenu(false);
+    
+    // Save the current conversation state explicitly when closing
+    if (messages.length > 0) {
+      saveSession();
+      console.log('💾 Chat conversation saved - you can continue where you left off!');
+    }
   };
 
   // Generate AI response with conversational routing

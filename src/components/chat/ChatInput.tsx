@@ -24,6 +24,17 @@ export const ChatInput = ({ onSendMessage, isProcessing }: ChatInputProps) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Refocus after processing completes
+  useEffect(() => {
+    if (!isProcessing && textareaRef.current) {
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 200); // Small delay after AI response
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isProcessing]);
+
   const handleSend = async () => {
     if (message.trim() === '' || isProcessing) return;
     
@@ -36,7 +47,7 @@ export const ChatInput = ({ onSendMessage, isProcessing }: ChatInputProps) => {
       console.error('Error sending message:', error);
     }
     
-    // Focus back on the textarea after sending
+    // Focus back on the textarea after sending (immediate)
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
