@@ -3,6 +3,7 @@ import { AuthProvider } from '@/context/auth';
 import { SecurityProvider } from '@/components/security/SecurityProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
+import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 
 // Lazy load non-critical providers
 const SalonProvider = lazy(() => import('@/context/salon').then(module => ({ default: module.SalonProvider })));
@@ -20,19 +21,21 @@ export const OptimizedProviders: React.FC<OptimizedProvidersProps> = ({ children
     <HelmetProvider>
       <SecurityProvider>
         <AuthProvider>
-          <Suspense fallback={<SimpleLoadingFallback message="Loading..." />}>
-            <SalonProvider>
-              <SubscriptionProvider>
-                <NotificationProvider>
-                  <RecommendationProvider>
-                    <OnboardingProvider>
-                      {children}
-                    </OnboardingProvider>
-                  </RecommendationProvider>
-                </NotificationProvider>
-              </SubscriptionProvider>
-            </SalonProvider>
-          </Suspense>
+          <FallbackBoundary errorMessage="Unable to load application providers. Please refresh the page.">
+            <Suspense fallback={<SimpleLoadingFallback message="Loading..." />}>
+              <SalonProvider>
+                <SubscriptionProvider>
+                  <NotificationProvider>
+                    <RecommendationProvider>
+                      <OnboardingProvider>
+                        {children}
+                      </OnboardingProvider>
+                    </RecommendationProvider>
+                  </NotificationProvider>
+                </SubscriptionProvider>
+              </SalonProvider>
+            </Suspense>
+          </FallbackBoundary>
         </AuthProvider>
       </SecurityProvider>
     </HelmetProvider>

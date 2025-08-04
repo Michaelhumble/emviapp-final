@@ -4,6 +4,7 @@ import Hero from "@/components/home/Hero";
 import { useAuth } from "@/context/auth";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
+import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 
 // Critical above-the-fold components (loaded immediately)
 import JobsCallToAction from "@/components/home/JobsCallToAction";
@@ -52,9 +53,11 @@ const LazyIndex = () => {
       <JobsCallToAction />
       
       {/* LAZY: Everything below the fold */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <LiveStatsBar />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load stats. Please refresh the page.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <LiveStatsBar />
+        </Suspense>
+      </FallbackBoundary>
 
       {/* Social Media Proof - Simple, no lazy loading needed */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
@@ -65,53 +68,77 @@ const LazyIndex = () => {
         </div>
       </section>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <RealTimeActivity />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load activity feed.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <RealTimeActivity />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <OptimizedIndustryListings />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load job listings.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <OptimizedIndustryListings />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <TrustBadges />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load trust badges.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <TrustBadges />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <WhyTrustSection />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load trust section.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <WhyTrustSection />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <AIMatchmakerSection />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load AI matchmaker.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <AIMatchmakerSection />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <SalonClientGrowthSystem />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load growth system.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <SalonClientGrowthSystem />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <ClientSuccessStories />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load success stories.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <ClientSuccessStories />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <MissingPieceSection />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load section.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <MissingPieceSection />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <FounderMessage />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load founder message.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <FounderMessage />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <FinalFounderCTA />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load call-to-action.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <FinalFounderCTA />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <EmviQASection />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load Q&A section.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <EmviQASection />
+        </Suspense>
+      </FallbackBoundary>
       
-      <Suspense fallback={<LoadingSpinner />}>
-        <JobsFooterCTA />
-      </Suspense>
+      <FallbackBoundary errorMessage="Unable to load footer CTA.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <JobsFooterCTA />
+        </Suspense>
+      </FallbackBoundary>
 
       {user && userId && (
         <RoleSelectionModal 

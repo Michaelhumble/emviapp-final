@@ -3,6 +3,7 @@
 
 import React, { ReactNode, lazy, Suspense } from 'react';
 import Navbar from './Navbar';
+import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 
 const LazyChatSystem = lazy(() => import('@/components/chat/LazyChatSystem').then(m => ({ default: m.LazyChatSystem })));
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -35,9 +36,11 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       {showMobileNav && <UnifiedMobileNavigation />}
       
       {/* Sunshine Chatbot Widget - Lazy loaded for performance */}
-      <Suspense fallback={null}>
-        <LazyChatSystem />
-      </Suspense>
+      <FallbackBoundary errorMessage="">
+        <Suspense fallback={null}>
+          <LazyChatSystem />
+        </Suspense>
+      </FallbackBoundary>
     </div>
   );
 };
