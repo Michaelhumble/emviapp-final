@@ -12,6 +12,7 @@ import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { detectLanguage, extractName } from '@/utils/languageDetection';
 import { trackChatEvent, chatEvents, trackSignupInitiated } from '@/utils/chatAnalytics';
+import { trackConversionEvent, conversionEvents } from '@/utils/conversionTracking';
 import { processMessage } from '@/utils/messageProcessing';
 
 interface Message {
@@ -299,6 +300,18 @@ export const ChatSystem = () => {
     setIsOpen(true);
     setShowButton(false);
     trackChatEvent(chatEvents.CHAT_OPENED, { userName, language });
+    
+    // Track conversion event
+    if (conversionPopupShown) {
+      trackConversionEvent({
+        userId,
+        eventType: 'chat_opened',
+        source: 'auto_popup',
+        userType: isNewUser ? 'new' : 'returning',
+        language,
+        metadata: { greeting_type: 'conversion_focused' }
+      });
+    }
     
     // Only add greeting if no messages exist AND no userName exists
     if (messages.length === 0 && !userName) {

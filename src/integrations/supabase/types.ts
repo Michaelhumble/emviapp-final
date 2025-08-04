@@ -1706,6 +1706,42 @@ export type Database = {
         }
         Relationships: []
       }
+      conversion_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          language: string
+          metadata: Json | null
+          source: string
+          timestamp: string
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          language: string
+          metadata?: Json | null
+          source: string
+          timestamp?: string
+          user_id: string
+          user_type: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          language?: string
+          metadata?: Json | null
+          source?: string
+          timestamp?: string
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
       credit_earnings: {
         Row: {
           amount: number
