@@ -592,9 +592,9 @@ export const ChatSystem = () => {
   };
 
   const fontSizeClasses = {
-    small: 'text-xs',
-    normal: 'text-sm',
-    large: 'text-base'
+    small: 'text-sm font-premium',
+    normal: 'text-base font-premium',
+    large: 'text-lg font-premium'
   };
 
   return (
@@ -787,9 +787,11 @@ export const ChatSystem = () => {
                     <Sun size={18} className="text-white drop-shadow" />
                   </motion.div>
                   <div>
-                    <h3 className="text-white font-bold text-lg drop-shadow">Sunshine</h3>
-                    <p className="text-white/90 text-xs drop-shadow">
-                      {userName ? `Chatting with ${userName}` : 'Your EmviApp assistant'}
+                    <h3 className="text-white font-luxury font-semibold text-xl drop-shadow-md tracking-wide">
+                      ☀️ Sunshine
+                    </h3>
+                    <p className="text-white/90 text-sm drop-shadow font-premium tracking-wide">
+                      {userName ? `Chatting with ${userName}` : 'Your premium beauty assistant'}
                     </p>
                   </div>
                 </div>
@@ -918,7 +920,11 @@ export const ChatSystem = () => {
                     disabled={isLoading}
                     aria-label={language === 'vi' ? 'Nhập tin nhắn chat' : 'Type chat message'}
                     aria-describedby="chat-input-help"
-                    className={`w-full py-3 px-4 ${isDarkMode ? 'bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-orange-200 text-gray-800 placeholder-gray-500'} rounded-2xl focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 ${fontSizeClasses[fontSize]} disabled:opacity-50 transition-all shadow-inner`}
+                    className={`w-full py-3.5 px-5 font-premium font-medium ${isDarkMode ? 'bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white/95 border-orange-200/50 text-gray-800 placeholder-gray-500'} rounded-2xl focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/30 ${fontSizeClasses[fontSize]} disabled:opacity-50 transition-all shadow-inner backdrop-blur-sm border-2 tracking-wide`}
+                    style={{
+                      fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+                      letterSpacing: '-0.01em'
+                    }}
                   />
                 </div>
                 <motion.button
@@ -927,17 +933,21 @@ export const ChatSystem = () => {
                   onClick={sendMessage}
                   disabled={isLoading || !inputValue.trim()}
                   aria-label={language === 'vi' ? 'Gửi tin nhắn' : 'Send message'}
-                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-white/20 focus:ring-2 focus:ring-orange-400/50 focus:outline-none"
+                  className="w-14 h-14 bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 text-white rounded-2xl flex items-center justify-center shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border-2 border-white/30 focus:ring-4 focus:ring-orange-400/50 focus:outline-none hover:shadow-3xl"
+                  style={{
+                    background: 'linear-gradient(135deg, #ff8a00 0%, #ff6b6b 25%, #e056fd 50%, #686de0 100%)',
+                    boxShadow: '0 8px 32px rgba(255, 138, 0, 0.3), 0 4px 16px rgba(224, 86, 253, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                  }}
                 >
                   {isLoading ? (
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                     >
-                      <Sun size={18} />
+                      <Sun size={20} />
                     </motion.div>
                   ) : (
-                    <Send size={18} />
+                    <Send size={20} />
                   )}
                 </motion.button>
               </div>

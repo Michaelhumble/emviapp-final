@@ -16,6 +16,10 @@ const config: Config = {
       },
       fontFamily: {
         playfair: ["'Playfair Display'", "serif"],
+        cormorant: ["'Cormorant Garamond'", "serif"], 
+        manrope: ["'Manrope'", "sans-serif"],
+        luxury: ["'Cormorant Garamond'", "'Playfair Display'", "serif"],
+        premium: ["'Manrope'", "'Inter'", "sans-serif"],
       },
     },
   },

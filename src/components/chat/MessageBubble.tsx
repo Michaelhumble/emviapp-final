@@ -42,9 +42,9 @@ interface MessageBubbleProps {
 }
 
 const fontSizeClasses = {
-  small: 'text-xs',
-  normal: 'text-sm',
-  large: 'text-base'
+  small: 'text-sm font-premium',
+  normal: 'text-base font-premium', 
+  large: 'text-lg font-premium'
 };
 
 export const MessageBubble = ({
@@ -74,15 +74,22 @@ export const MessageBubble = ({
       }}
       className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
     >
-      <div className={`max-w-[85%] p-4 rounded-2xl shadow-lg relative backdrop-blur-sm ${
+      <div className={`max-w-[85%] p-4 rounded-2xl shadow-xl relative backdrop-blur-sm border-2 font-premium ${
         message.isUser 
-          ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border border-blue-400/30' 
+          ? 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white border-white/20 shadow-2xl' 
           : isDarkMode
-            ? 'bg-gray-800/90 text-gray-100 border border-gray-600/30'
-            : 'bg-white/90 text-gray-800 border border-orange-100/50'
+            ? 'bg-gray-800/95 text-gray-100 border-gray-600/40 shadow-lg'
+            : 'bg-white/95 text-gray-800 border-orange-100/60 shadow-lg'
       }`}>
-        {/* Message Text */}
-        <p className={`${fontSizeClasses[fontSize]} leading-relaxed whitespace-pre-wrap`}>
+        {/* Message Text with Premium Typography */}
+        <p 
+          className={`${fontSizeClasses[fontSize]} leading-relaxed whitespace-pre-wrap font-medium tracking-wide`}
+          style={{
+            fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+            letterSpacing: '-0.01em',
+            lineHeight: '1.6'
+          }}
+        >
           {message.text}
         </p>
         
@@ -130,7 +137,11 @@ export const MessageBubble = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={action.action}
-                className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-md font-medium"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white text-sm rounded-full hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg font-premium font-medium tracking-wide border border-white/20"
+                style={{
+                  fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+                  letterSpacing: '-0.01em'
+                }}
               >
                 {action.label}
               </motion.button>
@@ -144,16 +155,22 @@ export const MessageBubble = ({
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="absolute -bottom-1 -left-1 w-5 h-5 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full flex items-center justify-center shadow-sm border border-white/30"
+            className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-orange-400 via-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/50"
           >
-            <Sun size={10} className="text-white" />
+            <Sun size={12} className="text-white" />
           </motion.div>
         )}
         
-        {/* Timestamp */}
-        <div className={`text-xs mt-2 ${
-          message.isUser ? 'text-blue-100' : isDarkMode ? 'text-gray-400' : 'text-gray-500'
-        }`}>
+        {/* Timestamp with Premium Typography */}
+        <div 
+          className={`text-xs mt-2 font-premium font-medium tracking-wide ${
+            message.isUser ? 'text-blue-100' : isDarkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}
+          style={{
+            fontFeatureSettings: '"kern" 1, "liga" 1',
+            letterSpacing: '0.01em'
+          }}
+        >
           {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
