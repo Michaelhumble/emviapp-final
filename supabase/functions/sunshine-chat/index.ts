@@ -322,27 +322,24 @@ Be authentically helpful, never pushy. Behind every chat is a real person with d
       const data = await response.json();
       let aiResponse = data.choices[0].message.content;
 
-      // Enhanced contextual links for conversion
+      // Gentle, contextual navigation help (only when relevant)
       const responseLower = aiResponse.toLowerCase();
       
-      // Job posting conversion
-      if (responseLower.includes('job') || responseLower.includes('tuyển') || responseLower.includes('hiring') || responseLower.includes('tìm nhân viên') || responseLower.includes('staff') || responseLower.includes('post')) {
-        aiResponse += '\n\n🚀 [Post Job Now - FREE](https://emvi.app/post-job) | 💎 Get premium boost for faster results!';
+      // Only add subtle navigation buttons when user explicitly asks for specific actions
+      if (responseLower.includes('post job') || responseLower.includes('đăng tin tuyển')) {
+        aiResponse += '\n\n[Post Your Job Here]';
       }
       
-      // Salon selling conversion  
-      if ((responseLower.includes('bán salon') || responseLower.includes('sell salon') || responseLower.includes('rao bán') || responseLower.includes('list salon')) && responseLower.includes('salon')) {
-        aiResponse += '\n\n🏆 [List My Salon - FREE Featured](https://emvi.app/sell-salon) | ⚡ Limited time: Premium placement included!';
+      if (responseLower.includes('sell salon') || responseLower.includes('bán salon')) {
+        aiResponse += '\n\n[Sell Your Salon]';
       }
       
-      // Job seeking conversion
-      if (responseLower.includes('tìm việc') || responseLower.includes('find job') || responseLower.includes('looking for work') || responseLower.includes('job search')) {
-        aiResponse += '\n\n💼 [Find Jobs Now](https://emvi.app/jobs) | 🌟 Upgrade profile for 5x more visibility!';
+      if (responseLower.includes('find job') || responseLower.includes('tìm việc')) {
+        aiResponse += '\n\n[Find Beauty Jobs]';
       }
       
-      // Artist/salon browsing conversion
-      if (responseLower.includes('tìm thợ') || responseLower.includes('find artist') || responseLower.includes('đặt lịch') || responseLower.includes('book') || responseLower.includes('salon directory')) {
-        aiResponse += '\n\n✨ [Browse Top Artists](https://emvi.app/artists) | 🎯 [Find Salons Near You](https://emvi.app/salons)';
+      if (responseLower.includes('browse') || responseLower.includes('artists') || responseLower.includes('tìm thợ')) {
+        aiResponse += '\n\n[Browse Top Artists]';
       }
 
       console.log('Sunshine Chat response generated:', { 
