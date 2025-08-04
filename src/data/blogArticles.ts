@@ -13,6 +13,8 @@ import mobileFirstBeautyImage from '@/assets/blog/mobile-first-beauty.jpg';
 import salonPricingStrategiesImage from '@/assets/blog/salon-pricing-strategies.jpg';
 import nailSalonSocialMediaImage from '@/assets/blog/nail-salon-social-media.jpg';
 import salonSocialMediaMarketingImage from '@/assets/blog/salon-social-media-marketing.jpg';
+import salonStaffingSolutionImage from '@/assets/blog/salon-staffing-solution-2025.jpg';
+import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 
 export interface BlogArticle {
@@ -47,9 +49,45 @@ const TheBeautyIndustrysMissingPiece = lazy(() => import('@/pages/blog/articles/
 const NailCareSecretsArticle = lazy(() => import('@/components/blog/articles/NailCareSecretsArticle'));
 const AISalonTools2025 = lazy(() => import('@/pages/blog/AISalonTools2025'));
 const SalonStaffingCrisis2025 = lazy(() => import('@/pages/blog/SalonStaffingCrisis2025'));
+const SalonStaffingSolution2025 = lazy(() => import('@/pages/blog/articles/SalonStaffingSolution2025'));
+const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGuide2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'salon-staffing-solution-2025',
+    slug: 'salon-staffing-solution-2025',
+    title: 'The 2025 Salon Staffing Crisis: How Smart Owners Are Solving It (And Making More Money)',
+    description: 'Discover how successful salon owners are turning the 2025 staffing crisis into profit opportunities. Real strategies, proven results, and tools that work.',
+    author: 'EmviApp Industry Research Team',
+    publishedAt: '2025-01-04',
+    readTime: '12 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['salon staffing crisis', 'beauty staff shortage', 'salon recruitment', 'hire beauty staff', 'nail technician jobs', 'salon management', 'EmviApp hiring solution', 'beauty industry trends 2025'],
+    image: salonStaffingSolutionImage,
+    featured: true,
+    trending: true,
+    component: SalonStaffingSolution2025,
+    url: '/blog/salon-management/salon-staffing-solution-2025'
+  },
+  {
+    id: 'sell-salon-guide-2025',
+    slug: 'sell-salon-guide-2025',
+    title: 'How to Sell Your Salon in 2025: The Complete Insider\'s Guide That Made Me $450K',
+    description: 'The complete insider\'s guide to selling your salon for maximum profit. Real strategies that generated $450K+ sales. Step-by-step process, valuation tips, and buyer secrets.',
+    author: 'Sarah Chen, Former Salon Owner & Business Consultant',
+    publishedAt: '2025-01-04',
+    readTime: '15 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['sell salon', 'salon for sale', 'nail salon business sale', 'beauty salon valuation', 'sell nail salon', 'salon broker', 'business sale guide', 'EmviApp salon marketplace'],
+    image: sellSalonGuideImage,
+    featured: true,
+    trending: true,
+    component: SellSalonGuide2025,
+    url: '/blog/salon-management/sell-salon-guide-2025'
+  },
   {
     id: 'salon-staffing-crisis-2025',
     slug: 'salon-staffing-crisis-2025',
