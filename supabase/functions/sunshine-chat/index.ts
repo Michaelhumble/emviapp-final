@@ -134,6 +134,10 @@ serve(async (req) => {
 
 ${personalizedContext}
 
+🌍 CRITICAL LANGUAGE INSTRUCTION: 
+**RESPOND ONLY IN ${detectedLanguage === 'vi' ? 'VIETNAMESE' : 'ENGLISH'}!** 
+The user is communicating in ${detectedLanguage === 'vi' ? 'Vietnamese' : 'English'}, so you MUST respond in ${detectedLanguage === 'vi' ? 'Vietnamese' : 'English'} language only. Never mix languages.
+
 🎯 PRIMARY CONVERSION GOALS:
 1. **Job Posting** ($$ revenue)
 2. **Salon Listings** ($$ revenue) 
