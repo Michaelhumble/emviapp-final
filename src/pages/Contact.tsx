@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
 import ContactForm from '@/components/ContactForm';
 
 const ContactPage = () => {
@@ -11,8 +10,7 @@ const ContactPage = () => {
         <title>Contact EmviApp</title>
         <meta name="description" content="Contact EmviApp - We'd love to hear from you!" />
       </Helmet>
-      <Layout>
-        <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50">
           {/* Header Section */}
           <div className="bg-white border-b border-gray-200">
             <div className="container max-w-4xl mx-auto px-4 py-12">
@@ -36,7 +34,6 @@ const ContactPage = () => {
             <ContactForm />
           </div>
         </div>
-      </Layout>
     </>
   );
 };

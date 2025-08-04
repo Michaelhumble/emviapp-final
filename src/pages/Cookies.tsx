@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
 
 const Cookies = () => {
   return (
@@ -10,8 +9,7 @@ const Cookies = () => {
         <title>Cookie Policy | EmviApp</title>
         <meta name="description" content="EmviApp Cookie Policy and Usage Information" />
       </Helmet>
-      <Layout>
-        <div className="container mx-auto py-12 px-4">
+      <div className="container mx-auto py-12 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-6 font-playfair">Cookie Policy</h1>
             <div className="space-y-4 text-gray-700">
@@ -24,7 +22,6 @@ const Cookies = () => {
             </div>
           </div>
         </div>
-      </Layout>
     </>
   );
 };

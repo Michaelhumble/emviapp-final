@@ -9,8 +9,7 @@ const Privacy = () => {
         <title>Privacy Policy | EmviApp</title>
         <meta name="description" content="EmviApp Privacy Policy - How we collect, use, and protect your personal information" />
       </Helmet>
-      <Layout>
-        <div className="container mx-auto py-12 px-4">
+      <div className="container mx-auto py-12 px-4">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl font-bold mb-8 text-center font-playfair">Privacy Policy</h1>
             <div className="prose prose-lg max-w-none space-y-6">
@@ -140,7 +139,6 @@ const Privacy = () => {
             </div>
           </div>
         </div>
-      </Layout>
     </>
   );
 };

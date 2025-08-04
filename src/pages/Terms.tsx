@@ -1,6 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
 
 const Terms = () => {
   return (
@@ -9,8 +8,7 @@ const Terms = () => {
         <title>Terms of Service | EmviApp</title>
         <meta name="description" content="EmviApp Terms of Service - Rules and conditions for using our platform" />
       </Helmet>
-      <Layout>
-        <div className="container mx-auto py-12 px-4">
+      <div className="container mx-auto py-12 px-4">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl font-bold mb-8 text-center font-playfair">Terms of Service</h1>
             <div className="prose prose-lg max-w-none space-y-6">
@@ -159,7 +157,6 @@ const Terms = () => {
             </div>
           </div>
         </div>
-      </Layout>
     </>
   );
 };

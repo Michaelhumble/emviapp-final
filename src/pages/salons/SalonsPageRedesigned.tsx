@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -171,7 +170,7 @@ const SalonsPageRedesigned = () => {
   };
 
   return (
-    <Layout>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
       {/* New Premium Hero Section */}
       <PremiumSalonHero />
       
@@ -438,7 +437,7 @@ const SalonsPageRedesigned = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
-    </Layout>
+    </div>
   );
 };
 
