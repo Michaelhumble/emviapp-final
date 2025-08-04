@@ -10,10 +10,23 @@ export const LazyChatSystem = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Load chat after 3 seconds or on user interaction
+    // CRITICAL: Load chat only after DOMContentLoaded + 3 seconds for performance
+    const loadChat = () => {
+      setTimeout(() => {
+        setShouldLoad(true);
+      }, 3000);
+    };
+
+    if (document.readyState === 'complete') {
+      loadChat();
+    } else {
+      window.addEventListener('load', loadChat);
+      return () => window.removeEventListener('load', loadChat);
+    }
+
     const timer = setTimeout(() => {
       setShouldLoad(true);
-    }, 3000);
+    }, 5000); // Fallback
 
     const handleUserInteraction = () => {
       setShouldLoad(true);

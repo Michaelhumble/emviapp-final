@@ -26,21 +26,21 @@ export default defineConfig(({ mode }) => ({
           'vendor': ['react', 'react-dom'],
           'ui': ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-toast'],
           'auth': ['@supabase/supabase-js'],
-          'utils': ['framer-motion', 'react-router-dom'],
-          'home': [
+          'critical': [
             '@/components/home/Hero',
+            '@/components/home/JobsCallToAction',
+            '@/components/layout/Navbar'
+          ],
+          'home-lazy': [
             '@/components/home/PremiumIndustryShowcase',
-            '@/components/home/ClientSuccessStories'
+            '@/components/home/ClientSuccessStories',
+            '@/components/home/ai-matchmaker',
+            '@/components/home/SalonClientGrowthSystem'
           ],
           'chat': [
             '@/components/chat/ChatSystem',
             '@/components/chat/MessageBubble',
             '@/components/chat/ChatInput'
-          ],
-          'pages': [
-            '@/pages/Jobs',
-            '@/pages/About',
-            '@/pages/Contact'
           ]
         }
       }
@@ -48,6 +48,6 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
-    chunkSizeWarningLimit: 500
+    chunkSizeWarningLimit: 300
   }
 }));

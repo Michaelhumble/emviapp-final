@@ -2,14 +2,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RRFWGM0MPH"></script>
+    <!-- Google Analytics - Deferred for performance -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-RRFWGM0MPH');
+      // Load Google Analytics after page load for performance
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-RRFWGM0MPH';
+          document.head.appendChild(script);
+          
+          script.onload = function() {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-RRFWGM0MPH');
+          };
+        }, 2000);
+      });
     </script>
     
     <meta charset="UTF-8" />
@@ -18,7 +28,15 @@
     <title>EmviApp</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <!-- Critical fonts loaded with font-display: swap -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Critical inline CSS for immediate render -->
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .font-loading { font-family: system-ui, -apple-system, sans-serif !important; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

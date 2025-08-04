@@ -10,6 +10,7 @@ import { OnboardingProvider } from '@/context/OnboardingContext';
 import { SecurityProvider } from '@/components/security/SecurityProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
+import LazyIndex from "./pages/LazyIndex";
 
 // Critical components loaded immediately
 import { Toaster } from "@/components/ui/toaster";
@@ -167,12 +168,15 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
-                    {/* ... keep existing code (other routes) the same */}
-                    {routes.map((route, index) => (
-                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
-                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                       route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
-                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success" && route.path !== "/profile") && (
+                     {/* Homepage route - critical performance optimization */}
+                     <Route path="/" element={<LazyIndex />} />
+                     
+                     {/* ... keep existing code (other routes) the same */}
+                     {routes.map((route, index) => (
+                       (route.path !== "/" && route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
+                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
+                        route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
+                        route.path !== "/sell-salon" && route.path !== "/salon-listing-success" && route.path !== "/profile") && (
                         <Route 
                           key={index}
                           path={route.path}

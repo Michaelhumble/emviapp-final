@@ -1,5 +1,5 @@
 
-// Performance-optimized hero images - limited to 4 for faster loading
+// CRITICAL: Only 1 hero image loads first for <1s first paint
 export const heroImages = [
   {
     url: "/lovable-uploads/f7491bd3-25bf-43f9-80e2-d53b137a70d7.png",
@@ -9,7 +9,11 @@ export const heroImages = [
       text: "Join EmviApp Today",
       link: "/auth/signup"
     }
-  },
+  }
+];
+
+// Lazy-loaded additional images (loaded after 2s)
+export const lazyHeroImages = [
   {
     url: "/lovable-uploads/e84078f4-339e-4231-b027-e8cd67c8e4ae.png",
     alt: "Nail salon services showcase",
@@ -25,15 +29,6 @@ export const heroImages = [
     subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
     cta: {
       text: "Start Your Journey",
-      link: "/auth/signup"
-    }
-  },
-  {
-    url: "/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png",
-    alt: "Modern beauty salon interior",
-    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
-    cta: {
-      text: "Join Our Community",
       link: "/auth/signup"
     }
   }

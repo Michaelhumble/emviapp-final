@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
-import { heroImages } from "./hero/heroData";
+import { heroImages, lazyHeroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
 import HeroContent from "./hero/HeroContent";
 
@@ -11,6 +11,7 @@ const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isChanging, setIsChanging] = useState(false);
   const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
+  const [allImages, setAllImages] = useState(heroImages); // Start with just 1 image
   
   // Update viewport height when it changes
   useEffect(() => {
@@ -26,20 +27,31 @@ const Hero = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  // Load additional images after 2 seconds for performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAllImages([...heroImages, ...lazyHeroImages]);
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   // Rotate background images every 6.5 seconds with smooth transitions
   useEffect(() => {
+    if (allImages.length <= 1) return; // Don't rotate if only 1 image
+    
     const interval = setInterval(() => {
       setIsChanging(true);
       setTimeout(() => {
         setCurrentImageIndex((prevIndex) => 
-          prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+          prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
         );
         setIsChanging(false);
-      }, 800); // Longer fade transition for smoother experience
-    }, 6500); // Slightly longer display time for each image
+      }, 800);
+    }, 6500);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [allImages.length]);
 
   const handleDotClick = (index: number) => {
     setIsChanging(true);
@@ -49,22 +61,18 @@ const Hero = () => {
     }, 500);
   };
 
-  // Lazy load images after first paint - only preload on user interaction
+  // Preload next images only after carousel is loaded
   useEffect(() => {
+    if (allImages.length <= 1) return;
+    
     const timer = setTimeout(() => {
-      // Preload only the next 2 images after 2 seconds
-      const nextIndex = (currentImageIndex + 1) % heroImages.length;
-      const secondNextIndex = (currentImageIndex + 2) % heroImages.length;
-      
-      const img1 = new Image();
-      img1.src = heroImages[nextIndex].url;
-      
-      const img2 = new Image();
-      img2.src = heroImages[secondNextIndex].url;
-    }, 2000);
+      const nextIndex = (currentImageIndex + 1) % allImages.length;
+      const img = new Image();
+      img.src = allImages[nextIndex].url;
+    }, 3000);
     
     return () => clearTimeout(timer);
-  }, [currentImageIndex]);
+  }, [currentImageIndex, allImages]);
 
   return (
     <section 
@@ -83,9 +91,9 @@ const Hero = () => {
         paddingBottom: 'env(safe-area-inset-bottom)'
       }}
     >
-      {/* Background image carousel with full rotation through all images */}
+      {/* Background image carousel - starts with 1 image, loads more after 2s */}
       <HeroCarousel 
-        images={heroImages} 
+        images={allImages} 
         activeIndex={currentImageIndex} 
         isMobile={isMobile}
       />
@@ -95,7 +103,7 @@ const Hero = () => {
         <HeroContent 
           activeIndex={currentImageIndex}
           setActiveIndex={handleDotClick}
-          heroImages={heroImages}
+          heroImages={allImages}
           isMobile={isMobile}
         />
       </div>
