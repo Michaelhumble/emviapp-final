@@ -15,7 +15,8 @@ export const extractName = (text: string): string => {
   // First check: If text contains action keywords, NEVER extract a name
   const actionKeywords = [
     'muốn', 'cần', 'tìm', 'đăng', 'bán', 'want', 'need', 'find', 'post', 'sell', 
-    'looking', 'hiring', 'job', 'work', 'salon', 'artist', 'help', 'giúp'
+    'looking', 'hiring', 'job', 'work', 'salon', 'artist', 'help', 'giúp', 'bao nhiêu',
+    'có', 'làm', 'thế', 'nào', 'đó', 'việc', 'tiệm', 'giỏi', 'ta', 'người'
   ];
   
   for (const keyword of actionKeywords) {

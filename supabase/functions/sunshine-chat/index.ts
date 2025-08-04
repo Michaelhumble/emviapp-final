@@ -40,25 +40,66 @@ serve(async (req) => {
       return vietnamesePattern.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
     }
 
-    // Extract user name from message
+    // ULTRA STRICT name extraction - only from explicit introductions
     function extractUserName(text: string): string | null {
-      const namePatterns = [
-        /(?:tên|name|là|is)\s+([A-Za-zÀ-ỹ]+)/i,
-        /(?:em|anh|chị|i'm|i am)\s+([A-Za-zÀ-ỹ]+)/i,
-        /([A-Za-zÀ-ỹ]+)\s+(?:đây|here|nè)/i
+      const trimmedText = text.trim().toLowerCase();
+      
+      // First check: If text contains action keywords, NEVER extract a name
+      const actionKeywords = [
+        'muốn', 'cần', 'tìm', 'đăng', 'bán', 'want', 'need', 'find', 'post', 'sell', 
+        'looking', 'hiring', 'job', 'work', 'salon', 'artist', 'help', 'giúp', 'bao nhiêu',
+        'có', 'làm', 'thế', 'nào', 'đó', 'việc', 'tiệm', 'giỏi', 'ta', 'người'
       ];
       
-      for (const pattern of namePatterns) {
-        const match = text.match(pattern);
-        if (match && match[1] && match[1].length > 1) {
-          return match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+      for (const keyword of actionKeywords) {
+        if (trimmedText.includes(keyword)) {
+          return null; // Never extract names from action-based messages
         }
       }
+      
+      // Only these EXACT patterns for name introduction
+      const nameIntroPatterns = [
+        // Vietnamese name introductions - EXACT patterns only
+        /^(?:anh|chị|em|tôi|mình)\s+tên\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)$/i,
+        /^tên\s+(?:anh|chị|em|tôi|mình)\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)$/i,
+        // English name introductions - EXACT patterns only
+        /^(?:i\s+am|my\s+name\s+is)\s+([a-zA-Z]+)$/i,
+        /^(?:they\s+)?call\s+me\s+([a-zA-Z]+)$/i,
+        /^(?:i'?m)\s+([a-zA-Z]+)$/i
+      ];
+      
+      for (const pattern of nameIntroPatterns) {
+        const match = text.trim().match(pattern);
+        if (match && match[1] && match[1].length > 1) {
+          const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+          
+          // Double-check exclusion list
+          const excludeWords = [
+            'anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me',
+            'muốn', 'cần', 'tìm', 'việc', 'thợ', 'tiệm', 'salon', 'tuyển', 'bán', 'đăng', 'làm',
+            'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list',
+            'hôm', 'nay', 'today', 'now', 'here', 'where', 'what', 'how', 'why', 'when',
+            'đây', 'đó', 'ở', 'về', 'từ', 'cho', 'với', 'trong', 'ngoài', 'trên', 'dưới'
+          ];
+          
+          if (!excludeWords.includes(name.toLowerCase())) {
+            return name;
+          }
+        }
+      }
+      
       return null;
     }
 
     const detectedLanguage = language || detectLanguage(cleanMessage);
     const extractedName = extractUserName(cleanMessage);
+    
+    // Debug logging for name extraction
+    if (extractedName) {
+      console.log('✅ Valid name extracted:', extractedName, 'from message:', cleanMessage);
+    } else {
+      console.log('❌ No valid name detected in:', cleanMessage);
+    }
 
     // Get or create user session
     let userSession = null;
