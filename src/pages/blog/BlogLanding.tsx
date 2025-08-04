@@ -93,51 +93,60 @@ const BlogLanding = () => {
         }}
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
         {/* Hero Section */}
         <Container className="pt-20 pb-16">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-              <span className="bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Beauty Industry
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200/50 rounded-full px-6 py-3 mb-8">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <span className="text-purple-700 font-medium text-sm tracking-wide">WORLD-CLASS BEAUTY INSIGHTS</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair font-bold leading-tight mb-8">
+              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                The Future of
               </span>
               <br />
-              <span className="text-gray-900">Insights & Tips</span>
+              <span className="text-gray-900">Beauty Business</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Expert insights, proven strategies, and success stories from the world's leading beauty professionals
+            
+            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-10 leading-relaxed">
+              Exclusive insights, proven strategies, and cutting-edge trends from the world's most successful beauty professionals and industry leaders.
             </p>
             
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  type="text"
-                  placeholder="Search articles, tips, and insights..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-primary bg-white/80 backdrop-blur-sm"
-                />
+            {/* Enhanced Search Bar */}
+            <div className="max-w-2xl mx-auto mb-10">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                <div className="relative">
+                  <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6" />
+                  <Input
+                    type="text"
+                    placeholder="Search premium beauty insights..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="pl-14 pr-6 py-6 text-lg border-2 border-gray-200/50 rounded-2xl focus:border-purple-400 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300 focus:shadow-xl"
+                  />
+                </div>
               </div>
               
               {isSearching && searchResults.length > 0 && (
-                <div className="mt-4 bg-white rounded-xl shadow-lg border p-4 max-h-96 overflow-y-auto">
-                  <h3 className="font-semibold mb-3">Search Results ({searchResults.length})</h3>
-                  <div className="space-y-2">
+                <div className="mt-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-6 max-h-96 overflow-y-auto">
+                  <h3 className="font-semibold text-gray-900 mb-4">Search Results ({searchResults.length})</h3>
+                  <div className="space-y-3">
                     {searchResults.slice(0, 5).map((article) => (
                       <Link
                         key={article.id}
                         to={article.url}
-                        className="block p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="block p-4 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-xl transition-all duration-200 group"
                       >
-                        <h4 className="font-medium text-sm">{article.title}</h4>
-                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{article.description}</p>
+                        <h4 className="font-semibold text-gray-900 group-hover:text-purple-700 transition-colors">{article.title}</h4>
+                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{article.description}</p>
                       </Link>
                     ))}
                     {searchResults.length > 5 && (
-                      <p className="text-xs text-gray-500 text-center pt-2">
-                        +{searchResults.length - 5} more results
+                      <p className="text-sm text-gray-500 text-center pt-3 border-t border-gray-100">
+                        +{searchResults.length - 5} more premium articles
                       </p>
                     )}
                   </div>
@@ -145,60 +154,67 @@ const BlogLanding = () => {
               )}
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span>10,000+ Industry Professionals</span>
+            {/* Premium Stats */}
+            <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
+              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200/50">
+                <Users className="h-5 w-5 text-purple-600" />
+                <span className="font-medium">15,000+ Industry Leaders</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>Updated Daily</span>
+              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200/50">
+                <Calendar className="h-5 w-5 text-purple-600" />
+                <span className="font-medium">Daily Expert Content</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4" />
-                <span>Expert-Vetted Content</span>
+              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200/50">
+                <Star className="h-5 w-5 text-purple-600" />
+                <span className="font-medium">Industry-Leading Insights</span>
               </div>
             </div>
           </div>
 
-          {/* Featured Article Hero */}
+          {/* Premium Featured Article Hero */}
           {heroArticle && (
-            <div className="mb-16">
-              <Link
-                to={heroArticle.url}
-                className="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-              >
-                <div className="grid md:grid-cols-2 gap-0">
-                  <div className="aspect-[4/3] overflow-hidden">
-                    <img 
-                      src={heroArticle.image}
-                      alt={heroArticle.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-                      }}
-                    />
-                  </div>
-                  <div className="p-8 md:p-12 flex flex-col justify-center">
-                    <div className="flex items-center gap-4 mb-4">
-                      <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                        Featured
-                      </span>
-                      <span className="text-muted-foreground text-sm">{heroArticle.readTime}</span>
+            <div className="mb-20">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-500"></div>
+                <Link
+                  to={heroArticle.url}
+                  className="relative block bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-200/50"
+                >
+                  <div className="grid md:grid-cols-2 gap-0">
+                    <div className="aspect-[5/4] overflow-hidden">
+                      <img 
+                        src={heroArticle.image}
+                        alt={heroArticle.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                        }}
+                      />
                     </div>
-                    <h3 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-primary transition-colors">
-                      {heroArticle.title}
-                    </h3>
-                    <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                      {heroArticle.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{heroArticle.publishedAt}</span>
-                      <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
+                    <div className="p-10 md:p-16 flex flex-col justify-center">
+                      <div className="flex items-center gap-4 mb-6">
+                        <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-semibold tracking-wide">
+                          FEATURED
+                        </span>
+                        <span className="text-gray-500 text-sm font-medium">{heroArticle.readTime}</span>
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-playfair font-bold mb-6 group-hover:text-purple-700 transition-colors leading-tight">
+                        {heroArticle.title}
+                      </h3>
+                      <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                        {heroArticle.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500 font-medium">{heroArticle.publishedAt}</span>
+                        <div className="flex items-center gap-2 text-purple-600 font-semibold">
+                          <span>Read Article</span>
+                          <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             </div>
           )}
         </Container>
