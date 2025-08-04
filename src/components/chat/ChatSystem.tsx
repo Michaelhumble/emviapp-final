@@ -252,22 +252,15 @@ export const ChatSystem = () => {
   };
 
   const getInitialGreeting = () => {
-    // If we know the user's name from session, greet them and move to business
+    // If we know the user's name from session, simple friendly greeting
     if (userName) {
       return language === 'vi' 
-        ? `Xin chào ${userName}! 😊 Em có thể giúp gì cho anh hôm nay? Anh muốn tuyển nhân viên, tìm việc, hay mua/bán salon không?`
-        : `Hi ${userName}! 😊 How can I help you today? Are you looking to hire staff, find a job, or buy/sell a salon?`;
+        ? `Xin chào ${userName}! 😊`
+        : `Hi ${userName}! 😊`;
     }
     
-    // For new users without a name, use conversion-focused greeting
-    if (isNewUser || conversionPopupShown) {
-      return getConversionGreeting();
-    }
-    
-    // Default greeting asks for name
-    return language === 'vi'
-      ? "Xin chào! Em là Sunshine ☀️ Anh/chị tên gì để em xưng hô cho thân mật nhé? 🌸"
-      : "Hi there! I'm Sunshine ☀️ What's your name? I'll be your personal guide today! 🌸";
+    // For new users without a name, simple introduction - ASK ONLY ONCE
+    return "Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸";
   };
 
   const clearChat = () => {
@@ -297,20 +290,8 @@ export const ChatSystem = () => {
     setShowButton(false);
     trackChatEvent(chatEvents.CHAT_OPENED, { userName, language });
     
-    // Track conversion event
-    if (conversionPopupShown) {
-      trackConversionEvent({
-        userId,
-        eventType: 'chat_opened',
-        source: 'auto_popup',
-        userType: isNewUser ? 'new' : 'returning',
-        language,
-        metadata: { greeting_type: 'conversion_focused' }
-      });
-    }
-    
     // ALWAYS start with a fresh conversation when opening chat
-    // But greet by name if we know it from session
+    // Simple greeting based on whether we know the name or not
     const greeting: Message = {
       id: Date.now().toString(),
       text: getInitialGreeting(),
