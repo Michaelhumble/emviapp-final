@@ -17,6 +17,7 @@ import salonSocialMediaMarketingImage from '@/assets/blog/salon-social-media-mar
 import salonStaffingSolutionImage from '@/assets/blog/salon-staffing-solution-2025.jpg';
 import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg';
+import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 
 export interface BlogArticle {
@@ -53,7 +54,7 @@ const AISalonTools2025 = lazy(() => import('@/pages/blog/AISalonTools2025'));
 const SalonStaffingCrisis2025 = lazy(() => import('@/pages/blog/SalonStaffingCrisis2025'));
 const SalonStaffingSolution2025 = lazy(() => import('@/pages/blog/articles/SalonStaffingSolution2025'));
 const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGuide2025'));
-const AIBeautyRevolution2025 = lazy(() => import('@/pages/blog/articles/AIBeautyRevolution2025'));
+const AIBeautyRevolution2025 = lazy(() => import('@/data/blogArticles/ai-beauty-revolution-2025'));
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 
 // Central registry of all blog articles
@@ -76,21 +77,21 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     url: '/blog/career-growth/beauty-professional-success-guide'
   },
   {
-    id: 'ai-beauty-revolution-2025',
-    slug: 'ai-beauty-revolution-2025',
-    title: 'AI is Revolutionizing Beauty: 17 Tools Every Salon Owner Needs in 2025',
-    description: 'Discover the 17 game-changing AI tools that are transforming the beauty industry. From automated booking to AI-powered color matching, stay ahead of the competition.',
-    author: 'EmviApp Tech Research Team',
+    id: 'ai-beauty-revolution-2025-new',
+    slug: 'ai-beauty-revolution-2025-new',
+    title: 'The AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025',
+    description: 'Google searches for "AI beauty tools" hit 50M+ in Q1 2025. Discover the viral AI revolution transforming salons and how beauty professionals are using these 5 game-changing tools to increase revenue by 40% and client retention by 60%.',
+    author: 'EmviApp AI Research Team',
     publishedAt: '2025-01-04',
-    readTime: '18 min read',
-    category: 'Trends',
-    categorySlug: 'trends',
-    tags: ['AI beauty tools', 'salon technology 2025', 'beauty AI software', 'salon automation', 'AI nail art', 'beauty tech revolution', 'smart salon tools', 'AI color matching'],
-    image: aiBeautyRevolutionImage,
+    readTime: '15 min read',
+    category: 'Technology Trends',
+    categorySlug: 'technology-trends',
+    tags: ['AI beauty revolution 2025', 'virtual try-on technology', 'AI color matching', 'beauty salon AI', 'AI nail art tools', 'smart salon technology', 'beauty AI software', 'AI beauty tools viral', 'salon technology trends', 'AI beauty consulting'],
+    image: aiBeautyRevolutionHeroImage,
     featured: true,
     trending: true,
     component: AIBeautyRevolution2025,
-    url: '/blog/trends/ai-beauty-revolution-2025'
+    url: '/blog/technology-trends/ai-beauty-revolution-2025-new'
   },
   {
     id: 'salon-staffing-solution-2025',
