@@ -1,5 +1,5 @@
 
-import { useState, useRef, KeyboardEvent } from 'react';
+import { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import TextareaAutosize from 'react-textarea-autosize';
@@ -12,6 +12,17 @@ export interface ChatInputProps {
 export const ChatInput = ({ onSendMessage, isProcessing }: ChatInputProps) => {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus on mount and when chat opens
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 100); // Small delay to ensure component is fully mounted
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSend = async () => {
     if (message.trim() === '' || isProcessing) return;
