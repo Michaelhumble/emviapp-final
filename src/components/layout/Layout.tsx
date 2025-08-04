@@ -1,8 +1,8 @@
-
-// CLEAN STATE: No footers in the app until universal footer is approved and built.
+// CLEAN STATE: Universal Footer now integrated - single Footer component for all pages.
 
 import React, { ReactNode, lazy, Suspense } from 'react';
 import Navbar from './Navbar';
+import Footer from './Footer';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 
 const LazyChatSystem = lazy(() => import('@/components/chat/LazyChatSystem').then(m => ({ default: m.LazyChatSystem })));
@@ -30,7 +30,9 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       <main className={`flex-grow w-full max-w-full ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
       </main>
-      {/* NO FOOTERS - CLEAN STATE MAINTAINED */}
+      
+      {/* Universal Footer - Only Footer used on EmviApp */}
+      {!hideFooter && <Footer />}
       
       {/* Show the unified bottom navbar on all pages */}
       {showMobileNav && <UnifiedMobileNavigation />}
