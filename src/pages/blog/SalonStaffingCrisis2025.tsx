@@ -390,7 +390,7 @@ const SalonStaffingCrisis2025 = () => {
           <div className="max-w-4xl mx-auto px-6">
             <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Continue Reading</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <Link to="/blog/salon-bookings-increase" className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
+              <Link to="/blog/salon-management/increase-salon-bookings-2024" className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
                 <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                   How to Increase Salon Bookings by 300% in 90 Days
                 </h4>
@@ -399,7 +399,7 @@ const SalonStaffingCrisis2025 = () => {
                 </p>
               </Link>
               
-              <Link to="/blog/salon-staff-management" className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
+              <Link to="/blog/salon-management/hiring-managing-salon-staff-2025" className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
                 <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                   The Complete Guide to Salon Staff Management
                 </h4>

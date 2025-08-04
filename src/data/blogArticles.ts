@@ -82,7 +82,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     featured: true,
     trending: true,
     component: AISalonTools2025,
-    url: '/blog/ai-salon-tools-2025'
+    url: '/blog/salon-management/ai-salon-tools-2025'
   },
   {
     id: 'nail-care-secrets-2025',

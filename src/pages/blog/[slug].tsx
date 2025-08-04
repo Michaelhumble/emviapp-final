@@ -5,6 +5,7 @@ import { getArticleBySlug, BLOG_ARTICLES } from '@/data/blogArticles';
 import { extractSlugFromUrl } from '@/utils/blogLinks';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import { runBlogDiagnostics } from '@/utils/blogDiagnostics';
+import { performComprehensiveAudit } from '@/utils/blogAudit';
 
 const BlogArticlePage: React.FC = () => {
   const { slug, category } = useParams<{ slug: string; category: string }>();
@@ -18,10 +19,24 @@ const BlogArticlePage: React.FC = () => {
     extractedSlug: extractSlugFromUrl(location.pathname)
   });
   
-  // Run blog system diagnostics in development
+  // Run comprehensive blog audit in development
   if (import.meta.env.DEV) {
-    runBlogDiagnostics();
+    performComprehensiveAudit();
   }
+  
+  console.log('🔍 Available articles:', BLOG_ARTICLES.map(a => ({ 
+    slug: a.slug, 
+    url: a.url, 
+    title: a.title,
+    component: a.component ? 'EXISTS' : 'MISSING'
+  })));
+  
+  console.log('🎯 Current route details:', {
+    slug,
+    category,
+    pathname: location.pathname,
+    extractedSlug: extractSlugFromUrl(location.pathname)
+  });
   
   // Try to get slug from params first, then from URL path
   const articleSlug = slug || extractSlugFromUrl(location.pathname);
