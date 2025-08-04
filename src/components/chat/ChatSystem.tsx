@@ -187,6 +187,14 @@ export const ChatSystem = () => {
     const extractedName = extractName(text);
     if (extractedName && !userName) {
       setUserName(extractedName);
+      // Save updated session immediately when name is set
+      const session: ChatSession = {
+        userName: extractedName,
+        language,
+        lastActive: Date.now(),
+        messages
+      };
+      localStorage.setItem('sunshine-chat-session', JSON.stringify(session));
     }
     return extractedName;
   };
@@ -194,8 +202,8 @@ export const ChatSystem = () => {
   const getInitialGreeting = () => {
     if (userName) {
       return language === 'vi' 
-        ? `Chào anh ${userName}, rất vui được gặp lại anh! Em có thể giúp gì cho anh hôm nay? 😊`
-        : `Hi ${userName}, welcome back! How can I help you today? 😊`;
+        ? `Chào ${userName}! Em có thể giúp gì cho anh hôm nay? 😊`
+        : `Hi ${userName}! How can I help you today? 😊`;
     }
     return "Hi there! I'm Sunshine ☀️ What's your name? I can chat in Vietnamese or English—whatever you prefer!";
   };
@@ -222,7 +230,8 @@ export const ChatSystem = () => {
     setShowButton(false);
     trackChatEvent(chatEvents.CHAT_OPENED, { userName, language });
     
-    if (messages.length === 0) {
+    // Only add greeting if no messages exist AND no userName exists
+    if (messages.length === 0 && !userName) {
       const greeting: Message = {
         id: Date.now().toString(),
         text: getInitialGreeting(),
@@ -243,13 +252,16 @@ export const ChatSystem = () => {
   const generateResponse = async (userMessage: string) => {
     setIsLoading(true);
     
+    // Extract name from user message before sending
+    const extractedName = extractAndSetName(userMessage);
+    
     try {
       const { data, error } = await supabase.functions.invoke('sunshine-chat', {
         body: {
           message: userMessage,
           userId: userId,
-          userName: userName || null,
-          language: language,
+          userName: extractedName || userName || null,
+          language: detectAndSetLanguage(userMessage),
           isAuthenticated: !!user
         }
       });
