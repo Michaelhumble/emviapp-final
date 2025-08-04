@@ -57,6 +57,9 @@ export const ChatSystem = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showAuthFlow, setShowAuthFlow] = useState(false);
+  const [lastGreetingId, setLastGreetingId] = useState<string>('');
+  const [conversionPopupShown, setConversionPopupShown] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { user } = useAuth();
@@ -71,9 +74,15 @@ export const ChatSystem = () => {
   
   const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
   
-  // Load session from localStorage on mount
+  // Load session from localStorage on mount + conversion popup logic
   useEffect(() => {
     const savedSession = localStorage.getItem('sunshine-chat-session');
+    const hasShownConversionPopup = localStorage.getItem('sunshine-conversion-popup-shown');
+    const currentPath = window.location.pathname;
+    
+    // Track if this is a new user (no previous session)
+    setIsNewUser(!savedSession);
+    
     if (savedSession) {
       try {
         const session: ChatSession = JSON.parse(savedSession);
@@ -87,17 +96,37 @@ export const ChatSystem = () => {
         } else {
           // Session expired, clear it
           localStorage.removeItem('sunshine-chat-session');
+          setIsNewUser(true);
         }
       } catch (e) {
         localStorage.removeItem('sunshine-chat-session');
+        setIsNewUser(true);
       }
     }
     
-    const timer = setTimeout(() => {
-      setShowButton(true);
-    }, 3000);
+    // Show conversion popup on high-value pages after delay
+    const targetPages = ['/jobs', '/salons', '/', '/community', '/post-job', '/sell-salon'];
+    const isTargetPage = targetPages.includes(currentPath);
     
-    return () => clearTimeout(timer);
+    if (isTargetPage && !hasShownConversionPopup && !savedSession) {
+      // Random delay between 3-6 seconds for new users
+      const randomDelay = Math.random() * 3000 + 3000;
+      const conversionTimer = setTimeout(() => {
+        setConversionPopupShown(true);
+        localStorage.setItem('sunshine-conversion-popup-shown', 'true');
+        // Auto-show the chat button with conversion message
+        setShowButton(true);
+      }, randomDelay);
+      
+      return () => clearTimeout(conversionTimer);
+    } else {
+      // Normal timer for existing users
+      const timer = setTimeout(() => {
+        setShowButton(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   // Save session to localStorage
@@ -200,12 +229,52 @@ export const ChatSystem = () => {
     return extractedName;
   };
 
+  // Generate randomized conversion-focused greetings that don't repeat
+  const getConversionGreeting = () => {
+    const englishGreetings = [
+      "Hi there! 👋 Are you looking to hire staff, find a job, or buy/sell a salon? I'll help you get started and your FIRST POST IS FREE! 🎉",
+      "Welcome to EmviApp! 🌟 I'm Sunshine - your personal beauty business assistant. Looking to hire, job hunt, or grow your salon? Let's make it happen! ✨",
+      "Hey! 💫 Need help with hiring, job searching, or salon business? I've got insider tips and your first listing is completely FREE!",
+      "🚀 Ready to boost your beauty business? I'm here to help with hiring, job hunting, or salon growth - plus your first post won't cost a thing!",
+      "Welcome! I'm Sunshine ☀️ Whether you're hiring, job searching, or growing your salon - I've got the insider secrets to make it happen FAST!"
+    ];
+    
+    const vietnameseGreetings = [
+      "Chào anh/chị! 👋 Anh/chị đang muốn tuyển nhân viên, tìm việc, hay mua/bán salon không? Em sẽ hỗ trợ và ĐĂNG TIN MIỄN PHÍ lần đầu! 🎉",
+      "Chào mừng đến EmviApp! 🌟 Em là Sunshine - trợ lý kinh doanh làm đẹp của anh/chị. Cần tuyển dụng, tìm việc hay phát triển salon? Cùng em làm ngay nhé! ✨",
+      "Xin chào! 💫 Cần hỗ trợ tuyển dụng, tìm việc hay kinh doanh salon? Em có bí quyết hay và đăng tin đầu tiên HOÀN TOÀN MIỄN PHÍ!",
+      "🚀 Sẵn sàng phát triển business làm đẹp chưa ạ? Em ở đây hỗ trợ tuyển dụng, tìm việc hay phát triển salon - và tin đầu tiên không tốn một xu!",
+      "Chào mừng! Em là Sunshine ☀️ Dù anh/chị muốn tuyển dụng, tìm việc hay phát triển salon - em có bí quyết để làm thành công NHANH CHÓNG!"
+    ];
+    
+    const greetings = language === 'vi' ? vietnameseGreetings : englishGreetings;
+    
+    // Avoid repeating the last greeting
+    let availableGreetings = greetings;
+    if (lastGreetingId) {
+      availableGreetings = greetings.filter((_, index) => index.toString() !== lastGreetingId);
+    }
+    
+    const randomIndex = Math.floor(Math.random() * availableGreetings.length);
+    const selectedGreeting = availableGreetings[randomIndex];
+    const greetingId = greetings.indexOf(selectedGreeting).toString();
+    
+    setLastGreetingId(greetingId);
+    return selectedGreeting;
+  };
+
   const getInitialGreeting = () => {
     if (userName) {
       return language === 'vi' 
         ? `Chào ${userName}! Em có thể giúp gì cho anh hôm nay? 😊`
         : `Hi ${userName}! How can I help you today? 😊`;
     }
+    
+    // Use conversion greeting for new users, simple greeting for returning users
+    if (isNewUser || conversionPopupShown) {
+      return getConversionGreeting();
+    }
+    
     return "Hi there! I'm Sunshine ☀️ What's your name? I can chat in Vietnamese or English—whatever you prefer!";
   };
 
@@ -666,11 +735,11 @@ export const ChatSystem = () => {
         )}
       </AnimatePresence>
 
-      {/* Enhanced Sunshine Chat Toggle Button */}
+      {/* Enhanced Sunshine Chat Toggle Button with Conversion Hooks */}
       <ChatToggleButton
         isOpen={isOpen}
         onClick={openChat}
-        hasUnreadMessages={false} // You can add logic here to detect unread messages
+        hasUnreadMessages={conversionPopupShown && !isOpen} // Show notification for conversion popup
         userName={userName}
       />
 
