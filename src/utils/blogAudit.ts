@@ -39,16 +39,17 @@ export const performComprehensiveAudit = () => {
   
   console.log('🔗 URL Consistency:', urlConsistency);
   
-  // 4. Image validation
+  // 4. Image validation - Check for proper ES6 module imports
   const imageValidation = BLOG_ARTICLES.map(article => {
     const hasValidImage = typeof article.image === 'string' && article.image.length > 0;
-    const isImported = !article.image.startsWith('/src/');
+    // Images imported as modules will have full paths starting with /
+    const isProperlyImported = article.image.startsWith('/') || article.image.startsWith('data:') || article.image.startsWith('http');
     return {
       slug: article.slug,
       image: article.image,
       hasImage: hasValidImage,
-      properlyImported: isImported,
-      status: hasValidImage && isImported ? '✅ OK' : '❌ ISSUE'
+      properlyImported: isProperlyImported,
+      status: hasValidImage && isProperlyImported ? '✅ OK' : '❌ ISSUE'
     };
   });
   

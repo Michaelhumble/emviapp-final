@@ -10,14 +10,17 @@ export const runBlogDiagnostics = () => {
   const registryValidation = validateArticleRegistry();
   console.log('📋 Registry Validation:', registryValidation);
   
-  // 2. Check all image imports
+  // 2. Check all image imports - Validate ES6 module imports
   const imageValidation = BLOG_ARTICLES.map(article => {
     const hasValidImage = typeof article.image === 'string' && article.image.length > 0;
+    const isProperlyImported = article.image.startsWith('/') || article.image.startsWith('data:') || article.image.startsWith('http');
     return {
       slug: article.slug,
       imageValid: hasValidImage,
+      properlyImported: isProperlyImported,
       imageType: typeof article.image,
-      imageValue: article.image
+      imageValue: article.image,
+      status: hasValidImage && isProperlyImported ? '✅ OK' : '❌ ISSUE'
     };
   });
   
