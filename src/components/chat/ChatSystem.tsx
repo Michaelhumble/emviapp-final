@@ -75,41 +75,31 @@ export const ChatSystem = () => {
   
   const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
   
-  // Load session from localStorage on mount + conversion popup logic
+  // Smart session management - separate name storage from conversation history
   useEffect(() => {
-    const savedSession = localStorage.getItem('sunshine-chat-session');
+    // Check for existing name in current browser session
+    const savedName = sessionStorage.getItem('sunshine-user-name');
+    const savedLanguage = sessionStorage.getItem('sunshine-user-language');
+    
+    // Only get conversation history from localStorage for conversion popup logic
     const hasShownConversionPopup = localStorage.getItem('sunshine-conversion-popup-shown');
     const currentPath = window.location.pathname;
     
-    // Track if this is a new user (no previous session)
-    setIsNewUser(!savedSession);
+    // Track if this is a new user (no session name)
+    setIsNewUser(!savedName);
     
-    if (savedSession) {
-      try {
-        const session: ChatSession = JSON.parse(savedSession);
-        const timeSinceLastActive = Date.now() - session.lastActive;
-        
-        if (timeSinceLastActive < IDLE_TIMEOUT) {
-          // Resume session
-          setUserName(session.userName);
-          setLanguage(session.language);
-          setMessages(session.messages || []);
-        } else {
-          // Session expired, clear it
-          localStorage.removeItem('sunshine-chat-session');
-          setIsNewUser(true);
-        }
-      } catch (e) {
-        localStorage.removeItem('sunshine-chat-session');
-        setIsNewUser(true);
-      }
+    // Restore name and language from session (if exists)
+    if (savedName) {
+      setUserName(savedName);
+      setLanguage((savedLanguage as 'en' | 'vi') || 'en');
+      console.log('🧠 Restored user session:', { name: savedName, language: savedLanguage });
     }
     
-    // Show conversion popup on high-value pages after delay
+    // Show conversion popup on high-value pages after delay (only for new users)
     const targetPages = ['/jobs', '/salons', '/', '/community', '/post-job', '/sell-salon'];
     const isTargetPage = targetPages.includes(currentPath);
     
-    if (isTargetPage && !hasShownConversionPopup && !savedSession) {
+    if (isTargetPage && !hasShownConversionPopup && !savedName) {
       // Random delay between 3-6 seconds for new users
       const randomDelay = Math.random() * 3000 + 3000;
       const conversionTimer = setTimeout(() => {
@@ -130,15 +120,19 @@ export const ChatSystem = () => {
     }
   }, []);
 
-  // Save session to localStorage
-  const saveSession = (updatedMessages?: Message[]) => {
-    const session: ChatSession = {
-      userName,
-      language,
-      lastActive: Date.now(),
-      messages: updatedMessages || messages
-    };
-    localStorage.setItem('sunshine-chat-session', JSON.stringify(session));
+  // Save user name and language to sessionStorage (persists only for browser session)
+  const saveUserSession = (name?: string, lang?: 'en' | 'vi') => {
+    if (name) {
+      sessionStorage.setItem('sunshine-user-name', name);
+      sessionStorage.setItem('sunshine-user-language', lang || language);
+      console.log('💾 Saved user session:', { name, language: lang || language });
+    }
+  };
+
+  // Clear conversation history when chat closes (but keep name in session)
+  const clearConversationHistory = () => {
+    setMessages([]);
+    console.log('🗑️ Conversation history cleared (name preserved for session)');
   };
 
   useEffect(() => {
@@ -160,12 +154,12 @@ export const ChatSystem = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Save session when messages change
+  // Save user session when name or language changes
   useEffect(() => {
-    if (messages.length > 0) {
-      saveSession(messages);
+    if (userName) {
+      saveUserSession(userName, language);
     }
-  }, [messages, userName, language]);
+  }, [userName, language]);
 
   // Use shared language detection
   const detectAndSetLanguage = (text: string) => {
@@ -218,14 +212,7 @@ export const ChatSystem = () => {
     const extractedName = extractName(text);
     if (extractedName && !userName) {
       setUserName(extractedName);
-      // Save updated session immediately when name is set
-      const session: ChatSession = {
-        userName: extractedName,
-        language,
-        lastActive: Date.now(),
-        messages
-      };
-      localStorage.setItem('sunshine-chat-session', JSON.stringify(session));
+      console.log('✅ Name extracted and saved:', extractedName);
     }
     return extractedName;
   };
@@ -265,25 +252,34 @@ export const ChatSystem = () => {
   };
 
   const getInitialGreeting = () => {
+    // If we know the user's name from session, greet them and move to business
     if (userName) {
       return language === 'vi' 
-        ? `Chào ${userName}! Em có thể giúp gì cho anh hôm nay? 😊`
-        : `Hi ${userName}! How can I help you today? 😊`;
+        ? `Xin chào ${userName}! 😊 Em có thể giúp gì cho anh hôm nay? Anh muốn tuyển nhân viên, tìm việc, hay mua/bán salon không?`
+        : `Hi ${userName}! 😊 How can I help you today? Are you looking to hire staff, find a job, or buy/sell a salon?`;
     }
     
-    // Use conversion greeting for new users, simple greeting for returning users
+    // For new users without a name, use conversion-focused greeting
     if (isNewUser || conversionPopupShown) {
       return getConversionGreeting();
     }
     
-    return "Hi there! I'm Sunshine ☀️ What's your name? I can chat in Vietnamese or English—whatever you prefer!";
+    // Default greeting asks for name
+    return language === 'vi'
+      ? "Xin chào! Em là Sunshine ☀️ Anh/chị tên gì để em xưng hô cho thân mật nhé? 🌸"
+      : "Hi there! I'm Sunshine ☀️ What's your name? I'll be your personal guide today! 🌸";
   };
 
   const clearChat = () => {
-    localStorage.removeItem('sunshine-chat-session');
-    setMessages([]);
+    // Clear conversation history and reset states
+    clearConversationHistory();
     setUserName('');
     setLanguage('en');
+    
+    // Clear session storage
+    sessionStorage.removeItem('sunshine-user-name');
+    sessionStorage.removeItem('sunshine-user-language');
+    
     trackChatEvent(chatEvents.CHAT_CLEARED);
     
     const greeting: Message = {
@@ -313,16 +309,21 @@ export const ChatSystem = () => {
       });
     }
     
-    // Only add greeting if no messages exist AND no userName exists
-    if (messages.length === 0 && !userName) {
-      const greeting: Message = {
-        id: Date.now().toString(),
-        text: getInitialGreeting(),
-        isUser: false,
-        timestamp: new Date()
-      };
-      setMessages([greeting]);
-    }
+    // ALWAYS start with a fresh conversation when opening chat
+    // But greet by name if we know it from session
+    const greeting: Message = {
+      id: Date.now().toString(),
+      text: getInitialGreeting(),
+      isUser: false,
+      timestamp: new Date()
+    };
+    setMessages([greeting]);
+    
+    console.log('🚀 Chat opened - fresh conversation started', { 
+      hasUserName: !!userName, 
+      userName, 
+      language 
+    });
   };
 
   const closeChat = () => {
@@ -330,11 +331,10 @@ export const ChatSystem = () => {
     setShowButton(true);
     setShowMenu(false);
     
-    // Save the current conversation state explicitly when closing
-    if (messages.length > 0) {
-      saveSession();
-      console.log('💾 Chat conversation saved - you can continue where you left off!');
-    }
+    // Clear conversation history but keep user name in session
+    clearConversationHistory();
+    
+    console.log('💾 Chat closed - conversation cleared, name preserved for session');
   };
 
   // Generate AI response with conversational routing
@@ -384,7 +384,7 @@ export const ChatSystem = () => {
       }
 
       setMessages(prev => [...prev, botMessage]);
-      saveSession([...messages, botMessage]);
+      // No need to save conversation to localStorage - only session name matters
     } catch (error) {
       console.error('Error generating response:', error);
       
@@ -411,7 +411,7 @@ export const ChatSystem = () => {
       };
 
       setMessages(prev => [...prev, botMessage]);
-      saveSession([...messages, botMessage]);
+      // No need to save conversation to localStorage - only session name matters
     } finally {
       // Always clear loading state
       setIsLoading(false);
@@ -577,7 +577,7 @@ export const ChatSystem = () => {
     };
     
     setMessages(prev => [...prev, confirmMsg]);
-    saveSession([...messages, confirmMsg]);
+    setMessages(prev => [...prev, confirmMsg]);
   };
 
   // Handle auth success
@@ -615,7 +615,7 @@ export const ChatSystem = () => {
       };
       
       setMessages(prev => [...prev, confirmMsg]);
-      saveSession([...messages, confirmMsg]);
+      setMessages(prev => [...prev, confirmMsg]);
     }
   };
 
@@ -653,7 +653,6 @@ export const ChatSystem = () => {
 
     const finalMessages = [...newMessages, greetingMessage];
     setMessages(finalMessages);
-    saveSession(finalMessages);
     return;
   }
 
