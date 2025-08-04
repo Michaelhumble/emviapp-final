@@ -26,12 +26,23 @@ const BilingualExperienceSection: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="space-y-6"
+            className="space-y-8 relative"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-medium text-gray-800 leading-tight">
+            {/* Sparkle effects for English title */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+              <div className="w-3 h-3 bg-purple-400 rounded-full opacity-60 animate-pulse" />
+            </div>
+            <div className="absolute top-2 right-1/4">
+              <div className="w-2 h-2 bg-pink-300 rounded-full opacity-50 animate-pulse" style={{ animationDelay: '0.7s' }} />
+            </div>
+            <div className="absolute top-8 left-1/4">
+              <div className="w-1.5 h-1.5 bg-blue-300 rounded-full opacity-60 animate-pulse" style={{ animationDelay: '1.2s' }} />
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-gray-800 leading-[1.1] tracking-tight bg-gradient-to-r from-gray-800 via-purple-800 to-gray-800 bg-clip-text">
               Let's Experience EmviApp Together
             </h2>
-            <p className="text-xl md:text-2xl font-light text-gray-700">
+            <p className="text-xl md:text-2xl lg:text-3xl font-manrope font-light text-gray-700 leading-relaxed tracking-wide">
               Built With Love for the Beauty Community
             </p>
           </motion.div>
