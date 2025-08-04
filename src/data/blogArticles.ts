@@ -60,23 +60,6 @@ const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
-    id: 'beauty-professional-success-guide',
-    slug: 'beauty-professional-success-guide',
-    title: 'From Struggling Artist to $120K/Year: The Complete Beauty Professional Success Guide',
-    description: 'The exact strategies, mindset shifts, and business moves that transformed my beauty career from barely surviving to thriving.',
-    author: 'Sarah Mitchell',
-    publishedAt: '2025-01-04',
-    readTime: '12 min read',
-    category: 'Career Growth',
-    categorySlug: 'career-growth',
-    tags: ['Career', 'Success', 'Business', 'Income', 'Professional Development'],
-    image: beautyProfessionalSuccessGuideImage,
-    featured: true,
-    trending: true,
-    component: BeautyProfessionalSuccessGuide,
-    url: '/blog/career-growth/beauty-professional-success-guide'
-  },
-  {
     id: 'ai-beauty-revolution-2025-new',
     slug: 'ai-beauty-revolution-2025-new',
     title: 'The AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025',
@@ -92,6 +75,23 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     trending: true,
     component: AIBeautyRevolution2025,
     url: '/blog/technology-trends/ai-beauty-revolution-2025-new'
+  },
+  {
+    id: 'beauty-professional-success-guide',
+    slug: 'beauty-professional-success-guide',
+    title: 'From Struggling Artist to $120K/Year: The Complete Beauty Professional Success Guide',
+    description: 'The exact strategies, mindset shifts, and business moves that transformed my beauty career from barely surviving to thriving.',
+    author: 'Sarah Mitchell',
+    publishedAt: '2025-01-04',
+    readTime: '12 min read',
+    category: 'Career Growth',
+    categorySlug: 'career-growth',
+    tags: ['Career', 'Success', 'Business', 'Income', 'Professional Development'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: BeautyProfessionalSuccessGuide,
+    url: '/blog/career-growth/beauty-professional-success-guide'
   },
   {
     id: 'salon-staffing-solution-2025',
