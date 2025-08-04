@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
@@ -10,72 +10,74 @@ import { OnboardingProvider } from '@/context/OnboardingContext';
 import { SecurityProvider } from '@/components/security/SecurityProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
-import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
-import BookingCalendarNew from "@/pages/dashboard/artist/BookingCalendarNew";
-import ArtistInbox from "@/pages/dashboard/artist/Inbox";
+
+// Critical components loaded immediately
 import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
-import SalonsPageRedesigned from "@/pages/salons/SalonsPageRedesigned";
-import SalonsFinalsPage from "@/pages/salons/SalonsFinal";
 import Layout from "@/components/layout/Layout";
-import Jobs from "@/pages/Jobs";
-import GlobalJobsPage from "@/pages/GlobalJobsPage";
-import JobDetailPage from "@/pages/JobDetailPage";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import Terms from "@/pages/Terms";
-import Refund from "@/pages/Refund";
-import Privacy from "@/pages/Privacy";
-import Cookies from "@/pages/Cookies";
-import CheckoutFallback from "@/pages/CheckoutFallback";
-import PostSuccess from "@/pages/post-success";
-import PostCanceled from "@/pages/post-canceled";
-import PostJobBillion from "@/pages/PostJobBillion";
-import PostJobExperimental from "@/pages/PostJobExperimental";
-import SignIn from "@/pages/auth/SignIn";
-import NewSignUp from "@/pages/auth/NewSignUp";
-import SignupFastFomo from "@/pages/SignupFastFomo";
-import AuthPage from "@/pages/auth/AuthPage";
-import PremiumSignupPage from "@/pages/auth/PremiumSignupPage";
+import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import FirstTimeVisitorRedirect from "@/components/routing/FirstTimeVisitorRedirect";
 import GlobalPremiumSignupModalProvider from "@/components/modals/GlobalPremiumSignupModalProvider";
-import Onboarding from "@/pages/Onboarding";
-import ProtectedRoute from "@/components/layout/ProtectedRoute";
-import EnhancedPostJob from "@/pages/enhanced-post-job";
-import SellSalonPage from "@/pages/sell-salon";
-import PostSalon from "@/pages/PostSalon";
-import SalonListingSuccessPage from "@/pages/salon-listing-success";
-import CustomerProfilePage from "@/pages/customer/ProfilePage";
-import JobPostingSuccessPage from "@/pages/JobPostingSuccessPage";
-import InviteAcceptance from "@/pages/InviteAcceptance";
-import FreelancerProfile from "@/pages/FreelancerProfile";
 
-import NailJobSuccessPage from "@/pages/nails-job-success";
+// Lazy load heavy pages
+const BookingCalendar = lazy(() => import("@/pages/dashboard/artist/BookingCalendar"));
+const BookingCalendarNew = lazy(() => import("@/pages/dashboard/artist/BookingCalendarNew"));
+const ArtistInbox = lazy(() => import("@/pages/dashboard/artist/Inbox"));
+const SalonsPageRedesigned = lazy(() => import("@/pages/salons/SalonsPageRedesigned"));
+const Jobs = lazy(() => import("@/pages/Jobs"));
+const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
+const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
+const About = lazy(() => import("@/pages/About"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Terms = lazy(() => import("@/pages/Terms"));
+const Refund = lazy(() => import("@/pages/Refund"));
+const Privacy = lazy(() => import("@/pages/Privacy"));
+const Cookies = lazy(() => import("@/pages/Cookies"));
+const CheckoutFallback = lazy(() => import("@/pages/CheckoutFallback"));
+const PostSuccess = lazy(() => import("@/pages/post-success"));
+const PostCanceled = lazy(() => import("@/pages/post-canceled"));
+const PostJobBillion = lazy(() => import("@/pages/PostJobBillion"));
+const PostJobExperimental = lazy(() => import("@/pages/PostJobExperimental"));
+const SignIn = lazy(() => import("@/pages/auth/SignIn"));
+const NewSignUp = lazy(() => import("@/pages/auth/NewSignUp"));
+const SignupFastFomo = lazy(() => import("@/pages/SignupFastFomo"));
+const AuthPage = lazy(() => import("@/pages/auth/AuthPage"));
+const PremiumSignupPage = lazy(() => import("@/pages/auth/PremiumSignupPage"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const EnhancedPostJob = lazy(() => import("@/pages/enhanced-post-job"));
+const SellSalonPage = lazy(() => import("@/pages/sell-salon"));
+const PostSalon = lazy(() => import("@/pages/PostSalon"));
+const SalonListingSuccessPage = lazy(() => import("@/pages/salon-listing-success"));
+const CustomerProfilePage = lazy(() => import("@/pages/customer/ProfilePage"));
+const JobPostingSuccessPage = lazy(() => import("@/pages/JobPostingSuccessPage"));
+const InviteAcceptance = lazy(() => import("@/pages/InviteAcceptance"));
+const FreelancerProfile = lazy(() => import("@/pages/FreelancerProfile"));
+const NailJobSuccessPage = lazy(() => import("@/pages/nails-job-success"));
 
 // Blog Pages
-import BlogLanding from "@/pages/blog/BlogLanding";
-import BlogArticlePage from "@/pages/blog/[slug]";
+const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
+const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
 
 // Blog Category Pages
-import TrendsCategory from "@/pages/blog/categories/TrendsCategory";
-import BeautyTipsCategory from "@/pages/blog/categories/BeautyTipsCategory";
-import IndustryCategory from "@/pages/blog/categories/IndustryCategory";
-import ArtistSpotlightsCategory from "@/pages/blog/categories/ArtistSpotlightsCategory";
-import SuccessStoriesCategory from "@/pages/blog/categories/SuccessStoriesCategory";
-import SalonManagementCategory from "@/pages/blog/categories/SalonManagementCategory";
+const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
+const BeautyTipsCategory = lazy(() => import("@/pages/blog/categories/BeautyTipsCategory"));
+const IndustryCategory = lazy(() => import("@/pages/blog/categories/IndustryCategory"));
+const ArtistSpotlightsCategory = lazy(() => import("@/pages/blog/categories/ArtistSpotlightsCategory"));
+const SuccessStoriesCategory = lazy(() => import("@/pages/blog/categories/SuccessStoriesCategory"));
+const SalonManagementCategory = lazy(() => import("@/pages/blog/categories/SalonManagementCategory"));
 
 // Industry Pages
-import NailsPage from "@/pages/nails";
-import HairPage from "@/pages/hair";
-import BarberPage from "@/pages/barber";
-import MassagePage from "@/pages/massage";
-import SkincarePage from "@/pages/skincare";
-import MakeupPage from "@/pages/makeup";
-import BrowsLashesPage from "@/pages/brows-lashes";
-import TattooPage from "@/pages/tattoo";
-import BookingServices from "@/pages/BookingServices";
+const NailsPage = lazy(() => import("@/pages/nails"));
+const HairPage = lazy(() => import("@/pages/hair"));
+const BarberPage = lazy(() => import("@/pages/barber"));
+const MassagePage = lazy(() => import("@/pages/massage"));
+const SkincarePage = lazy(() => import("@/pages/skincare"));
+const MakeupPage = lazy(() => import("@/pages/makeup"));
+const BrowsLashesPage = lazy(() => import("@/pages/brows-lashes"));
+const TattooPage = lazy(() => import("@/pages/tattoo"));
+const BookingServices = lazy(() => import("@/pages/BookingServices"));
 
 function App() {
   const location = useLocation();
@@ -104,27 +106,26 @@ function App() {
                             <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                            <Routes>
                     
-                    {/* Auth routes */}
-                    <Route path="/login" element={<SignIn />} />
-                    <Route path="/signin" element={<SignIn />} />
-                    {/* Remove legacy /signup route - use /auth/signup only */}
-                    <Route path="/signup-fast-fomo" element={<SignupFastFomo />} />
-                    <Route path="/auth" element={<AuthPage />} />
-                    <Route path="/auth/premium-signup" element={<PremiumSignupPage />} />
-                    <Route path="/onboarding" element={
-                      <ProtectedRoute>
-                        <Onboarding />
-                      </ProtectedRoute>
-                    } />
+                     {/* Auth routes */}
+                     <Route path="/login" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
+                     <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
+                     <Route path="/signup-fast-fomo" element={<Suspense fallback={<SimpleLoadingFallback />}><SignupFastFomo /></Suspense>} />
+                     <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
+                     <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />
+                     <Route path="/onboarding" element={
+                       <ProtectedRoute>
+                         <Suspense fallback={<SimpleLoadingFallback />}><Onboarding /></Suspense>
+                       </ProtectedRoute>
+                     } />
+                     
+                     {/* Customer Profile route */}
+                     <Route path="/profile" element={<Suspense fallback={<SimpleLoadingFallback />}><CustomerProfilePage /></Suspense>} />
                     
-                    {/* Customer Profile route */}
-                    <Route path="/profile" element={<CustomerProfilePage />} />
-                    
-                    {/* Job posting routes - USE ENHANCED VERSION */}
-                    <Route path="/post-job" element={<EnhancedPostJob />} />
-                    <Route path="/post-job/nails" element={<EnhancedPostJob />} />
-                    <Route path="/post-job-billion" element={<PostJobBillion />} />
-                    <Route path="/post-job-experimental" element={<PostJobExperimental />} />
+                     {/* Job posting routes - Lazy loaded */}
+                     <Route path="/post-job" element={<Suspense fallback={<SimpleLoadingFallback />}><EnhancedPostJob /></Suspense>} />
+                     <Route path="/post-job/nails" element={<Suspense fallback={<SimpleLoadingFallback />}><EnhancedPostJob /></Suspense>} />
+                     <Route path="/post-job-billion" element={<Suspense fallback={<SimpleLoadingFallback />}><PostJobBillion /></Suspense>} />
+                     <Route path="/post-job-experimental" element={<Suspense fallback={<SimpleLoadingFallback />}><PostJobExperimental /></Suspense>} />
                     
                      {/* Salon selling routes */}
                      <Route path="/sell-salon" element={<SellSalonPage />} />

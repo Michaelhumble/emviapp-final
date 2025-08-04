@@ -3,7 +3,7 @@
 
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
-import { ChatSystem } from '@/components/chat/ChatSystem';
+import { LazyChatSystem } from '@/components/chat/LazyChatSystem';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';
@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       {showMobileNav && <UnifiedMobileNavigation />}
       
       {/* Sunshine Chatbot Widget - Always visible on all pages */}
-      <ChatSystem />
+      <LazyChatSystem />
     </div>
   );
 };

@@ -26,12 +26,28 @@ export default defineConfig(({ mode }) => ({
           'vendor': ['react', 'react-dom'],
           'ui': ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-toast'],
           'auth': ['@supabase/supabase-js'],
-          'utils': ['framer-motion', 'react-router-dom']
+          'utils': ['framer-motion', 'react-router-dom'],
+          'home': [
+            '@/components/home/Hero',
+            '@/components/home/PremiumIndustryShowcase',
+            '@/components/home/ClientSuccessStories'
+          ],
+          'chat': [
+            '@/components/chat/ChatSystem',
+            '@/components/chat/MessageBubble',
+            '@/components/chat/ChatInput'
+          ],
+          'pages': [
+            '@/pages/Jobs',
+            '@/pages/About',
+            '@/pages/Contact'
+          ]
         }
       }
     },
     target: 'esnext',
     minify: 'esbuild',
-    sourcemap: false
+    sourcemap: false,
+    chunkSizeWarningLimit: 500
   }
 }));

@@ -49,18 +49,21 @@ const Hero = () => {
     }, 500);
   };
 
-  // Preload only next image for smoother transitions (reduced from 3 to 1)
+  // Lazy load images after first paint - only preload on user interaction
   useEffect(() => {
-    const preloadNextImage = () => {
+    const timer = setTimeout(() => {
+      // Preload only the next 2 images after 2 seconds
       const nextIndex = (currentImageIndex + 1) % heroImages.length;
-      const img = new Image();
-      img.src = heroImages[nextIndex].url;
-    };
+      const secondNextIndex = (currentImageIndex + 2) % heroImages.length;
+      
+      const img1 = new Image();
+      img1.src = heroImages[nextIndex].url;
+      
+      const img2 = new Image();
+      img2.src = heroImages[secondNextIndex].url;
+    }, 2000);
     
-    // Debounce preloading to avoid excessive requests
-    const timeoutId = setTimeout(preloadNextImage, 500);
-    
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timer);
   }, [currentImageIndex]);
 
   return (

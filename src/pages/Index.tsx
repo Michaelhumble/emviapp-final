@@ -26,9 +26,8 @@ import EmviQASection from "@/components/home/EmviQASection";
 import JobsCallToAction from "@/components/home/JobsCallToAction";
 import JobsFooterCTA from "@/components/home/JobsFooterCTA";
 
-// Premium Industry Showcase
-import PremiumIndustryShowcase from "@/components/home/PremiumIndustryShowcase";
-import { industryConfig } from "@/data/industryListings";
+// Premium Industry Showcase - Optimized for performance
+import OptimizedIndustryListings from "@/components/home/OptimizedIndustryListings";
 
 // Trust & Social Proof Components
 import LiveStatsBar from "@/components/home/trust/LiveStatsBar";
@@ -111,28 +110,15 @@ const Index = () => {
         </div>
       </section>
       
-      {/* 2. Premium Industry Showcases - Diamond listings first */}
-      {Object.values(industryConfig).map((industry, index) => (
-        <div key={industry.name}>
-          <PremiumIndustryShowcase
-            industryName={industry.name}
-            displayName={industry.displayName}
-            listings={industry.listings}
-            routePath={industry.routePath}
-            gradientColors={industry.gradientColors}
-            icon={industry.icon}
-          />
-          
-          {/* Trust Badges after every 2nd industry showcase */}
-          {index === 1 && (
-            <section className="py-12 bg-gradient-to-r from-purple-50/30 to-pink-50/20">
-              <div className="container mx-auto px-4 text-center">
-                <TrustBadges />
-              </div>
-            </section>
-          )}
+      {/* 2. Premium Industry Showcases - Optimized loading with top 3 only */}
+      <OptimizedIndustryListings />
+      
+      {/* Trust Badges after industry showcases */}
+      <section className="py-12 bg-gradient-to-r from-purple-50/30 to-pink-50/20">
+        <div className="container mx-auto px-4 text-center">
+          <TrustBadges />
         </div>
-      ))}
+      </section>
       
       {/* 3. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
