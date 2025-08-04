@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // Import ALL blog images as ES6 modules for proper bundling
 import salonStaffingCrisisImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
 import aiSalonToolsImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
+import beautyProfessionalSuccessGuideImage from '@/assets/blog/beauty-professional-success-guide.jpg';
 import nailCareSecretsImage from '@/assets/blog/nail-care-secrets-hero.jpg';
 import aiMakeupToolsImage from '@/assets/blog/ai-makeup-tools-2025.jpg';
 import lashClientLoyaltyImage from '@/assets/blog/lash-client-loyalty-2025.jpg';
@@ -53,9 +54,27 @@ const SalonStaffingCrisis2025 = lazy(() => import('@/pages/blog/SalonStaffingCri
 const SalonStaffingSolution2025 = lazy(() => import('@/pages/blog/articles/SalonStaffingSolution2025'));
 const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGuide2025'));
 const AIBeautyRevolution2025 = lazy(() => import('@/pages/blog/articles/AIBeautyRevolution2025'));
+const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'beauty-professional-success-guide',
+    slug: 'beauty-professional-success-guide',
+    title: 'From Struggling Artist to $120K/Year: The Complete Beauty Professional Success Guide',
+    description: 'The exact strategies, mindset shifts, and business moves that transformed my beauty career from barely surviving to thriving.',
+    author: 'Sarah Mitchell',
+    publishedAt: '2025-01-04',
+    readTime: '12 min read',
+    category: 'Career Growth',
+    categorySlug: 'career-growth',
+    tags: ['Career', 'Success', 'Business', 'Income', 'Professional Development'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: BeautyProfessionalSuccessGuide,
+    url: '/blog/career-growth/beauty-professional-success-guide'
+  },
   {
     id: 'ai-beauty-revolution-2025',
     slug: 'ai-beauty-revolution-2025',
