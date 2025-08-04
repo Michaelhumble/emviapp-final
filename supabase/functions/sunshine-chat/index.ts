@@ -342,11 +342,12 @@ Be authentically helpful, never pushy. Behind every chat is a real person with d
         aiResponse += '\n\n[Browse Top Artists]';
       }
 
-      console.log('Sunshine Chat response generated:', { 
+      console.log('Sunshine Chat response generated (v2.0):', { 
         responseLength: aiResponse.length,
         language: detectedLanguage,
-        hasLinks: aiResponse.includes('](/'),
-        userId 
+        hasLinks: aiResponse.includes('['),
+        userId,
+        isHumanized: true
       });
 
       // Update user session with latest question and log the chat
