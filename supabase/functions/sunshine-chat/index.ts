@@ -44,62 +44,73 @@ serve(async (req) => {
     function extractUserName(text: string): string | null {
       const trimmedText = text.trim().toLowerCase();
       
+      console.log('🔍 Checking name extraction for:', text);
+      
       // First check: If text contains action keywords, NEVER extract a name
       const actionKeywords = [
         'muốn', 'cần', 'tìm', 'đăng', 'bán', 'want', 'need', 'find', 'post', 'sell', 
         'looking', 'hiring', 'job', 'work', 'salon', 'artist', 'help', 'giúp', 'bao nhiêu',
-        'có', 'làm', 'thế', 'nào', 'đó', 'việc', 'tiệm', 'giỏi', 'ta', 'người'
+        'có', 'làm', 'thế', 'nào', 'đó', 'việc', 'tiệm', 'giỏi', 'ta', 'người', 'sao', 'em',
+        'ah', 'vay', 'ai', 'dat', 'cho', 'nuoc'
       ];
       
       for (const keyword of actionKeywords) {
         if (trimmedText.includes(keyword)) {
+          console.log('❌ Blocked by keyword:', keyword);
           return null; // Never extract names from action-based messages
         }
       }
       
-      // Only these EXACT patterns for name introduction
+      // Only these ULTRA STRICT patterns for name introduction
       const nameIntroPatterns = [
-        // Vietnamese name introductions - EXACT patterns only
-        /^(?:anh|chị|em|tôi|mình)\s+tên\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)$/i,
-        /^tên\s+(?:anh|chị|em|tôi|mình)\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)$/i,
-        // English name introductions - EXACT patterns only
-        /^(?:i\s+am|my\s+name\s+is)\s+([a-zA-Z]+)$/i,
-        /^(?:they\s+)?call\s+me\s+([a-zA-Z]+)$/i,
-        /^(?:i'?m)\s+([a-zA-Z]+)$/i
+        // Vietnamese - must have "tên là" or similar
+        /^(?:anh|chị|em|tôi|mình)\s+tên\s+là\s+([a-zA-ZÀ-ỹ]{2,})$/i,
+        /^tên\s+(?:anh|chị|em|tôi|mình)\s+là\s+([a-zA-ZÀ-ỹ]{2,})$/i,
+        // English - exact patterns only
+        /^my\s+name\s+is\s+([a-zA-Z]{2,})$/i,
+        /^i\s+am\s+([a-zA-Z]{2,})$/i,
+        /^call\s+me\s+([a-zA-Z]{2,})$/i,
+        /^i'?m\s+([a-zA-Z]{2,})$/i
       ];
+      
+      console.log('🎯 Testing against strict patterns...');
       
       for (const pattern of nameIntroPatterns) {
         const match = text.trim().match(pattern);
-        if (match && match[1] && match[1].length > 1) {
+        if (match && match[1]) {
           const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
           
-          // Double-check exclusion list
+          // Ultra strict exclusion list
           const excludeWords = [
             'anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me',
             'muốn', 'cần', 'tìm', 'việc', 'thợ', 'tiệm', 'salon', 'tuyển', 'bán', 'đăng', 'làm',
             'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list',
             'hôm', 'nay', 'today', 'now', 'here', 'where', 'what', 'how', 'why', 'when',
-            'đây', 'đó', 'ở', 'về', 'từ', 'cho', 'với', 'trong', 'ngoài', 'trên', 'dưới'
+            'đây', 'đó', 'ở', 'về', 'từ', 'cho', 'với', 'trong', 'ngoài', 'trên', 'dưới', 'ta'
           ];
           
           if (!excludeWords.includes(name.toLowerCase())) {
+            console.log('✅ Valid name extracted:', name);
             return name;
+          } else {
+            console.log('❌ Name blocked by exclusion list:', name);
           }
         }
       }
       
+      console.log('❌ No valid name patterns matched');
       return null;
     }
 
     const detectedLanguage = language || detectLanguage(cleanMessage);
     const extractedName = extractUserName(cleanMessage);
     
-    // Debug logging for name extraction
-    if (extractedName) {
-      console.log('✅ Valid name extracted:', extractedName, 'from message:', cleanMessage);
-    } else {
-      console.log('❌ No valid name detected in:', cleanMessage);
-    }
+    // Enhanced debug logging for name extraction
+    console.log('🔍 Name extraction result:', {
+      extractedName: extractedName,
+      message: cleanMessage,
+      userId: userId
+    });
 
     // Get or create user session
     let userSession = null;
