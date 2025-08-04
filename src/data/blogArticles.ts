@@ -30,9 +30,27 @@ const SocialMediaContentNailSalons2025 = lazy(() => import('@/pages/blog/article
 const SocialMediaMarketingSalons2025 = lazy(() => import('@/pages/blog/articles/SocialMediaMarketingSalons2025'));
 const TheBeautyIndustrysMissingPiece = lazy(() => import('@/pages/blog/articles/TheBeautyIndustrysMissingPiece'));
 const NailCareSecretsArticle = lazy(() => import('@/components/blog/articles/NailCareSecretsArticle'));
+const AISalonTools2025 = lazy(() => import('@/pages/blog/AISalonTools2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'ai-salon-tools-2025',
+    slug: 'ai-salon-tools-2025',
+    title: '17 AI Tools Every Salon Owner Needs in 2025',
+    description: 'Discover how salon owners are using AI to increase revenue by 35%, reduce no-shows by 67%, and create personalized experiences. Complete guide with ROI calculator.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-02-01',
+    readTime: '15 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['AI tools', 'salon owners 2025', 'salon management software', 'AI booking system', 'beauty industry AI', 'salon automation', 'revenue optimization', 'business growth'],
+    image: '/src/assets/blog/ai-salon-tools-2025.jpg',
+    featured: true,
+    trending: true,
+    component: AISalonTools2025,
+    url: '/blog/ai-salon-tools-2025'
+  },
   {
     id: 'nail-care-secrets-2025',
     slug: 'nail-care-secrets-healthy-beautiful-nails',
