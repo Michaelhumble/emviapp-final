@@ -152,7 +152,7 @@ export const ChatSystem = () => {
     if (lowerMessage.includes('đăng việc') || lowerMessage.includes('post job') || 
         lowerMessage.includes('tuyển') || lowerResponse.includes('post')) {
       return language === 'vi' 
-        ? "\n\nAnh có cần em hướng dẫn những thông tin cần thiết để đăng tin không? Hoặc anh muốn biết về giá cả?" 
+        ? "\n\nBạn cần biết chi phí hoặc thông tin cần thiết để đăng tin không?" 
         : "\n\nWould you like to know what info you need to post a job, or do you have any questions about pricing?";
     }
     
@@ -160,7 +160,7 @@ export const ChatSystem = () => {
     if (lowerMessage.includes('bán salon') || lowerMessage.includes('sell salon') ||
         lowerMessage.includes('bán tiệm') || lowerResponse.includes('sell')) {
       return language === 'vi'
-        ? "\n\nThat's exciting! Em có thể đưa anh một số tips về định giá salon hoặc chuẩn bị hồ sơ bán. Anh muốn biết gì?"
+        ? "\n\nAnh/chị muốn biết cách đăng tin hiệu quả hoặc giá bán hợp lý không?"
         : "\n\nThat's exciting! I can give you some tips on pricing your salon or preparing the listing. What would you like to know?";
     }
     
@@ -168,7 +168,7 @@ export const ChatSystem = () => {
     if (lowerMessage.includes('đăng ký') || lowerMessage.includes('sign up') ||
         lowerMessage.includes('join') || lowerResponse.includes('sign up')) {
       return language === 'vi'
-        ? "\n\nRất vui khi anh tham gia! Sau khi đăng ký, anh sẽ có thể đăng tin tuyển dụng, quản lý ứng viên và nhiều tính năng khác nữa."
+        ? "\n\nRất vui khi anh/chị tham gia! Sau khi đăng ký, anh/chị sẽ có thể đăng tin tuyển dụng, quản lý ứng viên và nhiều tính năng khác nữa."
         : "\n\nSo glad you're joining! After signing up, you'll be able to post jobs, manage applicants, and access many more features.";
     }
     
@@ -176,7 +176,7 @@ export const ChatSystem = () => {
     if (lowerMessage.includes('blog') || lowerMessage.includes('tin tức') ||
         lowerMessage.includes('bài viết') || lowerResponse.includes('blog')) {
       return language === 'vi'
-        ? "\n\nCó nhiều bài viết hay về ngành làm đẹp và kinh doanh salon đấy! Anh có muốn em giới thiệu loại bài viết nào đặc biệt không?"
+        ? "\n\nCó nhiều bài viết hay về ngành làm đẹp và kinh doanh salon đấy! Anh/chị có muốn em giới thiệu loại bài viết nào đặc biệt không?"
         : "\n\nThere are lots of great articles about the beauty industry and salon business! Would you like me to recommend any specific type of content?";
     }
     
@@ -197,7 +197,7 @@ export const ChatSystem = () => {
         ? `Chào anh ${userName}, rất vui được gặp lại anh! Em có thể giúp gì cho anh hôm nay? 😊`
         : `Hi ${userName}, welcome back! How can I help you today? 😊`;
     }
-    return "Hi there! I'm Sunshine 😊 What's your name? I can chat in Vietnamese or English—whatever you prefer!";
+    return "Hi there! I'm Sunshine ☀️ What's your name? I can chat in Vietnamese or English—whatever you prefer!";
   };
 
   const clearChat = () => {
@@ -299,7 +299,7 @@ export const ChatSystem = () => {
       console.error('Chat error details:', errorDetails);
       
       const fallbackResponse = language === 'vi' 
-        ? "Em xin lỗi, có chút vấn đề kỹ thuật! Nhưng em vẫn có thể giúp anh đăng việc, bán salon, hoặc tham gia cộng đồng. Anh cần gì ạ?"
+        ? "Em xin lỗi, có chút vấn đề kỹ thuật! Nhưng em vẫn có thể giúp anh/chị đăng việc, bán salon, hoặc tham gia cộng đồng. Anh/chị cần gì ạ?"
         : "Sorry, there's a small technical hiccup! But I can still help you post jobs, sell salons, or join our community. What do you need?";
       
       const botMessage: Message = {
@@ -447,12 +447,12 @@ export const ChatSystem = () => {
       }
     }
     
-    // Help action only when user explicitly asks for help
-    if (lowerMessage.includes('help') || lowerMessage.includes('giúp') || lowerMessage.includes('hỗ trợ')) {
+    // Always offer help at the end - but don't add redundant actions
+    if (actions.length === 0 && (lowerMessage.includes('help') || lowerMessage.includes('giúp') || lowerMessage.includes('hỗ trợ'))) {
       if (language === 'vi') {
-        actions.push({ id: 'help', label: '💬 Trò chuyện thêm', action: () => handleQuickAction('Em cần hỗ trợ thêm') });
+        actions.push({ id: 'help', label: '💬 Cần thêm hỗ trợ gì, cứ hỏi em nhé!', action: () => handleQuickAction('Em cần hỗ trợ thêm') });
       } else {
-        actions.push({ id: 'help', label: '💬 Get More Help', action: () => handleQuickAction('I need more help') });
+        actions.push({ id: 'help', label: '💬 Let me know if you need more help!', action: () => handleQuickAction('I need more help') });
       }
     }
     

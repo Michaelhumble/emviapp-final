@@ -7,13 +7,29 @@ export const detectLanguage = (text: string): 'vi' | 'en' => {
 };
 
 export const extractName = (text: string): string => {
-  // Only extract names from explicit name introduction patterns
+  // ULTRA STRICT: Only extract names from explicit name introduction patterns
+  // NEVER extract from action-based text like "anh muốn tìm việc"
+  
+  const trimmedText = text.trim().toLowerCase();
+  
+  // First check: If text contains action keywords, NEVER extract a name
+  const actionKeywords = [
+    'muốn', 'cần', 'tìm', 'đăng', 'bán', 'want', 'need', 'find', 'post', 'sell', 
+    'looking', 'hiring', 'job', 'work', 'salon', 'artist', 'help', 'giúp'
+  ];
+  
+  for (const keyword of actionKeywords) {
+    if (trimmedText.includes(keyword)) {
+      return ''; // Never extract names from action-based messages
+    }
+  }
+  
+  // Only these EXACT patterns for name introduction
   const nameIntroPatterns = [
-    // Vietnamese name introductions
+    // Vietnamese name introductions - EXACT patterns only
     /^(?:anh|chị|em|tôi|mình)\s+tên\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)$/i,
     /^tên\s+(?:anh|chị|em|tôi|mình)\s+(?:là\s+)?([a-zA-ZÀ-ỹ]+)$/i,
-    /^(?:anh|chị|em|tôi|mình)\s+là\s+([a-zA-ZÀ-ỹ]+)$/i,
-    // English name introductions
+    // English name introductions - EXACT patterns only
     /^(?:i\s+am|my\s+name\s+is)\s+([a-zA-Z]+)$/i,
     /^(?:they\s+)?call\s+me\s+([a-zA-Z]+)$/i,
     /^(?:i'?m)\s+([a-zA-Z]+)$/i
@@ -24,13 +40,11 @@ export const extractName = (text: string): string => {
     if (match && match[1] && match[1].length > 1) {
       const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
       
-      // Exclude Vietnamese keywords and intent words that are NOT names
+      // Double-check exclusion list
       const excludeWords = [
         'anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me',
-        // Vietnamese intent keywords that should NEVER be treated as names
         'muốn', 'cần', 'tìm', 'việc', 'thợ', 'tiệm', 'salon', 'tuyển', 'bán', 'đăng', 'làm',
         'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list',
-        // Additional protection against misinterpreting action words as names
         'hôm', 'nay', 'today', 'now', 'here', 'where', 'what', 'how', 'why', 'when',
         'đây', 'đó', 'ở', 'về', 'từ', 'cho', 'với', 'trong', 'ngoài', 'trên', 'dưới'
       ];
