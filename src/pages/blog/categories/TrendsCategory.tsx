@@ -18,13 +18,13 @@ const TrendsCategory = () => {
       publishedAt: "January 15, 2025"
     },
     {
-      title: "AI in Beauty: 2025 Trends Reshaping the Industry",
-      slug: "ai-beauty-trends-2025",
+      title: "AI is Revolutionizing Beauty: 17 Tools Every Salon Owner Needs in 2025",
+      slug: "ai-beauty-revolution-2025",
       category: "trends",
-      excerpt: "From personalized skin analysis to AI-powered booking systems, discover how artificial intelligence is revolutionizing the beauty industry in 2025.",
+      excerpt: "Discover the 17 game-changing AI tools that are transforming the beauty industry. From automated booking to AI-powered color matching, stay ahead of the competition.",
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      readTime: "6 min read",
-      publishedAt: "January 10, 2025"
+      readTime: "18 min read",
+      publishedAt: "January 4, 2025"
     }
   ];
 
