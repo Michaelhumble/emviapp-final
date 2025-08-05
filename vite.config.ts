@@ -23,68 +23,29 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Core React libraries
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          // UI component libraries
-          'vendor-ui': [
-            '@radix-ui/react-dialog', 
-            '@radix-ui/react-popover', 
-            '@radix-ui/react-toast',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-select'
-          ],
-          // Authentication and backend
-          'vendor-auth': ['@supabase/supabase-js', '@tanstack/react-query'],
-          // Animation libraries
-          'vendor-animation': ['framer-motion', 'canvas-confetti'],
-          // Critical path components (loaded immediately)
+          'vendor': ['react', 'react-dom'],
+          'ui': ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-toast'],
+          'auth': ['@supabase/supabase-js'],
           'critical': [
             '@/components/home/Hero',
             '@/components/home/JobsCallToAction',
-            '@/components/layout/Navbar',
-            '@/components/layout/Footer'
+            '@/components/layout/Navbar'
           ],
-          // Home page lazy-loaded sections
           'home-lazy': [
             '@/components/home/PremiumIndustryShowcase',
             '@/components/home/ClientSuccessStories',
             '@/components/home/ai-matchmaker',
             '@/components/home/SalonClientGrowthSystem'
           ],
-          // Chat system (heavy component)
           'chat': [
             '@/components/chat/ChatSystem',
             '@/components/chat/MessageBubble',
-            '@/components/chat/ChatInput',
-            '@/components/chat/LazyChatSystem'
+            '@/components/chat/ChatInput'
           ],
-          // Blog system
           'blog': [
             '@/pages/blog/BlogLanding',
             '@/pages/blog/[slug]',
             '@/data/blogArticles'
-          ],
-          // Job system
-          'jobs': [
-            '@/components/jobs/JobListingCard',
-            '@/components/jobs/JobFilters',
-            '@/components/jobs/JobLoadingState',
-            '@/data/protected/vietnameseJobs'
-          ],
-          // Dashboard components (heavy)
-          'dashboard': [
-            '@/pages/dashboard/artist/BookingCalendar',
-            '@/pages/dashboard/artist/BookingCalendarNew',
-            '@/pages/dashboard/artist/Inbox'
-          ],
-          // Form components
-          'forms': [
-            '@/components/jobs/FreeJobPostingForm',
-            '@/components/jobs/PaidJobTestForm', 
-            'react-hook-form',
-            'zod'
           ]
         }
       }
@@ -92,12 +53,7 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
-    chunkSizeWarningLimit: 400, // Reduced for stricter bundle size control
-    assetsInlineLimit: 2048, // Reduced to 2KB for better caching
-    cssCodeSplit: true,
-    reportCompressedSize: false, // Disable for faster builds
-    modulePreload: {
-      polyfill: true
-    }
+    chunkSizeWarningLimit: 500,
+    assetsInlineLimit: 4096
   }
 }));

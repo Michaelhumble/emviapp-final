@@ -18,11 +18,11 @@ const SalonPromotion: React.FC = () => {
         <Badge variant="outline" className="bg-white text-gray-800 font-normal text-sm py-1.5 px-4">
           Featured Listing: $99
         </Badge>
-        <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+        <Link to="/sign-up">
           <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6">
             List Your Salon
           </Button>
-        </a>
+        </Link>
       </div>
     </div>
   );

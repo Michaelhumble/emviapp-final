@@ -32,7 +32,7 @@ const PostYourSalonButton: React.FC<PostYourSalonButtonProps> = ({
       size={size}
       className={className}
     >
-      <Link to="/sell-salon" onClick={handleClick}>
+      <Link to="/posting/salon" onClick={handleClick}>
         {t({
           english: "Post Your Salon",
           vietnamese: "Đăng Bán Tiệm"

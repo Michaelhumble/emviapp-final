@@ -53,7 +53,7 @@ const FinalCTASection = () => {
               </div>
 
               <div className="space-y-4">
-                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                <Link to="/auth/signup">
                   <Button 
                     size="lg"
                     className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 text-black hover:from-yellow-500 hover:to-orange-500 font-bold text-lg py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
@@ -61,7 +61,7 @@ const FinalCTASection = () => {
                     <Crown className="mr-2 h-5 w-5" />
                     Apply Now—Free VIP Badge!
                   </Button>
-                </a>
+                </Link>
                 
                 <p className="text-sm text-yellow-200">
                   🔥 Limited: First 50 new artists only

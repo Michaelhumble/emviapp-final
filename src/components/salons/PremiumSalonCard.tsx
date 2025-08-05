@@ -17,17 +17,7 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
   onViewDetails,
   className = ""
 }) => {
-  const { isSignedIn, user, session, loading } = useAuth();
-  
-  // 🔍 DEBUG: Log auth state for PremiumSalonCard
-  console.log('🔍 [PREMIUM-SALON-CARD] Auth state:', {
-    isSignedIn,
-    hasUser: !!user,
-    hasSession: !!session,
-    loading,
-    userEmail: user?.email
-  });
-  
+  const { isSignedIn } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Navigation functions for image gallery

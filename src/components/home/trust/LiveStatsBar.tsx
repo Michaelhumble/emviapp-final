@@ -134,7 +134,7 @@ const LiveStatsBar = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <div className="flex justify-center w-full">
-            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+            <Link to="/auth/signup">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -146,7 +146,7 @@ const LiveStatsBar = () => {
                   Đăng ký miễn phí — Bắt đầu kiếm tiền hôm nay
                 </span>
               </Button>
-            </a>
+            </Link>
           </div>
           <p className="text-sm text-gray-500 mt-3 max-w-md mx-auto">
             Join thousands of beauty professionals who've found their perfect opportunities with EmviApp

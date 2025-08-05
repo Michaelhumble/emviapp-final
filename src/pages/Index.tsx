@@ -12,7 +12,6 @@ import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
-import HomepageSEO from "@/components/seo/HomepageSEO";
 
 // Enhanced homepage components
 import AIMatchmakerSection from "@/components/home/ai-matchmaker";
@@ -29,9 +28,6 @@ import JobsFooterCTA from "@/components/home/JobsFooterCTA";
 
 // Premium Industry Showcase - Optimized for performance
 import OptimizedIndustryListings from "@/components/home/OptimizedIndustryListings";
-
-// Quick Action Buttons for testing
-import QuickActionButtons from "@/components/home/QuickActionButtons";
 
 // Trust & Social Proof Components
 import LiveStatsBar from "@/components/home/trust/LiveStatsBar";
@@ -52,10 +48,7 @@ const Index = () => {
   } = useRoleSelection();
   
   useEffect(() => {
-    document.title = "EmviApp - The Beauty Industry's Missing Piece | Premium Beauty Platform";
-    document.querySelector('meta[name="description"]')?.setAttribute('content', 
-      'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.'
-    );
+    document.title = "EmviApp | The Beauty Industry Platform";
     console.log("Index page loaded");
     
     // Run verification to ensure all listings have proper routing
@@ -66,7 +59,6 @@ const Index = () => {
   
   return (
     <Layout>
-      <HomepageSEO />
       {/* 1. Hero section as first */}
       <Hero />
       
@@ -110,9 +102,6 @@ const Index = () => {
       
       {/* 1.5. Jobs Call to Action - Above the fold */}
       <JobsCallToAction />
-      
-      {/* Quick Action Buttons for Testing */}
-      <QuickActionButtons />
       
       {/* 1.6 Real-time Activity Feed */}
       <section className="py-8 bg-white">

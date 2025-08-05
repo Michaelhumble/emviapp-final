@@ -42,7 +42,6 @@ const PostCanceled = lazy(() => import("@/pages/post-canceled"));
 const PostJobBillion = lazy(() => import("@/pages/PostJobBillion"));
 const PostJobExperimental = lazy(() => import("@/pages/PostJobExperimental"));
 const SignIn = lazy(() => import("@/pages/auth/SignIn"));
-const SignUp = lazy(() => import("@/pages/auth/SignUp"));
 const NewSignUp = lazy(() => import("@/pages/auth/NewSignUp"));
 const SignupFastFomo = lazy(() => import("@/pages/SignupFastFomo"));
 const AuthPage = lazy(() => import("@/pages/auth/AuthPage"));
@@ -81,7 +80,6 @@ const MakeupPage = lazy(() => import("@/pages/makeup"));
 const BrowsLashesPage = lazy(() => import("@/pages/brows-lashes"));
 const TattooPage = lazy(() => import("@/pages/tattoo"));
 const BookingServices = lazy(() => import("@/pages/BookingServices"));
-const Artists = lazy(() => import("@/pages/Artists"));
 const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 
 function App() {
@@ -116,7 +114,7 @@ function App() {
                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signup-fast-fomo" element={<Suspense fallback={<SimpleLoadingFallback />}><SignupFastFomo /></Suspense>} />
                      <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
-                     <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
+                     <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
                      <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />
                      <Route path="/onboarding" element={
                        <ProtectedRoute>
@@ -153,7 +151,6 @@ function App() {
                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs/*" element={<Layout><Jobs /></Layout>} />
-                     <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
                      <Route path="/job/:jobId" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     

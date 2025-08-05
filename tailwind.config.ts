@@ -15,15 +15,11 @@ const config: Config = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       fontFamily: {
-        // Primary font system - clean and consistent
-        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        'serif': ['Playfair Display', 'Georgia', 'serif'],
-        'manrope': ['Manrope', 'Inter', 'sans-serif'],
-        
-        // Aliases for semantic use
-        'primary': ['Inter', 'system-ui', 'sans-serif'],
-        'display': ['Playfair Display', 'Georgia', 'serif'],
-        'body': ['Inter', 'system-ui', 'sans-serif'],
+        playfair: ["'Playfair Display'", "serif"],
+        cormorant: ["'Cormorant Garamond'", "serif"], 
+        manrope: ["'Manrope'", "sans-serif"],
+        luxury: ["'Cormorant Garamond'", "'Playfair Display'", "serif"],
+        premium: ["'Manrope'", "'Inter'", "sans-serif"],
       },
       keyframes: {
         "gradient-shift": {

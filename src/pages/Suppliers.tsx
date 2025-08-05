@@ -23,11 +23,11 @@ const Suppliers = () => {
             <p className="text-lg text-gray-600 mb-10 font-sans leading-relaxed">
               EmviApp helps your products reach the right salons, artists, and pros — automatically.
             </p>
-            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+            <Link to="/auth/signup">
               <Button size="lg" className="font-medium px-8 py-6 text-base">
                 Advertise with EmviApp
               </Button>
-            </a>
+            </Link>
           </div>
         </motion.div>
       </section>
@@ -288,11 +288,11 @@ const Suppliers = () => {
             <p className="text-lg text-gray-600 mb-8">
               Join our network of trusted suppliers and connect directly with beauty professionals who value quality and innovation.
             </p>
-            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+            <Link to="/auth/signup">
               <Button size="lg" className="font-medium px-8 py-6 text-base hover:scale-105 transition-transform">
                 Join as a Supplier
               </Button>
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>

@@ -13,10 +13,10 @@ export const WelcomeHeader = ({ userRole }: WelcomeHeaderProps) => {
       <Badge className="px-4 py-1 text-sm font-medium bg-primary/10 text-primary border-primary/30 mb-4">
         {getRoleDisplayName(userRole)}
       </Badge>
-      <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 tracking-tight text-slate-900">
+      <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6 tracking-tight">
         Welcome to EmviApp
       </h1>
-      <p className="text-lg md:text-xl text-slate-600 mb-8 font-primary">
+      <p className="text-lg md:text-xl text-gray-700 mb-8">
         {getWelcomeMessage(userRole)}
       </p>
     </div>

@@ -17,11 +17,11 @@ const HeroSection = () => {
           <p className="text-lg text-gray-600 mb-10 font-sans leading-relaxed">
             Post jobs, view top-rated artists, and fill empty chairs fast — powered by AI.
           </p>
-          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+          <Link to="/auth/signup">
             <Button size="lg" className="font-medium px-8 py-6 text-base">
               Start Hiring
             </Button>
-          </a>
+          </Link>
         </div>
       </motion.div>
     </section>

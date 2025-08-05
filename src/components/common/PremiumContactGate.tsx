@@ -19,16 +19,11 @@ const PremiumContactGate: React.FC<PremiumContactGateProps> = ({
   contactEmail,
   className = ""
 }) => {
-  const { isSignedIn, user, session, loading } = useAuth();
+  const { isSignedIn } = useAuth();
 
-  // 🔍 DEBUG: Enhanced logging to debug auth issues
-  console.log('🔍 [PREMIUM-CONTACT-GATE] Auth state:', {
+  // 🔍 DEBUG: Log contact info props to verify they're being passed
+  console.log('🔍 [PREMIUM-CONTACT-GATE] Props received:', {
     isSignedIn,
-    hasUser: !!user,
-    hasSession: !!session,
-    loading,
-    userEmail: user?.email,
-    sessionValid: session?.expires_at ? new Date(session.expires_at * 1000) > new Date() : false,
     contactName,
     contactPhone, 
     contactEmail,

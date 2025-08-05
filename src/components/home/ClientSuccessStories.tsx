@@ -188,48 +188,46 @@ const ClientSuccessStories = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="py-24 bg-gradient-to-b from-gray-50/30 via-purple-50/20 to-pink-50/30 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-100/30 via-transparent to-pink-100/30"></div>
-      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full filter blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-blue-400/10 to-purple-400/10 rounded-full filter blur-3xl"></div>
-
-      <div className="container mx-auto px-4 relative">
+    <section className="py-16 bg-white relative overflow-hidden">
+      <div className="container mx-auto px-4">
+        {/* Enhanced background elements */}
+        <div className="absolute inset-0 overflow-hidden opacity-8 z-0">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full filter blur-3xl opacity-15" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-tl from-blue-400 to-purple-400 rounded-full filter blur-3xl opacity-15" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-amber-300 to-orange-300 rounded-full filter blur-3xl opacity-10" />
+        </div>
+        
         {/* Enhanced section header */}
         <motion.div 
-          className="text-center max-w-5xl mx-auto mb-20"
+          className="text-center max-w-4xl mx-auto mb-16 relative z-10"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <Sparkles className="w-10 h-10 text-purple-500" />
-            <motion.h2 
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-tight"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: 0.2 }}
-            >
-              No Matter Your Craft — We Know the Struggle
-            </motion.h2>
-            <Sparkles className="w-10 h-10 text-pink-500" />
-          </div>
+          <motion.h2 
+            className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6 tracking-tight text-foreground leading-tight"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+          >
+            No Matter Your Craft — We Know the Struggle
+          </motion.h2>
           <motion.p 
-            className="text-xl md:text-2xl text-gray-600 leading-relaxed"
+            className="text-lg md:text-xl text-muted-foreground font-inter leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             Real stories from Nail Techs, Barbers, Tattoo Artists, Makeup Artists, Massage Therapists, and more — 
-            finally, a platform built for <span className="text-purple-600 font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">all of us</span>.
+            finally, a platform built for <em className="text-purple-600 font-semibold">all of us</em>.
           </motion.p>
         </motion.div>
         
         {/* Testimonial carousel */}
-        <div className="relative max-w-7xl mx-auto w-full">
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
           <div className="overflow-hidden max-w-full" ref={emblaRef}>
             <div className="flex max-w-full">
               {testimonials.map((testimonial, idx) => {
@@ -239,68 +237,46 @@ const ClientSuccessStories = () => {
                 return (
                   <div 
                     key={idx} 
-                    className="flex-grow-0 flex-shrink-0 w-full md:w-1/3 px-4 min-w-0 max-w-full"
+                    className={`flex-grow-0 flex-shrink-0 w-full md:w-1/3 px-4 min-w-0 max-w-full`}
                   >
                     <motion.div
-                      initial={{ opacity: 0, y: 30 }}
+                      initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: idx * 0.1 }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
                       whileHover={{ 
-                        y: -12, 
-                        scale: 1.03,
+                        y: -8, 
+                        scale: 1.02,
                         transition: { duration: 0.3, ease: "easeOut" }
                       }}
-                      className="h-full bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border-l-4 border-purple-400 overflow-hidden group cursor-pointer transform"
+                      className={`h-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 
+                                border-t-4 ${professionStyle.borderColor} overflow-hidden group cursor-pointer`}
                     >
-                      <div className="p-8 h-full flex flex-col">
-                        {/* Professional Header */}
-                        <div className="flex items-center mb-6">
-                          <div className={`w-14 h-14 rounded-full flex items-center justify-center mr-4 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg`}>
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              {getIconComponent(professionStyle.icon)}
-                            </div>
+                      <div className="p-6 h-full flex flex-col">
+                        <div className="flex items-center mb-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 
+                                        ${professionStyle.iconBgColor}`}>
+                            {getIconComponent(professionStyle.icon)}
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">{testimonial.name}</h3>
-                            <p className="text-sm font-semibold text-purple-600 mb-1">{testimonial.profession}</p>
-                            <p className="text-sm text-gray-500">{testimonial.location}</p>
+                            <h3 className="font-inter font-semibold text-foreground">{testimonial.name}</h3>
+                            <p className="text-sm text-muted-foreground font-inter">{testimonial.profession} • {testimonial.location}</p>
                           </div>
                         </div>
                         
-                        {/* Professional Image */}
-                        <div className="mb-6 flex-grow">
-                          <div className="relative overflow-hidden rounded-xl">
+                        <div className="mb-4 flex-grow">
+                          <div className="relative">
                             <img 
                               src={testimonial.image} 
                               alt={testimonial.name} 
-                              className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                              className="w-full h-40 object-cover rounded-md"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           </div>
                         </div>
                         
-                        {/* Quote */}
-                        <blockquote className="text-gray-700 italic text-base leading-relaxed mb-4 flex-grow">
-                          <span className="text-4xl text-purple-400 leading-none">"</span>
-                          {testimonial.quote}
-                          <span className="text-4xl text-purple-400 leading-none">"</span>
+                        <blockquote className="text-foreground font-inter italic text-sm md:text-base mb-3">
+                          "{testimonial.quote}"
                         </blockquote>
-
-                        {/* Bottom decoration */}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                          <div className="flex items-center">
-                            <div className="flex space-x-1">
-                              {[...Array(5)].map((_, i) => (
-                                <div key={i} className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                              ))}
-                            </div>
-                            <span className="text-xs text-gray-500 ml-2">Verified Story</span>
-                          </div>
-                          <div className="text-xs text-purple-600 font-semibold">
-                            EmviApp Success
-                          </div>
-                        </div>
                       </div>
                     </motion.div>
                   </div>
@@ -309,37 +285,31 @@ const ClientSuccessStories = () => {
             </div>
           </div>
           
-          {/* Enhanced Navigation arrows */}
+          {/* Navigation arrows - visible on all screen sizes but styled differently */}
           <button 
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 
-                      bg-white/90 backdrop-blur-sm rounded-full shadow-xl p-4
-                      hover:bg-white hover:shadow-2xl transition-all duration-300
-                      border border-purple-100 hover:border-purple-200"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 md:p-3
+                      hover:bg-gray-50 transition-colors focus:outline-none"
             onClick={() => emblaApi?.scrollPrev()}
             aria-label="Previous testimonial"
           >
-            <ArrowLeft className="h-6 w-6 text-purple-600" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 text-gray-800" />
           </button>
           <button 
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 
-                      bg-white/90 backdrop-blur-sm rounded-full shadow-xl p-4
-                      hover:bg-white hover:shadow-2xl transition-all duration-300
-                      border border-purple-100 hover:border-purple-200"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 md:p-3
+                      hover:bg-gray-50 transition-colors focus:outline-none"
             onClick={() => emblaApi?.scrollNext()}
             aria-label="Next testimonial"
           >
-            <ArrowRight className="h-6 w-6 text-purple-600" />
+            <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-800" />
           </button>
           
-          {/* Enhanced dots indicator */}
-          <div className="flex justify-center mt-8 gap-3 md:hidden">
+          {/* Dots indicator for mobile */}
+          <div className="flex justify-center mt-6 gap-2 md:hidden">
             {testimonials.map((_, idx) => (
               <button
                 key={idx}
-                className={`h-3 rounded-full transition-all duration-300 ${
-                  idx === currentIndex 
-                    ? "w-8 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg" 
-                    : "w-3 bg-gray-300 hover:bg-gray-400"
+                className={`h-2 rounded-full mx-0.5 transition-all ${
+                  idx === currentIndex ? "w-6 bg-primary" : "w-2 bg-gray-300"
                 }`}
                 onClick={() => emblaApi?.scrollTo(idx)}
                 aria-label={`Go to testimonial ${idx + 1}`}
@@ -348,38 +318,33 @@ const ClientSuccessStories = () => {
           </div>
         </div>
         
-        {/* Enhanced CTA section */}
+        {/* Enhanced CTA button */}
         <motion.div 
-          className="mt-20 text-center"
-          initial={{ opacity: 0, y: 30 }}
+          className="mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-12 rounded-3xl shadow-2xl max-w-4xl mx-auto">
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Transform Your Career?
-            </h3>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-              Join 50,000+ beauty professionals who've taken control of their success story.
-            </p>
-            <motion.div
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2 }}
+          <motion.div
+            whileHover={{ scale: 1.05, y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white font-inter font-bold px-10 py-6 rounded-2xl text-lg shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 group relative overflow-hidden"
+              aria-label="Join EmviApp community"
             >
-              <Button 
-                size="lg" 
-                className="bg-white text-purple-600 hover:bg-gray-50 font-bold px-12 py-6 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-                aria-label="Join EmviApp community"
-              >
-                <span className="flex items-center">
-                  <span className="mr-3">💪 Start Your Success Story</span>
-                  <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-                </span>
-              </Button>
-            </motion.div>
-          </div>
+              <span className="relative z-10 flex items-center">
+                <span className="mr-3">💪 Join 50,000+ Taking Control of Their Career</span>
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+              </span>
+              
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12 group-hover:animate-shimmer" />
+            </Button>
+          </motion.div>
         </motion.div>
       </div>
     </section>

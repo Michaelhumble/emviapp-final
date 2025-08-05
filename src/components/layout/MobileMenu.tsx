@@ -96,7 +96,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   ];
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {isOpen && (
         <>
           {/* Backdrop */}
@@ -104,7 +104,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] md:hidden"
             onClick={onClose}
             style={{ backdropFilter: 'blur(8px)' }}
@@ -115,17 +114,12 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ 
-              type: 'spring', 
-              damping: 30, 
-              stiffness: 300,
-              duration: 0.3 
-            }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-[10000] flex flex-col"
             style={{ 
-              height: '100dvh',
-              minHeight: '100svh',
-              overflowY: 'hidden'
+              height: '100dvh', // Use dynamic viewport height for better mobile support
+              minHeight: '100svh', // Small viewport height fallback
+              overflowY: 'hidden' // Let the inner scroll container handle scrolling
             }}
           >
             {/* Header with Profile Integration */}
@@ -168,9 +162,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 size="sm"
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
               >
-                <a href="http://emviapp-final.lovable.app/post-job" onClick={onClose}>
+                <Link to="/post-job" onClick={onClose}>
                   Post a Job
-                </a>
+                </Link>
               </Button>
               
               <Button
@@ -179,9 +173,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 variant="outline"
                 className="w-full border-gray-200 hover:bg-gray-50"
               >
-                <a href="http://emviapp-final.lovable.app/sell-salon" onClick={onClose}>
+                <Link to="/sell-salon" onClick={onClose}>
                   Post Your Salon
-                </a>
+                </Link>
               </Button>
             </div>
 
@@ -196,13 +190,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               ) : uiState.isAuthenticated ? (
                 // ✅ AUTHENTICATED STATE: Show dashboard link and sign out
                 <div className="space-y-2">
-                  <a 
-                    href="http://emviapp-final.lovable.app/dashboard/customer" 
+                  <Link 
+                    to="/dashboard" 
                     onClick={onClose}
                     className="block w-full text-center text-sm text-purple-600 hover:text-purple-700 font-medium py-1"
                   >
                     View Dashboard →
-                  </a>
+                  </Link>
                   <Button
                     onClick={() => handleAuthAction('signOut')}
                     variant="outline"

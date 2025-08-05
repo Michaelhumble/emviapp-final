@@ -171,7 +171,6 @@ const FeaturedOpportunities = () => {
                         variant="outline"
                         size="sm"
                         className="w-full font-inter text-sm"
-                        onClick={() => window.location.href = '/jobs'}
                       >
                         <Eye className="w-3 h-3 mr-1" />
                         Xem Chi Tiết
@@ -280,7 +279,6 @@ const FeaturedOpportunities = () => {
                         variant="outline"
                         size="sm"
                         className="w-full font-inter text-sm"
-                        onClick={() => window.location.href = '/jobs'}
                       >
                         <Eye className="w-3 h-3 mr-1" />
                         Xem Chi Tiết

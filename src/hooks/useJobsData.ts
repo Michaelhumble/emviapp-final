@@ -3,7 +3,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { Job } from '@/types/job';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { sortJobsByTierAndDate } from '@/utils/jobSorting';
-import { deduplicateJobs } from '@/utils/jobDeduplication';
 
 export const useJobsData = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -116,33 +115,13 @@ export const useJobsData = () => {
     console.log('🔍 [JOBS-DATA] useEffect triggered, calling fetchJobs');
     fetchJobs();
     
-    // Set up real-time subscription for instant job updates
-    const channel = supabaseBypass
-      .channel('jobs-realtime-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'jobs'
-        },
-        (payload) => {
-          console.log('🚀 [JOBS-DATA] Real-time job update received:', payload);
-          fetchJobs(); // Refresh jobs when any change occurs
-        }
-      )
-      .subscribe();
-
-    // Set up aggressive refresh for near-instant visibility (30 seconds)
+    // Set up periodic refresh to handle expiration updates
     const interval = setInterval(() => {
-      console.log('🔄 [JOBS-DATA] Fast refresh for instant visibility');
+      console.log('🔄 [JOBS-DATA] Periodic refresh for expiration check');
       fetchJobs();
-    }, 30 * 1000); // Refresh every 30 seconds
+    }, 5 * 60 * 1000); // Refresh every 5 minutes
     
-    return () => {
-      clearInterval(interval);
-      supabaseBypass.removeChannel(channel);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   console.log('🔍 [JOBS-DATA] Hook returning:', {
@@ -152,17 +131,16 @@ export const useJobsData = () => {
     hasJobs: jobs.length > 0
   });
 
-  // Apply deduplication and tier sorting to jobs before returning
-  const processedJobs = useMemo(() => {
+  // Apply mandatory tier sorting to jobs before returning
+  const sortedJobs = useMemo(() => {
     if (!jobs || !Array.isArray(jobs)) return [];
     
-    console.log('🎯 [JOBS-DATA] Applying deduplication and tier sorting to all jobs');
-    const deduplicatedJobs = deduplicateJobs(jobs);
-    return sortJobsByTierAndDate(deduplicatedJobs);
+    console.log('🎯 [JOBS-DATA] Applying final tier sorting to all jobs');
+    return sortJobsByTierAndDate(jobs);
   }, [jobs]);
 
   return {
-    jobs: processedJobs,
+    jobs: sortedJobs,
     loading,
     error,
     refreshJobs

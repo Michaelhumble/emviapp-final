@@ -147,125 +147,9 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
           </motion.p>
         </motion.div>
 
-        {/* Premium Listings Grid - Mobile swipeable, desktop 5 cards wide */}
-        <div className="relative">
-          {/* Mobile: Horizontal scrollable container */}
-          <div className="lg:hidden overflow-x-auto scrollbar-hide smooth-scroll pb-4">
-            <div className="flex gap-4 w-max px-4 touch-manipulation">
-              {listings.slice(0, 5).map((listing, index) => (
-                <motion.div
-                  key={listing.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="w-80 flex-shrink-0"
-                >
-                  <Card className={`h-full bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${getCardBorder(listing.tier)} overflow-hidden group cursor-pointer hover:scale-[1.02] active:scale-[0.98] ripple-effect touch-manipulation`}>
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img 
-                        src={listing.imageUrl} 
-                        alt={`${listing.title} - Premium ${displayName} opportunity`}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {getTierBadge(listing.tier)}
-                      
-                      {listing.tier === 'diamond' && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-amber-500/20 to-transparent" />
-                      )}
-                    </div>
-                    
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        {getTierIcon(listing.tier)}
-                        {listing.rating && (
-                          <div className="flex items-center text-amber-500">
-                            <Star className="w-3 h-3 fill-current" />
-                            <span className="text-sm font-medium ml-1">{listing.rating}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <h3 className="font-playfair font-bold text-foreground text-base line-clamp-2 mb-2">
-                        {listing.title}
-                      </h3>
-                      
-                      <div className="flex items-center text-sm text-muted-foreground mb-2 font-inter">
-                        <MapPin className="w-3 h-3 mr-1" />
-                        <span className="line-clamp-1">{listing.location}</span>
-                      </div>
-                      
-                      <div className="bg-green-50 p-2 rounded-lg mb-3">
-                        <div className="flex items-center text-green-700 font-inter font-bold text-base">
-                          <DollarSign className="w-3 h-3 mr-1" />
-                          <span className="line-clamp-1">{listing.salary}</span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-sm text-muted-foreground font-inter line-clamp-2 mb-3">
-                        {listing.summary}
-                      </p>
-
-                      {/* Contact Info - Hidden unless signed in */}
-                      {listing.phone && (
-                        <div className="mb-3">
-                          {isSignedIn ? (
-                            <div className="flex items-center text-sm text-foreground font-inter">
-                              <Phone className="h-3 w-3 mr-1" />
-                              <span>{listing.phone}</span>
-                            </div>
-                          ) : (
-                            <AuthAction
-                              customTitle="Sign in to see contact details"
-                              onAction={() => true}
-                              fallbackContent={
-                                <div className="text-sm text-muted-foreground italic flex items-center gap-1 font-inter">
-                                  <LockIcon className="h-3 w-3" />
-                                  <span>Sign in to see contact</span>
-                                </div>
-                              }
-                            />
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Action Buttons */}
-                      <div className="space-y-2">
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="w-full text-sm font-inter font-medium hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-all duration-300 group"
-                            onClick={() => handleViewDetails(listing)}
-                          >
-                            <span className="mr-2">View Details</span>
-                            <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200" />
-                          </Button>
-                        </motion.div>
-                        
-                        {/* Industry-specific CTA */}
-                        <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
-                          <Button
-                            size="sm"
-                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xs"
-                          >
-                            🔥 Claim Your Spot in {displayName}
-                          </Button>
-                        </a>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Desktop: Standard grid layout */}
-          <div className="hidden lg:grid lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12 w-full max-w-full">
-            {listings.slice(0, 5).map((listing, index) => (
+        {/* Premium Listings Grid - 5 cards wide */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12 w-full max-w-full">
+          {listings.slice(0, 5).map((listing, index) => (
             <motion.div
               key={listing.id}
               initial={{ opacity: 0, y: 20 }}
@@ -274,11 +158,11 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
               transition={{ duration: 0.4, delay: index * 0.1 }}
               className="h-full"
             >
-              <Card className={`h-full bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${getCardBorder(listing.tier)} overflow-hidden group cursor-pointer hover:scale-[1.02] active:scale-[0.98] ripple-effect touch-manipulation`}>
+              <Card className={`h-full bg-white hover:shadow-2xl transition-all duration-300 ${getCardBorder(listing.tier)} overflow-hidden group cursor-pointer`}>
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img 
                     src={listing.imageUrl} 
-                    alt={`${listing.title} - Premium ${displayName} opportunity`}
+                    alt={listing.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {getTierBadge(listing.tier)}
@@ -342,38 +226,24 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
                     </div>
                   )}
                   
-                  {/* Action Buttons */}
-                  <div className="space-y-2">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full text-sm font-inter font-medium hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-all duration-300 group"
+                      onClick={() => handleViewDetails(listing)}
                     >
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="w-full text-sm font-inter font-medium hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-all duration-300 group"
-                        onClick={() => handleViewDetails(listing)}
-                      >
-                        <span className="mr-2">View Details</span>
-                        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200" />
-                      </Button>
-                    </motion.div>
-                    
-                    {/* Industry-specific CTA */}
-                    <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
-                      <Button
-                        size="sm"
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xs"
-                      >
-                        🔥 Claim Your Spot in {displayName}
-                      </Button>
-                    </a>
-                  </div>
+                      <span className="mr-2">View Details</span>
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200" />
+                    </Button>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-          </div>
         </div>
 
         {/* Enhanced CTA Button */}

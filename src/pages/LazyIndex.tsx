@@ -11,14 +11,7 @@ import JobsCallToAction from "@/components/home/JobsCallToAction";
 
 // Lazy load everything below the fold
 const ClientSuccessStories = lazy(() => import("@/components/home/ClientSuccessStories"));
-const NailListingsSection = lazy(() => import("@/components/home/NailListingsSection"));
-const HairListingsSection = lazy(() => import("@/components/home/HairListingsSection"));
-const BarberPremiumListingsSection = lazy(() => import("@/components/home/BarberPremiumListingsSection"));
-const TattooListingsSection = lazy(() => import("@/components/home/TattooListingsSection"));
-const MakeupListingsSection = lazy(() => import("@/components/home/MakeupListingsSection"));
-const SkincareListingsSection = lazy(() => import("@/components/home/SkincareListingsSection"));
-const EyebrowLashListingsSection = lazy(() => import("@/components/home/EyebrowLashListingsSection"));
-const MassageListingsSection = lazy(() => import("@/components/home/MassageListingsSection"));
+const OptimizedIndustryListings = lazy(() => import("@/components/home/OptimizedIndustryListings"));
 const AIMatchmakerSection = lazy(() => import("@/components/home/ai-matchmaker"));
 const WhyTrustSection = lazy(() => import("@/components/home/sections/WhyTrustSection"));
 const SalonClientGrowthSystem = lazy(() => import("@/components/home/SalonClientGrowthSystem"));
@@ -81,53 +74,9 @@ const LazyIndex = () => {
         </Suspense>
       </FallbackBoundary>
       
-      
-      <FallbackBoundary errorMessage="Unable to load nail listings.">
+      <FallbackBoundary errorMessage="Unable to load job listings.">
         <Suspense fallback={<LoadingSpinner />}>
-          <NailListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Unable to load hair listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <HairListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      
-      <FallbackBoundary errorMessage="Unable to load barber listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <BarberPremiumListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Unable to load tattoo listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <TattooListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Unable to load makeup listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <MakeupListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Unable to load skincare listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <SkincareListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Unable to load eyebrow lash listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <EyebrowLashListingsSection />
-        </Suspense>
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Unable to load massage listings.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <MassageListingsSection />
+          <OptimizedIndustryListings />
         </Suspense>
       </FallbackBoundary>
       

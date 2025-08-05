@@ -49,7 +49,7 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
-                <Link to="/auth/signup?redirect=%2Fsell-salon">
+                <Link to="/auth/signup">
                   Sign Up
                 </Link>
               </Button>
@@ -65,8 +65,7 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
   const metadataRole = user?.user_metadata?.role || userRole;
   const effectiveRole = profileRole || metadataRole;
   
-  // More permissive check - allow owners, salon, and customers to post salons
-  const isSalonOwner = effectiveRole === 'salon' || effectiveRole === 'owner' || effectiveRole === 'customer';
+  const isSalonOwner = effectiveRole === 'salon' || effectiveRole === 'owner';
 
   if (!isSalonOwner) {
     return (

@@ -26,7 +26,7 @@ const CTARepeater = ({
       icon: Sparkles,
       buttonText: "Start Your Journey",
       buttonClass: "bg-white text-purple-600 hover:bg-gray-100",
-      link: "http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+      link: "/auth/signup"
     },
     secondary: {
       bgClass: "bg-gradient-to-r from-emerald-500 to-teal-600",
@@ -53,7 +53,7 @@ const CTARepeater = ({
       icon: ArrowRight,
       buttonText: "Get Started",
       buttonClass: "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700",
-      link: "http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+      link: "/auth/signup"
     }
   };
 
@@ -88,28 +88,23 @@ const CTARepeater = ({
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg"
-              className={`
-                ${config.buttonClass} 
-                px-8 py-4 text-lg font-semibold 
-                shadow-xl hover:shadow-2xl 
-                transition-all duration-300 
-                transform hover:scale-105 
-                rounded-full
-                min-w-[200px]
-              `}
-              onClick={() => {
-                if (config.link.startsWith('http')) {
-                  window.location.href = config.link;
-                } else {
-                  window.location.href = config.link;
-                }
-              }}
-            >
-              {config.buttonText}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to={config.link}>
+              <Button 
+                size="lg"
+                className={`
+                  ${config.buttonClass} 
+                  px-8 py-4 text-lg font-semibold 
+                  shadow-xl hover:shadow-2xl 
+                  transition-all duration-300 
+                  transform hover:scale-105 
+                  rounded-full
+                  min-w-[200px]
+                `}
+              >
+                {config.buttonText}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             
             {variant === 'primary' && (
               <Link to="/jobs">

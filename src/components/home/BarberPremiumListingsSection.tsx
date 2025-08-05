@@ -5,16 +5,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/context/auth/hooks/useSession';
 
-import { barberShopImages, cardDestinations } from '@/utils/beautyExchangeImages';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
-
 // Define destinations for each card
+const cardDestinations = [
+  { id: "barber-1", type: "salon", path: "/salons/barber-1" },
+  { id: "barber-2", type: "job", path: "/jobs/barber-2" },
+  { id: "barber-3", type: "salon", path: "/salons/barber-3" },
+  { id: "barber-4", type: "job", path: "/jobs/barber-4" },
+  { id: "barber-5", type: "salon", path: "/salons/barber-5" }
+];
 
 const BarberPremiumListingsSection: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ const BarberPremiumListingsSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {barberShopImages.map((imageSrc, index) => (
+          {Array.from({ length: 5 }).map((_, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -49,21 +52,15 @@ const BarberPremiumListingsSection: React.FC = () => {
               className="h-full"
             >
               <AuthAction
-                onAction={handleCardClick(cardDestinations.barber[index].path)}
-                redirectPath={cardDestinations.barber[index].path}
+                onAction={handleCardClick(cardDestinations[index].path)}
+                redirectPath={cardDestinations[index].path}
                 customTitle="Sign in to view barber shop details"
                 fallbackContent={
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                      <ImageWithFallback 
-                        src={imageSrc} 
-                        alt={`Barber Shop ${index + 1}`} 
-                        className="w-full h-full object-cover"
-                        category="barber"
-                      />
-                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
-                        ★ PREMIUM
-                      </Badge>
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500">Premium Space</span>
+                      </div>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
@@ -79,43 +76,30 @@ const BarberPremiumListingsSection: React.FC = () => {
                         Elegant barber shop with premium finishes and state-of-the-art equipment.
                       </p>
                       
-                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                         <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
-                           Premium
-                         </Badge>
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Premium
+                        </Badge>
 
-                         <div className="flex flex-col gap-1 ml-auto">
-                           <Button size="sm" variant="outline" className="gap-1 text-xs">
-                             <Eye className="h-3.5 w-3.5" /> View Details
-                           </Button>
-                           <Link to="/barber">
-                             <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full">
-                               🔥 Claim Your Spot in Barber
-                             </Button>
-                           </Link>
-                         </div>
-                       </div>
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> View Details
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 }
                 authenticatedContent={
                   <ValidatedLink 
-                    to={cardDestinations.barber[index].path}
-                    listingId={cardDestinations.barber[index].id}
-                    listingType={cardDestinations.barber[index].type as "salon" | "job"}
+                    to={cardDestinations[index].path}
+                    listingId={cardDestinations[index].id}
+                    listingType={cardDestinations[index].type as "salon" | "job"}
                     className="no-underline block h-full"
                   >
                     <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <ImageWithFallback 
-                          src={imageSrc} 
-                          alt={`Barber Shop ${index + 1}`} 
-                          className="w-full h-full object-cover"
-                          category="barber"
-                        />
-                        <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
-                          ★ PREMIUM
-                        </Badge>
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">Premium Space</span>
+                        </div>
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
@@ -131,22 +115,15 @@ const BarberPremiumListingsSection: React.FC = () => {
                           Elegant barber shop with premium finishes and state-of-the-art equipment.
                         </p>
                         
-                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                           <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
-                             Premium
-                           </Badge>
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                            Premium
+                          </Badge>
 
-                           <div className="flex flex-col gap-1 ml-auto">
-                             <Button size="sm" variant="outline" className="gap-1 text-xs">
-                               <Eye className="h-3.5 w-3.5" /> View Details
-                             </Button>
-                             <Link to="/barber">
-                               <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full">
-                                 🔥 Claim Your Spot in Barber
-                               </Button>
-                             </Link>
-                           </div>
-                         </div>
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Eye className="h-3.5 w-3.5" /> View Details
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   </ValidatedLink>

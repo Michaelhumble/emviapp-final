@@ -4,7 +4,6 @@ import React, { ReactNode, lazy, Suspense } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
-import { PerformanceProvider } from '@/components/performance/PerformanceProvider';
 
 const LazyChatSystem = lazy(() => import('@/components/chat/LazyChatSystem').then(m => ({ default: m.LazyChatSystem })));
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,28 +24,26 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
   const showMobileNav = isMobile;
 
   return (
-    <PerformanceProvider>
-      <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
-        {!hideNavbar && <Navbar />}
-        
-        <main className={`flex-grow w-full max-w-full ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
-          {children}
-        </main>
-        
-        {/* Universal Footer - Only Footer used on EmviApp */}
-        {!hideFooter && <Footer />}
-        
-        {/* Show the unified bottom navbar on all pages */}
-        {showMobileNav && <UnifiedMobileNavigation />}
-        
-        {/* Sunshine Chatbot Widget - Lazy loaded for performance */}
-        <FallbackBoundary errorMessage="">
-          <Suspense fallback={null}>
-            <LazyChatSystem />
-          </Suspense>
-        </FallbackBoundary>
-      </div>
-    </PerformanceProvider>
+    <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
+      {!hideNavbar && <Navbar />}
+      
+      <main className={`flex-grow w-full max-w-full ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
+        {children}
+      </main>
+      
+      {/* Universal Footer - Only Footer used on EmviApp */}
+      {!hideFooter && <Footer />}
+      
+      {/* Show the unified bottom navbar on all pages */}
+      {showMobileNav && <UnifiedMobileNavigation />}
+      
+      {/* Sunshine Chatbot Widget - Lazy loaded for performance */}
+      <FallbackBoundary errorMessage="">
+        <Suspense fallback={null}>
+          <LazyChatSystem />
+        </Suspense>
+      </FallbackBoundary>
+    </div>
   );
 };
 

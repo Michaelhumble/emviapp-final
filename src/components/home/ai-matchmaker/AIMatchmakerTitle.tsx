@@ -10,31 +10,15 @@ interface AIMatchmakerTitleProps {
 const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) => {
   return (
     <motion.div
-      className="text-center mb-16 relative"
+      className="text-center mb-12 md:mb-16"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
       variants={itemVariants}
     >
-      {/* Section Number Badge - Blog Style */}
-      <motion.div 
-        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/60 rounded-full px-4 py-2 mb-6"
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <span className="w-6 h-6 bg-purple-600 text-white text-sm font-semibold rounded-full flex items-center justify-center">
-          4
-        </span>
-        <span className="text-purple-700 font-medium text-sm">
-          {language === "en" ? "AI Matchmaking" : "Ghép Đôi AI"}
-        </span>
-      </motion.div>
-
       <div className="relative inline-block max-w-5xl mx-auto">
         <motion.h2 
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-slate-900 mb-6 leading-tight tracking-tight"
+          className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-foreground mb-6 leading-tight"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -42,27 +26,21 @@ const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) =
         >
           {language === "en" ? (
             <>
-              Meet Your{" "}
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                AI Matchmaker
-              </span>
+              Meet Your AI Matchmaker
             </>
           ) : (
             <>
-              Trải Nghiệm{" "}
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                AI Ghép Đôi Hoàn Hảo
-              </span>
+              Trải Nghiệm AI Ghép Đôi Hoàn Hảo
             </>
           )}
           <motion.span 
-            className="inline-block ml-3 text-3xl md:text-4xl lg:text-5xl"
+            className="inline-block ml-3 text-2xl md:text-3xl lg:text-4xl"
             animate={{ 
-              scale: [1, 1.3, 1],
-              rotate: [0, 10, -10, 0]
+              scale: [1, 1.2, 1],
+              rotate: [0, 5, -5, 0]
             }}
             transition={{ 
-              duration: 4, 
+              duration: 3, 
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
@@ -71,18 +49,22 @@ const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) =
           </motion.span>
         </motion.h2>
         
-        {/* Elegant underline */}
+        {/* Enhanced premium gradient underline */}
         <motion.div 
-          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 rounded-full bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400"
-          style={{ width: "60%" }}
+          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-1 rounded-full"
+          style={{
+            width: "70%",
+            background: "linear-gradient(90deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)",
+            boxShadow: "0 4px 12px rgba(139, 92, 246, 0.4)"
+          }}
           initial={{ width: "0%" }}
-          whileInView={{ width: "60%" }}
+          whileInView={{ width: "70%" }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
         />
       </div>
 
-      {/* Subheadline */}
+      {/* Enhanced subheadline with better typography */}
       <motion.div
         className="max-w-4xl mx-auto mt-8"
         initial={{ opacity: 0, y: 20 }}
@@ -90,19 +72,19 @@ const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) =
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.4 }}
       >
-        <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-primary">
+        <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-inter">
           {language === "en" ? (
             <>
-              EmviApp's advanced AI doesn't just connect you—it finds your <span className="text-purple-600 font-semibold">perfect match</span>. 
+              EmviApp's advanced AI doesn't just connect you—it finds your <em className="text-purple-600 font-semibold">perfect match</em>. 
               Whether you're hiring top talent, seeking the best salons, or looking for loyal customers, our 
               intelligent system learns what you love and delivers results you can trust. 
-              <span className="text-slate-800 font-medium"> Unlock your future in beauty—instantly.</span>
+              <span className="text-foreground font-medium"> Unlock your future in beauty—instantly.</span>
             </>
           ) : (
             <>
-              AI tiên tiến của EmviApp không chỉ kết nối—mà còn tìm <span className="text-purple-600 font-semibold">đúng người, đúng tiệm, đúng khách</span> cho bạn. 
+              AI tiên tiến của EmviApp không chỉ kết nối—mà còn tìm <em className="text-purple-600 font-semibold">đúng người, đúng tiệm, đúng khách</em> cho bạn. 
               Chủ tiệm dễ dàng tuyển chọn thợ giỏi, nghệ sĩ tìm được môi trường mơ ước, khách hàng gặp dịch vụ tuyệt vời—
-              <span className="text-slate-800 font-medium">tất cả trong tích tắc.</span>
+              <span className="text-foreground font-medium">tất cả trong tích tắc.</span>
             </>
           )}
         </p>

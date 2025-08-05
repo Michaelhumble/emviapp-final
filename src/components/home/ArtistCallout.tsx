@@ -32,11 +32,11 @@ const ArtistCallout = () => {
               You don't have to hustle alone. EmviApp is here to support you with consistent clients, 
               fair compensation, and career growth opportunities.
             </p>
-            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+            <Link to="/auth/signup">
               <Button size="lg" className="font-medium px-8">
                 Join as an Artist
               </Button>
-            </a>
+            </Link>
           </motion.div>
         </div>
       </div>
