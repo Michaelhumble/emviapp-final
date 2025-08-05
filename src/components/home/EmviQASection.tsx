@@ -344,17 +344,40 @@ const EmviQASection = () => {
           {categories.map((category) => {
             const Icon = category.icon;
             const isActive = selectedCategory === category.id;
+            
+            const getButtonStyles = () => {
+              if (isActive) {
+                switch (category.color) {
+                  case "purple":
+                    return "bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg";
+                  case "blue":
+                    return "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg";
+                  case "emerald":
+                    return "bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg";
+                  default:
+                    return "bg-gradient-to-r from-slate-600 to-slate-700 text-white shadow-lg";
+                }
+              }
+              
+              switch (category.color) {
+                case "purple":
+                  return "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-purple-300";
+                case "blue":
+                  return "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-blue-300";
+                case "emerald":
+                  return "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-emerald-300";
+                default:
+                  return "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300";
+              }
+            };
+            
             return (
               <motion.button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl font-primary font-medium text-sm transition-all duration-300 ${
-                  isActive
-                    ? `bg-gradient-to-r from-${category.color}-600 to-${category.color}-700 text-white shadow-lg`
-                    : `bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-${category.color}-300`
-                }`}
+                className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl font-primary font-medium text-sm transition-all duration-300 ${getButtonStyles()}`}
               >
                 <Icon className="h-4 w-4" />
                 {category.name}
