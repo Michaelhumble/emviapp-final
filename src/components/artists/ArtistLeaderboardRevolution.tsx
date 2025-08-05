@@ -4,19 +4,13 @@ import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { Crown, TrendingUp, Star, Zap, DollarSign, Calendar } from "lucide-react";
 
-// Import new avatar images
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen-new.jpg";
-import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-new.jpg";
-import jessicaKimAvatar from "@/assets/avatars/jessica-kim-new.jpg";
-import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen-new.jpg";
-
 const topRevolutionArtists = [
   {
     id: 1,
     name: "Sofia Chen",
     specialty: "AI Nail Artist",
     location: "San Francisco, CA",
-    image: sofiaChenAvatar,
+    initials: "SC",
     badge: "AI PIONEER",
     earnings: "$47K this month",
     rating: 4.98,
@@ -29,7 +23,7 @@ const topRevolutionArtists = [
     name: "Maria Rodriguez",
     specialty: "Hair Revolution Expert", 
     location: "Miami, FL",
-    image: mariaRodriguezAvatar,
+    initials: "MR",
     badge: "TOP 0.1%",
     earnings: "$38K this month",
     rating: 4.96,
@@ -42,7 +36,7 @@ const topRevolutionArtists = [
     name: "Jessica Kim",
     specialty: "Makeup AI Specialist",
     location: "Los Angeles, CA", 
-    image: jessicaKimAvatar,
+    initials: "JK",
     badge: "FEATURED",
     earnings: "$34K this month",
     rating: 4.94,
@@ -55,7 +49,7 @@ const topRevolutionArtists = [
     name: "Minh Anh Nguyen",
     specialty: "Nail Tech (Vietnamese)",
     location: "Westminster, CA",
-    image: minhAnhNguyenAvatar,
+    initials: "MN",
     badge: "CỘNG ĐỒNG VIỆT",
     earnings: "$31K this month", 
     rating: 4.97,
@@ -136,11 +130,9 @@ const ArtistLeaderboardRevolution = () => {
                 >
                   <div className="text-center space-y-6">
                     <div className="relative">
-                      <img 
-                        src={artist.image} 
-                        alt={artist.name}
-                        className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-yellow-400/50 shadow-2xl"
-                      />
+                      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto border-4 border-yellow-400/50 shadow-2xl">
+                        <span className="text-white font-bold text-4xl">{artist.initials}</span>
+                      </div>
                       <motion.div 
                         className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full p-2"
                         animate={{ rotate: 360 }}
@@ -234,11 +226,9 @@ const ArtistLeaderboardRevolution = () => {
                     }`}>
                       {index + 1}
                     </span>
-                    <img 
-                      src={artist.image} 
-                      alt={artist.name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-600"
-                    />
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center border-2 border-gray-600">
+                      <span className="text-white font-bold text-lg">{artist.initials}</span>
+                    </div>
                   </div>
                   
                   <div className="flex-1">

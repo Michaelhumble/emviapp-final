@@ -5,20 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, DollarSign, Users, Star, Calendar, Crown } from "lucide-react";
 
-// Import new avatar images
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen-new.jpg";
-import davidKimAvatar from "@/assets/avatars/david-kim-new.jpg";
-import jenniferMartinezAvatar from "@/assets/avatars/jennifer-martinez-new.jpg";
-import sarahThompsonAvatar from "@/assets/avatars/sarah-thompson-new.jpg";
-import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen-new.jpg";
-
 const ArtistSuccessStoriesRevolution = () => {
   const artistStories = [
     {
       name: "Sofia Chen",
       specialty: "AI-Powered Nail Artist",
       location: "San Francisco, CA",
-      image: sofiaChenAvatar,
+      initials: "SC",
       story: "I went from struggling to find clients to having a 3-month waitlist. The AI discovery engine connects me with premium clients who truly value artistry.",
       results: {
         before: "$2,800/month",
@@ -33,7 +26,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "David Kim", 
       specialty: "Hair Revolution Expert",
       location: "New York, NY",
-      image: davidKimAvatar,
+      initials: "DK",
       story: "The platform's AI matching system eliminated time-wasters. Now I only work with clients who appreciate premium services and pay accordingly.",
       results: {
         before: "$4,200/month",
@@ -51,7 +44,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "Jennifer Martinez",
       type: "Premium Client",
       location: "Los Angeles, CA", 
-      image: jenniferMartinezAvatar,
+      initials: "JM",
       story: "EmviApp's AI found me artists I never would have discovered. Every booking has been absolutely perfect - worth every penny.",
       experience: "Booked 47 premium services",
       satisfaction: "100% satisfaction rate",
@@ -62,7 +55,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "Sarah Thompson",
       type: "Regular Customer", 
       location: "Miami, FL",
-      image: sarahThompsonAvatar,
+      initials: "ST",
       story: "The AI matching is incredible. It learns my preferences and consistently connects me with artists who exceed my expectations.",
       experience: "32 successful bookings",
       satisfaction: "4.9/5 average experience",
@@ -75,7 +68,7 @@ const ArtistSuccessStoriesRevolution = () => {
     name: "Minh Anh Nguyen",
     salon: "Minh Anh Nail Spa",
     location: "Westminster, CA (Little Saigon)",
-    image: minhAnhNguyenAvatar,
+    initials: "MN",
     story: "Từ khi dùng AI của EmviApp, tiệm tôi đã thay đổi hoàn toàn. Khách booking tự động, doanh thu tăng gấp 4 lần, và quan trọng nhất là có thời gian nghỉ ngơi.",
     results: {
       before: "$6,500/month",
@@ -129,11 +122,9 @@ const ArtistSuccessStoriesRevolution = () => {
                 <Card className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-sm border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300">
                   <CardContent className="p-8">
                     <div className="flex items-center space-x-4 mb-6">
-                      <img
-                        src={story.image}
-                        alt={story.name}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-purple-400/50"
-                      />
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-2 border-purple-400/50">
+                        <span className="text-white font-bold text-lg">{story.initials}</span>
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <h4 className="font-bold text-white text-lg">{story.name}</h4>
@@ -188,11 +179,9 @@ const ArtistSuccessStoriesRevolution = () => {
                 <Card className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 backdrop-blur-sm border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300">
                   <CardContent className="p-8">
                     <div className="flex items-center space-x-4 mb-6">
-                      <img
-                        src={story.image}
-                        alt={story.name}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-blue-400/50"
-                      />
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center border-2 border-blue-400/50">
+                        <span className="text-white font-bold text-lg">{story.initials}</span>
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <h4 className="font-bold text-white text-lg">{story.name}</h4>
@@ -246,11 +235,9 @@ const ArtistSuccessStoriesRevolution = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start space-x-4 mb-6">
-                <img
-                  src={vietnameseStory.image}
-                  alt={vietnameseStory.name}
-                  className="w-20 h-20 rounded-full object-cover border-4 border-pink-400/50"
-                />
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-red-500 flex items-center justify-center border-4 border-pink-400/50">
+                  <span className="text-white font-bold text-2xl">{vietnameseStory.initials}</span>
+                </div>
                 <div>
                   <h4 className="font-bold text-white text-2xl">{vietnameseStory.name}</h4>
                   <p className="text-pink-200">{vietnameseStory.salon}</p>

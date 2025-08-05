@@ -5,17 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Crown, TrendingUp, Star, Rocket, Zap, Target, Users } from "lucide-react";
 
-// Import new avatar images
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen-new.jpg";
-import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-new.jpg";
-import jessicaKimAvatar from "@/assets/avatars/jessica-kim-new.jpg";
-
 const topArtists = [
   {
     id: 1,
     name: "Sofia Chen",
     specialty: "Nail Artist",
-    image: sofiaChenAvatar,
+    initials: "SC",
     badge: "AI PIONEER",
     status: "🔥 Viral",
     earnings: "$12K this month"
@@ -24,7 +19,7 @@ const topArtists = [
     id: 2,
     name: "Maria Rodriguez", 
     specialty: "Hair Stylist",
-    image: mariaRodriguezAvatar,
+    initials: "MR",
     badge: "TOP 1%",
     status: "🚀 Scaling",
     earnings: "300+ bookings"
@@ -33,7 +28,7 @@ const topArtists = [
     id: 3,
     name: "Jessica Kim",
     specialty: "Makeup Artist", 
-    image: jessicaKimAvatar,
+    initials: "JK",
     badge: "FEATURED",
     status: "⚡ Booked Out",
     earnings: "98% 5-star rating"
@@ -190,11 +185,9 @@ const ArtistRevolutionHero = () => {
                     }}
                   >
                     <div className="relative">
-                      <img 
-                        src={artist.image} 
-                        alt={artist.name}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-yellow-400/50 shadow-lg"
-                      />
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-2 border-yellow-400/50 shadow-lg">
+                        <span className="text-white font-bold text-lg">{artist.initials}</span>
+                      </div>
                       {index === currentArtist && (
                         <motion.div 
                           className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full p-1"
