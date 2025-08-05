@@ -223,19 +223,22 @@ const HeroContent = ({
         }}
       >
         <div className="max-w-7xl mx-auto text-center space-y-8">
-          {/* Premium Hero Title with Glassmorphism */}
+          {/* Classy Hero Title */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-black/20 backdrop-blur-xl rounded-3xl border border-white/10 -m-8" />
-            <h1 className="relative text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-pink-200 leading-tight">
-              The Future of
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white leading-tight tracking-wide">
+              The Beauty Industry's
               <br />
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent animate-pulse">
-                Beauty Careers
+              <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-yellow-300">
+                Missing Piece
+              </span>
+              <br />
+              <span className="text-4xl md:text-5xl lg:text-6xl">
+                — We Just Built It.
               </span>
             </h1>
             
@@ -246,7 +249,7 @@ const HeroContent = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.6 }}
-              className="text-xl md:text-3xl text-white/90 max-w-4xl mx-auto mt-6 leading-relaxed font-light"
+              className="text-xl md:text-3xl text-white/90 max-w-4xl mx-auto mt-8 leading-relaxed font-light"
             >
               {currentSlide?.subtitle || "Where 10,000+ beauty professionals build extraordinary careers"}
             </motion.p>
