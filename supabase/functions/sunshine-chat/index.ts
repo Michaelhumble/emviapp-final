@@ -314,11 +314,14 @@ ${detectedLanguage === 'vi' ?
 
 Remember: Format responses with clear steps, bold actions, and proper routing to protected URLs!`;
 
-    console.log('Enhanced AI system prompt built for user:', {
+    console.log('🚀 ENHANCED AI SYSTEM PROMPT ACTIVE - Phase 1 Training:', {
       hasUserName: !!currentUserName,
       userName: currentUserName,
       isReturningUser: !!userSession?.last_question,
-      conversionGoal: 'revenue_generation_phase1'
+      conversionGoal: 'revenue_generation_phase1',
+      systemPromptLength: systemPrompt.length,
+      detectedLanguage: detectedLanguage,
+      deploymentVersion: 'v2.1-WORLD-CLASS'
     });
 
     // Create request with timeout
@@ -338,8 +341,8 @@ Remember: Format responses with clear steps, bold actions, and proper routing to
             { role: 'system', content: systemPrompt },
             { role: 'user', content: cleanMessage }
           ],
-          temperature: 0.8,
-          max_tokens: 400,
+          temperature: 0.7,
+          max_tokens: 500,
         }),
         signal: controller.signal,
       });
@@ -353,13 +356,15 @@ Remember: Format responses with clear steps, bold actions, and proper routing to
       const data = await response.json();
       let aiResponse = data.choices[0].message.content;
 
-      // Log successful response
-      console.log('Sunshine Chat response generated (v2.1-DEPLOY):', {
+      // Log successful response with enhanced debugging
+      console.log('🌟 SUNSHINE WORLD-CLASS RESPONSE GENERATED:', {
         responseLength: aiResponse.length,
         language: detectedLanguage,
-        hasLinks: aiResponse.includes('[') && aiResponse.includes(']'),
+        hasLinks: aiResponse.includes('/auth/signup') || aiResponse.includes('/post-job') || aiResponse.includes('/sell-salon'),
         userId: userId,
-        isHumanized: !aiResponse.includes('AI') && !aiResponse.includes('assistant')
+        isEnhanced: aiResponse.length > 50 && !aiResponse.includes('What would you like to know'),
+        deploymentVersion: 'v2.1-WORLD-CLASS',
+        systemPromptWorking: systemPrompt.includes('EMVIAPP COMPLETE BUSINESS OVERVIEW')
       });
 
       // Store conversation log
