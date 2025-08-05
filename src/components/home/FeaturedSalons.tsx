@@ -16,7 +16,8 @@ const FeaturedSalons = () => {
       specialties: ["Luxury Manicures", "Spa Treatments", "Nail Art"],
       image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=300&fit=crop",
       isPremium: true,
-      hiringNow: true
+      hiringNow: true,
+      industry: "nails"
     },
     {
       id: 2,
@@ -27,18 +28,20 @@ const FeaturedSalons = () => {
       specialties: ["Hair Styling", "Color", "Extensions"],
       image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop",
       isPremium: false,
-      hiringNow: true
+      hiringNow: true,
+      industry: "hair"
     },
     {
       id: 3,
-      name: "Serenity Wellness Studio",
+      name: "Gentleman's Barber Co.",
       location: "Austin, TX",
       rating: 4.9,
       reviews: 189,
-      specialties: ["Massage Therapy", "Skincare", "Wellness"],
-      image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&h=300&fit=crop",
+      specialties: ["Classic Cuts", "Beard Grooming", "Hot Towel Shaves"],
+      image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=300&fit=crop",
       isPremium: true,
-      hiringNow: false
+      hiringNow: false,
+      industry: "barber"
     }
   ];
 
@@ -181,14 +184,28 @@ const FeaturedSalons = () => {
                     ))}
                   </div>
 
-                  {/* Action Button */}
-                  <Button
-                    variant="outline"
-                    className="w-full group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600 transition-all duration-300"
-                  >
-                    View Opportunities
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    <Button
+                      variant="outline"
+                      className="w-full group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600 transition-all duration-300"
+                    >
+                      View Opportunities
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                    
+                    {/* Industry-specific CTA */}
+                    <Link 
+                      to={`/${salon.industry}`}
+                      className="block"
+                    >
+                      <Button
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold"
+                      >
+                        🔥 Claim Your Spot in {salon.industry === 'nails' ? 'Nails' : salon.industry === 'hair' ? 'Hair' : 'Barber'}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </motion.div>
