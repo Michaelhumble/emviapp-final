@@ -31,8 +31,9 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-popover', 
             '@radix-ui/react-toast',
             '@radix-ui/react-avatar',
-            '@radix-ui/react-button',
-            '@radix-ui/react-dropdown-menu'
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-select'
           ],
           // Authentication and backend
           'vendor-auth': ['@supabase/supabase-js', '@tanstack/react-query'],
