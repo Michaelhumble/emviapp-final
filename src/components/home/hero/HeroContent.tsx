@@ -271,7 +271,7 @@ const HeroContent = ({
             transition={{ duration: 0.6, delay: 0.8 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-16"
           >
-            <Link to={currentSlide?.cta?.link || "/auth/signup"}>
+            <Link to={currentSlide?.cta?.link || "/jobs"}>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -287,7 +287,8 @@ const HeroContent = ({
                     transition={{ duration: 0.6 }}
                   />
                   <Sparkles className="mr-3 h-6 w-6" />
-                  {currentSlide?.cta?.text || "Start Your Journey"}
+                  {/* FIXED: Proper button text syncing */}
+                  {currentSlide?.cta?.text || "Start Your Career"}
                   <ArrowRight className="ml-3 h-6 w-6" />
                 </Button>
               </motion.div>

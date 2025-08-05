@@ -93,7 +93,7 @@ const ImageParallaxLayer = ({
       }}
       style={{ zIndex: isActive ? 2 : 1 }}
     >
-      {/* Simplified high-performance image */}
+      {/* Improved image visibility */}
       <div className="absolute inset-0 overflow-hidden">
         <img
           src={image.url}
@@ -104,16 +104,16 @@ const ImageParallaxLayer = ({
             width: "100%",
             height: "100%",
             objectPosition: "center",
-            filter: 'brightness(0.65) contrast(1.1)',
+            filter: 'brightness(0.8) contrast(1.05)', // Lighter for better visibility
             position: "absolute",
             top: 0,
             left: 0
           }}
         />
         
-        {/* Premium gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {/* Lighter overlays to show images better */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
       </div>
     </motion.div>
   );
@@ -133,33 +133,31 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
         />
       ))}
       
-      {/* Industry badge overlay */}
-      <AnimatePresence mode="wait">
-        {images[activeIndex]?.industry && (
-          <motion.div
-            key={`badge-${activeIndex}`}
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            transition={{ duration: 0.5 }}
-            className="absolute top-8 left-8 z-30"
-          >
-            <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/20">
-              <span className="text-2xl">
-                {images[activeIndex].industry === 'Makeup Artist' ? '💄' :
-                 images[activeIndex].industry === 'Nail Tech' ? '💅' :
-                 images[activeIndex].industry === 'Barber' ? '✂️' :
-                 images[activeIndex].industry === 'Hair Stylist' ? '💇‍♀️' :
-                 images[activeIndex].industry === 'Esthetician' ? '🧴' :
-                 images[activeIndex].industry === 'Massage Therapist' ? '💆‍♀️' :
-                 '✨'}
-              </span>
-              <span className="text-white font-bold text-lg">{images[activeIndex].industry}</span>
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Industry badge overlay - FIXED to prevent multiple badges */}
+      {images[activeIndex]?.industry && (
+        <motion.div
+          key={`badge-${activeIndex}-${images[activeIndex].industry}`}
+          initial={{ opacity: 0, y: -20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.9 }}
+          transition={{ duration: 0.5 }}
+          className="absolute top-8 left-8 z-30"
+        >
+          <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/20">
+            <span className="text-2xl">
+              {images[activeIndex].industry?.includes('Nail') ? '💅' :
+               images[activeIndex].industry?.includes('Barber') ? '✂️' :
+               images[activeIndex].industry?.includes('Hair') ? '💇‍♀️' :
+               images[activeIndex].industry?.includes('Makeup') ? '💄' :
+               images[activeIndex].industry?.includes('Esthetician') ? '🧴' :
+               images[activeIndex].industry?.includes('Massage') ? '💆‍♀️' :
+               '✨'}
+            </span>
+            <span className="text-white font-bold text-lg">{images[activeIndex].industry}</span>
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
