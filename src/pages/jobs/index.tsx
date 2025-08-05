@@ -298,7 +298,7 @@ const JobsPage = () => {
               <div className="animate-fade-in mb-12" style={{ animationDelay: '0.4s' }}>
                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
                   <button
-                    onClick={() => navigate('/post-job')}
+                    onClick={() => window.location.href = 'http://emviapp-final.lovable.app/post-job'}
                     className="group relative bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-500 text-white font-inter font-black py-6 px-8 sm:px-12 rounded-2xl text-lg sm:text-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] hover:shadow-[0_35px_70px_rgba(0,0,0,0.4)] transition-all duration-700 min-w-[280px] sm:min-w-[320px] transform hover:scale-105 animate-pulse"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-3">
