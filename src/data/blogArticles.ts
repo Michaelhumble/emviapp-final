@@ -20,6 +20,7 @@ import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg
 import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 import beautyArtistsImage from '@/assets/beauty-artists-hands-at-work.jpg';
+import diverseBeautyProfessionalsImage from '@/assets/diverse-beauty-professionals-at-work.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -58,9 +59,26 @@ const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGui
 const AIBeautyRevolution2025 = lazy(() => import('@/data/blogArticles/ai-beauty-revolution-2025'));
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 const TheInvisibleArtistsWhoMakeUsBeautiful = lazy(() => import('@/pages/blog/articles/TheInvisibleArtistsWhoMakeUsBeautiful'));
+const CelebratingEveryBeautyProfessional = lazy(() => import('@/pages/blog/articles/CelebratingEveryBeautyProfessional'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'celebrating-every-beauty-professional',
+    title: 'Behind Every Beautiful Moment: Celebrating All Beauty Professionals Who Make Us Feel Our Best',
+    slug: 'celebrating-every-beauty-professional',
+    description: 'From hair stylists to massage therapists, discover the untold stories of beauty professionals who dedicate their lives to making others feel confident and beautiful. Why beauty jobs matter more than ever in 2025.',
+    author: 'The EmviApp Team—for Every Artist, Everywhere',
+    publishedAt: '2025-01-15',
+    category: 'Community Stories',
+    categorySlug: 'community-stories',
+    tags: ['Beauty Professionals', 'Artist Appreciation', 'Community Stories', 'Beauty Industry', 'Support Local Artists'],
+    readTime: '8 min read',
+    image: diverseBeautyProfessionalsImage,
+    url: '/blog/community-stories/celebrating-every-beauty-professional',
+    component: CelebratingEveryBeautyProfessional,
+    featured: true
+  },
   {
     id: 'invisible-artists-who-make-us-beautiful',
     slug: 'invisible-artists-who-make-us-beautiful',
