@@ -4418,35 +4418,29 @@ export type Database = {
       user_sessions: {
         Row: {
           created_at: string | null
-          expires_at: string
           id: string
-          ip_address: unknown | null
-          is_active: boolean | null
-          last_activity: string | null
-          session_token: string
-          user_agent: string | null
+          language: string | null
+          last_question: string | null
+          name: string | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
-          expires_at: string
           id?: string
-          ip_address?: unknown | null
-          is_active?: boolean | null
-          last_activity?: string | null
-          session_token: string
-          user_agent?: string | null
+          language?: string | null
+          last_question?: string | null
+          name?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
-          expires_at?: string
           id?: string
-          ip_address?: unknown | null
-          is_active?: boolean | null
-          last_activity?: string | null
-          session_token?: string
-          user_agent?: string | null
+          language?: string | null
+          last_question?: string | null
+          name?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: []
