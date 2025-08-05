@@ -141,18 +141,10 @@ const Footer: React.FC = () => {
                 </li>
                 <li>
                   <Link 
-                    to="/booking-services" 
+                    to="/jobs" 
                     className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
                   >
-                    Book Services
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/nails" 
-                    className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
-                  >
-                    Find Beauty Jobs
+                    Jobs
                   </Link>
                 </li>
                 <li>
@@ -160,7 +152,7 @@ const Footer: React.FC = () => {
                     to="/salons" 
                     className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
                   >
-                    Salon Marketplace
+                    Salons for Sale
                   </Link>
                 </li>
               </ul>
