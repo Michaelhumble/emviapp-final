@@ -63,7 +63,7 @@ const ArtistRevolutionCTA = () => {
                   LIMITED SPOTS
                 </Badge>
                 <Badge className="bg-gradient-to-r from-purple-400 to-pink-500 text-white border-0 px-6 py-3 text-lg font-bold">
-                  🇻🇳 VIETNAMESE SUPPORT
+                  VIETNAMESE SUPPORT
                 </Badge>
               </motion.div>
 
@@ -177,7 +177,7 @@ const ArtistRevolutionCTA = () => {
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
                 <h3 className="text-2xl font-bold text-white mb-4">
-                  🇻🇳 Đặc Biệt Dành Cho Cộng Đồng Việt Nam
+                  Đặc Biệt Dành Cho Cộng Đồng Việt Nam
                 </h3>
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="text-center">

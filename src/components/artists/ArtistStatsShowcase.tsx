@@ -48,7 +48,7 @@ const ArtistStatsShowcase = () => {
         >
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              🇻🇳 Cách Mạng Ngành Nail Việt Nam
+              Cách Mạng Ngành Nail Việt Nam
             </h2>
             <p className="text-xl text-pink-200 max-w-3xl mx-auto">
               Hơn 15,000 thợ nail người Việt đã tham gia cuộc cách mạng AI

@@ -117,7 +117,7 @@ const ArtistSuccessToolkit = () => {
         >
           <div className="text-center mb-8">
             <h3 className="text-3xl font-black text-white mb-4">
-              🇻🇳 Câu Chuyện Thành Công Từ Cộng Đồng Nail Việt
+              Câu Chuyện Thành Công Từ Cộng Đồng Nail Việt
             </h3>
             <p className="text-pink-200 text-lg">
               Minh Anh Nail Spa (Little Saigon) - Từ 0 đến $25K/tháng trong 8 tháng

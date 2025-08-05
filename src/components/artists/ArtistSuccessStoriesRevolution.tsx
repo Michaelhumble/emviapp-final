@@ -229,7 +229,7 @@ const ArtistSuccessStoriesRevolution = () => {
         >
           <div className="text-center mb-8">
             <h3 className="text-4xl font-black text-white mb-4">
-              🇻🇳 Câu Chuyện Từ Cộng Đồng Nail Việt Nam
+              Câu Chuyện Từ Cộng Đồng Nail Việt Nam
             </h3>
             <Badge className="bg-gradient-to-r from-red-400 to-pink-500 text-white border-0 font-bold px-6 py-3 text-lg">
               VERIFIED SUCCESS STORY

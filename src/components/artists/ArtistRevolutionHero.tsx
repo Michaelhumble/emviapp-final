@@ -148,7 +148,7 @@ const ArtistRevolutionHero = () => {
                   <Users className="h-5 w-5 text-pink-400" />
                 </div>
                 <div>
-                  <p className="font-bold text-pink-200">🇻🇳 Dành cho cộng đồng Việt Nam</p>
+                  <p className="font-bold text-pink-200">Dành cho cộng đồng Việt Nam</p>
                   <p className="text-sm text-pink-300">15,000+ thợ nail Việt đã tham gia • Interface tiếng Việt 100%</p>
                 </div>
               </div>

@@ -54,7 +54,7 @@ const topRevolutionArtists = [
     earnings: "$31K this month", 
     rating: 4.97,
     clients: 234,
-    achievement: "🇻🇳 Top Vietnamese artist",
+    achievement: "Top Vietnamese artist",
     tier: "COMMUNITY"
   }
 ];

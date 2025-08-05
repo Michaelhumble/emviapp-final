@@ -128,7 +128,7 @@ const ArtistEmpathyRevolution = () => {
                 {/* Vietnamese section */}
                 <div className="bg-pink-500/20 border border-pink-400/30 rounded-2xl p-6 mt-8">
                   <p className="text-pink-200 font-semibold">
-                    🇻🇳 Dành cho khách hàng Việt Nam
+                    Dành cho khách hàng Việt Nam
                   </p>
                   <p className="text-pink-100 text-sm mt-2">
                     AI tự động tìm thợ nail giỏi nhất cho bạn • Giao tiếp tiếng Việt 100%
