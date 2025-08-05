@@ -21,6 +21,7 @@ import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg'
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 import beautyArtistsImage from '@/assets/beauty-artists-hands-at-work.jpg';
 import diverseBeautyProfessionalsImage from '@/assets/diverse-beauty-professionals-at-work.jpg';
+import healingPowerImage from '@/assets/healing-power-beauty-artists.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -60,9 +61,27 @@ const AIBeautyRevolution2025 = lazy(() => import('@/data/blogArticles/ai-beauty-
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 const TheInvisibleArtistsWhoMakeUsBeautiful = lazy(() => import('@/pages/blog/articles/TheInvisibleArtistsWhoMakeUsBeautiful'));
 const CelebratingEveryBeautyProfessional = lazy(() => import('@/pages/blog/articles/CelebratingEveryBeautyProfessional'));
+const HealingPowerOfBeautyArtists = lazy(() => import('@/pages/blog/articles/HealingPowerOfBeautyArtists'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'healing-power-beauty-artists',
+    title: 'More Than Beauty: How Hair Stylists, Makeup Artists, and Beauty Professionals Heal Hearts and Transform Lives',
+    slug: 'healing-power-beauty-artists',
+    description: 'Discover the profound healing power of beauty professionals who do more than create beautiful looks—they restore confidence, support mental health, and transform lives during our most vulnerable moments.',
+    author: 'The EmviApp Team—for Every Artist, Everywhere',
+    publishedAt: '2025-01-16',
+    category: 'Community Stories',
+    categorySlug: 'community-stories',
+    tags: ['Healing Power of Beauty', 'Beauty Industry Mental Health', 'Hair Stylists Matter', 'Client Transformation Stories', 'Beauty Jobs With Purpose'],
+    readTime: '9 min read',
+    image: healingPowerImage,
+    url: '/blog/community-stories/healing-power-beauty-artists',
+    component: HealingPowerOfBeautyArtists,
+    featured: true,
+    trending: true
+  },
   {
     id: 'celebrating-every-beauty-professional',
     title: 'Behind Every Beautiful Moment: Celebrating All Beauty Professionals Who Make Us Feel Our Best',
