@@ -96,7 +96,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   ];
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <>
           {/* Backdrop */}
@@ -104,6 +104,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] md:hidden"
             onClick={onClose}
             style={{ backdropFilter: 'blur(8px)' }}
@@ -114,12 +115,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            transition={{ 
+              type: 'spring', 
+              damping: 30, 
+              stiffness: 300,
+              duration: 0.3 
+            }}
             className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-[10000] flex flex-col"
             style={{ 
-              height: '100dvh', // Use dynamic viewport height for better mobile support
-              minHeight: '100svh', // Small viewport height fallback
-              overflowY: 'hidden' // Let the inner scroll container handle scrolling
+              height: '100dvh',
+              minHeight: '100svh',
+              overflowY: 'hidden'
             }}
           >
             {/* Header with Profile Integration */}
