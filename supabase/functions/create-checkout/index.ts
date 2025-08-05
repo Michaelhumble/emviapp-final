@@ -143,13 +143,13 @@ serve(async (req) => {
     const durationMonths = pricingOptions?.durationMonths || 1;
     const autoRenew = pricingOptions?.autoRenew || false;
 
-    // Map pricing to Stripe price IDs (these should match your actual Stripe dashboard)
+    // Map pricing to Stripe price IDs (YOU MUST REPLACE THESE WITH YOUR REAL STRIPE PRICE IDS)
     const priceMap = {
-      'standard_1': 'price_1QOBxsJBvWVB2d16QqYw1234', // $9.99/month - REPLACE WITH REAL PRICE ID
-      'standard_3': 'price_1QOBxsJBvWVB2d16QqYw5678', // $27.99/3 months - REPLACE WITH REAL PRICE ID
-      'standard_6': 'price_1QOBxsJBvWVB2d16QqYw9012', // $49.99/6 months - REPLACE WITH REAL PRICE ID
-      'premium_1': 'price_1QOBxsJBvWVB2d16QqYw3456', // $19.99/month - REPLACE WITH REAL PRICE ID
-      'gold_1': 'price_1QOBxsJBvWVB2d16QqYw7890', // $49.99/month - REPLACE WITH REAL PRICE ID
+      'standard_1': 'price_YOUR_REAL_STANDARD_1_MONTH_PRICE_ID', // $9.99/month
+      'standard_3': 'price_YOUR_REAL_STANDARD_3_MONTH_PRICE_ID', // $27.99/3 months  
+      'standard_6': 'price_YOUR_REAL_STANDARD_6_MONTH_PRICE_ID', // $49.99/6 months
+      'premium_1': 'price_YOUR_REAL_PREMIUM_1_MONTH_PRICE_ID',   // $19.99/month
+      'gold_1': 'price_YOUR_REAL_GOLD_1_MONTH_PRICE_ID',         // $49.99/month
     };
 
     if (pricingTier === 'standard') {
