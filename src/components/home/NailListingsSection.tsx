@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Flame, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
@@ -138,13 +139,23 @@ const NailListingsSection: React.FC = () => {
                           <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full">
                             Nail
                           </Badge>
-                          <Button 
-                            onClick={() => navigate("/booking-services")} 
-                            size="sm" 
-                            className="bg-[#9B51E0] hover:bg-[#8A46C2] text-white rounded-xl ml-auto"
-                          >
-                            Xem Chi Tiết
-                          </Button>
+                          <div className="flex flex-col gap-1 ml-auto">
+                            <Button 
+                              onClick={() => navigate("/booking-services")} 
+                              size="sm" 
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              Xem Chi Tiết
+                            </Button>
+                            <Button 
+                              onClick={() => navigate("/nails")} 
+                              size="sm" 
+                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold"
+                            >
+                              🔥 Claim Your Spot in Nails
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -194,12 +205,23 @@ const NailListingsSection: React.FC = () => {
                             <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full">
                               Nail
                             </Badge>
-                            <Button 
-                              size="sm" 
-                              className="bg-[#9B51E0] hover:bg-[#8A46C2] text-white rounded-xl ml-auto"
-                            >
-                              Xem Chi Tiết
-                            </Button>
+                            <div className="flex flex-col gap-1 ml-auto">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                Xem Chi Tiết
+                              </Button>
+                              <Link to="/nails" className="block">
+                                <Button 
+                                  size="sm" 
+                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full"
+                                >
+                                  🔥 Claim Your Spot in Nails
+                                </Button>
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </CardContent>
