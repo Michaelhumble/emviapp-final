@@ -10,14 +10,10 @@ import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/context/auth/hooks/useSession';
 
+import { barberShopImages, cardDestinations } from '@/utils/beautyExchangeImages';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+
 // Define destinations for each card
-const cardDestinations = [
-  { id: "barber-1", type: "salon", path: "/salons/barber-1" },
-  { id: "barber-2", type: "job", path: "/jobs/barber-2" },
-  { id: "barber-3", type: "salon", path: "/salons/barber-3" },
-  { id: "barber-4", type: "job", path: "/jobs/barber-4" },
-  { id: "barber-5", type: "salon", path: "/salons/barber-5" }
-];
 
 const BarberPremiumListingsSection: React.FC = () => {
   const navigate = useNavigate();
@@ -42,7 +38,7 @@ const BarberPremiumListingsSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {barberShopImages.map((imageSrc, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -52,15 +48,21 @@ const BarberPremiumListingsSection: React.FC = () => {
               className="h-full"
             >
               <AuthAction
-                onAction={handleCardClick(cardDestinations[index].path)}
-                redirectPath={cardDestinations[index].path}
+                onAction={handleCardClick(cardDestinations.barber[index].path)}
+                redirectPath={cardDestinations.barber[index].path}
                 customTitle="Sign in to view barber shop details"
                 fallbackContent={
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-500">Premium Space</span>
-                      </div>
+                      <ImageWithFallback 
+                        src={imageSrc} 
+                        alt={`Barber Shop ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                        category="barber"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                        ★ PREMIUM
+                      </Badge>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
@@ -90,16 +92,22 @@ const BarberPremiumListingsSection: React.FC = () => {
                 }
                 authenticatedContent={
                   <ValidatedLink 
-                    to={cardDestinations[index].path}
-                    listingId={cardDestinations[index].id}
-                    listingType={cardDestinations[index].type as "salon" | "job"}
+                    to={cardDestinations.barber[index].path}
+                    listingId={cardDestinations.barber[index].id}
+                    listingType={cardDestinations.barber[index].type as "salon" | "job"}
                     className="no-underline block h-full"
                   >
                     <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-500">Premium Space</span>
-                        </div>
+                        <ImageWithFallback 
+                          src={imageSrc} 
+                          alt={`Barber Shop ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                          category="barber"
+                        />
+                        <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                          ★ PREMIUM
+                        </Badge>
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
