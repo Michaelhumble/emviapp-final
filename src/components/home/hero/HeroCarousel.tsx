@@ -82,8 +82,8 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                 top: 0,
                 right: 0,
                 bottom: 0,
-                filter: 'brightness(0.75)',
-                imageRendering: 'auto',
+                filter: 'brightness(0.85) contrast(1.1) saturate(1.2)',
+                imageRendering: 'crisp-edges',
                 transform: 'translate3d(0,0,0)',
                 backfaceVisibility: 'hidden'
               }}

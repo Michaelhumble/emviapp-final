@@ -16,8 +16,8 @@ interface DynamicSEOProps {
 }
 
 const DynamicSEO: React.FC<DynamicSEOProps> = ({
-  title = 'EmviApp - Premium Beauty Community',
-  description = 'Join the most exclusive beauty community. Share your work, learn from pros, and grow your beauty career with EmviApp.',
+  title = 'EmviApp - The Beauty Industry\'s Missing Piece',
+  description = 'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.',
   image = 'https://emvi.app/og-image.jpg',
   url = 'https://emvi.app',
   type = 'website',
@@ -37,7 +37,7 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content={`beauty, nails, hair, makeup, skincare, community, professionals, ${tags.join(', ')}`} />
+      <meta name="keywords" content={`beauty jobs, nail technician, hair stylist, barber jobs, makeup artist, esthetician, massage therapist, salon opportunities, beauty careers, premium beauty platform, ${tags.join(', ')}`} />
       <meta name="author" content={author || 'EmviApp'} />
       
       {/* Robots */}

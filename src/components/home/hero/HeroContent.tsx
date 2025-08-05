@@ -112,7 +112,7 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Big, rounded, vibrant CTA Button */}
+          {/* Industry-specific dynamic CTA Button */}
           <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
             <Button 
               size="lg" 
@@ -122,7 +122,7 @@ const HeroContent = ({
                   : 'px-14 py-10 text-2xl'
               }`}
             >
-              ✨ Start Your Journey
+              {currentSlide?.cta?.text || "✨ Start Your Journey"}
             </Button>
           </a>
         </motion.div>
