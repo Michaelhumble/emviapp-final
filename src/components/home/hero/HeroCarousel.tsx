@@ -93,7 +93,7 @@ const ImageParallaxLayer = ({
       }}
       style={{ zIndex: isActive ? 2 : 1 }}
     >
-      {/* Crystal clear image visibility */}
+      {/* Maximum clarity for photos */}
       <div className="absolute inset-0 overflow-hidden">
         <img
           src={image.url}
@@ -104,16 +104,15 @@ const ImageParallaxLayer = ({
             width: "100%",
             height: "100%",
             objectPosition: "center",
-            filter: 'brightness(1.1) contrast(1.1) saturate(1.05)', // Much brighter and clearer
+            filter: 'brightness(1.3) contrast(1.15) saturate(1.1)', // Much brighter
             position: "absolute",
             top: 0,
             left: 0
           }}
         />
         
-        {/* Very light overlays for text readability only */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        {/* Minimal overlay just for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
       </div>
     </motion.div>
   );
