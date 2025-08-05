@@ -10,15 +10,31 @@ interface AIMatchmakerTitleProps {
 const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) => {
   return (
     <motion.div
-      className="text-center mb-16"
+      className="text-center mb-16 relative"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
       variants={itemVariants}
     >
+      {/* Section Number Badge - Blog Style */}
+      <motion.div 
+        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/60 rounded-full px-4 py-2 mb-6"
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <span className="w-6 h-6 bg-purple-600 text-white text-sm font-semibold rounded-full flex items-center justify-center">
+          4
+        </span>
+        <span className="text-purple-700 font-medium text-sm">
+          {language === "en" ? "AI Matchmaking" : "Ghép Đôi AI"}
+        </span>
+      </motion.div>
+
       <div className="relative inline-block max-w-5xl mx-auto">
         <motion.h2 
-          className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold bg-gradient-to-r from-slate-900 via-purple-800 to-indigo-900 bg-clip-text text-transparent mb-6 leading-tight tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-slate-900 mb-6 leading-tight tracking-tight"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -26,11 +42,17 @@ const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) =
         >
           {language === "en" ? (
             <>
-              Meet Your AI Matchmaker
+              Meet Your{" "}
+              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                AI Matchmaker
+              </span>
             </>
           ) : (
             <>
-              Trải Nghiệm AI Ghép Đôi Hoàn Hảo
+              Trải Nghiệm{" "}
+              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                AI Ghép Đôi Hoàn Hảo
+              </span>
             </>
           )}
           <motion.span 
@@ -49,18 +71,14 @@ const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) =
           </motion.span>
         </motion.h2>
         
-        {/* Rainbow gradient underline */}
+        {/* Elegant underline */}
         <motion.div 
-          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-1.5 rounded-full"
-          style={{
-            width: "70%",
-            background: "linear-gradient(90deg, #8B5CF6 0%, #EC4899 25%, #F59E0B 50%, #10B981 75%, #3B82F6 100%)",
-            boxShadow: "0 4px 20px rgba(139, 92, 246, 0.5)"
-          }}
+          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 rounded-full bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400"
+          style={{ width: "60%" }}
           initial={{ width: "0%" }}
-          whileInView={{ width: "70%" }}
+          whileInView={{ width: "60%" }}
           viewport={{ once: true }}
-          transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+          transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
         />
       </div>
 
@@ -72,7 +90,7 @@ const AIMatchmakerTitle = ({ language, itemVariants }: AIMatchmakerTitleProps) =
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.4 }}
       >
-        <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
+        <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-primary">
           {language === "en" ? (
             <>
               EmviApp's advanced AI doesn't just connect you—it finds your <span className="text-purple-600 font-semibold">perfect match</span>. 
