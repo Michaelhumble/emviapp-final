@@ -42,6 +42,7 @@ const PostCanceled = lazy(() => import("@/pages/post-canceled"));
 const PostJobBillion = lazy(() => import("@/pages/PostJobBillion"));
 const PostJobExperimental = lazy(() => import("@/pages/PostJobExperimental"));
 const SignIn = lazy(() => import("@/pages/auth/SignIn"));
+const SignUp = lazy(() => import("@/pages/auth/SignUp"));
 const NewSignUp = lazy(() => import("@/pages/auth/NewSignUp"));
 const SignupFastFomo = lazy(() => import("@/pages/SignupFastFomo"));
 const AuthPage = lazy(() => import("@/pages/auth/AuthPage"));
@@ -114,7 +115,7 @@ function App() {
                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signup-fast-fomo" element={<Suspense fallback={<SimpleLoadingFallback />}><SignupFastFomo /></Suspense>} />
                      <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
-                     <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
+                     <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
                      <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />
                      <Route path="/onboarding" element={
                        <ProtectedRoute>
