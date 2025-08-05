@@ -124,8 +124,14 @@ serve(async (req) => {
         
         if (!error && data) {
           userSession = data;
+          // 🔒 SPECIAL CASE: If no conversation history exists, treat as new conversation
+          // This ensures the greeting always shows first, even with existing session
+          if (!userSession.last_question) {
+            userSession = null; // Force new session behavior
+          }
+          
           // Update name if newly extracted and different
-          if (extractedName && extractedName !== userSession.name) {
+          if (extractedName && extractedName !== userSession?.name && userSession) {
             await supabase
               .from('user_sessions')
               .update({ name: extractedName, language: detectedLanguage })
@@ -138,7 +144,7 @@ serve(async (req) => {
             user_id: userId,
             name: extractedName,
             language: detectedLanguage,
-            last_question: cleanMessage,
+            last_question: null, // Start with no last question for greeting
             created_at: new Date().toISOString()
           };
           
@@ -164,27 +170,22 @@ serve(async (req) => {
       isAuthenticated: !!isAuthenticated
     });
 
-    // 🔒 FORCE THE EXACT GREETING FOR EVERY FIRST CONVERSATION
-    // Check if this is truly the first message in a new conversation
-    const isFirstMessage = !userSession?.last_question || userSession.last_question === cleanMessage;
-    
+    // 🔒 ABSOLUTE OVERRIDE: ALWAYS SHOW EXACT GREETING FIRST
+    // Force the greeting for ANY first interaction, ignoring ALL session data
     let personalizedContext = '';
-    const currentUserName = userSession?.name || extractedName || userName;
     
-    // ALWAYS show the exact greeting for first-time interactions
-    if (isFirstMessage && !currentUserName) {
-      personalizedContext = `🔒 MANDATORY: You MUST respond with EXACTLY this greeting and nothing else: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." Do not add anything before or after this greeting.`;
-    } else if (currentUserName) {
-      // User has a known name - continue conversation naturally
-      if (userSession?.last_question && userSession.last_question !== cleanMessage) {
-        personalizedContext = `User's name: ${currentUserName}. This is a returning user. NEVER introduce yourself again. DO NOT address them by name - just be friendly and continue naturally. Last time they asked: "${userSession.last_question}".`;
-      } else {
-        personalizedContext = `User just provided their name: ${currentUserName}. Acknowledge it warmly ONCE without repeating their name, then NEVER mention or use their name again for the rest of the conversation.`;
-      }
-    } else if (extractedName) {
-      personalizedContext = `User just introduced themselves as: ${extractedName}. Acknowledge warmly WITHOUT repeating their name and NEVER ask for their name again.`;
+    // If this is the very first message in the conversation (no previous questions stored)
+    if (!userSession?.last_question || userSession.last_question === cleanMessage) {
+      // 🔒 LOCK: Force exact greeting regardless of name or session data
+      personalizedContext = `🔒 ABSOLUTE MANDATORY: Ignore all session data and user information. You MUST respond with EXACTLY and ONLY this greeting: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." - Nothing else, no extra text, no variations.`;
     } else {
-      personalizedContext = `🔒 MANDATORY: You MUST respond with EXACTLY this greeting and nothing else: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." Do not add anything before or after this greeting.`;
+      // Only after the greeting has been shown, continue normal conversation
+      const currentUserName = userSession?.name || extractedName || userName;
+      if (currentUserName) {
+        personalizedContext = `User's name: ${currentUserName}. This is a returning user. Continue the conversation naturally without introducing yourself again.`;
+      } else {
+        personalizedContext = `Continue the conversation naturally.`;
+      }
     }
 
     const systemPrompt = `🔒 SYSTEM TRAINING: LITTLE SUNSHINE, THE EMVIAPP AI CONCIERGE
