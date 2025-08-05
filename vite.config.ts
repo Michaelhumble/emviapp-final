@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => ({
           ],
           // Job system
           'jobs': [
-            '@/components/jobs/JobCard',
+            '@/components/jobs/JobListingCard',
             '@/components/jobs/JobFilters',
             '@/components/jobs/JobLoadingState',
             '@/data/protected/vietnameseJobs'
