@@ -82,57 +82,38 @@ const ImageParallaxLayer = ({
     <motion.div 
       key={index}
       className="absolute inset-0 w-full h-full"
-      initial={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
+      initial={{ opacity: 0 }}
       animate={{ 
         opacity: isActive ? 1 : 0,
-        scale: isActive ? 1 : 1.1,
-        filter: isActive ? "blur(0px)" : "blur(20px)"
+        scale: isActive ? 1 : 1.02
       }}
       transition={{ 
-        duration: 1.2,
-        ease: [0.4, 0, 0.2, 1]
+        duration: 0.8,
+        ease: "easeInOut"
       }}
       style={{ zIndex: isActive ? 2 : 1 }}
     >
-      {/* High-performance image with advanced styling */}
-      <div className="fixed-image-container absolute inset-0 overflow-hidden">
-        <motion.img
+      {/* Simplified high-performance image */}
+      <div className="absolute inset-0 overflow-hidden">
+        <img
           src={image.url}
           alt={image.alt}
-          className="w-screen h-screen object-cover"
+          className="w-full h-full object-cover"
           loading={index === 0 ? "eager" : "lazy"}
-          decoding="async"
-          fetchPriority={index === 0 ? "high" : "low"}
           style={{ 
-            objectPosition: isMobile ? "center center" : "center", 
-            width: "100vw",
-            height: "100dvh",
-            minHeight: "100svh",
-            maxWidth: "100vw",
-            maxHeight: "100dvh",
+            width: "100%",
+            height: "100%",
+            objectPosition: "center",
+            filter: 'brightness(0.65) contrast(1.1)',
             position: "absolute",
-            left: 0,
             top: 0,
-            right: 0,
-            bottom: 0,
-            filter: 'brightness(0.7) contrast(1.1) saturate(1.2)',
-            imageRendering: 'crisp-edges'
+            left: 0
           }}
-          animate={isActive ? { 
-            scale: [1, 1.05, 1],
-          } : {}}
-          transition={isActive ? { 
-            duration: 20, 
-            repeat: Infinity,
-            ease: "easeInOut"
-          } : {}}
         />
         
-        {/* Premium overlay effects */}
-        <PremiumImageOverlay isActive={isActive} />
-        
-        {/* Vignette effect */}
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/40" />
+        {/* Premium gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       </div>
     </motion.div>
   );
@@ -141,46 +122,44 @@ const ImageParallaxLayer = ({
 const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden">
-      {/* Background mesh gradient */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-orange-900/20" />
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 25% 25%, rgba(147,51,234,0.1) 0%, transparent 50%),
-              radial-gradient(circle at 75% 75%, rgba(219,39,119,0.1) 0%, transparent 50%)
-            `
-          }}
+      {/* Ensure images render properly */}
+      {images.map((image, index) => (
+        <ImageParallaxLayer
+          key={`image-${index}`}
+          image={image}
+          index={index}
+          activeIndex={activeIndex}
+          isMobile={isMobile}
         />
-      </div>
+      ))}
       
-      {/* Image layers with advanced effects */}
+      {/* Industry badge overlay */}
       <AnimatePresence mode="wait">
-        {images.map((image, index) => (
-          <ImageParallaxLayer
-            key={`${image.url}-${index}`}
-            image={image}
-            index={index}
-            activeIndex={activeIndex}
-            isMobile={isMobile}
-          />
-        ))}
+        {images[activeIndex]?.industry && (
+          <motion.div
+            key={`badge-${activeIndex}`}
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            transition={{ duration: 0.5 }}
+            className="absolute top-8 left-8 z-30"
+          >
+            <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/20">
+              <span className="text-2xl">
+                {images[activeIndex].industry === 'Makeup Artist' ? '💄' :
+                 images[activeIndex].industry === 'Nail Tech' ? '💅' :
+                 images[activeIndex].industry === 'Barber' ? '✂️' :
+                 images[activeIndex].industry === 'Hair Stylist' ? '💇‍♀️' :
+                 images[activeIndex].industry === 'Esthetician' ? '🧴' :
+                 images[activeIndex].industry === 'Massage Therapist' ? '💆‍♀️' :
+                 '✨'}
+              </span>
+              <span className="text-white font-bold text-lg">{images[activeIndex].industry}</span>
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
-      
-      {/* Animated border frame */}
-      <motion.div
-        className="absolute inset-4 border-2 border-white/10 rounded-3xl pointer-events-none z-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-      >
-        {/* Corner accents */}
-        <div className="absolute -top-1 -left-1 w-8 h-8 border-l-2 border-t-2 border-purple-400/60 rounded-tl-lg" />
-        <div className="absolute -top-1 -right-1 w-8 h-8 border-r-2 border-t-2 border-pink-400/60 rounded-tr-lg" />
-        <div className="absolute -bottom-1 -left-1 w-8 h-8 border-l-2 border-b-2 border-blue-400/60 rounded-bl-lg" />
-        <div className="absolute -bottom-1 -right-1 w-8 h-8 border-r-2 border-b-2 border-orange-400/60 rounded-br-lg" />
-      </motion.div>
     </div>
   );
 };
