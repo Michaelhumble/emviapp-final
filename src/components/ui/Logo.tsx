@@ -24,8 +24,8 @@ const Logo: React.FC<LogoProps> = ({
     large: "h-20 w-auto"
   };
 
-  // The direct Supabase storage URL for the EmviApp logo
-  const logoUrl = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png";
+  // Your new official EmviApp logo
+  const logoUrl = "/lovable-uploads/560454ad-67be-4d6b-84d4-5205627a59c3.png";
   
   // Clear any cached errors on component mount or URL change
   useEffect(() => {
