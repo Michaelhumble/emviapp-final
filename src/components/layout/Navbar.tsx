@@ -55,14 +55,14 @@ const Navbar = () => {
                 </svg>
               </button>
               <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <a href="http://emviapp-final.lovable.app/jobs" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                <Link to="/jobs" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                   <Briefcase className="w-4 h-4 mr-3" />
                   Jobs
-                </a>
-                <a href="http://emviapp-final.lovable.app/artists" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                </Link>
+                <Link to="/artists" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                   <User className="w-4 h-4 mr-3" />
                   Artists
-                </a>
+                </Link>
                 <Link to="/salons" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                   <Building2 className="w-4 h-4 mr-3" />
                   Salons
@@ -104,14 +104,14 @@ const Navbar = () => {
                   <ChevronDown className="w-4 h-4 ml-1" />
                 </Button>
                 <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <a href="http://emviapp-final.lovable.app/post-job" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                  <Link to="/post-job" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                     <Briefcase className="w-4 h-4 mr-3" />
                     Post a Job
-                  </a>
-                  <a href="http://emviapp-final.lovable.app/sell-salon" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                  </Link>
+                  <Link to="/sell-salon" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                     <Building2 className="w-4 h-4 mr-3" />
                     Post Your Salon
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -122,12 +122,12 @@ const Navbar = () => {
             {/* Dashboard Link for Signed In Users */}
             {isSignedIn && (
               <div className="hidden md:flex">
-                <a 
-                  href="http://emviapp-final.lovable.app/dashboard/customer" 
+                <Link 
+                  to="/dashboard" 
                   className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
                 >
                   Dashboard
-                </a>
+                </Link>
               </div>
             )}
 

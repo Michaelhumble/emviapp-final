@@ -82,14 +82,16 @@ const FinalFounderCTA = () => {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
-                    <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold px-12 py-6 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group">
-                      <span className="flex items-center">
-                        <span className="mr-3">🚀 Get Started Free</span>
-                        <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-                      </span>
-                    </div>
-                  </a>
+                  <Button asChild>
+                    <Link to="/auth/signup">
+                      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold px-12 py-6 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                        <span className="flex items-center">
+                          <span className="mr-3">🚀 Get Started Free</span>
+                          <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
+                        </span>
+                      </div>
+                    </Link>
+                  </Button>
                 </motion.div>
 
                 <motion.div

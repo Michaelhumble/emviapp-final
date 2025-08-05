@@ -168,9 +168,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 size="sm"
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
               >
-                <a href="http://emviapp-final.lovable.app/post-job" onClick={onClose}>
+                <Link to="/post-job" onClick={onClose}>
                   Post a Job
-                </a>
+                </Link>
               </Button>
               
               <Button
@@ -179,9 +179,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 variant="outline"
                 className="w-full border-gray-200 hover:bg-gray-50"
               >
-                <a href="http://emviapp-final.lovable.app/sell-salon" onClick={onClose}>
+                <Link to="/sell-salon" onClick={onClose}>
                   Post Your Salon
-                </a>
+                </Link>
               </Button>
             </div>
 
@@ -196,13 +196,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               ) : uiState.isAuthenticated ? (
                 // ✅ AUTHENTICATED STATE: Show dashboard link and sign out
                 <div className="space-y-2">
-                  <a 
-                    href="http://emviapp-final.lovable.app/dashboard/customer" 
+                   <Link 
+                    to="/dashboard" 
                     onClick={onClose}
                     className="block w-full text-center text-sm text-purple-600 hover:text-purple-700 font-medium py-1"
                   >
                     View Dashboard →
-                  </a>
+                  </Link>
                   <Button
                     onClick={() => handleAuthAction('signOut')}
                     variant="outline"
