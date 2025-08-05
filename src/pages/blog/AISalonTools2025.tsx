@@ -239,7 +239,7 @@ const AISalonTools2025 = () => {
                 <Button 
                   variant="outline" 
                   className="border-white text-white hover:bg-white hover:text-purple-600 px-8 py-3 text-lg font-semibold"
-                  onClick={() => window.open('/app', '_blank')}
+                  onClick={() => window.open('/auth', '_blank')}
                 >
                   Download App
                 </Button>
@@ -285,7 +285,7 @@ const AISalonTools2025 = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
-                  onClick={() => window.open('/dashboard', '_blank')}
+                  onClick={() => window.open('/auth', '_blank')}
                 >
                   Explore AI Dashboard
                 </Button>

@@ -79,6 +79,7 @@ const MakeupPage = lazy(() => import("@/pages/makeup"));
 const BrowsLashesPage = lazy(() => import("@/pages/brows-lashes"));
 const TattooPage = lazy(() => import("@/pages/tattoo"));
 const BookingServices = lazy(() => import("@/pages/BookingServices"));
+const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 
 function App() {
   const location = useLocation();
@@ -112,6 +113,7 @@ function App() {
                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signup-fast-fomo" element={<Suspense fallback={<SimpleLoadingFallback />}><SignupFastFomo /></Suspense>} />
                      <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
+                     <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
                      <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />
                      <Route path="/onboarding" element={
                        <ProtectedRoute>
@@ -161,12 +163,13 @@ function App() {
                     <Route path="/brows-lashes" element={<Layout><BrowsLashesPage /></Layout>} />
                     <Route path="/tattoo" element={<Layout><TattooPage /></Layout>} />
                     
-                    <Route path="/about" element={<Layout><About /></Layout>} />
-                    <Route path="/contact" element={<Layout><Contact /></Layout>} />
-                    <Route path="/terms" element={<Layout><Terms /></Layout>} />
-                    <Route path="/refund" element={<Layout><Refund /></Layout>} />
-                    <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-                    <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                     <Route path="/about" element={<Layout><About /></Layout>} />
+                     <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                     <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
+                     <Route path="/terms" element={<Layout><Terms /></Layout>} />
+                     <Route path="/refund" element={<Layout><Refund /></Layout>} />
+                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
                      {/* Homepage route - critical performance optimization */}
                      <Route path="/" element={<LazyIndex />} />
