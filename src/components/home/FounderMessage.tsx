@@ -282,12 +282,10 @@ Chúng ta cùng nhau thay đổi ngành làm đẹp, bắt đầu từ sự yêu
                   </p>
                   
                   <div className="flex items-center justify-center gap-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-rose-100 to-purple-100 rounded-full flex items-center justify-center overflow-hidden">
-                      <img 
-                        src="/lovable-uploads/560454ad-67be-4d6b-84d4-5205627a59c3.png"
-                        alt="EmviApp Official Logo"
-                        className="w-12 h-12 object-contain"
-                      />
+                    <div className="w-16 h-16 bg-gradient-to-br from-rose-100 to-purple-100 rounded-full flex items-center justify-center">
+                      <span className="text-2xl font-display font-bold text-rose-600">
+                        EM
+                      </span>
                     </div>
                     <div>
                       <p className="text-xl font-display font-bold text-slate-900">
