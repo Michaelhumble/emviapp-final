@@ -81,8 +81,8 @@ export default defineConfig(({ mode }) => ({
           ],
           // Form components
           'forms': [
-            '@/components/forms/JobForm',
-            '@/components/forms/SalonForm',
+            '@/components/jobs/FreeJobPostingForm',
+            '@/components/jobs/PaidJobTestForm', 
             'react-hook-form',
             'zod'
           ]
