@@ -159,7 +159,7 @@ Remember: Every conversation should feel like talking to the best business advis
           { role: 'user', content: cleanMessage }
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 2000,
         presence_penalty: 0.1,
         frequency_penalty: 0.1
       }),
