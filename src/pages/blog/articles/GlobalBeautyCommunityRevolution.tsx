@@ -97,7 +97,7 @@ const GlobalBeautyCommunityRevolution = () => {
         </div>
 
         <div className="text-center my-12">
-          <Link to="/signup">
+          <Link to="/auth/signup">
             <Button size="lg" className="text-lg px-8 py-6">
               Join 2.4M+ Beauty Professionals Worldwide
             </Button>
@@ -217,7 +217,7 @@ const GlobalBeautyCommunityRevolution = () => {
               Explore Salon Opportunities
             </Button>
           </Link>
-          <Link to="/jobs">
+          <Link to="/booking-services">
             <Button size="lg" className="text-lg px-8 py-6">
               Find Your Dream Job
             </Button>
@@ -679,12 +679,12 @@ const GlobalBeautyCommunityRevolution = () => {
             Join 2.4 million beauty professionals who've already discovered the power of AI-driven career advancement and global community connection.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
+            <Link to="/auth/signup">
               <Button size="lg" variant="secondary" className="text-lg px-8 py-6 bg-white text-primary hover:bg-white/90">
                 Start Your Journey Free
               </Button>
             </Link>
-            <Link to="/jobs">
+            <Link to="/booking-services">
               <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-white text-white hover:bg-white/10">
                 Explore Opportunities
               </Button>
