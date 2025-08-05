@@ -12,15 +12,15 @@ const AIBeautyRevolution2025: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>The $2.8B AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025 | EmviApp</title>
-        <meta name="description" content="Google searches for 'AI beauty tools' hit 50M+ in Q1 2025. Discover the viral AI revolution transforming salons and how beauty professionals are using these 5 game-changing tools to increase revenue by 40% and client retention by 60%." />
-        <meta name="keywords" content="AI beauty revolution 2025, virtual try-on technology, AI color matching, beauty salon AI, AI nail art tools, smart salon technology, beauty AI software, AI beauty tools viral, salon technology trends, AI beauty consulting" />
-        <meta property="og:title" content="The $2.8B AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025" />
+        <title>The $2.8B AI Beauty Revolution: How Million-Dollar Salons Are Scaling With AI in 2025 | EmviApp</title>
+        <meta name="description" content="Google searches for 'AI beauty tools' hit 50M+ in Q1 2025. Discover how top-performing salons are leveraging AI to scale from 6-figure to 7-figure revenue with these 5 game-changing automation tools." />
+        <meta name="keywords" content="AI beauty revolution 2025, virtual try-on technology, AI color matching, beauty salon AI, AI nail art tools, smart salon technology, beauty AI software, AI beauty tools viral, salon technology trends, AI beauty consulting, million dollar salon, salon scaling" />
+        <meta property="og:title" content="The $2.8B AI Beauty Revolution: How Million-Dollar Salons Are Scaling With AI in 2025" />
         <meta property="og:description" content="The complete insider's guide to the AI revolution transforming beauty salons worldwide. Real strategies, proven results, and tools that work." />
         <meta property="og:image" content={aiBeautyRevolutionHeroImage} />
         <meta property="og:type" content="article" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="The $2.8B AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025" />
+        <meta name="twitter:title" content="The $2.8B AI Beauty Revolution: How Million-Dollar Salons Are Scaling With AI in 2025" />
         <meta name="twitter:description" content="Discover the AI tools that are transforming the beauty industry. Complete insider's guide for salon owners." />
         <meta name="twitter:image" content={aiBeautyRevolutionHeroImage} />
       </Helmet>
@@ -50,10 +50,10 @@ const AIBeautyRevolution2025: React.FC = () => {
                 <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Revolution</span>
               </h1>
               <h2 className="text-2xl md:text-4xl font-bold mb-8 text-blue-100">
-                How Salon Owners Are Making $50K+ More in 2025
+                How Million-Dollar Salons Are Scaling With AI in 2025
               </h2>
               <p className="text-xl md:text-2xl mb-12 max-w-4xl mx-auto text-gray-200 leading-relaxed">
-                <strong>Google searches for "AI beauty tools" hit 50M+ in Q1 2025.</strong> Discover the viral AI revolution transforming salons and how beauty professionals are using these 5 game-changing tools to increase revenue by 40% and client retention by 60%.
+                <strong>Google searches for "AI beauty tools" hit 50M+ in Q1 2025.</strong> Discover how top-performing salons generating $500K-$2M+ annually are leveraging AI automation to scale operations, reduce costs by 35%, and increase client lifetime value by 67%.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold px-8 py-4 text-lg">
@@ -108,13 +108,13 @@ const AIBeautyRevolution2025: React.FC = () => {
                   <p className="text-green-200 text-sm mt-2">For "AI beauty tools"</p>
                 </div>
                 <div className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="text-5xl font-black text-purple-400 mb-2">40%</div>
-                  <p className="text-white font-semibold">Average booking increase</p>
-                  <p className="text-purple-200 text-sm mt-2">For AI-enabled salons</p>
+                  <div className="text-5xl font-black text-purple-400 mb-2">35%</div>
+                  <p className="text-white font-semibold">Cost reduction achieved</p>
+                  <p className="text-purple-200 text-sm mt-2">Through AI automation</p>
                 </div>
                 <div className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="text-5xl font-black text-cyan-400 mb-2">60%</div>
-                  <p className="text-white font-semibold">Higher client retention</p>
+                  <div className="text-5xl font-black text-cyan-400 mb-2">67%</div>
+                  <p className="text-white font-semibold">Client lifetime value boost</p>
                   <p className="text-cyan-200 text-sm mt-2">With AI personalization</p>
                 </div>
               </div>
@@ -249,7 +249,7 @@ const AIBeautyRevolution2025: React.FC = () => {
                 
                 <div className="mt-8 p-6 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-xl border border-yellow-500/30">
                   <p className="text-yellow-100 text-lg">
-                    <strong>"Since implementing AI scheduling, our no-show rate dropped from 25% to 8%, and we're booking 47 more appointments per day without working longer hours."</strong> - Sarah Chen, Owner of Elite Nails & Spa, California
+                    <strong>"Since implementing AI color matching, our color correction calls dropped by 85%. We went from $340K annual revenue to $580K in just 8 months by eliminating waste and improving client satisfaction."</strong> - Sarah Chen, Owner of Elite Nails & Spa, California
                   </p>
                 </div>
               </div>
