@@ -1,15 +1,17 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import Layout from "@/components/layout/Layout";
-import Hero from "@/components/home/Hero";
 import { useAuth } from "@/context/auth";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 
-// Critical above-the-fold components (loaded immediately)
-import JobsCallToAction from "@/components/home/JobsCallToAction";
+// Modern redesigned components (critical above-the-fold)
+import ModernHero from "@/components/home/modern/ModernHero";
+import WhyBeautyProsLoveUs from "@/components/home/modern/WhyBeautyProsLoveUs";
+import ModernServiceFeatures from "@/components/home/modern/ModernServiceFeatures";
+import BlogInsightsSection from "@/components/home/modern/BlogInsightsSection";
 
-// Lazy load everything below the fold
+// Lazy load remaining sections below the fold
 const ClientSuccessStories = lazy(() => import("@/components/home/ClientSuccessStories"));
 const OptimizedIndustryListings = lazy(() => import("@/components/home/OptimizedIndustryListings"));
 const AIMatchmakerSection = lazy(() => import("@/components/home/ai-matchmaker"));
@@ -37,20 +39,28 @@ const LoadingSpinner = () => (
 
 const LazyIndex = () => {
   const { user, loading } = useAuth();
+  const [isVietnamese, setIsVietnamese] = useState(false);
   
   const { 
     isRoleModalOpen, 
     setIsRoleModalOpen, 
     userId
   } = useRoleSelection();
+
+  const toggleLanguage = () => {
+    setIsVietnamese(!isVietnamese);
+  };
   
   return (
     <Layout>
-      {/* CRITICAL: Above-the-fold content loads immediately */}
-      <Hero />
+      {/* Modern hero section with blog-inspired design */}
+      <ModernHero isVietnamese={isVietnamese} toggleLanguage={toggleLanguage} />
       
-      {/* Critical CTA */}
-      <JobsCallToAction />
+      {/* Why Beauty Pros Love EmviApp - Key stats section */}
+      <WhyBeautyProsLoveUs isVietnamese={isVietnamese} />
+      
+      {/* Modern service features with real images */}
+      <ModernServiceFeatures isVietnamese={isVietnamese} />
       
       {/* LAZY: Everything below the fold */}
       <FallbackBoundary errorMessage="Unable to load stats. Please refresh the page.">
@@ -58,15 +68,6 @@ const LazyIndex = () => {
           <LiveStatsBar />
         </Suspense>
       </FallbackBoundary>
-
-      {/* Social Media Proof - Simple, no lazy loading needed */}
-      <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
-        <div className="container mx-auto px-4 text-center">
-          <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
-            Thousands of beauty professionals are growing with EmviApp every day.
-          </h3>
-        </div>
-      </section>
       
       <FallbackBoundary errorMessage="Unable to load activity feed.">
         <Suspense fallback={<LoadingSpinner />}>
@@ -133,6 +134,9 @@ const LazyIndex = () => {
           <EmviQASection />
         </Suspense>
       </FallbackBoundary>
+      
+      {/* Blog insights section with latest articles */}
+      <BlogInsightsSection isVietnamese={isVietnamese} />
       
       <FallbackBoundary errorMessage="Unable to load footer CTA.">
         <Suspense fallback={<LoadingSpinner />}>
