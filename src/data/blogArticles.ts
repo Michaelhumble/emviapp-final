@@ -19,7 +19,7 @@ import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg';
 import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
-import beautyHeroesCommunityImage from '@/assets/blog/beauty-heroes-community.jpg';
+import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -72,7 +72,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'EmviApp Vision',
     categorySlug: 'emviapp-vision',
     tags: ['beauty revolution', 'artist empowerment', 'community building', 'EmviApp mission', 'beauty industry transformation', 'Vietnamese beauty artists', 'nail artist recognition', 'salon success stories'],
-    image: beautyHeroesCommunityImage,
+    image: beautyTechRevolutionHeroImage,
     featured: true,
     trending: true,
     component: TheBeautyRevolutionArticle,

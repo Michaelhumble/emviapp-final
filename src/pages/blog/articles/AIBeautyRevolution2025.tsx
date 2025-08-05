@@ -87,7 +87,7 @@ const AIBeautyRevolution2025: React.FC = () => {
 
           {/* Vietnamese Market Insights */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-12">
-            <h2 className="text-2xl font-bold text-yellow-900 mb-4">🇻🇳 AI trong Cộng Đồng Nail Việt Nam</h2>
+            <h2 className="text-2xl font-bold text-yellow-900 mb-4">🌸 AI trong Cộng Đồng Nail Việt Nam</h2>
             <p className="text-yellow-800 mb-4">
               Khảo sát 300+ tiệm nail của người Việt cho thấy tác động mạnh mẽ của AI:
             </p>

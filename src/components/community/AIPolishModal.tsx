@@ -24,7 +24,7 @@ const styles = [
 
 const languages = [
   { id: 'english', label: 'English', flag: '🇺🇸' },
-  { id: 'vietnamese', label: 'Tiếng Việt', flag: '🇻🇳' },
+  { id: 'vietnamese', label: 'Tiếng Việt', flag: '🌸' },
 ];
 
 const AIPolishModal = ({ isOpen, onClose, content, postType, onApply }: AIPolishModalProps) => {

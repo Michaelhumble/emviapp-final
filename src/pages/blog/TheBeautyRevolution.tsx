@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Users, Sparkles, Globe, Trophy, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import heroImage from '@/assets/blog/beauty-heroes-community.jpg';
+import heroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 
 const TheBeautyRevolution = () => {
   return (
@@ -256,7 +256,7 @@ const TheBeautyRevolution = () => {
 
           {/* Vietnamese Section */}
           <div className="bg-gradient-to-r from-yellow-50 to-red-50 p-8 rounded-2xl mb-12 border border-yellow-300">
-            <h2 className="text-2xl font-bold text-red-700 mb-6">🇻🇳 Thông Điệp Đến Cộng Đồng Việt Nam</h2>
+            <h2 className="text-2xl font-bold text-red-700 mb-6">💫 Thông Điệp Đến Cộng Đồng Việt Nam</h2>
             <p className="text-lg text-gray-800 mb-4">
               <strong>Chúng tôi hiểu rằng</strong> các bạn đã xây dựng ngành nail từ con số không. Từ những đôi tay khéo léo và trái tim kiên nhẫn, các bạn đã tạo ra cả một ngành công nghiệp.
             </p>
