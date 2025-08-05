@@ -19,6 +19,7 @@ import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import aiBeautyRevolutionHeroImage from '@/assets/blog/ai-beauty-revolution-hero-premium.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
+import globalBeautyCommunityHeroImage from '@/assets/blog/global-beauty-community-hero.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -57,9 +58,27 @@ const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGui
 const AIBeautyRevolution2025 = lazy(() => import('@/pages/blog/articles/AIBeautyRevolution2025'));
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
+const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'global-beauty-community-revolution',
+    slug: 'global-beauty-community-revolution',
+    title: 'The Global Beauty Revolution: How AI-Powered Communities Are Transforming Every Artist\'s Career in 2025',
+    description: 'From Vietnamese nail technicians to New York barbers, discover how 2.4 million beauty professionals worldwide are building careers, finding opportunities, and creating lasting connections through AI-powered community platforms.',
+    author: 'EmviApp Editorial Team',
+    publishedAt: '2025-01-08',
+    readTime: '22 min read',
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['beauty industry', 'career growth', 'AI technology', 'global community', 'professional development', 'Vietnamese beauty professionals', 'beauty careers', 'AI-powered platforms', 'global networking', 'beauty entrepreneurship'],
+    image: globalBeautyCommunityHeroImage,
+    featured: true,
+    trending: true,
+    component: GlobalBeautyCommunityRevolution,
+    url: '/blog/industry-insights/global-beauty-community-revolution'
+  },
   {
     id: 'the-beauty-revolution-manifesto',
     slug: 'the-beauty-revolution-manifesto',

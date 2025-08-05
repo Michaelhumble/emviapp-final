@@ -21,9 +21,8 @@ const GlobalBeautyCommunityRevolution = () => {
   return (
     <BlogArticleLayout
       article={article}
-      slug="global-beauty-community-revolution"
-      categorySlug="industry-insights"
-      url="/blog/industry-insights/global-beauty-community-revolution"
+      articleSlug="global-beauty-community-revolution"
+      articleUrl="/blog/industry-insights/global-beauty-community-revolution"
     >
       <div className="prose prose-lg max-w-none">
         {/* Opening Story - Universal Beauty Experience */}
