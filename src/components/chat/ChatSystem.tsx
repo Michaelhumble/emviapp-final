@@ -264,8 +264,8 @@ export const ChatSystem = () => {
         : `Hi there! 😊`;
     }
     
-    // For new users without a name, use EXACT greeting as specified
-    return "Hi, my name is Sunshine! What's your name? Em biết nói tiếng Việt 🌸";
+    // For new users without a name, ask EXACTLY as user requested
+    return "Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸";
   };
 
   const clearChat = () => {

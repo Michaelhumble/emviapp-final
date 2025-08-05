@@ -19,9 +19,6 @@ import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg';
 import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
-import beautyArtistsImage from '@/assets/beauty-artists-hands-at-work.jpg';
-import diverseBeautyProfessionalsImage from '@/assets/diverse-beauty-professionals-at-work.jpg';
-import healingPowerImage from '@/assets/healing-power-beauty-artists.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -59,62 +56,9 @@ const SalonStaffingSolution2025 = lazy(() => import('@/pages/blog/articles/Salon
 const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGuide2025'));
 const AIBeautyRevolution2025 = lazy(() => import('@/data/blogArticles/ai-beauty-revolution-2025'));
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
-const TheInvisibleArtistsWhoMakeUsBeautiful = lazy(() => import('@/pages/blog/articles/TheInvisibleArtistsWhoMakeUsBeautiful'));
-const CelebratingEveryBeautyProfessional = lazy(() => import('@/pages/blog/articles/CelebratingEveryBeautyProfessional'));
-const HealingPowerOfBeautyArtists = lazy(() => import('@/pages/blog/articles/HealingPowerOfBeautyArtists'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  {
-    id: 'healing-power-beauty-artists',
-    title: 'More Than Beauty: How Hair Stylists, Makeup Artists, and Beauty Professionals Heal Hearts and Transform Lives',
-    slug: 'healing-power-beauty-artists',
-    description: 'Discover the profound healing power of beauty professionals who do more than create beautiful looks—they restore confidence, support mental health, and transform lives during our most vulnerable moments.',
-    author: 'The EmviApp Team—for Every Artist, Everywhere',
-    publishedAt: '2025-01-16',
-    category: 'Community Stories',
-    categorySlug: 'community-stories',
-    tags: ['Healing Power of Beauty', 'Beauty Industry Mental Health', 'Hair Stylists Matter', 'Client Transformation Stories', 'Beauty Jobs With Purpose'],
-    readTime: '9 min read',
-    image: healingPowerImage,
-    url: '/blog/community-stories/healing-power-beauty-artists',
-    component: HealingPowerOfBeautyArtists,
-    featured: true,
-    trending: true
-  },
-  {
-    id: 'celebrating-every-beauty-professional',
-    title: 'Behind Every Beautiful Moment: Celebrating All Beauty Professionals Who Make Us Feel Our Best',
-    slug: 'celebrating-every-beauty-professional',
-    description: 'From hair stylists to massage therapists, discover the untold stories of beauty professionals who dedicate their lives to making others feel confident and beautiful. Why beauty jobs matter more than ever in 2025.',
-    author: 'The EmviApp Team—for Every Artist, Everywhere',
-    publishedAt: '2025-01-15',
-    category: 'Community Stories',
-    categorySlug: 'community-stories',
-    tags: ['Beauty Professionals', 'Artist Appreciation', 'Community Stories', 'Beauty Industry', 'Support Local Artists'],
-    readTime: '8 min read',
-    image: diverseBeautyProfessionalsImage,
-    url: '/blog/community-stories/celebrating-every-beauty-professional',
-    component: CelebratingEveryBeautyProfessional,
-    featured: true
-  },
-  {
-    id: 'invisible-artists-who-make-us-beautiful',
-    slug: 'invisible-artists-who-make-us-beautiful',
-    title: 'The Invisible Artists Who Make Us Beautiful: A Love Letter to Beauty Workers Everywhere',
-    description: 'Behind every confident stride, every special moment, every "you look amazing" compliment, there are hands that made it possible. This is their story—the beauty artists, nail techs, and salon workers who lift us daily but rarely get the recognition they deserve.',
-    author: 'By The EmviApp Team—for Every Artist, Everywhere',
-    publishedAt: '2025-01-05',
-    readTime: '8 min read',
-    category: 'Community Stories',
-    categorySlug: 'community-stories',
-    tags: ['beauty artist appreciation', 'nail tech stories', 'salon worker recognition', 'beauty industry workers', 'support local salons', 'freelance beauty professionals', 'beauty community', 'why we value beauty workers', 'invisible artists', 'beauty artist respect'],
-    image: beautyArtistsImage,
-    featured: true,
-    trending: true,
-    component: TheInvisibleArtistsWhoMakeUsBeautiful,
-    url: '/blog/community-stories/invisible-artists-who-make-us-beautiful'
-  },
   {
     id: 'ai-beauty-revolution-2025-new',
     slug: 'ai-beauty-revolution-2025-new',
