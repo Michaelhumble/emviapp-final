@@ -264,7 +264,7 @@ const EmviQASection = () => {
               EmviApp isn't just another app—it's a mission, a movement, and a community. If you're ready to grow, share, and succeed together, join us and let's make the beauty industry better for everyone!
             </p>
             
-            <Link to="/auth/signup">
+            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
               <Button 
                 size="lg" 
                 className="text-lg px-12 py-6 rounded-2xl font-inter font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
@@ -276,7 +276,7 @@ const EmviQASection = () => {
                 Join Now – Experience the Difference
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
+            </a>
           </div>
         </motion.div>
       </div>

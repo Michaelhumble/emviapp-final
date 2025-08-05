@@ -187,14 +187,14 @@ const AIPowerhouse = () => {
             ))}
           </div>
 
-          <Link to="/auth/signup">
+          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
             <Button 
               size="lg" 
               className="font-inter font-medium px-8 py-6 text-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
             >
               Join EmviApp Today
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>

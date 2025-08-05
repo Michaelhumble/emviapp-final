@@ -111,7 +111,7 @@ const BeautyExchangeSection = () => {
                 </p>
                 
                 <div className="text-center mt-auto">
-                  <Link to="/auth/signup">
+                  <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -119,7 +119,7 @@ const BeautyExchangeSection = () => {
                     >
                       Join Today <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
               
@@ -161,7 +161,7 @@ const BeautyExchangeSection = () => {
                 </p>
                 
                 <div className="text-center mt-auto">
-                  <Link to="/auth/signup">
+                  <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -169,7 +169,7 @@ const BeautyExchangeSection = () => {
                     >
                       Get Started <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
               
@@ -211,7 +211,7 @@ const BeautyExchangeSection = () => {
                 </p>
                 
                 <div className="text-center mt-auto">
-                  <Link to="/auth/signup">
+                  <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -219,7 +219,7 @@ const BeautyExchangeSection = () => {
                     >
                       Find Services <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
               

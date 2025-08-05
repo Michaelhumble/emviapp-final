@@ -22,11 +22,11 @@ const FinalFounderCTA = () => {
             Join thousands of artists, salon owners, and beauty enthusiasts who've found success with EmviApp.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/auth/signup">
+            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
               <Button size="lg" className="font-inter font-medium px-6">
                 Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
+            </a>
             <Link to="/salons">
               <Button size="lg" variant="outline" className="font-inter font-medium">
                 Explore Services

@@ -49,9 +49,9 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
-                <Link to="/auth/signup">
+                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                   Sign Up
-                </Link>
+                </a>
               </Button>
             </div>
           </CardContent>

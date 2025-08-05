@@ -72,7 +72,7 @@ const BilingualExperienceSection: React.FC = () => {
             className="pt-6"
           >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/sign-up">
+              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                 <Button 
                   size="lg" 
                   className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 group"
@@ -80,7 +80,7 @@ const BilingualExperienceSection: React.FC = () => {
                   {isVietnamese ? "Đăng Ký Ngay" : "Sign Up Now"}
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
-              </Link>
+              </a>
               <Button 
                 size="lg" 
                 variant="outline"

@@ -95,8 +95,8 @@ const SalonClientGrowthSystem = () => {
                   </motion.p>
                   
                   <motion.div variants={itemVariants}>
-                    <Link 
-                      to="/auth/signup" 
+                    <a 
+                      href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F" 
                       onClick={handleCtaClick}
                       className="block w-full"
                     >
@@ -104,7 +104,7 @@ const SalonClientGrowthSystem = () => {
                         Get Started Free
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
-                    </Link>
+                    </a>
                   </motion.div>
                 </motion.div>
               ) : (

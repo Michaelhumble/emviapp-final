@@ -23,11 +23,11 @@ const Customers = () => {
             <p className="text-lg text-gray-600 mb-10 font-sans leading-relaxed">
               Instantly discover salons, deals, and services you'll love — without the search.
             </p>
-            <Link to="/auth/signup">
+            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
               <Button size="lg" className="font-medium px-8 py-6 text-base">
                 Explore Nearby Offers
               </Button>
-            </Link>
+            </a>
           </div>
         </motion.div>
       </section>
@@ -275,11 +275,11 @@ const Customers = () => {
             <p className="text-lg text-gray-600 mb-8">
               Join thousands of beauty enthusiasts and enjoy exclusive deals, personalized recommendations, and more.
             </p>
-            <Link to="/auth/signup">
+            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
               <Button size="lg" className="font-medium px-8 py-6 text-base hover:scale-105 transition-transform">
                 Sign Up Now — It's Free
               </Button>
-            </Link>
+            </a>
           </motion.div>
         </div>
       </section>
