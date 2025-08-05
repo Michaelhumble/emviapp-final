@@ -19,10 +19,10 @@ export const WelcomeContent = ({ userRole, onContinue, onSkip }: WelcomeContentP
         className="w-full h-64 object-cover rounded-lg mb-8"
       />
       
-      <h2 className="text-2xl md:text-3xl font-serif font-semibold mb-4">
+      <h2 className="text-2xl md:text-3xl font-display font-semibold mb-4 text-slate-900">
         We've built EmviApp just for you
       </h2>
-      <p className="text-gray-600 mb-6">
+      <p className="text-slate-600 mb-6 font-primary">
         Our platform is designed to make your experience in the beauty industry more connected, 
         efficient, and rewarding. Let us show you how our AI-powered tools can help you succeed.
       </p>

@@ -29,8 +29,8 @@ const FeaturedSalons = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Beauty Salons</h2>
-          <p className="text-lg text-gray-600">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6 leading-tight tracking-tight">Featured Beauty Salons</h2>
+          <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-primary">
             Discover exceptional salons with opportunities for talented beauty professionals
           </p>
         </motion.div>
