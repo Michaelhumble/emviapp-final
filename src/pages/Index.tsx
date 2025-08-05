@@ -30,6 +30,9 @@ import JobsFooterCTA from "@/components/home/JobsFooterCTA";
 // Premium Industry Showcase - Optimized for performance
 import OptimizedIndustryListings from "@/components/home/OptimizedIndustryListings";
 
+// Quick Action Buttons for testing
+import QuickActionButtons from "@/components/home/QuickActionButtons";
+
 // Trust & Social Proof Components
 import LiveStatsBar from "@/components/home/trust/LiveStatsBar";
 import TrustBadges from "@/components/home/trust/TrustBadges";
@@ -107,6 +110,9 @@ const Index = () => {
       
       {/* 1.5. Jobs Call to Action - Above the fold */}
       <JobsCallToAction />
+      
+      {/* Quick Action Buttons for Testing */}
+      <QuickActionButtons />
       
       {/* 1.6 Real-time Activity Feed */}
       <section className="py-8 bg-white">

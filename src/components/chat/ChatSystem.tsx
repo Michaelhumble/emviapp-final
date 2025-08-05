@@ -436,7 +436,7 @@ export const ChatSystem = () => {
         message.includes('tạo tài khoản') || message.includes('join') ||
         response.includes('sign up') || response.includes('đăng ký')) {
       return {
-        destination: 'http://emviapp-final.lovable.app/auth/signup?redirect=%2F',
+        destination: '/auth/signup?redirect=%2F',
         title: language === 'vi' ? 'Tham gia cộng đồng làm đẹp' : 'Join Our Beauty Community',
         requiresAuth: false
       };
@@ -468,13 +468,13 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'post', 
           label: 'Đăng tin tuyển thợ tại đây', 
-          action: () => window.location.href = 'http://emviapp-final.lovable.app/post-job'
+          action: () => window.location.href = '/post-job'
         });
       } else {
         actions.push({ 
           id: 'post', 
           label: 'Post a Job Here', 
-          action: () => window.location.href = 'http://emviapp-final.lovable.app/post-job'
+          action: () => window.location.href = '/post-job'
         });
       }
     }
@@ -486,13 +486,13 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'sell', 
           label: 'Bán tiệm tại đây', 
-          action: () => window.location.href = 'http://emviapp-final.lovable.app/sell-salon'
+          action: () => window.location.href = '/sell-salon'
         });
       } else {
         actions.push({ 
           id: 'sell', 
           label: 'Sell a Salon Here', 
-          action: () => window.location.href = 'http://emviapp-final.lovable.app/sell-salon'
+          action: () => window.location.href = '/sell-salon'
         });
       }
     }
@@ -505,13 +505,13 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'signup', 
           label: 'Tham gia cộng đồng làm đẹp', 
-          action: () => window.location.href = 'http://emviapp-final.lovable.app/auth/signup?redirect=%2F'
+          action: () => window.location.href = '/auth/signup?redirect=%2F'
         });
       } else {
         actions.push({ 
           id: 'signup', 
           label: 'Join Our Beauty Community', 
-          action: () => window.location.href = 'http://emviapp-final.lovable.app/auth/signup?redirect=%2F'
+          action: () => window.location.href = '/auth/signup?redirect=%2F'
         });
       }
     }
