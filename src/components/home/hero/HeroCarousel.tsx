@@ -56,8 +56,8 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             scale: index === activeIndex ? 1 : 1.02
           }}
           transition={{ 
-            duration: 0.8,
-            ease: [0.4, 0, 0.2, 1]
+            duration: 1.2,
+            ease: [0.25, 0.46, 0.45, 0.94]
           }}
           style={{ zIndex: index === activeIndex ? 2 : 1 }}
         >
@@ -83,7 +83,9 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                 right: 0,
                 bottom: 0,
                 filter: 'brightness(0.75)',
-                imageRendering: 'crisp-edges'
+                imageRendering: 'auto',
+                transform: 'translate3d(0,0,0)',
+                backfaceVisibility: 'hidden'
               }}
             />
             
