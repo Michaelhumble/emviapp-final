@@ -133,7 +133,7 @@ const NailListingsSection: React.FC = () => {
                           {nailJobListings[index]?.location || "📍Location information"}
                         </p>
                         <p className="text-xs text-gray-500">
-                          🔒 Sign in to view contact info
+                          {user ? "📞 Contact info available" : "🔒 Sign in to view contact info"}
                         </p>
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
                           <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full">
@@ -141,7 +141,7 @@ const NailListingsSection: React.FC = () => {
                           </Badge>
                           <div className="flex flex-col gap-1 ml-auto">
                             <Button 
-                              onClick={() => navigate("/booking-services")} 
+                              onClick={() => navigate("/jobs")} 
                               size="sm" 
                               variant="outline"
                               className="text-xs"
@@ -163,7 +163,7 @@ const NailListingsSection: React.FC = () => {
                 }
                 authenticatedContent={
                   <ValidatedLink 
-                    to="/booking-services" 
+                    to="/jobs" 
                     listingId="nails-general"
                     listingType="page"
                     className="no-underline block h-full"
@@ -199,7 +199,7 @@ const NailListingsSection: React.FC = () => {
                             {nailJobListings[index]?.location || "📍Location information"}
                           </p>
                           <p className="text-xs text-gray-500">
-                            🔒 Sign in to view contact info
+                            {user ? "📞 Contact info available" : "🔒 Sign in to view contact info"}
                           </p>
                           <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
                             <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full">
@@ -207,6 +207,7 @@ const NailListingsSection: React.FC = () => {
                             </Badge>
                             <div className="flex flex-col gap-1 ml-auto">
                               <Button 
+                                onClick={() => navigate("/jobs")}
                                 size="sm" 
                                 variant="outline"
                                 className="text-xs"
