@@ -117,7 +117,7 @@ const TopDiamondFeaturedSection = ({
               </p>
               <Button 
                 className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
-                onClick={() => window.location.href = '/post-job'}
+                onClick={() => window.location.href = 'http://emviapp-final.lovable.app/post-job'}
               >
                 Apply for Diamond
               </Button>

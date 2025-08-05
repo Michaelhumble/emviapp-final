@@ -85,7 +85,7 @@ const DiamondFOMOCard: React.FC<DiamondFOMOCardProps> = ({ industryName }) => {
           </div>
 
           <Button 
-            onClick={() => window.location.href = '/post-job?tier=diamond'}
+            onClick={() => window.location.href = 'http://emviapp-final.lovable.app/post-job?tier=diamond'}
             className="w-full font-inter font-bold text-white transition-all duration-300 hover:scale-105" 
             style={{ backgroundColor: '#2176FF' }}
           >

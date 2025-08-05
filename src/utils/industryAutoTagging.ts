@@ -168,7 +168,6 @@ export const enhanceJobWithIndustryTag = (jobData: JobDetailsSubmission): JobDet
     ...jobData,
     category: autoDetectedIndustry,
     // Add industry-specific enhancements
-    post_type: 'job',
-    industry: autoDetectedIndustry
+    post_type: 'job'
   };
 };
