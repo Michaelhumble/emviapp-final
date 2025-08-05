@@ -4,13 +4,19 @@ import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { Crown, TrendingUp, Star, Zap, DollarSign, Calendar } from "lucide-react";
 
+// Import generated avatars
+import sofiaChenAvatar from "@/assets/avatars/sofia-chen.jpg";
+import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez.jpg";
+import jessicaKimAvatar from "@/assets/avatars/jessica-kim.jpg";
+import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen.jpg";
+
 const topRevolutionArtists = [
   {
     id: 1,
     name: "Sofia Chen",
     specialty: "AI Nail Artist",
     location: "San Francisco, CA",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+    image: sofiaChenAvatar,
     badge: "AI PIONEER",
     earnings: "$47K this month",
     rating: 4.98,
@@ -23,7 +29,7 @@ const topRevolutionArtists = [
     name: "Maria Rodriguez",
     specialty: "Hair Revolution Expert", 
     location: "Miami, FL",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    image: mariaRodriguezAvatar,
     badge: "TOP 0.1%",
     earnings: "$38K this month",
     rating: 4.96,
@@ -36,7 +42,7 @@ const topRevolutionArtists = [
     name: "Jessica Kim",
     specialty: "Makeup AI Specialist",
     location: "Los Angeles, CA", 
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+    image: jessicaKimAvatar,
     badge: "FEATURED",
     earnings: "$34K this month",
     rating: 4.94,
@@ -49,7 +55,7 @@ const topRevolutionArtists = [
     name: "Minh Anh Nguyen",
     specialty: "Nail Tech (Vietnamese)",
     location: "Westminster, CA",
-    image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150&h=150&fit=crop&crop=face",
+    image: minhAnhNguyenAvatar,
     badge: "CỘNG ĐỒNG VIỆT",
     earnings: "$31K this month", 
     rating: 4.97,
