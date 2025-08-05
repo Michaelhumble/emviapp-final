@@ -51,8 +51,7 @@ export default defineConfig(({ mode }) => ({
             '@/components/home/PremiumIndustryShowcase',
             '@/components/home/ClientSuccessStories',
             '@/components/home/ai-matchmaker',
-            '@/components/home/SalonClientGrowthSystem',
-            '@/components/home/BillionDollarJobSystem'
+            '@/components/home/SalonClientGrowthSystem'
           ],
           // Chat system (heavy component)
           'chat': [
