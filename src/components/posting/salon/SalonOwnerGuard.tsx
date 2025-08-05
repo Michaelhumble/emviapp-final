@@ -49,9 +49,9 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
-                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                <Link to="/auth/signup?redirect=%2Fsell-salon">
                   Sign Up
-                </a>
+                </Link>
               </Button>
             </div>
           </CardContent>
@@ -65,7 +65,8 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
   const metadataRole = user?.user_metadata?.role || userRole;
   const effectiveRole = profileRole || metadataRole;
   
-  const isSalonOwner = effectiveRole === 'salon' || effectiveRole === 'owner';
+  // More permissive check - allow owners, salon, and customers to post salons
+  const isSalonOwner = effectiveRole === 'salon' || effectiveRole === 'owner' || effectiveRole === 'customer';
 
   if (!isSalonOwner) {
     return (

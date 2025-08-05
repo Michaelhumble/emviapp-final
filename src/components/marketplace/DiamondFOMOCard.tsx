@@ -4,12 +4,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Crown, LockIcon, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface DiamondFOMOCardProps {
   industryName: string;
 }
 
 const DiamondFOMOCard: React.FC<DiamondFOMOCardProps> = ({ industryName }) => {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -85,7 +87,7 @@ const DiamondFOMOCard: React.FC<DiamondFOMOCardProps> = ({ industryName }) => {
           </div>
 
           <Button 
-            onClick={() => window.location.href = 'http://emviapp-final.lovable.app/post-job?tier=diamond'}
+            onClick={() => navigate('/post-job?tier=diamond')}
             className="w-full font-inter font-bold text-white transition-all duration-300 hover:scale-105" 
             style={{ backgroundColor: '#2176FF' }}
           >

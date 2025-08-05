@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Send, X, Sun, Sparkles, RotateCcw, Type, Moon, Settings, ArrowRight, ExternalLink } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useChatRouting } from '@/hooks/useChatRouting';
 import { ChatToggleButton } from './ChatToggleButton';
@@ -46,6 +47,7 @@ interface ChatSession {
 }
 
 export const ChatSystem = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -468,13 +470,7 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'post', 
           label: 'Đăng tin tuyển thợ tại đây', 
-          action: () => window.location.href = '/post-job'
-        });
-      } else {
-        actions.push({ 
-          id: 'post', 
-          label: 'Post a Job Here', 
-          action: () => window.location.href = '/post-job'
+          action: () => navigate('/post-job')
         });
       }
     }
@@ -486,13 +482,7 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'sell', 
           label: 'Bán tiệm tại đây', 
-          action: () => window.location.href = '/sell-salon'
-        });
-      } else {
-        actions.push({ 
-          id: 'sell', 
-          label: 'Sell a Salon Here', 
-          action: () => window.location.href = '/sell-salon'
+          action: () => navigate('/sell-salon')
         });
       }
     }

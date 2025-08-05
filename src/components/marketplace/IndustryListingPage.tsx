@@ -569,7 +569,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             <Button 
               size="lg" 
               className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
-              onClick={() => window.location.href = `http://emviapp-final.lovable.app/post-job?industry=${industryName}`}
+              onClick={() => navigate(`/post-job?industry=${industryName}`)}
             >
               Post Your {displayName} Job Now
             </Button>
@@ -680,7 +680,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
         <Button
           size="lg"
           className="bg-purple-600 hover:bg-purple-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 rounded-full px-6 py-4 font-inter font-bold"
-          onClick={() => window.location.href = `http://emviapp-final.lovable.app/post-job?industry=${industryName}`}
+          onClick={() => navigate(`/post-job?industry=${industryName}`)}
         >
           <Plus className="w-5 h-5 mr-2" />
           Post {displayName} Job

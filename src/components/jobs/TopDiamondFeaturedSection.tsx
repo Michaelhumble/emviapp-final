@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Diamond, Crown, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface TopDiamondFeaturedSectionProps {
   featuredJobs: Job[];
@@ -18,6 +19,7 @@ const TopDiamondFeaturedSection = ({
   onViewDetails, 
   maxSpots = 3 // Updated to 3 max spots (public spots only)
 }: TopDiamondFeaturedSectionProps) => {
+  const navigate = useNavigate();
   const diamondJobs = featuredJobs.filter(job => 
     job.pricingTier === 'diamond' || job.pricing_tier === 'diamond'
   ).slice(0, maxSpots);
@@ -117,7 +119,7 @@ const TopDiamondFeaturedSection = ({
               </p>
               <Button 
                 className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
-                onClick={() => window.location.href = 'http://emviapp-final.lovable.app/post-job'}
+                onClick={() => navigate('/post-job?tier=diamond')}
               >
                 Apply for Diamond
               </Button>
