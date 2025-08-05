@@ -178,7 +178,7 @@ serve(async (req) => {
     } else if (extractedName) {
       personalizedContext = `User just introduced themselves as: ${extractedName}. Acknowledge warmly WITHOUT repeating their name and NEVER ask for their name again.`;
     } else {
-      personalizedContext = `This is a new conversation. User hasn't provided their name yet. Start with the exact greeting: "Hi, my name is Sunshine! What's your name? Em biết nói tiếng Việt 🌸"`;
+      personalizedContext = `This is a new conversation. User hasn't provided their name yet. Start with the exact greeting: "Hi! My name is Little Sunshine, what's your name? Em biết nói tiếng Việt!"`;
     }
 
     const systemPrompt = `🔒 SYSTEM TRAINING: LITTLE SUNSHINE, THE EMVIAPP AI CONCIERGE
