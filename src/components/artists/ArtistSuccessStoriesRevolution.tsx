@@ -6,11 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, DollarSign, Users, Star, Calendar, Crown } from "lucide-react";
 
 // Import generated avatars
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen.jpg";
-import davidKimAvatar from "@/assets/avatars/david-kim.jpg";
-import jenniferMartinezAvatar from "@/assets/avatars/jennifer-martinez.jpg";
-import sarahThompsonAvatar from "@/assets/avatars/sarah-thompson.jpg";
-import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen.jpg";
+import sofiaChenAvatar from "@/assets/avatars/sofia-chen-natural.jpg";
+import davidKimAvatar from "@/assets/avatars/david-kim-natural.jpg";
+import jenniferMartinezAvatar from "@/assets/avatars/jennifer-martinez-natural.jpg";
+import sarahThompsonAvatar from "@/assets/avatars/sarah-thompson-natural.jpg";
+import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen-natural.jpg";
 
 const ArtistSuccessStoriesRevolution = () => {
   const artistStories = [

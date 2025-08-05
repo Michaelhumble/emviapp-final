@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Crown, TrendingUp, Star, Zap, DollarSign, Calendar } from "lucide-react";
 
 // Import generated avatars
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen.jpg";
-import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez.jpg";
-import jessicaKimAvatar from "@/assets/avatars/jessica-kim.jpg";
-import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen.jpg";
+import sofiaChenAvatar from "@/assets/avatars/sofia-chen-natural.jpg";
+import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-natural.jpg";
+import jessicaKimAvatar from "@/assets/avatars/jessica-kim-natural.jpg";
+import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen-natural.jpg";
 
 const topRevolutionArtists = [
   {
