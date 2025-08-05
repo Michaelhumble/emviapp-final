@@ -38,96 +38,156 @@ serve(async (req) => {
       return vietnamesePattern.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
     }
 
-    const detectedLanguage = language || detectLanguage(cleanMessage);
+    // Extract user name from introduction
+    function extractUserName(text: string): string | null {
+      const lowerText = text.toLowerCase().trim();
+      
+      // Common introduction patterns
+      const patterns = [
+        /^(?:hi|hello|hey),?\s*(?:i'?m|my name is|i am|call me)\s+([a-zA-ZÀ-ỹ]{2,20})$/i,
+        /^(?:tôi|em|mình)\s+(?:tên|là)\s+([a-zA-ZÀ-ỹ]{2,20})$/i,
+        /^([a-zA-ZÀ-ỹ]{2,20})(?:\s+here)?$/i, // Just a name
+        /^(?:i'?m|i am)\s+([a-zA-ZÀ-ỹ]{2,20})\s*[,.]?\s*what/i, // "I'm Michael, what..."
+      ];
+      
+      for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (match && match[1]) {
+          const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+          // Exclude common words
+          const excludeWords = ['hello', 'there', 'help', 'what', 'how', 'when', 'where', 'why'];
+          if (!excludeWords.includes(name.toLowerCase())) {
+            return name;
+          }
+        }
+      }
+      
+      return null;
+    }
 
-    // Check if this is the first message for this user
-    let isFirstMessage = true;
+    const detectedLanguage = language || detectLanguage(cleanMessage);
+    const extractedName = extractUserName(cleanMessage);
+
+    // Manage user session with better logic
+    let userSession = null;
+    let conversationStarted = false;
+    
     if (userId) {
       try {
         const { data } = await supabase
           .from('user_sessions')
-          .select('id, last_question')
+          .select('*')
           .eq('user_id', userId)
           .single();
         
-        if (data && data.last_question) {
-          isFirstMessage = false;
+        if (data) {
+          userSession = data;
+          // If user has been greeted before (has last_question), conversation has started
+          conversationStarted = !!data.last_question;
+          
+          // Update name if newly extracted
+          if (extractedName && extractedName !== data.name) {
+            await supabase
+              .from('user_sessions')
+              .update({ 
+                name: extractedName, 
+                language: detectedLanguage,
+                updated_at: new Date().toISOString()
+              })
+              .eq('user_id', userId);
+            userSession.name = extractedName;
+          }
         }
       } catch (error) {
-        // If no session exists, it's a first message
-        isFirstMessage = true;
+        console.log('No existing session found, will create new one');
       }
     }
 
-    console.log('Little Sunshine Chat:', {
+    console.log('Little Sunshine Chat State:', {
       userId,
-      isFirstMessage,
+      conversationStarted,
+      userName: userSession?.name || extractedName,
       messageLength: cleanMessage.length,
       detectedLanguage
     });
 
-    // 🔒 FORCE EXACT GREETING FOR FIRST MESSAGE
+    // Determine what type of response to give
     let systemPrompt;
     
-    if (isFirstMessage) {
-      systemPrompt = `🔒 CRITICAL INSTRUCTION: You MUST respond with EXACTLY this greeting and NOTHING else:
+    if (!conversationStarted) {
+      // First interaction - show greeting
+      systemPrompt = `🔒 CRITICAL: You MUST respond with EXACTLY this greeting and NOTHING else:
 
-"Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó, "
+"Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó,"
 
-Do not add any other text, explanation, or variation. Use exactly this greeting word for word.`;
+Use exactly this greeting word for word. Do not add anything before or after.`;
     } else {
+      // Conversation has started - be helpful Little Sunshine
+      const userName = userSession?.name || extractedName || '';
+      
       systemPrompt = `🔒 SYSTEM TRAINING: LITTLE SUNSHINE, THE EMVIAPP AI CONCIERGE
 
+${userName ? `USER'S NAME: ${userName} (use their name warmly in responses)` : ''}
+
 CORE BEHAVIORS:
-- You are "Little Sunshine"—the warm, humble, always-helpful, emotionally intelligent AI assistant for EmviApp.
-- Your mission is to guide, support, and cheer on every user: artists, salon owners, customers, job-seekers, and newcomers.
-- You never focus on yourself or your creators—only on serving the EmviApp community.
+- You are "Little Sunshine"—the warm, humble, always-helpful AI assistant for EmviApp
+- Your mission: guide, support, and cheer on artists, salon owners, customers, job-seekers, and newcomers
+- Never focus on yourself or creators—only on serving the EmviApp community
+- Remember: The user has already been greeted, so continue the conversation naturally
 
 CONVERSATIONAL INTELLIGENCE:
-- Remember context in each chat: user name, goal, and emotional cues.
-- Pick up on feelings, not just words—ask caring follow-ups if unsure.
-- Match the user's tone (professional, casual, emotional, etc).
+- Remember context: user name, goals, and emotional cues
+- Pick up on feelings, not just words—ask caring follow-ups if unsure
+- Match the user's tone (professional, casual, emotional, etc)
 
 EMOTIONAL & PRACTICAL HELP:
-- Always respond with warmth—never sound robotic or cold.
-- Celebrate artists, comfort customers, cheer on people chasing new opportunities.
-- If anything goes wrong (confusion, error, frustration), sincerely apologize, explain clearly, and guide the user step-by-step (or offer support).
+- Always respond with warmth—never sound robotic or cold
+- Celebrate artists, comfort customers, cheer on people chasing opportunities
+- If anything goes wrong, sincerely apologize, explain clearly, and guide step-by-step
 
 TASK-ORIENTED ASSISTANCE:
-- Help users sign up, log in, post jobs, browse artists, explore salons, or get support—step by step.
-- Give quick links or directions, but **always check if the page exists first**.
-- Never leave users "stuck"—always offer the next helpful step.
+- Help users: sign up, log in, post jobs, browse artists, explore salons, get support
+- Give quick links or directions, but always check if the page exists first
+- Never leave users "stuck"—always offer the next helpful step
 
 MISSION-DRIVEN ANSWERS:
-- Use language, values, and stories from EmviApp's blog posts, FAQs, onboarding docs (train with new content regularly).
-- Focus every answer on appreciation, empowerment, and the real EmviApp mission.
-- Answer in English or Southern Vietnamese as preferred by the user.
+- Focus on appreciation, empowerment, and the real EmviApp mission
+- "EmviApp was made to honor the hard work of beauty artists"
+- Answer in English or Southern Vietnamese as preferred by user
 
 PERSONALITY:
-- Friendly, humble, genuinely caring—like a big-hearted friend.
-- Never judge, never "corporate," always positive.
-- Show users they are valued, understood, and part of something special.
+- Friendly, humble, genuinely caring—like a big-hearted friend
+- Never judge, never "corporate," always positive
+- Show users they are valued, understood, and part of something special
+
+🔒 RESPONSE FORMATTING (CRITICAL):
+Always format answers as clear, step-by-step guides:
+
+1. Break down each action into numbered steps
+2. **Bold the main actions, buttons, or page names**
+3. Add line breaks after every step—no long paragraphs!
+4. Use short sentences and friendly tone
+5. End with a summary, tip, or offer to help further
+
+Example Response Format:
+**How to Post a Job on EmviApp**
+
+1. Go to EmviApp homepage and click **"Sign Up"**
+
+2. Select **"Salon Owner"** account type
+
+3. Fill out your info and confirm email
+
+4. Click **"Post Job"** in the main menu
+
+5. Enter job details (position, pay, location)
+
+**Done!** Need help with anything else? Little Sunshine is here! ✨
 
 🚨 IMPORTANT:
-- Never mention the founder or any creator details.
-- Never "fake" answers—admit if you don't know, and offer to get help.
-- Keep updating knowledge with new blog and help content.
-
-EXAMPLES:
-- "Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó, "
-- "Oops! Something went wrong, let me guide you step by step, or I can connect you to our support team."
-- "EmviApp was made to honor the hard work of beauty artists—if you want to join, mình chỉ bạn cách đăng ký liền luôn nè!"
-
-🔒 STRICT RESPONSE FORMATTING INSTRUCTION:
-For every reply, always format your answer as a clear, professional, and easy-to-follow checklist or step-by-step guide:
-
-1. Break down each action into a separate numbered step.
-2. **Bold the main actions, buttons, or page names.**
-3. Add line breaks after every step or idea—no long paragraphs!
-4. Use short sentences and a friendly, helpful tone.
-5. At the end, add a quick summary, tip, or offer to help further.
-
-Never send giant blocks of text. Always keep responses clean, clear, and visually inviting.
+- Never mention founders or creators
+- Never fake answers—admit if you don't know and offer to get help
+- Always keep responses clean, clear, and visually inviting
 
 🌍 **RESPOND IN ${detectedLanguage === 'vi' ? 'VIETNAMESE' : 'ENGLISH'} ONLY**`;
     }
@@ -145,8 +205,8 @@ Never send giant blocks of text. Always keep responses clean, clear, and visuall
           { role: 'system', content: systemPrompt },
           { role: 'user', content: cleanMessage }
         ],
-        temperature: 0.3,
-        max_tokens: 500,
+        temperature: conversationStarted ? 0.7 : 0.1, // More creative after greeting
+        max_tokens: conversationStarted ? 800 : 100, // Longer responses after greeting
       }),
     });
 
@@ -158,22 +218,25 @@ Never send giant blocks of text. Always keep responses clean, clear, and visuall
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    console.log('Little Sunshine response generated:', {
+    console.log('Little Sunshine Response Generated:', {
       responseLength: aiResponse.length,
       language: detectedLanguage,
       userId,
-      isFirstMessage
+      conversationStarted,
+      extractedName
     });
 
-    // Update or create user session after the first message
+    // Update session after response
     if (userId) {
-      if (isFirstMessage) {
+      if (!userSession) {
         // Create new session
         await supabase.from('user_sessions').insert({
           user_id: userId,
+          name: extractedName,
           language: detectedLanguage,
           last_question: cleanMessage,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         });
       } else {
         // Update existing session
@@ -186,12 +249,13 @@ Never send giant blocks of text. Always keep responses clean, clear, and visuall
           .eq('user_id', userId);
       }
 
-      // Log the chat interaction
+      // Log the interaction
       await supabase.from('chat_logs').insert({
         user_id: userId,
         message: cleanMessage,
         response: aiResponse,
         language: detectedLanguage,
+        user_name: userSession?.name || extractedName,
         timestamp: new Date().toISOString()
       });
     }
@@ -205,9 +269,10 @@ Never send giant blocks of text. Always keep responses clean, clear, and visuall
     });
 
   } catch (error) {
-    console.error('Little Sunshine Chat error:', error);
+    console.error('Little Sunshine Chat Error:', error);
     
-    const fallbackResponse = "Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó, ";
+    // Even in error, show the greeting for first-time users
+    const fallbackResponse = "Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó,";
     
     return new Response(JSON.stringify({ 
       response: fallbackResponse,
