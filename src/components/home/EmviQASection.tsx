@@ -235,7 +235,7 @@ const EmviQASection = () => {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-orange-50/20 relative overflow-hidden">
+    <section className="py-16 bg-gradient-to-br from-slate-50 via-white to-orange-50/20 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-orange-100/20 to-amber-100/20 rounded-full blur-3xl"></div>
