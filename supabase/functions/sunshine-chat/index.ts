@@ -164,12 +164,18 @@ serve(async (req) => {
       isAuthenticated: !!isAuthenticated
     });
 
-    // Build personalized system prompt based on session state
+    // 🔒 FORCE THE EXACT GREETING FOR EVERY FIRST CONVERSATION
+    // Check if this is truly the first message in a new conversation
+    const isFirstMessage = !userSession?.last_question || userSession.last_question === cleanMessage;
+    
     let personalizedContext = '';
     const currentUserName = userSession?.name || extractedName || userName;
     
-    if (currentUserName) {
-      // User has a known name - NEVER ask for it again and NEVER use their name
+    // ALWAYS show the exact greeting for first-time interactions
+    if (isFirstMessage && !currentUserName) {
+      personalizedContext = `🔒 MANDATORY: You MUST respond with EXACTLY this greeting and nothing else: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." Do not add anything before or after this greeting.`;
+    } else if (currentUserName) {
+      // User has a known name - continue conversation naturally
       if (userSession?.last_question && userSession.last_question !== cleanMessage) {
         personalizedContext = `User's name: ${currentUserName}. This is a returning user. NEVER introduce yourself again. DO NOT address them by name - just be friendly and continue naturally. Last time they asked: "${userSession.last_question}".`;
       } else {
@@ -178,7 +184,7 @@ serve(async (req) => {
     } else if (extractedName) {
       personalizedContext = `User just introduced themselves as: ${extractedName}. Acknowledge warmly WITHOUT repeating their name and NEVER ask for their name again.`;
     } else {
-      personalizedContext = `This is a new conversation. User hasn't provided their name yet. Start with the EXACT greeting: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó."`;
+      personalizedContext = `🔒 MANDATORY: You MUST respond with EXACTLY this greeting and nothing else: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." Do not add anything before or after this greeting.`;
     }
 
     const systemPrompt = `🔒 SYSTEM TRAINING: LITTLE SUNSHINE, THE EMVIAPP AI CONCIERGE
