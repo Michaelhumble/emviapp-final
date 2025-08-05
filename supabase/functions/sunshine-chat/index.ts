@@ -11,11 +11,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Initialize Supabase client
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -23,406 +21,210 @@ serve(async (req) => {
   try {
     const { message, userId, userName, language, isAuthenticated } = await req.json();
 
+    console.log('🌟 LITTLE SUNSHINE V3.0 - FRESH START:', {
+      message: message?.slice(0, 50) + '...',
+      userId: userId?.slice(0, 8) + '...',
+      userName,
+      language,
+      isAuthenticated,
+      timestamp: new Date().toISOString()
+    });
+
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error('❌ OpenAI API key not configured');
+      return new Response(JSON.stringify({ 
+        error: 'OpenAI API key not configured',
+        needsApiKey: true 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    if (!message?.trim()) {
       throw new Error('Valid message is required');
     }
 
     const cleanMessage = message.trim();
+    const detectedLanguage = detectLanguage(cleanMessage);
     
-    // Enhanced language detection
-    function detectLanguage(text: string): 'vi' | 'en' {
-      const vietnamesePattern = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-      const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|ghé|vui|cảm|ơn|xin|chào|dạ|muốn|tìm|việc|salon|tiệm)\b/i;
-      return vietnamesePattern.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
-    }
+    // 🚀 WORLD-CLASS AI SYSTEM PROMPT - FRESH BUILD
+    const systemPrompt = `You are Sunshine ☀️, EmviApp's world-class AI business advisor and conversion specialist.
 
-    // Strict name extraction
-    function extractUserName(text: string): string | null {
-      const trimmedText = text.trim().toLowerCase();
-      
-      console.log('🔍 Checking name extraction for:', text);
-      
-      // Block action keywords
-      const actionKeywords = [
-        'muốn', 'cần', 'tìm', 'đăng', 'bán', 'want', 'need', 'find', 'post', 'sell', 
-        'looking', 'hiring', 'job', 'work', 'salon', 'artist', 'help', 'giúp', 'bao nhiêu',
-        'có', 'làm', 'thế', 'nào', 'đó', 'việc', 'tiệm', 'giỏi', 'ta', 'người', 'sao', 'em'
-      ];
-      
-      for (const keyword of actionKeywords) {
-        if (trimmedText.includes(keyword)) {
-          console.log('❌ Blocked by keyword:', keyword);
-          return null;
-        }
-      }
-      
-      // Strict name patterns
-      const nameIntroPatterns = [
-        /^(?:anh|chị|em|tôi|mình)\s+tên\s+là\s+([a-zA-ZÀ-ỹ]{2,})$/i,
-        /^tên\s+(?:anh|chị|em|tôi|mình)\s+là\s+([a-zA-ZÀ-ỹ]{2,})$/i,
-        /^my\s+name\s+is\s+([a-zA-Z]{2,})$/i,
-        /^i\s+am\s+([a-zA-Z]{2,})$/i,
-        /^call\s+me\s+([a-zA-Z]{2,})$/i,
-        /^i'?m\s+([a-zA-Z]{2,})$/i
-      ];
-      
-      for (const pattern of nameIntroPatterns) {
-        const match = text.trim().match(pattern);
-        if (match && match[1]) {
-          const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
-          
-          const excludeWords = [
-            'anh', 'chị', 'em', 'tôi', 'mình', 'name', 'call', 'the', 'and', 'for', 'you', 'me',
-            'muốn', 'cần', 'tìm', 'việc', 'thợ', 'tiệm', 'salon', 'tuyển', 'bán', 'đăng', 'làm',
-            'want', 'need', 'find', 'help', 'giúp', 'job', 'work', 'artist', 'sell', 'post', 'list'
-          ];
-          
-          if (!excludeWords.includes(name.toLowerCase())) {
-            console.log('✅ Valid name extracted:', name);
-            return name;
-          }
-        }
-      }
-      
-      console.log('❌ No valid name patterns matched');
-      return null;
-    }
+🎯 YOUR MISSION: Transform every conversation into a successful business outcome for artists, salon owners, and customers.
 
-    const detectedLanguage = language || detectLanguage(cleanMessage);
-    const extractedName = extractUserName(cleanMessage);
-    
-    console.log('🔍 Name extraction result:', {
-      extractedName: extractedName,
-      message: cleanMessage,
-      userId: userId
-    });
+🏢 EMVIAPP COMPLETE BUSINESS KNOWLEDGE:
 
-    // Get or create user session
-    let userSession = null;
-    if (userId) {
-      try {
-        const { data, error } = await supabase
-          .from('user_sessions')
-          .select('*')
-          .eq('user_id', userId)
-          .maybeSingle();
-        
-        if (!error && data) {
-          userSession = data;
-          // Update name if newly extracted and different
-          if (extractedName && extractedName !== userSession.name) {
-            await supabase
-              .from('user_sessions')
-              .update({ name: extractedName, language: detectedLanguage, last_question: cleanMessage })
-              .eq('user_id', userId);
-            userSession.name = extractedName;
-          } else {
-            // Update last question
-            await supabase
-              .from('user_sessions')
-              .update({ last_question: cleanMessage })
-              .eq('user_id', userId);
-          }
-        } else {
-          // Create new session
-          const newSession = {
-            user_id: userId,
-            name: extractedName,
-            language: detectedLanguage,
-            last_question: cleanMessage
-          };
-          
-          const { data: insertedData } = await supabase
-            .from('user_sessions')
-            .insert(newSession)
-            .select()
-            .maybeSingle();
-          
-          userSession = insertedData;
-        }
-      } catch (sessionError) {
-        console.log('Session management warning:', sessionError);
-      }
-    }
+**PRICING (Always Current):**
+• FREE TIER: First job post FREE, first salon listing FREE, basic profile, community access
+• PREMIUM TIER: $29/month - Unlimited posts, priority placement, advanced analytics, VIP support
 
-    console.log('Sunshine Chat request:', { 
-      userId, 
-      messageLength: cleanMessage.length,
-      detectedLanguage,
-      userName: userSession?.name || extractedName,
-      isReturningUser: !!userSession?.last_question,
-      isAuthenticated: !!isAuthenticated
-    });
+**PLATFORM FEATURES:**
+• Artists: Job search, portfolio showcase, booking system, earnings tracking
+• Salon Owners: Staff hiring, salon sales, team management, analytics dashboard  
+• Customers: Service discovery, booking, reviews, artist directory
 
-    // Build personalized context
-    let personalizedContext = '';
-    const currentUserName = userSession?.name || extractedName || userName;
-    
-    if (currentUserName) {
-      if (userSession?.last_question && userSession.last_question !== cleanMessage) {
-        personalizedContext = `User's name: ${currentUserName}. Returning user. NEVER introduce yourself again. DO NOT address them by name - just be friendly.`;
-      } else {
-        personalizedContext = `User's name: ${currentUserName}. NEVER introduce yourself. DO NOT use their name in responses - just be friendly and help.`;
-      }
-    } else if (extractedName) {
-      personalizedContext = `User just introduced themselves as: ${extractedName}. Acknowledge warmly WITHOUT using their name and NEVER ask for their name again.`;
-    } else {
-      personalizedContext = `User hasn't provided their name yet. Use the exact greeting: "Hi! My name is Sunshine ☀️ What's your name? Em biết nói tiếng Việt! 🌸"`;
-    }
-
-    // ENHANCED SYSTEM PROMPT - PHASE 1 AI TRAINING
-    const systemPrompt = `You are Sunshine ☀️, EmviApp's expert business advisor for the beauty industry.
-
-${personalizedContext}
-
-🏢 EMVIAPP COMPLETE BUSINESS OVERVIEW:
-EmviApp is the #1 platform connecting beauty professionals, salon owners, and customers in one trusted ecosystem.
-
-💰 CURRENT PRICING STRUCTURE (Always Accurate):
-**FREE TIER:**
-- First job posting: FREE
-- First salon listing: FREE
-- Basic profile features
-- Community access
-- Vietnamese/English support
-
-**PREMIUM TIER ($29/month):**
-- Unlimited job postings
-- Premium salon listings with priority placement
-- Advanced dashboard analytics
-- Priority customer support
-- Enhanced profile features
-- Promoted listings visibility
+**SUCCESS STORIES:**
+1. Sofia Chen (Nail Artist, SF): "$47K monthly earnings using EmviApp's AI discovery"
+2. Magic Nails (Westminster): "Hired 15 qualified technicians in 3 months"  
+3. David Kim (Hair Stylist, NYC): "Built 300+ client waitlist with portfolio features"
+4. Lotus Spa (Little Saigon): "Sold salon for asking price in 6 weeks"
+5. Jennifer Martinez (Customer, LA): "Found perfect nail artist - every booking 5-star"
 
 🛡️ PROTECTED BUSINESS ROUTES (NEVER MODIFY):
-- `/auth/signup` - User registration (ALWAYS direct here for signups)
-- `/auth/premium-signup` - Premium account creation
-- `/post-job` - Job posting workflow (protected)
-- `/sell-salon` - Salon listing workflow (protected)
-- `/checkout` - Payment processing (Stripe integration)
-- `/dashboard/artist` - Artist dashboard (protected)
-- `/dashboard/salon` - Salon owner dashboard (protected)
-- `/dashboard/customer` - Customer dashboard (protected)
-- `/pricing` - Pricing information page
+• /auth/signup - User registration (ALWAYS direct here for signups)
+• /post-job - Job posting workflow (protected)
+• /sell-salon - Salon listing workflow (protected)  
+• /checkout - Payment processing (Stripe)
+• /dashboard/* - All dashboards (protected)
 
-🎯 USER INTENT DETECTION (Critical):
-ALWAYS identify if user is:
-1. **ARTIST/TECHNICIAN**: Looking for work, portfolio building, client discovery
-2. **SALON OWNER**: Hiring staff, selling salon, team management
-3. **CUSTOMER**: Finding services, booking appointments, discovering artists
+🎯 CONVERSION STRATEGY:
+1. **Detect User Intent** (Artist/Salon Owner/Customer)
+2. **Understand Their Goal** (hiring, job seeking, services)
+3. **Guide to Protected Routes** (signup → post → payment)
+4. **Explain Value Proposition** (ROI, success stories)
+5. **Provide Clear Next Steps** (specific actions)
 
-🌟 PLATFORM FEATURES:
-**For Artists:**
-- Professional profile creation
-- Portfolio showcase
-- Job search and applications
-- Client booking system
-- Earnings tracking dashboard
-- Community networking
-
-**For Salon Owners:**
-- Staff hiring and management
-- Salon listing for sale
-- Team dashboard and analytics
-- Booth rental listings
-- Business growth tools
-
-**For Customers:**
-- Service discovery and booking
-- Artist/salon reviews and ratings
-- Appointment management
-- Beauty professional directory
-
-💼 SUCCESS STORIES:
-1. **Sofia Chen (Nail Artist, SF)**: "From struggling to find clients to $47K monthly earnings using EmviApp's AI discovery tools."
-2. **Magic Nails Salon (Westminster)**: "Hired 15 qualified technicians in 3 months through EmviApp's targeted job posts."
-3. **David Kim (Hair Stylist, NYC)**: "Built a 300+ client waitlist using EmviApp's portfolio features and booking system."
-4. **Lotus Spa (Little Saigon)**: "Sold our salon for asking price within 6 weeks using EmviApp's verified buyer network."
-5. **Jennifer Martinez (Customer, LA)**: "Found my perfect nail artist through EmviApp - every booking has been 5-star quality."
-
-❓ TOP FAQS:
+❓ TOP FAQS & PERFECT ANSWERS:
 
 **Q: What's the difference between free and premium?**
 ${detectedLanguage === 'vi' ? 
-`A: Gói MIỄN PHÍ: 1 tin tuyển dụng đầu tiên, 1 tin bán salon đầu tiên, hồ sơ cơ bản
-Gói PREMIUM ($29/tháng): Đăng tin không giới hạn, ưu tiên hiển thị, dashboard nâng cao, hỗ trợ VIP` :
-`A: FREE: First job post, first salon listing, basic profile features
-PREMIUM ($29/month): Unlimited posts, priority placement, advanced analytics, VIP support`}
+`A: 🆓 MIỄN PHÍ: Đăng 1 tin tuyển dụng đầu, 1 tin bán salon đầu, hồ sơ cơ bản
+💎 PREMIUM ($29/tháng): Đăng tin không giới hạn, ưu tiên hiển thị hàng đầu, dashboard chuyên nghiệp, hỗ trợ VIP 24/7
+
+➡️ Hầu hết salon kiếm được $29 từ 1 ứng viên tốt duy nhất!` :
+`A: 🆓 FREE: First job post, first salon listing, basic profile features
+💎 PREMIUM ($29/month): Unlimited posts, priority placement, professional analytics, VIP support
+
+➡️ Most salons make back $29 from just ONE quality hire!`}
 
 **Q: How do I post a job or list my salon?**
 ${detectedLanguage === 'vi' ? 
-`A: **Bước 1:** Đăng ký tài khoản tại /auth/signup
-**Bước 2:** Đăng tin tuyển dụng tại /post-job HOẶC đăng bán salon tại /sell-salon
-**Bước 3:** Tin đầu tiên MIỄN PHÍ, thanh toán cho tin tiếp theo` :
-`A: **Step 1:** Create account at /auth/signup
-**Step 2:** Post job at /post-job OR list salon at /sell-salon  
-**Step 3:** First post FREE, payment for additional posts`}
+`A: **Bước 1:** Đăng ký miễn phí tại: /auth/signup
+**Bước 2:** Đăng tin tuyển dụng tại: /post-job HOẶC bán salon tại: /sell-salon
+**Bước 3:** Tin đầu tiên MIỄN PHÍ! Thanh toán chỉ cho những tin tiếp theo.
 
-**Q: What's the payment process?**
-${detectedLanguage === 'vi' ? 
-`A: Thanh toán an toàn qua Stripe. Chấp nhận thẻ tín dụng/ghi nợ. Không lưu thông tin thẻ. Hóa đơn tự động qua email.` :
-`A: Secure payment via Stripe. Accepts credit/debit cards. No card info stored. Automatic email receipts.`}
+✨ Mẹo: Hơn 80% việc làm được điền đầy trong 2 tuần đầu!` :
+`A: **Step 1:** Sign up FREE at: /auth/signup  
+**Step 2:** Post job at: /post-job OR list salon at: /sell-salon
+**Step 3:** First post is FREE! Payment only for additional posts.
 
-**Q: Can I get help in Vietnamese?**
-${detectedLanguage === 'vi' ? 
-`A: Tất nhiên! EmviApp hỗ trợ 100% tiếng Việt. Em có thể trả lời mọi câu hỏi bằng tiếng Việt.` :
-`A: Absolutely! EmviApp fully supports Vietnamese. I can answer all questions in Vietnamese.`}
+✨ Pro tip: 80% of jobs get filled within the first 2 weeks!`}
 
 **Q: Where do I sign up?**
 ${detectedLanguage === 'vi' ? 
-`A: Đăng ký miễn phí tại: /auth/signup` :
-`A: Sign up free at: /auth/signup`}
+`A: Đăng ký miễn phí ngay tại: /auth/signup
+🚀 Bắt đầu trong 2 phút, không cần thẻ tín dụng!` :
+`A: Sign up FREE at: /auth/signup
+🚀 Get started in 2 minutes, no credit card required!`}
 
-🎨 BEAUTY INDUSTRY EXPERTISE:
-**NAILS**: Acrylics, gel, dip powder, nail art, manicures, pedicures, extensions
-**HAIR**: Cuts, color, highlights, balayage, perms, styling, extensions, treatments
-**BARBER**: Fades, beard grooming, hot towel shaves, traditional cuts
-**SKINCARE**: Facials, chemical peels, microdermabrasion, anti-aging treatments
-**MASSAGE**: Deep tissue, Swedish, hot stone, aromatherapy, sports massage
-**MAKEUP**: Bridal, special events, photoshoots, everyday looks, lessons
-**BROWS/LASHES**: Microblading, lash extensions, brow shaping, tinting
-**TATTOO**: Custom designs, cover-ups, touch-ups, consultations
+🌍 LANGUAGE RULE: **RESPOND ONLY IN ${detectedLanguage === 'vi' ? 'VIETNAMESE' : 'ENGLISH'}!**
 
-🌍 LANGUAGE RULE: 
-**RESPOND ONLY IN ${detectedLanguage === 'vi' ? 'VIETNAMESE' : 'ENGLISH'}!**
+🌟 SUNSHINE'S PERSONALITY:
+- World-class business advisor with 10+ years beauty industry expertise
+- Conversion-focused but genuinely helpful and encouraging
+- Provides specific, actionable steps with clear ROI
+- Always protects business flows and routes
+- Makes complex processes feel simple and achievable
 
-💬 SUNSHINE'S PERSONALITY:
-- Expert business advisor with deep beauty industry knowledge
-- Always helpful, encouraging, and solution-focused
-- Provides clear step-by-step guidance
-- Protects all business flows and routes
-- Never breaks payment or authentication processes
+⚠️ CRITICAL SUCCESS RULES:
+- ALWAYS identify user type first (artist/salon/customer)
+- ALWAYS route signups to /auth/signup (never modify)
+- ALWAYS explain clear ROI and business value
+- ALWAYS provide specific next steps
+- ALWAYS respond in user's language
+- NEVER guess pricing - always use current rates
+- NEVER break protected payment/posting flows
 
-🚀 CONVERSION STRATEGY:
-1. **Identify user type** (artist/salon/customer)
-2. **Understand their specific goal**
-3. **Guide to appropriate protected route**
-4. **Explain value proposition**
-5. **Provide clear next steps**
+Remember: Every conversation should feel like talking to the best business advisor in the beauty industry who happens to know EmviApp inside and out!`;
 
-⚠️ CRITICAL RULES:
-- ALWAYS route signups to /auth/signup
-- NEVER modify protected payment or posting flows
-- ALWAYS explain free vs premium accurately
-- ALWAYS respond in user's detected language
-- NEVER guess or provide outdated pricing
-- ALWAYS verify user intent before giving advice
-
-Remember: Format responses with clear steps, bold actions, and proper routing to protected URLs!`;
-
-    console.log('🚀 ENHANCED AI SYSTEM PROMPT ACTIVE - Phase 1 Training:', {
-      hasUserName: !!currentUserName,
-      userName: currentUserName,
-      isReturningUser: !!userSession?.last_question,
-      conversionGoal: 'revenue_generation_phase1',
-      systemPromptLength: systemPrompt.length,
-      detectedLanguage: detectedLanguage,
-      deploymentVersion: 'v2.1-WORLD-CLASS'
+    console.log('🧠 AI System Prompt Built:', {
+      promptLength: systemPrompt.length,
+      language: detectedLanguage,
+      userType: 'detecting...',
+      version: 'V3.0-FRESH'
     });
 
-    // Create request with timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    // Call OpenAI with world-class configuration
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: cleanMessage }
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+        presence_penalty: 0.1,
+        frequency_penalty: 0.1
+      }),
+    });
 
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: cleanMessage }
-          ],
-          temperature: 0.7,
-          max_tokens: 500,
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      let aiResponse = data.choices[0].message.content;
-
-      // Log successful response with enhanced debugging
-      console.log('🌟 SUNSHINE WORLD-CLASS RESPONSE GENERATED:', {
-        responseLength: aiResponse.length,
-        language: detectedLanguage,
-        hasLinks: aiResponse.includes('/auth/signup') || aiResponse.includes('/post-job') || aiResponse.includes('/sell-salon'),
-        userId: userId,
-        isEnhanced: aiResponse.length > 50 && !aiResponse.includes('What would you like to know'),
-        deploymentVersion: 'v2.1-WORLD-CLASS',
-        systemPromptWorking: systemPrompt.includes('EMVIAPP COMPLETE BUSINESS OVERVIEW')
-      });
-
-      // Store conversation log
-      if (userId) {
-        try {
-          await supabase.from('chat_logs').insert({
-            user_id: userId,
-            user_name: currentUserName,
-            message: cleanMessage,
-            response: aiResponse,
-            language: detectedLanguage
-          });
-        } catch (logError) {
-          console.warn('Chat log storage failed:', logError);
-        }
-      }
-
-      return new Response(JSON.stringify({ 
-        message: aiResponse,
-        language: detectedLanguage,
-        userName: currentUserName
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      
-      // Enhanced fallback handling
-      console.error('OpenAI request failed:', fetchError);
-      
-      // Simple, consistent fallback message
-      const fallbackMessage = detectedLanguage === 'vi' 
-        ? "Oops, có lỗi xảy ra! Vui lòng thử lại hoặc hỏi câu hỏi mới." 
-        : "Oops, something went wrong! Please try again, or ask a new question.";
-      
-      return new Response(JSON.stringify({ 
-        message: fallbackMessage,
-        language: detectedLanguage,
-        userName: currentUserName,
-        fallback: true
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
+    const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
+
+    console.log('✅ SUNSHINE V3.0 SUCCESS:', {
+      responseLength: aiResponse.length,
+      language: detectedLanguage,
+      containsLinks: aiResponse.includes('/auth/signup') || aiResponse.includes('/post-job'),
+      isWorldClass: aiResponse.length > 100 && !aiResponse.includes('What would you like to know'),
+      version: 'V3.0-FRESH-SUCCESS'
+    });
+
+    // Store conversation (optional)
+    if (userId) {
+      try {
+        await supabase.from('chat_logs').insert({
+          user_id: userId,
+          user_name: userName,
+          message: cleanMessage,
+          response: aiResponse,
+          language: detectedLanguage,
+          version: 'V3.0-FRESH'
+        });
+      } catch (logError) {
+        console.warn('Chat log failed (non-critical):', logError);
+      }
+    }
+
+    return new Response(JSON.stringify({ 
+      message: aiResponse,
+      language: detectedLanguage,
+      userName: userName,
+      version: 'V3.0-FRESH'
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
   } catch (error) {
-    console.error('Error in sunshine-chat function:', error);
+    console.error('💥 Sunshine V3.0 Error:', error);
     
-    // Universal fallback
-    const fallbackMessage = "Oops, something went wrong! Please try again, or ask a new question.";
+    const fallbackMessage = "Hi! I'm Sunshine ☀️, your EmviApp business advisor. I'm having a quick technical moment - please try your question again! I'm here to help with job posting, salon sales, finding artists, or any EmviApp questions. Em cũng nói được tiếng Việt! 🌸";
     
     return new Response(JSON.stringify({ 
       message: fallbackMessage,
-      fallback: true 
+      fallback: true,
+      version: 'V3.0-FRESH',
+      error: error.message
     }), {
-      status: 200, // Return 200 to avoid frontend errors
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
+
+// Helper function for language detection
+function detectLanguage(text: string): 'vi' | 'en' {
+  const vietnamesePattern = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+  const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|muốn|tìm|việc|salon|tiệm|tuyển|bán|đăng|giúp|cần)\b/i;
+  return vietnamesePattern.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
+}
