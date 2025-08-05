@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 
 interface HeroImage {
@@ -19,144 +19,96 @@ interface HeroCarouselProps {
   isMobile?: boolean;
 }
 
-const PremiumImageOverlay = ({ isActive }: { isActive: boolean }) => (
-  <AnimatePresence>
-    {isActive && (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.8 }}
-        className="absolute inset-0 z-10"
-      >
-        {/* Dynamic gradient that shifts based on scroll */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-transparent to-pink-900/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        
-        {/* Animated light rays */}
-        <motion.div
-          className="absolute top-0 left-1/4 w-1 h-full bg-gradient-to-b from-white/20 to-transparent transform -skew-x-12"
-          initial={{ opacity: 0, x: -100 }}
-          animate={{ opacity: [0, 0.3, 0], x: [0, 100, 200] }}
-          transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-        />
-        
-        {/* Floating geometric elements */}
-        <motion.div
-          className="absolute top-1/4 right-1/4 w-4 h-4 border-2 border-white/30 transform rotate-45"
-          animate={{ 
-            rotate: [45, 225, 405],
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        
-        <motion.div
-          className="absolute bottom-1/3 left-1/3 w-6 h-6 border border-purple-400/50 rounded-full"
-          animate={{ 
-            scale: [1, 1.5, 1],
-            opacity: [0.4, 0.8, 0.4]
-          }}
-          transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-        />
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
-
-const ImageParallaxLayer = ({ 
-  image, 
-  index, 
-  activeIndex, 
-  isMobile 
-}: { 
-  image: HeroImage, 
-  index: number, 
-  activeIndex: number, 
-  isMobile: boolean 
-}) => {
-  const isActive = index === activeIndex;
-  
-  return (
-    <motion.div 
-      key={index}
-      className="absolute inset-0 w-full h-full"
-      initial={{ opacity: 0 }}
-      animate={{ 
-        opacity: isActive ? 1 : 0,
-        scale: isActive ? 1 : 1.02
-      }}
-      transition={{ 
-        duration: 1.2,
-        ease: [0.25, 0.1, 0.25, 1]
-      }}
-      style={{ zIndex: isActive ? 2 : 1 }}
-    >
-      {/* Maximum clarity for photos */}
-      <div className="absolute inset-0 overflow-hidden">
-        <img
-          src={image.url}
-          alt={image.alt}
-          className="w-full h-full object-cover"
-          loading={index === 0 ? "eager" : "lazy"}
-          style={{ 
-            width: "100%",
-            height: "100%",
-            objectPosition: "center",
-            filter: 'brightness(1.3) contrast(1.15) saturate(1.1)', // Much brighter
-            position: "absolute",
-            top: 0,
-            left: 0
-          }}
-        />
-        
-        {/* Minimal overlay just for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-      </div>
-    </motion.div>
-  );
-};
-
 const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
+  const getIndustryBadgeColor = (industry?: string) => {
+    switch (industry) {
+      case 'Nail Tech':
+      case 'Nail Artist':
+      case 'Nail Salon':
+        return 'bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 shadow-lg backdrop-blur-sm';
+      case 'Barber':
+        return 'bg-gradient-to-r from-slate-700 to-gray-800 text-white border-0 shadow-lg backdrop-blur-sm';
+      case 'Hair Stylist':
+      case 'Hair Salon':
+        return 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-lg backdrop-blur-sm';
+      case 'Makeup Artist':
+        return 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 shadow-lg backdrop-blur-sm';
+      case 'Esthetician':
+        return 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg backdrop-blur-sm';
+      case 'Massage Therapist':
+        return 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm';
+      case 'Beauty Platform':
+        return 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 shadow-lg backdrop-blur-sm';
+      default:
+        return 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 shadow-lg backdrop-blur-sm';
+    }
+  };
+
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden">
-      {/* Ensure images render properly */}
+    <div className="absolute inset-0 w-full h-full overflow-hidden max-w-full">
       {images.map((image, index) => (
-        <ImageParallaxLayer
-          key={`image-${index}`}
-          image={image}
-          index={index}
-          activeIndex={activeIndex}
-          isMobile={isMobile}
-        />
-      ))}
-      
-      {/* Industry badge overlay - FIXED to prevent multiple badges */}
-      {images[activeIndex]?.industry && (
-        <motion.div
-          key={`badge-${activeIndex}-${images[activeIndex].industry}`}
-          initial={{ opacity: 0, y: -20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.9 }}
-          transition={{ duration: 0.5 }}
-          className="absolute top-8 left-8 z-30"
+        <motion.div 
+          key={index}
+          className="absolute inset-0 w-full h-full"
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{ 
+            opacity: index === activeIndex ? 1 : 0,
+            scale: index === activeIndex ? 1 : 1.02
+          }}
+          transition={{ 
+            duration: 0.8,
+            ease: [0.4, 0, 0.2, 1]
+          }}
+          style={{ zIndex: index === activeIndex ? 2 : 1 }}
         >
-          <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/20">
-            <span className="text-2xl">
-              {images[activeIndex].industry?.includes('Nail') ? '💅' :
-               images[activeIndex].industry?.includes('Barber') ? '✂️' :
-               images[activeIndex].industry?.includes('Hair') ? '💇‍♀️' :
-               images[activeIndex].industry?.includes('Makeup') ? '💄' :
-               images[activeIndex].industry?.includes('Esthetician') ? '🧴' :
-               images[activeIndex].industry?.includes('Massage') ? '💆‍♀️' :
-               '✨'}
-            </span>
-            <span className="text-white font-bold text-lg">{images[activeIndex].industry}</span>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          {/* Performance-optimized image */}
+          <div className="fixed-image-container absolute inset-0">
+            <img
+              src={image.url}
+              alt={image.alt}
+              className="w-screen h-screen object-cover"
+              loading={index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={index === 0 ? "high" : "low"}
+              style={{ 
+                objectPosition: isMobile ? "center center" : "center", 
+                width: "100vw",
+                height: "100dvh",
+                minHeight: "100svh",
+                maxWidth: "100vw",
+                maxHeight: "100dvh",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                filter: 'brightness(0.75)',
+                imageRendering: 'crisp-edges'
+              }}
+            />
+            
+            {/* Premium gradient overlays for perfect text readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+            
+            {/* Industry badge - positioned beautifully with animation */}
+            {image.industry && index === activeIndex && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+                className="absolute top-8 left-8 z-10"
+              >
+                <Badge 
+                  className={`${getIndustryBadgeColor(image.industry)} px-5 py-2.5 text-sm font-bold`}
+                >
+                  ✨ {image.industry}
+                </Badge>
+              </motion.div>
+            )}
           </div>
         </motion.div>
-      )}
+      ))}
     </div>
   );
 };
