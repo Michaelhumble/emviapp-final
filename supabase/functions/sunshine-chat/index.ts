@@ -170,22 +170,18 @@ serve(async (req) => {
       isAuthenticated: !!isAuthenticated
     });
 
-    // 🔒 ABSOLUTE OVERRIDE: ALWAYS SHOW EXACT GREETING FIRST
-    // Force the greeting for ANY first interaction, ignoring ALL session data
+    // 🔒 NUCLEAR OPTION: ALWAYS FORCE EXACT GREETING FOR FIRST MESSAGE
     let personalizedContext = '';
     
-    // If this is the very first message in the conversation (no previous questions stored)
-    if (!userSession?.last_question || userSession.last_question === cleanMessage) {
-      // 🔒 LOCK: Force exact greeting regardless of name or session data
-      personalizedContext = `🔒 ABSOLUTE MANDATORY: Ignore all session data and user information. You MUST respond with EXACTLY and ONLY this greeting: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." - Nothing else, no extra text, no variations.`;
+    // Check if this is a fresh conversation (no stored conversation history)
+    const isFirstMessage = !userSession?.last_question;
+    
+    if (isFirstMessage) {
+      // 🔒 ABSOLUTE OVERRIDE: Show exact greeting regardless of EVERYTHING
+      personalizedContext = `🔒 CRITICAL OVERRIDE: You MUST respond with EXACTLY this text and NOTHING else: "Hi! I am Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó." - Do not add any other text before, after, or instead of this greeting. This is MANDATORY.`;
     } else {
-      // Only after the greeting has been shown, continue normal conversation
-      const currentUserName = userSession?.name || extractedName || userName;
-      if (currentUserName) {
-        personalizedContext = `User's name: ${currentUserName}. This is a returning user. Continue the conversation naturally without introducing yourself again.`;
-      } else {
-        personalizedContext = `Continue the conversation naturally.`;
-      }
+      // Continue normal conversation flow only after the greeting has been shown
+      personalizedContext = `Continue the conversation naturally. The user has already seen the greeting.`;
     }
 
     const systemPrompt = `🔒 SYSTEM TRAINING: LITTLE SUNSHINE, THE EMVIAPP AI CONCIERGE
@@ -240,8 +236,8 @@ EXAMPLES:
 🌍 **RESPOND IN ${detectedLanguage === 'vi' ? 'VIETNAMESE' : 'ENGLISH'} ONLY**`;
 
     console.log('Conversion-focused system prompt built for user:', {
-      hasUserName: !!currentUserName,
-      userName: currentUserName,
+      hasUserName: !!userSession?.name,
+      userName: userSession?.name || extractedName,
       isReturningUser: !!userSession?.last_question,
       conversionGoal: 'revenue_generation'
     });
