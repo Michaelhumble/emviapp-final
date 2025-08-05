@@ -327,16 +327,10 @@ export const ChatSystem = () => {
   const generateResponse = async (userMessage: string) => {
     setIsLoading(true);
     
-    // LITTLE SUNSHINE TEMPORARILY DISABLED
+    // Extract name from user message before sending
+    const extractedName = extractAndSetName(userMessage);
+    
     try {
-      // Disabled AI chat - returning simple message
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate thinking time
-      
-      const response = language === 'vi' 
-        ? "Xin lỗi, Little Sunshine đang tạm nghỉ. Vui lòng thử lại sau! 🌻"
-        : "Sorry, Little Sunshine is temporarily offline. Please try again later! 🌻";
-      
-      /* DISABLED AI CALL
       const { data, error } = await supabase.functions.invoke('sunshine-chat', {
         body: {
           message: userMessage,
@@ -352,7 +346,6 @@ export const ChatSystem = () => {
       const response = data?.response || (language === 'vi' 
         ? "Em ở đây để giúp anh/chị! Anh/chị muốn biết gì về EmviApp?"
         : "I'm here to help! What would you like to know about EmviApp?");
-      */
       
       // Check for routing intent and auth requirements
       const routeInfo = detectRouteIntent(userMessage, response);
