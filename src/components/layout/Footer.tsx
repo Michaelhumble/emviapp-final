@@ -140,12 +140,12 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/jobs" 
+                  <a 
+                    href="http://emviapp-final.lovable.app/jobs" 
                     className="text-gray-600 hover:text-purple-600 transition-colors duration-200 text-sm"
                   >
                     Jobs
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <Link 

@@ -18,11 +18,11 @@ const HeroSection = () => {
           <p className="text-lg text-gray-600 mb-10 font-sans leading-relaxed">
             Your profile works while you rest. EmviApp promotes your talent with AI.
           </p>
-          <Link to="/auth/signup">
+          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
             <Button size="lg" className="font-medium px-8 py-6 text-base">
               Claim My Artist Profile
             </Button>
-          </Link>
+          </a>
         </div>
       </motion.div>
     </section>

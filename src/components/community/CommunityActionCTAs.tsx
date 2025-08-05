@@ -43,10 +43,10 @@ const CommunityActionCTAs = () => {
                 Post your job opening and connect with talented beauty professionals ready to join your team.
               </p>
               <Button asChild className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl">
-                <Link to="/post-job" className="flex items-center justify-center gap-2">
+                <a href="http://emviapp-final.lovable.app/post-job" className="flex items-center justify-center gap-2">
                   Post a Job
                   <ArrowRight className="h-4 w-4" />
-                </Link>
+                </a>
               </Button>
             </div>
           </motion.div>
@@ -70,10 +70,10 @@ const CommunityActionCTAs = () => {
                 List your salon for sale and reach thousands of qualified buyers looking for their next opportunity.
               </p>
               <Button asChild className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl">
-                <Link to="/sell-salon" className="flex items-center justify-center gap-2">
+                <a href="http://emviapp-final.lovable.app/sell-salon" className="flex items-center justify-center gap-2">
                   List Your Salon
                   <ArrowRight className="h-4 w-4" />
-                </Link>
+                </a>
               </Button>
             </div>
           </motion.div>
