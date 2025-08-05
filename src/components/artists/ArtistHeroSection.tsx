@@ -99,7 +99,7 @@ const ArtistHeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <Link to="/auth/signup">
+              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
@@ -107,7 +107,7 @@ const ArtistHeroSection = () => {
                   <Crown className="mr-2 h-5 w-5" />
                   Become a Featured Artist
                 </Button>
-              </Link>
+              </a>
               
               <Link to="/explore/artists">
                 <Button 

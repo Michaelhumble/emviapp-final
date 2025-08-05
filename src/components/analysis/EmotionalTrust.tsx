@@ -18,11 +18,11 @@ const EmotionalTrust = () => {
           <p className="text-lg text-gray-600 mb-8">
             Everything about EmviApp was built for people like you. We don't just connect — we care.
           </p>
-          <Link to="/sign-up">
+          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
             <Button size="lg" className="font-medium px-8 py-6 text-base">
               Get Started — Free Forever
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>

@@ -113,7 +113,7 @@ const HeroContent = ({
           transition={{ duration: 0.7, delay: 0.6 }}
         >
           {/* Big, rounded, vibrant CTA Button */}
-          <Link to="/auth/signup">
+          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
             <Button 
               size="lg" 
               className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-700 hover:to-pink-600 shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-2xl ${
@@ -124,7 +124,7 @@ const HeroContent = ({
             >
               ✨ Start Your Journey
             </Button>
-          </Link>
+          </a>
         </motion.div>
         
         {/* Subtle Vietnamese line */}
