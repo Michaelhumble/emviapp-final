@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Stars } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart, Sparkles, Quote, Star, ArrowRight } from "lucide-react";
 import { getLanguagePreference, addLanguageChangeListener } from "@/utils/languagePreference";
 
 const FounderMessage = () => {
@@ -17,7 +18,10 @@ const FounderMessage = () => {
 
   const content = {
     en: {
-      title: "Founder's Message",
+      badge: "Message from Our Founder",
+      title: "A Message from Our Founder",
+      subtitle: "Why we built EmviApp for YOU",
+      quote: "Every beauty professional deserves to be seen, heard, and celebrated.",
       message: `To everyone who believes beauty changes lives:
 
 We see your hard work, your late nights, and the silent sacrifices no one else understands.
@@ -29,11 +33,14 @@ EmviApp exists because you deserve more: more recognition, more respect, more re
 This is your community—a place to be seen, supported, and celebrated.
 
 Thank you for making life more beautiful. Together, we're changing the beauty industry—starting with love and sincerity.`,
-      signature: "— The EmviApp Team",
-      icon: Sparkles
+      signature: "With love and respect,",
+      cta: "🌟 Join Our Community"
     },
     vi: {
-      title: "Thông điệp Người sáng lập",
+      badge: "Thông Điệp Từ Người Sáng Lập",
+      title: "Thông Điệp Từ Người Sáng Lập",
+      subtitle: "Tại sao chúng tôi xây dựng EmviApp cho BẠN",
+      quote: "Mỗi chuyên gia làm đẹp đều xứng đáng được nhìn thấy, lắng nghe và tôn vinh.",
       message: `Gửi đến những người làm đẹp bằng cả trái tim:
 
 EmviApp hiểu nỗi vất vả, nỗi lo, và cả những ước mơ thầm lặng của bạn.
@@ -46,142 +53,319 @@ Cộng đồng này là chỗ dựa, là nơi bạn thực sự thuộc về.
 
 Cảm ơn bạn đã làm đẹp cho cuộc sống này.
 Chúng ta cùng nhau thay đổi ngành làm đẹp, bắt đầu từ sự yêu thương và chân thành.`,
-      signature: "— Đội ngũ EmviApp",
-      icon: Stars
+      signature: "Với tình yêu và sự tôn trọng,",
+      cta: "🌟 Tham Gia Cộng Đồng"
     }
   };
 
   const currentContent = content[language];
-  const IconComponent = currentContent.icon;
+
+  // Enhanced animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { 
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const quoteVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { 
+        duration: 1.2,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const heartbeat = {
+    animate: {
+      scale: [1, 1.1, 1],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const floatingAnimation = {
+    animate: {
+      y: [-10, 10, -10],
+      rotate: [0, 5, -5, 0],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-purple-200/15 via-pink-200/15 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tr from-indigo-200/15 via-blue-200/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+    <section className="relative py-20 bg-gradient-to-br from-rose-50 via-white to-purple-50/30 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-rose-100/30 to-pink-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-gradient-to-br from-purple-100/30 to-indigo-100/20 rounded-full blur-3xl"></div>
         
-        {/* Floating sparkles */}
-        <div className="absolute top-20 left-1/4 text-yellow-300/40 animate-pulse text-2xl">✨</div>
-        <div className="absolute top-32 right-1/3 text-purple-300/30 animate-pulse text-xl" style={{ animationDelay: '1s' }}>✨</div>
-        <div className="absolute bottom-32 left-1/3 text-pink-300/40 animate-pulse text-lg" style={{ animationDelay: '2.5s' }}>✨</div>
-        <div className="absolute bottom-20 right-1/4 text-indigo-300/30 animate-pulse text-xl" style={{ animationDelay: '3.5s' }}>✨</div>
-      </div>
-
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
-        {/* Section Title with Icon */}
-        <motion.div 
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        {/* Floating decorative elements */}
+        <motion.div
+          className="absolute top-20 left-10 text-rose-300"
+          variants={floatingAnimation}
+          animate="animate"
         >
-          <h2 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold font-playfair flex items-center justify-center gap-4 relative group"
-            style={{
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-            role="heading"
-            aria-level={2}
-          >
-            <motion.div
-              animate={{ 
-                scale: [1, 1.1, 1],
-                rotate: [0, 5, -5, 0]
-              }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-            >
-              <IconComponent className="text-yellow-400" size={40} />
-            </motion.div>
-            {currentContent.title}
-            
-            {/* Animated underline */}
-            <motion.div 
-              className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 rounded-full group-hover:scale-x-110 transition-transform duration-300"
-              style={{
-                width: "60%",
-                background: "linear-gradient(90deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%)",
-                boxShadow: "0 4px 12px rgba(139, 92, 246, 0.4)"
-              }}
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
-            />
-          </h2>
+          <Heart className="h-6 w-6" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-32 right-20 text-purple-300"
+          animate={{
+            y: [10, -10, 10],
+            rotate: [0, -5, 5, 0],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        >
+          <Star className="h-8 w-8" />
         </motion.div>
 
-        {/* Main message card */}
-        <motion.div 
-          className="relative group max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+        <motion.div
+          className="absolute bottom-20 left-20 text-rose-400"
+          animate={{
+            y: [-5, 15, -5],
+            x: [-5, 5, -5],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
         >
-          {/* Glassmorphism card */}
-          <div 
-            className="relative bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl py-12 px-6 md:px-8 lg:px-12 border border-white/20 overflow-hidden group-hover:shadow-3xl transition-all duration-700"
-            style={{
-              background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 50%, rgba(245, 158, 11, 0.1) 100%)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              boxShadow: '0 25px 50px -12px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(255,255,255,0.1)'
-            }}
+          <Sparkles className="h-7 w-7" />
+        </motion.div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="max-w-4xl mx-auto"
+        >
+          {/* Section Badge */}
+          <motion.div 
+            variants={itemVariants}
+            className="flex justify-center mb-8"
           >
-            {/* Animated gradient border */}
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-400/20 via-pink-300/20 to-orange-400/20 p-[1px] group-hover:from-purple-400/40 group-hover:via-pink-300/40 group-hover:to-orange-400/40 transition-all duration-700">
-              <div className="h-full w-full rounded-3xl bg-transparent" />
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-rose-50 to-purple-50 border border-rose-200/60 rounded-full px-6 py-3 shadow-sm">
+              <span className="w-8 h-8 bg-gradient-to-r from-rose-600 to-purple-600 text-white text-sm font-bold rounded-full flex items-center justify-center">
+                7
+              </span>
+              <span className="text-rose-700 font-semibold text-sm font-primary tracking-wide">
+                {currentContent.badge}
+              </span>
             </div>
-            
-            {/* Subtle grid pattern overlay */}
-            <div className="absolute inset-0 opacity-5 rounded-3xl" style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)`,
-              backgroundSize: '24px 24px'
-            }}></div>
-            
-            <div className="relative z-10">
-              {/* Message content */}
-              <motion.div
+          </motion.div>
+
+          {/* Main Content Card */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-rose-100/60 overflow-hidden"
+          >
+            {/* Header with gradient */}
+            <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-purple-600 p-8 md:p-12 text-white relative">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
+                <motion.div
+                  variants={heartbeat}
+                  animate="animate"
+                  className="flex justify-center mb-6"
+                >
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <Heart className="h-8 w-8 text-white fill-current" />
+                  </div>
+                </motion.div>
+                
+                <motion.h2 
+                  variants={itemVariants}
+                  className="text-3xl md:text-5xl font-display font-bold text-center mb-4 leading-tight"
+                >
+                  {currentContent.title}
+                </motion.h2>
+                
+                <motion.p 
+                  variants={itemVariants}
+                  className="text-xl text-center font-primary opacity-90"
+                >
+                  {currentContent.subtitle}
+                </motion.p>
+              </div>
+            </div>
+
+            {/* Quote Section */}
+            <motion.div 
+              variants={quoteVariants}
+              className="px-8 md:px-12 py-8 bg-gradient-to-br from-rose-50/50 to-purple-50/50 border-b border-rose-100/30"
+            >
+              <div className="flex items-start gap-4">
+                <Quote className="h-8 w-8 text-rose-400 flex-shrink-0 mt-1" />
+                <blockquote className="text-xl md:text-2xl font-display font-medium text-slate-800 italic leading-relaxed">
+                  "{currentContent.quote}"
+                </blockquote>
+              </div>
+            </motion.div>
+
+            {/* Message Content */}
+            <div className="p-8 md:p-12">
+              <motion.div 
                 key={language}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="space-y-8"
-                role="article"
-                aria-label="Founder's message"
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="space-y-6"
               >
-                <div className="text-lg md:text-xl leading-relaxed text-foreground font-inter font-medium">
+                {/* Message paragraphs */}
+                <div className="text-lg md:text-xl leading-relaxed text-slate-700 space-y-6 font-primary">
                   {currentContent.message.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-6 last:mb-0">
+                    <motion.p 
+                      key={index} 
+                      className={`leading-relaxed ${
+                        index === 0 
+                          ? "text-2xl font-semibold text-rose-700 mb-8 text-center" 
+                          : "text-center"
+                      }`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                    >
                       {paragraph}
-                    </p>
+                    </motion.p>
                   ))}
                 </div>
-                
+
                 {/* Signature */}
-                <div className="pt-8 border-t border-white/20">
-                  <p 
-                    className="text-lg md:text-xl font-playfair italic"
-                    style={{
-                      color: 'rgba(139, 92, 246, 0.8)'
-                    }}
-                  >
+                <motion.div 
+                  className="mt-12 pt-8 border-t border-rose-100/60"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  <p className="text-lg font-primary text-slate-600 mb-4 text-center">
                     {currentContent.signature}
                   </p>
-                </div>
+                  
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-rose-100 to-purple-100 rounded-full flex items-center justify-center p-2">
+                      <img 
+                        src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png"
+                        alt="EmviApp Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-xl font-display font-bold text-slate-900">
+                        EmviApp {language === 'vi' ? 'Người Sáng Lập' : 'Founder'}
+                      </p>
+                      <p className="text-sm text-slate-500 font-primary">
+                        {language === 'vi' ? 'Người xây dựng cộng đồng làm đẹp' : 'Building the beauty community'}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             </div>
-          </div>
+          </motion.div>
+
+          {/* Enhanced CTA Section */}
+          <motion.div 
+            variants={itemVariants}
+            className="mt-12 text-center"
+          >
+            <div className="bg-gradient-to-br from-white to-rose-50/50 p-8 md:p-12 rounded-3xl shadow-xl border border-rose-100/60 max-w-2xl mx-auto">
+              <h3 className="text-2xl md:text-3xl font-display font-bold text-slate-900 mb-4">
+                {language === 'vi' ? 'Sẵn sàng tham gia?' : 'Ready to join us?'}
+              </h3>
+              <p className="text-lg text-slate-600 mb-8 font-primary leading-relaxed">
+                {language === 'vi' 
+                  ? 'Tham gia cộng đồng làm đẹp đang phát triển và kết nối với những chuyên gia thực thụ'
+                  : 'Join our growing beauty community and connect with real professionals'
+                }
+              </p>
+              
+              <motion.div
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
+                <a 
+                  href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+                  className="inline-block"
+                >
+                  <Button
+                    size="lg" 
+                    className="font-primary font-bold px-10 py-5 text-lg bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-700 hover:to-purple-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span>{currentContent.cta}</span>
+                      <ArrowRight className="h-6 w-6" />
+                    </span>
+                  </Button>
+                </a>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Bottom decorative hearts */}
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-center mt-8"
+          >
+            <div className="flex items-center gap-2">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.4, 1, 0.4],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                  }}
+                >
+                  <Heart className="h-4 w-4 text-rose-400 fill-current" />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

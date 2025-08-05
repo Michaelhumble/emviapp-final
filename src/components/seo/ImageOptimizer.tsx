@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { generateImageAlt } from '@/utils/seoHelpers';
+import { generateOptimizedImageUrl, generateSrcSet, createLazyObserver } from '@/utils/performanceOptimizer';
 
 interface OptimizedImageProps {
   src: string;
@@ -34,20 +35,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [hasError, setHasError] = useState(false);
   const [imgSrc, setImgSrc] = useState(src);
 
-  // Generate srcSet for responsive images
-  const generateSrcSet = (baseSrc: string) => {
-    if (!baseSrc) return '';
-    
-    // If it's a Supabase storage URL, we can add resize parameters
-    if (baseSrc.includes('supabase.co/storage')) {
-      const sizes = [320, 640, 768, 1024, 1200];
-      return sizes
-        .map(size => `${baseSrc}?width=${size}&quality=${quality} ${size}w`)
-        .join(', ');
-    }
-    
-    return '';
-  };
+  // Use performance-optimized srcSet generation
+  const optimizedSrcSet = generateSrcSet(imgSrc);
 
   // Handle load event
   const handleLoad = () => {
@@ -70,41 +59,47 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     return 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
   };
 
-  // Intersection Observer for lazy loading
+  // Performance-optimized lazy loading
   useEffect(() => {
     if (!lazy || priority) return;
 
     const img = document.querySelector(`img[data-src="${src}"]`) as HTMLImageElement;
     if (!img) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const target = entry.target as HTMLImageElement;
-            target.src = target.dataset.src || '';
-            target.classList.remove('lazy');
-            observer.unobserve(target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+    const observer = createLazyObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLImageElement;
+          target.src = target.dataset.src || '';
+          target.classList.remove('lazy');
+          observer.unobserve(target);
+        }
+      });
+    });
 
     observer.observe(img);
-
     return () => observer.disconnect();
   }, [src, lazy, priority]);
 
+  // Generate optimized image URL for better performance
+  const optimizedSrc = generateOptimizedImageUrl({
+    src: imgSrc,
+    quality,
+    format: 'webp',
+    priority
+  });
+
   const imageProps = {
-    src: lazy && !priority ? undefined : imgSrc,
+    src: lazy && !priority ? undefined : optimizedSrc,
     'data-src': lazy && !priority ? src : undefined,
     alt: alt || generateImageAlt(title || 'Image'),
     title,
     className: `${className} ${!isLoaded && showShimmer ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 ${lazy && !priority ? 'lazy' : ''}`,
     sizes,
-    srcSet: generateSrcSet(imgSrc),
+    srcSet: optimizedSrcSet,
     loading: lazy && !priority ? 'lazy' as const : 'eager' as const,
+    decoding: 'async' as const,
+    fetchPriority: priority ? 'high' as const : 'low' as const,
     onLoad: handleLoad,
     onError: handleError,
     style: {

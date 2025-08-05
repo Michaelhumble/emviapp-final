@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
@@ -72,15 +73,22 @@ const MassageListingsSection: React.FC = () => {
                         Premium massage studio offering wellness, therapy, and bodywork services.
                       </p>
                       
-                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
-                          Coming Soon
-                        </Badge>
+                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                         <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                           Coming Soon
+                         </Badge>
 
-                        <Button size="sm" variant="outline" className="gap-1">
-                          <Eye className="h-3.5 w-3.5" /> More Info
-                        </Button>
-                      </div>
+                         <div className="flex flex-col gap-1 ml-auto">
+                           <Button size="sm" variant="outline" className="gap-1 text-xs">
+                             <Eye className="h-3.5 w-3.5" /> More Info
+                           </Button>
+                           <Link to="/massage">
+                             <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full">
+                               🔥 Claim Your Spot in Massage
+                             </Button>
+                           </Link>
+                         </div>
+                       </div>
                     </CardContent>
                   </Card>
                 }
@@ -114,15 +122,22 @@ const MassageListingsSection: React.FC = () => {
                           Premium massage studio offering wellness, therapy, and bodywork services.
                         </p>
                         
-                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
-                            Coming Soon
-                          </Badge>
+                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                           <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                             Coming Soon
+                           </Badge>
 
-                          <Button size="sm" variant="outline" className="gap-1">
-                            <Eye className="h-3.5 w-3.5" /> View Details
-                          </Button>
-                        </div>
+                           <div className="flex flex-col gap-1 ml-auto">
+                             <Button size="sm" variant="outline" className="gap-1 text-xs">
+                               <Eye className="h-3.5 w-3.5" /> View Details
+                             </Button>
+                             <Link to="/massage">
+                               <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full">
+                                 🔥 Claim Your Spot in Massage
+                               </Button>
+                             </Link>
+                           </div>
+                         </div>
                       </CardContent>
                     </Card>
                   </ValidatedLink>

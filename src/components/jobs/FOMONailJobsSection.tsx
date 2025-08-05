@@ -21,7 +21,16 @@ interface FOMOJob {
 }
 
 const FOMONailJobsSection: React.FC = () => {
-  const { user } = useSession();
+  const { user, session } = useSession();
+  
+  // 🔍 DEBUG: Log auth state for FOMONailJobsSection  
+  console.log('🔍 [FOMO-NAIL-JOBS] Auth state:', {
+    hasUser: !!user,
+    hasSession: !!session,
+    userEmail: user?.email,
+    isSignedIn: !!user
+  });
+  
   const [selectedJob, setSelectedJob] = useState<FOMOJob | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 

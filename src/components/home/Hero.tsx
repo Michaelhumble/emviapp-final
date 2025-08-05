@@ -41,24 +41,16 @@ const Hero = () => {
     if (allImages.length <= 1) return; // Don't rotate if only 1 image
     
     const interval = setInterval(() => {
-      setIsChanging(true);
-      setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => 
-          prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
-        );
-        setIsChanging(false);
-      }, 800);
-    }, 6500);
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 7000);
     
     return () => clearInterval(interval);
   }, [allImages.length]);
 
   const handleDotClick = (index: number) => {
-    setIsChanging(true);
-    setTimeout(() => {
-      setCurrentImageIndex(index);
-      setIsChanging(false);
-    }, 500);
+    setCurrentImageIndex(index);
   };
 
   // Preload next images only after carousel is loaded

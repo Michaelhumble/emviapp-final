@@ -7,6 +7,7 @@ import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 const Index = lazy(() => import('@/pages/Index'));
 const Artists = lazy(() => import('@/pages/Artists'));
 const BookingServices = lazy(() => import('@/pages/BookingServices'));
+const Jobs = lazy(() => import('@/pages/Jobs'));
 const SalonsPageRedesigned = lazy(() => import('@/pages/salons/SalonsPageRedesigned'));
 const Dashboard = lazy(() => import('@/pages/dashboard'));
 const ArtistDashboard = lazy(() => import('@/pages/dashboard/Artist'));
@@ -17,6 +18,7 @@ const About = lazy(() => import('@/pages/About'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const SignIn = lazy(() => import('@/pages/auth/SignIn'));
 const SignUp = lazy(() => import('@/pages/auth/SignUp'));
+const PerformanceAudit = lazy(() => import('@/pages/PerformanceAudit'));
 
 // Loading component for Suspense
 const PageLoading = () => (
@@ -38,6 +40,7 @@ const ProductionRoutes: React.FC = () => {
         <Route path="/" element={<Index />} />
         <Route path="/artists" element={<Artists />} />
         <Route path="/booking-services" element={<BookingServices />} />
+        <Route path="/jobs/*" element={<Jobs />} />
         <Route path="/salons" element={<SalonsPageRedesigned />} />
         <Route path="/community" element={<Community />} />
         <Route path="/about" element={<About />} />
@@ -46,6 +49,9 @@ const ProductionRoutes: React.FC = () => {
         {/* Authentication routes */}
         <Route path="/auth/signin" element={<SignIn />} />
         <Route path="/auth/signup" element={<SignUp />} />
+        
+        {/* Performance audit route */}
+        <Route path="/performance-audit" element={<PerformanceAudit />} />
 
         {/* Protected dashboard routes */}
         <Route
@@ -82,7 +88,6 @@ const ProductionRoutes: React.FC = () => {
         />
 
         {/* Legacy redirects */}
-        <Route path="/jobs" element={<Navigate to="/booking-services" replace />} />
         <Route path="/salon-owners" element={<Navigate to="/salons" replace />} />
         <Route path="/customers" element={<Navigate to="/booking-services" replace />} />
 

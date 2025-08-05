@@ -12,18 +12,18 @@ const CallToAction = () => {
   return (
     <div className="bg-primary/5 py-16">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-4">
+        <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6 leading-tight tracking-tight">
           Ready to Join the Beauty Industry Platform?
         </h2>
-        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed font-primary">
           Start your journey today and connect with the best in the beauty industry.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           {!user ? (
             <>
-              <Link to="/auth/signup">
+              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                 <Button size="lg">Get Started</Button>
-              </Link>
+              </a>
               <Link to="/salons">
                 <Button size="lg" variant="outline">Browse Services</Button>
               </Link>

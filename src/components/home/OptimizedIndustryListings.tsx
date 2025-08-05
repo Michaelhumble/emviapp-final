@@ -20,7 +20,7 @@ const OptimizedIndustryListings = () => {
           key={industry.name}
           industryName={industry.name}
           displayName={industry.displayName}
-          listings={industry.listings.slice(0, 3)} // Only top 3 listings per industry
+          listings={industry.listings.slice(0, 5)} // Always show 5 featured cards
           routePath={industry.routePath}
           gradientColors={industry.gradientColors}
           icon={industry.icon}
@@ -45,7 +45,7 @@ const OptimizedIndustryListings = () => {
           key={industry.name}
           industryName={industry.name}
           displayName={industry.displayName}
-          listings={industry.listings.slice(0, 3)}
+          listings={industry.listings.slice(0, 5)}
           routePath={industry.routePath}
           gradientColors={industry.gradientColors}
           icon={industry.icon}

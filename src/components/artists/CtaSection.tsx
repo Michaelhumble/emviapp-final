@@ -19,11 +19,11 @@ const CtaSection = () => {
           <p className="text-lg text-gray-600 mb-8">
             Take control of your career, connect with clients who value your work, and become part of a supportive community of beauty professionals.
           </p>
-          <Link to="/auth/signup">
+          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
             <Button size="lg" className="font-medium px-8 py-6 text-base hover:scale-105 transition-transform">
               Get Started Today
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Send, X, Sun, Sparkles, RotateCcw, Type, Moon, Settings, ArrowRight, ExternalLink } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useChatRouting } from '@/hooks/useChatRouting';
 import { ChatToggleButton } from './ChatToggleButton';
@@ -46,6 +47,7 @@ interface ChatSession {
 }
 
 export const ChatSystem = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -468,13 +470,7 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'post', 
           label: 'Đăng tin tuyển thợ tại đây', 
-          action: () => handleRouteAction('/post-job')
-        });
-      } else {
-        actions.push({ 
-          id: 'post', 
-          label: 'Post a Job Here', 
-          action: () => handleRouteAction('/post-job')
+          action: () => navigate('/post-job')
         });
       }
     }
@@ -486,13 +482,7 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'sell', 
           label: 'Bán tiệm tại đây', 
-          action: () => handleRouteAction('/sell-salon')
-        });
-      } else {
-        actions.push({ 
-          id: 'sell', 
-          label: 'Sell a Salon Here', 
-          action: () => handleRouteAction('/sell-salon')
+          action: () => navigate('/sell-salon')
         });
       }
     }
@@ -505,13 +495,13 @@ export const ChatSystem = () => {
         actions.push({ 
           id: 'signup', 
           label: 'Tham gia cộng đồng làm đẹp', 
-          action: () => handleRouteAction('/auth/signup?redirect=%2F')
+          action: () => window.location.href = '/auth/signup?redirect=%2F'
         });
       } else {
         actions.push({ 
           id: 'signup', 
           label: 'Join Our Beauty Community', 
-          action: () => handleRouteAction('/auth/signup?redirect=%2F')
+          action: () => window.location.href = '/auth/signup?redirect=%2F'
         });
       }
     }

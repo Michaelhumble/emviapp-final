@@ -104,7 +104,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
               <Button 
                 variant="secondary" 
                 className="w-full" 
-                onClick={() => handleNavigation('/sign-up')}
+                onClick={() => window.location.href = 'http://emviapp-final.lovable.app/auth/signup?redirect=%2F'}
               >
                 Create Account
               </Button>
@@ -144,7 +144,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
             <Button 
               variant="secondary" 
               className="w-full" 
-              onClick={() => handleNavigation('/sign-up')}
+              onClick={() => window.location.href = 'http://emviapp-final.lovable.app/auth/signup?redirect=%2F'}
             >
               Create Account
             </Button>

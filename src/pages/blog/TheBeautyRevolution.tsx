@@ -267,11 +267,11 @@ const TheBeautyRevolution = () => {
               <strong>Cùng nhau</strong>, chúng ta sẽ xây dựng một tương lai nơi mọi nghệ sĩ làm đẹp đều được tôn trọng, mọi salon đều thành công, và mọi khách hàng đều hài lòng.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/auth/signup">
+              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                 <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg">
                   Tham Gia Ngay 🌟
                 </Button>
-              </Link>
+              </a>
               <Link to="/jobs">
                 <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50 px-8 py-3 text-lg">
                   Tìm Việc Làm 💼
@@ -289,11 +289,11 @@ const TheBeautyRevolution = () => {
               </div>
               <h3 className="font-bold text-purple-800 mb-2">Are You an Artist?</h3>
               <p className="text-gray-600 mb-4 text-sm">Join 100,000+ professionals who've already discovered their potential</p>
-              <Link to="/auth/signup">
+              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full">
                   Start Your Journey
                 </Button>
-              </Link>
+              </a>
             </div>
             <div className="bg-green-50 p-6 rounded-xl text-center">
               <div className="w-16 h-16 bg-green-200 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -379,12 +379,12 @@ const TheBeautyRevolution = () => {
               Let's build it, together. ✨
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth/signup">
+              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white px-12 py-4 text-xl flex items-center gap-2">
                   Join the Revolution
                   <ArrowRight className="w-6 h-6" />
                 </Button>
-              </Link>
+              </a>
               <Link to="/community">
                 <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50 px-12 py-4 text-xl">
                   Share Your Story

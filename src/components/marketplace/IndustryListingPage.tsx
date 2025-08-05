@@ -118,7 +118,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
   const handleEditJob = (listing: IndustryListing) => {
     if (listing.isOwner && listing.originalJobData) {
       // Universal edit routing for all industries
-      navigate(`/post-job/${industryName}`, {
+      navigate(`/post-job?edit=${listing.id}&industry=${industryName}`, {
         state: {
           editJobId: listing.id,
           editJobData: listing.originalJobData
@@ -569,7 +569,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
             <Button 
               size="lg" 
               className="bg-purple-600 hover:bg-purple-700 text-white font-inter font-bold"
-              onClick={() => navigate(industryName === 'nails' ? '/post-job/nails' : '/post-job')}
+              onClick={() => navigate(`/post-job?industry=${industryName}`)}
             >
               Post Your {displayName} Job Now
             </Button>
@@ -680,7 +680,7 @@ const IndustryListingPage: React.FC<IndustryListingPageProps> = ({
         <Button
           size="lg"
           className="bg-purple-600 hover:bg-purple-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 rounded-full px-6 py-4 font-inter font-bold"
-          onClick={() => navigate(industryName === 'nails' ? '/post-job/nails' : '/post-job')}
+          onClick={() => navigate(`/post-job?industry=${industryName}`)}
         >
           <Plus className="w-5 h-5 mr-2" />
           Post {displayName} Job

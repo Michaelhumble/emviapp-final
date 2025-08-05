@@ -85,19 +85,42 @@ const AIMatchmakerContent = ({ language, itemVariants }: AIMatchmakerContentProp
   ];
 
   return (
-    <div className="space-y-12">
-      {/* Feature cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+    <div className="space-y-16">
+      {/* Feature cards grid with clean, sophisticated design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {features.map((feature, index) => (
-          <AIFeatureCard 
+          <motion.div
             key={index}
-            feature={feature}
-            index={index}
-          />
+            className="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200/80 hover:shadow-lg hover:border-slate-300/80 transition-all duration-500 hover:-translate-y-1"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+          >
+            {/* Icon */}
+            <div className="mb-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform duration-300">
+                {feature.icon}
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div>
+              <h3 className="text-xl font-display font-semibold text-slate-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
+                {feature.title}
+              </h3>
+              <p className="text-slate-600 leading-relaxed font-primary">
+                {feature.description}
+              </p>
+            </div>
+            
+            {/* Subtle accent line */}
+            <div className="absolute bottom-0 left-8 right-8 h-0.5 bg-gradient-to-r from-purple-200 via-pink-200 to-orange-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          </motion.div>
         ))}
       </div>
       
-      {/* Redesigned Premium CTA Button */}
+      {/* CTA Button with refined design */}
       <motion.div
         className="flex justify-center pt-8"
         initial={{ opacity: 0, y: 30 }}
@@ -106,42 +129,37 @@ const AIMatchmakerContent = ({ language, itemVariants }: AIMatchmakerContentProp
         transition={{ duration: 0.8, delay: 0.6 }}
       >
         <motion.div
-          whileHover={{ scale: 1.05, y: -3 }}
+          whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.2 }}
         >
           <Button
             size="lg"
             onClick={handleCTAClick}
-            className="relative px-12 py-6 text-lg font-bold text-white rounded-2xl overflow-hidden group transition-all duration-500 border-0 shadow-2xl hover:shadow-purple-500/30"
+            className="relative px-8 py-4 text-lg font-primary font-medium text-white rounded-xl overflow-hidden group transition-all duration-300 border-0 shadow-md hover:shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 30%, #F59E0B 70%, #10B981 100%)",
-              boxShadow: "0 20px 40px rgba(139, 92, 246, 0.4), 0 8px 16px rgba(139, 92, 246, 0.2), 0 0 0 1px rgba(255,255,255,0.1)"
+              background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)",
             }}
-            aria-label="Try AI Matchmaker now"
           >
-            {/* Enhanced shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 transform -skew-x-12 group-hover:animate-shimmer" />
+            {/* Subtle shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform -skew-x-12" />
             
-            {/* Button text with icon */}
-            <span className="relative z-10 flex items-center">
-              <span className="mr-3">
+            {/* Button content */}
+            <span className="relative z-10 flex items-center gap-3">
+              <span>
                 {language === "en" 
-                  ? "🚀 Experience Your AI Matchmaker"
-                  : "🚀 Khám Phá AI Ghép Đôi Ngay"
+                  ? "✨ Experience Your AI Matchmaker"
+                  : "✨ Khám Phá AI Ghép Đôi Ngay"
                 }
               </span>
               <motion.span
-                className="inline-block"
-                animate={{ x: [0, 4, 0] }}
+                className="inline-block text-lg"
+                animate={{ x: [0, 3, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
                 →
               </motion.span>
             </span>
-            
-            {/* Enhanced glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-400/40 via-pink-400/40 to-emerald-400/40 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
           </Button>
         </motion.div>
       </motion.div>
