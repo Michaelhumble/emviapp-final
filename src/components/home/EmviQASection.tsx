@@ -150,156 +150,108 @@ const EmviQASection = () => {
   };
 
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden">
-      {/* Premium gradient background */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(252,250,255,0.98) 25%, rgba(255,249,245,0.95) 50%, rgba(252,250,255,0.98) 75%, rgba(255,255,255,0.95) 100%)"
-        }}
-      />
-      
-      {/* Animated sparkles */}
-      <motion.div
-        className="absolute top-20 left-1/4 text-amber-400 text-lg opacity-60"
-        variants={sparkleVariants}
-        animate="animate"
-      >
-        <Sparkles />
-      </motion.div>
-      <motion.div
-        className="absolute top-40 right-1/5 text-purple-400 text-sm opacity-50"
-        variants={sparkleVariants}
-        animate="animate"
-        style={{ animationDelay: "1s" }}
-      >
-        <Sparkles />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-32 left-1/6 text-rose-400 text-base opacity-60"
-        variants={sparkleVariants}
-        animate="animate"
-        style={{ animationDelay: "2s" }}
-      >
-        <Sparkles />
-      </motion.div>
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-orange-50/30">
+      <div className="container mx-auto px-4">
+        {/* Section Number Badge */}
+        <motion.div 
+          className="flex justify-center mb-6"
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200/60 rounded-full px-4 py-2">
+            <span className="w-6 h-6 bg-orange-600 text-white text-sm font-semibold rounded-full flex items-center justify-center">
+              6
+            </span>
+            <span className="text-orange-700 font-medium text-sm">
+              Community Q&A
+            </span>
+          </div>
+        </motion.div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Enhanced Section Header */}
         <motion.div
-          className="text-center mb-20"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-2xl">❓</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-tight">
-              EmviApp Community Q&A
-            </h2>
-            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full flex items-center justify-center">
-              <span className="text-2xl animate-pulse">✨</span>
-            </div>
-          </div>
-          <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
-            Real questions from our community, answered with transparency and care.
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6 leading-tight">
+            EmviApp{" "}
+            <span className="bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent">
+              Community Q&A
+            </span>
+          </h2>
+          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-primary">
+            Real questions from our community members, answered by industry experts and successful professionals.
           </p>
         </motion.div>
 
-        {/* Enhanced Q&A Accordion */}
+        {/* Q&A Accordion with refined design */}
         <motion.div
-          className="max-w-5xl mx-auto mb-20"
+          className="max-w-4xl mx-auto mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-purple-100">
-            <Accordion type="single" collapsible className="space-y-6">
-              {qaData.map((qa, index) => {
-                const gradients = [
-                  "from-purple-50 to-violet-50 border-purple-200",
-                  "from-blue-50 to-cyan-50 border-blue-200", 
-                  "from-pink-50 to-rose-50 border-pink-200",
-                  "from-green-50 to-emerald-50 border-green-200",
-                  "from-orange-50 to-amber-50 border-orange-200"
-                ];
-                const currentGradient = gradients[index % gradients.length];
-                
-                return (
-                  <AccordionItem 
-                    key={index} 
-                    value={`item-${index}`}
-                    className="border-0"
-                  >
-                    <div className={`bg-gradient-to-br ${currentGradient} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-l-4`}>
-                      <AccordionTrigger className="px-6 py-6 hover:no-underline text-left group">
-                        <div className="flex items-start gap-4 w-full">
-                          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300">
-                            <span className="text-sm font-bold text-purple-600">{index + 1}</span>
-                          </div>
-                          <span className="text-lg font-semibold text-gray-800 leading-relaxed pr-4 group-hover:text-purple-700 transition-colors duration-300">
-                            {qa.question}
-                          </span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-6">
-                        <div className="ml-12 bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-white/50">
-                          <p className="text-gray-700 leading-relaxed text-base">
-                            {qa.answer}
-                          </p>
-                        </div>
-                      </AccordionContent>
+          <Accordion type="single" collapsible className="space-y-4">
+            {qaData.slice(0, 8).map((qa, index) => (
+              <AccordionItem 
+                key={index} 
+                value={`item-${index}`}
+                className="border-0"
+              >
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 hover:shadow-md transition-all duration-300">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline text-left group">
+                    <div className="flex items-start gap-4 w-full">
+                      <div className="w-8 h-8 bg-gradient-to-br from-orange-100 to-amber-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-sm font-semibold text-orange-600">{index + 1}</span>
+                      </div>
+                      <span className="text-base font-display font-semibold text-slate-900 leading-relaxed pr-4 group-hover:text-orange-700 transition-colors duration-300">
+                        {qa.question}
+                      </span>
                     </div>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
-          </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4">
+                    <div className="ml-12 bg-slate-50/50 p-4 rounded-lg">
+                      <p className="text-slate-700 leading-relaxed font-primary text-sm">
+                        {qa.answer}
+                      </p>
+                    </div>
+                  </AccordionContent>
+                </div>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </motion.div>
 
-        {/* Enhanced Final CTA Block */}
+        {/* CTA */}
         <motion.div
-          className="text-center max-w-5xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 rounded-3xl p-12 md:p-16 shadow-2xl">
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <span className="text-4xl">🚀</span>
-              <h3 className="text-3xl md:text-4xl font-bold text-white">
-                Ready to Join the Movement?
-              </h3>
-              <span className="text-4xl">💫</span>
-            </div>
-            
-            <p className="text-xl text-purple-100 leading-relaxed mb-10 max-w-4xl mx-auto">
-              EmviApp isn't just another app—it's a mission, a movement, and a community. If you're ready to grow, share, and succeed together, join us and let's make the beauty industry better for everyone!
-            </p>
-            
-            <motion.div
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-            >
-              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
-                <Button 
-                  size="lg" 
-                  className="bg-white text-purple-900 hover:bg-gray-50 font-bold px-12 py-6 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  <span className="flex items-center">
-                    <span className="mr-3">✨ Join Now – Experience the Difference</span>
-                    <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-                  </span>
-                </Button>
-              </a>
-            </motion.div>
-          </div>
+          <motion.div
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+          >
+            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+              <Button 
+                size="lg"
+                className="font-primary font-medium px-8 py-4 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <span className="flex items-center gap-3">
+                  <span>✨ Join Our Community</span>
+                  <ArrowRight className="h-5 w-5" />
+                </span>
+              </Button>
+            </a>
+          </motion.div>
         </motion.div>
       </div>
     </section>

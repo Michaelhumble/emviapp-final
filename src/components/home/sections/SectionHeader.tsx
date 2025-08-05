@@ -24,15 +24,15 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       transition={{ duration: 0.7 }}
       className="text-center mb-16"
     >
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-4 text-foreground tracking-tight">
+      <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6 leading-tight tracking-tight">
         {title}
         {isVietnamese && vietnameseTitle && (
-          <span className="block text-xl md:text-2xl text-muted-foreground mt-2 font-inter font-medium">
+          <span className="block text-xl md:text-2xl text-slate-600 mt-3 font-primary font-medium">
             {vietnameseTitle}
           </span>
         )}
       </h2>
-      <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-inter">
+      <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-primary">
         {description}
       </p>
     </motion.div>
