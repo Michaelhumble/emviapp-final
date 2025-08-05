@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 import { Crown, TrendingUp, Star, Rocket, Zap, Target, Users } from "lucide-react";
 
 // Import generated avatars
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen-natural.jpg";
-import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-natural.jpg";
-import jessicaKimAvatar from "@/assets/avatars/jessica-kim-natural.jpg";
+import sofiaChenAvatar from "@/assets/avatars/sofia-chen-realistic.jpg";
+import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-realistic.jpg";
+import jessicaKimAvatar from "@/assets/avatars/jessica-kim-realistic.jpg";
 const topArtists = [
   {
     id: 1,
