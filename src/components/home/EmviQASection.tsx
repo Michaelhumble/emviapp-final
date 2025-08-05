@@ -197,7 +197,7 @@ const EmviQASection = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <Accordion type="single" collapsible className="space-y-4">
-            {qaData.slice(0, 8).map((qa, index) => (
+            {qaData.map((qa, index) => (
               <AccordionItem 
                 key={index} 
                 value={`item-${index}`}
