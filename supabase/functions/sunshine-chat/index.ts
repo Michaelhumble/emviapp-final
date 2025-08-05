@@ -354,7 +354,7 @@ Remember: Format responses with clear steps, bold actions, and proper routing to
       let aiResponse = data.choices[0].message.content;
 
       // Log successful response
-      console.log('Sunshine Chat response generated (v2.0):', {
+      console.log('Sunshine Chat response generated (v2.1-DEPLOY):', {
         responseLength: aiResponse.length,
         language: detectedLanguage,
         hasLinks: aiResponse.includes('[') && aiResponse.includes(']'),
