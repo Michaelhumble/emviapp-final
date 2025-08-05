@@ -32,12 +32,12 @@ const PostYourSalonButton: React.FC<PostYourSalonButtonProps> = ({
       size={size}
       className={className}
     >
-      <a href="http://emviapp-final.lovable.app/sell-salon" onClick={handleClick}>
+      <Link to="/sell-salon" onClick={handleClick}>
         {t({
           english: "Post Your Salon",
           vietnamese: "Đăng Bán Tiệm"
         })}
-      </a>
+      </Link>
     </Button>
   );
 };
