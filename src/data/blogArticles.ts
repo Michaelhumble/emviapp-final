@@ -19,6 +19,7 @@ import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg';
 import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
+import beautyHeroesCommunityImage from '@/assets/blog/beauty-heroes-community.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -56,9 +57,27 @@ const SalonStaffingSolution2025 = lazy(() => import('@/pages/blog/articles/Salon
 const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGuide2025'));
 const AIBeautyRevolution2025 = lazy(() => import('@/data/blogArticles/ai-beauty-revolution-2025'));
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
+const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'the-beauty-revolution-manifesto',
+    slug: 'the-beauty-revolution-manifesto',
+    title: 'The Beauty Revolution: Empowering Every Artist, Transforming Every Life',
+    description: 'The manifesto that\'s changing how the world sees beauty professionals. Join millions of artists discovering their potential and building communities that celebrate real beauty.',
+    author: 'EmviApp Founder',
+    publishedAt: '2025-01-05',
+    readTime: '12 min read',
+    category: 'EmviApp Vision',
+    categorySlug: 'emviapp-vision',
+    tags: ['beauty revolution', 'artist empowerment', 'community building', 'EmviApp mission', 'beauty industry transformation', 'Vietnamese beauty artists', 'nail artist recognition', 'salon success stories'],
+    image: beautyHeroesCommunityImage,
+    featured: true,
+    trending: true,
+    component: TheBeautyRevolutionArticle,
+    url: '/blog/the-beauty-revolution'
+  },
   {
     id: 'ai-beauty-revolution-2025-new',
     slug: 'ai-beauty-revolution-2025-new',

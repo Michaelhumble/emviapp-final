@@ -60,6 +60,7 @@ const NailJobSuccessPage = lazy(() => import("@/pages/nails-job-success"));
 // Blog Pages
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
+const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 
 // Blog Category Pages
 const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
@@ -205,6 +206,7 @@ function App() {
                     
                     {/* Blog Routes */}
                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                    <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
                     
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />
