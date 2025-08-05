@@ -61,33 +61,44 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           }}
           style={{ zIndex: index === activeIndex ? 2 : 1 }}
         >
-          {/* Performance-optimized image */}
+          {/* Performance-optimized image with WebP support */}
           <div className="fixed-image-container absolute inset-0">
-            <img
-              src={image.url}
-              alt={image.alt}
-              className="w-screen h-screen object-cover"
-              loading={index === 0 ? "eager" : "lazy"}
-              decoding="async"
-              fetchPriority={index === 0 ? "high" : "low"}
-              style={{ 
-                objectPosition: isMobile ? "center center" : "center", 
-                width: "100vw",
-                height: "100dvh",
-                minHeight: "100svh",
-                maxWidth: "100vw",
-                maxHeight: "100dvh",
-                position: "absolute",
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-                filter: 'brightness(0.85) contrast(1.1) saturate(1.2)',
-                imageRendering: 'crisp-edges',
-                transform: 'translate3d(0,0,0)',
-                backfaceVisibility: 'hidden'
-              }}
-            />
+            <picture>
+              <source 
+                srcSet={`${image.url}?format=webp&quality=85${isMobile ? '&w=768' : '&w=1920'}`}
+                type="image/webp"
+              />
+              <source 
+                srcSet={`${image.url}?format=avif&quality=80${isMobile ? '&w=768' : '&w=1920'}`}
+                type="image/avif"
+              />
+              <img
+                src={`${image.url}?quality=85${isMobile ? '&w=768' : '&w=1920'}`}
+                alt={image.alt}
+                className="w-screen h-screen object-cover"
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+                fetchPriority={index === 0 ? "high" : "low"}
+                style={{ 
+                  objectPosition: isMobile ? "center center" : "center", 
+                  width: "100vw",
+                  height: "100dvh",
+                  minHeight: "100svh",
+                  maxWidth: "100vw",
+                  maxHeight: "100dvh",
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  filter: 'brightness(0.85) contrast(1.1) saturate(1.2)',
+                  imageRendering: 'crisp-edges',
+                  transform: 'translate3d(0,0,0)',
+                  backfaceVisibility: 'hidden',
+                  willChange: index === activeIndex ? 'opacity' : 'auto'
+                }}
+              />
+            </picture>
             
             {/* Premium gradient overlays for perfect text readability */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
