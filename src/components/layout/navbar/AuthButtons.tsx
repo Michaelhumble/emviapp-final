@@ -120,9 +120,9 @@ const AuthButtons = () => {
           <Link to={`/sign-in?redirect=${currentPath}`}>
             <Button variant="ghost">Sign In</Button>
           </Link>
-          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+          <Link to={`/auth/signup?redirect=${currentPath}`}>
             <Button>Sign Up</Button>
-          </a>
+          </Link>
         </>
       )}
     </div>

@@ -163,9 +163,9 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
 
           <div className="text-sm text-center text-gray-500">
             Don't have an account?{" "}
-            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link to="/auth/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
               Sign up
-            </a>
+            </Link>
           </div>
         </CardFooter>
       </form>
