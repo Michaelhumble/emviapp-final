@@ -127,7 +127,7 @@ const ModernHero = ({ isVietnamese = false, toggleLanguage = () => {} }: ModernH
                 {isVietnamese ? "Đặt Lịch Ngay" : "Book Services Now"}
               </Button>
             </Link>
-            <Link to="/auth/signup">
+            <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
               <Button 
                 size="lg" 
                 variant="outline" 
@@ -135,7 +135,7 @@ const ModernHero = ({ isVietnamese = false, toggleLanguage = () => {} }: ModernH
               >
                 {isVietnamese ? "Tìm Việc Làm Đẹp" : "Find Beauty Jobs"}
               </Button>
-            </Link>
+            </a>
           </motion.div>
 
           {/* Trust Indicators */}
