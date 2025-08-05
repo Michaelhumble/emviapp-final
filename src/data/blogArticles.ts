@@ -16,8 +16,7 @@ import nailSalonSocialMediaImage from '@/assets/blog/nail-salon-social-media.jpg
 import salonSocialMediaMarketingImage from '@/assets/blog/salon-social-media-marketing.jpg';
 import salonStaffingSolutionImage from '@/assets/blog/salon-staffing-solution-2025.jpg';
 import sellSalonGuideImage from '@/assets/blog/sell-salon-guide-2025.jpg';
-import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg';
-import aiBeautyRevolutionHeroImage from '@/assets/ai-beauty-revolution-hero.jpg';
+import aiBeautyRevolutionHeroImage from '@/assets/blog/ai-beauty-revolution-hero-premium.jpg';
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 
@@ -55,7 +54,7 @@ const AISalonTools2025 = lazy(() => import('@/pages/blog/AISalonTools2025'));
 const SalonStaffingCrisis2025 = lazy(() => import('@/pages/blog/SalonStaffingCrisis2025'));
 const SalonStaffingSolution2025 = lazy(() => import('@/pages/blog/articles/SalonStaffingSolution2025'));
 const SellSalonGuide2025 = lazy(() => import('@/pages/blog/articles/SellSalonGuide2025'));
-const AIBeautyRevolution2025 = lazy(() => import('@/data/blogArticles/ai-beauty-revolution-2025'));
+const AIBeautyRevolution2025 = lazy(() => import('@/pages/blog/articles/AIBeautyRevolution2025'));
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 

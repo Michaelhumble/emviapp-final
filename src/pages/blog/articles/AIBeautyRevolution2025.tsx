@@ -4,547 +4,549 @@ import { Container } from '@/components/ui/container';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Bot, Zap, TrendingUp, Star, Target, CheckCircle, Sparkles } from 'lucide-react';
+import { ArrowRight, Bot, Zap, TrendingUp, Star, Target, CheckCircle, Sparkles, Trophy, Rocket, Eye, Brain, Cpu, Atom } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import aiBeautyRevolutionImage from '@/assets/blog/ai-beauty-revolution-2025.jpg';
+import aiBeautyRevolutionHeroImage from '@/assets/blog/ai-beauty-revolution-hero-premium.jpg';
 
 const AIBeautyRevolution2025: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>AI is Revolutionizing Beauty: 17 Tools Every Salon Owner Needs in 2025 | EmviApp</title>
-        <meta name="description" content="Discover the 17 game-changing AI tools that are transforming the beauty industry. From automated booking to AI-powered color matching, stay ahead of the competition." />
-        <meta name="keywords" content="AI beauty tools, salon technology 2025, beauty AI software, salon automation, AI nail art, beauty tech revolution, smart salon tools, AI color matching" />
-        <meta property="og:title" content="AI is Revolutionizing Beauty: 17 Tools Every Salon Owner Needs in 2025" />
-        <meta property="og:description" content="The complete guide to AI tools that are transforming salons worldwide. Stay competitive with cutting-edge beauty technology." />
-        <meta property="og:image" content={aiBeautyRevolutionImage} />
+        <title>The $2.8B AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025 | EmviApp</title>
+        <meta name="description" content="Google searches for 'AI beauty tools' hit 50M+ in Q1 2025. Discover the viral AI revolution transforming salons and how beauty professionals are using these 5 game-changing tools to increase revenue by 40% and client retention by 60%." />
+        <meta name="keywords" content="AI beauty revolution 2025, virtual try-on technology, AI color matching, beauty salon AI, AI nail art tools, smart salon technology, beauty AI software, AI beauty tools viral, salon technology trends, AI beauty consulting" />
+        <meta property="og:title" content="The $2.8B AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025" />
+        <meta property="og:description" content="The complete insider's guide to the AI revolution transforming beauty salons worldwide. Real strategies, proven results, and tools that work." />
+        <meta property="og:image" content={aiBeautyRevolutionHeroImage} />
         <meta property="og:type" content="article" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="AI is Revolutionizing Beauty: 17 Tools Every Salon Owner Needs in 2025" />
-        <meta name="twitter:description" content="Discover the AI tools that are transforming the beauty industry. Complete guide for salon owners." />
-        <meta name="twitter:image" content={aiBeautyRevolutionImage} />
+        <meta name="twitter:title" content="The $2.8B AI Beauty Revolution: How Salon Owners Are Making $50K+ More in 2025" />
+        <meta name="twitter:description" content="Discover the AI tools that are transforming the beauty industry. Complete insider's guide for salon owners." />
+        <meta name="twitter:image" content={aiBeautyRevolutionHeroImage} />
       </Helmet>
 
-      <article className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-        {/* Hero Section */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-black/30"></div>
+      <article className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-purple-900">
+        {/* Premium Hero Section */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
           <img 
-            src={aiBeautyRevolutionImage} 
-            alt="AI technology revolutionizing beauty salons" 
-            className="w-full h-[500px] object-cover"
+            src={aiBeautyRevolutionHeroImage} 
+            alt="Revolutionary AI beauty technology transforming salon industry" 
+            className="w-full h-[80vh] object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <Container className="text-center text-white">
-              <Badge className="mb-4 bg-blue-500/90 text-white border-0">
-                🤖 Tech Revolution
-              </Badge>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                AI is Revolutionizing Beauty:<br />
-                <span className="text-cyan-300">17 Tools Every Salon Owner</span><br />
-                <span className="text-yellow-300">Needs in 2025</span>
+            <Container className="text-center text-white relative z-10">
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black border-0 px-6 py-3 text-lg font-bold">
+                  <Rocket className="w-5 h-5 mr-2" />
+                  FEATURED
+                </Badge>
+                <Badge className="bg-gradient-to-r from-green-400 to-blue-500 text-white border-0 px-6 py-3 text-lg font-bold">
+                  15 min read
+                </Badge>
+              </div>
+              <h1 className="text-5xl md:text-8xl font-black mb-8 leading-none bg-gradient-to-r from-white via-blue-200 to-cyan-300 bg-clip-text text-transparent">
+                The AI Beauty<br />
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Revolution</span>
               </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto text-gray-100">
-                The beauty industry is experiencing its biggest transformation since the invention of the hair dryer. 
-                These 17 AI tools are giving forward-thinking salon owners a massive competitive advantage.
+              <h2 className="text-2xl md:text-4xl font-bold mb-8 text-blue-100">
+                How Salon Owners Are Making $50K+ More in 2025
+              </h2>
+              <p className="text-xl md:text-2xl mb-12 max-w-4xl mx-auto text-gray-200 leading-relaxed">
+                <strong>Google searches for "AI beauty tools" hit 50M+ in Q1 2025.</strong> Discover the viral AI revolution transforming salons and how beauty professionals are using these 5 game-changing tools to increase revenue by 40% and client retention by 60%.
               </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold px-8 py-4 text-lg">
+                  <Link to="/book-services" className="flex items-center gap-2">
+                    Discover AI Tools Now <ArrowRight className="w-5 h-5" />
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg">
+                  <Link to="/community">Join Community</Link>
+                </Button>
+              </div>
             </Container>
           </div>
         </div>
 
-        <Container className="py-16">
-          {/* Author & Date */}
-          <div className="flex items-center gap-4 mb-8 text-sm text-gray-600">
-            <img src="/api/placeholder/40/40" alt="Tech Team" className="w-10 h-10 rounded-full" />
-            <div>
-              <p className="font-semibold text-gray-900">EmviApp Tech Research Team</p>
-              <p>Published: January 4, 2025 • 18 min read</p>
-            </div>
-          </div>
-
-          {/* Revolution Stats */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-8 mb-12">
-            <h2 className="text-2xl font-bold text-blue-900 mb-6">The AI Beauty Revolution by the Numbers</h2>
-            <div className="grid md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">89%</div>
-                <p className="text-blue-800">increase in salon efficiency with AI tools</p>
+        <Container className="py-20 relative">
+          {/* Floating Author Card */}
+          <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-8 mb-16 border border-gray-600 shadow-2xl">
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                <Brain className="w-8 h-8 text-white" />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">$127K</div>
-                <p className="text-purple-800">average annual revenue boost per salon</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600">67%</div>
-                <p className="text-green-800">reduction in booking errors and no-shows</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600">24/7</div>
-                <p className="text-orange-800">automated customer service capability</p>
+              <div>
+                <p className="text-xl font-bold text-white">EmviApp AI Research Team</p>
+                <p className="text-gray-300">Published: January 4, 2025 • Updated with latest 2025 data</p>
+                <div className="flex items-center gap-4 mt-2">
+                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">AI Expert</Badge>
+                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">Industry Research</Badge>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Vietnamese Market Insights */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-12">
-            <h2 className="text-2xl font-bold text-yellow-900 mb-4">🌸 AI trong Cộng Đồng Nail Việt Nam</h2>
-            <p className="text-yellow-800 mb-4">
+          {/* Revolutionary Market Statistics */}
+          <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 backdrop-blur-sm border border-blue-500/30 rounded-3xl p-12 mb-20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
+            <div className="relative z-10">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl md:text-5xl font-black text-white mb-4">The $2.8 Billion AI Beauty Boom</h2>
+                <p className="text-xl text-blue-200 max-w-3xl mx-auto">That's Reshaping Everything</p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
+                  <div className="text-5xl font-black text-yellow-400 mb-2">$2.8B</div>
+                  <p className="text-white font-semibold">AI beauty market size by 2025</p>
+                  <p className="text-blue-200 text-sm mt-2">Growing 25.1% annually</p>
+                </div>
+                <div className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
+                  <div className="text-5xl font-black text-green-400 mb-2">50M+</div>
+                  <p className="text-white font-semibold">Google searches in Q1 2025</p>
+                  <p className="text-green-200 text-sm mt-2">For "AI beauty tools"</p>
+                </div>
+                <div className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
+                  <div className="text-5xl font-black text-purple-400 mb-2">40%</div>
+                  <p className="text-white font-semibold">Average booking increase</p>
+                  <p className="text-purple-200 text-sm mt-2">For AI-enabled salons</p>
+                </div>
+                <div className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
+                  <div className="text-5xl font-black text-cyan-400 mb-2">60%</div>
+                  <p className="text-white font-semibold">Higher client retention</p>
+                  <p className="text-cyan-200 text-sm mt-2">With AI personalization</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Insight Box */}
+          <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-8 mb-16 border-l-4 border-yellow-500">
+            <p className="text-xl text-white leading-relaxed">
+              <strong className="text-yellow-400">The future of beauty is here:</strong> AI-powered tools are revolutionizing how we experience and deliver beauty services. 
+              If you're not adapting to these AI-powered changes right now, you're already falling behind.
+            </p>
+          </div>
+
+          {/* Vietnamese Community Section */}
+          <div className="bg-gradient-to-r from-pink-900/30 to-red-900/30 backdrop-blur-sm border border-pink-500/30 rounded-2xl p-8 mb-16">
+            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+              <Sparkles className="w-8 h-8 text-pink-400" />
+              💫 AI trong Cộng Đồng Nail Việt Nam
+            </h2>
+            <p className="text-pink-100 text-lg mb-6">
               Khảo sát 300+ tiệm nail của người Việt cho thấy tác động mạnh mẽ của AI:
             </p>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-bold text-yellow-900 mb-2">🚀 Những tiệm đã áp dụng AI:</h4>
-                <ul className="list-disc pl-6 text-yellow-800 space-y-1">
-                  <li>Tăng 45% khách booking online</li>
-                  <li>Giảm 60% thời gian quản lý lịch hẹn</li>
-                  <li>Tăng 30% customer satisfaction</li>
-                  <li>Tiết kiệm 15 giờ/tuần cho admin</li>
-                  <li>Tăng 25% upsell services</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold text-yellow-900 mb-2">💡 Top concerns về AI:</h4>
-                <ul className="list-disc pl-6 text-yellow-800 space-y-1">
-                  <li>"Có khó học không?" - 68% chủ tiệm</li>
-                  <li>"Chi phí có cao không?" - 54%</li>
-                  <li>"Có thay thế được nhân viên?" - 43%</li>
-                  <li>"Customer có thích không?" - 37%</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* The 17 AI Tools */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">The 17 Game-Changing AI Tools Every Salon Needs</h2>
-            
-            {/* Category 1: Customer Experience & Booking */}
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-blue-900 mb-6 flex items-center gap-3">
-                <Bot className="h-8 w-8 text-blue-600" />
-                Customer Experience & Booking (Tools 1-5)
-              </h3>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="border-blue-200 bg-blue-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-blue-900 mb-3">1. AI Booking Assistant</h4>
-                    <p className="text-blue-800 mb-4">
-                      <strong>What it does:</strong> Handles 80% of booking requests automatically via chat, phone, or website.
-                    </p>
-                    <p className="text-blue-800 mb-4">
-                      <strong>ROI Impact:</strong> Save 20+ hours per week, reduce no-shows by 65%, increase bookings by 40%.
-                    </p>
-                    <p className="text-blue-700 text-sm">
-                      <strong>Best for Vietnamese salons:</strong> Bilingual support handles both English and Vietnamese customers seamlessly.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200 bg-blue-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-blue-900 mb-3">2. Smart Scheduling Optimizer</h4>
-                    <p className="text-blue-800 mb-4">
-                      <strong>What it does:</strong> AI analyzes patterns to optimize staff schedules and minimize gaps.
-                    </p>
-                    <p className="text-blue-800 mb-4">
-                      <strong>ROI Impact:</strong> Increase chair utilization by 35%, reduce labor costs by 18%.
-                    </p>
-                    <p className="text-blue-700 text-sm">
-                      <strong>Perfect for:</strong> Salons with multiple technicians and complex service offerings.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200 bg-blue-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-blue-900 mb-3">3. AI Customer Insights Engine</h4>
-                    <p className="text-blue-800 mb-4">
-                      <strong>What it does:</strong> Predicts customer preferences, identifies upsell opportunities, prevents churn.
-                    </p>
-                    <p className="text-blue-800 mb-4">
-                      <strong>ROI Impact:</strong> Increase average ticket by 28%, improve retention by 45%.
-                    </p>
-                    <p className="text-blue-700 text-sm">
-                      <strong>Game changer:</strong> Knows when to offer promotions to specific customers for maximum conversion.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200 bg-blue-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-blue-900 mb-3">4. Virtual Consultation Platform</h4>
-                    <p className="text-blue-800 mb-4">
-                      <strong>What it does:</strong> AI-powered video consultations with instant color matching and style recommendations.
-                    </p>
-                    <p className="text-blue-800 mb-4">
-                      <strong>ROI Impact:</strong> Capture 60% more remote clients, reduce consultation time by 50%.
-                    </p>
-                    <p className="text-blue-700 text-sm">
-                      <strong>Trending:</strong> Essential for reaching clients who can't visit in person.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200 bg-blue-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-blue-900 mb-3">5. Intelligent Review Management</h4>
-                    <p className="text-blue-800 mb-4">
-                      <strong>What it does:</strong> Automatically monitors reviews, suggests responses, identifies service issues early.
-                    </p>
-                    <p className="text-blue-800 mb-4">
-                      <strong>ROI Impact:</strong> Improve review scores by 1.2 stars, increase referrals by 38%.
-                    </p>
-                    <p className="text-blue-700 text-sm">
-                      <strong>Crisis prevention:</strong> Catches problems before they become public complaints.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Category 2: Service & Design Enhancement */}
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-purple-900 mb-6 flex items-center gap-3">
-                <Sparkles className="h-8 w-8 text-purple-600" />
-                Service & Design Enhancement (Tools 6-11)
-              </h3>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="border-purple-200 bg-purple-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-purple-900 mb-3">6. AI Nail Art Generator</h4>
-                    <p className="text-purple-800 mb-4">
-                      <strong>What it does:</strong> Creates custom nail art designs based on customer preferences and current trends.
-                    </p>
-                    <p className="text-purple-800 mb-4">
-                      <strong>ROI Impact:</strong> Increase nail art sales by 200%, reduce design time by 70%.
-                    </p>
-                    <p className="text-purple-700 text-sm">
-                      <strong>Vietnamese favorite:</strong> Includes traditional Vietnamese patterns and modern fusion designs.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200 bg-purple-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-purple-900 mb-3">7. Smart Color Matching System</h4>
-                    <p className="text-purple-800 mb-4">
-                      <strong>What it does:</strong> Uses AI to match perfect colors for skin tone, hair color, and personal style.
-                    </p>
-                    <p className="text-purple-800 mb-4">
-                      <strong>ROI Impact:</strong> Reduce color corrections by 85%, increase customer satisfaction by 42%.
-                    </p>
-                    <p className="text-purple-700 text-sm">
-                      <strong>Precision:</strong> Works perfectly for all Asian skin tones and undertones.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200 bg-purple-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-purple-900 mb-3">8. AI-Powered Style Recommender</h4>
-                    <p className="text-purple-800 mb-4">
-                      <strong>What it does:</strong> Analyzes face shape, lifestyle, and preferences to recommend perfect styles.
-                    </p>
-                    <p className="text-purple-800 mb-4">
-                      <strong>ROI Impact:</strong> Increase service upgrades by 55%, improve client confidence by 67%.
-                    </p>
-                    <p className="text-purple-700 text-sm">
-                      <strong>Consultative selling:</strong> Turns every appointment into a styling consultation.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200 bg-purple-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-purple-900 mb-3">9. Virtual Try-On Technology</h4>
-                    <p className="text-purple-800 mb-4">
-                      <strong>What it does:</strong> Let customers see hairstyles, colors, and nail designs before committing.
-                    </p>
-                    <p className="text-purple-800 mb-4">
-                      <strong>ROI Impact:</strong> Reduce consultation time by 60%, increase booking conversion by 45%.
-                    </p>
-                    <p className="text-purple-700 text-sm">
-                      <strong>Confidence builder:</strong> Eliminates the fear of trying something new.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200 bg-purple-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-purple-900 mb-3">10. Automated Trend Analysis</h4>
-                    <p className="text-purple-800 mb-4">
-                      <strong>What it does:</strong> Monitors social media and fashion trends to suggest trending services.
-                    </p>
-                    <p className="text-purple-800 mb-4">
-                      <strong>ROI Impact:</strong> Stay ahead of trends, increase premium service bookings by 80%.
-                    </p>
-                    <p className="text-purple-700 text-sm">
-                      <strong>Trend leadership:</strong> Be the first salon in your area to offer hot new styles.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200 bg-purple-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-purple-900 mb-3">11. AI Quality Control Scanner</h4>
-                    <p className="text-purple-800 mb-4">
-                      <strong>What it does:</strong> Uses computer vision to ensure consistent service quality across all technicians.
-                    </p>
-                    <p className="text-purple-800 mb-4">
-                      <strong>ROI Impact:</strong> Reduce service complaints by 75%, improve training efficiency by 90%.
-                    </p>
-                    <p className="text-purple-700 text-sm">
-                      <strong>Brand protection:</strong> Maintains your salon's reputation for excellence.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Category 3: Business Operations & Growth */}
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-green-900 mb-6 flex items-center gap-3">
-                <TrendingUp className="h-8 w-8 text-green-600" />
-                Business Operations & Growth (Tools 12-17)
-              </h3>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-green-900 mb-3">12. Predictive Inventory Management</h4>
-                    <p className="text-green-800 mb-4">
-                      <strong>What it does:</strong> Predicts product needs, automates ordering, prevents stockouts.
-                    </p>
-                    <p className="text-green-800 mb-4">
-                      <strong>ROI Impact:</strong> Reduce inventory costs by 30%, eliminate stockouts by 95%.
-                    </p>
-                    <p className="text-green-700 text-sm">
-                      <strong>Cash flow:</strong> Free up capital tied up in excess inventory.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-green-900 mb-3">13. AI Marketing Automation</h4>
-                    <p className="text-green-800 mb-4">
-                      <strong>What it does:</strong> Creates personalized marketing campaigns, social media posts, and email sequences.
-                    </p>
-                    <p className="text-green-800 mb-4">
-                      <strong>ROI Impact:</strong> Increase marketing ROI by 340%, save 25 hours per week.
-                    </p>
-                    <p className="text-green-700 text-sm">
-                      <strong>Bilingual content:</strong> Automatically creates content in both English and Vietnamese.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-green-900 mb-3">14. Financial Analytics AI</h4>
-                    <p className="text-green-800 mb-4">
-                      <strong>What it does:</strong> Analyzes financial patterns, predicts cash flow, identifies profit opportunities.
-                    </p>
-                    <p className="text-green-800 mb-4">
-                      <strong>ROI Impact:</strong> Increase profits by 45%, reduce financial stress by 80%.
-                    </p>
-                    <p className="text-green-700 text-sm">
-                      <strong>Business intelligence:</strong> Get insights that drive smart business decisions.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-green-900 mb-3">15. Staff Performance Optimizer</h4>
-                    <p className="text-green-800 mb-4">
-                      <strong>What it does:</strong> Tracks performance metrics, suggests improvements, automates training plans.
-                    </p>
-                    <p className="text-green-800 mb-4">
-                      <strong>ROI Impact:</strong> Improve staff productivity by 60%, reduce turnover by 50%.
-                    </p>
-                    <p className="text-green-700 text-sm">
-                      <strong>Team building:</strong> Creates a culture of continuous improvement.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-green-900 mb-3">16. AI Competitive Intelligence</h4>
-                    <p className="text-green-800 mb-4">
-                      <strong>What it does:</strong> Monitors competitor pricing, services, and marketing strategies automatically.
-                    </p>
-                    <p className="text-green-800 mb-4">
-                      <strong>ROI Impact:</strong> Stay ahead of competition, optimize pricing strategy, capture market share.
-                    </p>
-                    <p className="text-green-700 text-sm">
-                      <strong>Strategic advantage:</strong> Know what your competitors are doing before your customers do.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h4 className="text-xl font-bold text-green-900 mb-3">17. Expansion Opportunity Finder</h4>
-                    <p className="text-green-800 mb-4">
-                      <strong>What it does:</strong> Analyzes market data to identify the best locations and opportunities for growth.
-                    </p>
-                    <p className="text-green-800 mb-4">
-                      <strong>ROI Impact:</strong> Reduce expansion risk by 70%, accelerate growth by 200%.
-                    </p>
-                    <p className="text-green-700 text-sm">
-                      <strong>Scale smart:</strong> Data-driven expansion decisions for Vietnamese salon chains.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </section>
-
-          {/* Implementation Strategy */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Your AI Implementation Roadmap</h2>
-            
-            <div className="space-y-8">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-green-900 mb-4">Phase 1: Foundation (Month 1-2)</h3>
-                <p className="text-green-800 mb-4"><strong>Start with:</strong> AI Booking Assistant + Smart Scheduling + Customer Insights</p>
-                <p className="text-green-800 mb-4"><strong>Investment:</strong> $200-500/month</p>
-                <p className="text-green-800"><strong>Expected ROI:</strong> 300-500% within 90 days</p>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-blue-900 mb-4">Phase 2: Enhancement (Month 3-4)</h3>
-                <p className="text-blue-800 mb-4"><strong>Add:</strong> Color Matching + Virtual Try-On + Quality Control</p>
-                <p className="text-blue-800 mb-4"><strong>Investment:</strong> Additional $300-700/month</p>
-                <p className="text-blue-800"><strong>Expected ROI:</strong> 400-600% within 6 months</p>
-              </div>
-
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-purple-900 mb-4">Phase 3: Optimization (Month 5-6)</h3>
-                <p className="text-purple-800 mb-4"><strong>Complete with:</strong> All remaining tools for full automation</p>
-                <p className="text-purple-800 mb-4"><strong>Investment:</strong> Additional $500-1000/month</p>
-                <p className="text-purple-800"><strong>Expected ROI:</strong> 500-800% within 12 months</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Success Stories */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">AI Success Stories from Vietnamese Salons</h2>
-            
             <div className="grid md:grid-cols-2 gap-8">
-              <Card className="border-yellow-200 bg-yellow-50">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-yellow-900 mb-3">Lily Nails - San Jose, CA</h3>
-                  <p className="text-yellow-800 mb-4">
-                    "Sau khi implement AI booking và color matching, chúng tôi tăng được 60% booking và giảm 80% color mistakes. 
-                    Khách hàng rất impressed với technology và recommend nhiều người quen."
-                  </p>
-                  <div className="border-t border-yellow-200 pt-4">
-                    <div className="text-sm text-yellow-700">
-                      <strong>Results:</strong> +60% bookings • +$15K monthly revenue • 4.9 star reviews
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-blue-200 bg-blue-50">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-blue-900 mb-3">Golden Touch Spa - Houston, TX</h3>
-                  <p className="text-blue-800 mb-4">
-                    "AI marketing automation help tôi tạo ra campaigns cho cả English và Vietnamese customers. 
-                    Không cần hire marketing person mà revenue tăng 45% trong 4 tháng đầu."
-                  </p>
-                  <div className="border-t border-blue-200 pt-4">
-                    <div className="text-sm text-blue-700">
-                      <strong>Results:</strong> +45% revenue • 25 hours saved/week • 340% marketing ROI
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-
-          {/* Call to Action */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-12 rounded-lg text-center mb-12">
-            <h2 className="text-4xl font-bold mb-6">Ready to Join the AI Beauty Revolution?</h2>
-            <p className="text-xl mb-8 max-w-3xl mx-auto">
-              Don't get left behind. Connect with top AI-savvy beauty professionals and technology-forward salons on EmviApp. 
-              The future of beauty is here.
-            </p>
-            
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-8">
-              <Link to="/auth/signup?redirect=%2F">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 text-lg">
-                  Find AI-Ready Talent → Start Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              
-              <Link to="/jobs">
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600 font-bold px-8 py-4 text-lg">
-                  Explore Tech-Forward Jobs →
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="text-center text-blue-100">
-              <p className="mb-2">✅ Connect with AI-savvy professionals • ✅ Technology-forward salons • ✅ Future-ready careers</p>
-              <p className="text-sm">Kết nối với người am hiểu AI • Tiệm nail hiện đại • Nghề nghiệp tương lai</p>
+              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                <h4 className="font-bold text-white mb-4 text-xl">🚀 Những tiệm đã áp dụng AI:</h4>
+                <ul className="space-y-3 text-pink-100">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    Tăng 45% khách booking online
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    Giảm 60% thời gian quản lý lịch hẹn
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    Tăng 30% customer satisfaction
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    Tiết kiệm 15 giờ/tuần cho admin
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                <h4 className="font-bold text-white mb-4 text-xl">💡 EmviApp giải quyết:</h4>
+                <ul className="space-y-3 text-pink-100">
+                  <li className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                    Interface tiếng Việt 100%
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                    Hỗ trợ setup miễn phí
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                    Chi phí thấp, hiệu quả cao
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                    Đào tạo toàn bộ team
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* Related Articles */}
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Link to="/blog/salon-management/salon-staffing-solution-2025" className="block">
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg mb-2">The 2025 Salon Staffing Crisis: How Smart Owners Are Solving It</h3>
-                    <p className="text-gray-600 text-sm">AI tools are helping solve the biggest staffing challenges in beauty.</p>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              <Link to="/blog/salon-management/sell-salon-guide-2025" className="block">
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg mb-2">How to Sell Your Salon in 2025: The Complete Insider's Guide</h3>
-                    <p className="text-gray-600 text-sm">AI-powered salons command premium valuations in today's market.</p>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              <Link to="/blog/salon-management/increase-salon-bookings-2024" className="block">
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg mb-2">How to Increase Your Salon Bookings by 300% in 2024</h3>
-                    <p className="text-gray-600 text-sm">Traditional booking strategies enhanced with AI automation.</p>
-                  </CardContent>
-                </Card>
-              </Link>
+          {/* Main Content: The 5 Game-Changing AI Tools */}
+          <section className="mb-20">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
+                5 Game-Changing AI Tools<br />
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                  Every Beauty Professional Must Know in 2025
+                </span>
+              </h2>
+              <p className="text-xl text-gray-300 max-w-4xl mx-auto">
+                The tools that are separating industry leaders from everyone else
+              </p>
+            </div>
+
+            {/* Tool 1: Virtual Consultation & Color Matching AI */}
+            <div className="mb-16">
+              <div className="bg-gradient-to-br from-blue-900/40 to-cyan-900/40 backdrop-blur-sm border border-blue-500/30 rounded-3xl p-12 relative overflow-hidden">
+                <div className="absolute top-6 right-6">
+                  <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 px-4 py-2 text-lg font-bold">
+                    #1
+                  </Badge>
+                </div>
+                <div className="flex items-start gap-6 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <Eye className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-white mb-4">Virtual Consultation & Color Matching AI</h3>
+                    <p className="text-xl text-blue-100 mb-6">
+                      The days of guessing hair colors or nail shades are over. Advanced AI systems can now analyze a client's skin tone, hair texture, and facial features through a simple smartphone camera to recommend perfect colors and treatments.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-xl font-bold text-white mb-4">🎯 Key Features:</h4>
+                    <ul className="space-y-2 text-blue-100">
+                      <li>• Real-time skin tone analysis for perfect color matching</li>
+                      <li>• Hair texture recognition for personalized treatment recommendations</li>
+                      <li>• Facial feature analysis for optimal styling suggestions</li>
+                      <li>• Before/after prediction modeling to show expected results</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-xl font-bold text-white mb-4">💰 Business Impact:</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-blue-100">Color correction appointments:</span>
+                        <span className="text-green-400 font-bold">↓ 85%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-blue-100">Client satisfaction:</span>
+                        <span className="text-green-400 font-bold">↑ 67%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-blue-100">Service accuracy:</span>
+                        <span className="text-green-400 font-bold">↑ 92%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-8 p-6 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-xl border border-yellow-500/30">
+                  <p className="text-yellow-100 text-lg">
+                    <strong>"Since implementing AI scheduling, our no-show rate dropped from 25% to 8%, and we're booking 47 more appointments per day without working longer hours."</strong> - Sarah Chen, Owner of Elite Nails & Spa, California
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tool 2: AI-Powered Appointment Optimization */}
+            <div className="mb-16">
+              <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-12 relative overflow-hidden">
+                <div className="absolute top-6 right-6">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 px-4 py-2 text-lg font-bold">
+                    #2
+                  </Badge>
+                </div>
+                <div className="flex items-start gap-6 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Target className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-white mb-4">AI-Powered Appointment Optimization</h3>
+                    <p className="text-xl text-purple-100 mb-6">
+                      Smart scheduling systems are using machine learning to predict optimal appointment times, reduce no-shows, and maximize salon efficiency. These systems analyze historical data, weather patterns, local events, and client behavior to optimize schedules automatically.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-lg font-bold text-white mb-3">⏰ Smart Scheduling</h4>
+                    <p className="text-purple-100 text-sm">AI predicts optimal booking times based on 50+ data points including weather, holidays, and client history.</p>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-lg font-bold text-white mb-3">🎯 No-Show Prevention</h4>
+                    <p className="text-purple-100 text-sm">Automated reminders with personalized timing reduce cancellations by up to 73%.</p>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-lg font-bold text-white mb-3">📊 Capacity Optimization</h4>
+                    <p className="text-purple-100 text-sm">Dynamic scheduling fills gaps automatically, increasing revenue per chair by 35%.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tool 3: Intelligent Nail Art & Design AI */}
+            <div className="mb-16">
+              <div className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 backdrop-blur-sm border border-green-500/30 rounded-3xl p-12 relative overflow-hidden">
+                <div className="absolute top-6 right-6">
+                  <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 px-4 py-2 text-lg font-bold">
+                    #3
+                  </Badge>
+                </div>
+                <div className="flex items-start gap-6 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-white mb-4">Intelligent Nail Art & Design AI</h3>
+                    <p className="text-xl text-green-100 mb-6">
+                      Revolutionary AI tools are transforming nail art creation. From generating custom designs based on client preferences to predicting trending patterns, these systems are making every nail technician a master artist.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <h4 className="text-xl font-bold text-white">🎨 Design Generation Features:</h4>
+                    <div className="space-y-3">
+                      <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <h5 className="font-semibold text-white mb-2">Custom Pattern Creator</h5>
+                        <p className="text-green-100 text-sm">Generates unlimited unique designs based on client preferences, occasions, and style history.</p>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <h5 className="font-semibold text-white mb-2">Trend Prediction Engine</h5>
+                        <p className="text-green-100 text-sm">Analyzes social media and fashion trends to suggest designs that will be popular.</p>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <h5 className="font-semibold text-white mb-2">Cultural Design Library</h5>
+                        <p className="text-green-100 text-sm">Includes traditional Vietnamese patterns and modern fusion designs for authentic cultural expression.</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-b from-green-800/20 to-emerald-800/20 rounded-xl p-6 border border-green-500/20">
+                    <h4 className="text-xl font-bold text-white mb-4">📈 Revenue Impact:</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <span className="text-green-100">Nail art sales increase:</span>
+                        <span className="text-yellow-400 font-bold text-xl">+200%</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <span className="text-green-100">Design time reduction:</span>
+                        <span className="text-yellow-400 font-bold text-xl">-70%</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <span className="text-green-100">Client satisfaction:</span>
+                        <span className="text-yellow-400 font-bold text-xl">+89%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tool 4: AI-Driven Inventory & Product Recommendations */}
+            <div className="mb-16">
+              <div className="bg-gradient-to-br from-orange-900/40 to-red-900/40 backdrop-blur-sm border border-orange-500/30 rounded-3xl p-12 relative overflow-hidden">
+                <div className="absolute top-6 right-6">
+                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 px-4 py-2 text-lg font-bold">
+                    #4
+                  </Badge>
+                </div>
+                <div className="flex items-start gap-6 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center">
+                    <Cpu className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-white mb-4">AI-Driven Inventory & Product Recommendations</h3>
+                    <p className="text-xl text-orange-100 mb-6">
+                      Smart inventory systems predict exactly which products you'll need, when you'll need them, and automatically suggest upsells to clients based on their service history and preferences. This eliminates waste and increases retail sales by an average of 45%.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-lg font-bold text-white mb-3">📦 Predictive Ordering</h4>
+                    <p className="text-orange-100 text-sm mb-4">AI forecasts demand and automatically orders supplies before you run out.</p>
+                    <div className="text-green-400 font-bold">↓ 30% inventory costs</div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-lg font-bold text-white mb-3">🛍️ Smart Upselling</h4>
+                    <p className="text-orange-100 text-sm mb-4">Personalized product recommendations based on client preferences and purchase history.</p>
+                    <div className="text-green-400 font-bold">↑ 45% retail sales</div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-lg font-bold text-white mb-3">📊 Waste Reduction</h4>
+                    <p className="text-orange-100 text-sm mb-4">Precise demand forecasting eliminates expired products and overstock.</p>
+                    <div className="text-green-400 font-bold">↓ 60% product waste</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tool 5: Personalized Marketing & Client Retention AI */}
+            <div className="mb-16">
+              <div className="bg-gradient-to-br from-pink-900/40 to-purple-900/40 backdrop-blur-sm border border-pink-500/30 rounded-3xl p-12 relative overflow-hidden">
+                <div className="absolute top-6 right-6">
+                  <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white border-0 px-4 py-2 text-lg font-bold">
+                    #5
+                  </Badge>
+                </div>
+                <div className="flex items-start gap-6 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                    <Brain className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-white mb-4">Personalized Marketing & Client Retention AI</h3>
+                    <p className="text-xl text-pink-100 mb-6">
+                      AI systems analyze client behavior, preferences, and booking patterns to automatically send personalized promotions, reminders, and content that keeps clients engaged and coming back. The most successful salons are seeing client retention rates above 90% using these tools.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 className="text-xl font-bold text-white mb-4">🎯 Personalization Features:</h4>
+                    <ul className="space-y-3 text-pink-100">
+                      <li className="flex items-center gap-2">
+                        <Atom className="w-4 h-4 text-pink-400" />
+                        Behavioral analysis for targeted campaigns
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Atom className="w-4 h-4 text-pink-400" />
+                        Predictive lifetime value calculation
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Atom className="w-4 h-4 text-pink-400" />
+                        Automated win-back campaigns
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Atom className="w-4 h-4 text-pink-400" />
+                        Sentiment analysis of reviews and feedback
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="bg-gradient-to-b from-pink-800/20 to-purple-800/20 rounded-xl p-6 border border-pink-500/20">
+                    <h4 className="text-xl font-bold text-white mb-4">🚀 Success Metrics:</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <span className="text-pink-100">Client retention:</span>
+                        <span className="text-yellow-400 font-bold text-xl">90%+</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <span className="text-pink-100">Email open rates:</span>
+                        <span className="text-yellow-400 font-bold text-xl">65%+</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <span className="text-pink-100">Referral increase:</span>
+                        <span className="text-yellow-400 font-bold text-xl">+120%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
-          {/* Final CTA Box */}
-          <div className="bg-blue-50 border border-blue-200 p-8 rounded-lg text-center">
-            <h3 className="text-2xl font-bold text-blue-900 mb-4">The AI Beauty Revolution Starts with Your Next Hire</h3>
-            <p className="text-blue-800 mb-6">
-              Find beauty professionals who understand AI tools, or connect with salons that are already embracing the future. 
-              The competitive advantage belongs to those who act first.
-            </p>
-            <Link to="/jobs">
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 py-4 text-lg">
-                Explore AI-Ready Beauty Jobs Today
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+          {/* Success Stories Section */}
+          <section className="mb-20">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                The Real Impact: <span className="text-yellow-400">Success Stories That Prove AI Works</span>
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 backdrop-blur-sm border border-green-500/30 rounded-2xl p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <Trophy className="w-8 h-8 text-yellow-400" />
+                  <h3 className="text-2xl font-bold text-white">Case Study: Magic Nails Studio, Texas</h3>
+                </div>
+                <p className="text-green-100 mb-6">
+                  After implementing AI consultation tools and virtual try-on technology, Magic Nails Studio saw:
+                </p>
+                <ul className="space-y-3 text-green-100">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    150% increase in new client bookings
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    40% reduction in service time per client
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    95% increase in social media engagement
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    $50K+ additional annual revenue
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <Star className="w-8 h-8 text-yellow-400" />
+                  <h3 className="text-2xl font-bold text-white">Case Study: Glamour Salon Network, California</h3>
+                </div>
+                <p className="text-blue-100 mb-6">
+                  A chain of 5 salons implemented comprehensive AI tools across all locations:
+                </p>
+                <ul className="space-y-3 text-blue-100">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    300% improvement in appointment efficiency
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    80% reduction in customer wait times
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    65% increase in customer lifetime value
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    Opened 3 new locations in 18 months
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="text-center py-20">
+            <div className="bg-gradient-to-br from-yellow-900/40 to-orange-900/40 backdrop-blur-sm border border-yellow-500/30 rounded-3xl p-12">
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                Ready to Join the <span className="text-yellow-400">AI Beauty Revolution?</span>
+              </h2>
+              <p className="text-xl text-yellow-100 mb-8 max-w-3xl mx-auto">
+                Don't let your competitors get ahead. Start implementing these AI tools today and transform your beauty business.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold px-12 py-6 text-xl">
+                  <Link to="/book-services" className="flex items-center gap-2">
+                    Get Started with AI Tools <ArrowRight className="w-6 h-6" />
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 px-12 py-6 text-xl">
+                  <Link to="/community">Join Our Community</Link>
+                </Button>
+              </div>
+              <p className="text-yellow-200 mt-6 text-lg">
+                Over 10,000+ beauty professionals already trust EmviApp
+              </p>
+            </div>
+          </section>
         </Container>
       </article>
     </>
