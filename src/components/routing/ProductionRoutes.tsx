@@ -18,6 +18,7 @@ const About = lazy(() => import('@/pages/About'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const SignIn = lazy(() => import('@/pages/auth/SignIn'));
 const SignUp = lazy(() => import('@/pages/auth/SignUp'));
+const PerformanceAudit = lazy(() => import('@/pages/PerformanceAudit'));
 
 // Loading component for Suspense
 const PageLoading = () => (
@@ -48,6 +49,9 @@ const ProductionRoutes: React.FC = () => {
         {/* Authentication routes */}
         <Route path="/auth/signin" element={<SignIn />} />
         <Route path="/auth/signup" element={<SignUp />} />
+        
+        {/* Performance audit route */}
+        <Route path="/performance-audit" element={<PerformanceAudit />} />
 
         {/* Protected dashboard routes */}
         <Route
