@@ -5,16 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Crown, TrendingUp, Star, Rocket, Zap, Target, Users } from "lucide-react";
 
-// Import generated avatars
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen-realistic.jpg";
-import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-realistic.jpg";
-import jessicaKimAvatar from "@/assets/avatars/jessica-kim-realistic.jpg";
 const topArtists = [
   {
     id: 1,
     name: "Sofia Chen",
     specialty: "Nail Artist",
-    image: sofiaChenAvatar,
+    image: "/placeholder-avatar.jpg",
     badge: "AI PIONEER",
     status: "🔥 Viral",
     earnings: "$12K this month"
@@ -23,7 +19,7 @@ const topArtists = [
     id: 2,
     name: "Maria Rodriguez", 
     specialty: "Hair Stylist",
-    image: mariaRodriguezAvatar,
+    image: "/placeholder-avatar.jpg",
     badge: "TOP 1%",
     status: "🚀 Scaling",
     earnings: "300+ bookings"
@@ -32,7 +28,7 @@ const topArtists = [
     id: 3,
     name: "Jessica Kim",
     specialty: "Makeup Artist", 
-    image: jessicaKimAvatar,
+    image: "/placeholder-avatar.jpg",
     badge: "FEATURED",
     status: "⚡ Booked Out",
     earnings: "98% 5-star rating"

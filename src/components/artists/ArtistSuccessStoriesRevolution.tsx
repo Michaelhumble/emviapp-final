@@ -5,12 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, DollarSign, Users, Star, Calendar, Crown } from "lucide-react";
 
-// Import generated avatars
-import sofiaChenAvatar from "@/assets/avatars/sofia-chen-realistic.jpg";
-import davidKimAvatar from "@/assets/avatars/david-kim-realistic.jpg";
-import jenniferMartinezAvatar from "@/assets/avatars/jennifer-martinez-realistic.jpg";
-import sarahThompsonAvatar from "@/assets/avatars/sarah-thompson-realistic.jpg";
-import minhAnhNguyenAvatar from "@/assets/avatars/minh-anh-nguyen-realistic.jpg";
 
 const ArtistSuccessStoriesRevolution = () => {
   const artistStories = [
@@ -18,7 +12,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "Sofia Chen",
       specialty: "AI-Powered Nail Artist",
       location: "San Francisco, CA",
-      image: sofiaChenAvatar,
+      image: "/placeholder-avatar.jpg",
       story: "I went from struggling to find clients to having a 3-month waitlist. The AI discovery engine connects me with premium clients who truly value artistry.",
       results: {
         before: "$2,800/month",
@@ -33,7 +27,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "David Kim", 
       specialty: "Hair Revolution Expert",
       location: "New York, NY",
-      image: davidKimAvatar,
+      image: "/placeholder-avatar.jpg",
       story: "The platform's AI matching system eliminated time-wasters. Now I only work with clients who appreciate premium services and pay accordingly.",
       results: {
         before: "$4,200/month",
@@ -51,7 +45,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "Jennifer Martinez",
       type: "Premium Client",
       location: "Los Angeles, CA", 
-      image: jenniferMartinezAvatar,
+      image: "/placeholder-avatar.jpg",
       story: "EmviApp's AI found me artists I never would have discovered. Every booking has been absolutely perfect - worth every penny.",
       experience: "Booked 47 premium services",
       satisfaction: "100% satisfaction rate",
@@ -62,7 +56,7 @@ const ArtistSuccessStoriesRevolution = () => {
       name: "Sarah Thompson",
       type: "Regular Customer", 
       location: "Miami, FL",
-      image: sarahThompsonAvatar,
+      image: "/placeholder-avatar.jpg",
       story: "The AI matching is incredible. It learns my preferences and consistently connects me with artists who exceed my expectations.",
       experience: "32 successful bookings",
       satisfaction: "4.9/5 average experience",
@@ -75,7 +69,7 @@ const ArtistSuccessStoriesRevolution = () => {
     name: "Minh Anh Nguyen",
     salon: "Minh Anh Nail Spa",
     location: "Westminster, CA (Little Saigon)",
-    image: minhAnhNguyenAvatar,
+    image: "/placeholder-avatar.jpg",
     story: "Từ khi dùng AI của EmviApp, tiệm tôi đã thay đổi hoàn toàn. Khách booking tự động, doanh thu tăng gấp 4 lần, và quan trọng nhất là có thời gian nghỉ ngơi.",
     results: {
       before: "$6,500/month",
