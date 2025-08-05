@@ -5,12 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Crown, TrendingUp, Star, Rocket, Zap, Target, Users } from "lucide-react";
 
+// Import generated avatars
+import sofiaChenAvatar from "@/assets/avatars/sofia-chen-natural.jpg";
+import mariaRodriguezAvatar from "@/assets/avatars/maria-rodriguez-natural.jpg";
+import jessicaKimAvatar from "@/assets/avatars/jessica-kim-natural.jpg";
 const topArtists = [
   {
     id: 1,
     name: "Sofia Chen",
     specialty: "Nail Artist",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+    image: sofiaChenAvatar,
     badge: "AI PIONEER",
     status: "🔥 Viral",
     earnings: "$12K this month"
@@ -19,7 +23,7 @@ const topArtists = [
     id: 2,
     name: "Maria Rodriguez", 
     specialty: "Hair Stylist",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    image: mariaRodriguezAvatar,
     badge: "TOP 1%",
     status: "🚀 Scaling",
     earnings: "300+ bookings"
@@ -28,7 +32,7 @@ const topArtists = [
     id: 3,
     name: "Jessica Kim",
     specialty: "Makeup Artist", 
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+    image: jessicaKimAvatar,
     badge: "FEATURED",
     status: "⚡ Booked Out",
     earnings: "98% 5-star rating"
