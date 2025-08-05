@@ -31,23 +31,67 @@ serve(async (req) => {
 
     const cleanMessage = message.trim();
     
+    console.log('🌻 Little Sunshine received message:', {
+      userId,
+      message: cleanMessage,
+      language
+    });
+
     // Detect language
     function detectLanguage(text: string): 'vi' | 'en' {
       const vietnamesePattern = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-      const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|ghé|vui|cảm|ơn|xin|chào|dạ|muốn|tìm|việc|salon|tiệm)\b/i;
+      const vietnameseWords = /\b(anh|chị|em|tên|là|của|và|với|trong|nha|ạ|ơi|không|gì|được|có|làm|thế|này|đó|về|ghé|vui|cảm|ơn|xin|chào|dạ|muốn|tìm|việc|salon|tiệm|bit|noi|tieng|viet|gioi|khong)\b/i;
       return vietnamesePattern.test(text) || vietnameseWords.test(text) ? 'vi' : 'en';
     }
 
-    // Extract user name from introduction
+    const detectedLanguage = language || detectLanguage(cleanMessage);
+
+    // Simple conversation tracking using chat_logs
+    let hasGreeted = false;
+    let userName = '';
+    
+    if (userId) {
+      try {
+        // Check if we've chatted before by looking at chat logs
+        const { data: chatHistory } = await supabase
+          .from('chat_logs')
+          .select('*')
+          .eq('user_id', userId)
+          .order('timestamp', { ascending: false })
+          .limit(5);
+        
+        if (chatHistory && chatHistory.length > 0) {
+          hasGreeted = true;
+          // Try to get the user's name from previous conversations
+          const nameLog = chatHistory.find(log => log.user_name);
+          if (nameLog) {
+            userName = nameLog.user_name;
+          }
+          
+          console.log('🌻 Found chat history:', {
+            hasGreeted,
+            userName,
+            previousMessages: chatHistory.length
+          });
+        }
+      } catch (error) {
+        console.log('🌻 No chat history found:', error.message);
+      }
+    }
+
+    // Extract name from current message
     function extractUserName(text: string): string | null {
-      const lowerText = text.toLowerCase().trim();
-      
-      // Common introduction patterns
+      // More comprehensive Vietnamese name extraction
       const patterns = [
-        /^(?:hi|hello|hey),?\s*(?:i'?m|my name is|i am|call me)\s+([a-zA-ZÀ-ỹ]{2,20})$/i,
-        /^(?:tôi|em|mình)\s+(?:tên|là)\s+([a-zA-ZÀ-ỹ]{2,20})$/i,
-        /^([a-zA-ZÀ-ỹ]{2,20})(?:\s+here)?$/i, // Just a name
-        /^(?:i'?m|i am)\s+([a-zA-ZÀ-ỹ]{2,20})\s*[,.]?\s*what/i, // "I'm Michael, what..."
+        // Vietnamese patterns
+        /(?:anh|chị|em|tôi|mình)\s+(?:tên\s+)?(?:là\s+)?([a-zA-ZÀ-ỹ]{2,20})/i,
+        /tên\s+(?:anh|chị|em|tôi|mình)\s+(?:là\s+)?([a-zA-ZÀ-ỹ]{2,20})/i,
+        /(?:chào|xin chào).+(?:tên\s+(?:là\s+)?)?([a-zA-ZÀ-ỹ]{2,20})/i,
+        // English patterns
+        /(?:i'?m|my name is|i am|call me)\s+([a-zA-Z]{2,20})/i,
+        /(?:hello|hi).+(?:i'?m|name is|i am)\s+([a-zA-Z]{2,20})/i,
+        // Just a name in context
+        /(?:tên|name)\s+(?:là\s+)?([a-zA-ZÀ-ỹ]{2,20})/i
       ];
       
       for (const pattern of patterns) {
@@ -55,8 +99,9 @@ serve(async (req) => {
         if (match && match[1]) {
           const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
           // Exclude common words
-          const excludeWords = ['hello', 'there', 'help', 'what', 'how', 'when', 'where', 'why'];
+          const excludeWords = ['hello', 'chào', 'sunshine', 'there', 'help', 'what', 'how', 'when', 'where', 'why', 'viet', 'tieng', 'gioi', 'khong', 'bit', 'noi'];
           if (!excludeWords.includes(name.toLowerCase())) {
+            console.log('🌻 Extracted name:', name);
             return name;
           }
         }
@@ -65,134 +110,78 @@ serve(async (req) => {
       return null;
     }
 
-    const detectedLanguage = language || detectLanguage(cleanMessage);
     const extractedName = extractUserName(cleanMessage);
-
-    // Manage user session with better logic
-    let userSession = null;
-    let conversationStarted = false;
-    
-    if (userId) {
-      try {
-        const { data } = await supabase
-          .from('user_sessions')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-        
-        if (data) {
-          userSession = data;
-          // If user has been greeted before (has last_question), conversation has started
-          conversationStarted = !!data.last_question;
-          
-          // Update name if newly extracted
-          if (extractedName && extractedName !== data.name) {
-            await supabase
-              .from('user_sessions')
-              .update({ 
-                name: extractedName, 
-                language: detectedLanguage,
-                updated_at: new Date().toISOString()
-              })
-              .eq('user_id', userId);
-            userSession.name = extractedName;
-          }
-        }
-      } catch (error) {
-        console.log('No existing session found, will create new one');
-      }
+    if (extractedName && !userName) {
+      userName = extractedName;
     }
 
-    console.log('Little Sunshine Chat State:', {
-      userId,
-      conversationStarted,
-      userName: userSession?.name || extractedName,
-      messageLength: cleanMessage.length,
-      detectedLanguage
+    console.log('🌻 Conversation state:', {
+      hasGreeted,
+      userName,
+      detectedLanguage,
+      extractedName
     });
 
-    // Determine what type of response to give
+    // Determine response type
     let systemPrompt;
     
-    if (!conversationStarted) {
-      // First interaction - show greeting
-      systemPrompt = `🔒 CRITICAL: You MUST respond with EXACTLY this greeting and NOTHING else:
+    if (!hasGreeted) {
+      // First time - show greeting
+      console.log('🌻 Showing greeting (first time)');
+      systemPrompt = `You MUST respond with EXACTLY this greeting:
 
 "Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó,"
 
-Use exactly this greeting word for word. Do not add anything before or after.`;
+Use exactly this text. Nothing else.`;
     } else {
-      // Conversation has started - be helpful Little Sunshine
-      const userName = userSession?.name || extractedName || '';
+      // Continuing conversation
+      console.log('🌻 Continuing conversation with user:', userName);
       
-      systemPrompt = `🔒 SYSTEM TRAINING: LITTLE SUNSHINE, THE EMVIAPP AI CONCIERGE
+      systemPrompt = `🌻 LITTLE SUNSHINE - EMVIAPP AI CONCIERGE
 
-${userName ? `USER'S NAME: ${userName} (use their name warmly in responses)` : ''}
-
-CORE BEHAVIORS:
-- You are "Little Sunshine"—the warm, humble, always-helpful AI assistant for EmviApp
-- Your mission: guide, support, and cheer on artists, salon owners, customers, job-seekers, and newcomers
-- Never focus on yourself or creators—only on serving the EmviApp community
-- Remember: The user has already been greeted, so continue the conversation naturally
-
-CONVERSATIONAL INTELLIGENCE:
-- Remember context: user name, goals, and emotional cues
-- Pick up on feelings, not just words—ask caring follow-ups if unsure
-- Match the user's tone (professional, casual, emotional, etc)
-
-EMOTIONAL & PRACTICAL HELP:
-- Always respond with warmth—never sound robotic or cold
-- Celebrate artists, comfort customers, cheer on people chasing opportunities
-- If anything goes wrong, sincerely apologize, explain clearly, and guide step-by-step
-
-TASK-ORIENTED ASSISTANCE:
-- Help users: sign up, log in, post jobs, browse artists, explore salons, get support
-- Give quick links or directions, but always check if the page exists first
-- Never leave users "stuck"—always offer the next helpful step
-
-MISSION-DRIVEN ANSWERS:
-- Focus on appreciation, empowerment, and the real EmviApp mission
-- "EmviApp was made to honor the hard work of beauty artists"
-- Answer in English or Southern Vietnamese as preferred by user
+${userName ? `USER: ${userName} (greet them warmly by name!)` : 'USER: (no name yet)'}
 
 PERSONALITY:
-- Friendly, humble, genuinely caring—like a big-hearted friend
-- Never judge, never "corporate," always positive
-- Show users they are valued, understood, and part of something special
+- You are Little Sunshine - warm, humble, caring EmviApp assistant
+- Big-hearted friend who celebrates artists and helps everyone
+- Focus on EmviApp mission: honoring beauty industry workers
 
-🔒 RESPONSE FORMATTING (CRITICAL):
-Always format answers as clear, step-by-step guides:
+RESPONSE STYLE:
+Format every answer as clean step-by-step guides:
 
-1. Break down each action into numbered steps
-2. **Bold the main actions, buttons, or page names**
-3. Add line breaks after every step—no long paragraphs!
-4. Use short sentences and friendly tone
-5. End with a summary, tip, or offer to help further
+1. Break actions into numbered steps
+2. **Bold important buttons/pages**
+3. Short sentences, friendly tone
+4. End with summary and offer to help more
 
-Example Response Format:
-**How to Post a Job on EmviApp**
+Example:
+**How to Find Artists on EmviApp**
 
-1. Go to EmviApp homepage and click **"Sign Up"**
+1. Visit EmviApp homepage
+2. Click **"Browse Artists"** 
+3. Filter by location and specialty
+4. Check profiles and portfolios
 
-2. Select **"Salon Owner"** account type
+**That's it!** Need help with anything else? 😊
 
-3. Fill out your info and confirm email
+TASKS YOU HELP WITH:
+- Sign up, login, post jobs
+- Browse artists, explore salons
+- Navigation and support
+- Answer questions about EmviApp
 
-4. Click **"Post Job"** in the main menu
+IMPORTANT:
+- Always warm and positive
+- Never mention founders/creators
+- Admit if you don't know something
+- Keep responses clean and visual
 
-5. Enter job details (position, pay, location)
-
-**Done!** Need help with anything else? Little Sunshine is here! ✨
-
-🚨 IMPORTANT:
-- Never mention founders or creators
-- Never fake answers—admit if you don't know and offer to get help
-- Always keep responses clean, clear, and visually inviting
-
-🌍 **RESPOND IN ${detectedLanguage === 'vi' ? 'VIETNAMESE' : 'ENGLISH'} ONLY**`;
+🌍 RESPOND IN ${detectedLanguage === 'vi' ? 'VIETNAMESE (Southern style)' : 'ENGLISH'} ONLY`;
     }
 
     // Call OpenAI
+    console.log('🌻 Calling OpenAI with system prompt length:', systemPrompt.length);
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -205,59 +194,41 @@ Example Response Format:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: cleanMessage }
         ],
-        temperature: conversationStarted ? 0.7 : 0.1, // More creative after greeting
-        max_tokens: conversationStarted ? 800 : 100, // Longer responses after greeting
+        temperature: hasGreeted ? 0.7 : 0.1,
+        max_tokens: hasGreeted ? 800 : 100,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`OpenAI API error: ${response.statusText} - ${errorData.error?.message || 'Unknown error'}`);
+      throw new Error(`OpenAI API error: ${response.statusText}`);
     }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    console.log('Little Sunshine Response Generated:', {
+    console.log('🌻 Generated response:', {
       responseLength: aiResponse.length,
       language: detectedLanguage,
-      userId,
-      conversationStarted,
-      extractedName
+      hasGreeted,
+      userName
     });
 
-    // Update session after response
+    // Log this conversation
     if (userId) {
-      if (!userSession) {
-        // Create new session
-        await supabase.from('user_sessions').insert({
+      try {
+        await supabase.from('chat_logs').insert({
           user_id: userId,
-          name: extractedName,
+          message: cleanMessage,
+          response: aiResponse,
           language: detectedLanguage,
-          last_question: cleanMessage,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          user_name: userName || null,
+          timestamp: new Date().toISOString()
         });
-      } else {
-        // Update existing session
-        await supabase.from('user_sessions')
-          .update({ 
-            last_question: cleanMessage,
-            language: detectedLanguage,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', userId);
+        console.log('🌻 Logged conversation');
+      } catch (logError) {
+        console.error('🌻 Failed to log conversation:', logError);
       }
-
-      // Log the interaction
-      await supabase.from('chat_logs').insert({
-        user_id: userId,
-        message: cleanMessage,
-        response: aiResponse,
-        language: detectedLanguage,
-        user_name: userSession?.name || extractedName,
-        timestamp: new Date().toISOString()
-      });
     }
 
     return new Response(JSON.stringify({ 
@@ -269,9 +240,8 @@ Example Response Format:
     });
 
   } catch (error) {
-    console.error('Little Sunshine Chat Error:', error);
+    console.error('🌻 Little Sunshine Error:', error);
     
-    // Even in error, show the greeting for first-time users
     const fallbackResponse = "Hi, I'm Little Sunshine! What's your name? Em biết nói tiếng Việt nữa đó,";
     
     return new Response(JSON.stringify({ 
