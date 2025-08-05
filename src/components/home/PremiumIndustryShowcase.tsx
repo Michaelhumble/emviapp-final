@@ -226,20 +226,33 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
                     </div>
                   )}
                   
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-sm font-inter font-medium hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-all duration-300 group"
-                      onClick={() => handleViewDetails(listing)}
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <span className="mr-2">View Details</span>
-                      <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Button>
-                  </motion.div>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full text-sm font-inter font-medium hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-all duration-300 group"
+                        onClick={() => handleViewDetails(listing)}
+                      >
+                        <span className="mr-2">View Details</span>
+                        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200" />
+                      </Button>
+                    </motion.div>
+                    
+                    {/* Industry-specific CTA */}
+                    <Link to={routePath}>
+                      <Button
+                        size="sm"
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xs"
+                      >
+                        🔥 Claim Your Spot in {displayName}
+                      </Button>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
