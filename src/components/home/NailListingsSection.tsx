@@ -207,21 +207,28 @@ const NailListingsSection: React.FC = () => {
                             </Badge>
                             <div className="flex flex-col gap-1 ml-auto">
                               <Button 
-                                onClick={() => navigate("/jobs")}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigate("/jobs");
+                                }}
                                 size="sm" 
                                 variant="outline"
                                 className="text-xs"
                               >
                                 Xem Chi Tiết
                               </Button>
-                              <Link to="/nails" className="block">
-                                <Button 
-                                  size="sm" 
-                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full"
-                                >
-                                  🔥 Claim Your Spot in Nails
-                                </Button>
-                              </Link>
+                              <Button 
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigate("/nails");
+                                }}
+                                size="sm" 
+                                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold w-full"
+                              >
+                                🔥 Claim Your Spot in Nails
+                              </Button>
                             </div>
                           </div>
                         </div>
