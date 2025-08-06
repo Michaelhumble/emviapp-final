@@ -45,7 +45,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: Message = {
         id: 'welcome',
-        content: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!",
+        content: "Hi, I am Sunshine, what's your name? Em biết nói tiếng Việt nữa đó!",
         sender: 'assistant',
         timestamp: new Date()
       };
@@ -174,7 +174,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <ChatIcon size={isMobile ? 24 : 28} />
               <div>
-                <h3 className="font-bold text-base sm:text-lg">Little Sunshine</h3>
+                <h3 className="font-bold text-base sm:text-lg">Sunshine</h3>
                 <p className="text-xs text-orange-100">
                   {isLoading ? "🧠 Thinking deeply for you..." : "Your Beauty Industry Assistant ✨"}
                 </p>
@@ -266,7 +266,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                           </motion.div>
                           
                           <div className="flex flex-col">
-                            <span className="text-xs text-orange-600 font-medium">Little Sunshine is thinking...</span>
+                            <span className="text-xs text-orange-600 font-medium">Sunshine is thinking...</span>
                             <span className="text-xs text-orange-400 italic">Crafting the perfect response</span>
                           </div>
                         </div>
@@ -294,7 +294,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask Little Sunshine anything..."
+                  placeholder="Ask Sunshine anything..."
                   className="flex-1 min-h-[36px] sm:min-h-[40px] max-h-24 sm:max-h-32 resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400/20 bg-white/80 text-sm"
                   disabled={isLoading}
                 />
