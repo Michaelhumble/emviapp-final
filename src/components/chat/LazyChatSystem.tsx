@@ -1,74 +1,35 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react';
-import { ChatToggleButton } from './ChatToggleButton';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { useState, Suspense, lazy } from 'react';
+import { SunshineButton } from './SunshineButton';
 
-const ChatSystem = lazy(() => import('./ChatSystem').then(module => ({ default: module.ChatSystem })));
+// Lazy load the main chat component for better performance
+const SunshineChat = lazy(() => 
+  import('./SunshineChat').then(module => ({ default: module.SunshineChat }))
+);
 
 export const LazyChatSystem = () => {
-  const [shouldLoad, setShouldLoad] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    // CRITICAL: Load chat only after DOMContentLoaded + 3 seconds for performance
-    const loadChat = () => {
-      setTimeout(() => {
-        setShouldLoad(true);
-      }, 3000);
-    };
-
-    if (document.readyState === 'complete') {
-      loadChat();
-    } else {
-      window.addEventListener('load', loadChat);
-      return () => window.removeEventListener('load', loadChat);
-    }
-
-    const timer = setTimeout(() => {
-      setShouldLoad(true);
-    }, 5000); // Fallback
-
-    const handleUserInteraction = () => {
-      setShouldLoad(true);
-      clearTimeout(timer);
-    };
-
-    // Listen for user interactions
-    document.addEventListener('click', handleUserInteraction, { once: true });
-    document.addEventListener('scroll', handleUserInteraction, { once: true });
-    document.addEventListener('touchstart', handleUserInteraction, { once: true });
-
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('scroll', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-    };
-  }, []);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleToggleChat = () => {
-    setShouldLoad(true);
-    setIsOpen(!isOpen);
+    setIsChatOpen(!isChatOpen);
   };
 
-  if (!shouldLoad) {
-    return (
-      <ChatToggleButton 
-        isOpen={false} 
-        onClick={handleToggleChat}
-      />
-    );
-  }
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+  };
 
   return (
-    <Suspense fallback={
-      <ChatToggleButton 
-        isOpen={false} 
+    <>
+      <SunshineButton 
         onClick={handleToggleChat}
         hasUnreadMessages={false}
       />
-    }>
-      <ChatSystem />
-    </Suspense>
+      
+      <Suspense fallback={null}>
+        <SunshineChat 
+          isOpen={isChatOpen}
+          onClose={handleCloseChat}
+        />
+      </Suspense>
+    </>
   );
 };

@@ -1,19 +1,21 @@
+export interface Message {
+  id: string;
+  content: string;
+  isUser: boolean;
+  timestamp: Date;
+  typing?: boolean;
+}
 
-import { BookingMatch } from '@/services/assistantService';
+export interface ChatState {
+  isOpen: boolean;
+  isMinimized: boolean;
+  messages: Message[];
+  isProcessing: boolean;
+}
 
 export interface ActionSuggestion {
   id: string;
   label: string;
-  icon?: string;
+  icon: string;
   href: string;
-}
-
-export interface MessageType {
-  id: string;
-  content: string;
-  sender: 'user' | 'assistant';
-  timestamp: Date;
-  isTyping?: boolean;
-  actionSuggestions?: ActionSuggestion[];
-  bookingMatches?: BookingMatch[];
 }
