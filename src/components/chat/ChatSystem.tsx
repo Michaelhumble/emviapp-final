@@ -112,7 +112,7 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* BILLION-DOLLAR Chat Button with Ultra Premium Effects */}
+      {/* ULTRA BILLION-DOLLAR Little Sunshine Chat Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
@@ -121,192 +121,306 @@ export const ChatSystem = () => {
             exit={{ scale: 0, opacity: 0 }}
             className="fixed bottom-6 right-6 z-50"
           >
-            {/* Outer Glow Ring */}
+            {/* Massive Golden Aura */}
             <motion.div
-              className="absolute inset-0 rounded-full"
+              className="absolute rounded-full"
               animate={{
-                scale: [1, 1.4, 1],
-                opacity: [0.3, 0.7, 0.3],
+                scale: [1, 2.5, 1],
+                opacity: [0.1, 0.4, 0.1],
+                rotate: [0, 360],
               }}
               transition={{
-                duration: 3,
+                duration: 8,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
               style={{
-                background: 'radial-gradient(circle, rgba(255, 215, 0, 0.4), rgba(255, 140, 0, 0.6), transparent)',
-                filter: 'blur(8px)',
-                width: '80px',
-                height: '80px',
-                left: '-8px',
-                top: '-8px'
+                background: 'radial-gradient(circle, rgba(255, 215, 0, 0.8), rgba(255, 140, 0, 0.4), rgba(255, 69, 0, 0.2), transparent)',
+                filter: 'blur(20px)',
+                width: '160px',
+                height: '160px',
+                left: '-72px',
+                top: '-72px'
               }}
             />
             
-            {/* Diamond Sparkles */}
-            {[...Array(6)].map((_, i) => (
+            {/* Pulsing Energy Ring */}
+            <motion.div
+              className="absolute rounded-full border-4"
+              animate={{
+                scale: [0.8, 1.6, 0.8],
+                opacity: [0.8, 0.3, 0.8],
+                rotate: [0, -360],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{
+                borderImage: 'linear-gradient(45deg, #FFD700, #FF8C00, #FF4500, #FFD700) 1',
+                width: '100px',
+                height: '100px',
+                left: '-22px',
+                top: '-22px',
+                filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.8))'
+              }}
+            />
+            
+            {/* Magic Sparkle Constellation */}
+            {[...Array(12)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-white rounded-full"
+                className="absolute"
                 animate={{
-                  scale: [0, 1, 0],
-                  rotate: [0, 180, 360],
+                  scale: [0, 1.5, 0],
+                  rotate: [0, 360, 720],
                   opacity: [0, 1, 0],
                 }}
                 transition={{
-                  duration: 2 + i * 0.3,
+                  duration: 3 + i * 0.2,
                   repeat: Infinity,
-                  delay: i * 0.4,
+                  delay: i * 0.3,
                   ease: "easeInOut"
                 }}
                 style={{
-                  left: `${20 + i * 8}px`,
-                  top: `${15 + (i % 2) * 30}px`,
-                  boxShadow: '0 0 4px rgba(255, 255, 255, 0.8)'
+                  left: `${32 + 40 * Math.cos((i * 30) * Math.PI / 180)}px`,
+                  top: `${32 + 40 * Math.sin((i * 30) * Math.PI / 180)}px`,
+                  transform: 'translate(-50%, -50%)'
                 }}
-              />
+              >
+                <div 
+                  className="w-2 h-2 rounded-full"
+                  style={{
+                    background: i % 3 === 0 ? '#FFD700' : i % 3 === 1 ? '#FF69B4' : '#00FFFF',
+                    boxShadow: `0 0 12px ${i % 3 === 0 ? '#FFD700' : i % 3 === 1 ? '#FF69B4' : '#00FFFF'}`,
+                    clipPath: i % 4 === 0 ? 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' : 'circle()'
+                  }}
+                />
+              </motion.div>
             ))}
             
             <motion.button
               whileHover={{ 
-                scale: 1.15, 
-                y: -4,
-                rotateY: 10,
-                rotateX: 5
+                scale: 1.2, 
+                y: -8,
+                rotateY: 20,
+                rotateX: 10,
+                rotateZ: 5
               }}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.85 }}
               onClick={() => setIsOpen(true)}
-              className="relative w-16 h-16 text-white rounded-full transition-all duration-500 group overflow-hidden"
+              className="relative w-16 h-16 text-white rounded-full transition-all duration-700 group overflow-hidden"
               style={{
-                background: 'linear-gradient(145deg, #FFD700 0%, #FFA500 20%, #FF8C00 40%, #FF6B00 60%, #FF4500 80%, #DC143C 100%)',
-                boxShadow: `
-                  0 0 0 2px rgba(255, 215, 0, 0.5),
-                  0 0 0 4px rgba(255, 215, 0, 0.3),
-                  0 0 0 6px rgba(255, 215, 0, 0.1),
-                  0 15px 40px rgba(255, 107, 0, 0.6),
-                  0 5px 20px rgba(255, 215, 0, 0.4),
-                  inset 0 2px 0 rgba(255, 255, 255, 0.3),
-                  inset 0 -2px 0 rgba(0, 0, 0, 0.2)
+                background: `
+                  radial-gradient(circle at 30% 30%, #FFFFFF 0%, transparent 25%),
+                  linear-gradient(145deg, 
+                    #FFD700 0%, 
+                    #FFAA00 15%, 
+                    #FF8C00 30%, 
+                    #FF6B00 45%, 
+                    #FF4500 60%, 
+                    #DC143C 75%, 
+                    #8B0000 90%, 
+                    #FFD700 100%
+                  )
                 `,
-                animation: 'pulse-orange 2s infinite',
+                boxShadow: `
+                  0 0 0 3px rgba(255, 215, 0, 0.8),
+                  0 0 0 6px rgba(255, 215, 0, 0.5),
+                  0 0 0 9px rgba(255, 215, 0, 0.3),
+                  0 0 0 12px rgba(255, 215, 0, 0.1),
+                  0 20px 60px rgba(255, 107, 0, 0.8),
+                  0 10px 30px rgba(255, 215, 0, 0.6),
+                  inset 0 3px 0 rgba(255, 255, 255, 0.5),
+                  inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+                  0 0 40px rgba(255, 215, 0, 0.9)
+                `,
+                animation: 'pulse-orange 1.5s infinite',
                 perspective: '1000px',
-                transformStyle: 'preserve-3d'
+                transformStyle: 'preserve-3d',
+                filter: 'brightness(1.1) saturate(1.2)'
               }}
             >
-              {/* Ultra-Premium Gradient Overlay */}
+              {/* Liquid Gold Overlay */}
               <motion.div 
-                className="absolute inset-0 rounded-full opacity-60"
+                className="absolute inset-0 rounded-full"
                 animate={{
                   background: [
-                    'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 50%)',
-                    'radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.8), transparent 50%)',
-                    'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 50%)'
+                    'radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 40%)',
+                    'radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.9), transparent 40%)',
+                    'radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.9), transparent 40%)',
+                    'radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 40%)'
                   ]
                 }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Rotating Diamond Pattern */}
+              {/* Hypnotic Rotating Rings */}
               <motion.div
-                className="absolute inset-2 rounded-full border-2 border-white/30"
+                className="absolute inset-1 rounded-full"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
                 style={{
-                  background: 'conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent, rgba(255, 255, 255, 0.1), transparent)'
+                  background: 'conic-gradient(from 0deg, transparent 0deg, rgba(255, 255, 255, 0.3) 45deg, transparent 90deg, rgba(255, 255, 255, 0.3) 135deg, transparent 180deg, rgba(255, 255, 255, 0.3) 225deg, transparent 270deg, rgba(255, 255, 255, 0.3) 315deg, transparent 360deg)',
+                  borderRadius: '50%'
                 }}
               />
               
-              {/* Central Icon with 3D Effect */}
               <motion.div
-                className="relative z-10 flex items-center justify-center w-full h-full"
-                whileHover={{ rotateY: 15, rotateX: -5 }}
+                className="absolute inset-2 rounded-full border-2"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                style={{
+                  borderImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.6), transparent, rgba(255, 255, 255, 0.6), transparent) 1'
+                }}
+              />
+              
+              {/* 3D Sunshine Icon */}
+              <motion.div
+                className="relative z-20 flex items-center justify-center w-full h-full"
+                whileHover={{ rotateY: 25, rotateX: -10, scale: 1.1 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <MessageCircle 
-                  className="w-7 h-7 relative z-10 drop-shadow-lg" 
-                  style={{ 
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-                    transform: 'translateZ(4px)'
-                  }} 
-                />
+                {/* Sun Rays */}
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                >
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-0.5 h-4 bg-white rounded-full"
+                      style={{
+                        left: '50%',
+                        top: '2px',
+                        originX: 0.5,
+                        originY: '30px',
+                        transform: `rotate(${i * 45}deg) translateX(-50%)`,
+                        boxShadow: '0 0 6px rgba(255, 255, 255, 0.8)'
+                      }}
+                      animate={{
+                        opacity: [0.5, 1, 0.5],
+                        scaleY: [0.8, 1.3, 0.8]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  ))}
+                </motion.div>
+                
+                {/* Central Sun */}
+                <motion.div
+                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center relative z-10"
+                  style={{
+                    background: 'radial-gradient(circle, #FFFFFF 0%, #FFE55C  40%, #FFD700 100%)',
+                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.9), inset 0 2px 0 rgba(255, 255, 255, 0.8)',
+                    transform: 'translateZ(8px)',
+                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+                  }}
+                  animate={{
+                    boxShadow: [
+                      '0 0 20px rgba(255, 255, 255, 0.9)',
+                      '0 0 30px rgba(255, 215, 0, 1)',
+                      '0 0 20px rgba(255, 255, 255, 0.9)'
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <span className="text-orange-500 text-xs font-bold">☀</span>
+                </motion.div>
               </motion.div>
               
-              {/* Luxury Status Indicators */}
+              {/* Luxury Status Crown */}
               <motion.div 
-                className="absolute -top-1 -right-1 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center"
+                className="absolute -top-2 -right-2 w-7 h-7 rounded-full border-2 border-white flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, #00FF87, #60EFFF)',
-                  boxShadow: '0 0 12px rgba(0, 255, 135, 0.6)'
+                  background: 'linear-gradient(135deg, #00FF87, #60EFFF, #FF0080)',
+                  boxShadow: '0 0 20px rgba(0, 255, 135, 0.8)'
                 }}
                 animate={{
-                  scale: [1, 1.2, 1],
+                  scale: [1, 1.3, 1],
                   rotate: [0, 360],
+                  boxShadow: [
+                    '0 0 20px rgba(0, 255, 135, 0.8)',
+                    '0 0 30px rgba(96, 239, 255, 1)',
+                    '0 0 20px rgba(255, 0, 128, 0.8)',
+                    '0 0 20px rgba(0, 255, 135, 0.8)'
+                  ]
                 }}
                 transition={{
                   scale: { duration: 2, repeat: Infinity },
-                  rotate: { duration: 4, repeat: Infinity, ease: "linear" }
+                  rotate: { duration: 5, repeat: Infinity, ease: "linear" },
+                  boxShadow: { duration: 3, repeat: Infinity }
                 }}
               >
-                <motion.div 
-                  className="w-2 h-2 bg-white rounded-full"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                />
+                <span className="text-white text-xs">👑</span>
               </motion.div>
               
-              {/* Premium Floating Elements */}
+              {/* Premium Floating Diamonds */}
               <motion.div
-                className="absolute -top-3 -left-3 w-4 h-4"
+                className="absolute -top-4 -left-4 w-5 h-5"
                 animate={{
-                  y: [-2, -8, -2],
-                  rotate: [0, 180, 360],
+                  y: [-3, -12, -3],
+                  x: [-1, 3, -1],
+                  rotate: [0, 360],
                   opacity: [0.7, 1, 0.7]
                 }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-              >
-                <div 
-                  className="w-full h-full rounded-full"
-                  style={{
-                    background: 'linear-gradient(45deg, #FFD700, #FFA500)',
-                    boxShadow: '0 0 8px rgba(255, 215, 0, 0.8)'
-                  }}
-                />
-              </motion.div>
-              
-              <motion.div
-                className="absolute -bottom-2 -right-3 w-3 h-3"
-                animate={{
-                  y: [0, -6, 0],
-                  x: [-1, 2, -1],
-                  rotate: [0, -180, -360],
-                  opacity: [0.6, 1, 0.6]
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
+                transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
               >
                 <div 
                   className="w-full h-full"
                   style={{
-                    background: 'linear-gradient(45deg, #FF69B4, #FF1493)',
-                    boxShadow: '0 0 6px rgba(255, 105, 180, 0.8)',
-                    clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)'
+                    background: 'linear-gradient(45deg, #FFD700, #FFA500, #FF69B4)',
+                    boxShadow: '0 0 15px rgba(255, 215, 0, 0.9)',
+                    clipPath: 'polygon(50% 0%, 80% 50%, 50% 100%, 20% 50%)',
+                    transform: 'rotate(45deg)'
                   }}
                 />
               </motion.div>
               
-              {/* Shimmer Effect */}
+              <motion.div
+                className="absolute -bottom-3 -right-4 w-4 h-4"
+                animate={{
+                  y: [0, -8, 0],
+                  x: [-2, 2, -2],
+                  rotate: [0, -360],
+                  opacity: [0.6, 1, 0.6]
+                }}
+                transition={{ duration: 3.5, repeat: Infinity, delay: 1.2 }}
+              >
+                <div 
+                  className="w-full h-full rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, #00FFFF, #0080FF)',
+                    boxShadow: '0 0 12px rgba(0, 255, 255, 0.9)'
+                  }}
+                />
+              </motion.div>
+              
+              {/* Epic Shimmer Sweep */}
               <motion.div
                 className="absolute inset-0 rounded-full"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
+                initial={{ x: '-200%', opacity: 0 }}
+                animate={{ 
+                  x: ['200%', '-200%'],
+                  opacity: [0, 0.8, 0]
+                }}
                 transition={{
-                  duration: 3,
+                  duration: 4,
                   repeat: Infinity,
-                  repeatDelay: 2,
+                  repeatDelay: 1,
                   ease: "easeInOut"
                 }}
                 style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
-                  transform: 'skewX(-20deg)'
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), rgba(255, 215, 0, 0.6), rgba(255, 255, 255, 0.8), transparent)',
+                  transform: 'skewX(-25deg)',
+                  filter: 'blur(1px)'
                 }}
               />
             </motion.button>
