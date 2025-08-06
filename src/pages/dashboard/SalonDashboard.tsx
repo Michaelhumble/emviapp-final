@@ -1,14 +1,9 @@
 
 import React from 'react';
-import Layout from '@/components/layout/Layout';
-import { SalonDashboardContent } from '@/components/dashboard/salon/SalonDashboardContent';
+import BillionaireClubDashboard from '@/components/dashboard/salon/BillionaireClubDashboard';
 
 const SalonDashboard = () => {
-  return (
-    <Layout>
-      <SalonDashboardContent />
-    </Layout>
-  );
+  return <BillionaireClubDashboard />;
 };
 
 export default SalonDashboard;

@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
-import SalonDashboardNew from "@/components/dashboard/salon/SalonDashboardNew";
+import BillionaireClubDashboard from "@/components/dashboard/salon/BillionaireClubDashboard";
 
 const OwnerDashboard = () => {
   useEffect(() => {
-    document.title = "Salon Owner Dashboard | EmviApp";
+    document.title = "Billionaire Club Salon Dashboard | EmviApp";
   }, []);
 
-  // SalonProvider is already provided at App level - no need to duplicate
-  return <SalonDashboardNew />;
+  return <BillionaireClubDashboard />;
 };
 
 export default OwnerDashboard;
