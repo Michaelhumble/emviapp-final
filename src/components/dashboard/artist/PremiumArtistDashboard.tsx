@@ -19,6 +19,7 @@ import {
 // Premium Hero Components
 import ArtistAnimatedHero from './sections/ArtistAnimatedHero';
 import ArtistMobileActionBar from './sections/ArtistMobileActionBar';
+import ArtistMobileBookingButton from './sections/ArtistMobileBookingButton';
 
 // Tab Content Components
 import ArtistOverviewTab from './tabs/ArtistOverviewTab';
@@ -185,6 +186,9 @@ const PremiumArtistDashboard = () => {
           }}
           unreadNotifications={0}
         />
+        
+        {/* Mobile Booking Button */}
+        <ArtistMobileBookingButton />
       </motion.div>
     </div>
   );

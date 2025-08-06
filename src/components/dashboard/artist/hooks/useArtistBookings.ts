@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabaseBypass } from "@/types/supabase-bypass";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -31,99 +31,132 @@ export interface Booking {
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [serviceTypes, setServiceTypes] = useState<string[]>([]);
   const { user } = useAuth();
   
+  const fetchBookings = useCallback(async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch real bookings from Supabase
+      const { data, error: fetchError } = await supabaseBypass
+        .from("bookings")
+        .select("*")
+        .eq("recipient_id", user.id)
+        .order("date_requested", { ascending: false })
+        .order("time_requested", { ascending: false });
+      
+      if (fetchError) throw fetchError;
+      
+      // Convert database status strings to our enum type
+      const typedBookings = (data || []).map(booking => ({
+        ...booking,
+        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled'
+      }));
+      
+      setBookings(typedBookings);
+      
+      // Extract unique service types
+      const uniqueServiceTypes = Array.from(
+        new Set(
+          (data || [])
+            .filter(booking => booking.service_type)
+            .map(booking => booking.service_type as string)
+        )
+      );
+      
+      setServiceTypes(uniqueServiceTypes as string[]);
+    } catch (err: any) {
+      console.error('Error fetching bookings:', err);
+      setError("Failed to load bookings. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+  
   useEffect(() => {
-    if (!user) return;
-    
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        
-        // For now, return mock data as we don't have a bookings table yet
-        // This will be replaced with actual database queries once the table is set up
-        const mockBookings: Booking[] = [
-          {
-            id: '1',
-            sender_id: 'client1',
-            recipient_id: user.id,
-            client_name: 'Jane Smith',
-            client_avatar: '',
-            service_name: 'Manicure',
-            date_requested: '2025-05-01',
-            time_requested: '10:00 AM',
-            status: 'pending',
-            created_at: '2025-04-20T10:00:00Z'
-          },
-          {
-            id: '2',
-            sender_id: 'client2',
-            recipient_id: user.id,
-            client_name: 'Mike Johnson',
-            client_avatar: '',
-            service_name: 'Pedicure',
-            date_requested: '2025-05-02',
-            time_requested: '2:00 PM',
-            status: 'accepted',
-            created_at: '2025-04-19T14:30:00Z'
-          },
-          {
-            id: '3',
-            sender_id: 'client3',
-            recipient_id: user.id,
-            client_name: 'Sarah Williams',
-            client_avatar: '',
-            service_name: 'Nail Art',
-            date_requested: '2025-05-03',
-            time_requested: '11:30 AM',
-            status: 'completed',
-            created_at: '2025-04-18T09:15:00Z'
-          }
-        ];
-        
-        setBookings(mockBookings);
-        
-        // Extract unique service types
-        const uniqueServiceTypes = Array.from(
-          new Set(
-            mockBookings
-              .filter(booking => booking.service_name)
-              .map(booking => booking.service_name as string)
-          )
-        );
-        
-        setServiceTypes(uniqueServiceTypes);
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
     fetchBookings();
-  }, [user]);
+    
+    // Set up real-time subscription for bookings table changes
+    const subscription = supabaseBypass
+      .channel('bookings_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'bookings',
+          filter: `recipient_id=eq.${user?.id}`
+        },
+        () => {
+          // Refetch bookings when data changes
+          fetchBookings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabaseBypass.removeChannel(subscription);
+    };
+  }, [user?.id, fetchBookings]);
   
   const handleAccept = async (bookingId: string) => {
-    // Mock implementation - will be replaced with actual database update
-    setBookings(prev => prev.map(booking => 
-      booking.id === bookingId 
-        ? { ...booking, status: 'accepted' } 
-        : booking
-    ));
+    if (!user?.id) return;
     
-    toast.success('Booking accepted successfully');
+    try {
+      const { error } = await supabaseBypass
+        .from("bookings")
+        .update({ status: "accepted" })
+        .eq("id", bookingId)
+        .eq("recipient_id", user.id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setBookings(prev => prev.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: 'accepted' as const } 
+          : booking
+      ));
+      
+      toast.success('Booking accepted successfully');
+    } catch (err) {
+      console.error('Error accepting booking:', err);
+      toast.error('Failed to accept booking');
+    }
   };
   
   const handleDecline = async (bookingId: string) => {
-    // Mock implementation - will be replaced with actual database update
-    setBookings(prev => prev.map(booking => 
-      booking.id === bookingId 
-        ? { ...booking, status: 'declined' } 
-        : booking
-    ));
+    if (!user?.id) return;
     
-    toast.success('Booking declined');
+    try {
+      const { error } = await supabaseBypass
+        .from("bookings")
+        .update({ status: "declined" })
+        .eq("id", bookingId)
+        .eq("recipient_id", user.id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setBookings(prev => prev.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: 'declined' as const } 
+          : booking
+      ));
+      
+      toast.success('Booking declined');
+    } catch (err) {
+      console.error('Error declining booking:', err);
+      toast.error('Failed to decline booking');
+    }
   };
   
   // Calculate booking counts
@@ -148,6 +181,8 @@ export const useArtistBookings = () => {
   return {
     bookings,
     loading,
+    error,
+    refresh: fetchBookings,
     handleAccept,
     handleDecline,
     serviceTypes,

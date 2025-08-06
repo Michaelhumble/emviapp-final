@@ -5,6 +5,9 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth';
 
+// Note: This hook now uses the 'bookings' table instead of 'appointments'
+// to maintain consistency across the application
+
 export interface Appointment {
   id: string;
   artist_id: string;
@@ -37,13 +40,15 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
     queryFn: async () => {
       if (!user?.id) return [];
 
+      // Map to bookings table structure for consistency
       const { data, error } = await supabaseBypass
-        .from('appointments')
-        .select('*, services(title, price, duration_minutes)')
-        .eq('artist_id', user.id as any)
-        .gte('start_time', startDate.toISOString())
-        .lte('end_time', endDate.toISOString())
-        .order('start_time', { ascending: true });
+        .from('bookings')
+        .select('*')
+        .eq('recipient_id', user.id as any)
+        .gte('date_requested', format(startDate, 'yyyy-MM-dd'))
+        .lte('date_requested', format(endDate, 'yyyy-MM-dd'))
+        .order('date_requested', { ascending: true })
+        .order('time_requested', { ascending: true });
       
       if (error) {
         console.error('Error fetching appointments:', error);
@@ -82,9 +87,22 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
         end_time: dataToSave.end_time
       };
       
+      // Convert to bookings table format
+      const bookingData = {
+        recipient_id: user.id,
+        sender_id: dataToSave.customer_id || user.id,
+        client_name: dataToSave.customer_name,
+        service_type: dataToSave.services?.title || 'Service',
+        date_requested: format(new Date(dataToSave.start_time!), 'yyyy-MM-dd'),
+        time_requested: format(new Date(dataToSave.start_time!), 'HH:mm'),
+        status: 'accepted',
+        note: dataToSave.notes,
+        created_at: dataToSave.created_at
+      };
+
       const { data, error } = await supabaseBypass
-        .from('appointments')
-        .upsert(finalData as any)
+        .from('bookings')
+        .upsert(bookingData as any)
         .select()
         .single();
       
@@ -106,10 +124,10 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
       if (!user?.id) throw new Error('User not authenticated');
       
       const { error } = await supabaseBypass
-        .from('appointments')
+        .from('bookings')
         .delete()
         .eq('id', id as any)
-        .eq('artist_id', user.id as any); // Ensure only owner can delete
+        .eq('recipient_id', user.id as any); // Ensure only owner can delete
       
       if (error) throw error;
       return id;

@@ -4798,6 +4798,15 @@ export type Database = {
           first_ai_user: boolean
         }[]
       }
+      get_customer_booking_info: {
+        Args: { booking_id: string }
+        Returns: {
+          customer_name: string
+          customer_email: string
+          customer_phone: string
+          customer_avatar: string
+        }[]
+      }
       get_customer_info: {
         Args: { customer_id: string }
         Returns: {
