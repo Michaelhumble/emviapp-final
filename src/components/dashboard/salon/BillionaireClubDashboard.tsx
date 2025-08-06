@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
-import Layout from '@/components/layout/Layout';
+// Removed Layout import - using custom full-screen dashboard
 
 // Real-time live activity components
 const LiveActivityFeed = () => {
@@ -287,8 +287,8 @@ const BillionaireClubDashboard = () => {
   const [todayGoal] = useState(85);
 
   return (
-    <Layout hideFooter={true} hideMobileNav={true}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden w-full">
+      {/* Completely custom dashboard without Layout wrapper */}
         {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none">
           <motion.div 
@@ -523,9 +523,8 @@ const BillionaireClubDashboard = () => {
           </motion.div>
         </div>
 
-        {/* Removed Sticky Action Bar for clean dashboard */}
-      </div>
-    </Layout>
+        {/* NO FOOTERS - Completely removed for clean dashboard experience */}
+    </div>
   );
 };
 
