@@ -161,7 +161,7 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
             `}
           >
             {/* Header */}
-            <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4 md:p-6 flex items-center justify-between relative overflow-hidden">
+            <div className="bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 p-4 md:p-6 flex items-center justify-between relative overflow-hidden shadow-lg shadow-orange-500/30">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <motion.div
@@ -191,7 +191,7 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
                     rotate: { duration: 10, repeat: Infinity, ease: "linear" },
                     scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                   }}
-                  className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 shadow-lg"
                 >
                   <Sun className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </motion.div>
@@ -314,7 +314,7 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask Little Sunshine anything..."
-                    className="w-full px-3 py-2 md:px-4 md:py-3 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent bg-gray-50 text-sm md:text-base"
+                    className="w-full px-3 py-2 md:px-4 md:py-3 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent bg-gray-50 text-sm md:text-base"
                     disabled={isProcessing}
                   />
                 </div>
@@ -337,7 +337,7 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
                 <Button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isProcessing}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-lg shadow-orange-500/30"
                 >
                   <Send className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </Button>

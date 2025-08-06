@@ -34,7 +34,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
           }}
           className="absolute -top-8 -right-4"
         >
-          <Sparkles className="w-4 h-4 text-purple-400" />
+          <Sparkles className="w-4 h-4 text-orange-400" />
         </motion.div>
         
         <motion.div
@@ -52,7 +52,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
           }}
           className="absolute -top-6 -left-8"
         >
-          <Heart className="w-3 h-3 text-pink-400" />
+          <Heart className="w-3 h-3 text-red-400" />
         </motion.div>
 
         <motion.div
@@ -70,28 +70,28 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
           }}
           className="absolute -top-10 right-6"
         >
-          <Sun className="w-3 h-3 text-yellow-400" />
+          <Sun className="w-3 h-3 text-amber-400" />
         </motion.div>
       </div>
 
       {/* Main button */}
       <Button
         onClick={onClick}
-        className="relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-2xl border-2 border-white/20 overflow-hidden group"
+        className="relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-2xl shadow-orange-500/50 border-2 border-white/20 overflow-hidden group animate-pulse"
         aria-label="Open Chat with Little Sunshine"
       >
         {/* Pulsing background effect */}
         <motion.div
           animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.3, 0.7, 0.3]
+            scale: [1, 1.4, 1],
+            opacity: [0.4, 0.8, 0.4]
           }}
           transition={{
-            duration: 2.5,
+            duration: 2,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0 bg-gradient-to-br from-purple-300 to-pink-300 rounded-full"
+          className="absolute inset-0 bg-gradient-to-br from-orange-300 to-red-300 rounded-full"
         />
 
         {/* Chat icon with animation */}
@@ -129,7 +129,10 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
         )}
 
         {/* Radial glow effect on hover */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-300/30 to-pink-300/30 blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-300/50 to-red-300/50 blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        {/* Extra attention-grabbing glow */}
+        <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-orange-400/20 to-red-400/20 blur-2xl animate-pulse" />
       </Button>
 
       {/* Tooltip */}
