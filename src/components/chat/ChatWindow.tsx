@@ -24,7 +24,16 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
   const [input, setInput] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -123,7 +132,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed bottom-24 right-6 w-96 bg-white rounded-3xl shadow-2xl border border-orange-200 overflow-hidden z-[9998]"
+        className="fixed bottom-16 right-4 sm:bottom-24 sm:right-6 w-[95vw] max-w-sm sm:w-96 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-orange-200 overflow-hidden z-[9998]"
         initial={{ scale: 0, opacity: 0, y: 100 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0, opacity: 0, y: 100 }}
@@ -134,32 +143,32 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 p-4 text-white">
+        <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 p-3 sm:p-4 text-white">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <ChatIcon size={28} />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <ChatIcon size={isMobile ? 24 : 28} />
               <div>
-                <h3 className="font-bold text-lg">Little Sunshine</h3>
+                <h3 className="font-bold text-base sm:text-lg">Little Sunshine</h3>
                 <p className="text-xs text-orange-100">GPT-4.1 Premium AI ✨</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-0.5 sm:space-x-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="text-white hover:bg-white/20 w-8 h-8 p-0"
+                className="text-white hover:bg-white/20 w-7 h-7 sm:w-8 sm:h-8 p-0"
               >
-                {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+                {isMinimized ? <Maximize2 className="w-3 h-3 sm:w-4 sm:h-4" /> : <Minimize2 className="w-3 h-3 sm:w-4 sm:h-4" />}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="text-white hover:bg-white/20 w-8 h-8 p-0"
+                className="text-white hover:bg-white/20 w-7 h-7 sm:w-8 sm:h-8 p-0"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </div>
           </div>
@@ -174,8 +183,8 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
             transition={{ duration: 0.3 }}
           >
             {/* Messages */}
-            <ScrollArea className="h-80 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="h-64 sm:h-80 p-3 sm:p-4">
+              <div className="space-y-3 sm:space-y-4">
                 {messages.map((message) => (
                   <motion.div
                     key={message.id}
@@ -185,13 +194,13 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                     className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-xs px-4 py-3 rounded-2xl ${
+                      className={`max-w-[85%] sm:max-w-xs px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl text-sm ${
                         message.sender === 'user'
                           ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white'
                           : 'bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 text-gray-800'
                       }`}
                     >
-                      <p className="text-sm">{message.content}</p>
+                      <p className="text-sm leading-relaxed">{message.content}</p>
                       <p className={`text-xs mt-1 ${
                         message.sender === 'user' ? 'text-orange-100' : 'text-orange-400'
                       }`}>
@@ -206,7 +215,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                     animate={{ opacity: 1, y: 0 }}
                     className="flex justify-start"
                   >
-                    <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 px-4 py-3 rounded-2xl">
+                    <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl">
                       <div className="flex space-x-1">
                         {[...Array(3)].map((_, i) => (
                           <motion.div
@@ -231,23 +240,23 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
               </div>
             </ScrollArea>
 
-            {/* Input area */}
-            <div className="p-4 border-t border-orange-100 bg-gradient-to-r from-orange-50/50 to-yellow-50/50">
+            {/* Enhanced Input area with responsive design */}
+            <div className="p-3 sm:p-4 border-t border-orange-100 bg-gradient-to-r from-orange-50/50 to-yellow-50/50">
               <div className="flex space-x-2">
                 <Textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask Little Sunshine anything..."
-                  className="flex-1 min-h-[40px] max-h-32 resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400/20 bg-white/80"
+                  className="flex-1 min-h-[36px] sm:min-h-[40px] max-h-24 sm:max-h-32 resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400/20 bg-white/80 text-sm"
                   disabled={isLoading}
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={!input.trim() || isLoading}
-                  className="bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0 w-12 h-12 p-0"
+                  className="bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0 w-10 h-10 sm:w-12 sm:h-12 p-0"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChatIcon } from './ChatIcon';
 
@@ -8,6 +8,15 @@ interface ChatButtonProps {
 }
 
 export const ChatButton = ({ onClick, isOpen = false }: ChatButtonProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <motion.button
       onClick={(e) => {
@@ -16,7 +25,7 @@ export const ChatButton = ({ onClick, isOpen = false }: ChatButtonProps) => {
         console.log('🌟 Chat button clicked successfully!');
         onClick();
       }}
-      className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 shadow-2xl text-white cursor-pointer z-[9999] flex items-center justify-center"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 shadow-2xl text-white cursor-pointer z-[9999] flex items-center justify-center"
       style={{ 
         pointerEvents: 'auto',
         isolation: 'isolate'
@@ -34,12 +43,12 @@ export const ChatButton = ({ onClick, isOpen = false }: ChatButtonProps) => {
         damping: 20,
       }}
     >
-      <ChatIcon size={32} />
+      <ChatIcon size={isMobile ? 28 : 32} />
       
       {/* Notification dot when closed */}
       {!isOpen && (
         <motion.div
-          className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"
+          className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full border-1 sm:border-2 border-white"
           animate={{
             scale: [1, 1.2, 1],
           }}
