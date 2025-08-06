@@ -2,16 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, MessageCircle, Crown, Camera, Mic, Palette, Volume2, ArrowUp, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
 import PremiumFeatures from './PremiumFeatures';
 import VoiceChat from './VoiceChat';
 import PhotoUpload from './PhotoUpload';
 import AIImageGeneration from './AIImageGeneration';
+import ChatCTAButton from './ChatCTAButton';
 import { isFeatureEnabled, type PremiumFeature } from '@/config/premiumFeatures';
+import { detectUserIntent, shouldShowCTAButtons, type CTAButton } from '@/utils/chatIntentDetection';
 
 export const ChatSystem = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hi, I am Sunshine, what's your name? Em biết nói tiếng Việt nữa đó!", sender: 'bot' }
+    { id: 1, text: "Hi, I am Sunshine, what's your name? Em biết nói tiếng Việt nữa đó!", sender: 'bot', ctaButtons: [] }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,12 +54,16 @@ export const ChatSystem = () => {
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
-    const userMessage = { id: Date.now(), text: input, sender: 'user' };
+    const userMessage = { id: Date.now(), text: input, sender: 'user', ctaButtons: [] };
     setMessages(prev => [...prev, userMessage]);
     const currentInput = input;
     setInput('');
     setLoading(true);
     setIsTyping(true);
+
+    // Detect user intent for CTA buttons
+    const shouldShowButtons = shouldShowCTAButtons(currentInput);
+    const detectedButtons = shouldShowButtons ? detectUserIntent(currentInput, !!user) : [];
 
     try {
       const { data, error } = await supabase.functions.invoke('sunshine-chat', {
@@ -73,7 +81,8 @@ export const ChatSystem = () => {
         const botMessage = { 
           id: Date.now() + 1, 
           text: data?.message || "I'm here to help!", 
-          sender: 'bot' 
+          sender: 'bot',
+          ctaButtons: detectedButtons
         };
         setMessages(prev => [...prev, botMessage]);
       }, 1200);
@@ -84,7 +93,8 @@ export const ChatSystem = () => {
       const errorMessage = { 
         id: Date.now() + 1, 
         text: "I'm having trouble right now, but I'm here to help! Try again!", 
-        sender: 'bot' 
+        sender: 'bot',
+        ctaButtons: []
       };
       setMessages(prev => [...prev, errorMessage]);
     }
@@ -111,7 +121,8 @@ export const ChatSystem = () => {
     const botMessage = { 
       id: Date.now(), 
       text: analysis, 
-      sender: 'bot' 
+      sender: 'bot',
+      ctaButtons: []
     };
     setMessages(prev => [...prev, botMessage]);
   };
@@ -120,7 +131,8 @@ export const ChatSystem = () => {
     const botMessage = { 
       id: Date.now(), 
       text: `I've created your custom design! Here's a beautiful ${prompt} - what do you think?`, 
-      sender: 'bot' 
+      sender: 'bot',
+      ctaButtons: []
     };
     setMessages(prev => [...prev, botMessage]);
   };
@@ -249,7 +261,7 @@ export const ChatSystem = () => {
                       stiffness: 400,
                       damping: 25
                     }}
-                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} flex-col`}
                   >
                     <motion.div
                       whileHover={{ scale: 1.02, y: -1 }}
@@ -286,6 +298,25 @@ export const ChatSystem = () => {
                         {msg.text}
                       </p>
                     </motion.div>
+
+                    {/* CTA Buttons for bot messages */}
+                    {msg.sender === 'bot' && msg.ctaButtons && msg.ctaButtons.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex flex-col gap-2 mt-3 max-w-[85%]"
+                      >
+                        {msg.ctaButtons.map((button, buttonIndex) => (
+                          <ChatCTAButton
+                            key={buttonIndex}
+                            label={button.label}
+                            route={button.route}
+                            intent={button.intent}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
                   </motion.div>
                 ))}
               
