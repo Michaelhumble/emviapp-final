@@ -359,7 +359,7 @@ export const ChatSystem = () => {
         )}
       </AnimatePresence>
 
-      {/* Billion-Dollar Chat Window */}
+      {/* Responsive Premium Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -367,7 +367,9 @@ export const ChatSystem = () => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-6 right-6 w-96 h-[600px] z-50 flex flex-col overflow-hidden"
+            className="fixed bottom-4 right-4 z-50 flex flex-col overflow-hidden
+                      w-80 h-[500px] sm:w-96 sm:h-[600px] 
+                      max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
             style={{
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(20px)',
@@ -376,15 +378,15 @@ export const ChatSystem = () => {
               boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
             }}
           >
-            {/* Premium Header with Glassmorphism */}
+            {/* Enhanced Premium Header */}
             <div 
-              className="relative text-white p-6 flex justify-between items-center"
+              className="relative text-white p-4 sm:p-6 flex justify-between items-center"
               style={{
                 background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 50%, #FF4500 100%)',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}
             >
-              {/* Animated Background Particles */}
+              {/* Background Particles */}
               <div className="absolute inset-0 overflow-hidden">
                 {[...Array(6)].map((_, i) => (
                   <motion.div
@@ -408,9 +410,10 @@ export const ChatSystem = () => {
                 ))}
               </div>
 
-              <div className="flex items-center space-x-4 relative z-10">
+              <div className="flex items-center space-x-3 sm:space-x-4 relative z-10">
+                {/* Bigger Sunshine Icon */}
                 <motion.div 
-                  className="w-12 h-12 rounded-full flex items-center justify-center relative"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center relative"
                   style={{
                     background: 'rgba(255, 255, 255, 0.2)',
                     backdropFilter: 'blur(10px)',
@@ -419,12 +422,12 @@ export const ChatSystem = () => {
                   animate={{ rotate: 360 }}
                   transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                 >
-                  <span className="text-2xl">☀️</span>
+                  <span className="text-3xl sm:text-4xl">☀️</span>
                   <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-yellow-300/30 to-orange-300/30"></div>
                 </motion.div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <motion.h3 
-                    className="font-bold text-xl"
+                    className="font-bold text-lg sm:text-xl truncate"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
@@ -438,7 +441,9 @@ export const ChatSystem = () => {
                     transition={{ delay: 0.3 }}
                   >
                     <div className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></div>
-                    <p className="text-orange-100 text-sm">Your Beauty AI Assistant</p>
+                    <p className="text-orange-100 text-xs sm:text-sm truncate">
+                      Always here to brighten your day ✨
+                    </p>
                   </motion.div>
                 </div>
               </div>
@@ -457,9 +462,9 @@ export const ChatSystem = () => {
               </motion.button>
             </div>
 
-            {/* Premium Messages Container */}
+            {/* Responsive Messages Container */}
             <div 
-              className="flex-1 p-6 overflow-y-auto space-y-4 relative chat-scroll"
+              className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 relative chat-scroll"
               style={{
                 background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.6), rgba(255, 255, 255, 0.8))',
                 backdropFilter: 'blur(10px)'
@@ -488,7 +493,7 @@ export const ChatSystem = () => {
                   >
                     <motion.div
                       whileHover={{ scale: 1.02 }}
-                      className={`max-w-xs px-5 py-4 rounded-2xl relative overflow-hidden ${
+                      className={`max-w-[85%] sm:max-w-xs px-3 sm:px-5 py-2 sm:py-4 rounded-2xl relative overflow-hidden ${
                         msg.sender === 'user'
                           ? 'text-white shadow-lg'
                           : 'bg-white/80 text-gray-800 shadow-md border border-white/50'
@@ -505,7 +510,7 @@ export const ChatSystem = () => {
                       {msg.sender === 'user' && (
                         <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
                       )}
-                      <p className="text-sm leading-relaxed relative z-10 font-medium">{msg.text}</p>
+                      <p className="text-sm leading-relaxed relative z-10 font-medium break-words">{msg.text}</p>
                     </motion.div>
                   </motion.div>
                 ))}
@@ -518,7 +523,7 @@ export const ChatSystem = () => {
                     className="flex justify-start"
                   >
                     <motion.div 
-                      className="bg-white/90 text-gray-800 shadow-lg px-5 py-4 rounded-2xl max-w-xs relative overflow-hidden"
+                      className="bg-white/90 text-gray-800 shadow-lg px-3 sm:px-5 py-2 sm:py-4 rounded-2xl max-w-[85%] sm:max-w-xs relative overflow-hidden"
                       style={{
                         backdropFilter: 'blur(20px)',
                         border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -553,9 +558,9 @@ export const ChatSystem = () => {
               </div>
             </div>
 
-            {/* Billion-Dollar Input Section */}
+            {/* Responsive Input Section */}
             <div 
-              className="p-6 relative"
+              className="p-3 sm:p-6 relative"
               style={{
                 background: 'rgba(255, 255, 255, 0.8)',
                 backdropFilter: 'blur(20px)',
@@ -564,7 +569,7 @@ export const ChatSystem = () => {
             >
               {/* Premium Feature Shortcuts */}
               <motion.div 
-                className="flex gap-3 mb-4"
+                className="flex gap-2 sm:gap-3 mb-3 sm:mb-4 overflow-x-auto pb-1"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -580,19 +585,19 @@ export const ChatSystem = () => {
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={feature.action}
-                    className={`p-3 rounded-xl text-white transition-all duration-300 bg-gradient-to-r ${feature.color} shadow-lg hover:shadow-xl relative overflow-hidden group`}
+                    className={`p-2 sm:p-3 rounded-xl text-white transition-all duration-300 bg-gradient-to-r ${feature.color} shadow-lg hover:shadow-xl relative overflow-hidden group flex-shrink-0`}
                     title={feature.title}
                     style={{
                       boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
                     }}
                   >
                     <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    <feature.icon className="w-4 h-4 relative z-10" />
+                    <feature.icon className="w-3 h-3 sm:w-4 sm:h-4 relative z-10" />
                   </motion.button>
                 ))}
               </motion.div>
 
-              <div className="flex gap-3 items-end">
+              <div className="flex gap-2 sm:gap-3 items-end">
                 <div className="flex-1 relative">
                   <input
                     type="text"
@@ -601,7 +606,7 @@ export const ChatSystem = () => {
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
                     placeholder="Ask me anything..."
                     disabled={loading}
-                    className="w-full px-5 py-4 text-sm font-medium rounded-2xl transition-all duration-300 focus:outline-none focus:ring-0 border-0"
+                    className="w-full px-3 sm:px-5 py-3 sm:py-4 text-sm font-medium rounded-2xl transition-all duration-300 focus:outline-none focus:ring-0 border-0"
                     style={{
                       background: 'rgba(255, 255, 255, 0.9)',
                       backdropFilter: 'blur(10px)',
