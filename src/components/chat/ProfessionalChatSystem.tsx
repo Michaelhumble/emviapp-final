@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, MessageCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -17,12 +17,11 @@ interface Message {
 }
 
 const ProfessionalChatSystem: React.FC = () => {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hi! I\'m Sunshine ☀️ Your personal beauty career assistant. I can help you find jobs, post opportunities, or answer any questions about the beauty industry!',
+      text: 'Hi, I am Sunshine, what\'s your name? Em biết nói tiếng Việt nữa đó!',
       isUser: false,
       timestamp: new Date(),
     }
@@ -54,30 +53,40 @@ const ProfessionalChatSystem: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Simulate AI response
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('🤖 [SUNSHINE] Sending message to Little Sunshine:', currentInput);
       
-      const responses = [
-        "I'd be happy to help you with that! Let me guide you through the best options for your beauty career.",
-        "Great question! As someone in the beauty industry, here's what I recommend...",
-        "Perfect! I can definitely assist you with that. Let me show you the best path forward.",
-        "Wonderful! I love helping beauty professionals succeed. Here's what you need to know..."
-      ];
+      // Call the real Little Sunshine edge function
+      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
+        body: { message: currentInput }
+      });
 
-      // Simple CTA buttons based on common intents
+      if (error) {
+        console.error('❌ [SUNSHINE] Error calling edge function:', error);
+        throw error;
+      }
+
+      console.log('✅ [SUNSHINE] Response from Little Sunshine:', data);
+      
+      // Create AI response with the actual trained response
+      const aiResponse = data.message || "Hi! I'm Little Sunshine ☀️ I'm having a moment, but I'm here to help! Try asking me about beauty tips or salon services!";
+      
+      // Smart CTA buttons based on Little Sunshine's response content
       let ctaButtons: Array<{ label: string; route: string; variant?: 'primary' | 'secondary' }> = [];
       
-      if (currentInput.toLowerCase().includes('job') || currentInput.toLowerCase().includes('work')) {
-        ctaButtons = [{ label: '🔍 Browse Jobs', route: '/jobs', variant: 'primary' }];
-      } else if (currentInput.toLowerCase().includes('post') || currentInput.toLowerCase().includes('hire')) {
+      // Check if the response suggests specific actions
+      if (aiResponse.toLowerCase().includes('post') && aiResponse.toLowerCase().includes('job')) {
         ctaButtons = [{ label: '📝 Post a Job', route: '/post-job', variant: 'primary' }];
-      } else if (currentInput.toLowerCase().includes('salon')) {
-        ctaButtons = [{ label: '🏢 Browse Salons', route: '/salons', variant: 'primary' }];
+      } else if (aiResponse.toLowerCase().includes('browse') && aiResponse.toLowerCase().includes('job')) {
+        ctaButtons = [{ label: '🔍 Browse Jobs', route: '/jobs', variant: 'primary' }];
+      } else if (aiResponse.toLowerCase().includes('salon') && aiResponse.toLowerCase().includes('sell')) {
+        ctaButtons = [{ label: '🏢 List Your Salon', route: '/sell-salon', variant: 'primary' }];
+      } else if (aiResponse.toLowerCase().includes('sign up')) {
+        ctaButtons = [{ label: '✨ Sign Up Now', route: '/auth/signup', variant: 'primary' }];
       }
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: responses[Math.floor(Math.random() * responses.length)],
+        text: aiResponse,
         isUser: false,
         timestamp: new Date(),
         ctaButtons
@@ -85,7 +94,17 @@ const ProfessionalChatSystem: React.FC = () => {
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error('❌ [SUNSHINE] Chat error:', error);
+      
+      // Fallback message that maintains Little Sunshine's personality
+      const fallbackMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Hi! I'm Little Sunshine ☀️ I'm having a moment, but I'm here to help! Try asking me about beauty tips or salon services!",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      
+      setMessages(prev => [...prev, fallbackMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -389,10 +408,10 @@ const ProfessionalChatSystem: React.FC = () => {
                         {message.ctaButtons.map((cta, index) => (
                           <motion.button
                             key={index}
-                            onClick={() => navigate(cta.route)}
+                            onClick={() => window.location.href = cta.route}
                             className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                               cta.variant === 'primary'
-                                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700'
+                                ? 'bg-gradient-to-r from-orange-500 to-yellow-600 text-white hover:from-orange-600 hover:to-yellow-700'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                             whileHover={{ scale: 1.02 }}
