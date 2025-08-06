@@ -6,7 +6,7 @@ import Footer from './Footer';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 import { PerformanceProvider } from '@/components/performance/PerformanceProvider';
 
-const LazyChatSystem = lazy(() => import('@/components/chat/LazyChatSystem').then(m => ({ default: m.LazyChatSystem })));
+const LazyChatSystem = lazy(() => import('@/components/chat/LazyChatSystem'));
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';

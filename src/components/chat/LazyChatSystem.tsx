@@ -33,3 +33,5 @@ export const LazyChatSystem = () => {
     </>
   );
 };
+
+export default LazyChatSystem;
