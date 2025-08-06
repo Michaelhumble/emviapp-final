@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useJobsData } from '@/hooks/useJobsData.ts';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
+import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import JobsGrid from '@/components/jobs/JobsGrid';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
@@ -7,18 +7,19 @@ import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
 import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-// Removed ExpiredJobsSection - now handled by individual industry pages
-import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
-import FOMONailJobsSection from '@/components/jobs/FOMONailJobsSection';
-import DiamondPlanBlock from '@/components/pricing/DiamondPlanBlock';
-import FeaturedTrendingJobs from '@/components/jobs/FeaturedTrendingJobs';
-import LiveLeaderboards from '@/components/jobs/LiveLeaderboards';
-import SuccessStoriesCarousel from '@/components/jobs/SuccessStoriesCarousel';
-import RealTimeActivity from '@/components/jobs/RealTimeActivity';
-import TeaserLocked from '@/components/jobs/TeaserLocked';
-import UrgencyBoosters from '@/components/jobs/UrgencyBoosters';
-import StickyMobileCTA from '@/components/jobs/StickyMobileCTA';
-import InviteEarnBanner from '@/components/jobs/InviteEarnBanner';
+
+// Lazy load heavy components for better performance
+const WhatYouMissedSection = lazy(() => import('@/components/jobs/WhatYouMissedSection'));
+const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSection'));
+const DiamondPlanBlock = lazy(() => import('@/components/pricing/DiamondPlanBlock'));
+const FeaturedTrendingJobs = lazy(() => import('@/components/jobs/FeaturedTrendingJobs'));
+const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
+const SuccessStoriesCarousel = lazy(() => import('@/components/jobs/SuccessStoriesCarousel'));
+const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
+const TeaserLocked = lazy(() => import('@/components/jobs/TeaserLocked'));
+const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
+const StickyMobileCTA = lazy(() => import('@/components/jobs/StickyMobileCTA'));
+const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { getIndustryRoute } from '@/utils/industryRouteMap';
@@ -42,7 +43,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const JobsPage = () => {
-  const { jobs, loading, error, refreshJobs } = useJobsData();
+  const { jobs, loading, error, refreshJobs } = useOptimizedJobsData();
   const { isSignedIn } = useAuth();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
