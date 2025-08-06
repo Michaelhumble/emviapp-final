@@ -6,6 +6,7 @@ import { BookingAnalytics } from '../bookings/BookingAnalytics';
 import { EnhancedBookingCalendar } from '../bookings/EnhancedBookingCalendar';
 import { SmartNotificationCenter } from '../notifications/SmartNotificationCenter';
 import { ClientManagementSystem } from '../clients/ClientManagementSystem';
+import { AdvancedAnalyticsDashboard } from '../analytics/AdvancedAnalyticsDashboard';
 import { AutomatedFollowUpSystem } from '../automation/AutomatedFollowUpSystem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -27,8 +28,8 @@ const ArtistBookingsTab = () => {
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="clients">Clients</TabsTrigger>
           <TabsTrigger value="automation">Automation</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="stats">Statistics</TabsTrigger>
         </TabsList>
         
         <TabsContent value="list" className="space-y-4">
@@ -47,13 +48,14 @@ const ArtistBookingsTab = () => {
           <AutomatedFollowUpSystem />
         </TabsContent>
         
+        <TabsContent value="analytics" className="space-y-4">
+          <AdvancedAnalyticsDashboard />
+        </TabsContent>
+        
         <TabsContent value="notifications" className="space-y-4">
           <SmartNotificationCenter />
         </TabsContent>
         
-        <TabsContent value="stats" className="space-y-4">
-          <BookingStatsCards />
-        </TabsContent>
       </Tabs>
     </motion.div>
   );
