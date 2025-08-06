@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
+import { useJobsData } from '@/hooks/useJobsData';
 import JobsGrid from '@/components/jobs/JobsGrid';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const JobsPage = () => {
-  const { jobs, loading, error, refreshJobs } = useOptimizedJobsData();
+  const { jobs, loading, error, refreshJobs } = useJobsData();
   const { isSignedIn } = useAuth();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();

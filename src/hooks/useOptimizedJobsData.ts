@@ -28,7 +28,6 @@ export const useOptimizedJobsData = () => {
           description,
           compensation_type,
           compensation_details,
-          is_vietnamese_job,
           vietnamese_title,
           working_hours,
           benefits,
