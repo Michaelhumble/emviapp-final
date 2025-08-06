@@ -16,6 +16,7 @@ import { useSalonOnboarding } from '@/hooks/useSalonOnboarding';
 import Layout from '@/components/layout/Layout';
 
 // Import components
+import { BillionaireAnalyticsSuite } from './analytics/BillionaireAnalyticsSuite';
 import SalonStatsOverview from './components/SalonStatsOverview';
 import SalonReviewsManager from './components/SalonReviewsManager';
 import SalonOffersManager from './components/SalonOffersManager';
@@ -25,6 +26,7 @@ import SalonBookingCalendar from './SalonBookingCalendar';
 import SalonPhotoManager from './SalonPhotoManager';
 import SalonSettings from './SalonSettings';
 import SalonOnboardingWizard from './onboarding/SalonOnboardingWizard';
+import { PremiumMobileExperience } from './mobile/PremiumMobileExperience';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 // Import new modals
@@ -528,22 +530,7 @@ const SalonDashboardNew = () => {
               animate="visible"
               transition={{ duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-violet-50 to-purple-50">
-                <CardContent className="p-8 text-center">
-                  <TrendingUp className="h-16 w-16 text-violet-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-violet-900 mb-2">Advanced Analytics</h3>
-                  <p className="text-violet-700 mb-6">
-                    Deep insights into your salon's performance, growth trends, and team analytics.
-                  </p>
-                  <Button 
-                    onClick={() => setAnalyticsModalOpen(true)}
-                    className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
-                  >
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    View Analytics
-                  </Button>
-                </CardContent>
-              </Card>
+              <BillionaireAnalyticsSuite salonId={salonId} />
             </motion.div>
           </TabsContent>
           
@@ -589,6 +576,9 @@ const SalonDashboardNew = () => {
           onClose={() => setTeamModalOpen(false)}
           salonId={salonId}
         />
+        
+        {/* Premium Mobile Experience */}
+        <PremiumMobileExperience />
         </div>
       </div>
     </Layout>
