@@ -181,16 +181,17 @@ export const ChatSystem = () => {
                       h-[calc(100vh-120px)] sm:h-[650px] 
                       w-auto sm:max-w-[calc(100vw-3rem)]"
             style={{
-              background: 'rgba(255, 255, 255, 0.95)',
+              background: 'linear-gradient(180deg, rgba(255, 167, 38, 0.08) 0%, rgba(255, 255, 255, 0.98) 15%, rgba(255, 255, 255, 0.98) 100%)',
               backdropFilter: 'blur(40px)',
               borderRadius: '28px',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
+              border: '1px solid rgba(255, 167, 38, 0.15)',
               boxShadow: `
-                0 32px 64px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8),
-                0 0 120px rgba(255, 165, 0, 0.1)
-              `
+                0 0 0 1px rgba(255, 167, 38, 0.1),
+                0 8px 32px rgba(255, 167, 38, 0.12),
+                0 24px 64px rgba(0, 0, 0, 0.08),
+                0 0 40px rgba(255, 167, 38, 0.05)
+              `,
+              animation: 'sunbeamGlow 3s ease-in-out infinite alternate'
             }}
           >
             {/* Sunbeam Background Effect */}
@@ -212,16 +213,28 @@ export const ChatSystem = () => {
                 boxShadow: '0 4px 12px rgba(255, 167, 38, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
               }}
             >
-              <div className="flex items-center space-x-4">
-                <div 
-                  className="w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)'
+              <div className="flex items-center space-x-3">
+                <motion.div 
+                  className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm relative"
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ 
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatType: "loop"
                   }}
                 >
-                  <span className="text-3xl">☀️</span>
-                </div>
+                  <span className="text-3xl filter drop-shadow-sm">☀️</span>
+                  {/* Sparkle effect */}
+                  <motion.div
+                    className="absolute w-1 h-1 bg-yellow-200 rounded-full"
+                    style={{ top: '8px', right: '8px' }}
+                    animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                  />
+                </motion.div>
                 <div>
                   <motion.h3 
                     className="font-bold text-base sm:text-lg drop-shadow-sm"
