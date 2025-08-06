@@ -93,47 +93,154 @@ const ProfessionalChatSystem: React.FC = () => {
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Magical Sunshine Chat Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
+            initial={{ scale: 0, opacity: 0, rotate: -180 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            exit={{ scale: 0, opacity: 0, rotate: 180 }}
             className="fixed bottom-6 right-6 z-50"
           >
+            {/* Glowing aura */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.2) 50%, transparent 100%)',
+                filter: 'blur(8px)',
+                transform: 'scale(1.8)',
+              }}
+              animate={{
+                scale: [1.8, 2.2, 1.8],
+                opacity: [0.4, 0.7, 0.4],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+
+            {/* Orbiting sparkles */}
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-yellow-200 rounded-full"
+                style={{
+                  boxShadow: '0 0 8px rgba(251, 191, 36, 0.8)',
+                }}
+                animate={{
+                  x: [
+                    Math.cos((i * Math.PI * 2) / 6) * 40,
+                    Math.cos(((i * Math.PI * 2) / 6) + Math.PI * 2) * 40,
+                  ],
+                  y: [
+                    Math.sin((i * Math.PI * 2) / 6) * 40,
+                    Math.sin(((i * Math.PI * 2) / 6) + Math.PI * 2) * 40,
+                  ],
+                  scale: [1, 1.5, 1],
+                  opacity: [0.6, 1, 0.6],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                  ease: "linear",
+                }}
+              />
+            ))}
+
             <motion.button
-              whileHover={{ scale: 1.1, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ 
+                scale: 1.15, 
+                y: -3,
+                rotateZ: [0, -5, 5, 0]
+              }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => setIsOpen(true)}
               className="relative w-16 h-16 rounded-full shadow-2xl transition-all duration-300 group overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 30%, #ea580c 70%, #dc2626 100%)',
+                boxShadow: '0 8px 32px rgba(251, 191, 36, 0.6), inset 0 2px 8px rgba(255, 255, 255, 0.3)',
+              }}
+              animate={{
+                rotate: [0, 360],
+              }}
+              transition={{
+                rotate: { duration: 20, repeat: Infinity, ease: "linear" },
               }}
             >
-              {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Icon */}
-              <div className="relative z-10 flex items-center justify-center w-full h-full">
-                <MessageCircle className="w-8 h-8 text-white" />
-              </div>
-
-              {/* Floating particles */}
+              {/* Shimmer effect */}
               <motion.div
-                className="absolute top-2 right-2 w-2 h-2 bg-yellow-300 rounded-full"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.7, 1, 0.7],
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.4) 50%, transparent 70%)',
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                animate={{
+                  x: [-100, 100],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               />
               
-              {/* Tooltip */}
-              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                Chat with Sunshine ☀️
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+              {/* Sun Icon with sparkle effect */}
+              <div className="relative z-10 flex items-center justify-center w-full h-full">
+                <motion.div
+                  className="text-3xl"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotateZ: [0, -5, 5, 0],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  ☀️
+                </motion.div>
+                
+                {/* Inner sparkles */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    style={{
+                      top: `${20 + i * 20}%`,
+                      left: `${30 + i * 15}%`,
+                    }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [0, 1.5, 0],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.3,
+                    }}
+                  />
+                ))}
               </div>
+
+              {/* Pulsing heart for unread messages */}
+              <motion.div
+                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"
+                animate={{
+                  scale: [1, 1.3, 1],
+                }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <span className="text-white text-xs">💌</span>
+              </motion.div>
+              
+              {/* Enhanced tooltip */}
+              <motion.div 
+                className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-orange-600 to-yellow-600 text-white text-sm px-4 py-2 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
+                initial={{ y: 10, opacity: 0 }}
+                whileHover={{ y: 0, opacity: 1 }}
+              >
+                <div className="flex items-center space-x-2">
+                  <span>✨</span>
+                  <span className="font-medium">Meet Little Sunshine!</span>
+                  <span>✨</span>
+                </div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-600" />
+              </motion.div>
             </motion.button>
           </motion.div>
         )}
