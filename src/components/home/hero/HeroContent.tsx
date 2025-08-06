@@ -112,19 +112,36 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Primary CTA - Create Free Account */}
-          <Link to="/auth/signup?redirect=%2F">
-            <Button 
-              size="lg" 
-              className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-700 hover:to-pink-600 shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-2xl ${
-                isMobile 
-                  ? 'px-10 py-7 text-lg' 
-                  : 'px-14 py-10 text-2xl'
-              }`}
-            >
-              ✨ Create Your Free Account
-            </Button>
-          </Link>
+          {/* Primary Action Buttons */}
+          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center gap-4`}>
+            {/* Post a Job Button - Primary CTA */}
+            <Link to="/post-job">
+              <Button 
+                size="lg" 
+                className={`font-inter font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl ${
+                  isMobile 
+                    ? 'px-12 py-7 text-lg' 
+                    : 'px-16 py-10 text-2xl'
+                }`}
+              >
+                💼 Post a Job
+              </Button>
+            </Link>
+            
+            {/* Create Account Button - Secondary CTA */}
+            <Link to="/auth/signup?redirect=%2F">
+              <Button 
+                size="lg" 
+                className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-700 hover:to-pink-600 shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-2xl ${
+                  isMobile 
+                    ? 'px-10 py-7 text-lg' 
+                    : 'px-14 py-10 text-2xl'
+                }`}
+              >
+                ✨ Create Your Free Account
+              </Button>
+            </Link>
+          </div>
           
           {/* Secondary CTAs */}
           <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center gap-4`}>
