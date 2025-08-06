@@ -5,10 +5,22 @@ import { Calendar, Plus, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 const ArtistMobileBookingButton = () => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [formData, setFormData] = useState({
+    clientName: '',
+    service: '',
+    date: '',
+    time: '',
+    notes: ''
+  });
 
   if (!isMobile) return null;
 
@@ -51,10 +63,10 @@ const ArtistMobileBookingButton = () => {
                   <Button 
                     size="sm"
                     className="bg-purple-500 hover:bg-purple-600"
-                    onClick={() => {
-                      setIsOpen(false);
-                      // Navigate to bookings tab or open booking modal
-                    }}
+                     onClick={() => {
+                       setIsOpen(false);
+                       setShowBookingForm(true);
+                     }}
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Add
@@ -74,10 +86,14 @@ const ArtistMobileBookingButton = () => {
                     size="sm" 
                     variant="outline"
                     className="border-blue-500 text-blue-600 hover:bg-blue-50"
-                    onClick={() => {
-                      setIsOpen(false);
-                      // Navigate to availability settings
-                    }}
+                     onClick={() => {
+                       setIsOpen(false);
+                       // Find the Bookings tab and switch to it
+                       const bookingsTab = document.querySelector('[data-value="bookings"]') as HTMLElement;
+                       if (bookingsTab) {
+                         bookingsTab.click();
+                       }
+                     }}
                   >
                     <Calendar className="h-4 w-4 mr-1" />
                     Edit
@@ -94,6 +110,102 @@ const ArtistMobileBookingButton = () => {
               <X className="h-4 w-4 mr-2" />
               Close
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Booking Form Dialog */}
+      <Dialog open={showBookingForm} onOpenChange={setShowBookingForm}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Add New Appointment
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="clientName">Client Name*</Label>
+              <Input
+                id="clientName"
+                value={formData.clientName}
+                onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
+                placeholder="Enter client name"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="service">Service*</Label>
+              <Input
+                id="service"
+                value={formData.service}
+                onChange={(e) => setFormData(prev => ({ ...prev, service: e.target.value }))}
+                placeholder="e.g., Manicure & Nail Art"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="date">Date*</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="time">Time*</Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Any special requests or notes..."
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setShowBookingForm(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                onClick={() => {
+                  if (!formData.clientName || !formData.service || !formData.date || !formData.time) {
+                    toast.error('Please fill in all required fields');
+                    return;
+                  }
+                  toast.success('Appointment created successfully!');
+                  setShowBookingForm(false);
+                  setFormData({
+                    clientName: '',
+                    service: '',
+                    date: '',
+                    time: '',
+                    notes: ''
+                  });
+                }}
+              >
+                Create
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

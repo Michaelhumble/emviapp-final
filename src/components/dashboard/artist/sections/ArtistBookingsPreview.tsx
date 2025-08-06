@@ -2,9 +2,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, User, Plus, Eye } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 const ArtistBookingsPreview = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [formData, setFormData] = useState({
+    clientName: '',
+    service: '',
+    date: '',
+    time: '',
+    notes: ''
+  });
 
   const upcomingBookings = [
     {
@@ -34,8 +47,29 @@ const ArtistBookingsPreview = () => {
   ];
 
   const handleViewAllBookings = () => {
-    // Navigate to full bookings page - using window.location for now
-    window.location.href = '/dashboard/artist';
+    // Find the Bookings tab button and click it
+    const bookingsTab = document.querySelector('[data-value="bookings"]') as HTMLElement;
+    if (bookingsTab) {
+      bookingsTab.click();
+    }
+  };
+
+  const handleCreateAppointment = () => {
+    if (!formData.clientName || !formData.service || !formData.date || !formData.time) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
+    // Here you would normally save to database
+    toast.success('Appointment created successfully!');
+    setShowBookingModal(false);
+    setFormData({
+      clientName: '',
+      service: '',
+      date: '',
+      time: '',
+      notes: ''
+    });
   };
 
   return (
@@ -135,7 +169,87 @@ const ArtistBookingsPreview = () => {
         </motion.button>
       </motion.div>
 
-      {/* Coming Soon - Booking Modal */}
+      {/* Add Appointment Modal */}
+      <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Add New Appointment
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="clientName">Client Name*</Label>
+              <Input
+                id="clientName"
+                value={formData.clientName}
+                onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
+                placeholder="Enter client name"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="service">Service*</Label>
+              <Input
+                id="service"
+                value={formData.service}
+                onChange={(e) => setFormData(prev => ({ ...prev, service: e.target.value }))}
+                placeholder="e.g., Manicure & Nail Art"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="date">Date*</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="time">Time*</Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Any special requests or notes..."
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setShowBookingModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                onClick={handleCreateAppointment}
+              >
+                Create Appointment
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
