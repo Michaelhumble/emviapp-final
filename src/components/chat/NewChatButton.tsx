@@ -97,17 +97,19 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
         {/* Chat icon with animation */}
         <motion.div
           animate={{
-            rotate: [0, 5, -5, 0],
-            scale: [1, 1.1, 1]
+            rotate: [0, 360, 720],
+            scale: [1, 1.2, 1],
+            x: [0, 5, -5, 0],
+            y: [0, -3, 3, 0]
           }}
           transition={{
-            duration: 3,
+            duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
           }}
           className="relative z-10"
         >
-          <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
+          <Sun className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </motion.div>
 
         {/* Unread message indicator */}
