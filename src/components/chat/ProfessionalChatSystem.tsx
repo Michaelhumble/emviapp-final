@@ -149,7 +149,7 @@ const ProfessionalChatSystem: React.FC = () => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed bottom-6 right-6 z-50 w-96 h-[600px] max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]"
             style={{
-              background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+              background: 'linear-gradient(145deg, #fef7ed 0%, #fed7aa 20%, #fdba74 100%)',
               borderRadius: '24px',
               border: '1px solid rgba(148, 163, 184, 0.2)',
               boxShadow: `
@@ -246,7 +246,7 @@ const ProfessionalChatSystem: React.FC = () => {
               className="flex-1 p-6 overflow-y-auto space-y-4"
               style={{
                 height: 'calc(100% - 140px)',
-                background: 'linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%)',
+                background: 'linear-gradient(to bottom, #fef7ed 0%, #fed7aa 50%, #fdba74 100%)',
               }}
             >
               {messages.map((message, index) => (
@@ -324,7 +324,7 @@ const ProfessionalChatSystem: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="p-4 border-t border-gray-200"
               style={{
-                background: 'linear-gradient(to right, #f8fafc 0%, #ffffff 100%)',
+                background: 'linear-gradient(to right, #fef7ed 0%, #fed7aa 100%)',
                 borderRadius: '0 0 24px 24px',
               }}
             >
