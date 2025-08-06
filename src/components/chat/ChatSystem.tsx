@@ -239,8 +239,12 @@ export const ChatSystem = () => {
               <motion.button 
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setIsOpen(false)}
-                className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
+                onClick={() => {
+                  console.log('🔥 Closing chat window');
+                  setIsOpen(false);
+                }}
+                className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10 z-20 relative"
+                style={{ zIndex: 20 }}
               >
                 <X className="w-5 h-5" />
               </motion.button>
