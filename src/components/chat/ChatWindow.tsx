@@ -4,7 +4,7 @@ import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 import { ChatIcon } from './ChatIcon';
 import { Link } from 'react-router-dom';
 
@@ -102,7 +102,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
       console.log('🌟 Sending message to GPT-4.1 Sunshine:', currentInput);
       console.log('🌟 Enhanced conversation context with', messages.length, 'messages');
       
-      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
+      const { data, error } = await supabaseBypass.functions.invoke('sunshine-chat', {
         body: {
           message: currentInput,
           conversationHistory: messages
