@@ -129,7 +129,7 @@ export const ChatSystem = () => {
             >
               {/* Simple Sun Icon */}
               <div className="flex items-center justify-center w-full h-full">
-                <span className="text-3xl">☀️</span>
+                <span className="text-5xl">☀️</span>
               </div>
               
               {/* Online Dot */}
