@@ -353,7 +353,14 @@ const ProfessionalChatSystem: React.FC = () => {
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <p className="text-white/95 text-sm font-medium tracking-wide drop-shadow-sm">Online</p>
+                      <motion.p 
+                        className="text-white/95 text-sm font-medium tracking-wide drop-shadow-sm"
+                        initial={{ opacity: 0.8 }}
+                        animate={{ opacity: [0.8, 1, 0.8] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        Always here for you ✨
+                      </motion.p>
                     </div>
                   </div>
                 </div>
@@ -401,29 +408,61 @@ const ProfessionalChatSystem: React.FC = () => {
                   >
                     <p className="text-sm leading-relaxed font-medium">{message.text}</p>
                     
-                    {/* CTA Buttons */}
+                    {/* Smart Suggestions with Cute CTA Buttons */}
                     {message.ctaButtons && message.ctaButtons.length > 0 && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="mt-3 space-y-2"
+                        initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
+                        className="mt-4 space-y-3"
                       >
-                        {message.ctaButtons.map((cta, index) => (
-                          <motion.button
-                            key={index}
-                            onClick={() => window.location.href = cta.route}
-                            className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                              cta.variant === 'primary'
-                                ? 'bg-gradient-to-r from-orange-500 to-yellow-600 text-white hover:from-orange-600 hover:to-yellow-700'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            {cta.label}
-                          </motion.button>
-                        ))}
+                        {/* Cute suggestion header */}
+                        <motion.div 
+                          className="flex items-center gap-2 text-xs text-amber-600 font-medium"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.9 }}
+                        >
+                          <span className="animate-bounce">✨</span>
+                          <span>I can help you with this!</span>
+                          <span className="animate-bounce delay-75">✨</span>
+                        </motion.div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {message.ctaButtons.map((cta, index) => (
+                            <motion.button
+                              key={index}
+                              onClick={() => window.location.href = cta.route}
+                              className={`
+                                group relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold
+                                transition-all duration-300 shadow-lg hover:shadow-xl border border-white/30
+                                ${cta.variant === 'primary'
+                                  ? 'bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-500 text-white hover:from-orange-500 hover:via-amber-600 hover:to-yellow-600'
+                                  : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300'
+                                }
+                              `}
+                              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              transition={{ delay: 1 + index * 0.1, type: "spring", stiffness: 300 }}
+                              whileHover={{ 
+                                scale: 1.05,
+                                rotate: [0, -1, 1, 0],
+                                transition: { duration: 0.3 }
+                              }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {/* Sparkle effects */}
+                              <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                              <div className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-orange-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse delay-200" />
+                              
+                              {/* Shimmer */}
+                              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                              
+                              {/* Button content */}
+                              <span className="relative z-10">{cta.label}</span>
+                            </motion.button>
+                          ))}
+                        </div>
                       </motion.div>
                     )}
                   </div>
