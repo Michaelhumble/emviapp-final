@@ -108,7 +108,7 @@ const ProfessionalChatSystem: React.FC = () => {
               onClick={() => setIsOpen(true)}
               className="relative w-16 h-16 rounded-full shadow-2xl transition-all duration-300 group overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
               }}
             >
               {/* Animated background */}
@@ -166,7 +166,7 @@ const ProfessionalChatSystem: React.FC = () => {
               transition={{ delay: 0.1 }}
               className="relative overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
                 borderRadius: '24px 24px 0 0',
                 padding: '20px',
               }}
@@ -354,8 +354,8 @@ const ProfessionalChatSystem: React.FC = () => {
                   disabled={!inputMessage.trim() || isLoading}
                   className="p-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
                   style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
+                    boxShadow: '0 4px 12px rgba(251, 191, 36, 0.4)',
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
