@@ -21,27 +21,14 @@ export const useMessages = (recipientId: string) => {
 
   const simulateAIResponse = async (userMessage: string) => {
     try {
-      // Call the new Sunshine edge function
-      const { data, error } = await supabaseBypass.functions.invoke('sunshine-chat', {
-        body: {
-          message: userMessage,
-          conversationHistory: messages.map(msg => ({
-            content: msg.message,
-            isUser: msg.senderId !== 'support-agent'
-          }))
-        }
-      });
-
-      if (error) {
-        console.error('Error calling sunshine-chat:', error);
-        throw error;
-      }
+      // Fallback AI response since sunshine-chat is removed
+      const fallbackResponse = "I'm temporarily unavailable. Please check back soon!";
 
       const aiResponse: SalonMessage = {
         id: crypto.randomUUID(),
         senderId: 'support-agent',
-        senderName: 'Little Sunshine',
-        message: data.message || "I'm here to help! What can I do for you?",
+        senderName: 'Support',
+        message: fallbackResponse,
         timestamp: new Date().toISOString()
       };
 
@@ -56,8 +43,8 @@ export const useMessages = (recipientId: string) => {
       const fallbackResponse: SalonMessage = {
         id: crypto.randomUUID(),
         senderId: 'support-agent',
-        senderName: 'Little Sunshine',
-        message: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!",
+        senderName: 'Support',
+        message: "Support is temporarily unavailable.",
         timestamp: new Date().toISOString()
       };
 
@@ -75,8 +62,8 @@ export const useMessages = (recipientId: string) => {
         const welcomeMessage: SalonMessage = {
           id: crypto.randomUUID(),
           senderId: 'support-agent',
-          senderName: 'Little Sunshine',
-          message: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!",
+          senderName: 'Support',
+          message: "Support is temporarily unavailable.",
           timestamp: new Date().toISOString()
         };
         setMessages([welcomeMessage]);
