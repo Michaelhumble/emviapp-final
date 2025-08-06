@@ -151,6 +151,7 @@ const FOMONailJobsSection: React.FC = () => {
   ];
 
   const handleViewDetails = (job: FOMOJob) => {
+    // For FOMO jobs (demo data), open modal since they don't have real IDs
     setSelectedJob(job);
     setIsDetailModalOpen(true);
   };

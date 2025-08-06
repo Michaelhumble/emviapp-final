@@ -19,7 +19,6 @@ export const useOptimizedJobsData = () => {
         .select(`
           id,
           title,
-          salon_name,
           location,
           pricing_tier,
           status,

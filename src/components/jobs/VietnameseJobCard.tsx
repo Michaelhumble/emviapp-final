@@ -1,28 +1,31 @@
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Lock } from "lucide-react";
-import { Job } from "@/types/job";
-import { useAuth } from "@/context/auth";
 import { useNavigate } from 'react-router-dom';
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { MapPin, Phone, Lock } from 'lucide-react';
+import { useAuth } from '@/context/auth';
+import { Job } from '@/types/job';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface VietnameseJobCardProps {
   job: Job;
-  onViewDetails: () => void;
+  onViewDetails?: () => void; // Keep for backwards compatibility but make optional
 }
 
 const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const handleClick = () => {
     if (user) {
-      onViewDetails();
+      // Navigate to actual job detail page instead of modal
+      navigate(`/job/${job.id}`, {
+        state: { fromGlobalJobs: true }
+      });
     } else {
       // Redirect to sign in if needed
-      navigate('/jobs');
+      navigate('/auth/signin?redirect=' + encodeURIComponent(`/job/${job.id}`));
     }
   };
   
@@ -38,45 +41,28 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
       return "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png";
     }
     
-    // For other jobs, assign a unique image based on job ID or index
-    const jobId = job.id;
+    // For other Vietnamese jobs, use appropriate nail salon images
+    const images = [
+      "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png",
+      "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png"
+    ];
     
-    // Map specific job IDs to unique nail salon images
-    switch(jobId) {
-      // Active jobs with unique images
-      case "job-001": return "/lovable-uploads/c1533abd-8de5-4ec3-8ee5-868538a5d6dd.png";
-      case "job-002": return "/lovable-uploads/11925359-6327-46e7-b52e-79b4a4111e34.png";
-      case "job-003": return "/lovable-uploads/1575b88f-f835-4d89-9109-bf518fc4cfb1.png";
-      case "job-004": return "/lovable-uploads/7a729a53-192a-40cd-a28f-e28023529d8f.png";
-      case "job-005": return "/lovable-uploads/19f9a395-4b4e-4e60-bd13-e0cde9064550.png";
-      
-      // Expired jobs with unique images
-      case "job-006": return "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png";
-      case "job-007": return "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png";
-      case "job-008": return "/lovable-uploads/2542d0a3-5117-433d-baee-5c0fe2bfeca2.png";
-      case "job-009": return "/lovable-uploads/89855878-2908-47b5-98b0-1935d73cdd71.png";
-      
-      // Default in case of any other job ID
-      default: return job.image || "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png";
-    }
+    // Create a simple hash based on job ID to ensure consistency
+    const hash = job.id?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+    return images[hash % images.length];
   };
-  
-  const jobImage = getJobImage();
-  
+
   return (
-    <Card 
-      className={`
-        overflow-hidden hover:shadow-lg transition-all duration-300 rounded-2xl
-        ${isPinned && isMagicNails ? 'ring-2 ring-[#FFD700] bg-[#FAF3E0] shadow-xl' : 'ring-1 ring-gray-100 bg-white'}
-        ${isExpired ? 'opacity-80' : ''}
-        transform hover:-translate-y-1 hover:scale-[1.01]
-      `}
-    >
-      {(jobImage || isMagicNails) && (
-        <div className="h-40 w-full overflow-hidden relative">
+    <Card className={`overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-all cursor-pointer bg-white border border-gray-200 
+      ${isPinned && isMagicNails ? 'ring-2 ring-yellow-400 shadow-lg' : ''}
+      ${isExpired ? 'opacity-75 grayscale' : ''}
+    `}>
+      {/* Job Image */}
+      {getJobImage() && (
+        <div className="relative aspect-[4/3] bg-gray-100 flex items-center justify-center overflow-hidden">
           <ImageWithFallback 
-            src={jobImage} 
-            alt={job.title || "Job listing"}
+            src={getJobImage()} 
+            alt={job.title || 'Salon job'} 
             className="w-full h-full object-cover"
             fallbackImage="/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
           />
@@ -118,35 +104,34 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
               </Badge>
             )}
             
-            {job.is_urgent && !isPinned && !isExpired && (
-              <Badge className="bg-rose-100 text-rose-800 font-medium">
-                Gấp
-              </Badge>
-            )}
-            
-            {job.is_featured && !job.is_urgent && !isPinned && !isExpired && (
+            {!isPinned && !isExpired && (
               <Badge className="bg-blue-100 text-blue-800 font-medium">
-                Nổi Bật
+                Việc Làm
               </Badge>
             )}
           </div>
         </div>
         
-        <p className="text-gray-700 mt-1 font-medium">{job.company}</p>
-        
-        <div className="flex items-center text-gray-600 mt-3 text-sm">
-          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span>{job.location}</span>
+        <div className="flex items-center text-gray-600 text-sm mb-3">
+          <MapPin className="h-4 w-4 mr-2" />
+          <span className="font-medium">{job.location}</span>
         </div>
         
-        <p className="mt-4 text-gray-800 line-clamp-3">
-          {job.description}
-        </p>
-        
-        <div className="mt-4 font-medium text-emerald-700 text-lg">
-          {job.salary_range || job.compensation_details}
-        </div>
-        
+        {job.salary_range && (
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-medium text-emerald-600 uppercase tracking-wide">
+                  Lương
+                </span>
+                <p className="text-lg font-bold text-emerald-800 mt-1">
+                  {job.salary_range}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Add FOMO line below salary for Magic Nails */}
         {isPinned && isMagicNails && (
           <div className="mt-2 text-red-500 font-medium text-sm flex items-center">

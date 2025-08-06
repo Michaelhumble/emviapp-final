@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { useJobsData } from '@/hooks/useJobsData';
+import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
@@ -13,7 +13,7 @@ const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { jobs, loading } = useJobsData();
+  const { jobs, loading } = useOptimizedJobsData();
   const [job, setJob] = useState<Job | null>(null);
 
   // Get state from navigation (if coming from global jobs page)
