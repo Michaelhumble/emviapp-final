@@ -19,31 +19,41 @@ serve(async (req) => {
 
     const { message } = await req.json();
 
+    const requestBody = {
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are Little Sunshine, EmviApp friendly AI assistant. Be warm and helpful!'
+        },
+        {
+          role: 'user',
+          content: message
+        }
+      ],
+      max_tokens: 500,
+      temperature: 0.8
+    };
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + openAIApiKey,
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are Little Sunshine, EmviApp\'s friendly AI assistant. Be warm and helpful!'
-          },
-          {
-            role: 'user',
-            content: message
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.8
-      }),
+      body: JSON.stringify(requestBody)
     });
 
+    if (!response.ok) {
+      throw new Error('OpenAI API error: ' + response.status);
+    }
+
     const data = await response.json();
-    const aiMessage = data.choices[0]?.message?.content || "Hi! I'm Little Sunshine ☀️";
+    const aiMessage = data.choices[0]?.message?.content;
+
+    if (!aiMessage) {
+      throw new Error('No response from OpenAI');
+    }
 
     return new Response(JSON.stringify({ message: aiMessage }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
