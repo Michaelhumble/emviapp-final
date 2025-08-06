@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const About = () => {
   const { isVietnamese, toggleLanguage } = useTranslation();
+  const navigate = useNavigate();
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -1050,7 +1052,7 @@ const About = () => {
 
             <div className="relative p-16 text-white">
               <motion.h2 
-                className="text-5xl md:text-6xl font-serif mb-8"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif mb-6 sm:mb-8 leading-tight"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
               >
@@ -1061,7 +1063,7 @@ const About = () => {
               </motion.h2>
 
               <motion.p 
-                className="text-2xl mb-8 opacity-90"
+                className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-90"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -1070,7 +1072,7 @@ const About = () => {
               </motion.p>
 
               <motion.p 
-                className="text-3xl font-light mb-12"
+                className="text-xl sm:text-2xl lg:text-3xl font-light mb-8 sm:mb-12"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -1079,18 +1081,30 @@ const About = () => {
               </motion.p>
 
               <motion.button 
-                className="group relative bg-white text-orange-600 px-16 py-6 rounded-full text-xl font-bold overflow-hidden shadow-2xl"
+                onClick={() => navigate('/auth/signup')}
+                className="group relative bg-white text-orange-600 px-8 sm:px-16 py-4 sm:py-6 rounded-full text-lg sm:text-xl font-bold overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                {/* Button shimmer effect */}
+                {/* Enhanced shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-200/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 
-                <span className="relative z-10">
-                  {isVietnamese ? 'Tham Gia Ngay' : 'Join Now'}
+                {/* Premium glow effect */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-400/20 to-amber-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                
+                {/* Button content with responsive text */}
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <span>{isVietnamese ? 'Tham Gia Ngay' : 'Join Now'}</span>
+                  <motion.span
+                    className="text-lg sm:text-xl"
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
+                  >
+                    ✨
+                  </motion.span>
                 </span>
               </motion.button>
             </div>
