@@ -13,7 +13,11 @@ interface SalonBookingFooterProps {
 const SalonBookingFooter: React.FC<SalonBookingFooterProps> = ({ salon }) => {
   const isMobile = useIsMobile();
   
-  if (!isMobile) {
+  // Only show on salon profile pages, not dashboard
+  const currentPath = window.location.pathname;
+  const isDashboard = currentPath.includes('/dashboard');
+  
+  if (!isMobile || isDashboard) {
     return null;
   }
   
