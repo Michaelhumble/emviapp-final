@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/container';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import viralHeroImage from '@/assets/viral-article-hero-new.jpg';
 import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
 import BlogArticleCard from '@/components/blog/BlogArticleCard';
 import { 
@@ -27,7 +28,7 @@ const BlogLanding = () => {
     title: 'From Invisible to Unstoppable: How EmviApp Is Changing the Future of Beauty—for Everyone',
     description: 'Discover how EmviApp is transforming lives, building community, and making beauty visible—for everyone. Real stories of empowerment, AI innovation, and human connection.',
     url: '/article/from-invisible-to-unstoppable',
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    image: viralHeroImage,
     publishedAt: 'Today',
     readTime: '12 min read',
     category: 'Featured Story',
