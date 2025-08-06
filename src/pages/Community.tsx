@@ -20,6 +20,8 @@ import EnhancedPublicProfileModal from '@/components/community/EnhancedPublicPro
 import SponsorSpotlight from '@/components/community/SponsorSpotlight';
 import UniversalPhotoFeed from '@/components/community/UniversalPhotoFeed';
 import { UniversalMessageModal } from '@/components/community/UniversalMessageModal';
+import FOMOEngagement from '@/components/community/FOMOEngagement';
+import LiveNotifications from '@/components/community/LiveNotifications';
 
 const Community = () => {
   const { user } = useAuth();
@@ -38,12 +40,37 @@ const Community = () => {
     setShowCreatePost(true);
   };
   
+  const handleJoinNow = () => {
+    if (!user) {
+      toast.success("Join our community and start earning today! 🚀");
+      // Navigate to signup
+    } else {
+      setShowCreatePost(true);
+    }
+  };
 
+  const handleViewTrending = () => {
+    // Scroll to trending section or filter
+    toast.success("Check out what's trending! 🔥");
+  };
 
+  const handleViewContest = () => {
+    // Scroll to contest section
+    document.getElementById('weekly-challenge')?.scrollIntoView({ behavior: 'smooth' });
+  };
   return (
     <div className="min-h-screen bg-background text-foreground relative">
+      {/* FOMO Engagement Section - THE HOOK */}
+      <div className="px-8 py-8">
+        <FOMOEngagement 
+          onJoinNow={handleJoinNow}
+          onViewChallenge={handleViewContest}
+          onViewLeaderboard={() => document.getElementById('top-performers')?.scrollIntoView({ behavior: 'smooth' })}
+        />
+      </div>
+
       {/* Ultra-Compact Hero Section */}
-      <div className="text-center px-8 py-8">
+      <div className="text-center px-8 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -70,7 +97,7 @@ const Community = () => {
       </div>
 
       {/* Top Performers - Elegant Display */}
-      <div className="px-8 py-16">
+      <div id="top-performers" className="px-8 py-16">
         <TopPerformersCarousel />
       </div>
 
@@ -85,7 +112,7 @@ const Community = () => {
       </div>
 
       {/* Weekly Challenge - Minimalist */}
-      <div className="px-8 py-16">
+      <div id="weekly-challenge" className="px-8 py-16">
         <WeeklyChallengeEnhanced />
       </div>
 
@@ -195,6 +222,12 @@ const Community = () => {
         )}
       </AnimatePresence>
 
+      {/* Live Notifications for FOMO */}
+      <LiveNotifications 
+        onJoinNow={handleJoinNow}
+        onViewTrending={handleViewTrending}
+        onViewContest={handleViewContest}
+      />
     </div>
   );
 };
