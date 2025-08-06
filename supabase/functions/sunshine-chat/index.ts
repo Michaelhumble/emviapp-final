@@ -21,12 +21,13 @@ serve(async (req) => {
   try {
     const { message, userId, userName, language, isAuthenticated } = await req.json();
 
-    console.log('🌟 LITTLE SUNSHINE V3.0 - FRESH START:', {
+    console.log('🌞 LITTLE SUNSHINE V4.0 - FRESH RESTART:', {
       message: message?.slice(0, 50) + '...',
       userId: userId?.slice(0, 8) + '...',
       userName,
       language,
       isAuthenticated,
+      apiKeyStatus: openAIApiKey ? 'CONFIGURED' : 'MISSING',
       timestamp: new Date().toISOString()
     });
 
