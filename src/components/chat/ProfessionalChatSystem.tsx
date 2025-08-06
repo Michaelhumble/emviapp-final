@@ -424,15 +424,16 @@ const ProfessionalChatSystem: React.FC = () => {
               )}
             </div>
 
-            {/* Input Section */}
+            {/* Enhanced Input Section */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="p-4 border-t border-gray-200"
+              className="p-4 border-t border-orange-200/50"
               style={{
-                background: 'linear-gradient(to right, #fef7ed 0%, #fed7aa 100%)',
+                background: 'linear-gradient(to right, #ffffff 0%, #fef7ed 100%)',
                 borderRadius: '0 0 24px 24px',
+                backdropFilter: 'blur(10px)',
               }}
             >
               <div className="flex items-end space-x-3">
@@ -448,27 +449,58 @@ const ProfessionalChatSystem: React.FC = () => {
                     }}
                     placeholder="Ask me anything about beauty careers..."
                     rows={1}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-400 focus:outline-none resize-none text-gray-700 placeholder-gray-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:outline-none resize-none text-gray-800 placeholder-gray-500 transition-all duration-200 shadow-sm"
                     style={{
-                      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #fffbf5 100%)',
+                      boxShadow: 'inset 0 2px 4px rgba(234, 88, 12, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1)',
+                      fontWeight: '500',
                     }}
                   />
+                  
+                  {/* Floating placeholder animation */}
+                  {!inputMessage && (
+                    <motion.div
+                      className="absolute left-4 top-3 text-orange-400 text-sm pointer-events-none"
+                      animate={{
+                        opacity: [0.5, 0.8, 0.5],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      ✨ Type your message...
+                    </motion.div>
+                  )}
                 </div>
                 
                 <motion.button
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isLoading}
-                  className="p-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                  className="p-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group shadow-lg"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
-                    boxShadow: '0 4px 12px rgba(251, 191, 36, 0.4)',
+                    boxShadow: '0 4px 12px rgba(251, 191, 36, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
                   }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, y: -1 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <Send className="w-5 h-5 text-white relative z-10" />
+                  {/* Shimmer effect on hover */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    initial={{ x: -100 }}
+                    whileHover={{ x: 100 }}
+                    transition={{ duration: 0.6 }}
+                  />
+                  
+                  <motion.div
+                    className="relative z-10"
+                    animate={isLoading ? { rotate: 360 } : {}}
+                    transition={{ duration: 1, repeat: isLoading ? Infinity : 0 }}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-5 h-5 text-white" />
+                    ) : (
+                      <Send className="w-5 h-5 text-white" />
+                    )}
+                  </motion.div>
                 </motion.button>
               </div>
             </motion.div>
