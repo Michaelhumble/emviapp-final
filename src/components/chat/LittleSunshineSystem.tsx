@@ -6,6 +6,7 @@ export const LittleSunshineSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => {
+    console.log('🌟 Chat button clicked!');
     setIsOpen(!isOpen);
   };
 

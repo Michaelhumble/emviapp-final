@@ -10,7 +10,8 @@ interface LittleSunshineButtonProps {
 export const LittleSunshineButton = ({ onClick, isOpen = false }: LittleSunshineButtonProps) => {
   return (
     <motion.div
-      className="fixed bottom-6 right-6 z-50"
+      className="fixed bottom-6 right-6 z-[9999]"
+      style={{ pointerEvents: 'auto' }}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{
@@ -46,8 +47,14 @@ export const LittleSunshineButton = ({ onClick, isOpen = false }: LittleSunshine
         
         {/* Main button */}
         <motion.button
-          onClick={onClick}
-          className="relative w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 shadow-2xl border-2 border-orange-300/50 overflow-hidden"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🌟 Button click event fired!');
+            onClick();
+          }}
+          className="relative w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 shadow-2xl border-2 border-orange-300/50 overflow-hidden cursor-pointer"
+          style={{ pointerEvents: 'auto' }}
           whileHover={{ 
             scale: 1.1,
             boxShadow: "0 0 40px rgba(255, 165, 0, 0.8)",
