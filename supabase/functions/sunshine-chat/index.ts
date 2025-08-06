@@ -24,26 +24,17 @@ serve(async (req) => {
     const { message, conversationHistory = [] } = await req.json();
     console.log('☀️ [SUNSHINE] Processing message:', message);
 
-    // Build conversation context
+    // Simple system prompt
+    const systemPrompt = "You are Little Sunshine, EmviApp's friendly AI beauty assistant. Be warm, helpful, and encouraging. You speak both English and Vietnamese fluently.";
+
+    // Build messages array
     const messages = [
-      {
-        role: 'system',
-        content: `You are Little Sunshine, EmviApp's friendly AI beauty assistant. You're warm, helpful, and knowledgeable about beauty services, nail art, and salon experiences.
-
-Key traits:
-- Warm and sunny personality
-- Expert in beauty services, especially nail care
-- Bilingual - fluent in English and Vietnamese
-- Always positive and encouraging
-- Help with booking, services, and beauty advice
-
-Always be encouraging and make users feel confident about their beauty choices! ☀️`
-      }
+      { role: 'system', content: systemPrompt }
     ];
 
-    // Add conversation history
+    // Add conversation history (last 5 messages)
     if (conversationHistory.length > 0) {
-      conversationHistory.slice(-10).forEach((msg: any) => {
+      conversationHistory.slice(-5).forEach((msg: any) => {
         messages.push({
           role: msg.isUser ? 'user' : 'assistant',
           content: msg.content
@@ -57,20 +48,20 @@ Always be encouraging and make users feel confident about their beauty choices! 
       content: message
     });
 
-    console.log('☀️ [SUNSHINE] Calling OpenAI API');
+    console.log('☀️ [SUNSHINE] Calling OpenAI with', messages.length, 'messages');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: messages,
-        max_tokens: 800,
-        temperature: 0.8,
-      }),
+        max_tokens: 500,
+        temperature: 0.8
+      })
     });
 
     if (!response.ok) {
