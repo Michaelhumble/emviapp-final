@@ -22,6 +22,9 @@ import UniversalPhotoFeed from '@/components/community/UniversalPhotoFeed';
 import { UniversalMessageModal } from '@/components/community/UniversalMessageModal';
 import FOMOEngagement from '@/components/community/FOMOEngagement';
 import LiveNotifications from '@/components/community/LiveNotifications';
+import PersonalizedSmartFeed from '@/components/community/PersonalizedSmartFeed';
+import CreatorSpotlight from '@/components/community/CreatorSpotlight';
+import SuccessWall from '@/components/community/SuccessWall';
 
 const Community = () => {
   const { user } = useAuth();
