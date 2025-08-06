@@ -112,7 +112,7 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* Curious & Enticing Little Sunshine Chat Button */}
+      {/* 🔒 PREMIUM LUXURY SUNSHINE CHAT BUBBLE */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
@@ -121,130 +121,240 @@ export const ChatSystem = () => {
             exit={{ scale: 0, opacity: 0 }}
             className="fixed bottom-6 right-4 z-50"
           >
-            {/* Subtle Pulsing Glow */}
+            {/* Premium Floating Shadow */}
             <motion.div
               className="absolute inset-0 rounded-full"
               animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.1, 1],
+                opacity: [0.2, 0.4, 0.2],
               }}
               transition={{
-                duration: 3,
+                duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
               style={{
-                background: 'radial-gradient(circle, rgba(255, 140, 0, 0.4), transparent 70%)',
-                filter: 'blur(8px)',
-                width: '56px',
-                height: '56px'
+                background: 'radial-gradient(circle, rgba(255, 140, 0, 0.3), transparent 60%)',
+                filter: 'blur(12px)',
+                transform: 'translateY(4px)'
+              }}
+            />
+
+            {/* Luxury Sunbeam Radiance */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.1, 0.3, 0.1],
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{
+                background: 'conic-gradient(from 0deg, rgba(255, 215, 0, 0.4), transparent, rgba(255, 140, 0, 0.3), transparent)',
+                filter: 'blur(8px)'
               }}
             />
 
             <motion.button
               whileHover={{ 
-                scale: 1.1,
-                y: -2,
-                boxShadow: "0 10px 25px rgba(255, 140, 0, 0.5)"
+                scale: 1.05,
+                y: -2
               }}
-              whileTap={{ scale: 0.95 }}
+              whileTap={{ 
+                scale: 0.95,
+                y: 1
+              }}
               onClick={() => setIsOpen(true)}
-              className="relative w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full shadow-lg transition-all duration-300 overflow-hidden"
+              className="relative w-14 h-14 rounded-full transition-all duration-300 overflow-hidden"
+              style={{
+                background: 'linear-gradient(135deg, #FF8A00 0%, #FFD700 35%, #FF6B00 70%, #FF4500 100%)',
+                boxShadow: `
+                  0 8px 25px rgba(255, 140, 0, 0.4),
+                  0 0 0 2px rgba(255, 255, 255, 0.8),
+                  0 0 0 4px rgba(255, 215, 0, 0.3),
+                  inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                  inset 0 -2px 0 rgba(0, 0, 0, 0.1)
+                `
+              }}
               animate={{
-                y: [0, -2, 0],
+                // Gentle periodic wiggle
+                rotate: [0, 0, 0, 0, 5, -5, 3, -3, 0, 0, 0, 0],
+                // Soft breathing glow
                 boxShadow: [
-                  "0 4px 15px rgba(255, 140, 0, 0.3)",
-                  "0 8px 25px rgba(255, 140, 0, 0.4)",
-                  "0 4px 15px rgba(255, 140, 0, 0.3)"
+                  `0 8px 25px rgba(255, 140, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.8), 0 0 0 4px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1)`,
+                  `0 12px 35px rgba(255, 140, 0, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 4px rgba(255, 215, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.1)`,
+                  `0 8px 25px rgba(255, 140, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.8), 0 0 0 4px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1)`
                 ]
               }}
               transition={{
-                y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
-                boxShadow: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                rotate: { 
+                  duration: 6, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  times: [0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.9, 1]
+                },
+                boxShadow: { 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }
               }}
             >
-              {/* Curious Sparkle Effect */}
+              {/* Inner Premium Glow */}
               <motion.div
-                className="absolute top-1 right-1 w-1 h-1 bg-white rounded-full"
+                className="absolute inset-1 rounded-full"
+                style={{
+                  background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 60%)',
+                }}
                 animate={{
-                  scale: [0, 1, 0],
-                  opacity: [0, 1, 0],
+                  opacity: [0.3, 0.6, 0.3],
+                  background: [
+                    'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 60%)',
+                    'radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.4), transparent 60%)',
+                    'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 60%)'
+                  ]
                 }}
                 transition={{
-                  duration: 2,
+                  duration: 5,
                   repeat: Infinity,
-                  delay: 0.5,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              <motion.div
-                className="absolute top-2 left-1 w-0.5 h-0.5 bg-white rounded-full"
-                animate={{
-                  scale: [0, 1, 0],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: 1.2,
                   ease: "easeInOut"
                 }}
               />
 
-              {/* Inner Rotating Ring */}
+              {/* Luxury Shimmer Sweep */}
               <motion.div
-                className="absolute inset-1 rounded-full border border-white/30"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 rounded-full"
+                initial={{ x: '-150%' }}
+                animate={{ x: '150%' }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatDelay: 4,
+                  ease: "easeInOut"
+                }}
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), rgba(255, 215, 0, 0.4), rgba(255, 255, 255, 0.6), transparent)',
+                  transform: 'skewX(-20deg)',
+                  filter: 'blur(1px)'
+                }}
               />
-              
-              {/* Inner Rotating Gradient */}
+
+              {/* Rotating Inner Ring */}
               <motion.div
-                className="absolute inset-2 rounded-full opacity-20"
-                animate={{ rotate: -360 }}
+                className="absolute inset-2 rounded-full border border-white/40"
+                animate={{ rotate: 360 }}
                 transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
                 style={{
-                  background: 'conic-gradient(from 0deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.8), transparent)'
+                  borderStyle: 'dashed'
                 }}
               />
 
-              {/* White Sun Icon with Gentle Bounce */}
-              <motion.div 
-                className="flex items-center justify-center w-full h-full relative z-10"
+              {/* Premium Sun Icon with Luminous Glow */}
+              <motion.div
+                className="relative z-10 flex items-center justify-center w-full h-full"
                 animate={{
-                  rotate: [0, 5, -5, 0],
+                  // Occasional playful bounce
+                  y: [0, 0, 0, 0, -1, 0, 0, 0],
+                  scale: [1, 1, 1, 1, 1.05, 1, 1, 1]
                 }}
                 transition={{
-                  duration: 4,
+                  duration: 8,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
               >
-                <span 
-                  className="text-4xl"
+                <motion.span
+                  className="text-4xl relative"
                   style={{
-                    filter: 'brightness(0) invert(1)',
-                    WebkitFilter: 'brightness(0) invert(1)'
+                    filter: `
+                      brightness(0) invert(1) 
+                      drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
+                      drop-shadow(0 0 4px rgba(255, 215, 0, 0.6))
+                    `,
+                    WebkitFilter: `
+                      brightness(0) invert(1) 
+                      drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
+                      drop-shadow(0 0 4px rgba(255, 215, 0, 0.6))
+                    `
+                  }}
+                  animate={{
+                    // Gentle breathing
+                    scale: [1, 1.02, 1],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
                   }}
                 >
                   ☀️
-                </span>
+                </motion.span>
               </motion.div>
-              
-              {/* Pulsing Online Dot */}
-              <motion.div 
-                className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white"
+
+              {/* Premium Status Indicator */}
+              <motion.div
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #10B981, #34D399)',
+                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)'
+                }}
                 animate={{
-                  scale: [1, 1.2, 1],
+                  scale: [1, 1.15, 1],
+                  boxShadow: [
+                    '0 0 8px rgba(16, 185, 129, 0.6)',
+                    '0 0 12px rgba(16, 185, 129, 0.8)',
+                    '0 0 8px rgba(16, 185, 129, 0.6)'
+                  ]
                 }}
                 transition={{
-                  duration: 1.5,
+                  duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-              />
+              >
+                <div className="w-1.5 h-1.5 bg-white rounded-full" />
+              </motion.div>
+
+              {/* Sparkle Effects */}
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-white rounded-full"
+                  style={{
+                    left: `${20 + i * 20}%`,
+                    top: `${15 + i * 15}%`,
+                    boxShadow: '0 0 4px rgba(255, 255, 255, 0.8)'
+                  }}
+                  animate={{
+                    scale: [0, 1, 0],
+                    opacity: [0, 1, 0],
+                    rotate: [0, 180]
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    delay: i * 0.8 + 1,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
             </motion.button>
+
+            {/* First-time Tooltip */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 10 }}
+              className="absolute -top-12 -left-8 bg-black/80 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap"
+              style={{ zIndex: 60 }}
+            >
+              Tap to chat with Sunshine! ☀️
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80" />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
