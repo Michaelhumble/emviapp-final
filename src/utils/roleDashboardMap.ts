@@ -10,10 +10,9 @@ import { UserRole } from '@/context/auth/types';
 
 // Define all possible dashboard routes
 export const DASHBOARD_ROUTES = {
-  ARTIST: '/dashboard/artist',
+  PROFILE: '/dashboard/profile', // Unified profile dashboard
   SALON: '/dashboard/salon',
   CUSTOMER: '/dashboard/customer',
-  FREELANCER: '/dashboard/freelancer',
   SUPPLIER: '/dashboard/supplier',
   MANAGER: '/dashboard/manager',
   ADMIN: '/dashboard/admin',
@@ -25,14 +24,16 @@ export const DASHBOARD_ROUTES = {
 /**
  * SINGLE SOURCE OF TRUTH: Role to Dashboard Mapping
  * This is the ONLY place where role→dashboard logic should exist
+ * 
+ * Artists and Freelancers now use unified ProfileDashboard
  */
 export const ROLE_DASHBOARD_MAP: Record<UserRole, string> = {
-  'artist': DASHBOARD_ROUTES.ARTIST,
-  'nail technician/artist': DASHBOARD_ROUTES.ARTIST,
+  'artist': DASHBOARD_ROUTES.PROFILE,
+  'nail technician/artist': DASHBOARD_ROUTES.PROFILE,
+  'freelancer': DASHBOARD_ROUTES.PROFILE,
   'salon': DASHBOARD_ROUTES.SALON,
   'owner': DASHBOARD_ROUTES.SALON,
   'customer': DASHBOARD_ROUTES.CUSTOMER,
-  'freelancer': DASHBOARD_ROUTES.FREELANCER,
   'supplier': DASHBOARD_ROUTES.SUPPLIER,
   'beauty supplier': DASHBOARD_ROUTES.SUPPLIER,
   'vendor': DASHBOARD_ROUTES.SUPPLIER,
