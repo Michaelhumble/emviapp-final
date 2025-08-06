@@ -53,11 +53,22 @@ export default defineConfig(({ mode }) => ({
             '@/components/home/ai-matchmaker',
             '@/components/home/SalonClientGrowthSystem'
           ],
-          // Blog system
-          'blog': [
+          // Blog system - split into smaller chunks
+          'blog-core': [
             '@/pages/blog/BlogLanding',
+            '@/components/blog/OptimizedBlogImage',
+            '@/components/blog/VirtualizedBlogGrid'
+          ],
+          'blog-articles': [
             '@/pages/blog/[slug]',
             '@/data/blogArticles'
+          ],
+          'blog-sections': [
+            '@/components/blog/LazyBlogSection',
+            '@/components/blog/BlogCategoriesGrid',
+            '@/components/blog/BlogTrendingSection',
+            '@/components/blog/BlogFeaturedSection',
+            '@/components/blog/BlogRecentSection'
           ],
           // Job system
           'jobs': [

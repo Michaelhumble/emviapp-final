@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import viralHeroImage from '@/assets/viral-article-hero-new.jpg';
-import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
-import BlogArticleCard from '@/components/blog/BlogArticleCard';
+import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
+import LazyBlogSection from '@/components/blog/LazyBlogSection';
 import { 
   getFeaturedArticles, 
   getTrendingArticles, 
@@ -197,16 +197,14 @@ const BlogLanding = () => {
                   className="relative block bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-200/50"
                 >
                   <div className="grid md:grid-cols-2 gap-0">
-                    <div className="aspect-[5/4] overflow-hidden">
-                      <img 
-                        src={heroArticle.image}
-                        alt={heroArticle.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-                        }}
-                      />
-                    </div>
+                    <OptimizedBlogImage
+                      src={heroArticle.image}
+                      alt={heroArticle.title}
+                      className="group-hover:scale-110 transition-transform duration-700"
+                      priority={true}
+                      aspectRatio="5/4"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
                     <div className="p-10 md:p-16 flex flex-col justify-center">
                       <div className="flex items-center gap-4 mb-6">
                         <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold tracking-wide animate-pulse">
@@ -235,186 +233,38 @@ const BlogLanding = () => {
           )}
         </Container>
 
-        {/* Categories Grid */}
+        {/* Categories Grid - Lazy Loaded */}
         {categories.length > 0 && (
-          <Container className="py-16">
-            <h2 className="text-3xl font-bold mb-12 text-center">Explore Categories</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {categories.map((category) => {
-                const IconComponent = category.icon;
-                return (
-                  <Link
-                    key={category.slug}
-                    to={`/blog/categories/${category.slug}`}
-                    className={`${category.color} p-6 rounded-xl hover:scale-105 transition-all duration-300 group border border-white/20 backdrop-blur-sm`}
-                  >
-                    <div className="mb-4">
-                      <IconComponent className={`h-8 w-8 ${category.iconColor}`} />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {category.name}
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-3">
-                      {category.count} articles
-                    </p>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </Link>
-                );
-              })}
-            </div>
-          </Container>
-        )}
-
-        {/* Trending Articles */}
-        {trendingArticles.length > 0 && (
-          <Container className="py-16">
-            <div className="text-center mb-12">
-              <TrendingUp className="h-8 w-8 text-primary mx-auto mb-4" />
-              <h2 className="text-3xl font-bold mb-4">Trending Now</h2>
-              <p className="text-muted-foreground">The hottest topics in the beauty industry</p>
-            </div>
-            <BlogArticleGrid
-              articles={trendingArticles.slice(0, 3)}
-              variant="default"
-              columns={3}
-              showCategory={true}
-              showAuthor={true}
-              showImage={true}
-            />
-          </Container>
-        )}
-
-        {/* Trending Topics Tags */}
-        {trendingTopics.length > 0 && (
-          <Container className="py-16">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Popular Topics</h2>
-              <p className="text-muted-foreground">What the beauty community is talking about</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-3">
-              {trendingTopics.map((topic, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="rounded-full hover:bg-primary hover:text-white transition-colors"
-                  asChild
-                >
-                  <Link to={`/blog?tag=${encodeURIComponent(topic)}`}>
-                    #{topic}
-                  </Link>
-                </Button>
-              ))}
-            </div>
-          </Container>
-        )}
-
-        {/* Featured Articles Grid */}
-        {featuredArticles.length > 1 && (
-          <Container className="py-16">
-            <div className="text-center mb-12">
-              <Star className="h-8 w-8 text-primary mx-auto mb-4" />
-              <h2 className="text-3xl font-bold mb-4">Featured Articles</h2>
-              <p className="text-muted-foreground">Hand-picked insights from industry experts</p>
-            </div>
-            <BlogArticleGrid
-              articles={featuredArticles.slice(1, 4)} // Skip hero article
-              variant="featured"
-              columns={3}
-              showCategory={true}
-              showAuthor={true}
-              showImage={true}
-            />
-          </Container>
-        )}
-
-        {/* Recent Articles */}
-        <Container className="py-16">
-          <div className="text-center mb-12">
-            <Calendar className="h-8 w-8 text-primary mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-4">Latest Articles</h2>
-            <p className="text-muted-foreground">Stay updated with the freshest content</p>
-          </div>
-          <BlogArticleGrid
-            articles={recentArticles}
-            variant="default"
-            columns={3}
-            showCategory={true}
-            showAuthor={true}
-            showImage={true}
+          <LazyBlogSection 
+            type="categories" 
+            data={categories}
           />
-          
-          {/* Strategic Sign-Up CTA Section */}
-          <div className="mt-16 mb-8">
-            <div className="bg-gradient-to-br from-purple-50 via-white to-pink-50 rounded-3xl p-8 md:p-12 border border-purple-100 shadow-lg">
-              <div className="text-center">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200/50 rounded-full px-6 py-3 mb-6">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  <span className="text-purple-700 font-medium text-sm tracking-wide">EXCLUSIVE ACCESS</span>
-                </div>
-                
-                <h3 className="text-3xl md:text-4xl font-playfair font-bold mb-4 text-gray-900">
-                  Ready to Transform Your Beauty Career?
-                </h3>
-                
-                <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                  Join thousands of beauty professionals who've found their dream opportunities through EmviApp. 
-                  Start your journey today with premium job matching and industry connections.
-                </p>
-                
-                {/* Dual CTA Implementation */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link to="/auth/signup?redirect=%2F">
-                    <Button 
-                      size="lg" 
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      ✨ Create Your Free Account
-                    </Button>
-                  </Link>
-                  
-                  <Link to="/auth/signin?redirect=%2F">
-                    <Button 
-                      variant="outline" 
-                      size="lg"
-                      className="border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold px-8 py-4 rounded-xl"
-                    >
-                      Welcome Back! Sign In
-                    </Button>
-                  </Link>
-                </div>
-                
-                {/* Browse Jobs Alternative */}
-                <div className="mt-6">
-                  <Link to="/jobs">
-                    <Button 
-                      variant="ghost" 
-                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-medium"
-                    >
-                      See All Jobs – No Account Needed
-                    </Button>
-                  </Link>
-                </div>
-                
-                {/* Trust Indicators */}
-                <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-purple-600" />
-                    <span>15,000+ professionals</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-purple-600" />
-                    <span>Premium opportunities</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Award className="h-4 w-4 text-purple-600" />
-                    <span>Trusted by top salons</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-        </Container>
+        )}
+
+        {/* Trending Articles - Lazy Loaded */}
+        {trendingArticles.length > 0 && (
+          <LazyBlogSection 
+            type="trending" 
+            data={trendingArticles}
+          />
+        )}
+
+        {/* Trending Topics Tags - Lazy Loaded */}
+        {trendingTopics.length > 0 && (
+          <LazyBlogSection 
+            type="topics" 
+            data={trendingTopics}
+          />
+        )}
+
+        {/* Featured Articles Grid - Lazy Loaded */}
+        {featuredArticles.length > 1 && (
+          <LazyBlogSection 
+            type="featured" 
+            data={featuredArticles}
+          />
+        )}
+
 
         {/* Newsletter Signup */}
         <Container className="py-16">

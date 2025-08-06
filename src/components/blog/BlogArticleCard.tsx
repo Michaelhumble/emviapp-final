@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Calendar, User, ArrowRight } from 'lucide-react';
 import { BlogArticle } from '@/data/blogArticles';
-import BlogImage from './BlogImage';
+import OptimizedBlogImage from './OptimizedBlogImage';
 
 interface BlogArticleCardProps {
   article: BlogArticle;
@@ -11,6 +11,7 @@ interface BlogArticleCardProps {
   showAuthor?: boolean;
   showImage?: boolean;
   className?: string;
+  priority?: boolean;
 }
 
 const BlogArticleCard: React.FC<BlogArticleCardProps> = ({
@@ -19,7 +20,8 @@ const BlogArticleCard: React.FC<BlogArticleCardProps> = ({
   showCategory = true,
   showAuthor = true,
   showImage = true,
-  className = ''
+  className = '',
+  priority = false
 }) => {
   const isFeatured = variant === 'featured';
   const isCompact = variant === 'compact';
@@ -29,10 +31,13 @@ const BlogArticleCard: React.FC<BlogArticleCardProps> = ({
       {showImage && (
         <div className={`relative overflow-hidden ${isFeatured ? 'aspect-[16/9]' : isCompact ? 'aspect-[4/3]' : 'aspect-[3/2]'}`}>
           <Link to={article.url} className="block h-full">
-            <BlogImage
+            <OptimizedBlogImage
               src={article.image}
               alt={article.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              priority={priority}
+              aspectRatio={isFeatured ? '16/9' : isCompact ? '4/3' : '3/2'}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             {article.featured && (
               <div className="absolute top-4 left-4">
