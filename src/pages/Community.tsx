@@ -27,6 +27,9 @@ import CreatorSpotlight from '@/components/community/CreatorSpotlight';
 import SuccessWall from '@/components/community/SuccessWall';
 import ProgressStreakTracker from '@/components/community/ProgressStreakTracker';
 import LiveActivityFeed from '@/components/community/LiveActivityFeed';
+import SocialCommercePost from '@/components/community/SocialCommercePost';
+import BeautyBattlesLeaderboard from '@/components/community/BeautyBattlesLeaderboard';
+import VipLounge from '@/components/community/VipLounge';
 
 const Community = () => {
   const { user } = useAuth();
@@ -80,7 +83,7 @@ const Community = () => {
         />
       </div>
 
-      {/* Phase 1: FOMO-Driven Layout */}
+      {/* Phase 2: Advanced Features Layout */}
       <div className="px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
           {/* Left Sidebar - FOMO & Progress */}
@@ -90,25 +93,72 @@ const Community = () => {
               onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
             />
             <ProgressStreakTracker />
-            <LiveActivityFeed />
+            <BeautyBattlesLeaderboard />
           </div>
 
-          {/* Main Content - Smart Feed */}
-          <div className="lg:col-span-6">
+          {/* Main Content - Enhanced Smart Feed */}
+          <div className="lg:col-span-6 space-y-6">
             <PersonalizedSmartFeed 
               onSignUp={handleJoinNow}
               onCreatePost={() => handleCreatePost('story')}
               onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
             />
+            
+            {/* Featured Social Commerce Post */}
+            <SocialCommercePost 
+              post={{
+                id: 'featured-1',
+                user: {
+                  name: 'Sarah Chen',
+                  avatar: '/api/placeholder/48/48',
+                  isVerified: true,
+                  specialties: ['Nail Art', 'Color Theory']
+                },
+                content: 'Just finished this autumn-inspired nail design! 🍂 The gradient technique took 2 hours but the result is absolutely stunning. Book me for similar looks!',
+                images: ['/api/placeholder/300/300', '/api/placeholder/300/300'],
+                serviceOffering: {
+                  name: 'Autumn Gradient Nails',
+                  price: 85,
+                  duration: '2 hours',
+                  available: true
+                },
+                tipJar: {
+                  enabled: true,
+                  goal: 100,
+                  current: 47
+                },
+                affiliateProducts: [
+                  {
+                    id: '1',
+                    name: 'Premium Nail Polish Set',
+                    price: 45,
+                    commission: 15,
+                    image: '/api/placeholder/100/100'
+                  }
+                ],
+                engagement: {
+                  likes: 234,
+                  comments: 45,
+                  shares: 12,
+                  bookings: 8
+                }
+              }}
+              onBook={(postId) => toast.success("Booking request sent!")}
+              onTip={(postId, amount) => toast.success(`Tipped $${amount}! Thank you for supporting creators.`)}
+              onLike={(postId) => toast.success("Post liked!")}
+              onShare={(postId) => toast.success("Post shared!")}
+            />
           </div>
 
-          {/* Right Sidebar - Creator Spotlight */}
-          <div className="lg:col-span-3">
+          {/* Right Sidebar - VIP & Creator Features */}
+          <div className="lg:col-span-3 space-y-6">
+            <VipLounge />
             <CreatorSpotlight 
               onApplyForSpotlight={() => toast.success("Application submitted! We'll review it soon.")}
               onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
               onSignUp={handleJoinNow}
             />
+            <LiveActivityFeed />
           </div>
         </div>
       </div>
