@@ -6,7 +6,7 @@ import Footer from './Footer';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 import { PerformanceProvider } from '@/components/performance/PerformanceProvider';
 
-const LazyChatSystem = lazy(() => import('@/components/chat/LazyChatSystem'));
+import { MessageCenter } from "@/components/chat/MessageCenter";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';
@@ -42,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {/* Sunshine Chatbot Widget - Lazy loaded for performance */}
         <FallbackBoundary errorMessage="">
           <Suspense fallback={null}>
-            <LazyChatSystem />
+            <MessageCenter />
           </Suspense>
         </FallbackBoundary>
       </div>

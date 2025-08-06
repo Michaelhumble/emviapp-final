@@ -6,15 +6,18 @@ export interface ChatMessage {
   status?: 'sending' | 'sent' | 'error';
 }
 
-export interface ChatState {
-  isOpen: boolean;
-  messages: ChatMessage[];
-  isTyping: boolean;
+export interface ActionSuggestion {
+  id?: string;
+  text?: string;
+  action?: string;
+  label?: string;
+  icon?: string;
+  href?: string;
 }
 
-export interface ActionSuggestion {
-  id: string;
-  label: string;
-  icon: string;
-  href: string;
+export interface ChatSettings {
+  isOpen: boolean;
+  isMinimized: boolean;
+  unreadCount: number;
+  theme: 'orange' | 'sunshine';
 }
