@@ -296,26 +296,51 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                             {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                           
-                          {/* CTA Action Buttons for Sunshine */}
+                          {/* Premium CTA Action Buttons for Sunshine */}
                           {message.sender === 'assistant' && message.hasActions && (
-                            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-orange-100">
+                            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-orange-100/60">
                               <Link to="/auth/signup?redirect=%2F">
-                                <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs px-3 py-1">
-                                  ✨ Sign Up
+                                <Button 
+                                  size="sm" 
+                                  className="bg-gradient-to-r from-indigo-600 via-purple-600 to-purple-700 hover:from-indigo-700 hover:via-purple-700 hover:to-purple-800 text-white font-semibold text-xs px-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 border-0 rounded-full"
+                                >
+                                  <span className="mr-1">✨</span>
+                                  Sign Up
                                 </Button>
                               </Link>
                               <Link to="/auth/signin?redirect=%2F">
-                                <Button variant="outline" size="sm" className="border-purple-200 text-purple-700 hover:bg-purple-50 text-xs px-3 py-1">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 font-medium text-xs px-4 py-2 rounded-full transition-all duration-300"
+                                >
                                   Sign In
                                 </Button>
                               </Link>
                               <Link to="/post-job">
-                                <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs px-3 py-1">
-                                  💼 Post Job
+                                <Button 
+                                  size="sm" 
+                                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs px-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 border-0 rounded-full"
+                                >
+                                  <span className="mr-1">💼</span>
+                                  Post Job
+                                </Button>
+                              </Link>
+                              <Link to="/sell-salon">
+                                <Button 
+                                  size="sm" 
+                                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold text-xs px-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 border-0 rounded-full"
+                                >
+                                  <span className="mr-1">🏪</span>
+                                  Sell Salon
                                 </Button>
                               </Link>
                               <Link to="/jobs">
-                                <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs px-3 py-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-medium text-xs px-4 py-2 rounded-full transition-all duration-300"
+                                >
                                   Browse Jobs
                                 </Button>
                               </Link>
