@@ -7,7 +7,7 @@ import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 import { PerformanceProvider } from '@/components/performance/PerformanceProvider';
 
 
-// import ChatSystem from '@/components/chat/ChatSystem';
+import ChatSystem from '@/components/chat/ChatSystem';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';
@@ -40,12 +40,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {/* Show the unified bottom navbar on all pages */}
         {showMobileNav && <UnifiedMobileNavigation />}
         
-        {/* Chat System - Will be rebuilt properly */}
-        {/* <FallbackBoundary errorMessage="">
-          <Suspense fallback={null}>
-            <ChatSystem />
-          </Suspense>
-        </FallbackBoundary> */}
+        {/* Chat System - Phase 1 Basic Implementation */}
+        <ChatSystem />
       </div>
     </PerformanceProvider>
   );
