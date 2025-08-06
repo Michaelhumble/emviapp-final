@@ -176,7 +176,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
               <div>
                 <h3 className="font-bold text-base sm:text-lg">Sunshine</h3>
                 <p className="text-xs text-orange-100">
-                  {isLoading ? "🧠 Thinking deeply for you..." : "Your Beauty Industry Assistant ✨"}
+                  {isLoading ? "Sunshine is thinking..." : "Your Beauty Industry Assistant ✨"}
                 </p>
               </div>
             </div>
@@ -267,7 +267,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                           
                           <div className="flex flex-col">
                             <span className="text-xs text-orange-600 font-medium">Sunshine is thinking...</span>
-                            <span className="text-xs text-orange-400 italic">Crafting the perfect response</span>
+                            <span className="text-xs text-orange-400 italic">Just a moment...</span>
                           </div>
                         </div>
                       ) : (
