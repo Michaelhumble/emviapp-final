@@ -127,221 +127,31 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* 🌟 BILLION-DOLLAR FLOATING CHAT BUBBLE */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0, transition: { duration: 0.2 } }}
+            exit={{ scale: 0, opacity: 0 }}
             className="fixed bottom-6 right-6 z-50"
           >
-            {/* Luxury Ambient Glow */}
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              style={{
-                background: 'radial-gradient(circle, rgba(255, 165, 0, 0.4), rgba(255, 215, 0, 0.2), transparent 70%)',
-                filter: 'blur(20px)',
-                transform: 'translateY(8px)'
-              }}
-            />
-
-            {/* Premium Shadow Base */}
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{
-                background: 'rgba(0, 0, 0, 0.1)',
-                filter: 'blur(8px)',
-                transform: 'translateY(4px) scale(0.95)'
-              }}
-            />
-
             <motion.button
-              whileHover={{ 
-                scale: 1.1,
-                y: -3,
-                boxShadow: "0 20px 40px rgba(255, 165, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.3)"
-              }}
-              whileTap={{ 
-                scale: 0.95,
-                y: 1
-              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(true)}
-              className="relative w-16 h-16 rounded-full transition-all duration-500 overflow-hidden group"
+              className="w-16 h-16 rounded-full shadow-lg transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, #FFB366 0%, #FF8A00 25%, #FFD700 50%, #FFA500 75%, #FF6B00 100%)',
-                boxShadow: `
-                  0 15px 35px rgba(255, 165, 0, 0.3),
-                  0 5px 15px rgba(0, 0, 0, 0.1),
-                  0 0 0 1px rgba(255, 255, 255, 0.2),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.5),
-                  inset 0 -1px 0 rgba(0, 0, 0, 0.1)
-                `,
-                border: '2px solid rgba(255, 255, 255, 0.3)'
-              }}
-              animate={{
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.02, 1],
-              }}
-              transition={{
-                rotate: { 
-                  duration: 4, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                },
-                scale: { 
-                  duration: 2, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }
+                background: 'linear-gradient(135deg, #FF8A00 0%, #FFA500 100%)',
+                boxShadow: '0 8px 32px rgba(255, 138, 0, 0.3)'
               }}
             >
-              {/* Inner Glassmorphism Layer */}
-              <motion.div
-                className="absolute inset-1 rounded-full"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
-                animate={{
-                  background: [
-                    'rgba(255, 255, 255, 0.2)',
-                    'rgba(255, 255, 255, 0.3)',
-                    'rgba(255, 255, 255, 0.2)'
-                  ]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-
-              {/* Premium Shimmer Effect */}
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                initial={{ x: '-100%', skewX: -20 }}
-                animate={{ x: '100%' }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatDelay: 3,
-                  ease: "easeInOut"
-                }}
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), rgba(255, 215, 0, 0.4), rgba(255, 255, 255, 0.6), transparent)',
-                  transform: 'skewX(-20deg)',
-                  width: '50%'
-                }}
-              />
-
-              {/* Animated Sun Icon */}
-              <motion.div
-                className="relative z-10 flex items-center justify-center w-full h-full"
-                animate={{
-                  y: [0, -1, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <motion.span
-                  className="text-4xl relative"
-                  style={{
-                    filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))',
-                    textShadow: '0 0 10px rgba(255, 215, 0, 0.8)'
-                  }}
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    rotate: [0, 10, 0]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  ☀️
-                </motion.span>
-              </motion.div>
-
-              {/* Orbiting Sparkles */}
-              {[...Array(4)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1.5 h-1.5 bg-white rounded-full"
-                  style={{
-                    boxShadow: '0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 215, 0, 0.6)'
-                  }}
-                  animate={{
-                    x: [0, 25 * Math.cos(i * Math.PI / 2), 0, -25 * Math.cos(i * Math.PI / 2), 0],
-                    y: [0, 25 * Math.sin(i * Math.PI / 2), 0, -25 * Math.sin(i * Math.PI / 2), 0],
-                    scale: [0, 1, 1, 1, 0],
-                    opacity: [0, 1, 1, 1, 0]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    delay: i * 0.5,
-                    ease: "easeInOut"
-                  }}
-                />
-              ))}
-
-              {/* Live Status Indicator */}
-              <motion.div
-                className="absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, #10B981, #34D399)',
-                  boxShadow: '0 0 10px rgba(16, 185, 129, 0.6)'
-                }}
-                animate={{
-                  scale: [1, 1.2, 1],
-                  boxShadow: [
-                    '0 0 10px rgba(16, 185, 129, 0.6)',
-                    '0 0 20px rgba(16, 185, 129, 0.8)',
-                    '0 0 10px rgba(16, 185, 129, 0.6)'
-                  ]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <div className="w-2 h-2 bg-white rounded-full" />
-              </motion.div>
+              <span className="text-4xl">☀️</span>
             </motion.button>
 
-            {/* Luxury Tooltip */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 10 }}
-              className="absolute -top-14 -left-12 px-4 py-2 rounded-xl text-white text-sm font-medium whitespace-nowrap"
-              style={{
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
-              }}
-            >
-              Chat with Little Sunshine ☀️
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-6 border-transparent border-t-black/80" />
-            </motion.div>
+            <div className="absolute -top-12 -left-8 bg-black/80 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap">
+              Chat with Sunshine ☀️
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80" />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -370,113 +180,39 @@ export const ChatSystem = () => {
               `
             }}
           >
-            {/* 🎨 LUXURY HEADER */}
+            {/* Header */}
             <div 
-              className="relative text-white p-6 flex justify-between items-center"
+              className="text-white p-6 flex justify-between items-center"
               style={{
-                background: 'linear-gradient(135deg, #FF8A00 0%, #FFB366 25%, #FF6B00 50%, #FFA500 75%, #FF4500 100%)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%)',
                 borderRadius: '28px 28px 0 0'
               }}
             >
-              {/* Animated Background Particles */}
-              <div className="absolute inset-0 overflow-hidden rounded-t-3xl">
-                {[...Array(8)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-1 h-1 bg-white/30 rounded-full"
-                    animate={{
-                      x: [0, Math.random() * 100 - 50],
-                      y: [0, Math.random() * 50 - 25],
-                      opacity: [0, 1, 0],
-                      scale: [0, 1, 0]
-                    }}
-                    transition={{
-                      duration: 4 + Math.random() * 2,
-                      repeat: Infinity,
-                      delay: i * 0.5
-                    }}
-                    style={{
-                      left: `${10 + i * 10}%`,
-                      top: `${20 + Math.random() * 60}%`
-                    }}
-                  />
-                ))}
-              </div>
-
-              <div className="flex items-center space-x-4 relative z-10">
-                {/* Animated Sunshine Avatar */}
-                <motion.div 
-                  className="w-14 h-14 rounded-full flex items-center justify-center relative"
+              <div className="flex items-center space-x-4">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center"
                   style={{
                     background: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)',
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.5)'
-                  }}
-                  animate={{ 
-                    rotate: 360,
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{ 
-                    rotate: { duration: 8, repeat: Infinity, ease: "linear" },
-                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
                   }}
                 >
-                  <span className="text-4xl relative z-10">☀️</span>
-                  <motion.div
-                    className="absolute inset-0 rounded-full"
-                    animate={{
-                      background: [
-                        'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent 60%)',
-                        'radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.3), transparent 60%)',
-                        'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent 60%)'
-                      ]
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                </motion.div>
-
-                <div className="flex-1 min-w-0">
-                  <motion.h3 
-                    className="font-bold text-xl truncate"
-                    style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    Little Sunshine
-                  </motion.h3>
-                  <motion.div 
-                    className="flex items-center space-x-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <motion.div 
-                      className="w-2 h-2 bg-emerald-300 rounded-full"
-                      animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                    <p className="text-orange-100 text-sm truncate font-medium">
-                      Inspired by Sunshine ☀️
-                    </p>
-                  </motion.div>
+                  <span className="text-3xl">☀️</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Little Sunshine</h3>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-300 rounded-full"></div>
+                    <p className="text-orange-100 text-sm">Inspired by Sunshine ☀️</p>
+                  </div>
                 </div>
               </div>
               
-              <motion.button 
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
+              <button 
                 onClick={() => setIsOpen(false)}
-                className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10 z-20 relative"
+                className="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10"
               >
                 <X className="w-5 h-5" />
-              </motion.button>
+              </button>
             </div>
 
             {/* 💬 MESSAGES CONTAINER */}
