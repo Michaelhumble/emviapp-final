@@ -1,47 +1,48 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Heart, Stars } from 'lucide-react';
+import { MessageSquare, Sparkles, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface SunshineButtonProps {
+interface NewChatButtonProps {
   onClick: () => void;
   hasUnreadMessages?: boolean;
 }
 
-export const SunshineButton = ({ onClick, hasUnreadMessages = false }: SunshineButtonProps) => {
+export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatButtonProps) => {
   return (
     <motion.div
       className="fixed bottom-6 right-6 z-[9998]"
       initial={{ scale: 0, rotate: -180 }}
       animate={{ scale: 1, rotate: 0 }}
-      whileHover={{ scale: 1.1 }}
+      whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      {/* Floating sparkles animation */}
+      {/* Floating elements animation */}
       <div className="absolute inset-0 pointer-events-none">
+        {/* Sparkles */}
         <motion.div
           animate={{
-            x: [0, 10, -10, 0],
-            y: [0, -15, -5, 0],
+            x: [0, 15, -10, 0],
+            y: [0, -20, -10, 0],
             rotate: [0, 180, 360],
-            opacity: [0.4, 1, 0.4]
+            opacity: [0.6, 1, 0.6]
           }}
           transition={{
             duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute -top-8 -right-2"
+          className="absolute -top-8 -right-4"
         >
-          <Sparkles className="w-4 h-4 text-yellow-400" />
+          <Sparkles className="w-4 h-4 text-purple-400" />
         </motion.div>
         
         <motion.div
           animate={{
-            x: [0, -15, 10, 0],
-            y: [0, -10, -20, 0],
+            x: [0, -12, 8, 0],
+            y: [0, -15, -25, 0],
             rotate: [0, -180, -360],
-            opacity: [0.6, 1, 0.6]
+            opacity: [0.5, 1, 0.5]
           }}
           transition={{
             duration: 3.5,
@@ -49,17 +50,17 @@ export const SunshineButton = ({ onClick, hasUnreadMessages = false }: SunshineB
             ease: "easeInOut",
             delay: 1
           }}
-          className="absolute -top-4 -left-6"
+          className="absolute -top-6 -left-8"
         >
-          <Stars className="w-3 h-3 text-pink-400" />
+          <Heart className="w-3 h-3 text-pink-400" />
         </motion.div>
 
         <motion.div
           animate={{
-            x: [0, 8, -12, 0],
-            y: [0, -8, -12, 0],
-            scale: [1, 1.3, 0.8, 1],
-            opacity: [0.5, 1, 0.5]
+            x: [0, 10, -8, 0],
+            y: [0, -12, -18, 0],
+            scale: [1, 1.4, 0.8, 1],
+            opacity: [0.4, 1, 0.4]
           }}
           transition={{
             duration: 5,
@@ -67,36 +68,36 @@ export const SunshineButton = ({ onClick, hasUnreadMessages = false }: SunshineB
             ease: "easeInOut",
             delay: 2
           }}
-          className="absolute -top-6 right-4"
+          className="absolute -top-10 right-6"
         >
-          <Heart className="w-3 h-3 text-red-400" />
+          <Sparkles className="w-3 h-3 text-blue-400" />
         </motion.div>
       </div>
 
-      {/* Main sunshine button */}
+      {/* Main button */}
       <Button
         onClick={onClick}
-        className="relative w-16 h-16 rounded-full bg-gradient-to-br from-yellow-300 via-orange-400 to-pink-400 hover:from-yellow-400 hover:via-orange-500 hover:to-pink-500 shadow-2xl border-3 border-white/30 overflow-hidden group"
-        aria-label="Chat with Little Sunshine"
+        className="relative w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-2xl border-2 border-white/20 overflow-hidden group"
+        aria-label="Open Chat with Little Sunshine"
       >
         {/* Pulsing background effect */}
         <motion.div
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
+            scale: [1, 1.3, 1],
+            opacity: [0.3, 0.7, 0.3]
           }}
           transition={{
-            duration: 2,
+            duration: 2.5,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0 bg-gradient-to-br from-yellow-200 to-orange-300 rounded-full"
+          className="absolute inset-0 bg-gradient-to-br from-purple-300 to-pink-300 rounded-full"
         />
 
-        {/* Sunshine emoji with animation */}
+        {/* Chat icon with animation */}
         <motion.div
           animate={{
-            rotate: [0, 10, -10, 0],
+            rotate: [0, 5, -5, 0],
             scale: [1, 1.1, 1]
           }}
           transition={{
@@ -104,20 +105,20 @@ export const SunshineButton = ({ onClick, hasUnreadMessages = false }: SunshineB
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="relative z-10 text-2xl"
+          className="relative z-10"
         >
-          ☀️
+          <MessageSquare className="w-6 h-6 text-white" />
         </motion.div>
 
         {/* Unread message indicator */}
         {hasUnreadMessages && (
           <motion.div
             animate={{
-              scale: [1, 1.3, 1],
-              opacity: [1, 0.7, 1]
+              scale: [1, 1.4, 1],
+              opacity: [1, 0.6, 1]
             }}
             transition={{
-              duration: 1.5,
+              duration: 1.8,
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -127,17 +128,18 @@ export const SunshineButton = ({ onClick, hasUnreadMessages = false }: SunshineB
           </motion.div>
         )}
 
-        {/* Radial glow effect */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-300/20 to-pink-300/20 blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Radial glow effect on hover */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-300/30 to-pink-300/30 blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </Button>
 
       {/* Tooltip */}
       <motion.div
         initial={{ opacity: 0, x: 10 }}
         whileHover={{ opacity: 1, x: 0 }}
-        className="absolute right-20 top-1/2 -translate-y-1/2 bg-black/80 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap pointer-events-none"
+        className="absolute right-20 top-1/2 -translate-y-1/2 bg-black/90 text-white px-4 py-2 rounded-lg text-sm whitespace-nowrap pointer-events-none backdrop-blur-sm"
       >
-        Chat with Little Sunshine ✨
+        Chat with Little Sunshine 💬
+        <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-black/90"></div>
       </motion.div>
     </motion.div>
   );

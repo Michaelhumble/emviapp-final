@@ -1,16 +1,15 @@
-export interface Message {
+export interface ChatMessage {
   id: string;
   content: string;
   isUser: boolean;
   timestamp: Date;
-  typing?: boolean;
+  status?: 'sending' | 'sent' | 'error';
 }
 
 export interface ChatState {
   isOpen: boolean;
-  isMinimized: boolean;
-  messages: Message[];
-  isProcessing: boolean;
+  messages: ChatMessage[];
+  isTyping: boolean;
 }
 
 export interface ActionSuggestion {

@@ -1,9 +1,9 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { SunshineButton } from './SunshineButton';
+import { NewChatButton } from './NewChatButton';
 
-// Lazy load the main chat component for better performance
-const SunshineChat = lazy(() => 
-  import('./SunshineChat').then(module => ({ default: module.SunshineChat }))
+// Lazy load the chat window for performance
+const NewChatWindow = lazy(() => 
+  import('./NewChatWindow').then(module => ({ default: module.NewChatWindow }))
 );
 
 export const LazyChatSystem = () => {
@@ -19,13 +19,13 @@ export const LazyChatSystem = () => {
 
   return (
     <>
-      <SunshineButton 
+      <NewChatButton 
         onClick={handleToggleChat}
         hasUnreadMessages={false}
       />
       
       <Suspense fallback={null}>
-        <SunshineChat 
+        <NewChatWindow 
           isOpen={isChatOpen}
           onClose={handleCloseChat}
         />
