@@ -70,17 +70,17 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ isOpen, onClose }) => {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl p-6 w-full max-w-md mx-auto"
+          className="bg-white rounded-2xl p-4 w-full max-w-sm mx-auto"
         >
-          {/* Header */}
-          <div className="text-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full mx-auto mb-3 flex items-center justify-center">
-              <span className="text-2xl">☀️</span>
+          {/* Compact Header */}
+          <div className="text-center mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+              <span className="text-xl">☀️</span>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Little Sunshine</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Little Sunshine</h2>
             <Badge 
               variant={connectionStatus === 'connected' ? 'default' : 'secondary'}
-              className={`${
+              className={`text-xs ${
                 connectionStatus === 'connected' 
                   ? 'bg-green-100 text-green-700 border-green-200' 
                   : connectionStatus === 'connecting'
@@ -90,7 +90,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ isOpen, onClose }) => {
             >
               {connectionStatus === 'connected' && '🟢 Connected'}
               {connectionStatus === 'connecting' && '🟡 Connecting...'}
-              {connectionStatus === 'disconnected' && '⚪ Ready to connect'}
+              {connectionStatus === 'disconnected' && '⚪ Ready'}
             </Badge>
           </div>
 
@@ -99,28 +99,28 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ isOpen, onClose }) => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6 text-center"
+              className="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4 text-center"
             >
-              <div className="text-orange-600 font-semibold mb-1">🚀 Coming Soon!</div>
-              <p className="text-orange-700 text-sm">
-                Voice chat with Little Sunshine will be available in Q2 2025. Get ready for natural voice conversations!
+              <div className="text-orange-600 font-medium text-sm mb-1">🚀 Coming Q2 2025!</div>
+              <p className="text-orange-700 text-xs">
+                Natural voice conversations with Little Sunshine
               </p>
             </motion.div>
           )}
 
-          {/* Audio Visualization */}
-          <div className="flex justify-center mb-6">
-            <div className="flex items-end space-x-1 h-12">
+          {/* Compact Audio Visualization */}
+          <div className="flex justify-center mb-4">
+            <div className="flex items-end space-x-1 h-8">
               {[...Array(5)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className={`w-2 rounded-full ${
+                  className={`w-1.5 rounded-full ${
                     isRecording || isSpeaking ? 'bg-orange-500' : 'bg-gray-300'
                   }`}
                   animate={{
                     height: isRecording || isSpeaking 
-                      ? `${20 + (audioLevel * 0.3) + (Math.random() * 20)}px`
-                      : '8px'
+                      ? `${12 + (audioLevel * 0.2) + (Math.random() * 12)}px`
+                      : '6px'
                   }}
                   transition={{ duration: 0.1 }}
                 />
@@ -128,34 +128,34 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Status Text */}
-          <div className="text-center mb-6">
+          {/* Compact Status Text */}
+          <div className="text-center mb-4">
             {!isConnected && connectionStatus === 'disconnected' && (
-              <p className="text-gray-600">Tap the call button to start voice chat</p>
+              <p className="text-gray-600 text-sm">Tap to start voice chat</p>
             )}
             {connectionStatus === 'connecting' && (
-              <p className="text-orange-600">Connecting to Little Sunshine...</p>
+              <p className="text-orange-600 text-sm">Connecting...</p>
             )}
             {isConnected && !isRecording && !isSpeaking && (
-              <p className="text-green-600">Connected! Tap mic to speak</p>
+              <p className="text-green-600 text-sm">Tap mic to speak</p>
             )}
             {isRecording && (
-              <p className="text-orange-600">Listening... speak now</p>
+              <p className="text-orange-600 text-sm">Listening...</p>
             )}
             {isSpeaking && (
-              <p className="text-blue-600">Little Sunshine is speaking...</p>
+              <p className="text-blue-600 text-sm">Speaking...</p>
             )}
           </div>
 
-          {/* Controls */}
-          <div className="flex justify-center space-x-4 mb-6">
+          {/* Compact Controls */}
+          <div className="flex justify-center space-x-3 mb-4">
             {!isConnected ? (
               <Button
                 onClick={handleStartCall}
                 disabled={!isFeatureEnabled('VOICE_CHAT') || connectionStatus === 'connecting'}
-                className="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16"
+                className="bg-green-500 hover:bg-green-600 text-white rounded-full w-12 h-12"
               >
-                <Phone className="w-6 h-6" />
+                <Phone className="w-5 h-5" />
               </Button>
             ) : (
               <>
@@ -163,33 +163,33 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ isOpen, onClose }) => {
                 <Button
                   onClick={toggleRecording}
                   variant={isRecording ? 'default' : 'outline'}
-                  className={`rounded-full w-16 h-16 ${
+                  className={`rounded-full w-12 h-12 ${
                     isRecording 
                       ? 'bg-orange-500 hover:bg-orange-600 text-white' 
                       : 'hover:bg-orange-50 text-orange-600 border-orange-300'
                   }`}
                 >
-                  {isRecording ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
+                  {isRecording ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
                 </Button>
 
                 {/* End Call */}
                 <Button
                   onClick={handleEndCall}
-                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-16 h-16"
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-12 h-12"
                 >
-                  <PhoneOff className="w-6 h-6" />
+                  <PhoneOff className="w-5 h-5" />
                 </Button>
               </>
             )}
           </div>
 
-          {/* Features List */}
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h4 className="font-semibold text-gray-800 mb-2">Voice Chat Features:</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Natural voice conversations</li>
-              <li>• Real-time beauty advice</li>
-              <li>• Multiple language support</li>
+          {/* Compact Features List */}
+          <div className="bg-gray-50 rounded-xl p-3">
+            <h4 className="font-medium text-gray-800 mb-2 text-sm">Voice Features:</h4>
+            <ul className="text-xs text-gray-600 space-y-1">
+              <li>• Natural conversations</li>
+              <li>• Real-time advice</li>
+              <li>• Multiple languages</li>
               <li>• Hands-free interaction</li>
             </ul>
           </div>
