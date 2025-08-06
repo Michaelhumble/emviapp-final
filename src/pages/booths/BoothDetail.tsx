@@ -90,7 +90,7 @@ const BoothDetail = () => {
                 src={boothData.imageUrl}
                 alt={boothData.title}
                 className="w-full h-[300px] md:h-[400px] object-cover"
-                fallbackImage="/placeholder.svg"
+                fallbackImage="/src/assets/salon-booth-interior.jpg"
               />
             </div>
 

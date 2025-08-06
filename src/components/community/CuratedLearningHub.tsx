@@ -5,6 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Play, Clock, Users, BookOpen, Filter, Search, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+// Import beauty industry images
+import beautyThumbnail1 from '@/assets/beauty-thumbnail-1.jpg';
+import beautyThumbnail2 from '@/assets/beauty-thumbnail-2.jpg';
+import beautyThumbnail3 from '@/assets/beauty-thumbnail-3.jpg';
+
 interface LearningResource {
   id: string;
   title: string;
@@ -30,7 +35,7 @@ const CuratedLearningHub = () => {
       id: '1',
       title: 'Nail Art Fundamentals: From Basic to Beautiful',
       description: 'Learn the essential techniques for creating stunning nail art designs',
-      thumbnail: '/api/placeholder/300/200',
+      thumbnail: beautyThumbnail1,
       duration: '45 min',
       difficulty: 'Beginner',
       category: 'Nail Art',
@@ -44,7 +49,7 @@ const CuratedLearningHub = () => {
       id: '2',
       title: 'Advanced Color Theory for Hair Stylists',
       description: 'Master color mixing and matching for professional hair coloring',
-      thumbnail: '/api/placeholder/300/200',
+      thumbnail: beautyThumbnail2,
       duration: '1hr 20min',
       difficulty: 'Advanced',
       category: 'Hair Styling',
@@ -58,7 +63,7 @@ const CuratedLearningHub = () => {
       id: '3',
       title: 'Building Your Beauty Business: Marketing Essentials',
       description: 'Essential marketing strategies for beauty professionals',
-      thumbnail: '/api/placeholder/300/200',
+      thumbnail: beautyThumbnail3,
       duration: '30 min read',
       difficulty: 'Intermediate',
       category: 'Business',

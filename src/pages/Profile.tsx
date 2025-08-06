@@ -369,7 +369,7 @@ const Profile = () => {
       <div className="relative">
         {/* Profile Banner */}
         <div className="h-48 bg-gradient-to-r from-primary/80 via-primary to-primary/80 relative">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-10 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('/src/assets/salon-workspace-hero.jpg')] opacity-20 mix-blend-overlay bg-cover bg-center"></div>
         </div>
         
         <div className="container mx-auto px-4 relative">

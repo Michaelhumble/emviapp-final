@@ -54,7 +54,7 @@ const SellSalonGuide2025: React.FC = () => {
         <Container className="py-16">
           {/* Author & Date */}
           <div className="flex items-center gap-4 mb-8 text-sm text-gray-600">
-            <img src="/api/placeholder/40/40" alt="Sarah Chen" className="w-10 h-10 rounded-full" />
+            <img src="/src/assets/team-workspace.jpg" alt="Sarah Chen" className="w-10 h-10 rounded-full object-cover" />
             <div>
               <p className="font-semibold text-gray-900">Sarah Chen, Former Salon Owner & Business Consultant</p>
               <p>Published: January 4, 2025 • 15 min read</p>

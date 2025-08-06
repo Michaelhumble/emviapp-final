@@ -405,12 +405,12 @@ const Community = () => {
                   id: 'featured-1',
                   user: {
                     name: 'Sarah Chen',
-                    avatar: '/api/placeholder/48/48',
+                    avatar: '/src/assets/beauty-pattern-abstract.jpg',
                     isVerified: true,
                     specialties: ['Nail Art', 'Color Theory']
                   },
                   content: 'Just finished this autumn-inspired nail design! 🍂 The gradient technique took 2 hours but the result is absolutely stunning. Book me for similar looks!',
-                  images: ['/api/placeholder/400/400', '/api/placeholder/400/400'],
+                  images: ['/src/assets/autumn-nail-art.jpg', '/src/assets/nail-art-showcase.jpg'],
                   serviceOffering: {
                     name: 'Autumn Gradient Nails',
                     price: 85,
@@ -428,14 +428,14 @@ const Community = () => {
                       name: 'Premium Nail Polish Set',
                       price: 45,
                       commission: 15,
-                      image: '/api/placeholder/120/120'
+                      image: '/src/assets/luxury-beauty-products.jpg'
                     },
                     {
                       id: '2',
                       name: 'Professional Nail Tools',
                       price: 65,
                       commission: 20,
-                      image: '/api/placeholder/120/120'
+                      image: '/src/assets/nail-care-workshop.jpg'
                     }
                   ],
                   engagement: {

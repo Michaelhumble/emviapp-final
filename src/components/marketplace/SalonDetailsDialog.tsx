@@ -82,7 +82,7 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
           <div>
             <div className="aspect-video bg-gray-200 mb-4 rounded-md overflow-hidden">
               <img 
-                src="/placeholder.svg" 
+                src="/src/assets/beauty-salon-interior.jpg" 
                 alt={salon.name} 
                 className="w-full h-full object-cover"
               />

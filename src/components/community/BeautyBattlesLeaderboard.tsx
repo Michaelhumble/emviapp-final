@@ -6,6 +6,13 @@ import { Progress } from '@/components/ui/progress';
 import { Trophy, Crown, Zap, Users, Calendar, Award, Target, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Import beauty industry images
+import avatarBeauty1 from '@/assets/avatar-beauty-1.jpg';
+import avatarBeauty2 from '@/assets/avatar-beauty-2.jpg';
+import avatarBeauty3 from '@/assets/avatar-beauty-3.jpg';
+import avatarBeauty4 from '@/assets/avatar-beauty-4.jpg';
+import avatarBeauty5 from '@/assets/avatar-beauty-5.jpg';
+
 interface Participant {
   id: string;
   name: string;
@@ -72,11 +79,11 @@ const BeautyBattlesLeaderboard = () => {
 
   // Mock leaderboard data
   const leaderboard: Participant[] = [
-    { id: '1', name: 'Sarah Chen', avatar: '/api/placeholder/40/40', score: 2850, rank: 1, submissionCount: 12 },
-    { id: '2', name: 'Maria Garcia', avatar: '/api/placeholder/40/40', score: 2720, rank: 2, submissionCount: 10 },
-    { id: '3', name: 'You', avatar: '/api/placeholder/40/40', score: 2650, rank: 3, submissionCount: 8, isCurrentUser: true },
-    { id: '4', name: 'Jessica Kim', avatar: '/api/placeholder/40/40', score: 2580, rank: 4, submissionCount: 9 },
-    { id: '5', name: 'Amanda Rose', avatar: '/api/placeholder/40/40', score: 2450, rank: 5, submissionCount: 7 }
+    { id: '1', name: 'Sarah Chen', avatar: avatarBeauty1, score: 2850, rank: 1, submissionCount: 12 },
+    { id: '2', name: 'Maria Garcia', avatar: avatarBeauty2, score: 2720, rank: 2, submissionCount: 10 },
+    { id: '3', name: 'You', avatar: avatarBeauty3, score: 2650, rank: 3, submissionCount: 8, isCurrentUser: true },
+    { id: '4', name: 'Jessica Kim', avatar: avatarBeauty4, score: 2580, rank: 4, submissionCount: 9 },
+    { id: '5', name: 'Amanda Rose', avatar: avatarBeauty5, score: 2450, rank: 5, submissionCount: 7 }
   ];
 
   // Calculate time remaining

@@ -48,7 +48,7 @@ const VipLounge = () => {
       type: 'masterclass',
       host: {
         name: 'Maria Santos',
-        avatar: '/api/placeholder/40/40',
+        avatar: '/src/assets/avatar-beauty-1.jpg',
         title: 'Celebrity Hair Colorist'
       }
     },

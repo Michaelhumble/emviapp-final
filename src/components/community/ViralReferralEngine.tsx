@@ -39,7 +39,7 @@ const ViralReferralEngine = () => {
     {
       id: '1',
       name: 'Sarah Chen',
-      avatar: '/api/placeholder/40/40',
+      avatar: '/src/assets/avatar-beauty-1.jpg',
       joinDate: new Date(2024, 1, 15),
       status: 'active',
       contribution: 250,
