@@ -113,74 +113,65 @@ const PremiumFeatures: React.FC<PremiumFeaturesProps> = ({ isOpen, onClose, onFe
 
           {/* Content */}
           <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-      {/* Header */}
-      <div className="text-center mb-6">
-        <div className="flex items-center justify-center mb-2">
-          <Crown className="w-6 h-6 text-orange-500 mr-2" />
-          <h2 className="text-xl font-bold text-gray-900">Premium Features</h2>
-        </div>
-        <p className="text-gray-600 text-sm">Unlock Little Sunshine's full potential</p>
-      </div>
-
-      {/* Core Features */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <Sparkles className="w-4 h-4 mr-2 text-orange-500" />
-          Core Features
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          {coreFeatures.map((feature) => (
-            <FeatureCard key={feature} feature={feature} />
-          ))}
-        </div>
-      </div>
-
-      {/* Advanced Features */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <Crown className="w-4 h-4 mr-2 text-purple-500" />
-          Advanced Features
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          {advancedFeatures.map((feature) => (
-            <FeatureCard key={feature} feature={feature} />
-          ))}
-        </div>
-      </div>
-
-      {/* Coming Soon */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-          <Clock className="w-4 h-4 mr-2 text-blue-500" />
-          Coming Soon
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          {comingSoonFeatures.map((feature) => (
-            <FeatureCard key={feature} feature={feature} />
-          ))}
-        </div>
-      </div>
-
-      {/* Upgrade Notice */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white text-center"
-      >
-        <Crown className="w-6 h-6 mx-auto mb-2" />
-        <h3 className="font-semibold mb-1">Premium Coming Soon</h3>
-        <p className="text-orange-100 text-sm mb-3">
-          We're working hard to bring you these amazing features!
-        </p>
-        <Button 
-          variant="secondary" 
-          size="sm"
-          className="bg-white text-orange-600 hover:bg-orange-50"
-        >
-          Get Notified
-        </Button>
-      </motion.div>
+            
+            {/* Core Features */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <Sparkles className="w-4 h-4 mr-2 text-orange-500" />
+                Core Features
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {coreFeatures.map((feature) => (
+                  <FeatureCard key={feature} feature={feature} />
+                ))}
+              </div>
             </div>
+
+            {/* Advanced Features */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <Crown className="w-4 h-4 mr-2 text-purple-500" />
+                Advanced Features
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {advancedFeatures.map((feature) => (
+                  <FeatureCard key={feature} feature={feature} />
+                ))}
+              </div>
+            </div>
+
+            {/* Coming Soon */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <Clock className="w-4 h-4 mr-2 text-blue-500" />
+                Coming Soon
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {comingSoonFeatures.map((feature) => (
+                  <FeatureCard key={feature} feature={feature} />
+                ))}
+              </div>
+            </div>
+
+            {/* Upgrade Notice */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white text-center"
+            >
+              <Crown className="w-6 h-6 mx-auto mb-2" />
+              <h3 className="font-semibold mb-1">Premium Coming Soon</h3>
+              <p className="text-orange-100 text-sm mb-3">
+                We're working hard to bring you these amazing features!
+              </p>
+              <Button 
+                variant="secondary" 
+                size="sm"
+                className="bg-white text-orange-600 hover:bg-orange-50"
+              >
+                Get Notified
+              </Button>
+            </motion.div>
           </div>
         </motion.div>
       </motion.div>
