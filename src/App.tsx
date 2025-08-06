@@ -23,7 +23,6 @@ import FirstTimeVisitorRedirect from "@/components/routing/FirstTimeVisitorRedir
 import GlobalPremiumSignupModalProvider from "@/components/modals/GlobalPremiumSignupModalProvider";
 
 // Lazy load heavy pages
-const BookingCalendar = lazy(() => import("@/pages/dashboard/artist/BookingCalendar"));
 const BookingCalendarNew = lazy(() => import("@/pages/dashboard/artist/BookingCalendarNew"));
 const ArtistInbox = lazy(() => import("@/pages/dashboard/artist/Inbox"));
 const SalonsPageRedesigned = lazy(() => import("@/pages/salons/SalonsPageRedesigned"));
@@ -192,11 +191,6 @@ function App() {
                         />
                       )
                     ))}
-                    <Route path="/dashboard/artist/booking-calendar" element={
-                      <ProtectedRoute>
-                        <Layout><BookingCalendar /></Layout>
-                      </ProtectedRoute>
-                    } />
                     <Route path="/dashboard/artist/booking-calendar-new" element={
                       <ProtectedRoute>
                         <Layout><BookingCalendarNew /></Layout>
