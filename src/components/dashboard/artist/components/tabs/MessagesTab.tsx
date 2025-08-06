@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
-import { MessageCenter } from "@/components/chat/MessageCenter";
+import AssistantPanel from "@/components/ai/AssistantPanel";
 import { useTestRecipient } from "@/hooks/chat/useTestRecipient";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import LoadingState from "./LoadingState";
@@ -57,7 +57,7 @@ const MessagesTab = () => {
               </Card>
             }
           >
-            <MessageCenter recipientId={testRecipient.id} />
+            <AssistantPanel />
           </FallbackBoundary>
         ) : (
           <Card className="p-8 text-center">

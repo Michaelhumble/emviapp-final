@@ -1,17 +1,13 @@
 
 import React from 'react';
-import { MessageCenter } from '@/components/chat/MessageCenter';
+import AssistantPanel from '@/components/ai/AssistantPanel';
 
 interface ArtistMessageCenterProps {
-  recipientId: string | undefined;
+  recipientId?: string | undefined;
 }
 
 const ArtistMessageCenter = ({ recipientId }: ArtistMessageCenterProps) => {
-  if (!recipientId) {
-    return <div>Loading...</div>;
-  }
-
-  return <MessageCenter recipientId={recipientId} />;
+  return <AssistantPanel />;
 };
 
 export default ArtistMessageCenter;
