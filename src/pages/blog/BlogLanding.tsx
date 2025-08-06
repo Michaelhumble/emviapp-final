@@ -21,14 +21,29 @@ const BlogLanding = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Always feature the viral article at the top
+  const viralArticle = {
+    id: 'viral-article-1',
+    title: 'From Invisible to Unstoppable: How EmviApp Is Changing the Future of Beauty—for Everyone',
+    description: 'Discover how EmviApp is transforming lives, building community, and making beauty visible—for everyone. Real stories of empowerment, AI innovation, and human connection.',
+    url: '/article/from-invisible-to-unstoppable',
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    publishedAt: 'Today',
+    readTime: '12 min read',
+    category: 'Featured Story',
+    author: 'EmviApp Editorial Team',
+    isFeatured: true,
+    isViral: true
+  };
+
   const featuredArticles = getFeaturedArticles();
   const trendingArticles = getTrendingArticles();
   const recentArticles = getRecentArticles(9);
   const dynamicCategories = getAllCategories();
   const allTags = getAllTags();
   
-  // Get hero article
-  const heroArticle = featuredArticles[0] || recentArticles[0];
+  // Always use viral article as hero
+  const heroArticle = viralArticle;
   
   // Get trending topics from most popular tags
   const trendingTopics = allTags.slice(0, 8).map(tag => tag.name);
@@ -193,8 +208,8 @@ const BlogLanding = () => {
                     </div>
                     <div className="p-10 md:p-16 flex flex-col justify-center">
                       <div className="flex items-center gap-4 mb-6">
-                        <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-semibold tracking-wide">
-                          FEATURED
+                        <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold tracking-wide animate-pulse">
+                          🔥 VIRAL ARTICLE
                         </span>
                         <span className="text-gray-500 text-sm font-medium">{heroArticle.readTime}</span>
                       </div>
