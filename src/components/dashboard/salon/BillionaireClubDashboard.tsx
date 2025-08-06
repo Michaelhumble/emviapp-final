@@ -287,7 +287,7 @@ const BillionaireClubDashboard = () => {
   const [todayGoal] = useState(85);
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none">
