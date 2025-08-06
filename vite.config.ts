@@ -53,12 +53,6 @@ export default defineConfig(({ mode }) => ({
             '@/components/home/ai-matchmaker',
             '@/components/home/SalonClientGrowthSystem'
           ],
-          // Chat system (heavy component)
-          'chat': [
-            '@/components/chat/UltimateSunshineWindow',
-            '@/components/chat/UltimateSunshineButton',
-            '@/components/chat/UltimateSunshineSystem'
-          ],
           // Blog system
           'blog': [
             '@/pages/blog/BlogLanding',
