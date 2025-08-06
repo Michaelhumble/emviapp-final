@@ -14,10 +14,3 @@ export interface ActionSuggestion {
   icon?: string;
   href?: string;
 }
-
-export interface ChatSettings {
-  isOpen: boolean;
-  isMinimized: boolean;
-  unreadCount: number;
-  theme: 'orange' | 'sunshine';
-}
