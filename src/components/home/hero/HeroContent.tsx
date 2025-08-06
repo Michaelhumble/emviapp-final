@@ -107,12 +107,12 @@ const HeroContent = ({
         </motion.p>
 
         <motion.div
-          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-10 mb-6'}`}
+          className={`flex flex-col items-center gap-4 ${isMobile ? 'mt-10 mb-8' : 'mt-10 mb-6'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Industry-specific dynamic CTA Button */}
+          {/* Primary CTA - Create Free Account */}
           <Link to="/auth/signup?redirect=%2F">
             <Button 
               size="lg" 
@@ -122,9 +122,32 @@ const HeroContent = ({
                   : 'px-14 py-10 text-2xl'
               }`}
             >
-              {currentSlide?.cta?.text || "✨ Start Your Journey"}
+              ✨ Create Your Free Account
             </Button>
           </Link>
+          
+          {/* Secondary CTAs */}
+          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center gap-4`}>
+            <Link to="/auth/signin?redirect=%2F">
+              <Button 
+                variant="outline"
+                size={isMobile ? "default" : "lg"}
+                className="bg-white/20 backdrop-blur-sm border-white/40 text-white hover:bg-white/30 hover:text-white font-inter font-semibold transition-all duration-300"
+              >
+                Welcome Back! Sign In
+              </Button>
+            </Link>
+            
+            <Link to="/jobs">
+              <Button 
+                variant="ghost"
+                size={isMobile ? "default" : "lg"}
+                className="text-white/90 hover:text-white hover:bg-white/10 font-inter font-medium underline-offset-4 hover:underline"
+              >
+                See All Jobs – No Account Needed
+              </Button>
+            </Link>
+          </div>
         </motion.div>
         
         {/* Subtle Vietnamese line */}

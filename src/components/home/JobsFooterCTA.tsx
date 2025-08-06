@@ -29,15 +29,33 @@ const JobsFooterCTA = () => {
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
             Join thousands of beauty professionals who've found their perfect job through EmviApp.
           </p>
-          <Link to="/booking-services">
-            <Button
-              size="lg" 
-              className="group px-6 py-3 font-medium hover:scale-105 transition-all duration-300"
-            >
-              Explore Jobs Now
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
+          <div className="flex flex-col items-center gap-4">
+            {/* Primary CTA */}
+            <Link to="/jobs">
+              <Button
+                size="lg" 
+                className="group px-6 py-3 font-medium hover:scale-105 transition-all duration-300"
+              >
+                Explore Jobs Now
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            
+            {/* Secondary CTAs */}
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <Link to="/auth/signup?redirect=%2F">
+                <Button variant="outline" className="bg-white hover:bg-gray-50 text-purple-700 border-purple-200 hover:border-purple-300 font-inter">
+                  ✨ Create Your Free Account
+                </Button>
+              </Link>
+              
+              <Link to="/auth/signin?redirect=%2F">
+                <Button variant="ghost" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-inter">
+                  Welcome Back! Sign In
+                </Button>
+              </Link>
+            </div>
+          </div>
         </motion.div>
       </div>
     </motion.section>
