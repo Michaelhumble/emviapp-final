@@ -19,32 +19,39 @@ export const ChatSystem = () => {
   }, [messages, isTyping]);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
     const userMessage = { id: Date.now(), text: input, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setLoading(true);
     setIsTyping(true);
 
+    console.log('🤖 [SUNSHINE] Sending message:', currentInput);
+
     try {
-      const { data } = await supabase.functions.invoke('sunshine-chat', {
-        body: { message: input }
+      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
+        body: { message: currentInput }
       });
 
-      console.log('🤖 [SUNSHINE] Response received:', data);
+      console.log('🤖 [SUNSHINE] Response received:', { data, error });
 
-      // Brief realistic typing delay (500ms instead of 1500ms)
+      if (error) {
+        throw new Error(error.message || 'Failed to get response');
+      }
+
+      // Brief realistic typing delay
       setTimeout(() => {
         setIsTyping(false);
+        setLoading(false);
         const botMessage = { 
           id: Date.now() + 1, 
           text: data?.message || "I'm here to help!", 
           sender: 'bot' 
         };
         setMessages(prev => [...prev, botMessage]);
-        setLoading(false);
-      }, 500);
+      }, 800);
     } catch (error) {
       console.error('🤖 [SUNSHINE] Error:', error);
       setIsTyping(false);
