@@ -7,7 +7,7 @@ import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 import { PerformanceProvider } from '@/components/performance/PerformanceProvider';
 
 
-import LittleSunshineSystem from '@/components/chat/LittleSunshineSystem';
+import ChatSystem from '@/components/chat/ChatSystem';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';
@@ -40,10 +40,10 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {/* Show the unified bottom navbar on all pages */}
         {showMobileNav && <UnifiedMobileNavigation />}
         
-        {/* Little Sunshine Chat System - Premium Orange Experience */}
+        {/* Chat System - Premium Orange Experience */}
         <FallbackBoundary errorMessage="">
           <Suspense fallback={null}>
-            <LittleSunshineSystem />
+            <ChatSystem />
           </Suspense>
         </FallbackBoundary>
       </div>
