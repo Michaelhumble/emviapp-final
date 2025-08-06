@@ -11,7 +11,7 @@ import { isFeatureEnabled, type PremiumFeature } from '@/config/premiumFeatures'
 export const ChatSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hi! I'm Little Sunshine ☀️ How can I help you today?", sender: 'bot' }
+    { id: 1, text: "Hi, I am Sunshine, what's your name? Em biết nói tiếng Việt nữa đó!", sender: 'bot' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
