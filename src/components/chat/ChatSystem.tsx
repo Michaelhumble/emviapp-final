@@ -112,28 +112,53 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* Simple Little Sunshine Chat Button */}
+      {/* Compact Mobile-Friendly Little Sunshine Chat Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed bottom-4 right-4 z-50"
           >
             <motion.button
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(true)}
-              className="relative w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              className="relative w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
-              {/* Simple Sun Icon */}
-              <div className="flex items-center justify-center w-full h-full">
-                <span className="text-5xl">☀️</span>
+              {/* Inner Rotating Ring */}
+              <motion.div
+                className="absolute inset-1 rounded-full border border-white/30"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              />
+              
+              {/* Inner Rotating Gradient */}
+              <motion.div
+                className="absolute inset-2 rounded-full opacity-20"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                style={{
+                  background: 'conic-gradient(from 0deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.8), transparent)'
+                }}
+              />
+
+              {/* White Sun Icon */}
+              <div className="flex items-center justify-center w-full h-full relative z-10">
+                <span 
+                  className="text-4xl"
+                  style={{
+                    filter: 'brightness(0) invert(1)', // Makes emoji white
+                    WebkitFilter: 'brightness(0) invert(1)'
+                  }}
+                >
+                  ☀️
+                </span>
               </div>
               
-              {/* Online Dot */}
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white" />
+              {/* Smaller Online Dot */}
+              <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white" />
             </motion.button>
           </motion.div>
         )}
