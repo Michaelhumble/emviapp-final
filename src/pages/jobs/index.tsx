@@ -5,7 +5,7 @@ import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 // Removed ExpiredJobsSection - now handled by individual industry pages
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
@@ -297,9 +297,9 @@ const JobsPage = () => {
               {/* Large CTA Buttons */}
               <div className="animate-fade-in mb-12" style={{ animationDelay: '0.4s' }}>
                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-                  <button
-                    onClick={() => navigate('/post-job')}
-                    className="group relative bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-500 text-white font-inter font-black py-6 px-8 sm:px-12 rounded-2xl text-lg sm:text-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] hover:shadow-[0_35px_70px_rgba(0,0,0,0.4)] transition-all duration-700 min-w-[280px] sm:min-w-[320px] transform hover:scale-105 animate-pulse"
+                  <Link
+                    to="/post-job"
+                    className="group relative bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-500 text-white font-inter font-black py-6 px-8 sm:px-12 rounded-2xl text-lg sm:text-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] hover:shadow-[0_35px_70px_rgba(0,0,0,0.4)] transition-all duration-700 min-w-[280px] sm:min-w-[320px] transform hover:scale-105 animate-pulse inline-flex items-center justify-center"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-3">
                       <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,7 +307,7 @@ const JobsPage = () => {
                       </svg>
                       Post a Job
                     </span>
-                  </button>
+                  </Link>
                   
                   <button
                     onClick={() => {

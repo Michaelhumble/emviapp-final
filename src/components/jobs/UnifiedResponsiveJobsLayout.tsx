@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getIndustryRoute } from '@/utils/industryRouteMap';
 
 interface UnifiedResponsiveJobsLayoutProps {
@@ -329,11 +329,10 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 z-40">
         <div className="text-center">
           <p className="font-inter font-bold mb-2">Ready to hire the best talent?</p>
-          <Button
-            onClick={() => navigate('/post-job')}
-            className="bg-white text-purple-600 hover:bg-gray-100 font-inter font-black py-2 px-6 rounded-full"
-          >
-            Post Your Job FREE
+          <Button asChild className="bg-white text-purple-600 hover:bg-gray-100 font-inter font-black py-2 px-6 rounded-full">
+            <Link to="/post-job">
+              Post Your Job FREE
+            </Link>
           </Button>
         </div>
       </div>
