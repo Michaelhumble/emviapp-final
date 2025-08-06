@@ -6,13 +6,28 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { ChatIcon } from './ChatIcon';
+import { Link } from 'react-router-dom';
 
 interface Message {
   id: string;
   content: string;
   sender: 'user' | 'assistant';
   timestamp: Date;
+  hasActions?: boolean; // New field for CTA buttons
 }
+
+// Helper function to detect if message should have action buttons
+const shouldShowActions = (content: string): boolean => {
+  const actionTriggers = [
+    'sign up', 'signup', 'create account', 'register',
+    'sign in', 'signin', 'login', 'log in',
+    'post a job', 'post job', 'hire', 'find talent',
+    'sell salon', 'sell your salon', 'list salon'
+  ];
+  
+  const lowerContent = content.toLowerCase();
+  return actionTriggers.some(trigger => lowerContent.includes(trigger));
+};
 
 interface ChatWindowProps {
   isOpen: boolean;
@@ -112,7 +127,8 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         id: `assistant-${Date.now()}`,
         content: data.message || "✨ I'm here to help! How can I assist you today?",
         sender: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        hasActions: shouldShowActions(data.message || "")
       };
       
       setMessages(prev => prev.filter(msg => !msg.content.includes("thinking...")).concat([response]));
@@ -123,7 +139,8 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         id: `error-${Date.now()}`,
         content: "✨ I'm experiencing a brief moment to think better! Please try again. I'm here and ready to help! 🌟",
         sender: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        hasActions: false
       };
       
       setMessages(prev => prev.filter(msg => !msg.content.includes("thinking...")).concat([errorResponse]));
@@ -271,14 +288,40 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                           </div>
                         </div>
                       ) : (
-                        <>
+                        <div>
                           <p className="text-sm leading-relaxed">{message.content}</p>
                           <p className={`text-xs mt-1 ${
                             message.sender === 'user' ? 'text-orange-100' : 'text-orange-400'
                           }`}>
                             {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
-                        </>
+                          
+                          {/* CTA Action Buttons for Sunshine */}
+                          {message.sender === 'assistant' && message.hasActions && (
+                            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-orange-100">
+                              <Link to="/auth/signup?redirect=%2F">
+                                <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs px-3 py-1">
+                                  ✨ Sign Up
+                                </Button>
+                              </Link>
+                              <Link to="/auth/signin?redirect=%2F">
+                                <Button variant="outline" size="sm" className="border-purple-200 text-purple-700 hover:bg-purple-50 text-xs px-3 py-1">
+                                  Sign In
+                                </Button>
+                              </Link>
+                              <Link to="/post-job">
+                                <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs px-3 py-1">
+                                  💼 Post Job
+                                </Button>
+                              </Link>
+                              <Link to="/jobs">
+                                <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs px-3 py-1">
+                                  Browse Jobs
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </motion.div>

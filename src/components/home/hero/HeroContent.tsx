@@ -107,64 +107,21 @@ const HeroContent = ({
         </motion.p>
 
         <motion.div
-          className={`flex flex-col items-center gap-4 ${isMobile ? 'mt-10 mb-8' : 'mt-10 mb-6'}`}
+          className={`flex justify-center ${isMobile ? 'mt-10 mb-8' : 'mt-10 mb-6'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Primary Action Buttons */}
-          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center gap-4`}>
-            {/* Post a Job Button - Primary CTA */}
-            <Link to="/post-job">
-              <Button 
-                size="lg" 
-                className={`font-inter font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl ${
-                  isMobile 
-                    ? 'px-12 py-7 text-lg' 
-                    : 'px-16 py-10 text-2xl'
-                }`}
-              >
-                💼 Post a Job
-              </Button>
-            </Link>
-            
-            {/* Create Account Button - Secondary CTA */}
-            <Link to="/auth/signup?redirect=%2F">
-              <Button 
-                size="lg" 
-                className={`font-inter font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-purple-700 hover:to-pink-600 shadow-2xl shadow-black/40 hover:shadow-black/50 transition-all duration-300 transform hover:scale-105 rounded-2xl ${
-                  isMobile 
-                    ? 'px-10 py-7 text-lg' 
-                    : 'px-14 py-10 text-2xl'
-                }`}
-              >
-                ✨ Create Your Free Account
-              </Button>
-            </Link>
-          </div>
-          
-          {/* Secondary CTAs */}
-          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center gap-4`}>
-            <Link to="/auth/signin?redirect=%2F">
-              <Button 
-                variant="outline"
-                size={isMobile ? "default" : "lg"}
-                className="bg-white/20 backdrop-blur-sm border-white/40 text-white hover:bg-white/30 hover:text-white font-inter font-semibold transition-all duration-300"
-              >
-                Welcome Back! Sign In
-              </Button>
-            </Link>
-            
-            <Link to="/jobs">
-              <Button 
-                variant="ghost"
-                size={isMobile ? "default" : "lg"}
-                className="text-white/90 hover:text-white hover:bg-white/10 font-inter font-medium underline-offset-4 hover:underline"
-              >
-                See All Jobs – No Account Needed
-              </Button>
-            </Link>
-          </div>
+          {/* Simple Browse Jobs CTA */}
+          <Link to="/jobs">
+            <Button 
+              variant="outline"
+              size="lg"
+              className="bg-white/20 backdrop-blur-sm border-white/40 text-white hover:bg-white/30 hover:text-white font-inter font-semibold transition-all duration-300 px-12 py-6 text-lg rounded-2xl"
+            >
+              Browse Jobs
+            </Button>
+          </Link>
         </motion.div>
         
         {/* Subtle Vietnamese line */}
