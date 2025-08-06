@@ -193,12 +193,23 @@ export const ChatSystem = () => {
               `
             }}
           >
+            {/* Sunbeam Background Effect */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[28px]">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-32 bg-gradient-radial from-orange-200/20 via-orange-100/10 to-transparent blur-xl opacity-60"></div>
+              <div className="absolute top-4 left-8 w-2 h-16 bg-gradient-to-b from-orange-300/30 to-transparent blur-sm transform rotate-12 opacity-40"></div>
+              <div className="absolute top-6 right-12 w-1 h-12 bg-gradient-to-b from-yellow-300/25 to-transparent blur-sm transform -rotate-12 opacity-30"></div>
+            </div>
+
             {/* Header */}
-            <div 
-              className="text-white p-4 sm:p-6 flex justify-between items-center"
+            <motion.div 
+              className="text-white p-4 sm:p-6 flex justify-between items-center relative z-10"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
               style={{
-                background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%)',
-                borderRadius: '28px 28px 0 0'
+                background: 'linear-gradient(135deg, #FFA726 0%, #FF8F00 50%, #FFA726 100%)',
+                borderRadius: '28px 28px 0 0',
+                boxShadow: '0 4px 12px rgba(255, 167, 38, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
               }}
             >
               <div className="flex items-center space-x-4">
@@ -212,10 +223,28 @@ export const ChatSystem = () => {
                   <span className="text-3xl">☀️</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-base sm:text-lg">Little Sunshine</h3>
+                  <motion.h3 
+                    className="font-bold text-base sm:text-lg drop-shadow-sm"
+                    initial={{ x: -10, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    Little Sunshine
+                  </motion.h3>
                   <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-emerald-300 rounded-full"></div>
-                    <p className="text-orange-100 text-xs sm:text-sm">Inspired by Sunshine ☀️</p>
+                    <motion.div 
+                      className="w-2 h-2 bg-yellow-200 rounded-full"
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    <motion.p 
+                      className="text-orange-50 text-xs sm:text-sm font-medium drop-shadow-sm"
+                      initial={{ x: -10, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      Inspired by Sunshine ☀️
+                    </motion.p>
                   </div>
                 </div>
               </div>
@@ -233,7 +262,7 @@ export const ChatSystem = () => {
               ref={chatContainerRef}
               className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 relative"
               style={{
-                background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.4), rgba(255, 255, 255, 0.6))',
+                background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.3), rgba(255, 255, 255, 0.8))',
                 backdropFilter: 'blur(20px)'
               }}
             >
@@ -400,12 +429,15 @@ export const ChatSystem = () => {
             </div>
 
             {/* 🎛️ INPUT SECTION */}
-            <div 
+            <motion.div 
               className="p-3 sm:p-6 relative"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
               style={{
-                background: 'rgba(255, 255, 255, 0.8)',
+                background: 'rgba(255, 255, 255, 0.9)',
                 backdropFilter: 'blur(30px)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                borderTop: '1px solid rgba(255, 167, 38, 0.1)',
                 borderRadius: '0 0 28px 28px'
               }}
             >
