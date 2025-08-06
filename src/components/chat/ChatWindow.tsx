@@ -71,6 +71,18 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
     setInput('');
     setIsLoading(true);
 
+    // Add thinking indicator immediately
+    const thinkingMessage: Message = {
+      id: `thinking-${Date.now()}`,
+      content: "thinking...",
+      sender: 'assistant',
+      timestamp: new Date()
+    };
+    
+    setTimeout(() => {
+      setMessages(prev => [...prev, thinkingMessage]);
+    }, 300);
+
     try {
       console.log('🌟 Sending message to GPT-4.1 Sunshine:', currentInput);
       console.log('🌟 Enhanced conversation context with', messages.length, 'messages');
@@ -103,7 +115,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, response]);
+      setMessages(prev => prev.filter(msg => !msg.content.includes("thinking...")).concat([response]));
     } catch (error) {
       console.error('🌟 Chat error:', error);
       
@@ -114,7 +126,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, errorResponse]);
+      setMessages(prev => prev.filter(msg => !msg.content.includes("thinking...")).concat([errorResponse]));
     } finally {
       setIsLoading(false);
     }
@@ -142,14 +154,30 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
           damping: 25,
         }}
       >
-        {/* Header */}
-        <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 p-3 sm:p-4 text-white">
+        {/* Header with thinking pulse effect */}
+        <motion.div 
+          className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 p-3 sm:p-4 text-white"
+          animate={isLoading ? {
+            boxShadow: [
+              "0 0 20px rgba(255, 165, 0, 0.3)",
+              "0 0 30px rgba(255, 165, 0, 0.6)",
+              "0 0 20px rgba(255, 165, 0, 0.3)",
+            ],
+          } : {}}
+          transition={{
+            duration: 2,
+            repeat: isLoading ? Infinity : 0,
+            ease: "easeInOut",
+          }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
               <ChatIcon size={isMobile ? 24 : 28} />
               <div>
                 <h3 className="font-bold text-base sm:text-lg">Little Sunshine</h3>
-                <p className="text-xs text-orange-100">GPT-4.1 Premium AI ✨</p>
+                <p className="text-xs text-orange-100">
+                  {isLoading ? "🧠 GPT-4.1 Premium AI - Thinking..." : "GPT-4.1 Premium AI ✨"}
+                </p>
               </div>
             </div>
             
@@ -172,7 +200,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
               </Button>
             </div>
           </div>
-        </div>
+          </motion.div>
 
         {/* Chat content */}
         {!isMinimized && (
@@ -183,7 +211,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
             transition={{ duration: 0.3 }}
           >
             {/* Messages */}
-            <ScrollArea className="h-64 sm:h-80 p-3 sm:p-4">
+            <ScrollArea className="h-80 sm:h-96 p-3 sm:p-4">
               <div className="space-y-3 sm:space-y-4">
                 {messages.map((message) => (
                   <motion.div
@@ -200,42 +228,61 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
                           : 'bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 text-gray-800'
                       }`}
                     >
-                      <p className="text-sm leading-relaxed">{message.content}</p>
-                      <p className={`text-xs mt-1 ${
-                        message.sender === 'user' ? 'text-orange-100' : 'text-orange-400'
-                      }`}>
-                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                      {message.content === "thinking..." ? (
+                        <div className="flex items-center space-x-3 py-1">
+                          {/* Animated thinking dots */}
+                          <div className="flex space-x-1">
+                            {[...Array(3)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                className="w-2.5 h-2.5 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full"
+                                animate={{
+                                  scale: [1, 1.4, 1],
+                                  opacity: [0.4, 1, 0.4],
+                                }}
+                                transition={{
+                                  duration: 1.2,
+                                  repeat: Infinity,
+                                  delay: i * 0.15,
+                                  ease: "easeInOut",
+                                }}
+                              />
+                            ))}
+                          </div>
+                          
+                          {/* Sparkle effect */}
+                          <motion.div
+                            className="relative"
+                            animate={{
+                              rotate: [0, 360],
+                            }}
+                            transition={{
+                              duration: 3,
+                              repeat: Infinity,
+                              ease: "linear",
+                            }}
+                          >
+                            <span className="text-orange-400 text-sm">✨</span>
+                          </motion.div>
+                          
+                          <div className="flex flex-col">
+                            <span className="text-xs text-orange-600 font-medium">Little Sunshine is thinking...</span>
+                            <span className="text-xs text-orange-400 italic">Using GPT-4.1 Premium AI</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-sm leading-relaxed">{message.content}</p>
+                          <p className={`text-xs mt-1 ${
+                            message.sender === 'user' ? 'text-orange-100' : 'text-orange-400'
+                          }`}>
+                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </motion.div>
                 ))}
-                {isLoading && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-start"
-                  >
-                    <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl">
-                      <div className="flex space-x-1">
-                        {[...Array(3)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            className="w-2 h-2 bg-orange-400 rounded-full"
-                            animate={{
-                              scale: [1, 1.5, 1],
-                              opacity: [0.5, 1, 0.5],
-                            }}
-                            transition={{
-                              duration: 1,
-                              repeat: Infinity,
-                              delay: i * 0.2,
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
