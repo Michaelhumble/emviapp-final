@@ -61,7 +61,7 @@ const SocialCommercePost: React.FC<SocialCommercePostProps> = ({
   const tipAmounts = [5, 10, 25, 50, 100];
 
   return (
-    <Card className="bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 border-purple-200 overflow-hidden">
+    <Card className="bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 border-purple-200 overflow-hidden shadow-lg lg:shadow-xl hover:shadow-2xl transition-shadow duration-300">
       <CardContent className="p-0">
         {/* Header */}
         <div className="p-4 border-b border-purple-100">
@@ -100,21 +100,27 @@ const SocialCommercePost: React.FC<SocialCommercePostProps> = ({
         <div className="p-4">
           <p className="text-gray-700 mb-3">{post.content}</p>
           
-          {/* Images */}
+          {/* Images - Enhanced for Desktop */}
           {post.images.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 mb-4 rounded-xl overflow-hidden">
+            <div className={`mb-4 rounded-xl overflow-hidden ${
+              post.images.length === 1 
+                ? 'aspect-video' 
+                : 'grid grid-cols-2 gap-2 lg:gap-3'
+            }`}>
               {post.images.slice(0, 4).map((image, index) => (
-                <div key={index} className="relative aspect-square">
+                <div key={index} className="relative aspect-square group">
                   <img 
                     src={image} 
                     alt={`Post ${index + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
                   />
                   {index === 3 && post.images.length > 4 && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <span className="text-white font-semibold">+{post.images.length - 4}</span>
+                      <span className="text-white font-semibold text-lg">+{post.images.length - 4}</span>
                     </div>
                   )}
+                  {/* Desktop hover overlay */}
+                  <div className="hidden lg:block absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </div>
               ))}
             </div>
@@ -208,18 +214,18 @@ const SocialCommercePost: React.FC<SocialCommercePostProps> = ({
               <BookOpen className="h-4 w-4 text-blue-500" />
               Featured Products
             </h5>
-            <div className="grid grid-cols-2 gap-3">
-              {post.affiliateProducts.slice(0, 2).map((product) => (
-                <div key={product.id} className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              {post.affiliateProducts.slice(0, 3).map((product) => (
+                <div key={product.id} className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-lg transition-all duration-300 cursor-pointer group">
                   <img 
                     src={product.image} 
                     alt={product.name}
-                    className="w-full h-20 object-cover rounded mb-2"
+                    className="w-full h-20 lg:h-24 object-cover rounded mb-2 group-hover:scale-105 transition-transform duration-300"
                   />
                   <p className="font-medium text-sm text-gray-900 truncate">{product.name}</p>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-sm font-semibold text-green-600">${product.price}</span>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
                       {product.commission}% back
                     </Badge>
                   </div>

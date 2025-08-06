@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Users, Heart } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 import { useCommunityData } from '@/hooks/useCommunityData';
@@ -86,75 +87,132 @@ const Community = () => {
         />
       </div>
 
-      {/* Phase 3: AI-Powered Viral Growth Engine */}
-      <div className="px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
-          {/* Left Sidebar - FOMO & AI Insights */}
-          <div className="lg:col-span-3 space-y-6">
+      {/* Phase 3: Desktop-Optimized Viral Growth Engine */}
+      <div className="px-4 lg:px-8 py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-16 gap-4 lg:gap-8 max-w-[1600px] mx-auto">
+          {/* Left Sidebar - AI & FOMO (Desktop: 4 cols, Mobile: full width) */}
+          <div className="xl:col-span-4 space-y-6">
             <AISmartRecommendations />
             <SuccessWall 
               onSignUp={handleJoinNow}
               onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
             />
-            <BeautyBattlesLeaderboard />
           </div>
 
-          {/* Main Content - Enhanced Social Commerce */}
-          <div className="lg:col-span-6 space-y-6">
+          {/* Main Content - Enhanced Social Commerce (Desktop: 8 cols, Mobile: full width) */}
+          <div className="xl:col-span-8 space-y-6">
+            {/* Desktop Hero Section */}
+            <div className="hidden lg:block mb-8">
+              <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl p-8 text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="relative z-10">
+                  <h1 className="text-4xl font-bold mb-4">Beauty Community Hub</h1>
+                  <p className="text-xl text-purple-100 mb-6">Where talent meets opportunity. Connect, create, and earn.</p>
+                  <div className="flex gap-4">
+                    <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
+                      Start Creating
+                    </Button>
+                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                      Join Community
+                    </Button>
+                  </div>
+                </div>
+                <div className="absolute top-4 right-4 opacity-20">
+                  <div className="w-32 h-32 bg-white rounded-full blur-2xl" />
+                </div>
+              </div>
+            </div>
+
             <PersonalizedSmartFeed 
               onSignUp={handleJoinNow}
               onCreatePost={() => handleCreatePost('story')}
               onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
             />
             
-            {/* Featured Social Commerce Post */}
-            <SocialCommercePost 
-              post={{
-                id: 'featured-1',
-                user: {
-                  name: 'Sarah Chen',
-                  avatar: '/api/placeholder/48/48',
-                  isVerified: true,
-                  specialties: ['Nail Art', 'Color Theory']
-                },
-                content: 'Just finished this autumn-inspired nail design! 🍂 The gradient technique took 2 hours but the result is absolutely stunning. Book me for similar looks!',
-                images: ['/api/placeholder/300/300', '/api/placeholder/300/300'],
-                serviceOffering: {
-                  name: 'Autumn Gradient Nails',
-                  price: 85,
-                  duration: '2 hours',
-                  available: true
-                },
-                tipJar: {
-                  enabled: true,
-                  goal: 100,
-                  current: 47
-                },
-                affiliateProducts: [
-                  {
-                    id: '1',
-                    name: 'Premium Nail Polish Set',
-                    price: 45,
-                    commission: 15,
-                    image: '/api/placeholder/100/100'
+            {/* Enhanced Social Commerce Post for Desktop */}
+            <div className="lg:bg-gradient-to-br lg:from-purple-50 lg:via-white lg:to-pink-50 lg:p-6 lg:rounded-2xl lg:border lg:border-purple-200">
+              <SocialCommercePost 
+                post={{
+                  id: 'featured-1',
+                  user: {
+                    name: 'Sarah Chen',
+                    avatar: '/api/placeholder/48/48',
+                    isVerified: true,
+                    specialties: ['Nail Art', 'Color Theory']
+                  },
+                  content: 'Just finished this autumn-inspired nail design! 🍂 The gradient technique took 2 hours but the result is absolutely stunning. Book me for similar looks!',
+                  images: ['/api/placeholder/400/400', '/api/placeholder/400/400'],
+                  serviceOffering: {
+                    name: 'Autumn Gradient Nails',
+                    price: 85,
+                    duration: '2 hours',
+                    available: true
+                  },
+                  tipJar: {
+                    enabled: true,
+                    goal: 100,
+                    current: 47
+                  },
+                  affiliateProducts: [
+                    {
+                      id: '1',
+                      name: 'Premium Nail Polish Set',
+                      price: 45,
+                      commission: 15,
+                      image: '/api/placeholder/120/120'
+                    },
+                    {
+                      id: '2',
+                      name: 'Professional Nail Tools',
+                      price: 65,
+                      commission: 20,
+                      image: '/api/placeholder/120/120'
+                    }
+                  ],
+                  engagement: {
+                    likes: 234,
+                    comments: 45,
+                    shares: 12,
+                    bookings: 8
                   }
-                ],
-                engagement: {
-                  likes: 234,
-                  comments: 45,
-                  shares: 12,
-                  bookings: 8
-                }
-              }}
-              onBook={(postId) => toast.success("Booking request sent!")}
-              onTip={(postId, amount) => toast.success(`Tipped $${amount}! Thank you for supporting creators.`)}
-              onLike={(postId) => toast.success("Post liked!")}
-              onShare={(postId) => toast.success("Post shared!")}
-            />
+                }}
+                onBook={(postId) => toast.success("Booking request sent!")}
+                onTip={(postId, amount) => toast.success(`Tipped $${amount}! Thank you for supporting creators.`)}
+                onLike={(postId) => toast.success("Post liked!")}
+                onShare={(postId) => toast.success("Post shared!")}
+              />
+            </div>
+
+            {/* Desktop Live Stats Bar */}
+            <div className="hidden lg:block">
+              <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-green-600">2.4M</p>
+                      <p className="text-sm text-gray-600">Community Earnings</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-blue-600">15,892</p>
+                      <p className="text-sm text-gray-600">Jobs Matched</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-purple-600">98.2%</p>
+                      <p className="text-sm text-gray-600">Success Rate</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-pink-600">Live</p>
+                      <p className="text-sm text-gray-600">Real-time Updates</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          {/* Right Sidebar - VIP & Viral Growth */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* Right Sidebar - VIP & Viral Growth (Desktop: 4 cols, Mobile: full width) */}
+          <div className="xl:col-span-4 space-y-6">
+            <BeautyBattlesLeaderboard />
             <ViralReferralEngine />
             <VipLounge />
             <ProgressStreakTracker />
@@ -163,7 +221,7 @@ const Community = () => {
         </div>
       </div>
 
-      {/* Real-Time FOMO Notifications Overlay */}
+      {/* Real-Time FOMO Notifications Overlay - Enhanced for Desktop */}
       <RealTimeFOMONotifications 
         onNotificationClick={(notification) => {
           toast.success(`Opening ${notification.title}`);
