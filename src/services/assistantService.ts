@@ -23,11 +23,18 @@ export const processUserInput = async (
   userLanguage?: string
 ): Promise<AssistantResponse> => {
   try {
-    // Sunshine chat removed - using fallback
-    const fallbackMessage = "AI service temporarily unavailable";
+    // Call the sunshine-chat edge function
+    const { data, error } = await supabase.functions.invoke('sunshine-chat', {
+      body: { message: userInput }
+    });
+
+    if (error) {
+      console.error('Sunshine AI error:', error);
+      throw error;
+    }
 
     return {
-      message: fallbackMessage,
+      message: data.message || "Hi, I am Sunshine, what's your name? Em biết nói tiếng Việt nữa đó!",
       bookingMatches: undefined
     };
     
