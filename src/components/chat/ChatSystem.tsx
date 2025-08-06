@@ -575,53 +575,10 @@ export const ChatSystem = () => {
                 transition={{ delay: 0.5 }}
               >
                 {[
-                  { 
-                    icon: Mic, 
-                    action: () => setShowVoiceChat(true), 
-                    color: 'from-purple-500 to-purple-600', 
-                    title: 'Voice Chat',
-                    href: null
-                  },
-                  { 
-                    icon: Camera, 
-                    action: () => setShowPhotoUpload(true), 
-                    color: 'from-blue-500 to-blue-600', 
-                    title: 'Photo Upload',
-                    href: null
-                  },
-                  { 
-                    icon: () => (
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zM2.93 17.5c-.84-.15-1.43-.715-1.43-1.5v-2.64A24.905 24.905 0 0010 15c4.046 0 7.894-.896 11.5-2.64V16c0 .785-.59 1.34-1.43 1.5l-8.05 1.46c-.363.066-.737.066-1.1 0L2.93 17.5z" clipRule="evenodd" />
-                      </svg>
-                    ), 
-                    action: () => window.open('/jobs', '_blank'), 
-                    color: 'from-green-500 to-emerald-600', 
-                    title: 'Browse Jobs',
-                    href: '/jobs'
-                  },
-                  { 
-                    icon: () => (
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.25 2A2.25 2.25 0 002 4.25v2.5A2.25 2.25 0 004.25 9h2.5A2.25 2.25 0 009 6.75v-2.5A2.25 2.25 0 006.75 2h-2.5zm0 9A2.25 2.25 0 002 13.25v2.5A2.25 2.25 0 004.25 18h2.5A2.25 2.25 0 009 15.75v-2.5A2.25 2.25 0 006.75 11h-2.5zm9-9A2.25 2.25 0 0011 4.25v2.5A2.25 2.25 0 0013.25 9h2.5A2.25 2.25 0 0018 6.75v-2.5A2.25 2.25 0 0015.75 2h-2.5zm0 9A2.25 2.25 0 0011 13.25v2.5A2.25 2.25 0 0013.25 18h2.5A2.25 2.25 0 0018 15.75v-2.5A2.25 2.25 0 0015.75 11h-2.5z" clipRule="evenodd" />
-                      </svg>
-                    ), 
-                    action: () => window.open('/salons', '_blank'), 
-                    color: 'from-pink-500 to-rose-600', 
-                    title: 'Find Salons',
-                    href: '/salons'
-                  },
-                  { 
-                    icon: () => (
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
-                      </svg>
-                    ), 
-                    action: () => window.open('/artists', '_blank'), 
-                    color: 'from-orange-500 to-orange-600', 
-                    title: 'View Artists',
-                    href: '/artists'
-                  }
+                  { icon: Mic, action: () => setShowVoiceChat(true), color: 'from-purple-500 to-purple-600', title: 'Voice Chat' },
+                  { icon: Camera, action: () => setShowPhotoUpload(true), color: 'from-blue-500 to-blue-600', title: 'Photo Upload' },
+                  { icon: Palette, action: () => setShowAIImageGen(true), color: 'from-pink-500 to-pink-600', title: 'AI Generation' },
+                  { icon: Crown, action: () => setShowPremiumFeatures(true), color: 'from-yellow-500 to-orange-500', title: 'Premium' }
                 ].map((feature, index) => (
                   <motion.button
                     key={index}
@@ -636,32 +593,6 @@ export const ChatSystem = () => {
                   >
                     <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                     <feature.icon className="w-3 h-3 sm:w-4 sm:h-4 relative z-10" />
-                  </motion.button>
-                ))}
-              </motion.div>
-
-              {/* Quick Action Messages */}
-              <motion.div 
-                className="flex gap-2 mb-3 sm:mb-4 overflow-x-auto pb-1"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-              >
-                {[
-                  { text: "Find nail jobs near me", icon: "💅" },
-                  { text: "Book a salon service", icon: "✨" },
-                  { text: "Career advice", icon: "💼" },
-                  { text: "Beauty tips", icon: "💄" }
-                ].map((quickAction, index) => (
-                  <motion.button
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setInput(quickAction.text)}
-                    className="flex-shrink-0 px-3 py-2 bg-white/70 hover:bg-white/90 text-gray-700 text-xs rounded-full border border-gray-200 transition-all duration-200 flex items-center gap-1.5"
-                  >
-                    <span>{quickAction.icon}</span>
-                    <span className="whitespace-nowrap">{quickAction.text}</span>
                   </motion.button>
                 ))}
               </motion.div>
@@ -695,13 +626,22 @@ export const ChatSystem = () => {
                 </div>
                 
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
                   disabled={!input.trim() || loading}
-                  className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  className="p-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 relative overflow-hidden group"
+                  style={{
+                    background: input.trim() 
+                      ? 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%)'
+                      : 'rgba(156, 163, 175, 0.5)',
+                    boxShadow: input.trim() 
+                      ? '0 8px 25px rgba(255, 107, 0, 0.4)'
+                      : '0 4px 15px rgba(156, 163, 175, 0.2)'
+                  }}
                 >
-                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <div className="absolute inset-0 bg-white/20 transform rotate-45 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+                  <Send className="w-5 h-5 text-white relative z-10" />
                 </motion.button>
               </div>
             </div>
