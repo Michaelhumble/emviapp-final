@@ -78,13 +78,199 @@ const Community = () => {
   };
   return (
     <div className="min-h-screen bg-background text-foreground relative">
-      {/* FOMO Engagement Section - THE HOOK */}
-      <div className="px-8 py-8">
-        <FOMOEngagement 
-          onJoinNow={handleJoinNow}
-          onViewChallenge={handleViewContest}
-          onViewLeaderboard={() => document.getElementById('top-performers')?.scrollIntoView({ behavior: 'smooth' })}
-        />
+      {/* Premium Sunrise Hero Section - Viral Energy */}
+      <div className="relative overflow-hidden">
+        {/* Sunrise Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-orange-300 to-pink-400">
+          <div className="absolute inset-0 bg-gradient-to-t from-yellow-200/30 via-transparent to-pink-200/40" />
+        </div>
+        
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-white/40 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.4, 1, 0.4],
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration: 4 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Live Stats Bar - Celebration Style */}
+        <div className="relative px-4 md:px-8 pt-6 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-7xl mx-auto"
+          >
+            <div className="bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30 p-4 shadow-2xl">
+              <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
+                {/* Online Now - Pulsing Dot */}
+                <motion.div 
+                  className="flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <motion.div
+                    className="w-3 h-3 bg-green-400 rounded-full shadow-lg"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      boxShadow: [
+                        "0 0 5px rgba(34, 197, 94, 0.5)",
+                        "0 0 20px rgba(34, 197, 94, 0.8)",
+                        "0 0 5px rgba(34, 197, 94, 0.5)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <span className="text-green-800 font-bold text-sm md:text-base">
+                    🔥 1,847 online now
+                  </span>
+                </motion.div>
+
+                {/* Posts Today - Sparkle Effect */}
+                <motion.div 
+                  className="flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  >
+                    ✨
+                  </motion.div>
+                  <span className="text-orange-800 font-bold text-sm md:text-base">
+                    342 posts today
+                  </span>
+                </motion.div>
+
+                {/* Earnings - Glow Effect */}
+                <motion.div 
+                  className="flex items-center gap-2 bg-gradient-to-r from-yellow-300/30 to-orange-300/30 rounded-full px-4 py-2"
+                  whileHover={{ scale: 1.05 }}
+                  animate={{
+                    boxShadow: [
+                      "0 0 10px rgba(251, 191, 36, 0.3)",
+                      "0 0 25px rgba(251, 191, 36, 0.6)",
+                      "0 0 10px rgba(251, 191, 36, 0.3)"
+                    ]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <span className="text-2xl">💰</span>
+                  <span className="text-yellow-800 font-bold text-sm md:text-base">
+                    $12,456 earned today
+                  </span>
+                </motion.div>
+
+                {/* Success Rate - Bounce Effect */}
+                <motion.div 
+                  className="flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <span className="text-2xl">🎯</span>
+                  <span className="text-pink-800 font-bold text-sm md:text-base">
+                    98.2% success rate
+                  </span>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative px-4 md:px-8 py-8 md:py-12">
+          <div className="max-w-7xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
+                <span className="bg-gradient-to-r from-purple-800 via-pink-700 to-orange-600 bg-clip-text text-transparent">
+                  Beauty Creators
+                </span>
+                <br />
+                <span className="text-orange-800">Making Bank! 💎</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-orange-700 mb-8 max-w-3xl mx-auto font-medium">
+                Join 12,000+ creators earning serious money from their beauty skills
+              </p>
+            </motion.div>
+
+            {/* Viral CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
+            >
+              <motion.button
+                onClick={handleJoinNow}
+                className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white px-8 py-4 rounded-full text-lg font-bold shadow-2xl transform transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 20px 40px rgba(168, 85, 247, 0.4)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                animate={{
+                  boxShadow: [
+                    "0 10px 30px rgba(168, 85, 247, 0.3)",
+                    "0 15px 40px rgba(168, 85, 247, 0.5)",
+                    "0 10px 30px rgba(168, 85, 247, 0.3)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                🚀 Start Earning Now
+              </motion.button>
+              
+              <motion.button
+                onClick={handleViewContest}
+                className="bg-white/90 backdrop-blur-sm hover:bg-white text-orange-600 border-2 border-orange-300 hover:border-orange-400 px-8 py-4 rounded-full text-lg font-bold shadow-xl transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                🏆 Join Contest
+              </motion.button>
+            </motion.div>
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-wrap items-center justify-center gap-4 text-orange-700"
+            >
+              <div className="flex -space-x-2">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 border-3 border-white shadow-lg"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.7 + i * 0.1 }}
+                  />
+                ))}
+              </div>
+              <span className="font-semibold">💜 Trusted by thousands worldwide</span>
+            </motion.div>
+          </div>
+        </div>
       </div>
 
       {/* Phase 3: Desktop-Optimized Viral Growth Engine */}
@@ -101,24 +287,107 @@ const Community = () => {
 
           {/* Main Content - Enhanced Social Commerce (Desktop: 8 cols, Mobile: full width) */}
           <div className="xl:col-span-8 space-y-6">
-            {/* Desktop Hero Section */}
+            {/* Desktop Enhanced Hero Section - Premium Sunrise */}
             <div className="hidden lg:block mb-8">
-              <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl p-8 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="relative z-10">
-                  <h1 className="text-4xl font-bold mb-4">Beauty Community Hub</h1>
-                  <p className="text-xl text-purple-100 mb-6">Where talent meets opportunity. Connect, create, and earn.</p>
-                  <div className="flex gap-4">
-                    <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
-                      Start Creating
-                    </Button>
-                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                      Join Community
-                    </Button>
-                  </div>
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-200 via-orange-300 to-pink-400 p-8 shadow-2xl">
+                {/* Sparkle Animation Background */}
+                <div className="absolute inset-0">
+                  {[...Array(20)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-1 h-1 bg-white/60 rounded-full"
+                      style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                      }}
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0.5, 1.5, 0.5],
+                      }}
+                      transition={{
+                        duration: 2 + Math.random() * 2,
+                        repeat: Infinity,
+                        delay: Math.random() * 3,
+                      }}
+                    />
+                  ))}
                 </div>
-                <div className="absolute top-4 right-4 opacity-20">
-                  <div className="w-32 h-32 bg-white rounded-full blur-2xl" />
+                
+                <div className="relative z-10 grid grid-cols-2 gap-8 items-center">
+                  <div>
+                    <motion.h1 
+                      className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-800 via-pink-700 to-orange-600 bg-clip-text text-transparent"
+                      animate={{ 
+                        backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] 
+                      }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                    >
+                      Beauty Creators Making Bank! 💎
+                    </motion.h1>
+                    <p className="text-xl text-orange-800 mb-6 font-medium">
+                      Join the most profitable beauty community. Start earning from your passion today.
+                    </p>
+                    <div className="flex gap-4">
+                      <motion.button
+                        onClick={() => handleCreatePost('story')}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 rounded-full font-bold shadow-xl transition-all duration-300"
+                        whileHover={{ 
+                          scale: 1.05,
+                          boxShadow: "0 15px 35px rgba(168, 85, 247, 0.4)"
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        🚀 Start Creating
+                      </motion.button>
+                      <motion.button
+                        onClick={handleJoinNow}
+                        className="bg-white/90 backdrop-blur-sm hover:bg-white text-orange-600 border-2 border-orange-300 px-8 py-3 rounded-full font-bold shadow-lg transition-all duration-300"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        💰 Join Community
+                      </motion.button>
+                    </div>
+                  </div>
+                  
+                  {/* Live Stats Display */}
+                  <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-6 border border-white/30">
+                    <h3 className="text-orange-800 font-bold text-lg mb-4 text-center">🔥 Live Success Stats</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <motion.div 
+                        className="text-center"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+                      >
+                        <p className="text-3xl font-bold text-green-700">$2.4M</p>
+                        <p className="text-sm text-green-600">Monthly Earnings</p>
+                      </motion.div>
+                      <motion.div 
+                        className="text-center"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                      >
+                        <p className="text-3xl font-bold text-blue-700">15,892</p>
+                        <p className="text-sm text-blue-600">Success Stories</p>
+                      </motion.div>
+                      <motion.div 
+                        className="text-center"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                      >
+                        <p className="text-3xl font-bold text-purple-700">98.2%</p>
+                        <p className="text-sm text-purple-600">Success Rate</p>
+                      </motion.div>
+                      <motion.div 
+                        className="text-center"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+                      >
+                        <p className="text-3xl font-bold text-pink-700">🔴 Live</p>
+                        <p className="text-sm text-pink-600">Real-time Updates</p>
+                      </motion.div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -183,30 +452,118 @@ const Community = () => {
               />
             </div>
 
-            {/* Desktop Live Stats Bar */}
+            {/* Desktop Live Stats Bar - Celebration Mode */}
             <div className="hidden lg:block">
-              <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-4 gap-6">
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-green-600">2.4M</p>
-                      <p className="text-sm text-gray-600">Community Earnings</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-blue-600">15,892</p>
-                      <p className="text-sm text-gray-600">Jobs Matched</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-purple-600">98.2%</p>
-                      <p className="text-sm text-gray-600">Success Rate</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-pink-600">Live</p>
-                      <p className="text-sm text-gray-600">Real-time Updates</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-amber-100 via-orange-100 to-pink-100 border-2 border-orange-200 rounded-2xl p-6 shadow-xl relative overflow-hidden"
+              >
+                {/* Shimmer Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                />
+                
+                <div className="relative grid grid-cols-4 gap-6">
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ scale: 1.05 }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 0 0 rgba(34, 197, 94, 0)",
+                        "0 0 0 8px rgba(34, 197, 94, 0.1)",
+                        "0 0 0 0 rgba(34, 197, 94, 0)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <p className="text-4xl font-bold text-green-600 mb-1">💰$2.4M</p>
+                    <p className="text-sm text-green-700 font-medium">Community Earnings</p>
+                    <motion.div 
+                      className="h-1 bg-green-300 rounded-full mt-2"
+                      animate={{ width: ["0%", "100%"] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    />
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ scale: 1.05 }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 0 0 rgba(59, 130, 246, 0)",
+                        "0 0 0 8px rgba(59, 130, 246, 0.1)",
+                        "0 0 0 0 rgba(59, 130, 246, 0)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                  >
+                    <p className="text-4xl font-bold text-blue-600 mb-1">🎯15,892</p>
+                    <p className="text-sm text-blue-700 font-medium">Jobs Matched</p>
+                    <motion.div 
+                      className="h-1 bg-blue-300 rounded-full mt-2"
+                      animate={{ width: ["0%", "100%"] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                    />
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ scale: 1.05 }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 0 0 rgba(168, 85, 247, 0)",
+                        "0 0 0 8px rgba(168, 85, 247, 0.1)",
+                        "0 0 0 0 rgba(168, 85, 247, 0)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                  >
+                    <p className="text-4xl font-bold text-purple-600 mb-1">✨98.2%</p>
+                    <p className="text-sm text-purple-700 font-medium">Success Rate</p>
+                    <motion.div 
+                      className="h-1 bg-purple-300 rounded-full mt-2"
+                      animate={{ width: ["0%", "100%"] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+                    />
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ scale: 1.05 }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 0 0 rgba(236, 72, 153, 0)",
+                        "0 0 0 8px rgba(236, 72, 153, 0.1)",
+                        "0 0 0 0 rgba(236, 72, 153, 0)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+                  >
+                    <motion.p 
+                      className="text-4xl font-bold text-pink-600 mb-1"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      🔴 Live
+                    </motion.p>
+                    <p className="text-sm text-pink-700 font-medium">Real-time Updates</p>
+                    <motion.div 
+                      className="h-1 bg-pink-300 rounded-full mt-2"
+                      animate={{ 
+                        background: [
+                          "linear-gradient(90deg, #f9a8d4, #f9a8d4)",
+                          "linear-gradient(90deg, #f9a8d4, #ec4899, #f9a8d4)",
+                          "linear-gradient(90deg, #f9a8d4, #f9a8d4)"
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </motion.div>
+                </div>
+              </motion.div>
             </div>
           </div>
 
