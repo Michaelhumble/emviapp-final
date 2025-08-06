@@ -275,14 +275,16 @@ const ProfessionalChatSystem: React.FC = () => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed bottom-6 right-6 z-50 w-96 h-[600px] max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]"
             style={{
-              background: 'linear-gradient(145deg, #fef7ed 0%, #fed7aa 20%, #fdba74 100%)',
-              borderRadius: '24px',
-              border: '1px solid rgba(148, 163, 184, 0.2)',
+              background: 'linear-gradient(145deg, #ffffff 0%, #fefefe 100%)',
+              borderRadius: '28px',
+              border: '1px solid rgba(255, 255, 255, 0.8)',
               boxShadow: `
-                0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(255, 255, 255, 0.8),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9)
+                0 32px 64px -12px rgba(0, 0, 0, 0.18),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1),
+                0 2px 4px rgba(251, 191, 36, 0.1)
               `,
+              backdropFilter: 'blur(20px)',
             }}
           >
             {/* Header */}
@@ -293,8 +295,9 @@ const ProfessionalChatSystem: React.FC = () => {
               className="relative overflow-hidden"
               style={{
                 background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
-                borderRadius: '24px 24px 0 0',
-                padding: '20px',
+                borderRadius: '28px 28px 0 0',
+                padding: '24px',
+                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)',
               }}
             >
               {/* Animated background patterns */}
@@ -343,14 +346,14 @@ const ProfessionalChatSystem: React.FC = () => {
                   </motion.div>
 
                   <div>
-                    <h3 className="text-white font-bold text-lg">Little Sunshine</h3>
+                    <h3 className="text-white font-bold text-lg tracking-wide drop-shadow-sm">Little Sunshine</h3>
                     <div className="flex items-center space-x-2">
                       <motion.div
                         className="w-2 h-2 bg-green-300 rounded-full"
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <p className="text-white/90 text-sm">Online</p>
+                      <p className="text-white/95 text-sm font-medium tracking-wide drop-shadow-sm">Online</p>
                     </div>
                   </div>
                 </div>
@@ -372,7 +375,7 @@ const ProfessionalChatSystem: React.FC = () => {
               className="flex-1 p-6 overflow-y-auto space-y-4"
               style={{
                 height: 'calc(100% - 140px)',
-                background: 'linear-gradient(to bottom, #fef7ed 0%, #fed7aa 50%, #fdba74 100%)',
+                background: 'linear-gradient(to bottom, #fafafa 0%, #ffffff 100%)',
               }}
             >
               {messages.map((message, index) => (
@@ -384,18 +387,19 @@ const ProfessionalChatSystem: React.FC = () => {
                   className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 relative ${
+                    className={`max-w-[85%] rounded-2xl px-5 py-4 relative ${
                       message.isUser
-                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
-                        : 'bg-white border border-gray-200 text-gray-800 shadow-md'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
+                        : 'bg-white border border-gray-100 text-gray-800 shadow-lg'
                     }`}
                     style={{
                       boxShadow: message.isUser
-                        ? '0 4px 12px rgba(99, 102, 241, 0.3)'
-                        : '0 2px 8px rgba(0, 0, 0, 0.1)',
+                        ? '0 8px 25px rgba(251, 146, 60, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                        : '0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                      backdropFilter: 'blur(10px)',
                     }}
                   >
-                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    <p className="text-sm leading-relaxed font-medium">{message.text}</p>
                     
                     {/* CTA Buttons */}
                     {message.ctaButtons && message.ctaButtons.length > 0 && (
