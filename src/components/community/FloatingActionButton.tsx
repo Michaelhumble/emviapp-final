@@ -23,13 +23,17 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
     { type: 'video', icon: Video, label: 'Video', color: 'from-red-500 to-pink-500' },
   ];
 
-  const handleMainButtonClick = () => {
+  const handleMainButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!user) {
       toast.error('Please sign in to create posts');
       return;
     }
     // Direct action: open post modal immediately
     onCreatePost('story');
+    toast.success('Opening post creator... ✨');
   };
 
   const handlePostTypeSelect = (type: string) => {
@@ -56,7 +60,7 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
         )}
       </AnimatePresence>
 
-      <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
+      <div className={`fixed bottom-6 right-6 z-[60] ${className}`}>
         {/* Post Type Options - Only show on long press/right click */}
         <AnimatePresence>
           {isExpanded && (
@@ -111,22 +115,15 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
         >
           <Button
             onClick={handleMainButtonClick}
-            onMouseDown={(e) => {
-              // Long press for options menu
-              const timeoutId = setTimeout(() => {
-                setIsExpanded(true);
-              }, 500);
-              
-              const handleMouseUp = () => {
-                clearTimeout(timeoutId);
-                document.removeEventListener('mouseup', handleMouseUp);
-              };
-              
-              document.addEventListener('mouseup', handleMouseUp);
-            }}
-            className="h-16 w-16 rounded-full bg-gradient-to-br from-primary via-purple-600 to-pink-600 shadow-2xl hover:shadow-3xl transition-all duration-300 border-0 focus:ring-4 focus:ring-primary/30 focus:outline-none relative overflow-hidden group"
+            className="h-16 w-16 rounded-full bg-gradient-to-br from-primary via-purple-600 to-pink-600 shadow-2xl hover:shadow-3xl transition-all duration-300 border-0 focus:ring-4 focus:ring-primary/30 focus:outline-none relative overflow-hidden group pointer-events-auto"
             size="icon"
             aria-label="Create new post"
+            style={{ 
+              position: 'relative',
+              zIndex: 999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
           >
             {/* Animated gradient overlay */}
             <motion.div

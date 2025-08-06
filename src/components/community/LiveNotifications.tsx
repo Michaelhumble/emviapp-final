@@ -171,7 +171,7 @@ const LiveNotifications: React.FC<LiveNotificationsProps> = ({
     <>
       {/* Floating Notification Bell */}
       <motion.div
-        className="fixed top-4 right-4 z-50"
+        className="fixed top-4 right-4 z-40"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1 }}
@@ -202,7 +202,7 @@ const LiveNotifications: React.FC<LiveNotificationsProps> = ({
             initial={{ opacity: 0, x: 300 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 300 }}
-            className="fixed top-16 right-4 z-50 w-80 bg-white rounded-lg shadow-2xl border"
+            className="fixed top-16 right-4 z-45 w-80 bg-white rounded-lg shadow-2xl border"
           >
             <div className="p-4 border-b">
               <div className="flex items-center justify-between">
