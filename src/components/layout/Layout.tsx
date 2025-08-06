@@ -16,14 +16,15 @@ interface LayoutProps {
   children: ReactNode;
   hideNavbar?: boolean;
   hideFooter?: boolean;
+  hideMobileNav?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFooter = false }) => {
+const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFooter = false, hideMobileNav = false }) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Always show mobile bottom navbar on all pages 
-  const showMobileNav = isMobile;
+  // Show mobile bottom navbar only if not explicitly hidden
+  const showMobileNav = isMobile && !hideMobileNav;
 
   return (
     <PerformanceProvider>
