@@ -86,9 +86,9 @@ const CustomerDashboard = () => {
                       <Lock className="h-3 w-3 mr-1" />
                       <span>Unlock Full Access with a Free Account</span>
                     </div>
-                    <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                    <Link to="/auth/signup">
                       <Button variant="ghost" size="sm">Sign Up</Button>
-                    </a>
+                    </Link>
                   </div>
                 )}
                 {isLoggedIn && (
@@ -134,9 +134,9 @@ const CustomerDashboard = () => {
                       <Lock className="h-3 w-3 mr-1" />
                       <span>Unlock Full Access with a Free Account</span>
                     </div>
-                    <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                    <Link to="/auth/signup">
                       <Button variant="ghost" size="sm">Sign Up</Button>
-                    </a>
+                    </Link>
                   </div>
                 )}
               </CardFooter>
@@ -151,9 +151,9 @@ const CustomerDashboard = () => {
                     <Lock className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <h3 className="font-medium mb-2">Premium Content</h3>
                     <p className="text-sm text-gray-500 mb-3">Sign up to unlock exclusive member content</p>
-                    <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                    <Link to="/auth/signup">
                       <Button size="sm">Create Free Account</Button>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -170,11 +170,11 @@ const CustomerDashboard = () => {
                 </p>
               </CardContent>
               <CardFooter>
-                <a href={isLoggedIn ? "/analysis" : "http://emviapp-final.lovable.app/auth/signup?redirect=%2F"} className="w-full">
+                <Link to={isLoggedIn ? "/analysis" : "/auth/signup"} className="w-full">
                   <Button variant="outline" size="sm" className="w-full">
                     {isLoggedIn ? "View Trends" : "Sign Up to View"}
                   </Button>
-                </a>
+                </Link>
               </CardFooter>
             </Card>
           </motion.div>

@@ -217,27 +217,17 @@ const Footer: React.FC = () => {
                 {[
                   { to: "/", label: "Home" },
                   { to: "/blog", label: "Blog" },
-                  { href: "http://emviapp-final.lovable.app/jobs", label: "Jobs" },
+                  { to: "/jobs", label: "Jobs" },
                   { to: "/salons", label: "Salons for Sale" }
                 ].map((link, index) => (
                   <motion.li key={index} whileHover={{ x: 5 }}>
-                    {link.to ? (
-                      <Link 
-                        to={link.to}
-                        className="text-purple-200 hover:text-white transition-all duration-300 text-sm group flex items-center"
-                      >
-                        <span className="w-0 group-hover:w-4 h-0.5 bg-purple-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                        {link.label}
-                      </Link>
-                    ) : (
-                      <a 
-                        href={link.href}
-                        className="text-purple-200 hover:text-white transition-all duration-300 text-sm group flex items-center"
-                      >
-                        <span className="w-0 group-hover:w-4 h-0.5 bg-purple-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                        {link.label}
-                      </a>
-                    )}
+                    <Link 
+                      to={link.to}
+                      className="text-purple-200 hover:text-white transition-all duration-300 text-sm group flex items-center"
+                    >
+                      <span className="w-0 group-hover:w-4 h-0.5 bg-purple-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                      {link.label}
+                    </Link>
                   </motion.li>
                 ))}
               </ul>

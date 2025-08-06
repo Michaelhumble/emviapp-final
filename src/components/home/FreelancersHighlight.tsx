@@ -107,7 +107,7 @@ const FreelancersHighlight = () => {
                 No freelancers found. Be the first to join!
               </p>
               <Button className="mt-4" asChild>
-                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">Sign Up as a Freelancer</a>
+                <Link to="/auth/signup">Sign Up as a Freelancer</Link>
               </Button>
             </div>
           ) : (

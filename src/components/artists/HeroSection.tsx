@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import FOMOCTAWrapper from "@/components/cta/FOMOCTAWrapper";
 
 const HeroSection = () => {
   return (
@@ -18,11 +19,15 @@ const HeroSection = () => {
           <p className="text-lg text-gray-600 mb-10 font-sans leading-relaxed">
             Your profile works while you rest. EmviApp promotes your talent with AI.
           </p>
-          <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
-            <Button size="lg" className="font-medium px-8 py-6 text-base">
-              Claim My Artist Profile
-            </Button>
-          </a>
+          <FOMOCTAWrapper
+            fomoText="🔥 2,847 artists hired this month | 156 new opportunities today"
+            trustIndicator="Join 15,000+ verified beauty professionals"
+            primaryText="Claim My Artist Profile"
+            primaryRoute="/auth/signup"
+            intent="signup"
+            showUrgency={true}
+            showTrustBadge={true}
+          />
         </div>
       </motion.div>
     </section>

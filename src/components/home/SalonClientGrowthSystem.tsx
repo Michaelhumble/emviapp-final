@@ -168,8 +168,8 @@ const SalonClientGrowthSystem = () => {
                       
                       {/* CTA button */}
                       <motion.div variants={itemVariants}>
-                        <a 
-                          href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F" 
+                        <Link 
+                          to="/auth/signup"
                           onClick={handleCtaClick}
                           className="block w-full"
                         >
@@ -186,7 +186,7 @@ const SalonClientGrowthSystem = () => {
                               <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
                             </span>
                           </Button>
-                        </a>
+                        </Link>
                       </motion.div>
                     </motion.div>
                   ) : (
@@ -235,8 +235,8 @@ const SalonClientGrowthSystem = () => {
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.2 }}
             >
-              <a 
-                href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+              <Link 
+                to="/auth/signup"
                 className="inline-block"
               >
                 <Button 
@@ -248,7 +248,7 @@ const SalonClientGrowthSystem = () => {
                     <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
                   </span>
                 </Button>
-              </a>
+              </Link>
             </motion.div>
           </div>
         </motion.div>

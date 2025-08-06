@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Crown, Calculator, Star, TrendingUp } from "lucide-react";
+import SmartCTAButton from "@/components/cta/SmartCTAButton";
 
 const FinalCTASection = () => {
   return (
@@ -53,15 +54,13 @@ const FinalCTASection = () => {
               </div>
 
               <div className="space-y-4">
-                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
-                  <Button 
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 text-black hover:from-yellow-500 hover:to-orange-500 font-bold text-lg py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                  >
-                    <Crown className="mr-2 h-5 w-5" />
-                    Apply Now—Free VIP Badge!
-                  </Button>
-                </a>
+                <SmartCTAButton
+                  primaryText="Apply Now—Free VIP Badge!"
+                  primaryRoute="/auth/signup"
+                  intent="signup"
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 text-black hover:from-yellow-500 hover:to-orange-500 font-bold text-lg py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                />
                 
                 <p className="text-sm text-yellow-200">
                   🔥 Limited: First 50 new artists only

@@ -247,14 +247,14 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
                         </motion.div>
                         
                         {/* Industry-specific CTA */}
-                        <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                        <Link to="/auth/signup">
                           <Button
                             size="sm"
                             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xs"
                           >
                             🔥 Claim Your Spot in {displayName}
                           </Button>
-                        </a>
+                        </Link>
                       </div>
                     </CardContent>
                   </Card>
@@ -360,14 +360,14 @@ const PremiumIndustryShowcase: React.FC<PremiumIndustryShowcaseProps> = ({
                     </motion.div>
                     
                     {/* Industry-specific CTA */}
-                    <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                    <Link to="/auth/signup">
                       <Button
                         size="sm"
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xs"
                       >
                         🔥 Claim Your Spot in {displayName}
                       </Button>
-                    </a>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>

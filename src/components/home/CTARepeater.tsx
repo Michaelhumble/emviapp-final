@@ -26,7 +26,7 @@ const CTARepeater = ({
       icon: Sparkles,
       buttonText: "Start Your Journey",
       buttonClass: "bg-white text-purple-600 hover:bg-gray-100",
-      link: "http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+      link: "/auth/signup"
     },
     secondary: {
       bgClass: "bg-gradient-to-r from-emerald-500 to-teal-600",
@@ -53,7 +53,7 @@ const CTARepeater = ({
       icon: ArrowRight,
       buttonText: "Get Started",
       buttonClass: "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700",
-      link: "http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+      link: "/auth/signup"
     }
   };
 

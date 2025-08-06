@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Heart, Sparkles, Quote, Star, ArrowRight } from "lucide-react";
 import { getLanguagePreference, addLanguageChangeListener } from "@/utils/languagePreference";
 
@@ -324,8 +325,8 @@ Chúng ta cùng nhau thay đổi ngành làm đẹp, bắt đầu từ sự yêu
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2 }}
               >
-                <a 
-                  href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+                <Link 
+                  to="/auth/signup"
                   className="inline-block"
                 >
                   <Button
@@ -337,7 +338,7 @@ Chúng ta cùng nhau thay đổi ngành làm đẹp, bắt đầu từ sự yêu
                       <ArrowRight className="h-6 w-6" />
                     </span>
                   </Button>
-                </a>
+                </Link>
               </motion.div>
             </div>
           </motion.div>
