@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Mic, Palette, Volume2, Sparkles, Crown, Clock, Lock } from 'lucide-react';
+import { Camera, Mic, Palette, Volume2, Sparkles, Crown, Clock, Lock, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { isFeatureEnabled, FEATURE_DESCRIPTIONS, type PremiumFeature } from '@/config/premiumFeatures';
 
 interface PremiumFeaturesProps {
+  isOpen: boolean;
+  onClose: () => void;
   onFeatureSelect: (feature: PremiumFeature) => void;
 }
 
-const PremiumFeatures: React.FC<PremiumFeaturesProps> = ({ onFeatureSelect }) => {
+const PremiumFeatures: React.FC<PremiumFeaturesProps> = ({ isOpen, onClose, onFeatureSelect }) => {
   const [activeFeature, setActiveFeature] = useState<PremiumFeature | null>(null);
 
   const featureIcons: Record<PremiumFeature, React.ReactNode> = {
@@ -79,8 +81,38 @@ const PremiumFeatures: React.FC<PremiumFeaturesProps> = ({ onFeatureSelect }) =>
     );
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="p-6 space-y-6">
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-2xl w-full max-w-4xl mx-auto max-h-[90vh] overflow-hidden"
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center p-6 border-b border-gray-100">
+            <div className="flex items-center">
+              <Crown className="w-6 h-6 text-orange-500 mr-2" />
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Premium Features</h2>
+                <p className="text-gray-600 text-sm">Unlock Little Sunshine's full potential</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-120px)]">
       {/* Header */}
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-2">
@@ -148,7 +180,11 @@ const PremiumFeatures: React.FC<PremiumFeaturesProps> = ({ onFeatureSelect }) =>
           Get Notified
         </Button>
       </motion.div>
-    </div>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
