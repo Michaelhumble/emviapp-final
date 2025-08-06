@@ -11,7 +11,10 @@ export const LittleSunshineButton = ({ onClick, isOpen = false }: LittleSunshine
   return (
     <motion.div
       className="fixed bottom-6 right-6 z-[9999]"
-      style={{ pointerEvents: 'auto' }}
+      style={{ 
+        pointerEvents: 'auto',
+        isolation: 'isolate'
+      }}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{

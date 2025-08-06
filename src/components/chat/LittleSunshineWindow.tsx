@@ -157,7 +157,7 @@ export const LittleSunshineWindow = ({ isOpen, onClose }: LittleSunshineWindowPr
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed bottom-24 right-6 z-40"
+        className="fixed bottom-24 right-6 z-[9998]"
         initial={{ scale: 0, opacity: 0, y: 100 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0, opacity: 0, y: 100 }}
