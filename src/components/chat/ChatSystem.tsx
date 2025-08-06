@@ -112,21 +112,86 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* Compact Mobile-Friendly Little Sunshine Chat Button */}
+      {/* Curious & Enticing Little Sunshine Chat Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-4 right-4 z-50"
+            className="fixed bottom-6 right-4 z-50"
           >
+            {/* Subtle Pulsing Glow */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{
+                background: 'radial-gradient(circle, rgba(255, 140, 0, 0.4), transparent 70%)',
+                filter: 'blur(8px)',
+                width: '56px',
+                height: '56px'
+              }}
+            />
+
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ 
+                scale: 1.1,
+                y: -2,
+                boxShadow: "0 10px 25px rgba(255, 140, 0, 0.5)"
+              }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(true)}
-              className="relative w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+              className="relative w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full shadow-lg transition-all duration-300 overflow-hidden"
+              animate={{
+                y: [0, -2, 0],
+                boxShadow: [
+                  "0 4px 15px rgba(255, 140, 0, 0.3)",
+                  "0 8px 25px rgba(255, 140, 0, 0.4)",
+                  "0 4px 15px rgba(255, 140, 0, 0.3)"
+                ]
+              }}
+              transition={{
+                y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
+                boxShadow: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+              }}
             >
+              {/* Curious Sparkle Effect */}
+              <motion.div
+                className="absolute top-1 right-1 w-1 h-1 bg-white rounded-full"
+                animate={{
+                  scale: [0, 1, 0],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: 0.5,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              <motion.div
+                className="absolute top-2 left-1 w-0.5 h-0.5 bg-white rounded-full"
+                animate={{
+                  scale: [0, 1, 0],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: 1.2,
+                  ease: "easeInOut"
+                }}
+              />
+
               {/* Inner Rotating Ring */}
               <motion.div
                 className="absolute inset-1 rounded-full border border-white/30"
@@ -144,21 +209,41 @@ export const ChatSystem = () => {
                 }}
               />
 
-              {/* White Sun Icon */}
-              <div className="flex items-center justify-center w-full h-full relative z-10">
+              {/* White Sun Icon with Gentle Bounce */}
+              <motion.div 
+                className="flex items-center justify-center w-full h-full relative z-10"
+                animate={{
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
                 <span 
                   className="text-4xl"
                   style={{
-                    filter: 'brightness(0) invert(1)', // Makes emoji white
+                    filter: 'brightness(0) invert(1)',
                     WebkitFilter: 'brightness(0) invert(1)'
                   }}
                 >
                   ☀️
                 </span>
-              </div>
+              </motion.div>
               
-              {/* Smaller Online Dot */}
-              <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white" />
+              {/* Pulsing Online Dot */}
+              <motion.div 
+                className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white"
+                animate={{
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
             </motion.button>
           </motion.div>
         )}
