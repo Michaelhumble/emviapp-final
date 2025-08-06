@@ -444,13 +444,13 @@ const About = () => {
           </div>
         </motion.section>
 
-        {/* Our Journey Timeline - Enhanced */}
+        {/* Our Journey Timeline - Mobile-First Responsive Design */}
         <motion.section 
           className="mb-32"
           {...fadeInUp}
         >
           <motion.h2 
-            className="text-5xl md:text-6xl font-serif mb-20 text-center"
+            className="text-4xl sm:text-5xl md:text-6xl font-serif mb-12 sm:mb-20 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
           >
@@ -459,7 +459,171 @@ const About = () => {
             </span>
           </motion.h2>
           
-          <div className="relative">
+          {/* Mobile Timeline Design (hidden on desktop) */}
+          <div className="block md:hidden relative px-4">
+            {/* Mobile timeline line - left side */}
+            <div className="absolute left-8 top-0 w-1 h-full">
+              <div className="absolute inset-0 bg-gradient-to-b from-orange-500 via-amber-500 to-yellow-500 rounded-full shadow-lg" />
+              <div className="absolute inset-0 bg-gradient-to-b from-orange-400 via-amber-400 to-yellow-400 rounded-full blur-sm animate-pulse" />
+            </div>
+            
+            <div className="space-y-8">
+              {/* Mobile 2014 */}
+              <motion.div 
+                className="flex items-start gap-6"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <motion.div 
+                  className="relative w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full border-2 border-white shadow-xl z-10 flex-shrink-0 mt-4"
+                  whileInView={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full blur-sm animate-pulse" />
+                </motion.div>
+                <motion.div 
+                  className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-orange-200/50 flex-1"
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <motion.div 
+                    className="text-4xl font-black mb-3 bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    2014
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">
+                    {isVietnamese ? 'Ý Tưởng Ra Đời' : 'The Idea is Born'}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {isVietnamese 
+                      ? 'Một tầm nhìn để tạo ra những kết nối có ý nghĩa trong cộng đồng làm đẹp bắt đầu hình thành.'
+                      : 'A vision to create meaningful connections within the beauty community begins to take shape.'
+                    }
+                  </p>
+                </motion.div>
+              </motion.div>
+
+              {/* Mobile 2015 */}
+              <motion.div 
+                className="flex items-start gap-6"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                <motion.div 
+                  className="relative w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full border-2 border-white shadow-xl z-10 flex-shrink-0 mt-4"
+                  whileInView={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full blur-sm animate-pulse" />
+                </motion.div>
+                <motion.div 
+                  className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-orange-200/50 flex-1"
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <motion.div 
+                    className="text-4xl font-black mb-3 bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    2015
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">
+                    {isVietnamese ? 'Xây Dựng Đầu Tiên' : 'First Build'}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {isVietnamese 
+                      ? 'Phát triển nền tảng ban đầu tập trung vào việc hiểu những nhu cầu độc đáo của nghệ sĩ và chủ salon.'
+                      : 'Initial platform development focusing on understanding the unique needs of artists and salon owners.'
+                    }
+                  </p>
+                </motion.div>
+              </motion.div>
+
+              {/* Mobile 2016-2023 */}
+              <motion.div 
+                className="flex items-start gap-6"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <motion.div 
+                  className="relative w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full border-2 border-white shadow-xl z-10 flex-shrink-0 mt-4"
+                  whileInView={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full blur-sm animate-pulse" />
+                </motion.div>
+                <motion.div 
+                  className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-orange-200/50 flex-1"
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <motion.div 
+                    className="text-3xl font-black mb-3 bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    2016-23
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">
+                    {isVietnamese ? 'Lặp Lại Và Phát Triển' : 'Iteration and Growth'}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {isVietnamese 
+                      ? 'Những năm học hỏi, điều chỉnh, và phát triển để phục vụ cộng đồng tốt hơn thông qua cải tiến liên tục.'
+                      : 'Years of learning, adjusting, and evolving to better serve our community through continuous improvement.'
+                    }
+                  </p>
+                </motion.div>
+              </motion.div>
+
+              {/* Mobile 2025 */}
+              <motion.div 
+                className="flex items-start gap-6"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <motion.div 
+                  className="relative w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full border-2 border-white shadow-xl z-10 flex-shrink-0 mt-4"
+                  whileInView={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full blur-sm animate-pulse" />
+                </motion.div>
+                <motion.div 
+                  className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-orange-200/50 flex-1"
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <motion.div 
+                    className="text-4xl font-black mb-3 bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    2025
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">
+                    {isVietnamese ? 'Một Chương Mới' : 'A New Chapter'}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {isVietnamese 
+                      ? 'Mở rộng tầm nhìn với các tính năng nâng cao, kết nối sâu hơn, và cam kết mới với cộng đồng.'
+                      : 'Expanding our vision with enhanced features, deeper connections, and a renewed commitment to our community.'
+                    }
+                  </p>
+                </motion.div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Desktop Timeline Design (hidden on mobile) */}
+          <div className="hidden md:block relative">
             {/* Enhanced timeline line with glow */}
             <div className="absolute left-1/2 transform -translate-x-1/2 w-2 h-full">
               <div className="absolute inset-0 bg-gradient-to-b from-orange-500 via-amber-500 to-yellow-500 rounded-full shadow-lg" />
@@ -467,7 +631,7 @@ const About = () => {
             </div>
             
             <div className="space-y-24">
-              {/* 2014 */}
+              {/* Desktop 2014 */}
               <motion.div 
                 className="flex items-center justify-between"
                 initial={{ opacity: 0, x: -50 }}
@@ -511,7 +675,7 @@ const About = () => {
                 <div className="w-5/12"></div>
               </motion.div>
 
-              {/* 2015 */}
+              {/* Desktop 2015 */}
               <motion.div 
                 className="flex items-center justify-between"
                 initial={{ opacity: 0, x: 50 }}
@@ -555,7 +719,7 @@ const About = () => {
                 </div>
               </motion.div>
 
-              {/* 2016-2023 */}
+              {/* Desktop 2016-2023 */}
               <motion.div 
                 className="flex items-center justify-between"
                 initial={{ opacity: 0, x: -50 }}
@@ -599,7 +763,7 @@ const About = () => {
                 <div className="w-5/12"></div>
               </motion.div>
 
-              {/* 2025 */}
+              {/* Desktop 2025 */}
               <motion.div 
                 className="flex items-center justify-between"
                 initial={{ opacity: 0, x: 50 }}
