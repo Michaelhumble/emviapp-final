@@ -79,7 +79,6 @@ export default defineConfig(({ mode }) => ({
           ],
           // Dashboard components (heavy)
           'dashboard': [
-            '@/pages/dashboard/artist/BookingCalendar',
             '@/pages/dashboard/artist/BookingCalendarNew',
             '@/pages/dashboard/artist/Inbox'
           ],

@@ -1,6 +1,7 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
+import { BookingNotificationProvider } from '@/components/notifications/BookingNotificationProvider';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
@@ -100,6 +101,7 @@ function App() {
       <GeneralErrorBoundary>
         <SecurityProvider>
           <AuthProvider>
+            <BookingNotificationProvider>
             <SalonProvider>
               <SubscriptionProvider>
                 <NotificationProvider>
@@ -236,6 +238,7 @@ function App() {
               </NotificationProvider>
             </SubscriptionProvider>
           </SalonProvider>
+            </BookingNotificationProvider>
         </AuthProvider>
       </SecurityProvider>
       </GeneralErrorBoundary>
