@@ -179,15 +179,15 @@ serve(async (req) => {
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
+        'User-Agent': 'EmviApp/1.0'
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14', // 🚀 FLAGSHIP MODEL - Most capable and intelligent
+        model: 'gpt-4o-mini', // Using reliable model
         messages: messages,
-        max_tokens: 4000, // Enhanced response length
-        temperature: 0.8, // Slightly more creative for warmer responses
-        presence_penalty: 0.2, // Encourage topic diversity
-        frequency_penalty: 0.1, // Reduce repetition
-        top_p: 0.95 // Enhanced creativity control
+        max_tokens: 1000,
+        temperature: 0.8,
+        presence_penalty: 0.2,
+        frequency_penalty: 0.1
       }),
     });
 
