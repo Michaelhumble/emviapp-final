@@ -145,7 +145,7 @@ export const ChatSystem = () => {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed bottom-24 right-4 z-50 sm:bottom-6 sm:right-6"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -176,9 +176,10 @@ export const ChatSystem = () => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden
-                      w-80 h-[550px] sm:w-96 sm:h-[650px] 
-                      max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]"
+            className="fixed bottom-4 right-4 left-4 z-50 flex flex-col overflow-hidden
+                      sm:bottom-6 sm:right-6 sm:left-auto sm:w-96 
+                      h-[calc(100vh-120px)] sm:h-[650px] 
+                      w-auto sm:max-w-[calc(100vw-3rem)]"
             style={{
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(40px)',
@@ -194,7 +195,7 @@ export const ChatSystem = () => {
           >
             {/* Header */}
             <div 
-              className="text-white p-6 flex justify-between items-center"
+              className="text-white p-4 sm:p-6 flex justify-between items-center"
               style={{
                 background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%)',
                 borderRadius: '28px 28px 0 0'
@@ -211,10 +212,10 @@ export const ChatSystem = () => {
                   <span className="text-3xl">☀️</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">Little Sunshine</h3>
+                  <h3 className="font-bold text-base sm:text-lg">Little Sunshine</h3>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-emerald-300 rounded-full"></div>
-                    <p className="text-orange-100 text-sm">Inspired by Sunshine ☀️</p>
+                    <p className="text-orange-100 text-xs sm:text-sm">Inspired by Sunshine ☀️</p>
                   </div>
                 </div>
               </div>
@@ -230,7 +231,7 @@ export const ChatSystem = () => {
             {/* 💬 MESSAGES CONTAINER */}
             <div 
               ref={chatContainerRef}
-              className="flex-1 p-6 overflow-y-auto space-y-4 relative"
+              className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 relative"
               style={{
                 background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.4), rgba(255, 255, 255, 0.6))',
                 backdropFilter: 'blur(20px)'
@@ -400,7 +401,7 @@ export const ChatSystem = () => {
 
             {/* 🎛️ INPUT SECTION */}
             <div 
-              className="p-6 relative"
+              className="p-3 sm:p-6 relative"
               style={{
                 background: 'rgba(255, 255, 255, 0.8)',
                 backdropFilter: 'blur(30px)',
@@ -410,7 +411,7 @@ export const ChatSystem = () => {
             >
               {/* Premium Feature Shortcuts */}
               <motion.div 
-                className="flex gap-3 mb-4 overflow-x-auto pb-1"
+                className="flex gap-2 sm:gap-3 mb-3 sm:mb-4 overflow-x-auto pb-1"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
