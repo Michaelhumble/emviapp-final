@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Sparkles, Users, Building2, Briefcase } from "lucide-react";
 
 const signUpSchema = z.object({
@@ -310,6 +310,19 @@ export const EnhancedSignUpForm = () => {
                   "Join Our Beauty Community"
                 )}
               </Button>
+              
+              {/* Sign In Link for Existing Users */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600">
+                  Already have an account?{" "}
+                  <Link 
+                    to="/auth/signin" 
+                    className="font-semibold text-rose-600 hover:text-rose-700 transition-colors duration-200 underline-offset-2 hover:underline"
+                  >
+                    Welcome Back! Sign In
+                  </Link>
+                </p>
+              </div>
             </form>
           </CardContent>
         </Card>
