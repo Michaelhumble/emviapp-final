@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, Sparkles, Heart } from 'lucide-react';
+import { MessageSquare, Sparkles, Heart, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface NewChatButtonProps {
@@ -70,7 +70,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
           }}
           className="absolute -top-10 right-6"
         >
-          <Sparkles className="w-3 h-3 text-blue-400" />
+          <Sun className="w-3 h-3 text-yellow-400" />
         </motion.div>
       </div>
 

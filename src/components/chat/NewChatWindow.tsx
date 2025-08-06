@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Mic, MicOff, Bot, User, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Send, Mic, MicOff, Sun, User, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -193,7 +193,7 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
                   }}
                   className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30"
                 >
-                  <Bot className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                  <Sun className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </motion.div>
                 <div>
                   <h3 className="font-bold text-white text-lg md:text-xl">
@@ -249,11 +249,11 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
                       : 'bg-gradient-to-br from-orange-400 to-pink-500'
                     }
                   `}>
-                    {message.isUser ? (
-                      <User className="w-3 h-3 md:w-4 md:h-4 text-white" />
-                    ) : (
-                      <Bot className="w-3 h-3 md:w-4 md:h-4 text-white" />
-                    )}
+                  {message.isUser ? (
+                    <User className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  ) : (
+                    <Sun className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  )}
                   </div>
 
                   {/* Message Bubble */}
