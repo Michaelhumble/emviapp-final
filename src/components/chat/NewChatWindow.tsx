@@ -185,11 +185,15 @@ export const NewChatWindow = ({ isOpen, onClose }: NewChatWindowProps) => {
                 <motion.div
                   animate={{ 
                     rotate: [0, 360],
-                    scale: [1, 1.1, 1]
+                    scale: [1, 1.2, 1],
+                    x: [0, 3, -3, 0],
+                    y: [0, -2, 2, 0]
                   }}
                   transition={{ 
-                    rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                    x: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
+                    y: { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
                   }}
                   className="w-10 h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 shadow-lg"
                 >
