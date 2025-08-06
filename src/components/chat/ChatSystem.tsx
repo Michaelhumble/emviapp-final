@@ -32,7 +32,9 @@ export const ChatSystem = () => {
         body: { message: input }
       });
 
-      // Simulate realistic typing delay
+      console.log('🤖 [SUNSHINE] Response received:', data);
+
+      // Brief realistic typing delay (500ms instead of 1500ms)
       setTimeout(() => {
         setIsTyping(false);
         const botMessage = { 
@@ -41,19 +43,18 @@ export const ChatSystem = () => {
           sender: 'bot' 
         };
         setMessages(prev => [...prev, botMessage]);
-      }, 1500);
+        setLoading(false);
+      }, 500);
     } catch (error) {
-      setTimeout(() => {
-        setIsTyping(false);
-        const errorMessage = { 
-          id: Date.now() + 1, 
-          text: "I'm having trouble right now, but I'm here to help! Try again!", 
-          sender: 'bot' 
-        };
-        setMessages(prev => [...prev, errorMessage]);
-      }, 1000);
-    } finally {
+      console.error('🤖 [SUNSHINE] Error:', error);
+      setIsTyping(false);
       setLoading(false);
+      const errorMessage = { 
+        id: Date.now() + 1, 
+        text: "I'm having trouble right now, but I'm here to help! Try again!", 
+        sender: 'bot' 
+      };
+      setMessages(prev => [...prev, errorMessage]);
     }
   };
 
