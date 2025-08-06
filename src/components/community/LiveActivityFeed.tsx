@@ -1,200 +1,202 @@
 import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Clock, Users, Briefcase, Star, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Heart, Share, UserPlus, Trophy, Zap } from 'lucide-react';
 
 interface ActivityItem {
   id: string;
-  type: 'share' | 'like' | 'referral' | 'leaderboard' | 'hire' | 'join';
-  user: string;
-  action: string;
-  icon: React.ReactNode;
-  color: string;
+  type: 'hiring' | 'booking' | 'match' | 'join';
+  message: string;
+  count?: number;
   timestamp: Date;
+  urgent?: boolean;
 }
 
 const LiveActivityFeed = () => {
-  const [activities, setActivities] = useState<ActivityItem[]>([]);
-  const [currentActivity, setCurrentActivity] = useState<ActivityItem | null>(null);
-
-  // Mock activity data - in real app, this would come from real-time data
-  const mockActivities: Omit<ActivityItem, 'id' | 'timestamp'>[] = [
+  const [activities, setActivities] = useState<ActivityItem[]>([
     {
-      type: 'share',
-      user: 'Sofia',
-      action: 'just shared her success story!',
-      icon: <Share className="w-4 h-4" />,
-      color: 'text-blue-500'
+      id: '1',
+      type: 'hiring',
+      message: 'salons actively hiring',
+      count: 23,
+      timestamp: new Date(),
+      urgent: true
     },
     {
-      type: 'referral',
-      user: 'Maya',
-      action: 'invited 3 friends to EmviApp!',
-      icon: <UserPlus className="w-4 h-4" />,
-      color: 'text-green-500'
+      id: '2',
+      type: 'match',
+      message: 'jobs matched your profile',
+      count: 2,
+      timestamp: new Date(Date.now() - 60000),
+      urgent: true
     },
     {
-      type: 'leaderboard',
-      user: 'Alex',
-      action: 'is climbing the leaderboard!',
-      icon: <TrendingUp className="w-4 h-4" />,
-      color: 'text-purple-500'
+      id: '3',
+      type: 'booking',
+      message: 'new bookings this hour',
+      count: 18,
+      timestamp: new Date(Date.now() - 120000)
     },
     {
-      type: 'hire',
-      user: 'Emma',
-      action: 'just got hired at Dream Salon!',
-      icon: <Trophy className="w-4 h-4" />,
-      color: 'text-yellow-500'
-    },
-    {
-      type: 'like',
-      user: 'James',
-      action: 'hit 100 likes on his post!',
-      icon: <Heart className="w-4 h-4" />,
-      color: 'text-red-500'
-    },
-    {
+      id: '4',
       type: 'join',
-      user: 'Lisa',
-      action: 'just joined the community!',
-      icon: <Zap className="w-4 h-4" />,
-      color: 'text-orange-500'
+      message: 'beauty pros online now',
+      count: 147,
+      timestamp: new Date(Date.now() - 180000)
     }
-  ];
+  ]);
 
-  // Generate new activities periodically
+  // Simulate real-time updates
   useEffect(() => {
-    const generateActivity = () => {
-      const template = mockActivities[Math.floor(Math.random() * mockActivities.length)];
-      const newActivity: ActivityItem = {
-        ...template,
-        id: Date.now().toString(),
-        timestamp: new Date()
-      };
-      
-      setCurrentActivity(newActivity);
-      setActivities(prev => [newActivity, ...prev.slice(0, 4)]); // Keep last 5 activities
-    };
-
-    // Generate initial activity
-    generateActivity();
-
-    // Generate new activity every 8-15 seconds
     const interval = setInterval(() => {
-      generateActivity();
-    }, Math.random() * 7000 + 8000);
+      setActivities(prev => 
+        prev.map(activity => ({
+          ...activity,
+          count: activity.count ? activity.count + Math.floor(Math.random() * 3) : undefined,
+          timestamp: new Date()
+        }))
+      );
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-hide current activity after 5 seconds
-  useEffect(() => {
-    if (currentActivity) {
-      const timeout = setTimeout(() => {
-        setCurrentActivity(null);
-      }, 5000);
-      return () => clearTimeout(timeout);
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'hiring': return Briefcase;
+      case 'booking': return Star;
+      case 'match': return Users;
+      case 'join': return Users;
+      default: return Clock;
     }
-  }, [currentActivity]);
+  };
+
+  const getColor = (type: string, urgent?: boolean) => {
+    if (urgent) return 'text-red-500';
+    switch (type) {
+      case 'hiring': return 'text-green-500';
+      case 'booking': return 'text-blue-500';
+      case 'match': return 'text-purple-500';
+      case 'join': return 'text-orange-500';
+      default: return 'text-gray-500';
+    }
+  };
+
+  const getBadgeVariant = (urgent?: boolean) => {
+    return urgent ? 'destructive' : 'secondary';
+  };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 pointer-events-none">
-      {/* Current Activity Popup */}
-      <AnimatePresence>
-        {currentActivity && (
+    <Card className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 border-blue-200">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            🔴 Live Activity
+          </CardTitle>
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="mb-4 p-4 bg-background/95 backdrop-blur-lg border border-border/50 rounded-2xl shadow-2xl max-w-sm pointer-events-auto"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            <div className="flex items-center space-x-3">
-              {/* Activity Icon */}
-              <motion.div
-                className={`flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r ${
-                  currentActivity.color.includes('blue') ? 'from-blue-400 to-blue-600' :
-                  currentActivity.color.includes('green') ? 'from-green-400 to-green-600' :
-                  currentActivity.color.includes('purple') ? 'from-purple-400 to-purple-600' :
-                  currentActivity.color.includes('yellow') ? 'from-yellow-400 to-yellow-600' :
-                  currentActivity.color.includes('red') ? 'from-red-400 to-red-600' :
-                  'from-orange-400 to-orange-600'
-                }`}
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0]
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                <span className="text-white">
-                  {currentActivity.icon}
-                </span>
-              </motion.div>
-
-              {/* Activity Text */}
-              <div className="flex-1">
-                <p className="text-sm">
-                  <span className="font-semibold text-foreground">{currentActivity.user}</span>
-                  <span className="text-muted-foreground ml-1">{currentActivity.action}</span>
-                </p>
-                <p className="text-xs text-muted-foreground">just now</p>
-              </div>
-
-              {/* Live Indicator */}
-              <motion.div
-                className="w-2 h-2 bg-green-500 rounded-full"
-                animate={{ 
-                  scale: [1, 1.3, 1],
-                  opacity: [1, 0.6, 1]
-                }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-            </div>
+            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Activity History (Mini) */}
-      <AnimatePresence>
-        {activities.length > 0 && !currentActivity && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="p-3 bg-background/80 backdrop-blur-md border border-border/30 rounded-xl shadow-lg pointer-events-auto"
-          >
-            <div className="flex items-center space-x-2 mb-2">
-              <motion.div
-                className="w-1.5 h-1.5 bg-green-500 rounded-full"
-                animate={{ 
-                  scale: [1, 1.5, 1],
-                  opacity: [1, 0.5, 1]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <span className="text-xs font-medium text-muted-foreground">LIVE ACTIVITY</span>
-            </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        <AnimatePresence>
+          {activities.map((activity, index) => {
+            const Icon = getIcon(activity.type);
+            const colorClass = getColor(activity.type, activity.urgent);
             
-            <div className="space-y-1">
-              {activities.slice(0, 3).map((activity) => (
-                <motion.div
-                  key={activity.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center space-x-2 text-xs"
-                >
-                  <span className={activity.color}>
-                    {activity.icon}
-                  </span>
-                  <span className="text-muted-foreground truncate">
-                    <span className="font-medium">{activity.user}</span> {activity.action}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            return (
+              <motion.div
+                key={activity.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: index * 0.1 }}
+                className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                  activity.urgent 
+                    ? 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:shadow-lg' 
+                    : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    animate={activity.urgent ? { scale: [1, 1.2, 1] } : {}}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    <Icon className={`h-5 w-5 ${colorClass}`} />
+                  </motion.div>
+                  
+                  <div>
+                    <div className="flex items-center gap-2">
+                      {activity.count && (
+                        <motion.span
+                          key={activity.count}
+                          initial={{ scale: 1.2 }}
+                          animate={{ scale: 1 }}
+                          className="font-bold text-xl text-gray-900"
+                        >
+                          {activity.count}
+                        </motion.span>
+                      )}
+                      <span className="text-sm text-gray-600">{activity.message}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mt-1">
+                      <Clock className="h-3 w-3 text-gray-400" />
+                      <span className="text-xs text-gray-400">
+                        {activity.timestamp.toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                      {activity.urgent && (
+                        <Badge variant={getBadgeVariant(activity.urgent)} className="text-xs">
+                          Urgent
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {(activity.type === 'hiring' || activity.type === 'match') && (
+                  <Button 
+                    size="sm"
+                    variant={activity.urgent ? 'default' : 'outline'}
+                    className={
+                      activity.urgent 
+                        ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white pulse-glow' 
+                        : 'border-blue-200 text-blue-600 hover:bg-blue-50'
+                    }
+                  >
+                    {activity.type === 'match' ? 'View Jobs' : 'Apply Now'}
+                    <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                )}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {/* CTA Section */}
+        <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+          <div className="text-center">
+            <p className="text-sm text-gray-600 mb-3">
+              🚀 Don't miss out on these opportunities!
+            </p>
+            <Button 
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold"
+            >
+              Get Priority Alerts
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

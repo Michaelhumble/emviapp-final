@@ -25,6 +25,8 @@ import LiveNotifications from '@/components/community/LiveNotifications';
 import PersonalizedSmartFeed from '@/components/community/PersonalizedSmartFeed';
 import CreatorSpotlight from '@/components/community/CreatorSpotlight';
 import SuccessWall from '@/components/community/SuccessWall';
+import ProgressStreakTracker from '@/components/community/ProgressStreakTracker';
+import LiveActivityFeed from '@/components/community/LiveActivityFeed';
 
 const Community = () => {
   const { user } = useAuth();
@@ -78,46 +80,57 @@ const Community = () => {
         />
       </div>
 
-      {/* Ultra-Compact Hero Section */}
-      <div className="text-center px-8 py-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <Users size={24} className="text-primary/60" />
-            <h1 className="text-2xl font-playfair font-bold text-foreground leading-tight">
-              Beauty Community
-            </h1>
+      {/* Phase 1: FOMO-Driven Layout */}
+      <div className="px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
+          {/* Left Sidebar - FOMO & Progress */}
+          <div className="lg:col-span-3 space-y-6">
+            <SuccessWall 
+              onSignUp={handleJoinNow}
+              onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
+            />
+            <ProgressStreakTracker />
+            <LiveActivityFeed />
           </div>
-          <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-snug font-inter font-medium">
-            Where artists, salons, and clients connect, grow, and inspire—together.
-          </p>
-        </motion.div>
+
+          {/* Main Content - Smart Feed */}
+          <div className="lg:col-span-6">
+            <PersonalizedSmartFeed 
+              onSignUp={handleJoinNow}
+              onCreatePost={() => handleCreatePost('story')}
+              onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
+            />
+          </div>
+
+          {/* Right Sidebar - Creator Spotlight */}
+          <div className="lg:col-span-3">
+            <CreatorSpotlight 
+              onApplyForSpotlight={() => toast.success("Application submitted! We'll review it soon.")}
+              onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
+              onSignUp={handleJoinNow}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Sponsor Spotlight - Clean & Minimal */}
-      <div className="px-8 py-20">
-        <SponsorSpotlight 
-          onSponsorClick={(sponsor) => setShowProfileModal({id: sponsor.id, type: 'sponsor'})} 
-        />
-      </div>
+      {/* Legacy Content - Now Secondary */}
+      <div className="px-8 py-16 bg-gray-50/50">
+        <div className="max-w-7xl mx-auto space-y-16">
+          {/* Top Performers - Compact Display */}
+          <div id="top-performers">
+            <TopPerformersCarousel />
+          </div>
 
-      {/* Top Performers - Elegant Display */}
-      <div id="top-performers" className="px-8 py-16">
-        <TopPerformersCarousel />
-      </div>
-
-      {/* Universal Photo Feed - Main Content */}
-      <div className="px-8 py-16">
-        <UniversalPhotoFeed 
-          onProfileClick={(userId) => setShowProfileModal({id: userId, type: 'user'})}
-          onMessageClick={(userId, userName, userAvatar, userRole) => 
-            setShowMessageModal({id: userId, name: userName, avatar: userAvatar, role: userRole})
-          }
-        />
+          {/* Universal Photo Feed - Secondary Content */}
+          <div>
+            <UniversalPhotoFeed 
+              onProfileClick={(userId) => setShowProfileModal({id: userId, type: 'user'})}
+              onMessageClick={(userId, userName, userAvatar, userRole) => 
+                setShowMessageModal({id: userId, name: userName, avatar: userAvatar, role: userRole})
+              }
+            />
+          </div>
+        </div>
       </div>
 
       {/* Weekly Challenge - Minimalist */}
