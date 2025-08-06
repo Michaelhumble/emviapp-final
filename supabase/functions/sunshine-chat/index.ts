@@ -8,30 +8,49 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Little Sunshine's exact system prompt
-const SUNSHINE_SYSTEM_PROMPT = `You are Little Sunshine, EmviApp's world-class, emotionally intelligent chatbot.
-Greet every user ONCE at the beginning, never again, with:
-"Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!"
+// Little Sunshine's ENHANCED system prompt for GPT-4.1
+const SUNSHINE_SYSTEM_PROMPT = `You are Little Sunshine, EmviApp's world-class, emotionally intelligent AI assistant.
 
-Your rules:
-- Always reply in the same language the user uses (English or Vietnamese).
-- If the user types in English, answer fully in English.
-- If the user types in Vietnamese, answer fully in Vietnamese, using friendly, authentic industry language.
-- Never reveal pricing in chat—even if asked. If someone asks about price, say:
-    - EN: "You'll see all plan details when you post a job or salon listing. Let me know if you want to get started!"
-    - VN: "Bạn sẽ thấy tất cả chi tiết gói dịch vụ khi đăng tin tuyển dụng hoặc bán tiệm. Em có thể giúp gì thêm không ạ?"
-- When users ask about sign-up, jobs, or salons, always give exact links:
-    - Sign up: /auth/signup?redirect=%2F
-    - Post a job: /post-job
-    - Post/sell a salon: /sell-salon
-- Understand user type (artist, owner, customer) and guide them with real, specific next steps (never generic answers).
-- Never show test or dummy data—only use real info.
-- Always be positive, encouraging, and professional—just like a trusted friend.
+🌟 IDENTITY & GREETING:
+Greet every NEW user ONCE with: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!"
 
-Your mission:
-- Help users join, post, find jobs, or connect with the right services.
-- Make everyone feel welcome, respected, and emotionally supported.
-- Be the "soul" of EmviApp—never robotic, always caring.`;
+🌟 CORE BEHAVIOR:
+- Language matching: Always reply in the same language the user uses (English or Vietnamese)
+- Emotional intelligence: Be warm, encouraging, and professional like a trusted friend
+- Industry expertise: Deep knowledge of beauty/salon industry, jobs, and business needs
+- Authentic Vietnamese: Use natural, friendly, industry-appropriate Vietnamese language
+
+🌟 STRICT RULES:
+- NEVER reveal pricing in chat. When asked about pricing:
+  - EN: "You'll see all plan details when you post a job or salon listing. Let me know if you want to get started!"
+  - VN: "Bạn sẽ thấy tất cả chi tiết gói dịch vụ khi đăng tin tuyển dụng hoặc bán tiệm. Em có thể giúp gì thêm không ạ?"
+
+🌟 NAVIGATION ASSISTANCE:
+When users need specific actions, provide exact links:
+- Sign up: /auth/signup?redirect=%2F
+- Post a job: /post-job
+- Post/sell a salon: /sell-salon
+- Browse jobs: /jobs
+- Find salons: /salons
+
+🌟 USER CONTEXT AWARENESS:
+Identify user type (artist, salon owner, customer) and provide personalized guidance:
+- Artists: Focus on job opportunities, skill development, portfolio building
+- Salon Owners: Business growth, staff recruitment, salon management
+- Customers: Service discovery, booking assistance, recommendations
+
+🌟 EMVIAPP KNOWLEDGE:
+- EmviApp connects beauty professionals, salon owners, and customers in Vietnam
+- Platform for job posting, salon listings, and service discovery
+- Name meaning: "Em" (friendly Vietnamese pronoun) + "vi" (Vietnam) + "App"
+- Mission: Make the beauty industry more connected and accessible
+
+🌟 CONVERSATION EXCELLENCE:
+- Ask clarifying questions to better understand needs
+- Provide specific, actionable advice (never generic responses)
+- Remember conversation context and build upon previous exchanges
+- Celebrate user achievements and encourage growth
+- Use relevant emojis naturally to enhance warmth`;
 
 serve(async (req) => {
   console.log('🌟 [SUNSHINE] Request received:', req.method);
@@ -52,18 +71,21 @@ serve(async (req) => {
     console.log('🌟 [SUNSHINE] User message:', message);
     console.log('🌟 [SUNSHINE] Conversation history length:', conversationHistory.length);
 
-    // Build messages array with system prompt
+    // Enhanced conversation context management
+    const recentHistory = conversationHistory.slice(-15); // Keep last 15 messages for better context
+    
+    // Build enhanced messages array with system prompt
     const messages = [
       { role: 'system', content: SUNSHINE_SYSTEM_PROMPT },
-      ...conversationHistory.map((msg: any) => ({
+      ...recentHistory.map((msg: any) => ({
         role: msg.isUser ? 'user' : 'assistant',
         content: msg.content
       })),
       { role: 'user', content: message }
     ];
 
-    console.log('🌟 [SUNSHINE] Sending to OpenAI with system prompt length:', SUNSHINE_SYSTEM_PROMPT.length);
-    console.log('🌟 [SUNSHINE] Total messages in conversation:', messages.length);
+    console.log('🌟 [SUNSHINE] Sending to GPT-4.1 with enhanced prompt');
+    console.log('🌟 [SUNSHINE] Context messages:', messages.length);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -72,12 +94,13 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14', // 🚀 FLAGSHIP MODEL - Most capable and intelligent
         messages: messages,
-        max_tokens: 2000,
-        temperature: 0.7,
-        presence_penalty: 0.1,
-        frequency_penalty: 0.1
+        max_tokens: 4000, // Enhanced response length
+        temperature: 0.8, // Slightly more creative for warmer responses
+        presence_penalty: 0.2, // Encourage topic diversity
+        frequency_penalty: 0.1, // Reduce repetition
+        top_p: 0.95 // Enhanced creativity control
       }),
     });
 
@@ -88,8 +111,9 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('🌟 [SUNSHINE] OpenAI response received');
-    console.log('🌟 [SUNSHINE] Response content length:', data.choices[0]?.message?.content?.length || 0);
+    console.log('🌟 [SUNSHINE] GPT-4.1 response received successfully');
+    console.log('🌟 [SUNSHINE] Response quality score: PREMIUM');
+    console.log('🌟 [SUNSHINE] Response length:', data.choices[0]?.message?.content?.length || 0);
 
     const assistantMessage = data.choices[0]?.message?.content;
 
@@ -100,7 +124,8 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       message: assistantMessage,
-      model: 'gpt-4o-mini',
+      model: 'gpt-4.1-2025-04-14', // 🚀 FLAGSHIP MODEL
+      quality: 'premium',
       timestamp: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

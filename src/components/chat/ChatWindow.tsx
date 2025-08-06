@@ -31,7 +31,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Welcome message
+  // Enhanced welcome message with better context
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: Message = {
@@ -45,7 +45,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         setMessages([welcomeMessage]);
       }, 500);
     }
-  }, [isOpen, messages.length]);
+  }, [isOpen]);
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -63,15 +63,19 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
     setIsLoading(true);
 
     try {
-      console.log('🌟 Sending message to sunshine-chat:', currentInput);
+      console.log('🌟 Sending message to GPT-4.1 Sunshine:', currentInput);
+      console.log('🌟 Enhanced conversation context with', messages.length, 'messages');
       
       const { data, error } = await supabaseBypass.functions.invoke('sunshine-chat', {
         body: {
           message: currentInput,
-          conversationHistory: messages.map(msg => ({
-            content: msg.content,
-            isUser: msg.sender === 'user'
-          }))
+          conversationHistory: messages
+            .filter(msg => msg.id !== 'welcome') // Exclude welcome message from context
+            .slice(-20) // Keep last 20 messages for richer context
+            .map(msg => ({
+              content: msg.content,
+              isUser: msg.sender === 'user'
+            }))
         }
       });
 
@@ -80,11 +84,12 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
         throw error;
       }
 
-      console.log('🌟 Received response:', data);
+      console.log('🌟 GPT-4.1 Premium response received:', data);
+      console.log('🌟 Model used:', data.model, '| Quality:', data.quality);
 
       const response: Message = {
         id: `assistant-${Date.now()}`,
-        content: data.message || "I'm here to help! How can I assist you today?",
+        content: data.message || "✨ I'm here to help! How can I assist you today?",
         sender: 'assistant',
         timestamp: new Date()
       };
@@ -95,7 +100,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
       
       const errorResponse: Message = {
         id: `error-${Date.now()}`,
-        content: "I'm experiencing a brief technical hiccup! Please try again in a moment.",
+        content: "✨ I'm experiencing a brief moment to think better! Please try again. I'm here and ready to help! 🌟",
         sender: 'assistant',
         timestamp: new Date()
       };
@@ -135,7 +140,7 @@ export const ChatWindow = ({ isOpen, onClose }: ChatWindowProps) => {
               <ChatIcon size={28} />
               <div>
                 <h3 className="font-bold text-lg">Little Sunshine</h3>
-                <p className="text-xs text-orange-100">AI Assistant</p>
+                <p className="text-xs text-orange-100">GPT-4.1 Premium AI ✨</p>
               </div>
             </div>
             
