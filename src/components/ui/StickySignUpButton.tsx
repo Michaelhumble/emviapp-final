@@ -72,7 +72,7 @@ const StickySignUpButton = () => {
                 className={`absolute ${isMobile ? 'bottom-16 right-0' : 'bottom-20 right-0'} flex flex-col gap-3`}
               >
                 {/* Sign Up Button */}
-                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+                <Link to="/auth/signup">
                   <Button 
                     className={`
                       ${isMobile ? 'px-6 py-3 text-sm' : 'px-8 py-4 text-base'} 
@@ -88,7 +88,7 @@ const StickySignUpButton = () => {
                   >
                     ✨ Join EmviApp
                   </Button>
-                </a>
+                </Link>
 
                 {/* Browse Jobs */}
                 <Link to="/jobs">

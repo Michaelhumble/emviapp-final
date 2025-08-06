@@ -21,9 +21,9 @@ const CallToAction = () => {
         <div className="flex flex-wrap gap-4 justify-center">
           {!user ? (
             <>
-              <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">
+              <Link to="/auth/signup">
                 <Button size="lg">Get Started</Button>
-              </a>
+              </Link>
               <Link to="/salons">
                 <Button size="lg" variant="outline">Browse Services</Button>
               </Link>
