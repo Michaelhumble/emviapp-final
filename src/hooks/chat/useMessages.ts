@@ -19,29 +19,52 @@ export const useMessages = (recipientId: string) => {
     setMessages(prev => [...prev, message]);
   };
 
-  const simulateAIResponse = (userMessage: string) => {
-    const lowerMessage = userMessage.toLowerCase();
-    let responseContent = AI_RESPONSES.default;
+  const simulateAIResponse = async (userMessage: string) => {
+    try {
+      // Call the new Sunshine edge function
+      const { data, error } = await supabaseBypass.functions.invoke('sunshine-chat', {
+        body: {
+          message: userMessage,
+          conversationHistory: messages.map(msg => ({
+            content: msg.message,
+            isUser: msg.senderId !== 'support-agent'
+          }))
+        }
+      });
 
-    if (lowerMessage.includes('help')) {
-      responseContent = AI_RESPONSES.help;
-    } else if (lowerMessage.includes('book') || lowerMessage.includes('appointment')) {
-      responseContent = AI_RESPONSES.booking;
-    } else if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-      responseContent = AI_RESPONSES.price;
+      if (error) {
+        console.error('Error calling sunshine-chat:', error);
+        throw error;
+      }
+
+      const aiResponse: SalonMessage = {
+        id: crypto.randomUUID(),
+        senderId: 'support-agent',
+        senderName: 'Little Sunshine',
+        message: data.message || "I'm here to help! What can I do for you?",
+        timestamp: new Date().toISOString()
+      };
+
+      setTimeout(() => {
+        addMessage(aiResponse);
+      }, 1200);
+
+    } catch (error) {
+      console.error('Failed to get AI response:', error);
+      
+      // Fallback to a simple response if edge function fails
+      const fallbackResponse: SalonMessage = {
+        id: crypto.randomUUID(),
+        senderId: 'support-agent',
+        senderName: 'Little Sunshine',
+        message: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!",
+        timestamp: new Date().toISOString()
+      };
+
+      setTimeout(() => {
+        addMessage(fallbackResponse);
+      }, 1200);
     }
-
-    const aiResponse: SalonMessage = {
-      id: crypto.randomUUID(),
-      senderId: 'support-agent',
-      senderName: 'EmviApp Assistant',
-      message: responseContent,
-      timestamp: new Date().toISOString()
-    };
-
-    setTimeout(() => {
-      addMessage(aiResponse);
-    }, 1200);
   };
 
   useEffect(() => {
@@ -52,8 +75,8 @@ export const useMessages = (recipientId: string) => {
         const welcomeMessage: SalonMessage = {
           id: crypto.randomUUID(),
           senderId: 'support-agent',
-          senderName: 'EmviApp Assistant',
-          message: "👋 Hello! I'm the EmviApp Assistant. How can I help you today?",
+          senderName: 'Little Sunshine',
+          message: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!",
           timestamp: new Date().toISOString()
         };
         setMessages([welcomeMessage]);
