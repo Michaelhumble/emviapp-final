@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, MessageCircle } from 'lucide-react';
+import { X, Send, MessageCircle, Crown, Camera, Mic, Palette, Volume2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import PremiumFeatures from './PremiumFeatures';
+import VoiceChat from './VoiceChat';
+import PhotoUpload from './PhotoUpload';
+import AIImageGeneration from './AIImageGeneration';
+import { isFeatureEnabled, type PremiumFeature } from '@/config/premiumFeatures';
 
 export const ChatSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +16,10 @@ export const ChatSystem = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [showPremiumFeatures, setShowPremiumFeatures] = useState(false);
+  const [showVoiceChat, setShowVoiceChat] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [showAIImageGen, setShowAIImageGen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -63,6 +72,42 @@ export const ChatSystem = () => {
       };
       setMessages(prev => [...prev, errorMessage]);
     }
+  };
+
+  const handleFeatureSelect = (feature: PremiumFeature) => {
+    switch (feature) {
+      case 'VOICE_CHAT':
+        setShowVoiceChat(true);
+        break;
+      case 'PHOTO_UPLOAD':
+        setShowPhotoUpload(true);
+        break;
+      case 'AI_IMAGE_GEN':
+        setShowAIImageGen(true);
+        break;
+      default:
+        // Handle other features
+        break;
+    }
+    setShowPremiumFeatures(false);
+  };
+
+  const handlePhotoAnalyzed = (analysis: string) => {
+    const botMessage = { 
+      id: Date.now(), 
+      text: analysis, 
+      sender: 'bot' 
+    };
+    setMessages(prev => [...prev, botMessage]);
+  };
+
+  const handleImageGenerated = (imageUrl: string, prompt: string) => {
+    const botMessage = { 
+      id: Date.now(), 
+      text: `I've created your custom design! Here's a beautiful ${prompt} - what do you think?`, 
+      sender: 'bot' 
+    };
+    setMessages(prev => [...prev, botMessage]);
   };
 
   return (
@@ -172,8 +217,48 @@ export const ChatSystem = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Premium Input */}
+            {/* Premium Input with Feature Buttons */}
             <div className="p-4 border-t border-orange-100 bg-gradient-to-r from-orange-50/50 to-white">
+              {/* Premium Feature Shortcuts */}
+              <div className="flex gap-2 mb-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowVoiceChat(true)}
+                  className="p-2 bg-white border border-orange-200 rounded-lg hover:bg-orange-50 transition-colors"
+                  title="Voice Chat"
+                >
+                  <Mic className="w-4 h-4 text-orange-600" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowPhotoUpload(true)}
+                  className="p-2 bg-white border border-orange-200 rounded-lg hover:bg-orange-50 transition-colors"
+                  title="Photo Upload"
+                >
+                  <Camera className="w-4 h-4 text-orange-600" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowAIImageGen(true)}
+                  className="p-2 bg-white border border-orange-200 rounded-lg hover:bg-orange-50 transition-colors"
+                  title="AI Image Generation"
+                >
+                  <Palette className="w-4 h-4 text-orange-600" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowPremiumFeatures(true)}
+                  className="p-2 bg-gradient-to-r from-purple-500 to-orange-500 text-white rounded-lg hover:shadow-lg transition-all"
+                  title="Premium Features"
+                >
+                  <Crown className="w-4 h-4" />
+                </motion.button>
+              </div>
+
               <div className="flex gap-3 items-end">
                 <input
                   type="text"
@@ -198,6 +283,30 @@ export const ChatSystem = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Premium Feature Modals */}
+      <PremiumFeatures 
+        isOpen={showPremiumFeatures}
+        onClose={() => setShowPremiumFeatures(false)}
+        onFeatureSelect={handleFeatureSelect}
+      />
+      
+      <VoiceChat 
+        isOpen={showVoiceChat}
+        onClose={() => setShowVoiceChat(false)}
+      />
+      
+      <PhotoUpload 
+        isOpen={showPhotoUpload}
+        onClose={() => setShowPhotoUpload(false)}
+        onPhotoAnalyzed={handlePhotoAnalyzed}
+      />
+      
+      <AIImageGeneration 
+        isOpen={showAIImageGen}
+        onClose={() => setShowAIImageGen(false)}
+        onImageGenerated={handleImageGenerated}
+      />
     </>
   );
 };
