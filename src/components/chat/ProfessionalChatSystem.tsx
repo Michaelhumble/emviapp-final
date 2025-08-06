@@ -350,7 +350,7 @@ const ProfessionalChatSystem: React.FC = () => {
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <p className="text-white/90 text-sm">Your Beauty Career Assistant</p>
+                      <p className="text-white/90 text-sm">✨ Inspired by Sunshine ✨</p>
                     </div>
                   </div>
                 </div>
@@ -457,6 +457,9 @@ const ProfessionalChatSystem: React.FC = () => {
             >
               <div className="flex items-end space-x-3">
                 <div className="flex-1 relative">
+                  {/* Animated background for input */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-orange-100 via-yellow-50 to-orange-100 opacity-50 animate-pulse" />
+                  
                   <textarea
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
@@ -466,26 +469,38 @@ const ProfessionalChatSystem: React.FC = () => {
                         handleSendMessage();
                       }
                     }}
-                    placeholder="Ask me anything about beauty careers..."
+                    placeholder="🌟 Ask me anything! Jobs, salons, beauty tips... I'm here to help! 💬"
                     rows={1}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:outline-none resize-none text-gray-800 placeholder-gray-500 transition-all duration-200 shadow-sm"
+                    className="relative z-10 w-full px-5 py-4 rounded-xl border-2 border-orange-300/50 focus:border-orange-400 focus:outline-none resize-none text-gray-800 placeholder-orange-400 transition-all duration-300 shadow-lg font-medium"
                     style={{
                       background: 'linear-gradient(135deg, #ffffff 0%, #fffbf5 100%)',
-                      boxShadow: 'inset 0 2px 4px rgba(234, 88, 12, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1)',
-                      fontWeight: '500',
+                      boxShadow: 'inset 0 2px 4px rgba(234, 88, 12, 0.05), 0 4px 12px rgba(251, 191, 36, 0.15)',
                     }}
                   />
                   
-                  {/* Floating placeholder animation */}
+                  {/* Floating sparkle decorations */}
+                  <motion.div
+                    className="absolute top-3 right-4 text-orange-300"
+                    animate={{
+                      rotate: [0, 10, -10, 0],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    ✨
+                  </motion.div>
+                  
+                  {/* Encouraging animation when empty */}
                   {!inputMessage && (
                     <motion.div
-                      className="absolute left-4 top-3 text-orange-400 text-sm pointer-events-none"
+                      className="absolute left-5 top-4 text-orange-400 text-sm pointer-events-none font-medium"
                       animate={{
-                        opacity: [0.5, 0.8, 0.5],
+                        opacity: [0.6, 1, 0.6],
+                        scale: [1, 1.02, 1],
                       }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      ✨ Type your message...
+                      💭 What's on your mind today?
                     </motion.div>
                   )}
                 </div>
