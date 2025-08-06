@@ -21,7 +21,7 @@ export const detectUserIntent = (userMessage: string, isAuthenticated: boolean =
     } else {
       buttons.push({
         label: 'Sign Up',
-        route: '/auth/signup?redirect=%2F',
+        route: '/auth/signup',
         intent: 'signup'
       });
     }
@@ -32,7 +32,7 @@ export const detectUserIntent = (userMessage: string, isAuthenticated: boolean =
       message.includes('đăng nhập')) {
     buttons.push({
       label: 'Sign In',
-      route: '/auth/signin?redirect=%2F',
+      route: '/auth/signin',
       intent: 'signin'
     });
   }

@@ -21,7 +21,7 @@ export const chatSuggestions: ChatSuggestion[] = [
     timing: 'after_greeting',
     ctaButtons: [
       { label: '✨ Explore Features', route: '/jobs', intent: 'explore' },
-      { label: '💼 Post a Job', route: '/auth/signup?redirect=%2Fpost-job', intent: 'post-job' }
+      { label: '💼 Post a Job', route: '/post-job', intent: 'post-job' }
     ],
     conditions: { messageCount: 2 }
   },
@@ -32,7 +32,7 @@ export const chatSuggestions: ChatSuggestion[] = [
     message: "🌟 I noticed you're interested in finding talent! Posting a job on EmviApp is super easy and connects you with amazing artists. Want me to help you get started?",
     timing: 'after_question',
     ctaButtons: [
-      { label: '🚀 Post Job Now', route: '/auth/signup?redirect=%2Fpost-job', intent: 'post-job' },
+      { label: '🚀 Post Job Now', route: '/post-job', intent: 'post-job' },
       { label: '📋 See Job Examples', route: '/jobs', intent: 'browse' }
     ],
     conditions: { hasAskedAbout: ['hire', 'job', 'staff', 'employee', 'worker'] }
@@ -44,7 +44,7 @@ export const chatSuggestions: ChatSuggestion[] = [
     message: "💪 Ready to grow your beauty business? EmviApp helps salons connect with clients and find the best talent. Let's explore what's possible!",
     timing: 'after_question',
     ctaButtons: [
-      { label: '🏪 List Your Salon', route: '/auth/signup?redirect=%2Flist-salon', intent: 'list-salon' },
+      { label: '🏪 List Your Salon', route: '/salon-listing', intent: 'list-salon' },
       { label: '📖 Our Story', route: '/about', intent: 'learn-more' }
     ],
     conditions: { hasAskedAbout: ['business', 'salon', 'shop', 'grow', 'expand'] }
@@ -68,7 +68,7 @@ export const chatSuggestions: ChatSuggestion[] = [
     message: "😊 Still browsing? I'm here whenever you need help! Whether it's posting a job, finding talent, or just learning about EmviApp - just ask!",
     timing: 'periodic',
     ctaButtons: [
-      { label: '💼 Post a Job', route: '/auth/signup?redirect=%2Fpost-job', intent: 'post-job' },
+      { label: '💼 Post a Job', route: '/post-job', intent: 'post-job' },
       { label: '🎯 Find Talent', route: '/jobs', intent: 'browse' }
     ],
     conditions: { messageCount: 8, timeOnSite: 300 } // After 5 minutes
