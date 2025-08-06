@@ -11,7 +11,7 @@ interface NewChatButtonProps {
 export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatButtonProps) => {
   return (
     <motion.div
-      className="fixed bottom-6 right-6 z-[9998]"
+      className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[9998]"
       initial={{ scale: 0, rotate: -180 }}
       animate={{ scale: 1, rotate: 0 }}
       whileHover={{ scale: 1.05 }}
@@ -77,7 +77,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
       {/* Main button */}
       <Button
         onClick={onClick}
-        className="relative w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-2xl border-2 border-white/20 overflow-hidden group"
+        className="relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-2xl border-2 border-white/20 overflow-hidden group"
         aria-label="Open Chat with Little Sunshine"
       >
         {/* Pulsing background effect */}
@@ -107,7 +107,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
           }}
           className="relative z-10"
         >
-          <MessageSquare className="w-6 h-6 text-white" />
+          <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </motion.div>
 
         {/* Unread message indicator */}
@@ -122,7 +122,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center"
+            className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center"
           >
             <span className="text-white text-xs font-bold">!</span>
           </motion.div>
@@ -136,7 +136,7 @@ export const NewChatButton = ({ onClick, hasUnreadMessages = false }: NewChatBut
       <motion.div
         initial={{ opacity: 0, x: 10 }}
         whileHover={{ opacity: 1, x: 0 }}
-        className="absolute right-20 top-1/2 -translate-y-1/2 bg-black/90 text-white px-4 py-2 rounded-lg text-sm whitespace-nowrap pointer-events-none backdrop-blur-sm"
+        className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 bg-black/90 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap pointer-events-none backdrop-blur-sm"
       >
         Chat with Little Sunshine 💬
         <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-black/90"></div>
