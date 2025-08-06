@@ -350,7 +350,7 @@ const ProfessionalChatSystem: React.FC = () => {
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <p className="text-white/90 text-sm">💫 Dreams Come True Here 💫</p>
+                      <p className="text-white/90 text-sm">Online</p>
                     </div>
                   </div>
                 </div>
@@ -457,9 +457,6 @@ const ProfessionalChatSystem: React.FC = () => {
             >
               <div className="flex items-end space-x-3">
                 <div className="flex-1 relative">
-                  {/* Animated background for input */}
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-orange-100 via-yellow-50 to-orange-100 opacity-50 animate-pulse" />
-                  
                   <textarea
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
@@ -469,41 +466,13 @@ const ProfessionalChatSystem: React.FC = () => {
                         handleSendMessage();
                       }
                     }}
-                    placeholder="💭 Tell me your beauty dreams... I'll help make them happen! ✨"
+                    placeholder="Type a message..."
                     rows={1}
-                    className="relative z-10 w-full px-5 py-4 rounded-xl border-2 border-orange-400/60 focus:border-orange-500 focus:outline-none resize-none text-gray-800 placeholder-orange-500 transition-all duration-300 shadow-xl font-medium text-base"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-orange-400 focus:outline-none resize-none text-gray-800 placeholder-gray-500 transition-all duration-200"
                     style={{
-                      background: 'linear-gradient(135deg, #ffffff 0%, #fef7ed 100%)',
-                      boxShadow: 'inset 0 2px 8px rgba(234, 88, 12, 0.1), 0 6px 20px rgba(251, 191, 36, 0.25)',
+                      background: '#ffffff',
                     }}
                   />
-                  
-                  {/* Floating sparkle decorations */}
-                  <motion.div
-                    className="absolute top-3 right-4 text-orange-300"
-                    animate={{
-                      rotate: [0, 10, -10, 0],
-                      scale: [1, 1.1, 1],
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    ✨
-                  </motion.div>
-                  
-                  {/* Encouraging animation when empty */}
-                  {!inputMessage && (
-                    <motion.div
-                      className="absolute left-5 top-4 text-orange-500 text-sm pointer-events-none font-bold"
-                      animate={{
-                        opacity: [0.8, 1, 0.8],
-                        scale: [1, 1.05, 1],
-                        y: [0, -2, 0],
-                      }}
-                      transition={{ duration: 2.5, repeat: Infinity }}
-                    >
-                      🌟 What's your beauty goal today? 🌟
-                    </motion.div>
-                  )}
                 </div>
                 
                 <motion.button
