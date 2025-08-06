@@ -55,9 +55,9 @@ export default defineConfig(({ mode }) => ({
           ],
           // Chat system (heavy component)
           'chat': [
-            '@/components/chat/NewChatWindow',
-            '@/components/chat/NewChatButton',
-            '@/components/chat/LazyChatSystem'
+            '@/components/chat/SunshineWindow',
+            '@/components/chat/SunshineButton',
+            '@/components/chat/SunshineSystem'
           ],
           // Blog system
           'blog': [
