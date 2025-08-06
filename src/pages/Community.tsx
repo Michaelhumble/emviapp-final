@@ -30,6 +30,9 @@ import LiveActivityFeed from '@/components/community/LiveActivityFeed';
 import SocialCommercePost from '@/components/community/SocialCommercePost';
 import BeautyBattlesLeaderboard from '@/components/community/BeautyBattlesLeaderboard';
 import VipLounge from '@/components/community/VipLounge';
+import RealTimeFOMONotifications from '@/components/community/RealTimeFOMONotifications';
+import ViralReferralEngine from '@/components/community/ViralReferralEngine';
+import AISmartRecommendations from '@/components/community/AISmartRecommendations';
 
 const Community = () => {
   const { user } = useAuth();
@@ -83,20 +86,20 @@ const Community = () => {
         />
       </div>
 
-      {/* Phase 2: Advanced Features Layout */}
+      {/* Phase 3: AI-Powered Viral Growth Engine */}
       <div className="px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
-          {/* Left Sidebar - FOMO & Progress */}
+          {/* Left Sidebar - FOMO & AI Insights */}
           <div className="lg:col-span-3 space-y-6">
+            <AISmartRecommendations />
             <SuccessWall 
               onSignUp={handleJoinNow}
               onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
             />
-            <ProgressStreakTracker />
             <BeautyBattlesLeaderboard />
           </div>
 
-          {/* Main Content - Enhanced Smart Feed */}
+          {/* Main Content - Enhanced Social Commerce */}
           <div className="lg:col-span-6 space-y-6">
             <PersonalizedSmartFeed 
               onSignUp={handleJoinNow}
@@ -150,18 +153,22 @@ const Community = () => {
             />
           </div>
 
-          {/* Right Sidebar - VIP & Creator Features */}
+          {/* Right Sidebar - VIP & Viral Growth */}
           <div className="lg:col-span-3 space-y-6">
+            <ViralReferralEngine />
             <VipLounge />
-            <CreatorSpotlight 
-              onApplyForSpotlight={() => toast.success("Application submitted! We'll review it soon.")}
-              onViewProfile={(userId) => setShowProfileModal({id: userId, type: 'user'})}
-              onSignUp={handleJoinNow}
-            />
+            <ProgressStreakTracker />
             <LiveActivityFeed />
           </div>
         </div>
       </div>
+
+      {/* Real-Time FOMO Notifications Overlay */}
+      <RealTimeFOMONotifications 
+        onNotificationClick={(notification) => {
+          toast.success(`Opening ${notification.title}`);
+        }}
+      />
 
       {/* Legacy Content - Now Secondary */}
       <div className="px-8 py-16 bg-gray-50/50">
