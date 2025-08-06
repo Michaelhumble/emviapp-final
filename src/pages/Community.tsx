@@ -405,11 +405,11 @@ const Community = () => {
                   id: 'featured-1',
                   user: {
                     name: 'Sarah Chen',
-                    avatar: '/src/assets/beauty-pattern-abstract.jpg',
+                    avatar: '/src/assets/avatar-beauty-1.jpg',
                     isVerified: true,
                     specialties: ['Nail Art', 'Color Theory']
                   },
-                  content: 'Just finished this autumn-inspired nail design! 🍂 The gradient technique took 2 hours but the result is absolutely stunning. Book me for similar looks!',
+                  content: 'Just finished this holographic sunset nail design! ✨ The gradient technique took 2 hours but the result is absolutely stunning. Book me for similar looks!',
                   images: ['/src/assets/autumn-nail-art.jpg', '/src/assets/nail-art-showcase.jpg'],
                   serviceOffering: {
                     name: 'Autumn Gradient Nails',
