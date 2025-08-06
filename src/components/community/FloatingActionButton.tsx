@@ -24,15 +24,20 @@ const FloatingActionButton: React.FC<FABProps> = ({ onCreatePost, className = ''
   ];
 
   const handleMainButtonClick = (e: React.MouseEvent) => {
+    console.log('🔥 FloatingActionButton clicked!');
     e.preventDefault();
     e.stopPropagation();
     
     if (!user) {
+      console.log('🔥 No user, showing error toast');
       toast.error('Please sign in to create posts');
       return;
     }
+    
+    console.log('🔥 User found, calling onCreatePost with story');
     // Direct action: open post modal immediately
     onCreatePost('story');
+    console.log('🔥 onCreatePost called successfully');
     toast.success('Opening post creator... ✨');
   };
 

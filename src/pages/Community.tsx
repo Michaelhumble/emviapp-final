@@ -36,15 +36,21 @@ const Community = () => {
   const [showMessageModal, setShowMessageModal] = useState<{id: string, name: string, avatar?: string, role?: string} | null>(null);
 
   const handleCreatePost = (type: string) => {
+    console.log('🚀 handleCreatePost called with type:', type);
+    console.log('🚀 Current user:', user ? 'logged in' : 'not logged in');
     setPostType(type);
     setShowCreatePost(true);
+    console.log('🚀 setShowCreatePost(true) called');
   };
   
   const handleJoinNow = () => {
+    console.log('🎯 handleJoinNow called');
+    console.log('🎯 Current user:', user ? 'logged in' : 'not logged in');
     if (!user) {
       toast.success("Join our community and start earning today! 🚀");
       // Navigate to signup
     } else {
+      console.log('🎯 User logged in, calling setShowCreatePost(true)');
       setShowCreatePost(true);
     }
   };
