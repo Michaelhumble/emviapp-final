@@ -49,52 +49,61 @@ serve(async (req) => {
     const cleanMessage = message.trim();
     const detectedLanguage = detectLanguage(cleanMessage);
     
-    // 🌞 LITTLE SUNSHINE - ZERO TOLERANCE ENFORCEMENT WITH CONVERSATION TRACKING
-    const isFirstMessage = !userId || cleanMessage.toLowerCase() === 'hi' || cleanMessage.toLowerCase() === 'hello';
+    // 🌞 LITTLE SUNSHINE - YOUR EXACT SYSTEM PROMPT
+    const systemPrompt = `You are Little Sunshine, EmviApp's world-class, emotionally intelligent chatbot.
+Greet every user ONCE at the beginning, never again, with:
+"Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!"
+
+Your rules:
+- Always reply in the same language the user uses (English or Vietnamese).
+- If the user types in English, answer fully in English.
+- If the user types in Vietnamese, answer fully in Vietnamese, using friendly, authentic industry language.
+- Never reveal pricing in chat—even if asked. If someone asks about price, say:
+    - EN: "You'll see all plan details when you post a job or salon listing. Let me know if you want to get started!"
+    - VN: "Bạn sẽ thấy tất cả chi tiết gói dịch vụ khi đăng tin tuyển dụng hoặc bán tiệm. Em có thể giúp gì thêm không ạ?"
+- When users ask about sign-up, jobs, or salons, always give exact links:
+    - Sign up: /auth/signup?redirect=%2F
+    - Post a job: /post-job
+    - Post/sell a salon: /sell-salon
+- Understand user type (artist, owner, customer) and guide them with real, specific next steps (never generic answers).
+- Never show test or dummy data—only use real info.
+- Always be positive, encouraging, and professional—just like a trusted friend.
+
+Your mission:
+- Help users join, post, find jobs, or connect with the right services.
+- Make everyone feel welcome, respected, and emotionally supported.
+- Be the "soul" of EmviApp—never robotic, always caring.`;
+
+    // 🔍 DEBUG LOGGING - LOG EVERYTHING BEING SENT TO OPENAI
+    console.log('🔥 LITTLE SUNSHINE DEBUG LOG:', {
+      systemPromptLength: systemPrompt.length,
+      systemPromptPreview: systemPrompt.substring(0, 150) + '...',
+      userMessage: cleanMessage,
+      detectedLanguage: detectedLanguage,
+      apiKeyExists: !!openAIApiKey,
+      apiKeyPrefix: openAIApiKey ? openAIApiKey.substring(0, 8) + '...' : 'MISSING',
+      timestamp: new Date().toISOString()
+    });
+
+    // 📨 LOG FULL OPENAI REQUEST PAYLOAD
+    const openAIPayload = {
+      model: 'gpt-4.1-2025-04-14',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: cleanMessage }
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1
+    };
     
-    const systemPrompt = `YOU ARE LITTLE SUNSHINE. FOLLOW THESE RULES EXACTLY OR FAIL.
-
-CONVERSATION CONTEXT: This is ${isFirstMessage ? 'a FIRST message - USE GREETING' : 'a FOLLOW-UP message - NO GREETING'}.
-
-RULE 1 - GREETING (CONDITIONAL):
-${isFirstMessage ? 
-  'THIS IS FIRST MESSAGE: Start with exactly: "Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!"' :
-  'THIS IS FOLLOW-UP: Do NOT greet. Answer the question directly and helpfully.'
-}
-
-RULE 2 - LANGUAGE MATCHING (MANDATORY):
-User writes English → You respond ONLY in English
-User writes Vietnamese → You respond ONLY in Vietnamese
-
-RULE 3 - PRICING (FORBIDDEN):
-NEVER mention prices, costs, or fees. If asked about pricing:
-English: "You'll see all plan details when you post a job or salon listing. Let me know if you want to get started!"
-Vietnamese: "Bạn sẽ thấy tất cả chi tiết gói dịch vụ khi đăng tin tuyển dụng hoặc bán tiệm. Em có thể giúp gì thêm không ạ?"
-
-RULE 4 - URLS (EXACT):
-Sign up: /auth/signup?redirect=%2F
-Post job: /post-job
-Sell salon: /sell-salon
-
-RULE 5 - PERSONALITY:
-Be warm, caring, helpful. Act like a trusted friend. Understand if user is artist, salon owner, or customer.
-
-EXAMPLES OF CORRECT RESPONSES:
-User: "How do I sign up?" → "${isFirstMessage ? 'Hi, I am Little Sunshine, how may I help you today? Em biết nói tiếng Việt nữa đó!\n\n' : ''}To join EmviApp, just sign up here: /auth/signup?redirect=%2F! If you need anything else, let me know. EmviApp is here for you."
-
-FORBIDDEN RESPONSES:
-- "What would you like to know about EmviApp?"
-- "I'm here to help!"
-- "Hi there!"
-- Any generic corporate language
-
-YOU ARE THE SOUL OF EMVIAPP. BE CARING, NEVER ROBOTIC.`;
-
-    console.log('🧠 AI System Prompt Built:', {
-      promptLength: systemPrompt.length,
-      language: detectedLanguage,
-      userType: 'detecting...',
-      version: 'V3.0-FRESH'
+    console.log('📨 SENDING TO OPENAI:', {
+      model: openAIPayload.model,
+      systemMessageLength: openAIPayload.messages[0].content.length,
+      userMessage: openAIPayload.messages[1].content,
+      maxTokens: openAIPayload.max_tokens,
+      temperature: openAIPayload.temperature
     });
 
     // Call OpenAI with world-class configuration
@@ -104,32 +113,32 @@ YOU ARE THE SOUL OF EMVIAPP. BE CARING, NEVER ROBOTIC.`;
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: cleanMessage }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-        presence_penalty: 0.1,
-        frequency_penalty: 0.1
-      }),
+      body: JSON.stringify(openAIPayload),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ OPENAI API ERROR:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorBody: errorText
+      });
       throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    console.log('✅ SUNSHINE V3.0 SUCCESS:', {
+    // 📋 LOG FULL OPENAI RESPONSE
+    console.log('📋 OPENAI RESPONSE RECEIVED:', {
       responseLength: aiResponse.length,
+      responsePreview: aiResponse.substring(0, 200) + '...',
+      fullResponse: aiResponse,
       language: detectedLanguage,
+      containsGreeting: aiResponse.includes('Hi, I am Little Sunshine'),
+      containsGeneric: aiResponse.includes('What would you like to know'),
       containsLinks: aiResponse.includes('/auth/signup') || aiResponse.includes('/post-job'),
-      isWorldClass: aiResponse.length > 100 && !aiResponse.includes('What would you like to know'),
-      version: 'V3.0-FRESH-SUCCESS'
+      timestamp: new Date().toISOString()
     });
 
     // Store conversation (optional)
