@@ -6,7 +6,7 @@ import { MessageSquare, Home, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTestRecipient } from '@/hooks/chat/useTestRecipient';
-import AssistantPanel from '@/components/ai/AssistantPanel';
+
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ const Messages = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <AssistantPanel />
+          <div>Messages coming soon...</div>
         </motion.div>
       </div>
     </Layout>
