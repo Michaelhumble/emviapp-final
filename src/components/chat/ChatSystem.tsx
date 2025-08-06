@@ -181,24 +181,35 @@ export const ChatSystem = () => {
                       h-[calc(100vh-120px)] sm:h-[650px] 
                       w-auto sm:max-w-[calc(100vw-3rem)]"
             style={{
-              background: 'linear-gradient(180deg, rgba(255, 167, 38, 0.08) 0%, rgba(255, 255, 255, 0.98) 15%, rgba(255, 255, 255, 0.98) 100%)',
+              background: 'linear-gradient(180deg, rgba(255, 167, 38, 0.12) 0%, rgba(255, 193, 7, 0.08) 10%, rgba(255, 255, 255, 0.98) 20%, rgba(255, 255, 255, 0.98) 100%)',
               backdropFilter: 'blur(40px)',
               borderRadius: '28px',
-              border: '1px solid rgba(255, 167, 38, 0.15)',
+              border: '2px solid rgba(255, 167, 38, 0.2)',
               boxShadow: `
-                0 0 0 1px rgba(255, 167, 38, 0.1),
-                0 8px 32px rgba(255, 167, 38, 0.12),
-                0 24px 64px rgba(0, 0, 0, 0.08),
-                0 0 40px rgba(255, 167, 38, 0.05)
+                0 0 0 1px rgba(255, 167, 38, 0.15),
+                0 8px 32px rgba(255, 167, 38, 0.2),
+                0 24px 64px rgba(0, 0, 0, 0.1),
+                0 0 60px rgba(255, 167, 38, 0.1)
               `,
               animation: 'sunbeamGlow 3s ease-in-out infinite alternate'
             }}
           >
             {/* Sunbeam Background Effect */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[28px]">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-32 bg-gradient-radial from-orange-200/20 via-orange-100/10 to-transparent blur-xl opacity-60"></div>
-              <div className="absolute top-4 left-8 w-2 h-16 bg-gradient-to-b from-orange-300/30 to-transparent blur-sm transform rotate-12 opacity-40"></div>
-              <div className="absolute top-6 right-12 w-1 h-12 bg-gradient-to-b from-yellow-300/25 to-transparent blur-sm transform -rotate-12 opacity-30"></div>
+              <div 
+                className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-32 blur-xl opacity-60"
+                style={{ 
+                  background: 'radial-gradient(ellipse at center, rgba(255, 167, 38, 0.2) 0%, rgba(255, 193, 7, 0.1) 50%, transparent 100%)' 
+                }}
+              ></div>
+              <div 
+                className="absolute top-4 left-8 w-2 h-16 blur-sm transform rotate-12 opacity-40"
+                style={{ background: 'linear-gradient(to bottom, rgba(255, 167, 38, 0.3), transparent)' }}
+              ></div>
+              <div 
+                className="absolute top-6 right-12 w-1 h-12 blur-sm transform -rotate-12 opacity-30"
+                style={{ background: 'linear-gradient(to bottom, rgba(255, 193, 7, 0.25), transparent)' }}
+              ></div>
             </div>
 
             {/* Header */}
@@ -210,7 +221,7 @@ export const ChatSystem = () => {
               style={{
                 background: 'linear-gradient(135deg, #FFA726 0%, #FF8F00 50%, #FFA726 100%)',
                 borderRadius: '28px 28px 0 0',
-                boxShadow: '0 4px 12px rgba(255, 167, 38, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                boxShadow: '0 4px 12px rgba(255, 167, 38, 0.4), 0 2px 8px rgba(255, 138, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
               }}
             >
               <div className="flex items-center space-x-3">
@@ -277,7 +288,7 @@ export const ChatSystem = () => {
               ref={chatContainerRef}
               className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 relative"
               style={{
-                background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.3), rgba(255, 255, 255, 0.8))',
+                background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.4) 0%, rgba(255, 252, 247, 0.6) 50%, rgba(255, 255, 255, 0.9) 100%)',
                 backdropFilter: 'blur(20px)'
               }}
             >
