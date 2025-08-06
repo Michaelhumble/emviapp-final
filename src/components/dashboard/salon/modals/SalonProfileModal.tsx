@@ -84,13 +84,13 @@ const SalonProfileModal: React.FC<SalonProfileModalProps> = ({ isOpen, onClose }
       const fileName = `${userProfile.id}_${type}_${Date.now()}.${fileExt}`;
       const filePath = `salon-${type}s/${fileName}`;
 
-      const { error: uploadError } = await supabaseBypass.storage
+      const { error: uploadError } = await (supabaseBypass as any).storage
         .from('salon-photos')
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabaseBypass.storage
+      const { data } = (supabaseBypass as any).storage
         .from('salon-photos')
         .getPublicUrl(filePath);
 
@@ -111,7 +111,7 @@ const SalonProfileModal: React.FC<SalonProfileModalProps> = ({ isOpen, onClose }
 
     setLoading(true);
     try {
-      const { error } = await supabaseBypass
+      const { error } = await (supabaseBypass as any)
         .from('profiles')
         .update({
           salon_name: formData.salon_name,

@@ -566,7 +566,7 @@ const SalonDashboardNew = () => {
           onComplete={() => markOnboardingComplete()}
         />
 
-        {/* Modal Components */}
+        {/* Modal Components - Using unified SalonProfileModal */}
         <SalonProfileModal
           isOpen={profileModalOpen}
           onClose={() => setProfileModalOpen(false)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/auth';
 import { useSalon } from '@/context/salon';
@@ -9,15 +9,20 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { 
   Crown, Sparkles, TrendingUp, Calendar, Users, Star, 
   Zap, Trophy, Target, Clock, DollarSign, Flame as Fire, 
   ArrowUp, BookOpen, Camera, MessageSquare, Settings,
   Award, Gem, Rocket, Zap as Lightning, Heart, Eye, Timer,
-  Building2, ChevronRight, Plus, Bell, Gift, Coins
+  Building2, ChevronRight, Plus, Bell, Gift, Coins, User
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
+import { supabaseBypass } from '@/types/supabase-bypass';
 // Removed Layout import - using custom full-screen dashboard
 
 // Real-time live activity components
@@ -228,43 +233,217 @@ const VIPAchievements = () => {
   );
 };
 
-// Sticky Action Bar
-const StickyActionBar = () => {
+// Unified Profile Settings Modal
+const UnifiedProfileModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const { userProfile } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [formData, setFormData] = useState({
+    salon_name: '',
+    location: '',
+    bio: '',
+    phone: '',
+    avatar_url: '',
+    business_hours: '',
+    specialties: [] as string[],
+  });
+
+  useEffect(() => {
+    if (userProfile) {
+      setFormData({
+        salon_name: userProfile.salon_name || userProfile.company_name || '',
+        location: userProfile.location || '',
+        bio: userProfile.bio || '',
+        phone: userProfile.phone || '',
+        avatar_url: userProfile.avatar_url || '',
+        business_hours: userProfile.business_hours || '',
+        specialties: userProfile.specialties || [],
+      });
+    }
+  }, [userProfile]);
+
+  const handleImageUpload = async (file: File) => {
+    if (!userProfile?.id) return;
+
+    setImageUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userProfile.id}_avatar_${Date.now()}.${fileExt}`;
+      const filePath = `salon-avatars/${fileName}`;
+
+      const { error: uploadError } = await (supabaseBypass as any).storage
+        .from('salon-photos')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = (supabaseBypass as any).storage
+        .from('salon-photos')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, avatar_url: data.publicUrl }));
+      toast.success('Profile photo updated successfully!');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!userProfile?.id) return;
+
+    setLoading(true);
+    try {
+      const { error } = await (supabaseBypass as any)
+        .from('profiles')
+        .update({
+          salon_name: formData.salon_name,
+          company_name: formData.salon_name,
+          location: formData.location,
+          bio: formData.bio,
+          phone: formData.phone,
+          avatar_url: formData.avatar_url,
+          business_hours: formData.business_hours,
+          specialties: formData.specialties,
+        })
+        .eq('id', userProfile.id);
+
+      if (error) throw error;
+
+      toast.success('Profile updated successfully!');
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      onClose();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 1, duration: 0.6 }}
-      className="fixed bottom-4 left-4 right-4 z-40 md:left-auto md:right-4 md:w-80"
-    >
-      <Card className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 border-0 text-white shadow-2xl">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-3 gap-2">
-            <Button 
-              size="sm" 
-              className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-3 text-2xl">
+            <Crown className="h-6 w-6 text-purple-600" />
+            Profile Settings
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Avatar Upload */}
+          <div className="flex items-center gap-4">
+            <div 
+              className="relative w-20 h-20 rounded-full overflow-hidden cursor-pointer group border-4 border-purple-200"
+              onClick={() => fileInputRef.current?.click()}
             >
-              <Plus className="h-4 w-4 mr-1" />
-              Book
+              {formData.avatar_url ? (
+                <img 
+                  src={formData.avatar_url} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full bg-gradient-to-br from-purple-400 to-pink-400 text-white">
+                  <User className="h-8 w-8" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Camera className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <Button 
+                variant="outline" 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={imageUploading}
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                {imageUploading ? 'Uploading...' : 'Change Photo'}
+              </Button>
+            </div>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
+            }}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Salon Name</Label>
+              <Input
+                value={formData.salon_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, salon_name: e.target.value }))}
+                placeholder="Enter salon name"
+              />
+            </div>
+            <div>
+              <Label>Location</Label>
+              <Input
+                value={formData.location}
+                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="City, State"
+              />
+            </div>
+            <div>
+              <Label>Phone</Label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="(555) 123-4567"
+              />
+            </div>
+            <div>
+              <Label>Business Hours</Label>
+              <Input
+                value={formData.business_hours}
+                onChange={(e) => setFormData(prev => ({ ...prev, business_hours: e.target.value }))}
+                placeholder="Mon-Fri 9AM-6PM"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>About Your Salon</Label>
+            <Textarea
+              value={formData.bio}
+              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+              placeholder="Tell customers about your salon..."
+              rows={3}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t">
+            <Button 
+              onClick={handleSave}
+              disabled={loading}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              {loading ? 'Saving...' : 'Save Profile'}
             </Button>
-            <Button 
-              size="sm" 
-              className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-            >
-              <Camera className="h-4 w-4 mr-1" />
-              Photo
-            </Button>
-            <Button 
-              size="sm" 
-              className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-            >
-              <Gift className="h-4 w-4 mr-1" />
-              Offer
+            <Button variant="outline" onClick={onClose}>
+              Cancel
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -273,6 +452,10 @@ const BillionaireClubDashboard = () => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id || userProfile?.id;
   const { stats, loading, reviews, offers, todayBookings } = useSalonDashboard(salonId);
+  
+  // Modal states
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   const getSalonName = () => {
     return currentSalon?.salon_name ||
@@ -285,6 +468,11 @@ const BillionaireClubDashboard = () => {
   const [streakDays] = useState(12);
   const [vipLevel] = useState(3);
   const [todayGoal] = useState(85);
+
+  const handleCreateBooking = () => {
+    toast.success('Opening booking system...');
+    // In a real implementation, this would open the booking modal or navigate to booking page
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden w-full">
@@ -312,8 +500,8 @@ const BillionaireClubDashboard = () => {
           >
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Avatar className="h-20 w-20 border-4 border-gradient-to-r from-yellow-400 to-orange-500">
+                <div className="relative cursor-pointer" onClick={() => setProfileModalOpen(true)}>
+                  <Avatar className="h-20 w-20 border-4 border-gradient-to-r from-yellow-400 to-orange-500 hover:scale-105 transition-transform">
                     <AvatarImage src={userProfile?.avatar_url} />
                     <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-2xl font-bold">
                       {getSalonName().charAt(0)}
@@ -321,6 +509,9 @@ const BillionaireClubDashboard = () => {
                   </Avatar>
                   <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-1">
                     <Crown className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
+                    <Settings className="h-6 w-6 text-white" />
                   </div>
                 </div>
                 <div>
@@ -451,9 +642,19 @@ const BillionaireClubDashboard = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
+                    <Button 
+                      onClick={handleCreateBooking}
+                      className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+                    >
                       <Calendar className="h-4 w-4 mr-2" />
                       Create VIP Booking
+                    </Button>
+                    <Button 
+                      onClick={() => setProfileModalOpen(true)}
+                      className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Profile Settings
                     </Button>
                     <Button className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
                       <Users className="h-4 w-4 mr-2" />
@@ -462,10 +663,6 @@ const BillionaireClubDashboard = () => {
                     <Button className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
                       <Camera className="h-4 w-4 mr-2" />
                       Showcase Gallery
-                    </Button>
-                    <Button className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
-                      <Gift className="h-4 w-4 mr-2" />
-                      Premium Promotion
                     </Button>
                   </CardContent>
                 </Card>
@@ -522,6 +719,12 @@ const BillionaireClubDashboard = () => {
             </Card>
           </motion.div>
         </div>
+
+        {/* Unified Profile Modal */}
+        <UnifiedProfileModal
+          isOpen={profileModalOpen}
+          onClose={() => setProfileModalOpen(false)}
+        />
 
         {/* NO FOOTERS - Completely removed for clean dashboard experience */}
     </div>
