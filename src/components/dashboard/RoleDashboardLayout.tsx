@@ -77,13 +77,7 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
     { label: "Team Rating", value: "4.9", change: "+0.2", icon: Star, color: "from-yellow-500 to-amber-600" }
   ];
 
-  // Demo bookings data
-  const demoBookings = [
-    { id: 1, client: "Sarah Chen", service: "Hair Color", time: "10:00 AM", status: "confirmed", artist: "Maria" },
-    { id: 2, client: "Jessica Park", service: "Manicure", time: "11:30 AM", status: "pending", artist: "Anna" },
-    { id: 3, client: "Emily Rodriguez", service: "Facial", time: "2:00 PM", status: "confirmed", artist: "Sophia" },
-    { id: 4, client: "Ashley Kim", service: "Massage", time: "3:30 PM", status: "completed", artist: "David" }
-  ];
+  // This component uses demo data for UI showcase - real booking data comes from artist/salon specific hooks
 
   // Demo team data
   const demoTeam = [
@@ -244,21 +238,10 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {demoBookings.map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div>
-                      <p className="font-medium">{booking.client}</p>
-                      <p className="text-sm text-gray-600">{booking.service} • {booking.artist}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{booking.time}</p>
-                      <Badge variant={booking.status === 'confirmed' ? 'default' : booking.status === 'pending' ? 'secondary' : 'outline'}>
-                        {booking.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+              <div className="text-center py-8">
+                <Calendar className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-600 mb-2">No bookings for today</p>
+                <p className="text-sm text-gray-500">Real booking data is shown in role-specific dashboards</p>
               </div>
             </CardContent>
           </Card>

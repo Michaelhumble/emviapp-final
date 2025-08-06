@@ -9,63 +9,7 @@ import {
   CheckCircle2, AlertCircle, Clock3
 } from "lucide-react";
 
-// Mock data for bookings
-const mockBookings = [
-  {
-    id: "1",
-    time: "10:30 AM",
-    customerName: "Jennifer Kim",
-    serviceName: "Gel Fill + Pedi",
-    technician: "Lisa Wong",
-    duration: 75,
-    status: "confirmed"
-  },
-  {
-    id: "2",
-    time: "12:00 PM",
-    customerName: "Mike Johnson",
-    serviceName: "Haircut & Style",
-    technician: "David Chen",
-    duration: 60,
-    status: "pending"
-  },
-  {
-    id: "3",
-    time: "2:15 PM",
-    customerName: "Sarah Williams",
-    serviceName: "Full Set Acrylics",
-    technician: "Lisa Wong",
-    duration: 90,
-    status: "completed"
-  },
-  {
-    id: "4",
-    time: "3:30 PM",
-    customerName: "Walk-in",
-    serviceName: "Polish Change",
-    technician: null,
-    duration: 20,
-    status: "confirmed"
-  },
-  {
-    id: "5",
-    time: "4:45 PM",
-    customerName: "Emily Davis",
-    serviceName: "Full Facial",
-    technician: "Maria Rodriguez",
-    duration: 60,
-    status: "pending"
-  },
-  {
-    id: "6",
-    time: "5:30 PM",
-    customerName: "Alex Thompson",
-    serviceName: "Men's Haircut",
-    technician: "David Chen",
-    duration: 30,
-    status: "confirmed"
-  }
-];
+// All booking data comes from real-time Supabase queries
 
 type BookingStatus = "all" | "today" | "upcoming" | "completed";
 
@@ -102,14 +46,8 @@ const SalonBookingFeed = () => {
     }
   };
   
-  // Filter bookings based on selected tab
-  const filteredBookings = mockBookings.filter(booking => {
-    if (filterStatus === "all") return true;
-    if (filterStatus === "today") return booking.status !== "completed";
-    if (filterStatus === "upcoming") return booking.status === "confirmed" || booking.status === "pending";
-    if (filterStatus === "completed") return booking.status === "completed";
-    return true;
-  });
+  // For now, show empty state - real bookings will be loaded from Supabase
+  const filteredBookings: any[] = [];
   
   return (
     <Card className="mt-8">

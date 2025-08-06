@@ -23,15 +23,6 @@ export const bookingSystemPreBuildReport = {
         risksIfChanged: 'HIGH - This is the primary booking entry point'
       },
       {
-        route: '/dashboard/artist/booking-calendar',
-        component: 'BookingCalendar.tsx',
-        description: 'Artist booking calendar management',
-        ctaText: 'Manage bookings',
-        userRoles: ['artists only'],
-        currentStatus: '✅ WORKING - Calendar view with sample data',
-        risksIfChanged: 'MEDIUM - Artist dashboard dependency'
-      },
-      {
         route: '/dashboard/artist/booking-calendar-new',
         component: 'BookingCalendarNew.tsx',
         description: 'Enhanced artist booking calendar',

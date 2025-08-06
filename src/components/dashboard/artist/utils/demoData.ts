@@ -6,7 +6,7 @@ export const demoStats = {
   rating: 5.0
 };
 
-export const demoBookings = [];
+// All booking data now comes from real-time Supabase queries
 
 export const demoPortfolioItems = [
   {

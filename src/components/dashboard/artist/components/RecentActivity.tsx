@@ -9,29 +9,11 @@ interface RecentActivityProps {
   isLoading: boolean;
 }
 
-// Demo bookings for new artists
-const demoBookings = [
-  {
-    id: "demo-1",
-    service_name: "Gel Manicure",
-    appointment_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-    price: 45,
-    client_name: "Sample Client"
-  },
-  {
-    id: "demo-2",
-    service_name: "Full Set Acrylics",
-    appointment_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    price: 65,
-    client_name: "Sample Client"
-  }
-];
-
 const RecentActivity = ({ bookings, isLoading }: RecentActivityProps) => {
   const isNewArtist = useNewArtistStatus();
   
-  // Use demo bookings for new artists, otherwise use real bookings
-  const displayBookings = isNewArtist ? demoBookings as any[] : bookings;
+  // Always use real bookings from Supabase
+  const displayBookings = bookings || [];
 
   return (
     <Card className="col-span-4">
