@@ -249,13 +249,15 @@ export const ChatSystem = () => {
                 </div>
               </div>
               
-              <button 
+              <motion.button
                 onClick={() => setIsOpen(false)}
-                className="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10"
+                className="text-orange-50 hover:text-white hover:bg-white/20 p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
               >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+                <X className="h-5 w-5" />
+              </motion.button>
+            </motion.div>
 
             {/* 💬 MESSAGES CONTAINER */}
             <div 
@@ -535,7 +537,7 @@ export const ChatSystem = () => {
                   <Send className="w-5 h-5 text-white relative z-10" />
                 </motion.button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
