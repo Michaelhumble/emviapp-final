@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, MessageCircle, Crown, Camera, Mic, Palette, Volume2 } from 'lucide-react';
+import { X, Send, MessageCircle, Crown, Camera, Mic, Palette, Volume2, ArrowUp, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import PremiumFeatures from './PremiumFeatures';
 import VoiceChat from './VoiceChat';
@@ -20,12 +20,32 @@ export const ChatSystem = () => {
   const [showVoiceChat, setShowVoiceChat] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const [showAIImageGen, setShowAIImageGen] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom with smooth transition
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  // Show scroll to top button after scrolling
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      setShowScrollToTop(scrollHeight - scrollTop - clientHeight > 100);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    chatContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -37,20 +57,16 @@ export const ChatSystem = () => {
     setLoading(true);
     setIsTyping(true);
 
-    console.log('🤖 [SUNSHINE] Sending message:', currentInput);
-
     try {
       const { data, error } = await supabase.functions.invoke('sunshine-chat', {
         body: { message: currentInput }
       });
 
-      console.log('🤖 [SUNSHINE] Response received:', { data, error });
-
       if (error) {
         throw new Error(error.message || 'Failed to get response');
       }
 
-      // Brief realistic typing delay
+      // Realistic typing delay with shimmer effect
       setTimeout(() => {
         setIsTyping(false);
         setLoading(false);
@@ -60,7 +76,7 @@ export const ChatSystem = () => {
           sender: 'bot' 
         };
         setMessages(prev => [...prev, botMessage]);
-      }, 800);
+      }, 1200);
     } catch (error) {
       console.error('🤖 [SUNSHINE] Error:', error);
       setIsTyping(false);
@@ -86,7 +102,6 @@ export const ChatSystem = () => {
         setShowAIImageGen(true);
         break;
       default:
-        // Handle other features
         break;
     }
     setShowPremiumFeatures(false);
@@ -112,157 +127,133 @@ export const ChatSystem = () => {
 
   return (
     <>
-      {/* 🔒 PREMIUM LUXURY SUNSHINE CHAT BUBBLE */}
+      {/* 🌟 BILLION-DOLLAR FLOATING CHAT BUBBLE */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-4 z-50"
+            exit={{ scale: 0, opacity: 0, transition: { duration: 0.2 } }}
+            className="fixed bottom-6 right-6 z-50"
           >
-            {/* Premium Floating Shadow */}
+            {/* Luxury Ambient Glow */}
             <motion.div
               className="absolute inset-0 rounded-full"
               animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.2, 0.4, 0.2],
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
               }}
               transition={{
-                duration: 4,
+                duration: 3,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
               style={{
-                background: 'radial-gradient(circle, rgba(255, 140, 0, 0.3), transparent 60%)',
-                filter: 'blur(12px)',
-                transform: 'translateY(4px)'
+                background: 'radial-gradient(circle, rgba(255, 165, 0, 0.4), rgba(255, 215, 0, 0.2), transparent 70%)',
+                filter: 'blur(20px)',
+                transform: 'translateY(8px)'
               }}
             />
 
-            {/* Luxury Sunbeam Radiance */}
+            {/* Premium Shadow Base */}
             <motion.div
               className="absolute inset-0 rounded-full"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.1, 0.3, 0.1],
-                rotate: [0, 360],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
               style={{
-                background: 'conic-gradient(from 0deg, rgba(255, 215, 0, 0.4), transparent, rgba(255, 140, 0, 0.3), transparent)',
-                filter: 'blur(8px)'
+                background: 'rgba(0, 0, 0, 0.1)',
+                filter: 'blur(8px)',
+                transform: 'translateY(4px) scale(0.95)'
               }}
             />
 
             <motion.button
               whileHover={{ 
-                scale: 1.05,
-                y: -2
+                scale: 1.1,
+                y: -3,
+                boxShadow: "0 20px 40px rgba(255, 165, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.3)"
               }}
               whileTap={{ 
                 scale: 0.95,
                 y: 1
               }}
               onClick={() => setIsOpen(true)}
-              className="relative w-14 h-14 rounded-full transition-all duration-300 overflow-hidden"
+              className="relative w-16 h-16 rounded-full transition-all duration-500 overflow-hidden group"
               style={{
-                background: 'linear-gradient(135deg, #FF8A00 0%, #FFD700 35%, #FF6B00 70%, #FF4500 100%)',
+                background: 'linear-gradient(135deg, #FFB366 0%, #FF8A00 25%, #FFD700 50%, #FFA500 75%, #FF6B00 100%)',
                 boxShadow: `
-                  0 8px 25px rgba(255, 140, 0, 0.4),
-                  0 0 0 2px rgba(255, 255, 255, 0.8),
-                  0 0 0 4px rgba(255, 215, 0, 0.3),
-                  inset 0 2px 0 rgba(255, 255, 255, 0.3),
-                  inset 0 -2px 0 rgba(0, 0, 0, 0.1)
-                `
+                  0 15px 35px rgba(255, 165, 0, 0.3),
+                  0 5px 15px rgba(0, 0, 0, 0.1),
+                  0 0 0 1px rgba(255, 255, 255, 0.2),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                  inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                `,
+                border: '2px solid rgba(255, 255, 255, 0.3)'
               }}
               animate={{
-                // Gentle periodic wiggle
-                rotate: [0, 0, 0, 0, 5, -5, 3, -3, 0, 0, 0, 0],
-                // Soft breathing glow
-                boxShadow: [
-                  `0 8px 25px rgba(255, 140, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.8), 0 0 0 4px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1)`,
-                  `0 12px 35px rgba(255, 140, 0, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 4px rgba(255, 215, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.1)`,
-                  `0 8px 25px rgba(255, 140, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.8), 0 0 0 4px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1)`
-                ]
+                rotate: [0, 5, -5, 0],
+                scale: [1, 1.02, 1],
               }}
               transition={{
                 rotate: { 
-                  duration: 6, 
+                  duration: 4, 
                   repeat: Infinity, 
-                  ease: "easeInOut",
-                  times: [0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.9, 1]
+                  ease: "easeInOut" 
                 },
-                boxShadow: { 
-                  duration: 3, 
+                scale: { 
+                  duration: 2, 
                   repeat: Infinity, 
                   ease: "easeInOut" 
                 }
               }}
             >
-              {/* Inner Premium Glow */}
+              {/* Inner Glassmorphism Layer */}
               <motion.div
                 className="absolute inset-1 rounded-full"
                 style={{
-                  background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 60%)',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
                 animate={{
-                  opacity: [0.3, 0.6, 0.3],
                   background: [
-                    'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 60%)',
-                    'radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.4), transparent 60%)',
-                    'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 60%)'
+                    'rgba(255, 255, 255, 0.2)',
+                    'rgba(255, 255, 255, 0.3)',
+                    'rgba(255, 255, 255, 0.2)'
                   ]
                 }}
                 transition={{
-                  duration: 5,
+                  duration: 3,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
               />
 
-              {/* Luxury Shimmer Sweep */}
+              {/* Premium Shimmer Effect */}
               <motion.div
                 className="absolute inset-0 rounded-full"
-                initial={{ x: '-150%' }}
-                animate={{ x: '150%' }}
+                initial={{ x: '-100%', skewX: -20 }}
+                animate={{ x: '100%' }}
                 transition={{
-                  duration: 3,
+                  duration: 2,
                   repeat: Infinity,
-                  repeatDelay: 4,
+                  repeatDelay: 3,
                   ease: "easeInOut"
                 }}
                 style={{
                   background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), rgba(255, 215, 0, 0.4), rgba(255, 255, 255, 0.6), transparent)',
                   transform: 'skewX(-20deg)',
-                  filter: 'blur(1px)'
+                  width: '50%'
                 }}
               />
 
-              {/* Rotating Inner Ring */}
-              <motion.div
-                className="absolute inset-2 rounded-full border border-white/40"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                style={{
-                  borderStyle: 'dashed'
-                }}
-              />
-
-              {/* Premium Sun Icon with Luminous Glow */}
+              {/* Animated Sun Icon */}
               <motion.div
                 className="relative z-10 flex items-center justify-center w-full h-full"
                 animate={{
-                  // Occasional playful bounce
-                  y: [0, 0, 0, 0, -1, 0, 0, 0],
-                  scale: [1, 1, 1, 1, 1.05, 1, 1, 1]
+                  y: [0, -1, 0],
+                  scale: [1, 1.1, 1]
                 }}
                 transition={{
-                  duration: 8,
+                  duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
@@ -270,23 +261,15 @@ export const ChatSystem = () => {
                 <motion.span
                   className="text-4xl relative"
                   style={{
-                    filter: `
-                      brightness(0) invert(1) 
-                      drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
-                      drop-shadow(0 0 4px rgba(255, 215, 0, 0.6))
-                    `,
-                    WebkitFilter: `
-                      brightness(0) invert(1) 
-                      drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
-                      drop-shadow(0 0 4px rgba(255, 215, 0, 0.6))
-                    `
+                    filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))',
+                    textShadow: '0 0 10px rgba(255, 215, 0, 0.8)'
                   }}
                   animate={{
-                    // Gentle breathing
-                    scale: [1, 1.02, 1],
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 10, 0]
                   }}
                   transition={{
-                    duration: 4,
+                    duration: 3,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
@@ -295,19 +278,42 @@ export const ChatSystem = () => {
                 </motion.span>
               </motion.div>
 
-              {/* Premium Status Indicator */}
+              {/* Orbiting Sparkles */}
+              {[...Array(4)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1.5 h-1.5 bg-white rounded-full"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 215, 0, 0.6)'
+                  }}
+                  animate={{
+                    x: [0, 25 * Math.cos(i * Math.PI / 2), 0, -25 * Math.cos(i * Math.PI / 2), 0],
+                    y: [0, 25 * Math.sin(i * Math.PI / 2), 0, -25 * Math.sin(i * Math.PI / 2), 0],
+                    scale: [0, 1, 1, 1, 0],
+                    opacity: [0, 1, 1, 1, 0]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    delay: i * 0.5,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+
+              {/* Live Status Indicator */}
               <motion.div
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center"
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, #10B981, #34D399)',
-                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)'
+                  boxShadow: '0 0 10px rgba(16, 185, 129, 0.6)'
                 }}
                 animate={{
-                  scale: [1, 1.15, 1],
+                  scale: [1, 1.2, 1],
                   boxShadow: [
-                    '0 0 8px rgba(16, 185, 129, 0.6)',
-                    '0 0 12px rgba(16, 185, 129, 0.8)',
-                    '0 0 8px rgba(16, 185, 129, 0.6)'
+                    '0 0 10px rgba(16, 185, 129, 0.6)',
+                    '0 0 20px rgba(16, 185, 129, 0.8)',
+                    '0 0 10px rgba(16, 185, 129, 0.6)'
                   ]
                 }}
                 transition={{
@@ -316,118 +322,129 @@ export const ChatSystem = () => {
                   ease: "easeInOut"
                 }}
               >
-                <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                <div className="w-2 h-2 bg-white rounded-full" />
               </motion.div>
-
-              {/* Sparkle Effects */}
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white rounded-full"
-                  style={{
-                    left: `${20 + i * 20}%`,
-                    top: `${15 + i * 15}%`,
-                    boxShadow: '0 0 4px rgba(255, 255, 255, 0.8)'
-                  }}
-                  animate={{
-                    scale: [0, 1, 0],
-                    opacity: [0, 1, 0],
-                    rotate: [0, 180]
-                  }}
-                  transition={{
-                    duration: 2.5,
-                    repeat: Infinity,
-                    delay: i * 0.8 + 1,
-                    ease: "easeInOut"
-                  }}
-                />
-              ))}
             </motion.button>
 
-            {/* First-time Tooltip */}
+            {/* Luxury Tooltip */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 10 }}
-              className="absolute -top-12 -left-8 bg-black/80 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap"
-              style={{ zIndex: 60 }}
+              className="absolute -top-14 -left-12 px-4 py-2 rounded-xl text-white text-sm font-medium whitespace-nowrap"
+              style={{
+                background: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+              }}
             >
-              Tap to chat with Sunshine! ☀️
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80" />
+              Chat with Little Sunshine ☀️
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-6 border-transparent border-t-black/80" />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Responsive Premium Chat Window */}
+      {/* 💎 PREMIUM CHAT WINDOW */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ scale: 0.8, opacity: 0, y: 50 }}
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 50 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-4 right-4 z-50 flex flex-col overflow-hidden
-                      w-80 h-[500px] sm:w-96 sm:h-[600px] 
-                      max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden
+                      w-80 h-[550px] sm:w-96 sm:h-[650px] 
+                      max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]"
             style={{
               background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(20px)',
-              borderRadius: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+              backdropFilter: 'blur(40px)',
+              borderRadius: '28px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: `
+                0 32px 64px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                0 0 120px rgba(255, 165, 0, 0.1)
+              `
             }}
           >
-            {/* Enhanced Premium Header */}
+            {/* 🎨 LUXURY HEADER */}
             <div 
-              className="relative text-white p-4 sm:p-6 flex justify-between items-center"
+              className="relative text-white p-6 flex justify-between items-center"
               style={{
-                background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 50%, #FF4500 100%)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                background: 'linear-gradient(135deg, #FF8A00 0%, #FFB366 25%, #FF6B00 50%, #FFA500 75%, #FF4500 100%)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '28px 28px 0 0'
               }}
             >
-              {/* Background Particles */}
-              <div className="absolute inset-0 overflow-hidden">
-                {[...Array(6)].map((_, i) => (
+              {/* Animated Background Particles */}
+              <div className="absolute inset-0 overflow-hidden rounded-t-3xl">
+                {[...Array(8)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="absolute w-2 h-2 bg-white/20 rounded-full"
+                    className="absolute w-1 h-1 bg-white/30 rounded-full"
                     animate={{
-                      x: [0, 100, 0],
-                      y: [0, -50, 0],
-                      opacity: [0, 1, 0]
+                      x: [0, Math.random() * 100 - 50],
+                      y: [0, Math.random() * 50 - 25],
+                      opacity: [0, 1, 0],
+                      scale: [0, 1, 0]
                     }}
                     transition={{
-                      duration: 3 + i,
+                      duration: 4 + Math.random() * 2,
                       repeat: Infinity,
                       delay: i * 0.5
                     }}
                     style={{
-                      left: `${20 + i * 15}%`,
-                      top: `${30 + i * 10}%`
+                      left: `${10 + i * 10}%`,
+                      top: `${20 + Math.random() * 60}%`
                     }}
                   />
                 ))}
               </div>
 
-              <div className="flex items-center space-x-3 sm:space-x-4 relative z-10">
-                {/* Bigger Sunshine Icon */}
+              <div className="flex items-center space-x-4 relative z-10">
+                {/* Animated Sunshine Avatar */}
                 <motion.div 
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center relative"
+                  className="w-14 h-14 rounded-full flex items-center justify-center relative"
                   style={{
                     background: 'rgba(255, 255, 255, 0.2)',
                     backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.5)'
                   }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  animate={{ 
+                    rotate: 360,
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{ 
+                    rotate: { duration: 8, repeat: Infinity, ease: "linear" },
+                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  }}
                 >
-                  <span className="text-3xl sm:text-4xl">☀️</span>
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-yellow-300/30 to-orange-300/30"></div>
+                  <span className="text-4xl relative z-10">☀️</span>
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    animate={{
+                      background: [
+                        'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent 60%)',
+                        'radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.3), transparent 60%)',
+                        'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent 60%)'
+                      ]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
                 </motion.div>
+
                 <div className="flex-1 min-w-0">
                   <motion.h3 
-                    className="font-bold text-lg sm:text-xl truncate"
+                    className="font-bold text-xl truncate"
+                    style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
@@ -440,9 +457,13 @@ export const ChatSystem = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    <div className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></div>
-                    <p className="text-orange-100 text-xs sm:text-sm truncate">
-                      Always here to brighten your day ✨
+                    <motion.div 
+                      className="w-2 h-2 bg-emerald-300 rounded-full"
+                      animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    <p className="text-orange-100 text-sm truncate font-medium">
+                      Inspired by Sunshine ☀️
                     </p>
                   </motion.div>
                 </div>
@@ -451,33 +472,36 @@ export const ChatSystem = () => {
               <motion.button 
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => {
-                  console.log('🔥 Closing chat window');
-                  setIsOpen(false);
-                }}
+                onClick={() => setIsOpen(false)}
                 className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10 z-20 relative"
-                style={{ zIndex: 20 }}
               >
                 <X className="w-5 h-5" />
               </motion.button>
             </div>
 
-            {/* Responsive Messages Container */}
+            {/* 💬 MESSAGES CONTAINER */}
             <div 
-              className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 relative chat-scroll"
+              ref={chatContainerRef}
+              className="flex-1 p-6 overflow-y-auto space-y-4 relative"
               style={{
-                background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.6), rgba(255, 255, 255, 0.8))',
-                backdropFilter: 'blur(10px)'
+                background: 'linear-gradient(to bottom, rgba(255, 248, 240, 0.4), rgba(255, 255, 255, 0.6))',
+                backdropFilter: 'blur(20px)'
               }}
             >
-              {/* Ambient Background Effect */}
-              <div className="absolute inset-0 opacity-30">
-                <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-200 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-                <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-                <div className="absolute bottom-1/4 left-1/3 w-32 h-32 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
-              </div>
+              {/* Subtle Sunbeam Pattern */}
+              <div 
+                className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{
+                  backgroundImage: `
+                    radial-gradient(circle at 20% 20%, rgba(255, 165, 0, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                    linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.05) 49%, rgba(255, 255, 255, 0.05) 51%, transparent 52%)
+                  `,
+                  backgroundSize: '200px 200px, 300px 300px, 20px 20px'
+                }}
+              />
               
-              <div className="relative z-10">
+              <div className="relative z-10 space-y-4">
                 {messages.map((msg, index) => (
                   <motion.div
                     key={msg.id}
@@ -486,36 +510,50 @@ export const ChatSystem = () => {
                     transition={{ 
                       delay: index * 0.1,
                       type: "spring",
-                      stiffness: 500,
-                      damping: 30
+                      stiffness: 400,
+                      damping: 25
                     }}
-                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className={`max-w-[85%] sm:max-w-xs px-3 sm:px-5 py-2 sm:py-4 rounded-2xl relative overflow-hidden ${
+                      whileHover={{ scale: 1.02, y: -1 }}
+                      className={`max-w-[85%] px-4 py-3 rounded-3xl relative overflow-hidden group ${
                         msg.sender === 'user'
-                          ? 'text-white shadow-lg'
-                          : 'bg-white/80 text-gray-800 shadow-md border border-white/50'
+                          ? 'text-white'
+                          : 'bg-white/80 text-gray-800 border border-white/50'
                       }`}
                       style={msg.sender === 'user' ? {
-                        background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%)',
+                        background: 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 50%, #FFA500 100%)',
                         backdropFilter: 'blur(10px)',
-                        boxShadow: '0 8px 32px rgba(255, 107, 0, 0.3)'
+                        boxShadow: '0 8px 32px rgba(255, 107, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
                       } : {
-                        backdropFilter: 'blur(20px)',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                        backdropFilter: 'blur(30px)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
                       }}
                     >
+                      {/* Shimmer effect for user messages */}
                       {msg.sender === 'user' && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                        <motion.div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                          style={{
+                            background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)'
+                          }}
+                          animate={{ x: ['-100%', '100%'] }}
+                          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                        />
                       )}
-                      <p className="text-sm leading-relaxed relative z-10 font-medium break-words">{msg.text}</p>
+                      
+                      <p 
+                        className="text-sm leading-relaxed relative z-10 font-medium break-words"
+                        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                      >
+                        {msg.text}
+                      </p>
                     </motion.div>
                   </motion.div>
                 ))}
               
-                {/* Premium Typing Indicator */}
+                {/* ✨ LUXURY TYPING INDICATOR */}
                 {isTyping && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -523,11 +561,11 @@ export const ChatSystem = () => {
                     className="flex justify-start"
                   >
                     <motion.div 
-                      className="bg-white/90 text-gray-800 shadow-lg px-3 sm:px-5 py-2 sm:py-4 rounded-2xl max-w-[85%] sm:max-w-xs relative overflow-hidden"
+                      className="bg-white/90 text-gray-800 px-4 py-3 rounded-3xl max-w-[85%] relative overflow-hidden"
                       style={{
-                        backdropFilter: 'blur(20px)',
+                        backdropFilter: 'blur(30px)',
                         border: '1px solid rgba(255, 255, 255, 0.3)',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)'
                       }}
                     >
                       <div className="flex items-center space-x-3">
@@ -535,13 +573,16 @@ export const ChatSystem = () => {
                           {[...Array(3)].map((_, i) => (
                             <motion.div
                               key={i}
-                              className="w-2.5 h-2.5 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+                              className="w-2.5 h-2.5 rounded-full"
+                              style={{
+                                background: 'linear-gradient(135deg, #FF8A00, #FFA500)'
+                              }}
                               animate={{
-                                scale: [1, 1.4, 1],
-                                opacity: [0.5, 1, 0.5],
+                                scale: [1, 1.5, 1],
+                                opacity: [0.4, 1, 0.4],
                               }}
                               transition={{
-                                duration: 1.5,
+                                duration: 1.2,
                                 repeat: Infinity,
                                 delay: i * 0.2,
                                 ease: "easeInOut"
@@ -549,27 +590,60 @@ export const ChatSystem = () => {
                             />
                           ))}
                         </div>
-                        <span className="text-xs text-gray-500 font-medium">Sunshine is thinking...</span>
+                        <span 
+                          className="text-xs text-gray-500 font-medium"
+                          style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                        >
+                          Sunshine is thinking...
+                        </span>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Sparkles className="w-3 h-3 text-orange-400" />
+                        </motion.div>
                       </div>
                     </motion.div>
                   </motion.div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
+
+              {/* Scroll to Top Button */}
+              <AnimatePresence>
+                {showScrollToTop && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={scrollToTop}
+                    className="absolute bottom-4 right-4 p-2 rounded-full text-white shadow-lg"
+                    style={{
+                      background: 'linear-gradient(135deg, #FF8A00, #FFA500)',
+                      boxShadow: '0 4px 15px rgba(255, 138, 0, 0.4)'
+                    }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Responsive Input Section */}
+            {/* 🎛️ INPUT SECTION */}
             <div 
-              className="p-3 sm:p-6 relative"
+              className="p-6 relative"
               style={{
                 background: 'rgba(255, 255, 255, 0.8)',
-                backdropFilter: 'blur(20px)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+                backdropFilter: 'blur(30px)',
+                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '0 0 28px 28px'
               }}
             >
               {/* Premium Feature Shortcuts */}
               <motion.div 
-                className="flex gap-2 sm:gap-3 mb-3 sm:mb-4 overflow-x-auto pb-1"
+                className="flex gap-3 mb-4 overflow-x-auto pb-1"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -585,62 +659,79 @@ export const ChatSystem = () => {
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={feature.action}
-                    className={`p-2 sm:p-3 rounded-xl text-white transition-all duration-300 bg-gradient-to-r ${feature.color} shadow-lg hover:shadow-xl relative overflow-hidden group flex-shrink-0`}
+                    className={`p-3 rounded-2xl text-white transition-all duration-300 bg-gradient-to-r ${feature.color} shadow-lg hover:shadow-xl relative overflow-hidden group flex-shrink-0`}
                     title={feature.title}
                     style={{
-                      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+                      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)'
                     }}
                   >
-                    <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    <feature.icon className="w-3 h-3 sm:w-4 sm:h-4 relative z-10" />
+                    <motion.div
+                      className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full"
+                      transition={{ duration: 0.6 }}
+                    />
+                    <feature.icon className="w-4 h-4 relative z-10" />
                   </motion.button>
                 ))}
               </motion.div>
 
-              <div className="flex gap-2 sm:gap-3 items-end">
+              {/* Input Bar */}
+              <div className="flex gap-3 items-end">
                 <div className="flex-1 relative">
-                  <input
+                  <motion.input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                    placeholder="Ask me anything..."
+                    placeholder="Send a message..."
                     disabled={loading}
-                    className="w-full px-3 sm:px-5 py-3 sm:py-4 text-sm font-medium rounded-2xl transition-all duration-300 focus:outline-none focus:ring-0 border-0"
+                    className="w-full px-5 py-4 text-sm font-medium rounded-3xl transition-all duration-300 focus:outline-none focus:ring-0 border-0"
                     style={{
                       background: 'rgba(255, 255, 255, 0.9)',
-                      backdropFilter: 'blur(10px)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.3)',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+                      boxShadow: input ? 
+                        '0 8px 32px rgba(255, 138, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)' :
+                        '0 4px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                      fontFamily: 'Inter, system-ui, sans-serif'
+                    }}
+                    whileFocus={{
+                      boxShadow: '0 0 0 3px rgba(255, 138, 0, 0.1), 0 8px 32px rgba(255, 138, 0, 0.15)'
                     }}
                   />
                   {input && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2"
                     >
-                      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                      <motion.div 
+                        className="w-2 h-2 bg-orange-400 rounded-full"
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
                     </motion.div>
                   )}
                 </div>
                 
                 <motion.button
-                  whileHover={{ scale: 1.05, rotate: 5 }}
+                  whileHover={{ scale: 1.05, rotate: 15 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
                   disabled={!input.trim() || loading}
-                  className="p-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 relative overflow-hidden group"
+                  className="p-4 rounded-3xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 relative overflow-hidden group"
                   style={{
                     background: input.trim() 
                       ? 'linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%)'
-                      : 'rgba(156, 163, 175, 0.5)',
+                      : 'rgba(156, 163, 175, 0.3)',
                     boxShadow: input.trim() 
-                      ? '0 8px 25px rgba(255, 107, 0, 0.4)'
+                      ? '0 8px 25px rgba(255, 107, 0, 0.3)'
                       : '0 4px 15px rgba(156, 163, 175, 0.2)'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/20 transform rotate-45 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+                  <motion.div
+                    className="absolute inset-0 bg-white/20 transform rotate-45 -translate-x-full group-hover:translate-x-full"
+                    transition={{ duration: 0.5 }}
+                  />
                   <Send className="w-5 h-5 text-white relative z-10" />
                 </motion.button>
               </div>
