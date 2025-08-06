@@ -17,6 +17,7 @@ import SalonDashboard from './pages/dashboard/Salon';
 import OwnerDashboard from './pages/dashboard/Owner';
 import ManagerDashboard from './pages/dashboard/Manager';
 import FreelancerDashboard from './pages/dashboard/Freelancer';
+import ProfileDashboard from './pages/dashboard/Profile';
 import Community from './pages/Community';
 import SupplierDashboard from './pages/dashboard/Supplier';
 import OtherDashboard from './pages/dashboard/Other';
@@ -161,8 +162,12 @@ const routes = [
     element: <Dashboard />,
   },
   {
+    path: '/dashboard/profile',
+    element: <ProfileDashboard />,
+  },
+  {
     path: '/dashboard/artist',
-    element: <ArtistDashboard />,
+    element: <Navigate to="/dashboard/profile" replace />,
   },
   {
     path: '/dashboard/customer',
@@ -182,7 +187,7 @@ const routes = [
   },
   {
     path: '/dashboard/freelancer',
-    element: <FreelancerDashboard />,
+    element: <Navigate to="/dashboard/profile" replace />,
   },
   {
     path: '/dashboard/supplier',

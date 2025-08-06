@@ -10,6 +10,7 @@ const BookingServices = lazy(() => import('@/pages/BookingServices'));
 const Jobs = lazy(() => import('@/pages/Jobs'));
 const SalonsPageRedesigned = lazy(() => import('@/pages/salons/SalonsPageRedesigned'));
 const Dashboard = lazy(() => import('@/pages/dashboard'));
+const ProfileDashboard = lazy(() => import('@/pages/dashboard/Profile'));
 const ArtistDashboard = lazy(() => import('@/pages/dashboard/Artist'));
 const CustomerDashboard = lazy(() => import('@/pages/dashboard/Customer'));
 const SalonDashboard = lazy(() => import('@/pages/dashboard/Salon'));
@@ -69,10 +70,26 @@ const ProductionRoutes: React.FC = () => {
           }
         />
         <Route
+          path="/dashboard/profile"
+          element={
+            <ProductionRouteGuard requiresAuth>
+              <ProfileDashboard />
+            </ProductionRouteGuard>
+          }
+        />
+        <Route
           path="/dashboard/artist"
           element={
             <ProductionRouteGuard requiresAuth requiresRole="artist">
-              <ArtistDashboard />
+              <ProfileDashboard />
+            </ProductionRouteGuard>
+          }
+        />
+        <Route
+          path="/dashboard/freelancer"
+          element={
+            <ProductionRouteGuard requiresAuth>
+              <ProfileDashboard />
             </ProductionRouteGuard>
           }
         />
