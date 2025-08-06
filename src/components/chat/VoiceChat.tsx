@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, MicOff, Volume2, VolumeX, Phone, PhoneOff } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, Phone, PhoneOff, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { isFeatureEnabled } from '@/config/premiumFeatures';
@@ -70,13 +70,81 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ isOpen, onClose }) => {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl p-4 w-full max-w-sm mx-auto"
+          className="bg-white rounded-2xl p-4 w-full max-w-sm mx-auto relative"
         >
+          {/* Close Button */}
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="icon"
+            className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+
           {/* Compact Header */}
           <div className="text-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full mx-auto mb-2 flex items-center justify-center">
-              <span className="text-xl">☀️</span>
-            </div>
+            <motion.div 
+              className="w-16 h-16 mx-auto mb-2 flex items-center justify-center relative"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              {/* Animated Rays */}
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-4 bg-gradient-to-t from-orange-400 to-yellow-300 rounded-full"
+                    style={{
+                      left: '50%',
+                      top: '-8px',
+                      originX: 0.5,
+                      originY: '40px',
+                      transform: `rotate(${i * 45}deg) translateX(-50%)`
+                    }}
+                    animate={{
+                      opacity: [0.3, 1, 0.3],
+                      scale: [0.8, 1.2, 0.8]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                      ease: "easeInOut"
+                    }}
+                  />
+                ))}
+              </motion.div>
+              
+              {/* Central Sun */}
+              <motion.div 
+                className="w-14 h-14 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg relative z-10"
+                animate={{
+                  boxShadow: [
+                    "0 0 20px rgba(255, 165, 0, 0.5)",
+                    "0 0 30px rgba(255, 165, 0, 0.8)",
+                    "0 0 20px rgba(255, 165, 0, 0.5)"
+                  ]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <motion.span 
+                  className="text-white text-xl font-bold"
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                >
+                  ☀
+                </motion.span>
+              </motion.div>
+            </motion.div>
             <h2 className="text-lg font-bold text-gray-900 mb-1">Little Sunshine</h2>
             <Badge 
               variant={connectionStatus === 'connected' ? 'default' : 'secondary'}
