@@ -13,10 +13,9 @@ import { navigateToRoleDashboard, needsRoleSelection } from '@/utils/roleDashboa
 import RoleSelectionModal from '@/components/auth/RoleSelectionModal';
 
 // Import all dashboard components
-import ArtistDashboard from '@/pages/dashboard/Artist';
+import ProfileDashboard from '@/pages/dashboard/Profile';
 import SalonDashboard from '@/pages/dashboard/Salon';
 import CustomerDashboard from '@/pages/dashboard/Customer';
-import FreelancerDashboard from '@/pages/dashboard/Freelancer';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import ManagerDashboard from '@/pages/dashboard/Manager';
 import OtherDashboard from '@/pages/dashboard/Other';
@@ -116,14 +115,13 @@ function getDashboardPathForRole(role: string): string {
   switch (role) {
     case 'artist':
     case 'nail technician/artist':
-      return '/dashboard/artist';
+    case 'freelancer':
+      return '/dashboard/profile';
     case 'salon':
     case 'owner':
       return '/dashboard/salon';
     case 'customer':
       return '/dashboard/customer';
-    case 'freelancer':
-      return '/dashboard/freelancer';
     case 'supplier':
     case 'beauty supplier':
     case 'vendor':
@@ -144,14 +142,13 @@ function renderDashboardForRole(role: string | null) {
   switch (role) {
     case 'artist':
     case 'nail technician/artist':
-      return <ArtistDashboard />;
+    case 'freelancer':
+      return <ProfileDashboard />;
     case 'salon':
     case 'owner':
       return <SalonDashboard />;
     case 'customer':
       return <CustomerDashboard />;
-    case 'freelancer':
-      return <FreelancerDashboard />;
     case 'supplier':
     case 'beauty supplier':
     case 'vendor':
