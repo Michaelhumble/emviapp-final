@@ -10,7 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Crown, Sparkles, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, 
   Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus,
-  Edit, User, Trophy, CheckCircle, Coins, BarChart3, Gamepad2
+  Edit, User, Trophy, CheckCircle, Coins, BarChart3, Gamepad2, Search
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -693,14 +693,37 @@ const CustomerDashboard = () => {
             </motion.div>
           )}
 
+          {activeTab === 'discover' && (
+            <motion.div key="discover" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <AIProviderDiscovery onViewMap={() => setActiveTab('map')} />
+            </motion.div>
+          )}
+
+          {activeTab === 'map' && (
+            <motion.div key="map" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <MapboxProviderMap onClose={() => setActiveTab('discover')} />
+            </motion.div>
+          )}
+
+          {activeTab === 'stories' && (
+            <motion.div key="stories" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <CustomerStoriesHub />
+            </motion.div>
+          )}
+
+          {activeTab === 'social' && (
+            <motion.div key="social" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <div className="space-y-6">
+                <SocialMediaIntegration />
+                <SmartReminderEngine />
+                <PushNotificationCenter />
+              </div>
+            </motion.div>
+          )}
+
           {activeTab === 'booking' && (
-            <motion.div
-              key="booking"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <OptimizedBookingFlow />
+            <motion.div key="booking" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <OptimizedBookingFlow onBookingComplete={refetchBookings} />
             </motion.div>
           )}
         </AnimatePresence>
