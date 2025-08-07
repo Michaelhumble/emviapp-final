@@ -97,8 +97,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
   // Close menu on route change to prevent stuck menu
   React.useEffect(() => {
-    onClose();
-  }, [location.pathname, onClose]);
+    // Only close if menu is open and route actually changed
+    if (isOpen) {
+      onClose();
+    }
+  }, [location.pathname]); // Removed onClose dependency to prevent re-trigger loops
 
   // Add ESC key handler to close menu
   React.useEffect(() => {
