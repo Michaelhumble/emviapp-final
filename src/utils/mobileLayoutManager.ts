@@ -10,6 +10,8 @@ export const MOBILE_LAYOUT = {
     FAB_SECONDARY: 48,
     CHAT_BUTTON: 51, // Slightly higher than other FABs
     MODAL_OVERLAY: 60,
+    MOBILE_MENU_BACKDROP: 9998, // Mobile menu backdrop
+    MOBILE_MENU_PANEL: 9999, // Mobile menu panel (highest)
     TOAST_NOTIFICATIONS: 70,
     EMERGENCY_ALERTS: 80,
   },

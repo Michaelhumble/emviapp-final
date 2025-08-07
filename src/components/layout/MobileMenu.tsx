@@ -95,6 +95,51 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     { icon: Phone, label: 'Contact', href: '/contact' },
   ];
 
+  // Close menu on route change to prevent stuck menu
+  React.useEffect(() => {
+    onClose();
+  }, [location.pathname, onClose]);
+
+  // Add ESC key handler to close menu
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  // Prevent background scrolling when menu is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+    };
+  }, [isOpen]);
+
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
@@ -105,9 +150,12 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md md:hidden"
+            style={{ 
+              zIndex: 9998, // Below menu panel
+              backdropFilter: 'blur(8px)' 
+            }}
             onClick={onClose}
-            style={{ backdropFilter: 'blur(8px)' }}
           />
 
           {/* Menu Panel */}
@@ -121,8 +169,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               stiffness: 300,
               duration: 0.3 
             }}
-            className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-[10000] flex flex-col"
+            className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col"
             style={{ 
+              zIndex: 9999, // Highest priority
               height: '100dvh',
               minHeight: '100svh',
               overflowY: 'hidden'
