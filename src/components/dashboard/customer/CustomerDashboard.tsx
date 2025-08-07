@@ -28,6 +28,12 @@ import LiveLeaderboard from '@/components/social/LiveLeaderboard';
 import SocialChallenges from '@/components/social/SocialChallenges';
 import AdvancedStreakSystem from '@/components/loyalty/AdvancedStreakSystem';
 import OptimizedBookingFlow from '@/components/booking/OptimizedBookingFlow';
+import AIProviderDiscovery from '@/components/discovery/AIProviderDiscovery';
+import CustomerStoriesHub from '@/components/stories/CustomerStoriesHub';
+import SocialMediaIntegration from '@/components/social/SocialMediaIntegration';
+import SmartReminderEngine from '@/components/reminders/SmartReminderEngine';
+import MapboxProviderMap from '@/components/map/MapboxProviderMap';
+import PushNotificationCenter from '@/components/notifications/PushNotificationCenter';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 import { useCustomerBookingHistory } from '@/hooks/useCustomerBookingHistory';
 import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
@@ -42,7 +48,8 @@ const CustomerDashboard = () => {
   const [showShareWin, setShowShareWin] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [userCredits, setUserCredits] = useState(0);
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking' | 'discover' | 'stories' | 'social' | 'map'>('overview');
+  const [showMapView, setShowMapView] = useState(false);
 
   // Load user credits
   useEffect(() => {
@@ -234,6 +241,10 @@ const CustomerDashboard = () => {
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-2 flex space-x-2">
             {[
               { key: 'overview', label: 'Overview', icon: Star },
+              { key: 'discover', label: 'Discover', icon: Search },
+              { key: 'map', label: 'Map', icon: MapPin },
+              { key: 'stories', label: 'Stories', icon: Heart },
+              { key: 'social', label: 'Social', icon: Share2 },
               { key: 'analytics', label: 'Analytics', icon: BarChart3 },
               { key: 'challenges', label: 'Challenges', icon: Gamepad2 },
               { key: 'booking', label: 'Book Now', icon: Calendar }
