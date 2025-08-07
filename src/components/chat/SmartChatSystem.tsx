@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Loader2, MessageCircle, Settings } from 'lucide-react';
+import { X, Loader2, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { SmartChatButton } from './SmartChatButton';
+import { MobileChatInput } from './MobileChatInput';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useKeyboardVisible } from '@/utils/mobileLayoutManager';
 import { MOBILE_LAYOUT } from '@/utils/mobileLayoutManager';
 
 interface Message {
@@ -277,8 +279,9 @@ const SmartChatSystem: React.FC = () => {
               ref={chatContainerRef}
               className="flex-1 p-6 overflow-y-auto space-y-4"
               style={{
-                height: isMobile ? 'calc(100vh - 240px)' : 'calc(100% - 140px)',
+                height: isMobile ? 'calc(100vh - 320px)' : 'calc(100% - 140px)',
                 background: 'linear-gradient(to bottom, #fafafa 0%, #ffffff 100%)',
+                paddingBottom: isMobile ? '120px' : '24px', // Extra space for mobile input
               }}
             >
               {messages.map((message, index) => (
@@ -371,37 +374,14 @@ const SmartChatSystem: React.FC = () => {
               )}
             </div>
 
-            {/* Input Section */}
-            <div className="p-6 border-t border-gray-100">
-              <div className="flex space-x-3">
-                <input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Ask Little Sunshine anything..."
-                  className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm bg-white"
-                  disabled={isLoading}
-                  style={{
-                    minHeight: MOBILE_LAYOUT.TOUCH_TARGETS.MIN_SIZE + 'px'
-                  }}
-                />
-                <motion.button
-                  onClick={handleSendMessage}
-                  disabled={!inputMessage.trim() || isLoading}
-                  className="bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl px-4 py-3 hover:from-orange-600 hover:to-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg touch-manipulation"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    minWidth: MOBILE_LAYOUT.TOUCH_TARGETS.MIN_SIZE + 'px',
-                    minHeight: MOBILE_LAYOUT.TOUCH_TARGETS.MIN_SIZE + 'px'
-                  }}
-                  aria-label="Send message"
-                >
-                  <Send className="w-5 h-5" />
-                </motion.button>
-              </div>
-            </div>
+            {/* Mobile-optimized Input Section */}
+            <MobileChatInput
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              onSendMessage={handleSendMessage}
+              isLoading={isLoading}
+              isMobile={isMobile}
+            />
           </motion.div>
         )}
       </AnimatePresence>
