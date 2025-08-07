@@ -166,12 +166,7 @@ const OptimizedJobsPage: React.FC = () => {
     hasMore,
     loadMore,
     refresh
-  } = useOptimizedJobsData({
-    category: selectedIndustry === 'all' ? undefined : selectedIndustry,
-    location: debouncedLocation || undefined,
-    searchTerm: debouncedSearchTerm || undefined,
-    enableCache: true
-  });
+  } = useOptimizedJobsData();
 
   // Update URL params when filters change
   useEffect(() => {

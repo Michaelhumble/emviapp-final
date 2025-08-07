@@ -1,39 +1,26 @@
 
 import React, { useEffect } from 'react';
-import JobsPage from './jobs';
+import OptimizedJobsPageContent from './jobs/OptimizedJobsPageContent';
 import { Helmet } from 'react-helmet';
 import { Routes, Route } from 'react-router-dom';
 import CreateJobPosting from './jobs/CreateJobPosting';
 import EditJobPage from './jobs/EditJobPage';
 import { useTranslation } from '@/hooks/useTranslation';
-// Mobile navigation handled by Layout component
 
 const Jobs = () => {
   const { isVietnamese } = useTranslation();
   
   useEffect(() => {
     // Log page visit
-    console.log("Jobs page accessed, rendering JobsPage component");
+    console.log("Jobs page accessed, rendering OptimizedJobsPageContent component");
     document.title = isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp";
   }, [isVietnamese]);
 
   return (
     <>
-      <Helmet>
-        <title>
-          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
-        </title>
-        <meta 
-          name="description" 
-          content={isVietnamese 
-            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
-            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
-          }
-        />
-      </Helmet>
-      <div className="pb-20 md:pb-0">
+      <div className="w-full">
         <Routes>
-          <Route path="/" element={<JobsPage />} />
+          <Route path="/" element={<OptimizedJobsPageContent />} />
           <Route path="/create" element={<CreateJobPosting />} />
           <Route path="/edit/:jobId" element={<EditJobPage />} />
         </Routes>
