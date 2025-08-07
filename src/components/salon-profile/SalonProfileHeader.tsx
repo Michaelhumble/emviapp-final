@@ -110,15 +110,22 @@ const SalonProfileHeader: React.FC<SalonProfileHeaderProps> = ({ salon }) => {
         </div>
       </div>
       
-      {/* Mobile Booking Button */}
+      {/* Mobile Booking Button - Optimized */}
       {isMobile && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="fixed bottom-4 right-4 z-50"
+          className="fixed right-4"
+          style={{ 
+            bottom: '80px', // Safe distance from bottom nav
+            zIndex: 48, // Below primary FABs
+          }}
         >
-          <Button size="lg" className="rounded-full shadow-xl flex items-center gap-2">
+          <Button 
+            size="lg" 
+            className="rounded-full shadow-xl flex items-center gap-2 min-w-[48px] min-h-[48px] touch-manipulation"
+          >
             <Calendar className="h-4 w-4" />
             Book Now
           </Button>
