@@ -34,8 +34,7 @@ import SocialMediaIntegration from '@/components/social/SocialMediaIntegration';
 import SmartReminderEngine from '@/components/reminders/SmartReminderEngine';
 import MapboxProviderMap from '@/components/map/MapboxProviderMap';
 import PushNotificationCenter from '@/components/notifications/PushNotificationCenter';
-import DashboardAnalytics from '@/components/analytics/DashboardAnalytics';
-import NetworkSeeding from '@/components/network/NetworkSeeding';
+import ComprehensiveLaunchDashboard from '@/components/launch/ComprehensiveLaunchDashboard';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 import { useCustomerBookingHistory } from '@/hooks/useCustomerBookingHistory';
 import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
@@ -726,13 +725,13 @@ const CustomerDashboard = () => {
 
           {activeTab === 'network' && (
             <motion.div key="network" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-              <NetworkSeeding />
+              <ComprehensiveLaunchDashboard />
             </motion.div>
           )}
 
           {activeTab === 'monitor' && (
             <motion.div key="monitor" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-              <DashboardAnalytics />
+              <ComprehensiveLaunchDashboard />
             </motion.div>
           )}
 
