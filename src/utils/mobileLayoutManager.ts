@@ -8,6 +8,7 @@ export const MOBILE_LAYOUT = {
     STICKY_CTA: 45,
     FAB_PRIMARY: 50,
     FAB_SECONDARY: 48,
+    CHAT_BUTTON: 51, // Slightly higher than other FABs
     MODAL_OVERLAY: 60,
     TOAST_NOTIFICATIONS: 70,
     EMERGENCY_ALERTS: 80,

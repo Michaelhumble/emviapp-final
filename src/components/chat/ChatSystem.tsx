@@ -1,9 +1,9 @@
 import React from 'react';
-import ProfessionalChatSystem from './ProfessionalChatSystem';
+import SmartChatSystem from './SmartChatSystem';
 
-// Use the new professional chat system
+// Use the new smart chat system with intelligent positioning
 const ChatSystem: React.FC = () => {
-  return <ProfessionalChatSystem />;
+  return <SmartChatSystem />;
 };
 
 export default ChatSystem;
