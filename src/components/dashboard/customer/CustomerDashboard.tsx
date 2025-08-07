@@ -10,7 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Crown, Sparkles, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, 
   Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus,
-  Edit, User, Trophy, CheckCircle, Coins, BarChart3, Gamepad2, Search
+  Edit, User, Trophy, CheckCircle, Coins, BarChart3, Gamepad2, Search, AlertTriangle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -35,6 +35,7 @@ import SmartReminderEngine from '@/components/reminders/SmartReminderEngine';
 import MapboxProviderMap from '@/components/map/MapboxProviderMap';
 import PushNotificationCenter from '@/components/notifications/PushNotificationCenter';
 import ComprehensiveLaunchDashboard from '@/components/launch/ComprehensiveLaunchDashboard';
+import { EmergencyResponseDashboard } from '@/components/scaling/EmergencyResponseDashboard';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 import { useCustomerBookingHistory } from '@/hooks/useCustomerBookingHistory';
 import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
@@ -49,7 +50,7 @@ const CustomerDashboard = () => {
   const [showShareWin, setShowShareWin] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [userCredits, setUserCredits] = useState(0);
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking' | 'discover' | 'stories' | 'social' | 'map' | 'network' | 'monitor'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking' | 'discover' | 'stories' | 'social' | 'map' | 'network' | 'monitor' | 'emergency'>('overview');
   const [showMapView, setShowMapView] = useState(false);
 
   // Load user credits
@@ -248,6 +249,7 @@ const CustomerDashboard = () => {
               { key: 'social', label: 'Social', icon: Share2 },
               { key: 'network', label: 'Network', icon: Users },
               { key: 'monitor', label: 'Monitor', icon: BarChart3 },
+              { key: 'emergency', label: '🚨 Emergency', icon: AlertTriangle },
               { key: 'challenges', label: 'Challenges', icon: Gamepad2 },
               { key: 'booking', label: 'Book Now', icon: Calendar }
             ].map(({ key, label, icon: Icon }) => (
@@ -732,6 +734,12 @@ const CustomerDashboard = () => {
           {activeTab === 'monitor' && (
             <motion.div key="monitor" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               <ComprehensiveLaunchDashboard />
+            </motion.div>
+          )}
+
+          {activeTab === 'emergency' && (
+            <motion.div key="emergency" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <EmergencyResponseDashboard />
             </motion.div>
           )}
 
