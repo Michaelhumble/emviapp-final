@@ -28,6 +28,7 @@ const BookingCalendarNew = lazy(() => import("@/pages/dashboard/artist/BookingCa
 const ArtistInbox = lazy(() => import("@/pages/dashboard/artist/Inbox"));
 const SalonsPageRedesigned = lazy(() => import("@/pages/salons/SalonsPageRedesigned"));
 const Jobs = lazy(() => import("@/pages/Jobs"));
+const OptimizedJobsPage = lazy(() => import("@/pages/OptimizedJobsPage"));
 const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
 const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
 const About = lazy(() => import("@/pages/About"));
@@ -154,7 +155,8 @@ function App() {
                     
                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
-                     <Route path="/jobs/*" element={<Layout><Jobs /></Layout>} />
+                     <Route path="/jobs/*" element={<Jobs />} />
+                     <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
                      <Route path="/job/:jobId" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
