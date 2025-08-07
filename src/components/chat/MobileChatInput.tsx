@@ -150,28 +150,6 @@ export const MobileChatInput: React.FC<MobileChatInputProps> = ({
           </motion.button>
         </div>
 
-        {/* Typing indicator */}
-        <AnimatePresence>
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mt-3 flex items-center text-sm text-orange-600"
-            >
-              <motion.div
-                className="flex space-x-1"
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-75" />
-                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-150" />
-              </motion.div>
-              <span className="ml-3 font-medium">Sunshine is thinking...</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </motion.div>
   );
