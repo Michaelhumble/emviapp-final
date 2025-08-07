@@ -226,37 +226,30 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
               transform: 'scale(1.8)',
             }}
             animate={{
-              scale: [1.8, 2.2, 1.8],
-              opacity: [0.4, 0.7, 0.4],
+              scale: [1.8, 2.0, 1.8],
+              opacity: [0.3, 0.5, 0.3],
             }}
-            transition={{ duration: 3, repeat: Infinity }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          {/* Orbiting sparkles */}
-          {[...Array(6)].map((_, i) => (
+          {/* Simple sparkles - reduced for performance */}
+          {[...Array(3)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-2 bg-yellow-200 rounded-full"
+              className="absolute w-1.5 h-1.5 bg-yellow-200 rounded-full"
               style={{
-                boxShadow: '0 0 8px rgba(251, 191, 36, 0.8)',
+                top: `${20 + i * 25}%`,
+                right: `${15 + i * 10}%`,
+                boxShadow: '0 0 6px rgba(251, 191, 36, 0.6)',
               }}
               animate={{
-                x: [
-                  Math.cos((i * Math.PI * 2) / 6) * 40,
-                  Math.cos(((i * Math.PI * 2) / 6) + Math.PI * 2) * 40,
-                ],
-                y: [
-                  Math.sin((i * Math.PI * 2) / 6) * 40,
-                  Math.sin(((i * Math.PI * 2) / 6) + Math.PI * 2) * 40,
-                ],
-                scale: [1, 1.5, 1],
-                opacity: [0.6, 1, 0.6],
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 1, 0.7],
               }}
               transition={{
-                duration: 4,
+                duration: 2,
                 repeat: Infinity,
-                delay: i * 0.2,
-                ease: "linear",
+                delay: i * 0.4,
               }}
             />
           ))}
@@ -279,10 +272,10 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
               boxShadow: '0 8px 32px rgba(251, 191, 36, 0.6), inset 0 2px 8px rgba(255, 255, 255, 0.3)',
             }}
             animate={{
-              rotate: [0, 360],
+              rotate: [0, 10, -10, 0],
             }}
             transition={{
-              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+              rotate: { duration: 8, repeat: Infinity, ease: "easeInOut" },
             }}
             aria-label="Chat with Little Sunshine - AI Assistant"
             aria-describedby="chat-button-description"
