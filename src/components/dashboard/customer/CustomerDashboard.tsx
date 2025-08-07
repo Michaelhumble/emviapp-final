@@ -34,6 +34,8 @@ import SocialMediaIntegration from '@/components/social/SocialMediaIntegration';
 import SmartReminderEngine from '@/components/reminders/SmartReminderEngine';
 import MapboxProviderMap from '@/components/map/MapboxProviderMap';
 import PushNotificationCenter from '@/components/notifications/PushNotificationCenter';
+import DashboardAnalytics from '@/components/analytics/DashboardAnalytics';
+import NetworkSeeding from '@/components/network/NetworkSeeding';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 import { useCustomerBookingHistory } from '@/hooks/useCustomerBookingHistory';
 import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
@@ -48,7 +50,7 @@ const CustomerDashboard = () => {
   const [showShareWin, setShowShareWin] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [userCredits, setUserCredits] = useState(0);
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking' | 'discover' | 'stories' | 'social' | 'map'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking' | 'discover' | 'stories' | 'social' | 'map' | 'network' | 'monitor'>('overview');
   const [showMapView, setShowMapView] = useState(false);
 
   // Load user credits
@@ -245,7 +247,8 @@ const CustomerDashboard = () => {
               { key: 'map', label: 'Map', icon: MapPin },
               { key: 'stories', label: 'Stories', icon: Heart },
               { key: 'social', label: 'Social', icon: Share2 },
-              { key: 'analytics', label: 'Analytics', icon: BarChart3 },
+              { key: 'network', label: 'Network', icon: Users },
+              { key: 'monitor', label: 'Monitor', icon: BarChart3 },
               { key: 'challenges', label: 'Challenges', icon: Gamepad2 },
               { key: 'booking', label: 'Book Now', icon: Calendar }
             ].map(({ key, label, icon: Icon }) => (
@@ -721,9 +724,21 @@ const CustomerDashboard = () => {
             </motion.div>
           )}
 
+          {activeTab === 'network' && (
+            <motion.div key="network" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <NetworkSeeding />
+            </motion.div>
+          )}
+
+          {activeTab === 'monitor' && (
+            <motion.div key="monitor" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <DashboardAnalytics />
+            </motion.div>
+          )}
+
           {activeTab === 'booking' && (
             <motion.div key="booking" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-              <OptimizedBookingFlow onBookingComplete={refetchBookings} />
+              <OptimizedBookingFlow />
             </motion.div>
           )}
         </AnimatePresence>
