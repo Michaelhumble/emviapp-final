@@ -10,7 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Crown, Sparkles, Zap, Star, TrendingUp, Users, Heart, Award, Target, Gift, 
   Share2, Calendar, MapPin, Scissors, Store, Briefcase, ArrowRight, Plus,
-  Edit, User, Trophy, CheckCircle, Coins
+  Edit, User, Trophy, CheckCircle, Coins, BarChart3, Gamepad2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -23,6 +23,11 @@ import ShareWinModal from '@/components/customer/ShareWinModal';
 import CreditsProgress from '@/components/customer/CreditsProgress';
 import ReviewsSection from '@/components/customer/ReviewsSection';
 import WriteReviewButton from '@/components/customer/WriteReviewButton';
+import ConversionAnalytics from '@/components/analytics/ConversionAnalytics';
+import LiveLeaderboard from '@/components/social/LiveLeaderboard';
+import SocialChallenges from '@/components/social/SocialChallenges';
+import AdvancedStreakSystem from '@/components/loyalty/AdvancedStreakSystem';
+import OptimizedBookingFlow from '@/components/booking/OptimizedBookingFlow';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 import { useCustomerBookingHistory } from '@/hooks/useCustomerBookingHistory';
 import { creditsManager, CREDIT_REWARDS } from '@/lib/credits';
@@ -37,6 +42,7 @@ const CustomerDashboard = () => {
   const [showShareWin, setShowShareWin] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [userCredits, setUserCredits] = useState(0);
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'challenges' | 'booking'>('overview');
 
   // Load user credits
   useEffect(() => {
@@ -218,7 +224,47 @@ const CustomerDashboard = () => {
           </motion.div>
         </motion.div>
 
-        {/* Viral Stats Grid */}
+        {/* Phase 2 Navigation Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex justify-center mb-8"
+        >
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-2 flex space-x-2">
+            {[
+              { key: 'overview', label: 'Overview', icon: Star },
+              { key: 'analytics', label: 'Analytics', icon: BarChart3 },
+              { key: 'challenges', label: 'Challenges', icon: Gamepad2 },
+              { key: 'booking', label: 'Book Now', icon: Calendar }
+            ].map(({ key, label, icon: Icon }) => (
+              <Button
+                key={key}
+                variant={activeTab === key ? 'default' : 'ghost'}
+                onClick={() => setActiveTab(key as typeof activeTab)}
+                className={`flex items-center space-x-2 ${
+                  activeTab === key
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{label}</span>
+              </Button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Dynamic Content Based on Active Tab */}
+        <AnimatePresence mode="wait">
+          {activeTab === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              {/* Viral Stats Grid */}
         <motion.div 
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -599,9 +645,54 @@ const CustomerDashboard = () => {
                    </div>
                  </CardContent>
                </Card>
-             )}
-           </div>
-         </div>
+              )}
+            </div>
+          </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'analytics' && (
+            <motion.div
+              key="analytics"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ConversionAnalytics />
+                <AdvancedStreakSystem />
+              </div>
+              <LiveLeaderboard />
+            </motion.div>
+          )}
+
+          {activeTab === 'challenges' && (
+            <motion.div
+              key="challenges"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <SocialChallenges />
+                <LiveLeaderboard type="friends" />
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'booking' && (
+            <motion.div
+              key="booking"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <OptimizedBookingFlow />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Celebration Animation */}
         <AnimatePresence>
