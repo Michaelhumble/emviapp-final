@@ -1,17 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { analytics } from "@/lib/analytics";
+import { useAuth } from "@/context/auth";
 
 interface GuestCardTeaserModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   image?: string;
   title?: string;
+  cardType?: 'job' | 'salon' | 'artist' | 'gallery';
 }
 
-const GuestCardTeaserModal: React.FC<GuestCardTeaserModalProps> = ({ open, onOpenChange, image, title }) => {
+const GuestCardTeaserModal: React.FC<GuestCardTeaserModalProps> = ({ open, onOpenChange, image, title, cardType }) => {
   const navigate = useNavigate();
+  const { isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (open) {
+      analytics.trackEvent({
+        action: 'wonderland_card_teaser_open',
+        category: 'wonderland',
+        custom_parameters: {
+          userStatus: isSignedIn ? 'authenticated' : 'guest',
+          cardType
+        }
+      });
+    }
+  }, [open, isSignedIn, cardType]);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -36,7 +53,17 @@ const GuestCardTeaserModal: React.FC<GuestCardTeaserModalProps> = ({ open, onOpe
           <div className="mt-2 h-4 w-40 bg-muted rounded blur-[1px]" />
         </div>
         <div className="mt-4 flex justify-end">
-          <Button onClick={() => navigate('/auth/signup')} className="rounded-lg">
+          <Button onClick={() => {
+            analytics.trackEvent({
+              action: 'wonderland_gate_unlock_click',
+              category: 'wonderland',
+              custom_parameters: {
+                userStatus: isSignedIn ? 'authenticated' : 'guest',
+                cardType
+              }
+            });
+            navigate('/auth/signup');
+          }} className="rounded-lg">
             Sign up to unlock full details
           </Button>
         </div>

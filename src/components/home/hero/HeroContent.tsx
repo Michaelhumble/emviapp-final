@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { WONDERLAND_ENABLED } from "@/config/wonderland.config";
+import { useAuth } from "@/context/auth";
+import { analytics } from "@/lib/analytics";
 
 interface HeroImage {
   url: string;
@@ -30,6 +32,7 @@ const HeroContent = ({
   isMobile = false
 }: HeroContentProps) => {
   
+  const { isSignedIn } = useAuth();
   const currentSlide = heroImages[activeIndex];
   
   // Only show a maximum of 7 dots, with current one centered
@@ -128,6 +131,13 @@ const HeroContent = ({
             type="button"
             onClick={() => {
               if (!WONDERLAND_ENABLED) return;
+              analytics.trackEvent({
+                action: 'wonderland_explore_click',
+                category: 'wonderland',
+                custom_parameters: {
+                  userStatus: isSignedIn ? 'authenticated' : 'guest'
+                }
+              });
               const el = document.getElementById('wonderland-start');
               el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               // Attempt to focus for accessibility without jumping

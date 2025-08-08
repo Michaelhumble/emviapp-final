@@ -66,7 +66,7 @@ const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marke
           </article>
         ))}
       </div>
-      <GuestCardTeaserModal open={open} onOpenChange={setOpen} image={teaser.image} title={teaser.title} />
+      <GuestCardTeaserModal open={open} onOpenChange={setOpen} image={teaser.image} title={teaser.title} cardType="salon" />
     </section>
   );
 };

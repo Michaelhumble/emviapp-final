@@ -67,7 +67,7 @@ const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend }) =>
           </article>
         ))}
       </div>
-      <GuestCardTeaserModal open={open} onOpenChange={setOpen} image={teaser.image} title={teaser.title} />
+      <GuestCardTeaserModal open={open} onOpenChange={setOpen} image={teaser.image} title={teaser.title} cardType="job" />
     </section>
   );
 };
