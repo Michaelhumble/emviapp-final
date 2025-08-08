@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { WONDERLAND_ENABLED } from "@/config/wonderland.config";
 
 interface HeroImage {
   url: string;
