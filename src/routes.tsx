@@ -58,6 +58,7 @@ import Privacy from './pages/Privacy';
 import Cookies from './pages/Cookies';
 
 import { AuthRedirect } from './components/auth/AuthRedirect';
+import PostLoginLanding from './components/auth/PostLoginLanding';
 
 import PricingPage from './pages/pricing/PricingPage';
 import InvitePage from './pages/invite/InvitePage';
@@ -83,7 +84,7 @@ import ChooseRolePage from './pages/onboarding/ChooseRole';
 const routes = [
   {
     path: '/auth/redirect',
-    element: <AuthRedirect />,
+    element: <PostLoginLanding />,
   },
   {
     path: '/',
