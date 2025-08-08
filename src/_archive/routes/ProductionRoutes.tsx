@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+/** LEGACY ROUTER – DO NOT USE */
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProductionRouteGuard from '@/components/routing/ProductionRouteGuard';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';

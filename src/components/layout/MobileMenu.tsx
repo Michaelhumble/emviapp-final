@@ -1,4 +1,6 @@
 
+/** PROTECTED: Do not modify without explicit approval. */
+
 /**
  * 📱 MOBILE MENU - BULLETPROOF AUTH STATE SYNC
  * 

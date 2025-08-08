@@ -65,14 +65,12 @@ const Navbar = () => {
                   <ChevronDown className="w-4 h-4 ml-1" />
                 </Button>
                 <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <Link to="/post-job" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                    <Briefcase className="w-4 h-4 mr-3" />
-                    Post a Job
-                  </Link>
-                  <Link to="/sell-salon" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                    <Building2 className="w-4 h-4 mr-3" />
-                    Post Your Salon
-                  </Link>
+                  {NAV_ITEMS.filter(i => ['postJob','sellSalon'].includes(i.key)).map(item => (
+                    <Link key={item.key} to={item.path} className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                      {item.key === 'postJob' ? <Briefcase className="w-4 h-4 mr-3" /> : <Building2 className="w-4 h-4 mr-3" />}
+                      {item.label}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
