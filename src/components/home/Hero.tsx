@@ -4,10 +4,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 import { heroImages, lazyHeroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
-import HeroContent from "./hero/HeroContent";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Hero = () => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isChanging, setIsChanging] = useState(false);
   const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
@@ -90,14 +93,52 @@ const Hero = () => {
         isMobile={isMobile}
       />
       
-      {/* Main hero content - locked title and subtitle */}
+      {/* Main hero content - updated clarity messaging */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
-        <HeroContent 
-          activeIndex={currentImageIndex}
-          setActiveIndex={handleDotClick}
-          heroImages={allImages}
-          isMobile={isMobile}
-        />
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center text-white">
+            <h1 className="text-3xl md:text-6xl font-bold tracking-tight">
+              {t({
+                english: "The Beauty Industry's Missing Piece — We Just Built It.",
+                vietnamese: "Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.",
+              })}
+            </h1>
+            <p className="mt-4 text-lg md:text-2xl/relaxed text-white/90">
+              {t({
+                english: "Where beauty professionals connect with jobs, salons, and clients — all in one place.",
+                vietnamese: "Nơi thợ và tiệm gặp nhau để tìm việc, bán tiệm, và kết nối khách hàng.",
+              })}
+            </p>
+
+            {/* Icon + label row */}
+            <div className="mt-5 flex flex-col items-center gap-2 md:flex-row md:justify-center md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-base">
+                <span aria-hidden="true">💅</span>
+                <span>Find Work</span>
+              </div>
+              <div className="hidden md:block h-4 w-px bg-white/30" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-sm md:text-base">
+                <span aria-hidden="true">🏢</span>
+                <span>Hire Talent</span>
+              </div>
+              <div className="hidden md:block h-4 w-px bg-white/30" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-sm md:text-base">
+                <span aria-hidden="true">💖</span>
+                <span>Grow Your Salon</span>
+              </div>
+            </div>
+
+            {/* CTAs: stack on mobile, horizontal on desktop */}
+            <div className="mt-8 flex flex-col gap-3 items-center md:flex-row md:justify-center">
+              <Link to="/jobs">
+                <Button size="lg">Browse Jobs</Button>
+              </Link>
+              <Link to="/post-job" className="md:ml-4">
+                <Button size="lg" variant="outline">Post a Job</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
