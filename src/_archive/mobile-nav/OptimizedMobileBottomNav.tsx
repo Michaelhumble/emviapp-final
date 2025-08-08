@@ -1,3 +1,5 @@
+/** ARCHIVED – DO NOT USE. UnifiedMobileNavigation is the only bottom nav. */
+
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Scissors, Store, Briefcase, PlusCircle } from 'lucide-react';
@@ -17,10 +19,8 @@ const OptimizedMobileBottomNav = () => {
   const scrollDirection = useScrollDirection();
   const isMobile = useIsMobile();
 
-  // Don't render on desktop or while auth is loading
   if (!isMobile || loading) return null;
 
-  // Hide when keyboard is visible or scrolling down rapidly
   const shouldHide = isKeyboardVisible || scrollDirection === 'down';
 
   const bottomNavItems = [
@@ -67,7 +67,6 @@ const OptimizedMobileBottomNav = () => {
             ))}
           </div>
 
-          {/* Optimized FAB - Better positioning */}
           <motion.button 
             onClick={() => navigate('/post-job')}
             className="absolute bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full shadow-xl hover:shadow-2xl active:scale-95"

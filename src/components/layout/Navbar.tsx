@@ -20,6 +20,7 @@ import AuthButtons from './navbar/AuthButtons';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 import { Briefcase, User, Building2, Plus, ChevronDown } from 'lucide-react';
+import { NAV_ITEMS } from '@/config/nav.config';
 
 const Navbar = () => {
   // 🔐 SINGLE SOURCE OF TRUTH: Use only centralized auth state
@@ -39,55 +40,15 @@ const Navbar = () => {
 
           {/* Desktop Navigation - Optimized Dropdown Structure */}
           <div className="hidden md:flex items-center space-x-5">
-            <Link 
-              to="/" 
-              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
-            >
-              Home
-            </Link>
-            
-            {/* Marketplace Dropdown */}
-            <div className="relative group">
-              <button className="flex items-center text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors">
-                Marketplace
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <Link to="/jobs" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                  <Briefcase className="w-4 h-4 mr-3" />
-                  Jobs
-                </Link>
-                <Link to="/artists" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                  <User className="w-4 h-4 mr-3" />
-                  Artists
-                </Link>
-                <Link to="/salons" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                  <Building2 className="w-4 h-4 mr-3" />
-                  Salons
-                </Link>
-              </div>
-            </div>
-            
-            <Link 
-              to="/booking-services" 
-              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
-            >
-              Book Services
-            </Link>
-            <Link 
-              to="/community" 
-              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
-            >
-              Community
-            </Link>
-            <Link 
-              to="/blog" 
-              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
-            >
-              Blog
-            </Link>
+            {NAV_ITEMS.filter(i => i.location === 'top').map(item => (
+              <Link 
+                key={item.key}
+                to={item.path}
+                className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
 
           {/* Right side items */}

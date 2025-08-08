@@ -1,3 +1,5 @@
+/** ARCHIVED – DO NOT USE. UnifiedMobileNavigation is the only bottom nav. */
+
 import React from 'react';
 import { Home, Search, Plus, Heart, User, Video, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -77,12 +79,6 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                       {user?.user_metadata?.full_name?.[0] || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  {isActive && (
-                    <motion.div
-                      className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-purple-500 rounded-full"
-                      layoutId="activeIndicator"
-                    />
-                  )}
                 </div>
               ) : (
                 <>
@@ -94,20 +90,13 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
                     )}
                   </div>
-                  {isActive && (
-                    <motion.div
-                      className="absolute -bottom-1 w-1 h-1 bg-purple-500 rounded-full"
-                      layoutId="activeIndicator"
-                    />
-                  )}
                 </>
               )}
             </motion.button>
           );
         })}
       </div>
-      
-      {/* Messages floating button */}
+
       {hasMessages && (
         <motion.button
           className="absolute bottom-20 right-4 w-14 h-14 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg flex items-center justify-center"

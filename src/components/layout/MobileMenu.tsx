@@ -21,6 +21,7 @@ import { useAuth } from '@/context/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
 import { getAuthUIState } from './navbar/AuthButtons';
+import { NAV_ITEMS } from '@/config/nav.config';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -69,31 +70,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }
   };
 
-  // 🎯 CONSISTENT MENU LOGIC: Use shared auth state computation
-  const menuItems = uiState.isAuthenticated ? [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Scissors, label: 'Book Services', href: '/booking-services' },
-    { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Community', href: '/community' },
-    { icon: BookOpen, label: 'Blog', href: '/blog' },
-    { 
-      icon: User, 
-      label: userRole === 'artist' ? 'Artist Dashboard' : 'Dashboard', 
-      href: '/dashboard' 
-    },
-    { icon: Info, label: 'About', href: '/about' },
-    { icon: Phone, label: 'Contact', href: '/contact' },
-  ] : [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Scissors, label: 'Book Services', href: '/booking-services' },
-    { icon: Building2, label: 'Salons', href: '/salons' },
-    { icon: MessageSquare, label: 'Community', href: '/community' },
-    { icon: BookOpen, label: 'Blog', href: '/blog' },
-    { icon: Info, label: 'About', href: '/about' },
-    { icon: Phone, label: 'Contact', href: '/contact' },
-  ];
+  // 🎯 CONSISTENT MENU LOGIC: Use centralized config
+  const menuItems = NAV_ITEMS.filter(i => i.location === 'top' || i.location === 'drawer')
+    .filter(i => uiState.isAuthenticated ? true : !(i.roles && i.roles.length));
 
   // Close menu on route change to prevent stuck menu
   React.useEffect(() => {
@@ -292,12 +271,12 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <div className="space-y-1">
                   {menuItems.map((item) => (
                     <Link
-                      key={item.label}
-                      to={item.href}
+                      key={item.key}
+                      to={item.path}
                       onClick={onClose}
                       className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900 min-h-[44px] touch-manipulation"
                     >
-                      <item.icon className="h-5 w-5" />
+                      {/* Keep existing icon layout – optional mapping by key */}
                       <span className="font-medium">{item.label}</span>
                     </Link>
                   ))}

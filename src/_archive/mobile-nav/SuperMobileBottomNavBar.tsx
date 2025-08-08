@@ -1,3 +1,4 @@
+/** ARCHIVED – DO NOT USE. UnifiedMobileNavigation is the only bottom nav. */
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,6 @@ const SuperMobileBottomNavBar = () => {
   const [language, setLanguage] = useState(getLanguagePreference());
   const isMobile = useIsMobile();
 
-  // Update language when it changes
   useEffect(() => {
     const handleLanguageChange = () => {
       setLanguage(getLanguagePreference());
@@ -24,41 +24,17 @@ const SuperMobileBottomNavBar = () => {
     return () => window.removeEventListener('languageChanged', handleLanguageChange);
   }, []);
 
-  // Tab activation logic
   const isActive = (path: string) => 
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
-  // Navigation tabs with dynamic labels based on language
   const navTabs = [
-    { 
-      path: "/", 
-      icon: <Home strokeWidth={1.75} size={24} />, 
-      label: t("Home") 
-    },
-    { 
-      path: "/search", 
-      icon: <Search strokeWidth={1.75} size={24} />, 
-      label: t("Search") 
-    },
-    { 
-      path: "/jobs", 
-      icon: <Briefcase strokeWidth={1.75} size={language === "en" ? 30 : 28} />, 
-      label: t("Jobs"),
-      isCenter: true
-    },
-    { 
-      path: "/salons", 
-      icon: <Store strokeWidth={1.75} size={24} />, 
-      label: t("Salons") 
-    },
-    { 
-      path: "/contact", 
-      icon: <User strokeWidth={1.75} size={24} />, 
-      label: t("Contact") 
-    }
+    { path: "/", icon: <Home strokeWidth={1.75} size={24} />, label: t("Home") },
+    { path: "/search", icon: <Search strokeWidth={1.75} size={24} />, label: t("Search") },
+    { path: "/jobs", icon: <Briefcase strokeWidth={1.75} size={language === "en" ? 30 : 28} />, label: t("Jobs"), isCenter: true },
+    { path: "/salons", icon: <Store strokeWidth={1.75} size={24} />, label: t("Salons") },
+    { path: "/contact", icon: <User strokeWidth={1.75} size={24} />, label: t("Contact") }
   ];
 
-  // Only show on mobile screens
   if (!isMobile) return null;
 
   return (
