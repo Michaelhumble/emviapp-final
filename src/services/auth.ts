@@ -58,3 +58,62 @@ export async function signOut() {
     return { success: false, error };
   }
 }
+
+// OAuth providers
+export async function signInWithGoogle(redirectTo?: string) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo }
+    });
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Google sign-in error:', error);
+    return { success: false, error };
+  }
+}
+
+export async function signInWithApple(redirectTo?: string) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'apple',
+      options: { redirectTo }
+    });
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Apple sign-in error:', error);
+    return { success: false, error };
+  }
+}
+
+// Phone OTP
+export async function signInWithPhone(phone: string) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOtp({
+      phone,
+      options: { channel: 'sms' }
+    });
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Phone OTP send error:', error);
+    return { success: false, error };
+  }
+}
+
+export async function verifyPhoneOtp(phone: string, token: string) {
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone,
+      token,
+      type: 'sms'
+    });
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Phone OTP verify error:', error);
+    return { success: false, error };
+  }
+}
