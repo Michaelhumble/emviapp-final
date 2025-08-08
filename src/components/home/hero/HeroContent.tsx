@@ -112,7 +112,7 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Simple Browse Jobs CTA */}
+          {/* Primary CTA: Browse Jobs (unchanged) */}
           <Link to="/jobs">
             <Button 
               variant="outline"
@@ -122,6 +122,18 @@ const HeroContent = ({
               Browse Jobs
             </Button>
           </Link>
+          {/* Wonderland Mode: Smooth scroll trigger (guests and users) */}
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('wonderland-start');
+              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="ml-3 px-6 py-3 text-white/90 hover:text-white rounded-xl border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 transition-all duration-300"
+            aria-label="Start Exploring Wonderland Mode"
+          >
+            Start Exploring
+          </button>
         </motion.div>
         
         {/* Subtle Vietnamese line */}

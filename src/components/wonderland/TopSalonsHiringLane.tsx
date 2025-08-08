@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SALON_SEEDS } from '@/data/seed/salons.seed';
 import { SEED_BLEND, WONDERLAND_ENABLED } from '@/config/wonderland.config';
 import { getNearbySeed } from '@/lib/market';
 import PremiumContactGate from '@/components/common/PremiumContactGate';
+import { useAuth } from '@/context/auth';
+import GuestCardTeaserModal from '@/components/wonderland/GuestCardTeaserModal';
 
 interface TopSalonsHiringLaneProps {
   salons?: Array<any>;
@@ -12,6 +14,10 @@ interface TopSalonsHiringLaneProps {
 
 const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marketHint, blend }) => {
   if (!WONDERLAND_ENABLED) return null;
+
+  const { isSignedIn } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [teaser, setTeaser] = useState<{ image?: string; title?: string }>({});
 
   const seeds = getNearbySeed(SALON_SEEDS, marketHint).slice(0, Math.ceil((blend ?? SEED_BLEND.salons) * 6));
   const items = (salons && salons.length ? salons : []).concat(seeds);
@@ -25,7 +31,13 @@ const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marke
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((salon, idx) => (
           <article key={salon.id ?? `salon-${idx}`}
-            className="rounded-lg border border-border bg-card text-card-foreground shadow-sm overflow-hidden">
+            onClick={() => {
+              if (!isSignedIn) {
+                setTeaser({ image: salon.images?.[0], title: salon.title });
+                setOpen(true);
+              }
+            }}
+            className="rounded-lg border border-border bg-card text-card-foreground shadow-sm overflow-hidden cursor-pointer">
             {salon.images?.[0] && (
               <img src={salon.images[0]} alt={salon.title ?? 'Salon image'} loading="lazy" className="w-full h-40 object-cover" />
             )}
@@ -54,6 +66,7 @@ const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marke
           </article>
         ))}
       </div>
+      <GuestCardTeaserModal open={open} onOpenChange={setOpen} image={teaser.image} title={teaser.title} />
     </section>
   );
 };
