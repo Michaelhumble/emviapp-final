@@ -13,7 +13,7 @@ interface HotJobsLaneProps {
   preview?: boolean;
 }
 
-const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend, preview }) => {
+const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend, preview = false }) => {
   const enabled = WONDERLAND_ENABLED || !!preview;
   if (!enabled) return null;
 
