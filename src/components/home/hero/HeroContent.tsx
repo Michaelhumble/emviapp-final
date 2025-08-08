@@ -127,27 +127,31 @@ const HeroContent = ({
             </Button>
           </Link>
           {/* Wonderland Mode: Smooth scroll trigger (guests and users) */}
-          <button
-            type="button"
-            onClick={() => {
-              if (!WONDERLAND_ENABLED) return;
-              analytics.trackEvent({
-                action: 'wonderland_explore_click',
-                category: 'wonderland',
-                custom_parameters: {
-                  userStatus: isSignedIn ? 'authenticated' : 'guest'
+          <a
+            href="#wonderland-start"
+            onClick={(e) => {
+              if (WONDERLAND_ENABLED) {
+                if (process.env.NODE_ENV !== 'production') {
+                  console.log('WONDERLAND_ENABLED:', WONDERLAND_ENABLED);
                 }
-              });
-              const el = document.getElementById('wonderland-start');
-              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              // Attempt to focus for accessibility without jumping
-              el?.focus?.({ preventScroll: true });
+                analytics.trackEvent({
+                  action: 'wonderland_explore_click',
+                  category: 'wonderland',
+                  custom_parameters: {
+                    userStatus: isSignedIn ? 'authenticated' : 'guest'
+                  }
+                });
+                e.preventDefault();
+                const el = document.getElementById('wonderland-start');
+                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                el?.focus?.({ preventScroll: true });
+              }
             }}
             className="ml-3 px-6 py-3 text-white/90 hover:text-white rounded-xl border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 transition-all duration-300"
             aria-label="Start Exploring Wonderland Mode"
           >
             Start Exploring
-          </button>
+          </a>
         </motion.div>
         
         {/* Subtle Vietnamese line */}

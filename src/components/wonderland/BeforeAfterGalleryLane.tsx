@@ -14,6 +14,9 @@ const BeforeAfterGalleryLane: React.FC<BeforeAfterGalleryLaneProps> = ({ images,
 
   return (
     <section aria-label="Before & After gallery" className="container mx-auto px-4 py-8">
+      {process.env.NODE_ENV !== 'production' && (
+        <span className="sr-only">Dev: items={gallery.length}</span>
+      )}
       <header className="mb-4">
         <h2 className="text-xl font-semibold">Before & After</h2>
         <p className="text-sm text-muted-foreground">Khoảnh khắc thay đổi ấn tượng</p>

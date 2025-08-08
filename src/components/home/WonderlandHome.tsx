@@ -10,7 +10,7 @@ const WonderlandHome: React.FC = () => {
   if (!WONDERLAND_ENABLED) return null;
 
     return (
-      <div id="wonderland-start">
+      <div id="wonderland-start" tabIndex={-1}>
         <ActivityTicker />
         <HotJobsLane />
         <TopSalonsHiringLane />

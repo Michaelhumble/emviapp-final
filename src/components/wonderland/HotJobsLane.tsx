@@ -24,6 +24,9 @@ const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend }) =>
 
   return (
     <section aria-label="Hot jobs near you" className="container mx-auto px-4 py-8">
+      {process.env.NODE_ENV !== 'production' && (
+        <span className="sr-only">Dev: items={items.length}</span>
+      )}
       <header className="mb-4">
         <h2 className="text-xl font-semibold">Hot Jobs</h2>
         <p className="text-sm text-muted-foreground">Cơ hội tốt nhất tuần này</p>

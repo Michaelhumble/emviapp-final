@@ -18,6 +18,9 @@ const ArtistSpotlightsLane: React.FC<ArtistSpotlightsLaneProps> = ({ portfolios,
 
   return (
     <section aria-label="Artist spotlights" className="container mx-auto px-4 py-8">
+      {process.env.NODE_ENV !== 'production' && (
+        <span className="sr-only">Dev: items={items.length}</span>
+      )}
       <header className="mb-4">
         <h2 className="text-xl font-semibold">Artist Spotlights</h2>
         <p className="text-sm text-muted-foreground">Tác phẩm nổi bật tuần này</p>
