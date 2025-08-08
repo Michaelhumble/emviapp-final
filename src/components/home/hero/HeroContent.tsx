@@ -127,8 +127,29 @@ const HeroContent = ({
           <button
             type="button"
             onClick={() => {
-              const el = document.getElementById('wonderland-start');
-              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+              const behavior: ScrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+              const scrollTo = (el: Element | null) => el && el.scrollIntoView({ behavior, block: 'start' });
+
+              if (WONDERLAND_ENABLED) {
+                const anchor = document.getElementById('wonderland-start')
+                  || document.querySelector('[aria-label="Hot jobs near you"]');
+                if (anchor) {
+                  scrollTo(anchor);
+                  return;
+                }
+              }
+
+              // Fallback: Jobs section
+              const jobsAnchor = document.getElementById('jobs-section')
+                || document.querySelector('#jobs-section');
+              if (jobsAnchor) {
+                scrollTo(jobsAnchor);
+                return;
+              }
+
+              // Final fallback: navigate to jobs page anchor
+              window.location.assign('/jobs#jobs-section');
             }}
             className="ml-3 px-6 py-3 text-white/90 hover:text-white rounded-xl border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 transition-all duration-300"
             aria-label="Start Exploring Wonderland Mode"
