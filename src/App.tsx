@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';

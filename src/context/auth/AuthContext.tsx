@@ -1,4 +1,5 @@
 
+/** PROTECTED: Do not modify without explicit approval. */
 import { createContext } from "react";
 import { AuthContextType } from "./types";
 

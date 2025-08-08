@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 /**
  * 🎯 CENTRALIZED AUTH STATE MANAGER
  * 

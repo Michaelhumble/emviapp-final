@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { useJobsData } from '@/hooks/useJobsData';
 import JobsGrid from '@/components/jobs/JobsGrid';

@@ -1,4 +1,5 @@
 
+/** PROTECTED: Do not modify without explicit approval. */
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';

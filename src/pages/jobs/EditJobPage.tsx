@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';

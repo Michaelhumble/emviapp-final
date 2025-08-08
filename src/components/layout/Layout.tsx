@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 // CLEAN STATE: Universal Footer now integrated - single Footer component for all pages.
 
 import React, { ReactNode, lazy, Suspense } from 'react';

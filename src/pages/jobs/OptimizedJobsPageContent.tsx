@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 import React, { useEffect, useState, Suspense, lazy, useMemo } from 'react';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import JobsGrid from '@/components/jobs/JobsGrid';

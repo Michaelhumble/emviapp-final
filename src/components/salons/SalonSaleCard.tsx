@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import PremiumContactGate from '@/components/common/PremiumContactGate';
 
 interface SalonSaleCardProps {
   salon: SalonSale;
@@ -275,7 +276,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         </div>
 
         {/* Contact Info (Login Gated) */}
-        {isSignedIn ? (
+        <PremiumContactGate contactName={salon.contact_name} contactPhone={salon.contact_phone} contactEmail={salon.contact_email}>
           <div className="space-y-1 text-sm">
             {salon.contact_name && (
               <p className="font-inter">Contact: {salon.contact_name}</p>
@@ -293,13 +294,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
               </div>
             )}
           </div>
-        ) : (
-          <div className="bg-muted/50 rounded-lg p-3 text-center">
-            <p className="text-xs sm:text-sm text-muted-foreground font-inter">
-              Sign in to view contact information
-            </p>
-          </div>
-        )}
+        </PremiumContactGate>
 
         {/* FOMO & Social Proof Elements */}
         <div className="space-y-2 mb-3">

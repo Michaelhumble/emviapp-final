@@ -1,4 +1,5 @@
 
+/** PROTECTED: Do not modify without explicit approval. */
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 export type { SupabaseUser as User };

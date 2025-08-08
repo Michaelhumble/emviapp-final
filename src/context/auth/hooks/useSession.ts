@@ -1,4 +1,5 @@
 
+/** PROTECTED: Do not modify without explicit approval. */
 import { useAuth } from '../useAuth';
 
 /**

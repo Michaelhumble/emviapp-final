@@ -1,3 +1,4 @@
+/** PROTECTED: Do not modify without explicit approval. */
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';

@@ -1,4 +1,5 @@
 /** PROTECTED: Do not modify without explicit approval. */
+import React from 'react';
 import { Lock, Sparkles, Zap, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';

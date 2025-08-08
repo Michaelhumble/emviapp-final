@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { useAuth } from '@/context/auth';
+import PremiumContactGate from '@/components/common/PremiumContactGate';
 
 interface PremiumSalonCardProps {
   salon: RealSalonListing;
@@ -300,6 +301,7 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
         )}
 
         {/* Contact Info Preview - Mobile optimized, Auth Gated */}
+        <PremiumContactGate contactName={salon.contact.name} contactPhone={salon.contact.phone} contactEmail={salon.contact.email}>
         <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="text-xs text-gray-600 space-y-1">
             {salon.contact.name && (
@@ -307,42 +309,27 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
                 <span className="font-medium">Contact: {salon.contact.name}</span>
               </div>
             )}
-            
-            {isSignedIn ? (
-              <>
-                {salon.contact.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3 w-3 text-green-600" />
-                    <span className="font-medium text-green-600">{salon.contact.phone}</span>
-                  </div>
-                )}
-                {salon.contact.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3 w-3 text-blue-600" />
-                    <span className="font-medium text-blue-600">{salon.contact.email}</span>
-                  </div>
-                )}
-                {!salon.contact.phone && !salon.contact.email && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3 w-3" />
-                    <span className="font-medium">Contact via EmviApp only</span>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-3 w-3" />
-                  <span className="font-medium text-purple-600">📞 Sign in to view contact info</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-3 w-3" />
-                  <span className="font-medium text-purple-600">✉️ Sign in to view email</span>
-                </div>
-              </>
+            {salon.contact.phone && (
+              <div className="flex items-center gap-2">
+                <Phone className="h-3 w-3 text-green-600" />
+                <span className="font-medium text-green-600">{salon.contact.phone}</span>
+              </div>
+            )}
+            {salon.contact.email && (
+              <div className="flex items-center gap-2">
+                <Mail className="h-3 w-3 text-blue-600" />
+                <span className="font-medium text-blue-600">{salon.contact.email}</span>
+              </div>
+            )}
+            {!salon.contact.phone && !salon.contact.email && (
+              <div className="flex items-center gap-2">
+                <Phone className="h-3 w-3" />
+                <span className="font-medium">Contact via EmviApp only</span>
+              </div>
             )}
           </div>
         </div>
+        </PremiumContactGate>
 
         {/* View Details Button - Mobile optimized */}
         <Button 

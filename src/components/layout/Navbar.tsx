@@ -1,4 +1,5 @@
 
+/** PROTECTED: Do not modify without explicit approval. */
 /**
  * 🧭 NAVBAR - CENTRALIZED AUTH STATE
  * 
