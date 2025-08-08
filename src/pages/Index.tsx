@@ -38,6 +38,7 @@ import LiveStatsBar from "@/components/home/trust/LiveStatsBar";
 import TrustBadges from "@/components/home/trust/TrustBadges";
 import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
 import PartnerLogos from "@/components/home/trust/PartnerLogos";
+import WonderlandHome from "@/components/home/WonderlandHome";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -69,6 +70,9 @@ const Index = () => {
       <HomepageSEO />
       {/* 1. Hero section as first */}
       <Hero />
+      
+      {/* Wonderland Mode: Seeded live marketplace */}
+      <WonderlandHome />
       
       {/* 1.1 Live Stats Bar - Trust & Social Proof */}
       <section className="relative -mt-16 z-20 px-4 w-full max-w-full">
