@@ -4,13 +4,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 import { heroImages, lazyHeroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { useTranslation } from "@/hooks/useTranslation";
+import HeroContent from "./hero/HeroContent";
 
 const Hero = () => {
   const isMobile = useIsMobile();
-  const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isChanging, setIsChanging] = useState(false);
   const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
@@ -93,49 +90,14 @@ const Hero = () => {
         isMobile={isMobile}
       />
       
-      {/* Main hero content - updated clarity messaging */}
+      {/* Main hero content - locked title and subtitle */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center text-white">
-            <h1 className="text-3xl md:text-6xl font-bold tracking-tight">
-              The Beauty Industry's Missing Piece — We Just Built It.
-            </h1>
-            <p className="mt-4 text-lg md:text-2xl/relaxed text-white/90">
-              A community where talent, dreams, and opportunity meet—for every beauty professional, everywhere.
-            </p>
-            <p className="mt-4 text-lg md:text-2xl/relaxed text-white/90">
-              Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp. Hỗ trợ cho tất cả ngành làm đẹp — Nails, Tóc, Lashes, Makeup, Massage, và nhiều hơn nữa.
-            </p>
-
-            {/* Icon + label row */}
-            <div className="mt-5 flex flex-col items-center gap-2 md:flex-row md:justify-center md:gap-6">
-              <div className="flex items-center gap-2 text-sm md:text-base">
-                <span aria-hidden="true">💅</span>
-                <span>Find Work</span>
-              </div>
-              <div className="hidden md:block h-4 w-px bg-white/30" aria-hidden="true" />
-              <div className="flex items-center gap-2 text-sm md:text-base">
-                <span aria-hidden="true">🏢</span>
-                <span>Hire Talent</span>
-              </div>
-              <div className="hidden md:block h-4 w-px bg-white/30" aria-hidden="true" />
-              <div className="flex items-center gap-2 text-sm md:text-base">
-                <span aria-hidden="true">💖</span>
-                <span>Grow Your Salon</span>
-              </div>
-            </div>
-
-            {/* CTAs: stack on mobile, horizontal on desktop */}
-            <div className="mt-8 flex flex-col gap-3 items-center md:flex-row md:justify-center">
-              <Link to="/jobs">
-                <Button size="lg">Browse Jobs</Button>
-              </Link>
-              <Link to="/post-job" className="md:ml-4">
-                <Button size="lg" variant="outline">Post a Job</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
+        <HeroContent 
+          activeIndex={currentImageIndex}
+          setActiveIndex={handleDotClick}
+          heroImages={allImages}
+          isMobile={isMobile}
+        />
       </div>
     </section>
   );
