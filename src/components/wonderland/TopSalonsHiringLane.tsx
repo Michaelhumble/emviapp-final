@@ -10,10 +10,12 @@ interface TopSalonsHiringLaneProps {
   salons?: Array<any>;
   marketHint?: string;
   blend?: number;
+  preview?: boolean;
 }
 
-const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marketHint, blend }) => {
-  if (!WONDERLAND_ENABLED) return null;
+const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marketHint, blend, preview = false }) => {
+  const enabled = WONDERLAND_ENABLED || !!preview;
+  if (!enabled) return null;
 
   const { isSignedIn } = useAuth();
   const [open, setOpen] = useState(false);
@@ -23,7 +25,10 @@ const TopSalonsHiringLane: React.FC<TopSalonsHiringLaneProps> = ({ salons, marke
   const items = (salons && salons.length ? salons : []).concat(seeds);
 
   return (
-    <section aria-label="Top salons hiring" className="container mx-auto px-4 py-8">
+    <section aria-label="Top salons hiring" className={`container mx-auto px-4 py-8 ${preview ? 'relative border border-dashed border-primary/50 rounded-md' : ''}`}>
+      {preview && (
+        <span className="absolute -top-3 left-3 text-xs px-2 py-1 rounded bg-primary/10 text-primary">Top Salons Hiring</span>
+      )}
       {process.env.NODE_ENV !== 'production' && (
         <span className="sr-only">Dev: items={items.length}</span>
       )}

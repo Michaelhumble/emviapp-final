@@ -5,15 +5,20 @@ import { SEED_BLEND, WONDERLAND_ENABLED } from '@/config/wonderland.config';
 interface BeforeAfterGalleryLaneProps {
   images?: string[];
   blend?: number;
+  preview?: boolean;
 }
 
-const BeforeAfterGalleryLane: React.FC<BeforeAfterGalleryLaneProps> = ({ images, blend }) => {
-  if (!WONDERLAND_ENABLED) return null;
+const BeforeAfterGalleryLane: React.FC<BeforeAfterGalleryLaneProps> = ({ images, blend, preview = false }) => {
+  const enabled = WONDERLAND_ENABLED || !!preview;
+  if (!enabled) return null;
   const seeds = PORTFOLIO_SEEDS.slice(0, Math.ceil((blend ?? SEED_BLEND.portfolios) * 8));
   const gallery = (images && images.length ? images : []).concat(seeds.flatMap(s => s.images)).slice(0, 12);
 
   return (
-    <section aria-label="Before & After gallery" className="container mx-auto px-4 py-8">
+    <section aria-label="Before & After gallery" className={`container mx-auto px-4 py-8 ${preview ? 'relative border border-dashed border-primary/50 rounded-md' : ''}`}>
+      {preview && (
+        <span className="absolute -top-3 left-3 text-xs px-2 py-1 rounded bg-primary/10 text-primary">Before/After Gallery</span>
+      )}
       {process.env.NODE_ENV !== 'production' && (
         <span className="sr-only">Dev: items={gallery.length}</span>
       )}

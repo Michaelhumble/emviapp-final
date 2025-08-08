@@ -8,16 +8,21 @@ interface ArtistSpotlightsLaneProps {
   portfolios?: Array<any>;
   marketHint?: string;
   blend?: number;
+  preview?: boolean;
 }
 
-const ArtistSpotlightsLane: React.FC<ArtistSpotlightsLaneProps> = ({ portfolios, marketHint, blend }) => {
-  if (!WONDERLAND_ENABLED) return null;
+const ArtistSpotlightsLane: React.FC<ArtistSpotlightsLaneProps> = ({ portfolios, marketHint, blend, preview = false }) => {
+  const enabled = WONDERLAND_ENABLED || !!preview;
+  if (!enabled) return null;
 
   const seeds = getNearbySeed(PORTFOLIO_SEEDS, marketHint).slice(0, Math.ceil((blend ?? SEED_BLEND.portfolios) * 6));
   const items = (portfolios && portfolios.length ? portfolios : []).concat(seeds);
 
   return (
-    <section aria-label="Artist spotlights" className="container mx-auto px-4 py-8">
+    <section aria-label="Artist spotlights" className={`container mx-auto px-4 py-8 ${preview ? 'relative border border-dashed border-primary/50 rounded-md' : ''}`}>
+      {preview && (
+        <span className="absolute -top-3 left-3 text-xs px-2 py-1 rounded bg-primary/10 text-primary">Artist Spotlights</span>
+      )}
       {process.env.NODE_ENV !== 'production' && (
         <span className="sr-only">Dev: items={items.length}</span>
       )}
