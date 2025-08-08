@@ -10,6 +10,7 @@ import { JOB_SEEDS } from '@/data/seed/jobs.seed';
 import { SALON_SEEDS } from '@/data/seed/salons.seed';
 import { PORTFOLIO_SEEDS } from '@/data/seed/portfolios.seed';
 import { TICKER_SEEDS } from '@/data/seed/ticker.seed';
+import { isWonderlandPreviewActive } from '@/lib/preview';
 
 const WonderlandHome: React.FC = () => {
   const location = useLocation();
@@ -41,7 +42,7 @@ const WonderlandHome: React.FC = () => {
   if (!enabled) return null;
 
   return (
-    <div id="wonderland-start" tabIndex={-1}>
+    <div id="wonderland-start" tabIndex={-1} className={isWonderlandPreviewActive() ? 'preview-visible' : undefined}>
       {preview && (
         <div className="container mx-auto px-4 py-3 mt-2 rounded-md bg-primary/90 text-primary-foreground">
           <p className="text-sm font-medium">
