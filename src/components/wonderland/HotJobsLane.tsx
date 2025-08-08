@@ -10,10 +10,12 @@ interface HotJobsLaneProps {
   jobs?: Array<any>;
   marketHint?: string;
   blend?: number;
+  preview?: boolean;
 }
 
-const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend }) => {
-  if (!WONDERLAND_ENABLED) return null;
+const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend, preview }) => {
+  const enabled = WONDERLAND_ENABLED || !!preview;
+  if (!enabled) return null;
 
   const { isSignedIn } = useAuth();
   const [open, setOpen] = useState(false);
@@ -23,7 +25,10 @@ const HotJobsLane: React.FC<HotJobsLaneProps> = ({ jobs, marketHint, blend }) =>
   const items = (jobs && jobs.length ? jobs : []).concat(seeds);
 
   return (
-    <section aria-label="Hot jobs near you" className="container mx-auto px-4 py-8">
+    <section aria-label="Hot jobs near you" className={`container mx-auto px-4 py-8 ${preview ? 'relative border border-dashed border-primary/50 rounded-md' : ''}`}>
+      {preview && (
+        <span className="absolute -top-3 left-3 text-xs px-2 py-1 rounded bg-primary/10 text-primary">Hot Jobs Lane</span>
+      )}
       {process.env.NODE_ENV !== 'production' && (
         <span className="sr-only">Dev: items={items.length}</span>
       )}
