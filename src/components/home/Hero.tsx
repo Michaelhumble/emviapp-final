@@ -98,16 +98,13 @@ const Hero = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center text-white">
             <h1 className="text-3xl md:text-6xl font-bold tracking-tight">
-              {t({
-                english: "The Beauty Industry's Missing Piece — We Just Built It.",
-                vietnamese: "Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.",
-              })}
+              The Beauty Industry's Missing Piece — We Just Built It.
             </h1>
             <p className="mt-4 text-lg md:text-2xl/relaxed text-white/90">
-              {t({
-                english: "Where beauty professionals connect with jobs, salons, and clients — all in one place.",
-                vietnamese: "Nơi thợ và tiệm gặp nhau để tìm việc, bán tiệm, và kết nối khách hàng.",
-              })}
+              A community where talent, dreams, and opportunity meet—for every beauty professional, everywhere.
+            </p>
+            <p className="mt-4 text-lg md:text-2xl/relaxed text-white/90">
+              Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp. Hỗ trợ cho tất cả ngành làm đẹp — Nails, Tóc, Lashes, Makeup, Massage, và nhiều hơn nữa.
             </p>
 
             {/* Icon + label row */}
