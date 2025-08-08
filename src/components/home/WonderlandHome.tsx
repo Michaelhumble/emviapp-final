@@ -9,13 +9,15 @@ import BeforeAfterGalleryLane from '@/components/wonderland/BeforeAfterGalleryLa
 const WonderlandHome: React.FC = () => {
   if (!WONDERLAND_ENABLED) return null;
 
-    <div id="wonderland-start">
-      <ActivityTicker />
-      <HotJobsLane />
-      <TopSalonsHiringLane />
-      <ArtistSpotlightsLane />
-      <BeforeAfterGalleryLane />
-    </div>
+    return (
+      <div id="wonderland-start">
+        <ActivityTicker />
+        <HotJobsLane />
+        <TopSalonsHiringLane />
+        <ArtistSpotlightsLane />
+        <BeforeAfterGalleryLane />
+      </div>
+    )
 };
 
 export default WonderlandHome;

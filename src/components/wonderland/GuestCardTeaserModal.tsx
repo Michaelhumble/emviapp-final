@@ -26,9 +26,18 @@ const GuestCardTeaserModal: React.FC<GuestCardTeaserModalProps> = ({ open, onOpe
             <img src={image} alt={title || 'Card image'} className="w-full h-48 object-cover" />
           </div>
         )}
+        {/* Lightweight perks and blurred placeholders */}
+        <ul className="mt-3 text-sm text-muted-foreground list-disc pl-5">
+          <li>Unlock direct contact details</li>
+          <li>See full job and salon benefits</li>
+        </ul>
+        <div className="mt-3 p-3 rounded-md border border-border bg-muted/30">
+          <div className="h-4 w-32 bg-muted rounded blur-[1px]" />
+          <div className="mt-2 h-4 w-40 bg-muted rounded blur-[1px]" />
+        </div>
         <div className="mt-4 flex justify-end">
           <Button onClick={() => navigate('/auth/signup')} className="rounded-lg">
-            Sign Up Now
+            Sign up to unlock full details
           </Button>
         </div>
       </DialogContent>
