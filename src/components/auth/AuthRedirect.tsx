@@ -11,10 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { navigateToRoleDashboard, needsRoleSelection } from '@/utils/roleDashboardMap';
+import { useRequireRole } from '@/hooks/useRequireRole';
 
 export const AuthRedirect = () => {
   const navigate = useNavigate();
   const { user, userRole, loading, isSignedIn } = useAuth();
+  useRequireRole();
 
   useEffect(() => {
     if (loading) return;
@@ -27,7 +29,7 @@ export const AuthRedirect = () => {
 
     // NEEDS ROLE SELECTION: Redirect to onboarding
     if (needsRoleSelection(userRole)) {
-      navigate('/onboarding');
+      navigate('/onboarding/choose-role');
       toast.info('Please select your role to continue');
       return;
     }
