@@ -3,9 +3,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { WONDERLAND_ENABLED } from "@/config/wonderland.config";
-import { useAuth } from "@/context/auth";
-import { analytics } from "@/lib/analytics";
 
 interface HeroImage {
   url: string;
@@ -32,7 +29,6 @@ const HeroContent = ({
   isMobile = false
 }: HeroContentProps) => {
   
-  const { isSignedIn } = useAuth();
   const currentSlide = heroImages[activeIndex];
   
   // Only show a maximum of 7 dots, with current one centered
@@ -116,7 +112,7 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Primary CTA: Browse Jobs (unchanged) */}
+          {/* Simple Browse Jobs CTA */}
           <Link to="/jobs">
             <Button 
               variant="outline"
@@ -126,32 +122,6 @@ const HeroContent = ({
               Browse Jobs
             </Button>
           </Link>
-          {/* Wonderland Mode: Smooth scroll trigger (guests and users) */}
-          <a
-            href="#wonderland-start"
-            onClick={(e) => {
-              if (WONDERLAND_ENABLED) {
-                if (process.env.NODE_ENV !== 'production') {
-                  console.log('WONDERLAND_ENABLED:', WONDERLAND_ENABLED);
-                }
-                analytics.trackEvent({
-                  action: 'wonderland_explore_click',
-                  category: 'wonderland',
-                  custom_parameters: {
-                    userStatus: isSignedIn ? 'authenticated' : 'guest'
-                  }
-                });
-                e.preventDefault();
-                const el = document.getElementById('wonderland-start');
-                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                el?.focus?.({ preventScroll: true });
-              }
-            }}
-            className="ml-3 px-6 py-3 text-white/90 hover:text-white rounded-xl border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 transition-all duration-300"
-            aria-label="Start Exploring Wonderland Mode"
-          >
-            Start Exploring
-          </a>
         </motion.div>
         
         {/* Subtle Vietnamese line */}

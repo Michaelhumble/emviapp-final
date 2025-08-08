@@ -38,8 +38,6 @@ import LiveStatsBar from "@/components/home/trust/LiveStatsBar";
 import TrustBadges from "@/components/home/trust/TrustBadges";
 import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
 import PartnerLogos from "@/components/home/trust/PartnerLogos";
-import WonderlandHome from "@/components/home/WonderlandHome";
-import { isWonderlandPreviewActive } from "@/lib/preview";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -64,11 +62,6 @@ const Index = () => {
     runListingsVerification()
       .then(() => console.log("Listings verification completed"))
       .catch(err => console.error("Error in listings verification:", err));
-
-    // Wonderland preview body class toggle
-    if (isWonderlandPreviewActive()) {
-      document.body.classList.add('wonderland-preview');
-    }
   }, []);
   
   return (
@@ -76,15 +69,6 @@ const Index = () => {
       <HomepageSEO />
       {/* 1. Hero section as first */}
       <Hero />
-      
-{isWonderlandPreviewActive() && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', background: '#7E3FF2', color: '#fff', padding: '8px', textAlign: 'center', zIndex: 9999 }}>
-          Wonderland Preview Mode — Counts & Scroll Enabled
-        </div>
-      )}
-      
-      {/* Wonderland Mode: Seeded live marketplace */}
-      <WonderlandHome />
       
       {/* 1.1 Live Stats Bar - Trust & Social Proof */}
       <section className="relative -mt-16 z-20 px-4 w-full max-w-full">

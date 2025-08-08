@@ -1,4 +1,3 @@
-/** PROTECTED: HERO SECTION */
 
 import React, { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";

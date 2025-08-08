@@ -541,7 +541,3 @@
   }
 }
 
-/* Wonderland preview helpers */
-body.wonderland-preview .preview-outline { outline: 2px dashed #a855f7; }
-body.wonderland-preview .preview-label { position:absolute; top:6px; left:6px; background:#a855f7; color:#fff; padding:2px 6px; font-size:12px; border-radius:6px; }
-
