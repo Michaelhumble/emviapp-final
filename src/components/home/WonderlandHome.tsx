@@ -5,7 +5,7 @@ import HotJobsLane from '@/components/wonderland/HotJobsLane';
 import TopSalonsHiringLane from '@/components/wonderland/TopSalonsHiringLane';
 import ArtistSpotlightsLane from '@/components/wonderland/ArtistSpotlightsLane';
 import BeforeAfterGalleryLane from '@/components/wonderland/BeforeAfterGalleryLane';
-import { useLocation } from 'react-router-dom';
+// import removed: useLocation not needed
 import { JOB_SEEDS } from '@/data/seed/jobs.seed';
 import { SALON_SEEDS } from '@/data/seed/salons.seed';
 import { PORTFOLIO_SEEDS } from '@/data/seed/portfolios.seed';
@@ -13,8 +13,7 @@ import { TICKER_SEEDS } from '@/data/seed/ticker.seed';
 import { isWonderlandPreviewActive } from '@/lib/preview';
 
 const WonderlandHome: React.FC = () => {
-  const location = useLocation();
-  const urlPreview = new URLSearchParams(location.search).get('preview') === 'wonderland';
+  // location removed
   const [devPreview, setDevPreview] = useState<boolean>(false);
 
   // Dev-only keyboard toggle: Shift + W
@@ -29,8 +28,8 @@ const WonderlandHome: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const preview = urlPreview || devPreview;
-  const enabled = WONDERLAND_ENABLED || preview;
+  const isPreview = isWonderlandPreviewActive() || devPreview;
+  const enabled = WONDERLAND_ENABLED || isPreview;
 
   const counts = useMemo(() => ({
     jobs: JOB_SEEDS?.length ?? 0,
@@ -43,7 +42,7 @@ const WonderlandHome: React.FC = () => {
 
   return (
     <div id="wonderland-start" tabIndex={-1} className={isWonderlandPreviewActive() ? 'preview-visible' : undefined}>
-      {preview && (
+      {isPreview && (
         <div className="container mx-auto px-4 py-3 mt-2 rounded-md bg-primary/90 text-primary-foreground">
           <p className="text-sm font-medium">
             Wonderland Preview Active — lanes=Jobs:{counts.jobs}, Salons:{counts.salons}, Portfolios:{counts.portfolios}
@@ -60,11 +59,11 @@ const WonderlandHome: React.FC = () => {
       )}
 
       {/* Wonderland lanes */}
-      <ActivityTicker preview={preview} />
-      <HotJobsLane preview={preview} />
-      <TopSalonsHiringLane preview={preview} />
-      <ArtistSpotlightsLane preview={preview} />
-      <BeforeAfterGalleryLane preview={preview} />
+      <ActivityTicker preview={isPreview} />
+      <HotJobsLane preview={isPreview} />
+      <TopSalonsHiringLane preview={isPreview} />
+      <ArtistSpotlightsLane preview={isPreview} />
+      <BeforeAfterGalleryLane preview={isPreview} />
     </div>
   )
 };

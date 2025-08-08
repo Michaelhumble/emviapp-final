@@ -78,8 +78,8 @@ const Index = () => {
       <Hero />
       
 {isWonderlandPreviewActive() && (
-        <div className="w-full bg-purple-600 text-white text-center py-3 z-[999]">
-          <strong>WONDERLAND PREVIEW MODE</strong> — If you can read this, preview is ON.
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', background: '#7E3FF2', color: '#fff', padding: '8px', textAlign: 'center', zIndex: 9999 }}>
+          Wonderland Preview Mode — Counts & Scroll Enabled
         </div>
       )}
       
