@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 import { Sparkles, Users, Building2, Briefcase } from "lucide-react";
+import { getAppOrigin } from "@/utils/getAppOrigin";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -65,13 +66,13 @@ export const EnhancedSignUpForm = () => {
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: {
-            full_name: data.fullName,
-            role: mappedRole, // Use mapped role
+          options: {
+            emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
+            data: {
+              full_name: data.fullName,
+              role: mappedRole, // Use mapped role
+            },
           },
-        },
       });
 
       console.log("✅ [SIGN UP] Supabase response:", { authData, error });

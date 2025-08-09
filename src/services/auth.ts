@@ -28,7 +28,7 @@ export async function signUpWithEmail(email: string, password: string, userData:
       password,
       options: {
         data: userData,
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
         // Skip email confirmation for @emvi.app emails
         ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
       }
