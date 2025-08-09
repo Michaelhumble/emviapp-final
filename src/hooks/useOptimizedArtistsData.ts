@@ -57,7 +57,7 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
   // Listen for demo overlay seed/clear to re-evaluate without manual refresh
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useMemo(() => {
-    if (!inPreview) return;
+    if (!isPreview()) return;
     const w = window as any;
     const onSeed = () => {
       try { (w.__reactQueryClient?.invalidateQueries as any)?.({ queryKey: [cacheKey] }); } catch {}
@@ -69,7 +69,7 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
       window.removeEventListener('demo-overlay-seeded', onSeed);
       window.removeEventListener('demo-overlay-cleared', onClear);
     };
-  }, [cacheKey, inPreview]);
+  }, [cacheKey]);
 
   return { artists: artistsToReturn, loading: isLoading, error: error?.message || '' };
 }
