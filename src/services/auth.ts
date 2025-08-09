@@ -74,19 +74,21 @@ export async function signInWithGoogle(redirectTo?: string) {
   }
 }
 
-export async function signInWithApple(redirectTo?: string) {
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'apple',
-      options: { redirectTo }
-    });
-    if (error) throw error;
-    return { success: true, data };
-  } catch (error: any) {
-    console.error('Apple sign-in error:', error);
-    return { success: false, error };
-  }
-}
+// export async function signInWithApple(redirectTo?: string) {
+//   // Disabled per strict instruction: Do not integrate Apple Sign-In
+//   // Keeping this stub commented for potential future reactivation.
+//   // try {
+//   //   const { data, error } = await supabase.auth.signInWithOAuth({
+//   //     provider: 'apple',
+//   //     options: { redirectTo }
+//   //   });
+//   //   if (error) throw error;
+//   //   return { success: true, data };
+//   // } catch (error: any) {
+//   //   console.error('Apple sign-in error:', error);
+//   //   return { success: false, error };
+//   // }
+// }
 
 // Phone OTP
 export async function signInWithPhone(phone: string) {

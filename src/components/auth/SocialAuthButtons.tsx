@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Chrome, Apple as AppleIcon, Phone as PhoneIcon } from "lucide-react";
+
+import { Chrome, Phone as PhoneIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { signInWithGoogle, signInWithApple } from "@/services/auth";
+import { signInWithGoogle } from "@/services/auth";
 import { toast } from "sonner";
 import React from "react";
 
@@ -28,14 +28,6 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
     }
   };
 
-  const handleApple = async () => {
-    try {
-      await signInWithApple(redirectTo);
-    } catch (e: any) {
-      console.error("Apple auth error", e);
-      toast.error(e?.message || "Failed to start Apple sign-in");
-    }
-  };
 
   return (
     <div className="space-y-2">
@@ -44,11 +36,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
           <Chrome className="mr-2 h-4 w-4" />
           Continue with Google
         </Button>
-        <Button variant="outline" className="w-full justify-center" onClick={handleApple}>
-          <AppleIcon className="mr-2 h-4 w-4" />
-          Sign in with Apple
-        </Button>
-        <Button variant="secondary" className="w-full justify-center md:col-span-2" onClick={onPhoneClick}>
+        <Button variant="secondary" className="w-full justify-center" onClick={onPhoneClick}>
           <PhoneIcon className="mr-2 h-4 w-4" />
           {mode === "signup" ? "Sign up with phone" : "Sign in with phone"}
         </Button>
