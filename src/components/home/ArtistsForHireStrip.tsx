@@ -6,25 +6,11 @@ import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { showDemoBadges } from "@/demo/demoFlags";
-import { useEffect, useRef } from "react";
-import { analytics } from "@/lib/analytics";
-import { isPreview, hasAnalyticsFired, markAnalyticsFired, setCounts, debugLog } from "@/lib/demoOverlay";
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
   const fired = useRef(false);
 
-  useEffect(() => {
-    const surface = 'artists_strip';
-    const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
-    if (!hasAnalyticsFired(surface) && overlayActive && (artists || []).some((a: any) => a.__demo)) {
-      markAnalyticsFired(surface);
-      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: artists.length as any }); } catch {}
-      debugLog('Analytics fired:', surface, { count: artists.length });
-    }
-    if (overlayActive) setCounts({ artists: artists.length });
-  }, [artists]);
 
   return (
     <section className="py-12 bg-background">
@@ -71,11 +57,6 @@ const ArtistsForHireStrip = () => {
                       available={!!a.available_for_work}
                       viewMode={isSignedIn ? "signedIn" : "public"}
                     />
-                    {showDemoBadges() && a.__demo && (
-                      <div className="flex justify-end">
-                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Demo</Badge>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

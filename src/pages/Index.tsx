@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import { ensureDemoSeededOnMount, isOverlayEnabled, registerDumpDemoState, debugLog } from "@/lib/demoOverlay";
+
 import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
 import Testimonials from "@/components/home/Testimonials";
@@ -14,7 +14,7 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HomepageSEO from "@/components/seo/HomepageSEO";
-import '@/utils/demoSeed';
+
 
 // Enhanced homepage components
 import AIMatchmakerSection from "@/components/home/ai-matchmaker";
@@ -61,11 +61,6 @@ const Index = () => {
     );
     console.log("Index page loaded");
 
-    if (isOverlayEnabled()) {
-      registerDumpDemoState();
-      debugLog('Home page mount: ensuring demo seed');
-      void ensureDemoSeededOnMount();
-    }
     
     // Run verification to ensure all listings have proper routing
     runListingsVerification()

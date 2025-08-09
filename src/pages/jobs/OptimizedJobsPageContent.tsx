@@ -307,7 +307,9 @@ const OptimizedJobsPageContent = () => {
           <FeaturedTrendingJobs jobs={jobs} />
 
           {/* Artists Available for Hire */}
-          <ArtistsForHireSection />
+          {Boolean((window as any)?.__env?.SHOW_ARTISTS_STRIP) && (
+            <ArtistsForHireSection />
+          )}
 
           {isSignedIn && fomoEnabled !== false && (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">

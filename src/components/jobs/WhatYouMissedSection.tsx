@@ -6,10 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, DollarSign, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { track } from '@/lib/telemetry';
-import { getDemoJobs } from '@/demo/seedOverlay';
-import { showDemoBadges } from '@/demo/demoFlags';
-import { analytics } from '@/lib/analytics';
-import { isOverlayEnabled, hasAnalyticsFired, markAnalyticsFired, setCounts, debugLog } from '@/lib/demoOverlay';
 interface WhatYouMissedSectionProps {
   title?: string;
   maxJobs?: number;
@@ -24,18 +20,6 @@ const WhatYouMissedSection = ({
 
   useEffect(() => {
     fetchExpiredJobs();
-    const overlay = isOverlayEnabled();
-    if (overlay) {
-      const demo = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
-      setExpiredJobs(demo);
-      setCounts({ expiredJobs: demo.length });
-      const surface = 'what_you_missed';
-      if (!hasAnalyticsFired(surface)) {
-        try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: demo.length as any }); } catch {}
-        markAnalyticsFired(surface);
-        debugLog('Analytics fired:', surface, { count: demo.length });
-      }
-    }
   }, []);
 
   const fetchExpiredJobs = async () => {
@@ -74,25 +58,8 @@ const WhatYouMissedSection = ({
         }));
       }
 
-      const overlay = isOverlayEnabled();
-      if (overlay && (error || transformedJobs.length === 0)) {
-        transformedJobs = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
-        const surface = 'what_you_missed';
-        if (!hasAnalyticsFired(surface)) {
-          try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: transformedJobs.length as any }); } catch {}
-          markAnalyticsFired(surface);
-          debugLog('Analytics fired:', surface, { count: transformedJobs.length });
-        }
-      }
-
       setExpiredJobs(transformedJobs);
-      if (isOverlayEnabled()) setCounts({ expiredJobs: transformedJobs.length });
     } catch (error) {
-      console.error('Error fetching expired jobs:', error);
-      if (isOverlayEnabled()) {
-        const transformedJobs = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
-        setExpiredJobs(transformedJobs);
-      }
     } finally {
       setLoading(false);
     }
@@ -157,9 +124,6 @@ const WhatYouMissedSection = ({
                   <Clock className="w-3 h-3 mr-1" />
                   Expired
                 </Badge>
-                {showDemoBadges() && (job as any).__demo && (
-                  <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Demo</Badge>
-                )}
               </div>
 
               <CardContent className="p-5">

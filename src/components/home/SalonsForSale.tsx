@@ -9,10 +9,6 @@ import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import { useAuth } from '@/context/auth';
 import { Badge } from '@/components/ui/badge';
-import { getDemoSalons } from '@/demo/seedOverlay';
-import { showDemoBadges } from '@/demo/demoFlags';
-import { analytics } from '@/lib/analytics';
-import { isOverlayEnabled, setCounts, hasAnalyticsFired, markAnalyticsFired, debugLog } from '@/lib/demoOverlay';
 
 // Use real salon listings data
 
@@ -28,19 +24,6 @@ export default function SalonsForSale() {
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
-        const overlay = isOverlayEnabled();
-        if (overlay) {
-          const demo = getDemoSalons(6) as any;
-          setSalonSales(demo);
-          setLoading(false);
-          setCounts({ salons: demo.length });
-          const surface = 'salons_for_sale';
-          if (!hasAnalyticsFired(surface)) {
-            try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: demo.length as any }); } catch {}
-            markAnalyticsFired(surface);
-            debugLog('Analytics fired:', surface, { count: demo.length });
-          }
-        }
 
         const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -80,13 +63,6 @@ export default function SalonsForSale() {
             : (sale.images || [])
         }));
 
-        let finalSales: any[] = transformedSales;
-        if (overlay && (error || transformedSales.length === 0)) {
-          finalSales = getDemoSalons(6);
-        }
-
-        setSalonSales(finalSales as any);
-        setCounts({ salons: finalSales.length });
       } catch (error) {
         console.error('Error loading salon sales:', error);
       } finally {
@@ -97,15 +73,6 @@ export default function SalonsForSale() {
     fetchSalonSales();
   }, [isSignedIn]);
 
-  // Demo overlay analytics (guarded)
-  useEffect(() => {
-    const surface = 'salons_for_sale';
-    if (!hasAnalyticsFired(surface) && (salonSales as any[]).some((s: any) => s.__demo)) {
-      markAnalyticsFired(surface);
-      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: salonSales.length as any }); } catch {}
-      debugLog('Analytics fired:', surface, { count: salonSales.length });
-    }
-  }, [salonSales]);
 
   return (
     <section className="py-12 bg-gray-50">
@@ -152,9 +119,6 @@ export default function SalonsForSale() {
                     <div className="flex justify-end gap-2">
                       {!effectiveSignedIn && (
                         <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Recently sold</Badge>
-                      )}
-                      {showDemoBadges() && salon.__demo && (
-                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Demo</Badge>
                       )}
                     </div>
                   </div>

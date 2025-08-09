@@ -2,11 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
-import { isPreviewEnv } from '@/demo/demoFlags';
-import { getDemoJobs } from '@/demo/seedOverlay';
 import { analytics } from '@/lib/analytics';
-import { isOverlayEnabled, debugLog, setCounts, hasAnalyticsFired, markAnalyticsFired } from '@/lib/demoOverlay';
-// In-memory cache with stale times per feed
+
+// Simple in-memory cache
 const jobsCache: Record<string, { data: Job[]; ts: number }> = {};
 
 // Optional feature flag: if explicitly false, disable FOMO and show active to everyone
@@ -23,7 +21,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore] = useState(true);
 
   const { isSignedIn: authSignedIn } = useAuth();
   const inputLimit = params?.limit ?? 50;
@@ -32,17 +30,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const cacheKey = `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`;
   const staleMs = effectiveSignedIn ? 30 * 1000 : 5 * 1000; // Authed=30s, Public=5s
 
-  const isStale = (job: Job) => {
-    const now = Date.now();
-    const cutoff = now - 30 * 24 * 60 * 60 * 1000; // 30 days
-    const createdAt = job.created_at ? new Date(job.created_at).getTime() : 0;
-    const expiresAt = job.expires_at ? new Date(job.expires_at as any).getTime() : null;
-    if (expiresAt) return expiresAt <= now;
-    return createdAt <= cutoff;
-  };
-
   const fetchJobs = useCallback(async () => {
-    let usedDemo = false;
     try {
       setError('');
 
@@ -51,25 +39,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       if (cacheEntry && Date.now() - cacheEntry.ts < staleMs) {
         setJobs(cacheEntry.data);
         setLoading(false);
-        debugLog(`useOptimizedJobsData cache hit: ${effectiveSignedIn ? 'authed' : 'public'}`, { count: cacheEntry.data.length });
         return;
-      }
-
-      // Preview: prefill demo instantly to avoid empty UI while fetching
-      const overlay = isOverlayEnabled();
-      if (overlay) {
-        const mode = effectiveSignedIn ? 'active' : 'expired';
-        const capped = Math.min(inputLimit, 12);
-        const prefill = getDemoJobs({ mode: mode as any, limit: capped });
-        setJobs(prefill);
-        setLoading(false);
-        setCounts({ jobs: prefill.length });
-        const surface = 'jobs_feed';
-        if (!hasAnalyticsFired(surface)) {
-          try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: prefill.length as any }); } catch {}
-          markAnalyticsFired(surface);
-          debugLog('Analytics fired:', surface, { count: prefill.length });
-        }
       }
 
       setLoading(true);
@@ -100,63 +70,34 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
       const { data, error: fetchError } = await query;
 
-      let transformedJobs: Job[] = [];
-      if (!fetchError && data) {
-        transformedJobs = (data || []).map((job: any): Job => ({
-          id: job.id,
-          title: job.title,
-          description: job.description,
-          company: job.title,
-          location: job.location,
-          compensation_details: job.compensation_details,
-          salary_range: job.compensation_details,
-          specialties: [],
-          category: job.category,
-          status: job.status,
-          pricing_tier: job.pricing_tier || 'free',
-          created_at: job.created_at,
-          updated_at: job.updated_at,
-          user_id: job.user_id,
-          expires_at: job.expires_at,
-          contact_info: typeof job.contact_info === 'object' ? (job.contact_info as any) : {},
-        }));
+      if (fetchError) {
+        throw fetchError;
       }
 
-
-      if (overlay && (fetchError || (transformedJobs?.length ?? 0) === 0)) {
-        const mode = effectiveSignedIn ? 'active' : 'expired';
-        const capped = Math.min(inputLimit, 12);
-        transformedJobs = getDemoJobs({ mode: mode as any, limit: capped });
-        usedDemo = true;
-      }
+      const transformedJobs: Job[] = (data || []).map((job: any): Job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description,
+        company: job.title,
+        location: job.location,
+        compensation_details: job.compensation_details,
+        salary_range: job.compensation_details,
+        specialties: [],
+        category: job.category,
+        status: job.status,
+        pricing_tier: job.pricing_tier || 'free',
+        created_at: job.created_at,
+        updated_at: job.updated_at,
+        user_id: job.user_id,
+        expires_at: job.expires_at,
+        contact_info: typeof job.contact_info === 'object' ? (job.contact_info as any) : {},
+      }));
 
       setJobs(transformedJobs);
-      // Update cache
       jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
-      debugLog('useOptimizedJobsData loaded', { count: transformedJobs.length, mode: effectiveSignedIn ? 'active' : 'expired', usedDemo });
-      setCounts({ jobs: transformedJobs.length });
-
-      // Analytics once per surface when demo used
-      if (usedDemo) {
-        const surface = 'jobs_feed';
-        if (!hasAnalyticsFired(surface)) {
-          try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: transformedJobs.length as any }); } catch {}
-          markAnalyticsFired(surface);
-          debugLog('Analytics fired:', surface, { count: transformedJobs.length });
-        }
-      }
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('Failed to load jobs');
-      // Final fallback in preview
-      const overlay = isOverlayEnabled();
-      if (overlay) {
-        const mode = effectiveSignedIn ? 'active' : 'expired';
-        const capped = Math.min(inputLimit, 12);
-        const transformedJobs = getDemoJobs({ mode: mode as any, limit: capped });
-        setJobs(transformedJobs);
-        jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
-      }
     } finally {
       setLoading(false);
     }
@@ -168,21 +109,9 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
   // Initial load
   useEffect(() => {
+    analytics.trackEvent?.({ action: 'jobs_funnel_step', category: 'data', label: 'fetch_start' });
     fetchJobs();
   }, [fetchJobs]);
-
-  // React to demo overlay seed/clear without manual refresh
-  useEffect(() => {
-    if (import.meta.env.MODE === 'production') return;
-    const onSeed = () => refresh();
-    const onClear = () => refresh();
-    window.addEventListener('demo-overlay-seeded', onSeed);
-    window.addEventListener('demo-overlay-cleared', onClear);
-    return () => {
-      window.removeEventListener('demo-overlay-seeded', onSeed);
-      window.removeEventListener('demo-overlay-cleared', onClear);
-    };
-  }, [refresh]);
 
   return {
     jobs,
@@ -190,7 +119,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
     initialLoading: loading,
     error,
     hasMore,
-    loadMore: async () => {}, // Placeholder for pagination
+    loadMore: async () => {},
     refresh,
     cacheSize: jobs.length,
     cacheKey
