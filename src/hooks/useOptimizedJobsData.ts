@@ -4,6 +4,9 @@ import { Job } from '@/types/job';
 
 import { useAuth } from '@/context/auth';
 
+// In-memory cache with stale times per feed
+const jobsCache: Record<string, { data: Job[]; ts: number }> = {};
+
 // Optional feature flag: if explicitly false, disable FOMO and show active to everyone
 const getFomoEnabled = (): boolean | undefined => {
   try {
@@ -24,6 +27,8 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const inputLimit = params?.limit ?? 50;
   const fomoEnabled = getFomoEnabled();
   const effectiveSignedIn = fomoEnabled === false ? true : (params?.isSignedIn ?? authSignedIn);
+  const cacheKey = `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`;
+  const staleMs = effectiveSignedIn ? 30 * 1000 : 5 * 60 * 1000; // Authed=30s, Public=5m
 
   const isStale = (job: Job) => {
     const now = Date.now();
@@ -37,6 +42,16 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const fetchJobs = useCallback(async () => {
     try {
       setError('');
+
+      // Serve from cache if fresh
+      const cacheEntry = jobsCache[cacheKey];
+      if (cacheEntry && Date.now() - cacheEntry.ts < staleMs) {
+        setJobs(cacheEntry.data);
+        setLoading(false);
+        console.log(`🗂️ [OPTIMIZED-JOBS] Served from cache (${effectiveSignedIn ? 'authed' : 'public'})`);
+        return;
+      }
+
       setLoading(true);
 
       const nowISO = new Date().toISOString();
@@ -91,6 +106,8 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       }));
 
       setJobs(transformedJobs);
+      // Update cache
+      jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
       console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})`);
       
     } catch (err) {
@@ -161,6 +178,6 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
     loadMore: async () => {}, // Placeholder for pagination
     refresh,
     cacheSize: jobs.length,
-    cacheKey: `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`
+    cacheKey
   };
 }

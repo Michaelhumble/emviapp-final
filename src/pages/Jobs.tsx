@@ -6,12 +6,17 @@ import CreateJobPosting from './jobs/CreateJobPosting';
 import EditJobPage from './jobs/EditJobPage';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
+import { analytics } from '@/lib/analytics';
 
 const BrowseJobsPage = lazy(() => import('./jobs/OptimizedJobsPageContent'));
 const preloadBrowse = () => import('./jobs/OptimizedJobsPageContent');
 
 // Jobs landing page with CTA to browse
 const JobsLanding: React.FC<{ onPreload: () => void }> = ({ onPreload }) => {
+  useEffect(() => {
+    analytics.trackEvent({ action: 'jobs_funnel_step', category: 'navigation', label: 'landing' });
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-16">
       <Helmet>
@@ -24,7 +29,7 @@ const JobsLanding: React.FC<{ onPreload: () => void }> = ({ onPreload }) => {
         <p className="mt-3 text-muted-foreground">Explore the latest roles and opportunities from top salons and studios.</p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <Button asChild size="lg">
-            <Link to="/jobs/browse" onMouseEnter={onPreload}>Browse Jobs</Link>
+            <Link to="/jobs/browse" onMouseEnter={onPreload} onClick={() => analytics.trackEvent({ action: 'jobs_funnel_step', category: 'navigation', label: 'landing_to_browse' })}>Browse Jobs</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
             <Link to="/post-job">Post a Job</Link>

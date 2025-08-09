@@ -30,6 +30,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { track } from '@/lib/telemetry';
+import { analytics } from '@/lib/analytics';
 
 const OptimizedJobsPageContent = () => {
   const { isSignedIn } = useAuth();
@@ -68,6 +69,11 @@ const OptimizedJobsPageContent = () => {
       job.industry?.toLowerCase() === activeIndustryTab
     );
   }, [jobs, activeIndustryTab]);
+
+  // Funnel tracking: browse step
+  useEffect(() => {
+    analytics.trackEvent({ action: 'jobs_funnel_step', category: 'navigation', label: 'browse' });
+  }, []);
 
   // Handle industry tab pre-selection and deep linking
   useEffect(() => {

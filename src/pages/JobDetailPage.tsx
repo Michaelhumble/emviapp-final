@@ -10,6 +10,7 @@ import { ArrowLeft, MapPin, Briefcase, Clock, User, ExternalLink, PlusCircle } f
 import { formatDistanceToNow } from 'date-fns';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
+import { analytics } from '@/lib/analytics';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -27,6 +28,13 @@ const JobDetailPage = () => {
       setJob(foundJob || null);
     }
   }, [jobs, jobId]);
+
+  // Funnel tracking: detail step
+  useEffect(() => {
+    if (jobId) {
+      analytics.trackEvent({ action: 'jobs_funnel_step', category: 'navigation', label: 'detail', custom_parameters: { job_id: jobId } });
+    }
+  }, [jobId]);
 
   // Fallback: if not found in hook, fetch directly by id so expired jobs still render
   useEffect(() => {
