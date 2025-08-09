@@ -15,9 +15,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
-  const redirectTo = redirectParam
-    ? `${window.location.origin}${redirectParam}`
-    : window.location.origin;
+  const redirectTo = `${window.location.origin}/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
 
   const handleGoogle = async () => {
     try {
