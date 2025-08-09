@@ -37,23 +37,6 @@ export async function markSomeJobsExpired(count: number = 3) {
   }
 }
 
-// Seed N expired jobs and refresh the MV for "recently filled" strip
-export async function seedRecentlyFilledJobs(count: number = 3) {
-  try {
-    const res = await markSomeJobsExpired(count);
-    const { error: refreshErr } = await (supabaseBypass as any).rpc('refresh_mv_jobs_recently_filled');
-    if (refreshErr) throw refreshErr;
-    console.info('[SEED] Refreshed mv_jobs_recently_filled after expiring jobs.', res);
-    console.info('[SEED] Run again or revert by setting expires_at to null/future for affected IDs.');
-    return { ...res, refreshed: true };
-  } catch (e) {
-    console.error('[SEED] Error seeding recently filled MV:', e);
-    return { updated: 0, error: String(e) };
-  }
-}
-
-// Expose helpers globally for one-off use
+// Expose helper globally for one-off use
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(window as any).__markExpiredJobs = markSomeJobsExpired;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(window as any).__seedRecentlyFilledJobs = seedRecentlyFilledJobs;

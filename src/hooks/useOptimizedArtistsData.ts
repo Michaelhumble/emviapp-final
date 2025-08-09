@@ -19,5 +19,5 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
     retryCount: 2,
   });
 
-  return { artists: data || [], loading: isLoading, error: error?.message || '' };
+  return { artists: data || [], loading: isLoading, error: error?.message || "" };
 }

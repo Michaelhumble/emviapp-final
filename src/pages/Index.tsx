@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-
 import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
 import Testimonials from "@/components/home/Testimonials";
@@ -14,7 +13,6 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HomepageSEO from "@/components/seo/HomepageSEO";
-
 
 // Enhanced homepage components
 import AIMatchmakerSection from "@/components/home/ai-matchmaker";
@@ -60,7 +58,6 @@ const Index = () => {
       'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.'
     );
     console.log("Index page loaded");
-
     
     // Run verification to ensure all listings have proper routing
     runListingsVerification()

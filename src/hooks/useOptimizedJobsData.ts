@@ -1,11 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
-import { useAuth } from '@/context/auth';
-import { analytics } from '@/lib/analytics';
 
-// Simple in-memory cache
-const jobsCache: Record<string, { data: Job[]; ts: number }> = {};
+import { useAuth } from '@/context/auth';
 
 // Optional feature flag: if explicitly false, disable FOMO and show active to everyone
 const getFomoEnabled = (): boolean | undefined => {
@@ -21,27 +18,25 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [hasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
 
   const { isSignedIn: authSignedIn } = useAuth();
   const inputLimit = params?.limit ?? 50;
   const fomoEnabled = getFomoEnabled();
   const effectiveSignedIn = fomoEnabled === false ? true : (params?.isSignedIn ?? authSignedIn);
-  const cacheKey = `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`;
-  const staleMs = effectiveSignedIn ? 30 * 1000 : 5 * 1000; // Authed=30s, Public=5s
+
+  const isStale = (job: Job) => {
+    const now = Date.now();
+    const cutoff = now - 30 * 24 * 60 * 60 * 1000; // 30 days
+    const createdAt = job.created_at ? new Date(job.created_at).getTime() : 0;
+    const expiresAt = job.expires_at ? new Date(job.expires_at as any).getTime() : null;
+    if (expiresAt) return expiresAt <= now;
+    return createdAt <= cutoff;
+  };
 
   const fetchJobs = useCallback(async () => {
     try {
       setError('');
-
-      // Serve from cache if fresh
-      const cacheEntry = jobsCache[cacheKey];
-      if (cacheEntry && Date.now() - cacheEntry.ts < staleMs) {
-        setJobs(cacheEntry.data);
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
 
       const nowISO = new Date().toISOString();
@@ -49,7 +44,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
       let query = (supabase as any)
         .from('jobs')
-        .select('id,title,location,description,compensation_details,category,status,pricing_tier,created_at,updated_at,user_id,expires_at,contact_info')
+        .select('*')
         .eq('status' as any, 'active');
 
       if (effectiveSignedIn) {
@@ -71,10 +66,12 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       const { data, error: fetchError } = await query;
 
       if (fetchError) {
-        throw fetchError;
+        console.error('Error fetching jobs:', fetchError);
+        setError(fetchError.message);
+        return;
       }
 
-      const transformedJobs: Job[] = (data || []).map((job: any): Job => ({
+      const transformedJobs = (data || []).map((job: any): Job => ({
         id: job.id,
         title: job.title,
         description: job.description,
@@ -94,7 +91,8 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       }));
 
       setJobs(transformedJobs);
-      jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
+      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})`);
+      
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('Failed to load jobs');
@@ -109,9 +107,50 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
   // Initial load
   useEffect(() => {
-    analytics.trackEvent?.({ action: 'jobs_funnel_step', category: 'data', label: 'fetch_start' });
     fetchJobs();
   }, [fetchJobs]);
+
+  // Real-time subscriptions for new jobs
+  useEffect(() => {
+    const channel = supabase
+      .channel('jobs_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'jobs',
+          filter: 'status=eq.active'
+        },
+        (payload) => {
+          console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
+          if (!effectiveSignedIn) return; // Only inject into active view
+          const newJob = payload.new as Job;
+          setJobs(prev => [newJob, ...prev]);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'jobs'
+        },
+        (payload) => {
+          console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
+          if (!effectiveSignedIn) return; // Ignore updates in public FOMO view
+          const updatedJob = payload.new as Job;
+          setJobs(prev => prev.map(job => 
+            job.id === updatedJob.id ? updatedJob : job
+          ));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [effectiveSignedIn]);
 
   return {
     jobs,
@@ -119,9 +158,9 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
     initialLoading: loading,
     error,
     hasMore,
-    loadMore: async () => {},
+    loadMore: async () => {}, // Placeholder for pagination
     refresh,
     cacheSize: jobs.length,
-    cacheKey
+    cacheKey: `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`
   };
 }

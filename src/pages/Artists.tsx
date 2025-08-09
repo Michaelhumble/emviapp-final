@@ -4,12 +4,10 @@ import { Container } from "@/components/ui/container";
 import { useAuth } from "@/context/auth";
 import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
 import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
-import { useEffect } from "react";
 
 const Artists = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 20 });
-
 
   return (
     <Layout>

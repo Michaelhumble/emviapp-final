@@ -5,12 +5,10 @@ import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
 import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
-  
-
 
   return (
     <section className="py-12 bg-background">
@@ -46,18 +44,16 @@ const ArtistsForHireStrip = () => {
               </div>
             ) : artists.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {artists.map((a: any) => (
-                  <div key={a.user_id} className="space-y-2">
-                    <ArtistForHireCard
-                      key={a.user_id}
-                      name={undefined}
-                      specialties={a.specialties}
-                      location={a.location}
-                      headline={a.headline}
-                      available={!!a.available_for_work}
-                      viewMode={isSignedIn ? "signedIn" : "public"}
-                    />
-                  </div>
+                {artists.map((a) => (
+                  <ArtistForHireCard
+                    key={a.user_id}
+                    name={undefined}
+                    specialties={a.specialties}
+                    location={a.location}
+                    headline={a.headline}
+                    available={!!a.available_for_work}
+                    viewMode={isSignedIn ? "signedIn" : "public"}
+                  />
                 ))}
               </div>
             ) : (

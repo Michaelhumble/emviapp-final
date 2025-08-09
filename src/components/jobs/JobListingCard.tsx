@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import UnifiedImage from '@/components/ui/UnifiedImage';
-import { generatePlaceholderDataURL } from '@/utils/imageOptimizer';
 
 interface JobListingCardProps {
   job: Job;
@@ -42,7 +40,6 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
   };
 
   const isPaidJob = job.pricing_tier && job.pricing_tier !== 'free';
-  const isFilled = job.status === 'filled' || (job as any).position_filled === true || job.status === 'position_filled';
   
   const getPricingTierBadge = (tier?: string) => {
     switch (tier) {
@@ -60,15 +57,8 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
   return (
     <div className={`border rounded-lg overflow-hidden bg-white ${isExpired ? 'opacity-60' : ''} ${
       isPaidJob ? 'border-blue-200 shadow-lg ring-1 ring-blue-100' : 'border-gray-200'
-    } relative`}>
+    }`}>
       <div className={`p-4 ${isPaidJob ? 'bg-gradient-to-br from-blue-50/30 to-purple-50/30' : ''}`}>
-        {(isExpired || job.status === 'filled' || job.status === 'position_filled') && (
-          <span className={`pointer-events-none absolute top-3 -left-7 -rotate-45 ${
-            job.status === 'filled' || job.status === 'position_filled' ? 'bg-green-600' : 'bg-red-600'
-          } text-white text-[10px] px-8 py-1 shadow-md tracking-wide`}> 
-            {job.status === 'filled' || job.status === 'position_filled' ? 'Position Filled' : 'Expired'}
-          </span>
-        )}
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-semibold">{job.title}</h3>
           {getPricingTierBadge(job.pricing_tier)}
@@ -85,27 +75,21 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
         
         {/* Job Image - Only show for paid jobs */}
         {isPaidJob && job.image && (
-          <div className="mt-3 mb-3 relative">
-            <UnifiedImage
-              src={String(job.image)}
+          <div className="mt-3 mb-3">
+            <img
+              src={job.image}
               alt={job.title}
-              aspectRatio="video"
-              className="w-full h-32 rounded-lg shadow-sm border border-gray-200"
-              lazy
-              lowQualitySrc={generatePlaceholderDataURL(400, 180)}
-              showShimmer
+              className="w-full h-32 object-cover rounded-lg shadow-sm border border-gray-200"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </div>
         )}
         
         {/* Placeholder for free jobs - subtle visual hint */}
         {!isPaidJob && (
-          <div className="mt-3 mb-3 h-24 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center relative">
-            {(isExpired || isFilled) && (
-              <span className={`pointer-events-none absolute top-2 -left-7 -rotate-45 ${isFilled ? 'bg-green-600' : 'bg-red-600'} text-white text-[10px] px-8 py-1 shadow-md tracking-wide`}>
-                {isFilled ? 'Position Filled' : 'Expired'}
-              </span>
-            )}
+          <div className="mt-3 mb-3 h-24 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center">
             <div className="text-center text-gray-400">
               <p className="text-xs font-medium">📸 Photo available with</p>
               <p className="text-xs font-medium">Featured listings</p>

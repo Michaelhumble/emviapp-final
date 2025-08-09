@@ -42,18 +42,16 @@ const ArtistsForHire = () => {
               </div>
             ) : artists.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {artists.map((a: any) => (
-                  <div key={a.user_id} className="space-y-2">
-                    <ArtistForHireCard
-                      key={a.user_id}
-                      name={undefined}
-                      specialties={a.specialties}
-                      location={a.location}
-                      headline={a.headline}
-                      available={!!a.available_for_work}
-                      viewMode={isSignedIn ? "signedIn" : "public"}
-                    />
-                  </div>
+                {artists.map((a) => (
+                  <ArtistForHireCard
+                    key={a.user_id}
+                    name={undefined}
+                    specialties={a.specialties}
+                    location={a.location}
+                    headline={a.headline}
+                    available={!!a.available_for_work}
+                    viewMode={isSignedIn ? "signedIn" : "public"}
+                  />
                 ))}
               </div>
             ) : (

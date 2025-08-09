@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -14,17 +15,15 @@ import { Badge } from '@/components/ui/badge';
 
 export default function SalonsForSale() {
   const [loading, setLoading] = useState(true);
-  const [salonSales, setSalonSales] = useState<SalonSale[] & { __demo?: true }[]>([] as any);
+  const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
   const { isSignedIn } = useAuth();
   const fomoEnabled = (() => { try { const flag = (window as any)?.__env?.FOMO_LISTING_MODE; if (flag === false || flag === 'false') return false; if (flag === true || flag === 'true') return true; } catch {} return undefined; })();
   const effectiveSignedIn = fomoEnabled === false ? true : isSignedIn;
-  const fired = useRef(false);
 
   // Fetch real salon sales from database
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
-
         const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
         let query = supabaseBypass
@@ -51,6 +50,7 @@ export default function SalonsForSale() {
 
         if (error) {
           console.error('Error fetching salon sales:', error);
+          return;
         }
 
         // Transform data to include photos in images array
@@ -63,6 +63,7 @@ export default function SalonsForSale() {
             : (sale.images || [])
         }));
 
+        setSalonSales(transformedSales);
       } catch (error) {
         console.error('Error loading salon sales:', error);
       } finally {
@@ -72,7 +73,6 @@ export default function SalonsForSale() {
 
     fetchSalonSales();
   }, [isSignedIn]);
-
 
   return (
     <section className="py-12 bg-gray-50">
@@ -110,17 +110,17 @@ export default function SalonsForSale() {
               </div>
             ) : salonSales.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {salonSales.map((salon: any) => (
+                {salonSales.map(salon => (
                   <div key={salon.id} className="space-y-2">
                     <SalonSaleCard
                       salon={salon}
                       onViewDetails={() => {}}
                     />
-                    <div className="flex justify-end gap-2">
-                      {!effectiveSignedIn && (
-                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Recently sold</Badge>
-                      )}
-                    </div>
+                    {!effectiveSignedIn && (
+                      <div className="flex justify-end">
+                        <Badge variant="secondary" className="text-xs bg-muted text-foreground/70">Recently sold</Badge>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
