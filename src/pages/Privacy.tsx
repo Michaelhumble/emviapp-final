@@ -14,10 +14,13 @@ const Privacy = () => {
             <h1 className="text-4xl font-bold mb-8 text-center font-playfair">Privacy Policy</h1>
             <div className="prose prose-lg max-w-none space-y-6">
               
-              <section className="space-y-4">
-                <h2 className="text-2xl font-semibold text-primary">SMS Notifications Policy</h2>
+              <section id="sms-policy" className="space-y-4">
+                <h2 className="text-2xl font-semibold text-primary">SMS Policy</h2>
                 <p>
-                  By signing up on EmviApp, you agree to receive SMS notifications related to your account, bookings, and promotions. Reply STOP to unsubscribe at any time.
+                  By signing up on EmviApp, you agree to receive SMS notifications related to your account, bookings, and promotions. Message frequency varies. Reply STOP to unsubscribe, or HELP for help. Message & data rates may apply. Carriers are not liable for delayed or undelivered messages.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  See our <a href="/privacy#sms-policy" className="text-primary hover:underline">Privacy Policy</a> and <a href="/terms" className="text-primary hover:underline">Terms of Service</a> for details.
                 </p>
               </section>
 

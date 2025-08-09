@@ -182,6 +182,9 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
             <Button className="w-full" onClick={handleSendCode} disabled={loading}>
               {loading ? "Sending..." : "Send code"}
             </Button>
+            <p className="mt-2 text-xs text-muted-foreground text-center">
+              By continuing, you agree to EmviApp’s <a href="/privacy#sms-policy" className="text-primary hover:underline">SMS Policy</a> and <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+            </p>
           </div>
         ) : (
           <div className="space-y-4">

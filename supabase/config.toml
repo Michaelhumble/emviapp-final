@@ -102,3 +102,6 @@ port = 54327
 vector_port = 54328
 backend = "postgres"
 
+[functions.twilio-sms]
+verify_jwt = false
+
