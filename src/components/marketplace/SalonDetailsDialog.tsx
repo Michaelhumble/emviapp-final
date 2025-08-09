@@ -184,7 +184,7 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
                   </Button>
                 }
               />
-            )
+            )}
           </div>
         </div>
       </DialogContent>

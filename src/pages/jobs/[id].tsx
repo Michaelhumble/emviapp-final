@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Helmet } from 'react-helmet';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
+import { track } from '@/lib/telemetry';
 
 // Inline JSON-LD helper
 function generateJobPostingJsonLd(job: Job, isExpired: boolean) {
@@ -125,7 +126,7 @@ const JobDetailDynamicPage: React.FC = () => {
           <p className="text-sm text-muted-foreground mt-1">Recently filled. Sign in to see open roles or post a job to hire faster.</p>
           <div className="mt-3 flex gap-2">
             <Button onClick={() => navigate('/auth/signin?redirect=/jobs')}>Sign in to see open roles</Button>
-            <Button variant="outline" onClick={() => navigate('/post-job')}>Post a job</Button>
+            <Button variant="outline" onClick={() => { track('jobs_expired_detail_cta_click', { cta: 'post_job', job_id: job.id }); navigate('/post-job'); }}>Post a job</Button>
           </div>
         </div>
       )}
