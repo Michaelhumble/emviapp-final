@@ -1,16 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
-import { useDebounce } from '@/hooks/useDebounce';
+
 import { useAuth } from '@/context/auth';
 
-export function useOptimizedJobsData() {
+// Optional feature flag: if explicitly false, disable FOMO and show active to everyone
+const getFomoEnabled = (): boolean | undefined => {
+  try {
+    const flag = (window as any)?.__env?.FOMO_LISTING_MODE;
+    if (flag === false || flag === 'false') return false;
+    if (flag === true || flag === 'true') return true;
+  } catch {}
+  return undefined;
+};
+
+export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: number }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [hasMore, setHasMore] = useState(true);
 
-  const { isSignedIn } = useAuth();
+  const { isSignedIn: authSignedIn } = useAuth();
+  const inputLimit = params?.limit ?? 50;
+  const fomoEnabled = getFomoEnabled();
+  const effectiveSignedIn = fomoEnabled === false ? true : (params?.isSignedIn ?? authSignedIn);
 
   const isStale = (job: Job) => {
     const now = Date.now();
@@ -26,14 +39,31 @@ export function useOptimizedJobsData() {
       setError('');
       setLoading(true);
 
-      // Base query (server-side filters kept minimal to avoid PostgREST OR complexity)
-      const { data, error: fetchError } = await supabase
+      const nowISO = new Date().toISOString();
+      const thirtyDaysAgoISO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      let query = (supabase as any)
         .from('jobs')
         .select('*')
-        .eq('status', 'active')
-        .order('pricing_tier', { ascending: false }) // Diamond/Gold first
-        .order('created_at', { ascending: false })
-        .limit(50); // Limit initial load
+        .eq('status' as any, 'active');
+
+      if (effectiveSignedIn) {
+        // ACTIVE: expires_at > now OR (expires_at IS NULL AND created_at > now()-30d)
+        query = query
+          .or(`expires_at.gt.${nowISO},and(expires_at.is.null,created_at.gt.${thirtyDaysAgoISO})`)
+          .order('pricing_tier' as any, { ascending: false })
+          .order('created_at' as any, { ascending: false })
+          .limit(inputLimit);
+      } else {
+        // EXPIRED (Public FOMO): expires_at <= now OR (expires_at IS NULL AND created_at <= now()-30d)
+        query = query
+          .or(`expires_at.lte.${nowISO},and(expires_at.is.null,created_at.lte.${thirtyDaysAgoISO})`)
+          .order('expires_at' as any, { ascending: false })
+          .order('created_at' as any, { ascending: false })
+          .limit(inputLimit);
+      }
+
+      const { data, error: fetchError } = await query;
 
       if (fetchError) {
         console.error('Error fetching jobs:', fetchError);
@@ -41,15 +71,15 @@ export function useOptimizedJobsData() {
         return;
       }
 
-      const transformedJobs = (data || []).map((job): Job => ({
+      const transformedJobs = (data || []).map((job: any): Job => ({
         id: job.id,
         title: job.title,
         description: job.description,
-        company: job.title, // Use title as company fallback
+        company: job.title,
         location: job.location,
         compensation_details: job.compensation_details,
-        salary_range: job.compensation_details, // Map to available field
-        specialties: [], // Default empty array
+        salary_range: job.compensation_details,
+        specialties: [],
         category: job.category,
         status: job.status,
         pricing_tier: job.pricing_tier || 'free',
@@ -57,15 +87,11 @@ export function useOptimizedJobsData() {
         updated_at: job.updated_at,
         user_id: job.user_id,
         expires_at: job.expires_at,
-        contact_info: typeof job.contact_info === 'object' ? job.contact_info as any : {},
+        contact_info: typeof job.contact_info === 'object' ? (job.contact_info as any) : {},
       }));
 
-      const filtered = isSignedIn
-        ? transformedJobs.filter(j => !isStale(j))
-        : transformedJobs.filter(j => isStale(j));
-
-      setJobs(filtered);
-      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${filtered.length} jobs (${isSignedIn ? 'active' : 'FOMO'})`);
+      setJobs(transformedJobs);
+      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})`);
       
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -73,7 +99,7 @@ export function useOptimizedJobsData() {
     } finally {
       setLoading(false);
     }
-  }, [isSignedIn]);
+  }, [effectiveSignedIn, inputLimit]);
 
   const refresh = useCallback(() => {
     fetchJobs();
@@ -98,6 +124,7 @@ export function useOptimizedJobsData() {
         },
         (payload) => {
           console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
+          if (!effectiveSignedIn) return; // Only inject into active view
           const newJob = payload.new as Job;
           setJobs(prev => [newJob, ...prev]);
         }
@@ -111,6 +138,7 @@ export function useOptimizedJobsData() {
         },
         (payload) => {
           console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
+          if (!effectiveSignedIn) return; // Ignore updates in public FOMO view
           const updatedJob = payload.new as Job;
           setJobs(prev => prev.map(job => 
             job.id === updatedJob.id ? updatedJob : job
@@ -122,7 +150,7 @@ export function useOptimizedJobsData() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [effectiveSignedIn]);
 
   return {
     jobs,
@@ -133,6 +161,6 @@ export function useOptimizedJobsData() {
     loadMore: async () => {}, // Placeholder for pagination
     refresh,
     cacheSize: jobs.length,
-    cacheKey: 'optimized-jobs'
+    cacheKey: `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`
   };
 }

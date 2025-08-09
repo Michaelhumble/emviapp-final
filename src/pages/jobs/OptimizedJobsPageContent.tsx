@@ -31,8 +31,9 @@ import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Bri
 import { Button } from '@/components/ui/button';
 
 const OptimizedJobsPageContent = () => {
-  const { jobs, loading, error, refresh } = useOptimizedJobsData();
   const { isSignedIn } = useAuth();
+  const { jobs, loading, error, refresh } = useOptimizedJobsData({ isSignedIn, limit: 50 });
+  const fomoEnabled = (() => { try { const flag = (window as any)?.__env?.FOMO_LISTING_MODE; if (flag === false || flag === 'false') return false; if (flag === true || flag === 'true') return true; } catch {} return undefined; })();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -231,6 +232,11 @@ const OptimizedJobsPageContent = () => {
         {/* JOBS SECTION */}
         <section id="jobs-section" className="w-full py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {!isSignedIn && fomoEnabled !== false && (
+              <div className="mb-6 rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
+                These roles were just filled. Sign in free to see today’s open jobs.
+              </div>
+            )}
             
             {/* Industry Tabs */}
             <div className="mb-8">
@@ -293,6 +299,11 @@ const OptimizedJobsPageContent = () => {
           <RealTimeActivity />
           
           {/* FOMO Sections */}
+          {isSignedIn && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
+            </div>
+          )}
           <WhatYouMissedSection />
           <FOMONailJobsSection />
           

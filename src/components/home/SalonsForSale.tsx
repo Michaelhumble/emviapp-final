@@ -9,6 +9,7 @@ import SalonSaleCard from '@/components/salons/SalonSaleCard';
 import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import { useAuth } from '@/context/auth';
+import { Badge } from '@/components/ui/badge';
 
 // Use real salon listings data
 
@@ -16,6 +17,8 @@ export default function SalonsForSale() {
   const [loading, setLoading] = useState(true);
   const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
   const { isSignedIn } = useAuth();
+  const fomoEnabled = (() => { try { const flag = (window as any)?.__env?.FOMO_LISTING_MODE; if (flag === false || flag === 'false') return false; if (flag === true || flag === 'true') return true; } catch {} return undefined; })();
+  const effectiveSignedIn = fomoEnabled === false ? true : isSignedIn;
 
   // Fetch real salon sales from database
   useEffect(() => {
@@ -35,12 +38,12 @@ export default function SalonsForSale() {
           `)
           .eq('status', 'active');
 
-        if (isSignedIn) {
+        if (effectiveSignedIn) {
           // Signed-in: Active and recent
           query = query.order('created_at', { ascending: false }).limit(4);
         } else {
-          // Public FOMO: stale items (older than 30 days)
-          query = query.lte('created_at', cutoffIso).order('created_at', { ascending: false }).limit(4);
+          // Public FOMO: stale proxy (older than 30 days)
+          query = query.lte('created_at', cutoffIso).order('created_at', { ascending: false }).limit(6);
         }
 
         const { data, error } = await query;
@@ -108,11 +111,17 @@ export default function SalonsForSale() {
             ) : salonSales.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {salonSales.map(salon => (
-                  <SalonSaleCard
-                    key={salon.id}
-                    salon={salon}
-                    onViewDetails={() => {}} // Handle view details if needed
-                  />
+                  <div key={salon.id} className="space-y-2">
+                    <SalonSaleCard
+                      salon={salon}
+                      onViewDetails={() => {}}
+                    />
+                    {!effectiveSignedIn && (
+                      <div className="flex justify-end">
+                        <Badge variant="secondary" className="text-xs">Recently sold</Badge>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             ) : (
