@@ -42,6 +42,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   };
 
   const fetchJobs = useCallback(async () => {
+    let usedDemo = false;
     try {
       setError('');
 
@@ -82,39 +83,60 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
       const { data, error: fetchError } = await query;
 
-      if (fetchError) {
-        console.error('Error fetching jobs:', fetchError);
-        setError(fetchError.message);
-        return;
+      let transformedJobs: Job[] = [];
+      if (!fetchError && data) {
+        transformedJobs = (data || []).map((job: any): Job => ({
+          id: job.id,
+          title: job.title,
+          description: job.description,
+          company: job.title,
+          location: job.location,
+          compensation_details: job.compensation_details,
+          salary_range: job.compensation_details,
+          specialties: [],
+          category: job.category,
+          status: job.status,
+          pricing_tier: job.pricing_tier || 'free',
+          created_at: job.created_at,
+          updated_at: job.updated_at,
+          user_id: job.user_id,
+          expires_at: job.expires_at,
+          contact_info: typeof job.contact_info === 'object' ? (job.contact_info as any) : {},
+        }));
       }
 
-      const transformedJobs = (data || []).map((job: any): Job => ({
-        id: job.id,
-        title: job.title,
-        description: job.description,
-        company: job.title,
-        location: job.location,
-        compensation_details: job.compensation_details,
-        salary_range: job.compensation_details,
-        specialties: [],
-        category: job.category,
-        status: job.status,
-        pricing_tier: job.pricing_tier || 'free',
-        created_at: job.created_at,
-        updated_at: job.updated_at,
-        user_id: job.user_id,
-        expires_at: job.expires_at,
-        contact_info: typeof job.contact_info === 'object' ? (job.contact_info as any) : {},
-      }));
+      const inPreview = import.meta.env.MODE !== 'production';
+      const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
+
+      if (inPreview && (demoForced || fetchError || (transformedJobs?.length ?? 0) === 0)) {
+        const mode = effectiveSignedIn ? 'active' : 'expired';
+        const capped = Math.min(inputLimit, 12);
+        transformedJobs = getDemoJobs({ mode: mode as any, limit: capped });
+        usedDemo = true;
+      }
 
       setJobs(transformedJobs);
       // Update cache
       jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
-      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})`);
+      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})${usedDemo ? ' [demo overlay]' : ''}`);
+
+      // Analytics once per mount when demo used
+      if (usedDemo) {
+        try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `jobs:${transformedJobs.length}` }); } catch {}
+      }
       
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('Failed to load jobs');
+      // Final fallback in preview
+      const inPreview = import.meta.env.MODE !== 'production';
+      if (inPreview) {
+        const mode = effectiveSignedIn ? 'active' : 'expired';
+        const capped = Math.min(inputLimit, 12);
+        const transformedJobs = getDemoJobs({ mode: mode as any, limit: capped });
+        setJobs(transformedJobs);
+        jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
+      }
     } finally {
       setLoading(false);
     }
@@ -129,47 +151,18 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
     fetchJobs();
   }, [fetchJobs]);
 
-  // Real-time subscriptions for new jobs
+  // React to demo overlay seed/clear without manual refresh
   useEffect(() => {
-    const channel = supabase
-      .channel('jobs_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'jobs',
-          filter: 'status=eq.active'
-        },
-        (payload) => {
-          console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
-          if (!effectiveSignedIn) return; // Only inject into active view
-          const newJob = payload.new as Job;
-          setJobs(prev => [newJob, ...prev]);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'jobs'
-        },
-        (payload) => {
-          console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
-          if (!effectiveSignedIn) return; // Ignore updates in public FOMO view
-          const updatedJob = payload.new as Job;
-          setJobs(prev => prev.map(job => 
-            job.id === updatedJob.id ? updatedJob : job
-          ));
-        }
-      )
-      .subscribe();
-
+    if (import.meta.env.MODE === 'production') return;
+    const onSeed = () => refresh();
+    const onClear = () => refresh();
+    window.addEventListener('demo-overlay-seeded', onSeed);
+    window.addEventListener('demo-overlay-cleared', onClear);
     return () => {
-      supabase.removeChannel(channel);
+      window.removeEventListener('demo-overlay-seeded', onSeed);
+      window.removeEventListener('demo-overlay-cleared', onClear);
     };
-  }, [effectiveSignedIn]);
+  }, [refresh]);
 
   return {
     jobs,

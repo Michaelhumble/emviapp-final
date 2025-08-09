@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -10,15 +10,19 @@ import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
 import { useAuth } from '@/context/auth';
 import { Badge } from '@/components/ui/badge';
+import { getDemoSalons } from '@/demo/seedOverlay';
+import { showDemoBadges } from '@/demo/demoFlags';
+import { analytics } from '@/lib/analytics';
 
 // Use real salon listings data
 
 export default function SalonsForSale() {
   const [loading, setLoading] = useState(true);
-  const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
+  const [salonSales, setSalonSales] = useState<SalonSale[] & { __demo?: true }[]>([] as any);
   const { isSignedIn } = useAuth();
   const fomoEnabled = (() => { try { const flag = (window as any)?.__env?.FOMO_LISTING_MODE; if (flag === false || flag === 'false') return false; if (flag === true || flag === 'true') return true; } catch {} return undefined; })();
   const effectiveSignedIn = fomoEnabled === false ? true : isSignedIn;
+  const fired = useRef(false);
 
   // Fetch real salon sales from database
   useEffect(() => {
@@ -50,7 +54,6 @@ export default function SalonsForSale() {
 
         if (error) {
           console.error('Error fetching salon sales:', error);
-          return;
         }
 
         // Transform data to include photos in images array
@@ -63,7 +66,14 @@ export default function SalonsForSale() {
             : (sale.images || [])
         }));
 
-        setSalonSales(transformedSales);
+        let finalSales: any[] = transformedSales;
+        const inPreview = import.meta.env.MODE !== 'production';
+        const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
+        if (inPreview && (demoForced || error || transformedSales.length === 0)) {
+          finalSales = getDemoSalons(6);
+        }
+
+        setSalonSales(finalSales as any);
       } catch (error) {
         console.error('Error loading salon sales:', error);
       } finally {
@@ -73,6 +83,15 @@ export default function SalonsForSale() {
 
     fetchSalonSales();
   }, [isSignedIn]);
+
+  // Demo overlay analytics
+  useEffect(() => {
+    if (fired.current) return;
+    if (salonSales.some((s: any) => s.__demo)) {
+      fired.current = true;
+      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `salons_strip:${salonSales.length}` }); } catch {}
+    }
+  }, [salonSales]);
 
   return (
     <section className="py-12 bg-gray-50">
@@ -110,17 +129,20 @@ export default function SalonsForSale() {
               </div>
             ) : salonSales.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {salonSales.map(salon => (
+                {salonSales.map((salon: any) => (
                   <div key={salon.id} className="space-y-2">
                     <SalonSaleCard
                       salon={salon}
                       onViewDetails={() => {}}
                     />
-                    {!effectiveSignedIn && (
-                      <div className="flex justify-end">
+                    <div className="flex justify-end gap-2">
+                      {!effectiveSignedIn && (
                         <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Recently sold</Badge>
-                      </div>
-                    )}
+                      )}
+                      {showDemoBadges() && salon.__demo && (
+                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Demo</Badge>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

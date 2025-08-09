@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, DollarSign, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { track } from '@/lib/telemetry';
+import { getDemoJobs } from '@/demo/seedOverlay';
+import { showDemoBadges } from '@/demo/demoFlags';
+import { analytics } from '@/lib/analytics';
 
 interface WhatYouMissedSectionProps {
   title?: string;
@@ -38,8 +41,9 @@ const WhatYouMissedSection = ({
         .order('created_at' as any, { ascending: false })
         .limit(maxJobs);
 
+      let transformedJobs: Job[] = [];
       if (!error && jobsData) {
-        const transformedJobs: Job[] = jobsData.map((job: any) => ({
+        transformedJobs = jobsData.map((job: any) => ({
           id: job.id,
           title: job.title || 'Job Title',
           company: job.title || 'Company Name',
@@ -56,10 +60,23 @@ const WhatYouMissedSection = ({
           pricing_tier: job.pricing_tier || 'free',
           category: job.category || 'Other'
         }));
-        setExpiredJobs(transformedJobs);
       }
+
+      const inPreview = import.meta.env.MODE !== 'production';
+      const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
+      if (inPreview && (demoForced || error || transformedJobs.length === 0)) {
+        transformedJobs = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
+        try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `jobs:${transformedJobs.length}` }); } catch {}
+      }
+
+      setExpiredJobs(transformedJobs);
     } catch (error) {
       console.error('Error fetching expired jobs:', error);
+      const inPreview = import.meta.env.MODE !== 'production';
+      if (inPreview) {
+        const transformedJobs = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
+        setExpiredJobs(transformedJobs);
+      }
     } finally {
       setLoading(false);
     }
@@ -119,11 +136,14 @@ const WhatYouMissedSection = ({
           >
             <Card className="h-full opacity-60 border border-gray-200 bg-gray-50/50 relative overflow-hidden" onClick={() => track('jobs_recently_filled_card_click', { job_id: job.id, source: 'recently_filled' })}>
               {/* Expired Overlay */}
-              <div className="absolute top-2 right-2 z-10">
+              <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
                 <Badge variant="destructive" className="text-xs">
                   <Clock className="w-3 h-3 mr-1" />
                   Expired
                 </Badge>
+                {showDemoBadges() && (job as any).__demo && (
+                  <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Demo</Badge>
+                )}
               </div>
 
               <CardContent className="p-5">

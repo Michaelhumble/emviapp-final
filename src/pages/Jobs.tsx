@@ -7,6 +7,7 @@ import EditJobPage from './jobs/EditJobPage';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { analytics } from '@/lib/analytics';
+import '@/utils/demoSeed';
 
 const BrowseJobsPage = lazy(() => import('./jobs/OptimizedJobsPageContent'));
 const preloadBrowse = () => import('./jobs/OptimizedJobsPageContent');
@@ -60,7 +61,7 @@ const Jobs = () => {
         w.__seedDemoContent().catch(() => {});
       }
       // Console hints
-      console.info('Preview helpers: window.__seedDemoContent(), window.__clearDemoContent()');
+      console.info('Preview helpers: window.__seedDemoContent(), window.__clearDemoContent(), window.__clearDemoCache()');
     } catch {}
   }, []);
 

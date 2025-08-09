@@ -13,6 +13,7 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HomepageSEO from "@/components/seo/HomepageSEO";
+import '@/utils/demoSeed';
 
 // Enhanced homepage components
 import AIMatchmakerSection from "@/components/home/ai-matchmaker";
