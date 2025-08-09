@@ -27,7 +27,7 @@ const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Search, Plus } from 'lucide-react';
+import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const OptimizedJobsPageContent = () => {
@@ -181,7 +181,7 @@ const OptimizedJobsPageContent = () => {
 
       <div className="w-full">
         {/* OPTIMIZED HERO SECTION - Above the fold content */}
-        <section className="relative w-full bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 overflow-hidden py-16 md:py-24">
+        <section className="relative w-full bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 overflow-hidden py-10 sm:py-14 md:py-16">
           {/* Optimized background - reduced complexity */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-br from-rose-400/20 via-purple-600/30 to-indigo-800/40"></div>
@@ -190,64 +190,39 @@ const OptimizedJobsPageContent = () => {
           </div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center">
-              
-              {/* Trust/Stats Bar */}
-              <div className="mb-8">
-                <div className="inline-flex items-center gap-2 sm:gap-4 bg-white/95 backdrop-blur-lg border border-yellow-400/30 rounded-full px-4 sm:px-8 py-3 sm:py-4 shadow-2xl">
-                  <span className="text-red-500 text-sm sm:text-base">🔥</span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-800">
-                    <span className="hidden sm:inline">12,000+ jobs posted | 10,000+ artists connected | </span>{filteredJobs.length} jobs available
-                  </span>
-                </div>
+            <div className="max-w-2xl md:max-w-3xl mx-auto text-center space-y-3 sm:space-y-4">
+              {/* Eyebrow count pill */}
+              <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs sm:text-sm mx-auto ${jobs.length > 0 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted/40 text-muted-foreground border-border'}`}>
+                <Briefcase className="h-4 w-4" />
+                <span>{jobs.length} job{jobs.length !== 1 ? 's' : ''} available</span>
               </div>
-              
+
               {/* Headline */}
-              <div className="mb-8">
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[0.9] tracking-tight">
-                  <span className="block bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent">
-                    Build Your American Dream
-                  </span>
-                  <span className="block mt-2 text-white">
-                    in Nails & Beauty
-                  </span>
+              <div className="whitespace-normal hyphens-none">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-snug sm:leading-snug lg:leading-tight text-white">
+                  <span>Build Your American<wbr /> Dream</span>
                 </h1>
-                
-                <h2 className="text-lg sm:text-xl lg:text-2xl text-purple-100 mb-4 max-w-5xl mx-auto leading-relaxed font-medium">
-                  America's most trusted nail & beauty hiring platform.
-                  <span className="block mt-2 text-yellow-200 font-semibold text-base sm:text-lg lg:text-xl">
-                    Kết nối thợ nails và chủ salon khắp nước Mỹ.
-                  </span>
-                </h2>
+                <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-white/90">in Nails & Beauty</p>
               </div>
-              
-              {/* CTA Buttons */}
-              <div className="mb-12">
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-                  <Button
-                    onClick={() => navigate('/post-job')}
-                    size="lg"
-                    className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-500 text-white font-black py-6 px-8 sm:px-12 rounded-2xl text-lg sm:text-xl shadow-2xl hover:shadow-3xl transition-all duration-300 min-w-[280px] sm:min-w-[320px] transform hover:scale-105"
-                  >
-                    <Plus className="w-6 h-6 sm:w-7 sm:h-7 mr-3" />
-                    Post a Job
-                  </Button>
-                  
-                  <Button
-                    onClick={() => {
-                      const jobsSection = document.querySelector('#jobs-section');
-                      if (jobsSection) {
-                        jobsSection.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    variant="outline"
-                    size="lg"
-                    className="bg-white/10 hover:bg-white/20 backdrop-blur-lg text-white font-bold py-6 px-8 sm:px-12 rounded-2xl text-lg sm:text-xl shadow-xl hover:shadow-2xl transition-all duration-300 min-w-[280px] sm:min-w-[320px] border-2 border-white/30 hover:border-white/50 transform hover:scale-105"
-                  >
-                    <Search className="w-6 h-6 sm:w-7 sm:h-7 mr-3" />
-                    Browse Jobs
-                  </Button>
-                </div>
+
+              {/* CTAs */}
+              <div className="flex items-center justify-center gap-3 mt-6 flex-col">
+                <Button
+                  onClick={() => navigate('/post-job')}
+                  className="h-11 px-6 text-base rounded-xl shadow-sm"
+                >
+                  Post a Job
+                </Button>
+                <Button
+                  onClick={() => {
+                    const jobsSection = document.querySelector('#jobs-section');
+                    if (jobsSection) jobsSection.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  variant="outline"
+                  className="h-11 px-6 text-base rounded-xl"
+                >
+                  Browse Jobs
+                </Button>
               </div>
             </div>
           </div>
@@ -260,14 +235,15 @@ const OptimizedJobsPageContent = () => {
             {/* Industry Tabs */}
             <div className="mb-8">
               <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-9 mb-8">
+                <TabsList className="mt-6 flex flex-wrap justify-center gap-2 sm:gap-3">
                   {industryTabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
                       <TabsTrigger
                         key={tab.id}
                         value={tab.id}
-                        className="flex items-center gap-2 text-xs md:text-sm"
+                        data-active={activeIndustryTab === tab.id}
+                        className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                       >
                         <Icon className="h-4 w-4" />
                         <span className="hidden md:inline">{tab.label}</span>
@@ -277,16 +253,12 @@ const OptimizedJobsPageContent = () => {
                   })}
                 </TabsList>
 
+                <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto text-center mt-3 sm:mt-4">
+                  {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''} available
+                </p>
+
                 {industryTabs.map((tab) => (
                   <TabsContent key={tab.id} value={tab.id} className="mt-0">
-                    <div className="text-center mb-6">
-                      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                        {tab.label} Opportunities
-                      </h2>
-                      <p className="text-gray-600">
-                        {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''} available
-                      </p>
-                    </div>
 
                     {/* Use optimized job display */}
                     {filteredJobs.length === 0 ? (
