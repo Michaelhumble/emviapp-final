@@ -307,7 +307,7 @@ const OptimizedJobsPageContent = () => {
           <FeaturedTrendingJobs jobs={jobs} />
 
           {/* Artists Available for Hire */}
-          {Boolean((window as any)?.__env?.SHOW_ARTISTS_STRIP) && (
+          {(((window as any)?.__env?.SHOW_ARTISTS_STRIP !== false) && ((window as any)?.__env?.SHOW_ARTISTS_STRIP !== 'false')) && (
             <ArtistsForHireSection />
           )}
 

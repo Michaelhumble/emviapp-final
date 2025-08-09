@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
-  const fired = useRef(false);
+  
 
 
   return (

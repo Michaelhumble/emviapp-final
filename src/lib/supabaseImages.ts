@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { isProd as isProdEnv } from "@/lib/demoOverlay";
+
 
 export function useSupabaseBucketImages(bucket: string, { limit = 60 }: { limit?: number } = {}) {
   const [urls, setUrls] = useState<string[]>([]);
@@ -10,8 +10,6 @@ export function useSupabaseBucketImages(bucket: string, { limit = 60 }: { limit?
     let cancelled = false;
     (async () => {
       try {
-        // Preview-only: in production, do nothing
-        if (isProdEnv()) { setLoading(false); return; }
 
         // List files (root of bucket)
         const { data, error } = await supabase.storage

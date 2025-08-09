@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import ArtistForHireCard from '@/components/artists/ArtistForHireCard';
+import { analytics } from '@/lib/analytics';
 
 interface ArtistForHireProfile {
   id: string;

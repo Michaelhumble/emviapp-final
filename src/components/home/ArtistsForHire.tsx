@@ -5,8 +5,6 @@ import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
 import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
 import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
-import { Badge } from "@/components/ui/badge";
-import { showDemoBadges } from "@/demo/demoFlags";
 
 const ArtistsForHire = () => {
   const { isSignedIn } = useAuth();
@@ -55,11 +53,6 @@ const ArtistsForHire = () => {
                       available={!!a.available_for_work}
                       viewMode={isSignedIn ? "signedIn" : "public"}
                     />
-                    {showDemoBadges() && a.__demo && (
-                      <div className="flex justify-end">
-                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Demo</Badge>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
