@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { signInWithPhone, verifyPhoneOtp } from "@/services/auth";
 import { useLocation, useNavigate } from "react-router-dom";
+import { normalizeToE164, maskPhone as maskPhoneDisplay } from "@/utils/phone";
 
 interface PhoneOtpDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface PhoneOtpDialogProps {
 export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChange }) => {
   const [step, setStep] = useState<"phone" | "code">("phone");
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendIn, setResendIn] = useState(0);
@@ -57,20 +59,28 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
     return () => clearInterval(id);
   }, [resendIn]);
 
-  const normalizePhone = (p: string) => p.replace(/\s+/g, '');
-  const isE164 = (p: string) => /^\+[1-9]\d{7,14}$/.test(p);
-  const maskPhone = (p: string) => {
-    const n = normalizePhone(p);
-    if (n.length <= 6) return n;
-    return `${n.slice(0, 2)}••• ••${n.slice(-4)}`;
+  const handlePhoneBlur = () => {
+    const normalized = normalizeToE164(phone, 'US');
+    if (!phone.trim()) {
+      setPhoneError(null);
+      return;
+    }
+    if (!normalized) {
+      setPhoneError("Enter a valid phone in E.164 (e.g., +15551234567).");
+    } else {
+      setPhoneError(null);
+      setPhone(normalized);
+    }
   };
 
   const handleSendCode = async () => {
-    const normalized = normalizePhone(phone);
-    if (!normalized || !isE164(normalized)) {
-      toast.error("Enter a valid E.164 phone number, e.g. +15551234567");
+    const normalized = normalizeToE164(phone, 'US');
+    if (!normalized) {
+      setPhoneError("Enter a valid phone in E.164 (e.g., +15551234567).");
       return;
     }
+    setPhone(normalized);
+    setPhoneError(null);
     try {
       setLoading(true);
       const { error } = await signInWithPhone(normalized);
@@ -149,7 +159,25 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="phone">Phone number</Label>
-              <Input id="phone" type="tel" placeholder="+1 555 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <Input
+                id="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="+1 555 123 4567"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  if (phoneError) setPhoneError(null);
+                }}
+                onBlur={handlePhoneBlur}
+                aria-invalid={!!phoneError}
+              />
+              {phoneError && (
+                <p className="text-sm text-destructive mt-1">
+                  {phoneError}
+                </p>
+              )}
             </div>
             <Button className="w-full" onClick={handleSendCode} disabled={loading}>
               {loading ? "Sending..." : "Send code"}
@@ -162,7 +190,7 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
               <Input id="code" inputMode="numeric" placeholder="123456" value={code} onChange={(e) => setCode(e.target.value)} />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm opacity-70">Sending to {maskPhone(phone)}</span>
+              <span className="text-sm opacity-70">Sending to {maskPhoneDisplay(phone)}</span>
               <Button variant="ghost" size="sm" onClick={handleSendCode} disabled={loading || resendIn > 0}>
                 {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
               </Button>
