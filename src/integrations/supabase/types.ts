@@ -14,6 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
+      ab_test_assignments: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          test_id?: string
+          user_id?: string
+          variant?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_test_assignments_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ab_test_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          test_id?: string
+          user_id?: string
+          variant?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_test_events_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ab_tests: {
+        Row: {
+          confidence_level: number | null
+          created_at: string | null
+          created_by: string
+          end_date: string | null
+          id: string
+          minimum_sample_size: number | null
+          start_date: string | null
+          status: string | null
+          target_metric: string
+          test_name: string
+          test_type: string
+          traffic_split: Json
+          updated_at: string | null
+          variants: Json
+        }
+        Insert: {
+          confidence_level?: number | null
+          created_at?: string | null
+          created_by: string
+          end_date?: string | null
+          id?: string
+          minimum_sample_size?: number | null
+          start_date?: string | null
+          status?: string | null
+          target_metric: string
+          test_name: string
+          test_type: string
+          traffic_split?: Json
+          updated_at?: string | null
+          variants: Json
+        }
+        Update: {
+          confidence_level?: number | null
+          created_at?: string | null
+          created_by?: string
+          end_date?: string | null
+          id?: string
+          minimum_sample_size?: number | null
+          start_date?: string | null
+          status?: string | null
+          target_metric?: string
+          test_name?: string
+          test_type?: string
+          traffic_split?: Json
+          updated_at?: string | null
+          variants?: Json
+        }
+        Relationships: []
+      }
       activity_log: {
         Row: {
           activity_type: string
@@ -1921,6 +2042,72 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_stories: {
+        Row: {
+          booking_id: string | null
+          content: string
+          created_at: string | null
+          id: string
+          is_featured: boolean | null
+          is_viral: boolean | null
+          likes_count: number | null
+          location: string | null
+          media_urls: string[] | null
+          provider_id: string | null
+          published_at: string | null
+          shares_count: number | null
+          story_type: string | null
+          tags: string[] | null
+          title: string
+          trending_score: number | null
+          updated_at: string | null
+          user_id: string
+          views_count: number | null
+        }
+        Insert: {
+          booking_id?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_viral?: boolean | null
+          likes_count?: number | null
+          location?: string | null
+          media_urls?: string[] | null
+          provider_id?: string | null
+          published_at?: string | null
+          shares_count?: number | null
+          story_type?: string | null
+          tags?: string[] | null
+          title: string
+          trending_score?: number | null
+          updated_at?: string | null
+          user_id: string
+          views_count?: number | null
+        }
+        Update: {
+          booking_id?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_viral?: boolean | null
+          likes_count?: number | null
+          location?: string | null
+          media_urls?: string[] | null
+          provider_id?: string | null
+          published_at?: string | null
+          shares_count?: number | null
+          story_type?: string | null
+          tags?: string[] | null
+          title?: string
+          trending_score?: number | null
+          updated_at?: string | null
+          user_id?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
       default_artist_data: {
         Row: {
           content: Json
@@ -2951,6 +3138,84 @@ export type Database = {
           max_uses?: number
           used_count?: number
           value?: number
+        }
+        Relationships: []
+      }
+      provider_search_index: {
+        Row: {
+          availability_score: number | null
+          id: string
+          last_indexed: string | null
+          location_data: Json | null
+          popularity_score: number | null
+          provider_id: string
+          quality_score: number | null
+          search_vector: unknown | null
+          services: Json | null
+          specialties: string[] | null
+          trending_score: number | null
+        }
+        Insert: {
+          availability_score?: number | null
+          id?: string
+          last_indexed?: string | null
+          location_data?: Json | null
+          popularity_score?: number | null
+          provider_id: string
+          quality_score?: number | null
+          search_vector?: unknown | null
+          services?: Json | null
+          specialties?: string[] | null
+          trending_score?: number | null
+        }
+        Update: {
+          availability_score?: number | null
+          id?: string
+          last_indexed?: string | null
+          location_data?: Json | null
+          popularity_score?: number | null
+          provider_id?: string
+          quality_score?: number | null
+          search_vector?: unknown | null
+          services?: Json | null
+          specialties?: string[] | null
+          trending_score?: number | null
+        }
+        Relationships: []
+      }
+      provider_status: {
+        Row: {
+          available_until: string | null
+          created_at: string | null
+          current_location: Json | null
+          id: string
+          instant_book_available: boolean | null
+          last_seen: string | null
+          provider_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_until?: string | null
+          created_at?: string | null
+          current_location?: Json | null
+          id?: string
+          instant_book_available?: boolean | null
+          last_seen?: string | null
+          provider_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_until?: string | null
+          created_at?: string | null
+          current_location?: Json | null
+          id?: string
+          instant_book_available?: boolean | null
+          last_seen?: string | null
+          provider_id?: string
+          status?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -4039,6 +4304,99 @@ export type Database = {
         }
         Relationships: []
       }
+      smart_reminders: {
+        Row: {
+          ai_optimized: boolean | null
+          clicked_at: string | null
+          conversion_tracking: Json | null
+          created_at: string | null
+          delivery_method: string[] | null
+          id: string
+          message: string
+          personalization_data: Json | null
+          reminder_type: string
+          scheduled_for: string
+          sent_at: string | null
+          status: string | null
+          target_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          ai_optimized?: boolean | null
+          clicked_at?: string | null
+          conversion_tracking?: Json | null
+          created_at?: string | null
+          delivery_method?: string[] | null
+          id?: string
+          message: string
+          personalization_data?: Json | null
+          reminder_type: string
+          scheduled_for: string
+          sent_at?: string | null
+          status?: string | null
+          target_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          ai_optimized?: boolean | null
+          clicked_at?: string | null
+          conversion_tracking?: Json | null
+          created_at?: string | null
+          delivery_method?: string[] | null
+          id?: string
+          message?: string
+          personalization_data?: Json | null
+          reminder_type?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string | null
+          target_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      social_shares: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string | null
+          engagement_metrics: Json | null
+          id: string
+          platform: string
+          share_type: string
+          share_url: string | null
+          user_id: string
+          viral_score: number | null
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          id?: string
+          platform: string
+          share_type: string
+          share_url?: string | null
+          user_id: string
+          viral_score?: number | null
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          id?: string
+          platform?: string
+          share_type?: string
+          share_url?: string | null
+          user_id?: string
+          viral_score?: number | null
+        }
+        Relationships: []
+      }
       staff_service_assignments: {
         Row: {
           created_at: string | null
@@ -4498,6 +4856,48 @@ export type Database = {
           unlock_value?: string
           unlocked_at?: string | null
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      viral_leaderboards: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          leaderboard_type: string
+          metadata: Json | null
+          period_start: string
+          period_type: string
+          rank: number | null
+          score: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          leaderboard_type: string
+          metadata?: Json | null
+          period_start: string
+          period_type?: string
+          rank?: number | null
+          score?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          leaderboard_type?: string
+          metadata?: Json | null
+          period_start?: string
+          period_type?: string
+          rank?: number | null
+          score?: number | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
