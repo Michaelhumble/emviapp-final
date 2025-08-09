@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { getDemoSalons } from '@/demo/seedOverlay';
 import { showDemoBadges } from '@/demo/demoFlags';
 import { analytics } from '@/lib/analytics';
-import { isPreview, setCounts, hasAnalyticsFired, markAnalyticsFired, debugLog } from '@/lib/demoOverlay';
+import { isOverlayEnabled, setCounts, hasAnalyticsFired, markAnalyticsFired, debugLog } from '@/lib/demoOverlay';
 
 // Use real salon listings data
 
@@ -28,13 +28,13 @@ export default function SalonsForSale() {
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
-        const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
-        if (overlayActive) {
+        const overlay = isOverlayEnabled();
+        if (overlay) {
           const demo = getDemoSalons(6) as any;
           setSalonSales(demo);
           setLoading(false);
           setCounts({ salons: demo.length });
-          const surface = 'salons_strip';
+          const surface = 'salons_for_sale';
           if (!hasAnalyticsFired(surface)) {
             try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: demo.length as any }); } catch {}
             markAnalyticsFired(surface);
@@ -81,9 +81,8 @@ export default function SalonsForSale() {
         }));
 
         let finalSales: any[] = transformedSales;
-        const inPreview = isPreview();
-        const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
-        if (inPreview && (demoForced || error || transformedSales.length === 0)) {
+        const overlay = isOverlayEnabled();
+        if (overlay && (error || transformedSales.length === 0)) {
           finalSales = getDemoSalons(6);
         }
 
@@ -101,7 +100,7 @@ export default function SalonsForSale() {
 
   // Demo overlay analytics (guarded)
   useEffect(() => {
-    const surface = 'salons_strip';
+    const surface = 'salons_for_sale';
     if (!hasAnalyticsFired(surface) && (salonSales as any[]).some((s: any) => s.__demo)) {
       markAnalyticsFired(surface);
       try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: salonSales.length as any }); } catch {}

@@ -7,7 +7,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { analytics } from '@/lib/analytics';
 import '@/utils/demoSeed';
-import { ensureDemoSeededOnMount, isPreview, registerDumpDemoState, debugLog } from '@/lib/demoOverlay';
+import { ensureDemoSeededOnMount, isOverlayEnabled, registerDumpDemoState, debugLog } from '@/lib/demoOverlay';
 const BrowseJobsPage = lazy(() => import('./jobs/OptimizedJobsPageContent'));
 const preloadBrowse = () => import('./jobs/OptimizedJobsPageContent');
 
@@ -51,7 +51,7 @@ const Jobs = () => {
 
   // Preview-only: auto-seed demo content on first visit if not already seeded
   useEffect(() => {
-    if (!isPreview()) return;
+    if (!isOverlayEnabled()) return;
     registerDumpDemoState();
     debugLog('Jobs page mount: ensuring demo seed');
     void ensureDemoSeededOnMount();

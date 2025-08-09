@@ -5,13 +5,13 @@ import { useAuth } from "@/context/auth";
 import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
 import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
 import { useEffect } from "react";
-import { ensureDemoSeededOnMount, isPreview, registerDumpDemoState, debugLog } from "@/lib/demoOverlay";
+import { ensureDemoSeededOnMount, isOverlayEnabled, registerDumpDemoState, debugLog } from "@/lib/demoOverlay";
 const Artists = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 20 });
 
   useEffect(() => {
-    if (!isPreview()) return;
+    if (!isOverlayEnabled()) return;
     registerDumpDemoState();
     debugLog('Artists page mount: ensuring demo seed');
     void ensureDemoSeededOnMount();

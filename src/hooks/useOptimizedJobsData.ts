@@ -5,7 +5,7 @@ import { useAuth } from '@/context/auth';
 import { isPreviewEnv } from '@/demo/demoFlags';
 import { getDemoJobs } from '@/demo/seedOverlay';
 import { analytics } from '@/lib/analytics';
-import { isPreview, debugLog, setCounts, hasAnalyticsFired, markAnalyticsFired } from '@/lib/demoOverlay';
+import { isOverlayEnabled, debugLog, setCounts, hasAnalyticsFired, markAnalyticsFired } from '@/lib/demoOverlay';
 // In-memory cache with stale times per feed
 const jobsCache: Record<string, { data: Job[]; ts: number }> = {};
 
@@ -56,15 +56,15 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       }
 
       // Preview: prefill demo instantly to avoid empty UI while fetching
-      const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
-      if (overlayActive) {
+      const overlay = isOverlayEnabled();
+      if (overlay) {
         const mode = effectiveSignedIn ? 'active' : 'expired';
         const capped = Math.min(inputLimit, 12);
         const prefill = getDemoJobs({ mode: mode as any, limit: capped });
         setJobs(prefill);
         setLoading(false);
         setCounts({ jobs: prefill.length });
-        const surface = 'jobs';
+        const surface = 'jobs_feed';
         if (!hasAnalyticsFired(surface)) {
           try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: prefill.length as any }); } catch {}
           markAnalyticsFired(surface);
@@ -122,10 +122,9 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         }));
       }
 
-      const inPreview = import.meta.env.MODE !== 'production';
-      const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
+      const overlay = isOverlayEnabled();
 
-      if (inPreview && (demoForced || fetchError || (transformedJobs?.length ?? 0) === 0)) {
+      if (overlay && (fetchError || (transformedJobs?.length ?? 0) === 0)) {
         const mode = effectiveSignedIn ? 'active' : 'expired';
         const capped = Math.min(inputLimit, 12);
         transformedJobs = getDemoJobs({ mode: mode as any, limit: capped });
@@ -140,7 +139,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
       // Analytics once per surface when demo used
       if (usedDemo) {
-        const surface = 'jobs';
+        const surface = 'jobs_feed';
         if (!hasAnalyticsFired(surface)) {
           try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: transformedJobs.length as any }); } catch {}
           markAnalyticsFired(surface);
@@ -151,8 +150,8 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       console.error('Unexpected error:', err);
       setError('Failed to load jobs');
       // Final fallback in preview
-      const inPreview = import.meta.env.MODE !== 'production';
-      if (inPreview) {
+      const overlay = isOverlayEnabled();
+      if (overlay) {
         const mode = effectiveSignedIn ? 'active' : 'expired';
         const capped = Math.min(inputLimit, 12);
         const transformedJobs = getDemoJobs({ mode: mode as any, limit: capped });

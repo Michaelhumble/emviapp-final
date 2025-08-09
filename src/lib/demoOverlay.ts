@@ -20,19 +20,36 @@ declare global {
   }
 }
 
-export function isPreview(): boolean {
+export function isProd(): boolean {
   try {
-    const mode = (import.meta as any)?.env?.MODE ?? (typeof process !== 'undefined' ? (process as any)?.env?.NODE_ENV : undefined);
-    const flag = (import.meta as any)?.env?.VITE_PREVIEW ?? (typeof process !== 'undefined' ? (process as any)?.env?.NEXT_PUBLIC_PREVIEW : undefined);
-    return String(mode || '').includes('preview') || String(flag || '').toLowerCase() === 'true' || ((import.meta as any)?.env?.MODE !== 'production');
+    const ve = (typeof process !== 'undefined' ? (process as any)?.env?.VERCEL_ENV : undefined);
+    const nodeEnv = (typeof process !== 'undefined' ? (process as any)?.env?.NODE_ENV : undefined);
+    const veLower = String(ve || '').toLowerCase();
+    return veLower === 'production' || String(nodeEnv || '').toLowerCase() === 'production';
   } catch {
     return false;
   }
 }
 
+// Preview ON by default in non-production; allow ?design=on/off override
+export function isPreview(): boolean {
+  if (isProd()) return false;
+  try {
+    const q = new URLSearchParams((typeof window !== 'undefined' ? window.location.search : ''));
+    if (q.get('design') === 'off') return false;
+    if (q.get('design') === 'on') return true;
+  } catch {}
+  return true;
+}
+
+// Overlay enabled iff preview (prod always false)
+export function isOverlayEnabled(): boolean {
+  return isPreview();
+}
+
 // Idempotent force-seed hook from router mount
 export async function ensureDemoSeededOnMount(): Promise<void> {
-  if (!isPreview()) return;
+  if (!isOverlayEnabled()) return;
   if (typeof window === 'undefined') return;
 
   window.__demoState ??= { seeded: false, counts: { jobs: 0, expiredJobs: 0, salons: 0, artists: 0 }, analyticsFired: {} };
@@ -54,7 +71,7 @@ export async function ensureDemoSeededOnMount(): Promise<void> {
 }
 
 export function debugLog(...args: any[]) {
-  if (!isPreview()) return;
+  if (!isOverlayEnabled()) return;
   // eslint-disable-next-line no-console
   console.log('[DEMO]', ...args);
 }
