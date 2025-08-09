@@ -156,10 +156,11 @@ function App() {
                     
                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
-                     <Route path="/jobs/*" element={<Layout><Jobs /></Layout>} />
+                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
+                     <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
-                     <Route path="/job/:jobId" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
                     {/* Industry Pages */}

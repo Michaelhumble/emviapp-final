@@ -15,10 +15,12 @@ import { JobCard } from '@/components/jobs/JobCard';
 import OptimizedStickyMobileCTA from '@/components/mobile/OptimizedStickyMobileCTA';
 
 // Lazy load non-critical components for better performance
-const WhatYouMissedSection = lazy(() => import('@/components/jobs/WhatYouMissedSection'));
+import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
+import FeaturedTrendingJobs from '@/components/jobs/FeaturedTrendingJobs';
+import SalonsForSale from '@/components/home/SalonsForSale';
+import ArtistsForHireStrip from '@/components/home/ArtistsForHireStrip';
 const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSection'));
 const DiamondPlanBlock = lazy(() => import('@/components/pricing/DiamondPlanBlock'));
-const FeaturedTrendingJobs = lazy(() => import('@/components/jobs/FeaturedTrendingJobs'));
 const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
 const SuccessStoriesCarousel = lazy(() => import('@/components/jobs/SuccessStoriesCarousel'));
 const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
@@ -288,21 +290,25 @@ const OptimizedJobsPageContent = () => {
           </div>
         </section>
 
-        {isSignedIn && fomoEnabled !== false && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-            <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
-            <WhatYouMissedSection title="Recently filled" maxJobs={12} />
-          </div>
+        {/* Classic sections rendered below the hero */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+          <FeaturedTrendingJobs jobs={jobs} />
+        </div>
+        {(() => { const SHOW_ARTISTS_STRIP = true; return SHOW_ARTISTS_STRIP; })() && (
+          <ArtistsForHireStrip />
         )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+          <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
+          <WhatYouMissedSection title="Recently filled" maxJobs={12} />
+        </div>
+        <SalonsForSale />
 
         {/* LAZY LOADED SECTIONS - Below the fold */}
         <Suspense fallback={<div className="py-8" />}>
           {/* Success Stories */}
           <SuccessStoriesCarousel />
           
-          {/* Featured Jobs */}
-          <FeaturedTrendingJobs jobs={jobs} />
-          
+          {/* Featured Jobs moved above */}
           {/* Real-time Activity */}
           <RealTimeActivity />
           
