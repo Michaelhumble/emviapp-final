@@ -25,6 +25,7 @@ const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity')
 const TeaserLocked = lazy(() => import('@/components/jobs/TeaserLocked'));
 const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
+const ArtistsForHireSection = lazy(() => import('@/components/jobs/ArtistsForHireSection'));
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
@@ -294,12 +295,8 @@ const OptimizedJobsPageContent = () => {
           </div>
         </section>
 
-        {isSignedIn && fomoEnabled !== false && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-            <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
-            <WhatYouMissedSection title="Recently filled" maxJobs={12} />
-          </div>
-        )}
+        {/* Recently filled moved below to follow Featured Trending Jobs */}
+
 
         {/* LAZY LOADED SECTIONS - Below the fold */}
         <Suspense fallback={<div className="py-8" />}>
@@ -308,6 +305,16 @@ const OptimizedJobsPageContent = () => {
           
           {/* Featured Jobs */}
           <FeaturedTrendingJobs jobs={jobs} />
+
+          {/* Artists Available for Hire */}
+          <ArtistsForHireSection />
+
+          {isSignedIn && fomoEnabled !== false && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+              <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
+              <WhatYouMissedSection title="Recently filled" maxJobs={12} />
+            </div>
+          )}
           
           {/* Real-time Activity */}
           <RealTimeActivity />
