@@ -21,7 +21,7 @@ interface SalonPaymentStepProps {
 }
 
 export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPaymentComplete, isEditMode = false, editId }: SalonPaymentStepProps) => {
-  const { isLoading, initiatePayment } = useStripe();
+  const { isLoading, initiateSalonCheckout } = useStripe();
   const navigate = useNavigate();
   
   const selectedOptions: SalonPricingOptions = {
@@ -153,8 +153,15 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
     
     try {
       console.log('🔥 Starting payment with data:', { selectedOptions, formData: Object.keys(formData), photoCount: photoUploads.length });
-      
-      const success = await initiatePayment(selectedOptions, formData, photoUploads);
+      const origin = window.location.origin;
+      const success = await initiateSalonCheckout({
+        title: formData.salonName,
+        listingId: editId || null,
+        tier: selectedOptions.selectedPricingTier,
+        photoRefs: [],
+        successUrl: `${origin}/post-success?kind=salon`,
+        cancelUrl: `${origin}/pricing?cancel=1`,
+      });
       if (success && onPaymentComplete) {
         onPaymentComplete();
       }

@@ -122,9 +122,52 @@ export function useStripe() {
       setIsLoading(false);
     }
   };
+
+  // New: Dedicated Salon Checkout initiator used by CTA and debug button
+  const initiateSalonCheckout = async (payload: any) => {
+    setIsLoading(true);
+    try {
+      const origin = window.location.origin;
+      const body = {
+        // Preserve new lightweight fields
+        ...payload,
+        // Back-compat for existing function signature
+        pricingOptions: payload?.tier ? { selectedPricingTier: payload.tier } : payload?.pricingOptions,
+        formData: payload?.formData ?? {
+          title: payload?.title,
+          listingId: payload?.listingId,
+          photos: payload?.photoRefs || [],
+          successUrl: payload?.successUrl || `${origin}/post-success?kind=salon`,
+          cancelUrl: payload?.cancelUrl || `${origin}/pricing?cancel=1`
+        }
+      };
+
+      const { data, error } = await supabase.functions.invoke('create-salon-checkout', { body });
+      console.log('[salon-checkout] response', { data, error });
+      if (error) {
+        console.error(error);
+        toast.error('Salon checkout error', { description: error.message || 'Unknown error' });
+        return false;
+      }
+      if (data?.url) {
+        toast.message('Opening Stripe Checkout…');
+        window.open(data.url, '_blank');
+        return true;
+      }
+      toast.error('No checkout URL returned');
+      return false;
+    } catch (e: any) {
+      console.error('[salon-checkout] exception', e);
+      toast.error('Salon checkout failed', { description: e?.message });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   return {
     isLoading,
-    initiatePayment
+    initiatePayment,
+    initiateSalonCheckout
   };
 }
