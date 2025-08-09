@@ -15,6 +15,13 @@ const Privacy = () => {
             <div className="prose prose-lg max-w-none space-y-6">
               
               <section className="space-y-4">
+                <h2 className="text-2xl font-semibold text-primary">SMS Notifications Policy</h2>
+                <p>
+                  By signing up on EmviApp, you agree to receive SMS notifications related to your account, bookings, and promotions. Reply STOP to unsubscribe at any time.
+                </p>
+              </section>
+
+              <section className="space-y-4">
                 <h2 className="text-2xl font-semibold text-primary">1. Information We Collect</h2>
                 <p>
                   We collect information you provide directly to us, such as when you create an account, 
