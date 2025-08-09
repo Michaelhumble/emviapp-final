@@ -162,6 +162,15 @@ const Jobs = () => {
     } catch {}
   }, []);
 
+  if (!isProd) {
+    return (
+      <>
+        <JobsLanding onPreload={preloadBrowse} />
+        <FallbackJobsPreview data-preview="true" />
+      </>
+    );
+  }
+
   return (
     <>
       <div className="w-full">
