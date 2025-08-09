@@ -35,6 +35,14 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
     );
   };
 
+  // Derive expired state for pill rendering
+  const now = new Date();
+  const createdAt = job.created_at ? new Date(job.created_at) : new Date(0);
+  const expiresAt = job.expires_at ? new Date(job.expires_at as any) : null;
+  const activeWindow = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const isActive = job.status === 'active' && ((expiresAt && expiresAt > now) || (!expiresAt && activeWindow > now));
+  const isExpired = !isActive;
+
   return (
     <Card 
       className="h-full hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200 bg-white"

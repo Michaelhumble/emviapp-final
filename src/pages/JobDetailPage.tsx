@@ -8,6 +8,8 @@ import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { Job } from '@/types/job';
 import { ArrowLeft, MapPin, Briefcase, Clock, User, ExternalLink, PlusCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { supabaseBypass } from '@/types/supabase-bypass';
+import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -25,6 +27,41 @@ const JobDetailPage = () => {
       setJob(foundJob || null);
     }
   }, [jobs, jobId]);
+
+  // Fallback: if not found in hook, fetch directly by id so expired jobs still render
+  useEffect(() => {
+    const fetchById = async () => {
+      if (!job && jobId && !loading) {
+        const { data } = await (supabaseBypass as any)
+          .from('jobs')
+          .select('*')
+          .eq('id', jobId)
+          .maybeSingle();
+        if (data) {
+          const j: Job = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            company: data.title,
+            location: data.location,
+            compensation_details: data.compensation_details,
+            salary_range: data.compensation_details,
+            specialties: [],
+            category: data.category,
+            status: data.status,
+            pricing_tier: data.pricing_tier || 'free',
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+            user_id: data.user_id,
+            expires_at: data.expires_at,
+            contact_info: typeof data.contact_info === 'object' ? (data.contact_info as any) : {},
+          };
+          setJob(j);
+        }
+      }
+    };
+    fetchById();
+  }, [job, jobId, loading]);
 
   const handleBack = () => {
     if (fromGlobalJobs) {
@@ -101,6 +138,33 @@ const JobDetailPage = () => {
     );
   }
 
+  // Derive active/expired state per spec
+  const now = new Date();
+  const createdAt = job.created_at ? new Date(job.created_at) : new Date(0);
+  const expiresAt = job.expires_at ? new Date(job.expires_at as any) : null;
+  const activeWindow = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const isActive = job.status === 'active' && ((expiresAt && expiresAt > now) || (!expiresAt && activeWindow > now));
+  const isExpired = !isActive;
+
+  // JSON-LD for JobPosting
+  const jsonLd = (() => {
+    const base: any = {
+      '@context': 'https://schema.org',
+      '@type': 'JobPosting',
+      title: job.title,
+      description: job.description || '',
+      datePosted: job.created_at,
+      jobLocation: job.location ? { '@type': 'Place', address: job.location } : undefined,
+    } as any;
+    if (isExpired) {
+      const validThrough = job.expires_at || new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
+      base.validThrough = validThrough;
+    } else {
+      base.hiringOrganization = job.company ? { '@type': 'Organization', name: job.company } : undefined;
+    }
+    return JSON.stringify(base);
+  })();
+
   return (
     <>
       <Helmet>
@@ -109,6 +173,7 @@ const JobDetailPage = () => {
           name="description" 
           content={`${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`} 
         />
+        <script type="application/ld+json">{jsonLd}</script>
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
@@ -134,13 +199,14 @@ const JobDetailPage = () => {
                   >
                     {job.category || 'Other'}
                   </Badge>
-                  
+                  {isExpired && (
+                    <Badge variant="destructive">Expired</Badge>
+                  )}
                   {isNewJob(job.created_at || '') && (
                     <Badge className="bg-green-100 text-green-800">
                       New
                     </Badge>
                   )}
-                  
                   {job.pricing_tier === 'featured' && (
                     <Badge className="bg-orange-100 text-orange-800">
                       Featured
@@ -159,14 +225,12 @@ const JobDetailPage = () => {
                       {job.location}
                     </div>
                   )}
-                  
                   {job.compensation_details && (
                     <div className="flex items-center">
                       <Briefcase className="w-5 h-5 mr-2" />
                       {job.compensation_details}
                     </div>
                   )}
-                  
                   <div className="flex items-center">
                     <Clock className="w-5 h-5 mr-2" />
                     Posted {formatDistanceToNow(new Date(job.created_at || ''), { addSuffix: true })}
@@ -179,7 +243,8 @@ const JobDetailPage = () => {
                 <Button 
                   onClick={handleApply}
                   size="lg"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  className={`w-full ${isExpired ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}
+                  disabled={isExpired}
                 >
                   Apply Now
                 </Button>
@@ -187,6 +252,20 @@ const JobDetailPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Expired banner */}
+        {isExpired && (
+          <div className="container mx-auto px-4 mt-6">
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <h2 className="text-lg font-semibold">This job is no longer accepting applications.</h2>
+              <p className="text-sm text-muted-foreground mt-1">Recently filled. Sign in to see open roles or post a job to hire faster.</p>
+              <div className="mt-3 flex gap-2">
+                <Button onClick={() => navigate('/auth/signin?redirect=/jobs')}>Sign in to see open roles</Button>
+                <Button variant="outline" onClick={() => navigate('/post-job')}>Post a job</Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Job Content */}
         <div className="container mx-auto px-4 py-8">
@@ -217,6 +296,14 @@ const JobDetailPage = () => {
                 </div>
               )}
 
+              {/* Recently filled mini-row */}
+              {isExpired && (
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold mb-3">Recently filled</h3>
+                  <WhatYouMissedSection title="" maxJobs={4} />
+                </div>
+              )}
+
               {/* More from this industry CTA */}
               <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -243,7 +330,8 @@ const JobDetailPage = () => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Apply</h3>
                 <Button 
                   onClick={handleApply}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white mb-4"
+                  className={`w-full mb-4 ${isExpired ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}
+                  disabled={isExpired}
                 >
                   Apply for This Position
                 </Button>
