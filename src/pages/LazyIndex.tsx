@@ -27,6 +27,7 @@ const FinalFounderCTA = lazy(() => import("@/components/home/FinalFounderCTA"));
 const EmviQASection = lazy(() => import("@/components/home/EmviQASection"));
 const JobsFooterCTA = lazy(() => import("@/components/home/JobsFooterCTA"));
 const MissingPieceSection = lazy(() => import("@/components/home/missing-piece"));
+const ArtistsForHireSection = lazy(() => import("@/components/home/ArtistsForHire"));
 
 // Trust components
 const LiveStatsBar = lazy(() => import("@/components/home/trust/LiveStatsBar"));
