@@ -6,6 +6,7 @@ import ArtistSuccessToolkit from "@/components/artists/ArtistSuccessToolkit";
 import ArtistLeaderboardRevolution from "@/components/artists/ArtistLeaderboardRevolution";
 import ArtistSuccessStoriesRevolution from "@/components/artists/ArtistSuccessStoriesRevolution";
 import ArtistRevolutionCTA from "@/components/artists/ArtistRevolutionCTA";
+import ArtistsForHireStrip from "@/components/home/ArtistsForHireStrip";
 
 const Artists = () => {
   return (
@@ -16,6 +17,13 @@ const Artists = () => {
       <ArtistSuccessToolkit />
       <ArtistLeaderboardRevolution />
       <ArtistSuccessStoriesRevolution />
+
+      {/* Artists For Hire Listing (gated) */}
+      {/* This section lists artists using FOMO logic without altering existing marketing sections */}
+      <div className="mt-8">
+        <ArtistsForHireStrip />
+      </div>
+
       <ArtistRevolutionCTA />
     </Layout>
   );

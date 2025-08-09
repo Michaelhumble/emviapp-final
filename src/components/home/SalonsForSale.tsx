@@ -8,18 +8,22 @@ import { SalonSale } from '@/types/salonSale';
 import SalonSaleCard from '@/components/salons/SalonSaleCard';
 import { Link } from 'react-router-dom';
 import ValidatedLink from '@/components/common/ValidatedLink';
+import { useAuth } from '@/context/auth';
 
 // Use real salon listings data
 
 export default function SalonsForSale() {
   const [loading, setLoading] = useState(true);
   const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
+  const { isSignedIn } = useAuth();
 
   // Fetch real salon sales from database
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
-        const { data, error } = await supabaseBypass
+        const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+        let query = supabaseBypass
           .from('salon_sales')
           .select(`
             *,
@@ -29,9 +33,17 @@ export default function SalonsForSale() {
               order_number
             )
           `)
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
-          .limit(4); // Show only 4 recent listings
+          .eq('status', 'active');
+
+        if (isSignedIn) {
+          // Signed-in: Active and recent
+          query = query.order('created_at', { ascending: false }).limit(4);
+        } else {
+          // Public FOMO: stale items (older than 30 days)
+          query = query.lte('created_at', cutoffIso).order('created_at', { ascending: false }).limit(4);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
           console.error('Error fetching salon sales:', error);
@@ -39,7 +51,7 @@ export default function SalonsForSale() {
         }
 
         // Transform data to include photos in images array
-        const transformedSales = data.map(sale => ({
+        const transformedSales = (data || []).map((sale: any) => ({
           ...sale,
           images: sale.salon_sale_photos 
             ? sale.salon_sale_photos
@@ -57,7 +69,7 @@ export default function SalonsForSale() {
     };
 
     fetchSalonSales();
-  }, []);
+  }, [isSignedIn]);
 
   return (
     <section className="py-12 bg-gray-50">

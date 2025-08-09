@@ -29,6 +29,7 @@ import JobsFooterCTA from "@/components/home/JobsFooterCTA";
 
 // Premium Industry Showcase - Optimized for performance
 import OptimizedIndustryListings from "@/components/home/OptimizedIndustryListings";
+import ArtistsForHireStrip from "@/components/home/ArtistsForHireStrip";
 
 // Quick Action Buttons for testing
 import QuickActionButtons from "@/components/home/QuickActionButtons";
@@ -123,7 +124,10 @@ const Index = () => {
       
       {/* 2. Premium Industry Showcases - Optimized loading with top 3 only */}
       <OptimizedIndustryListings />
-      
+
+      {/* Artists Available for Hire - FOMO strip under industry showcases */}
+      <ArtistsForHireStrip />
+
       {/* Trust Badges after industry showcases */}
       <section className="py-12 bg-gradient-to-r from-purple-50/30 to-pink-50/20">
         <div className="container mx-auto px-4 text-center">

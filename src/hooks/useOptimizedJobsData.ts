@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useAuth } from '@/context/auth';
 
 export function useOptimizedJobsData() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -9,12 +10,23 @@ export function useOptimizedJobsData() {
   const [error, setError] = useState<string>('');
   const [hasMore, setHasMore] = useState(true);
 
+  const { isSignedIn } = useAuth();
+
+  const isStale = (job: Job) => {
+    const now = Date.now();
+    const cutoff = now - 30 * 24 * 60 * 60 * 1000; // 30 days
+    const createdAt = job.created_at ? new Date(job.created_at).getTime() : 0;
+    const expiresAt = job.expires_at ? new Date(job.expires_at as any).getTime() : null;
+    if (expiresAt) return expiresAt <= now;
+    return createdAt <= cutoff;
+  };
+
   const fetchJobs = useCallback(async () => {
     try {
       setError('');
       setLoading(true);
 
-      // Optimized query with proper indexing
+      // Base query (server-side filters kept minimal to avoid PostgREST OR complexity)
       const { data, error: fetchError } = await supabase
         .from('jobs')
         .select('*')
@@ -48,8 +60,12 @@ export function useOptimizedJobsData() {
         contact_info: typeof job.contact_info === 'object' ? job.contact_info as any : {},
       }));
 
-      setJobs(transformedJobs);
-      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs`);
+      const filtered = isSignedIn
+        ? transformedJobs.filter(j => !isStale(j))
+        : transformedJobs.filter(j => isStale(j));
+
+      setJobs(filtered);
+      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${filtered.length} jobs (${isSignedIn ? 'active' : 'FOMO'})`);
       
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -57,7 +73,7 @@ export function useOptimizedJobsData() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isSignedIn]);
 
   const refresh = useCallback(() => {
     fetchJobs();
