@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
+import { track } from '@/lib/telemetry';
 
 interface SalonDetailsDialogProps {
   isOpen: boolean;
@@ -94,7 +95,7 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
             <p className="text-sm text-muted-foreground mt-1">Recently sold. Sign in to see similar listings or post your salon for sale.</p>
             <div className="mt-3 flex gap-2">
               <Button onClick={() => { window.location.href = '/auth/signin?redirect=/salons'; }}>Sign in to see similar</Button>
-              <Button variant="outline" onClick={() => { window.location.href = '/salon-owners'; }}>Post a listing</Button>
+              <Button variant="outline" onClick={() => { track('salons_expired_detail_cta_click', { cta: 'post_listing', salon_id: salon.id }); window.location.href = '/salon-owners'; }}>Post a listing</Button>
             </div>
           </div>
         )}
@@ -167,7 +168,7 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
             {isExpired ? (
               <div className="space-y-2">
                 <Button className="w-full" onClick={() => { window.location.href = '/auth/signin?redirect=/salons'; }}>Sign in to see similar</Button>
-                <Button variant="outline" className="w-full" onClick={() => { window.location.href = '/salon-owners'; }}>Post a listing</Button>
+                <Button variant="outline" className="w-full" onClick={() => { track('salons_expired_detail_cta_click', { cta: 'post_listing', salon_id: salon.id }); window.location.href = '/salon-owners'; }}>Post a listing</Button>
                 <Button variant="outline" disabled className="w-full opacity-60 cursor-not-allowed">Contact Seller (Unavailable)</Button>
               </div>
             ) : isSignedIn ? (

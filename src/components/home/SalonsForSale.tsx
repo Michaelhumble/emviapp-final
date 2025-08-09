@@ -118,7 +118,7 @@ export default function SalonsForSale() {
                     />
                     {!effectiveSignedIn && (
                       <div className="flex justify-end">
-                        <Badge variant="secondary" className="text-xs bg-muted text-foreground/70">Recently sold</Badge>
+                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-foreground/70">Recently sold</Badge>
                       </div>
                     )}
                   </div>
