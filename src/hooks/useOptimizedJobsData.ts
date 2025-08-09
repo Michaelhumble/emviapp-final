@@ -44,7 +44,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
       let query = (supabase as any)
         .from('jobs')
-        .select('*')
+        .select('id,title,location,description,compensation_details,category,status,pricing_tier,created_at,updated_at,user_id,expires_at,contact_info')
         .eq('status' as any, 'active');
 
       if (effectiveSignedIn) {

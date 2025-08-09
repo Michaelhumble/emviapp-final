@@ -20,7 +20,7 @@ export const useJobsData = () => {
       
       const { data: jobsData, error: fetchError, count } = await supabaseBypass
         .from('jobs')
-        .select('*', { count: 'exact' })
+        .select('id,title,location,created_at,description,compensation_type,compensation_details,contact_info,user_id,status,expires_at,requirements,pricing_tier,category,vietnamese_title,vietnamese_description,image_url', { count: 'exact' })
         .eq('status' as any, 'active')
         .gte('expires_at' as any, new Date().toISOString())
         .order('created_at' as any, { ascending: false });
