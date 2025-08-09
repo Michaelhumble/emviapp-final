@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
-  const { artists, loading } = useOptimizedArtistsData({});
+  const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
 
   return (
     <section className="py-12 bg-background">
@@ -46,14 +46,13 @@ const ArtistsForHireStrip = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {artists.map((a) => (
                   <ArtistForHireCard
-                    key={a.id || a.user_id}
-                    name={null}
-                    specialty={a.specialties}
+                    key={a.user_id}
+                    name={undefined}
+                    specialties={a.specialties}
                     location={a.location}
                     headline={a.headline}
                     available={!!a.available_for_work}
                     viewMode={isSignedIn ? "signedIn" : "public"}
-                    seed={a.user_id}
                   />
                 ))}
               </div>

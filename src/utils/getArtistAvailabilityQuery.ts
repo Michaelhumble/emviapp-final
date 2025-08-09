@@ -24,7 +24,7 @@ export async function fetchArtistsForHire(isSignedIn: boolean, limit = 20): Prom
   if (!isSignedIn) {
     if (fomoEnabled) {
       // First attempt per spec: unavailable + fresh-looking
-      const attempt = await supabase
+      const { data: attemptData, error: attemptError } = await (supabase as any)
         .from("artist_for_hire_profiles")
         .select("user_id, specialties, location, headline, available_for_work, updated_at")
         .eq("available_for_work" as any, false)
@@ -32,12 +32,12 @@ export async function fetchArtistsForHire(isSignedIn: boolean, limit = 20): Prom
         .order("updated_at", { ascending: false })
         .limit(limit);
 
-      if (!attempt.error && attempt.data && attempt.data.length > 0) {
-        return attempt.data as ArtistForHireListItem[];
+      if (!attemptError && attemptData && attemptData.length > 0) {
+        return attemptData as ArtistForHireListItem[];
       }
 
       // RLS-safe fallback: still available but stale -> display as "Recently hired"
-      const fallback = await supabase
+      const { data: fbData, error: fbError } = await (supabase as any)
         .from("artist_for_hire_profiles")
         .select("user_id, specialties, location, headline, available_for_work, updated_at")
         .eq("available_for_work" as any, true)
@@ -45,23 +45,23 @@ export async function fetchArtistsForHire(isSignedIn: boolean, limit = 20): Prom
         .order("updated_at", { ascending: false })
         .limit(limit);
 
-      if (fallback.error) throw fallback.error;
-      return (fallback.data || []) as ArtistForHireListItem[];
+      if (fbError) throw fbError;
+      return (fbData || []) as ArtistForHireListItem[];
     }
     // FOMO disabled: show authed behavior to everyone
-    const res = await supabase
+    const { data, error } = await (supabase as any)
       .from("artist_for_hire_profiles")
       .select("user_id, specialties, location, headline, available_for_work, updated_at")
       .eq("available_for_work" as any, true)
       .gte("updated_at" as any, sixtyDaysAgoISO)
       .order("updated_at", { ascending: false })
       .limit(limit);
-    if (res.error) throw res.error;
-    return (res.data || []) as ArtistForHireListItem[];
+    if (error) throw error;
+    return (data || []) as ArtistForHireListItem[];
   }
 
   // Signed-in: actively available & fresh
-  const res = await supabase
+  const { data, error } = await (supabase as any)
     .from("artist_for_hire_profiles")
     .select("user_id, specialties, location, headline, available_for_work, updated_at")
     .eq("available_for_work" as any, true)
@@ -69,6 +69,6 @@ export async function fetchArtistsForHire(isSignedIn: boolean, limit = 20): Prom
     .order("updated_at", { ascending: false })
     .limit(limit);
 
-  if (res.error) throw res.error;
-  return (res.data || []) as ArtistForHireListItem[];
+  if (error) throw error;
+  return (data || []) as ArtistForHireListItem[];
 }

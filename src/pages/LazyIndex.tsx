@@ -119,6 +119,12 @@ const LazyIndex = () => {
           <SkincareListingsSection />
         </Suspense>
       </FallbackBoundary>
+
+      <FallbackBoundary errorMessage="Unable to load artists for hire.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <ArtistsForHireSection />
+        </Suspense>
+      </FallbackBoundary>
       
       <FallbackBoundary errorMessage="Unable to load eyebrow lash listings.">
         <Suspense fallback={<LoadingSpinner />}>
