@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { previewPremiumJobs, previewGoldJobs, previewExpiredJobs, previewSalonsForSale, previewArtists } from '@/demo/jobsPreviewData';
+import { useSupabaseBucketImages } from '@/lib/supabaseImages';
 
 function SafeImg(props: { src?: string; alt: string; className?: string }) {
   const [err, setErr] = useState(false);
@@ -17,6 +18,14 @@ function SafeImg(props: { src?: string; alt: string; className?: string }) {
 }
 
 export default function FallbackJobsPreview(props: { 'data-preview'?: string }) {
+  const { urls } = useSupabaseBucketImages('nails', { limit: 60 });
+  const pick = useMemo(() => (i: number) => (urls && urls.length ? urls[i % urls.length] : undefined), [urls]);
+
+  const premium = useMemo(() => previewPremiumJobs.map((j, i) => ({ ...j, photo: pick(i) || j.photo })), [pick]);
+  const gold    = useMemo(() => previewGoldJobs.map((j, i) => ({ ...j, photo: pick(i + 10) || j.photo })), [pick]);
+  const missed  = useMemo(() => previewExpiredJobs.map((j, i) => ({ ...j, photo: pick(i + 20) || j.photo })), [pick]);
+  const salons  = useMemo(() => previewSalonsForSale.map((s, i) => ({ ...s, photo: pick(i + 30) || s.photo })), [pick]);
+  const artists = useMemo(() => previewArtists.map((a, i) => ({ ...a, photo: pick(i + 40) || a.photo })), [pick]);
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Helmet>
@@ -34,7 +43,7 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
       <section className="mt-10 sm:mt-12">
         <h2 className="text-xl font-semibold mb-4">Premium Featured</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {previewPremiumJobs.map((job) => (
+          {premium.map((job) => (
             <div key={job.id} className="relative rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
                 <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
@@ -53,7 +62,7 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
       <section className="mt-10 sm:mt-12">
         <h2 className="text-xl font-semibold mb-4">Gold Featured</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {previewGoldJobs.map((job) => (
+          {gold.map((job) => (
             <div key={job.id} className="relative rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
                 <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
@@ -72,7 +81,7 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
       <section className="mt-10 sm:mt-12">
         <h2 className="text-xl font-semibold mb-4">What You Missed</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {previewExpiredJobs.map((job) => (
+          {missed.map((job) => (
             <div key={job.id} className="relative rounded-xl border bg-muted/40 overflow-hidden shadow-sm">
               <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
                 {job.expired && (
@@ -99,7 +108,7 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
       <section className="mt-10 sm:mt-12">
         <h2 className="text-xl font-semibold mb-4">Salons for Sale</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {previewSalonsForSale.map((salon) => (
+          {salons.map((salon) => (
             <div key={salon.id} className="rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
                 <SafeImg src={salon.photo} alt={salon.name} className="w-full h-full object-cover" />
@@ -118,7 +127,7 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
       <section className="mt-10 sm:mt-12">
         <h2 className="text-xl font-semibold mb-4">Artists for Hire</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {previewArtists.map((artist) => (
+          {artists.map((artist) => (
             <div key={artist.id} className="rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
                 <SafeImg src={artist.photo} alt={artist.name} className="w-full h-full object-cover" />
