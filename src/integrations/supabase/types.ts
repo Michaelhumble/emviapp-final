@@ -4991,7 +4991,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      mv_jobs_recently_filled: {
+        Row: {
+          cover_img: string | null
+          expires_at: string | null
+          id: string | null
+          location: string | null
+          pricing_tier: string | null
+          sort_key: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_team_invite: {
@@ -5345,6 +5356,10 @@ export type Database = {
           p_target_id?: string
         }
         Returns: boolean
+      }
+      refresh_mv_jobs_recently_filled: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       sanitize_content: {
         Args: { p_content: string }
