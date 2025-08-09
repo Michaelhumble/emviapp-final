@@ -64,8 +64,18 @@ const WhatYouMissedSection = ({
     }
   };
 
-  if (loading || expiredJobs.length === 0) {
+  if (loading) {
     return null;
+  }
+
+  if (expiredJobs.length === 0) {
+    return (
+      <section className="mb-8">
+        <div className="text-center text-sm text-muted-foreground">
+          No recently filled roles yet.
+        </div>
+      </section>
+    );
   }
 
   const getTimeAgoText = (expiresAt: string) => {
