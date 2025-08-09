@@ -10,6 +10,8 @@ import { ArrowLeft, MapPin, Briefcase, Clock, User, ExternalLink, PlusCircle } f
 import { formatDistanceToNow } from 'date-fns';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
+import { normalizeJobPhotos } from '@/lib/images';
+import JobPhotoGallery from '@/components/jobs/JobPhotoGallery';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
