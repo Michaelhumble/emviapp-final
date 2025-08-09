@@ -2,9 +2,8 @@ import { useMemo } from "react";
 import { useSafeQuery } from "@/hooks/useSafeQuery";
 import { fetchArtistsForHire, ArtistForHireListItem } from "@/utils/getArtistAvailabilityQuery";
 import { getDemoArtists } from "@/demo/seedOverlay";
-import { isPreviewEnv } from "@/demo/demoFlags";
 import { analytics } from "@/lib/analytics";
-
+import { isPreview, debugLog, setCounts, hasAnalyticsFired, markAnalyticsFired } from "@/lib/demoOverlay";
 interface Options {
   isSignedIn: boolean;
   limit?: number;
@@ -13,24 +12,23 @@ interface Options {
 export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
   const effectiveLimit = useMemo(() => limit ?? (isSignedIn ? 50 : 20), [isSignedIn, limit]);
   const cacheKey = isSignedIn ? `artists:authed:${effectiveLimit}` : `artists:public:${effectiveLimit}`;
+  const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
 
   const { data, isLoading, error } = useSafeQuery<ArtistForHireListItem[]>({
     queryKey: [cacheKey],
     context: "useOptimizedArtistsData",
     queryFn: async () => await fetchArtistsForHire(isSignedIn, effectiveLimit),
-    fallbackData: [],
+    fallbackData: overlayActive ? (getDemoArtists(Math.min(effectiveLimit, 6)) as unknown as ArtistForHireListItem[]) : [],
     retryCount: 2,
   });
 
   // Demo overlay: if forced or empty/error in preview, use high-quality demo artists (no DB writes)
   let artistsToReturn: ArtistForHireListItem[] = data || [];
-  const inPreview = import.meta.env.MODE !== 'production';
-  const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
 
-  if (inPreview && (demoForced || (artistsToReturn?.length ?? 0) === 0 || !!error)) {
+  if (overlayActive && ((artistsToReturn?.length ?? 0) === 0 || !!error)) {
     const capped = Math.min(typeof limit === 'number' ? limit : 6, 6);
     artistsToReturn = getDemoArtists(capped) as unknown as ArtistForHireListItem[];
-  } else if (inPreview) {
+  } else if (isPreview()) {
     // Secondary preview synth only if explicitly requested and nothing else is available
     try {
       const forceVisible = (window as any)?.__env?.PREVIEW_FORCE_VISIBLE;
@@ -45,6 +43,16 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
       }
     } catch {}
   }
+
+  if (overlayActive) {
+    setCounts({ artists: artistsToReturn?.length ?? 0 });
+  }
+
+  debugLog("useOptimizedArtistsData:", {
+    overlayActive,
+    chosenSource: overlayActive && ((data?.length ?? 0) === 0 || !!error) ? 'demo' : 'real',
+    counts: { artists: artistsToReturn?.length ?? 0 },
+  });
 
   // Listen for demo overlay seed/clear to re-evaluate without manual refresh
   // eslint-disable-next-line react-hooks/rules-of-hooks

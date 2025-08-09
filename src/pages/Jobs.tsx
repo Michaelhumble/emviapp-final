@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense, lazy } from 'react';
 import { Helmet } from 'react-helmet';
 import { Routes, Route, Link } from 'react-router-dom';
@@ -8,7 +7,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { analytics } from '@/lib/analytics';
 import '@/utils/demoSeed';
-
+import { ensureDemoSeededOnMount, isPreview, registerDumpDemoState, debugLog } from '@/lib/demoOverlay';
 const BrowseJobsPage = lazy(() => import('./jobs/OptimizedJobsPageContent'));
 const preloadBrowse = () => import('./jobs/OptimizedJobsPageContent');
 
@@ -52,16 +51,18 @@ const Jobs = () => {
 
   // Preview-only: auto-seed demo content on first visit if not already seeded
   useEffect(() => {
+    if (!isPreview()) return;
+    registerDumpDemoState();
+    debugLog('Jobs page mount: ensuring demo seed');
+    void ensureDemoSeededOnMount();
+
     try {
-      const isPreview = import.meta.env.MODE !== 'production' || window.location.hostname.includes('preview');
-      if (!isPreview) return;
       const seeded = localStorage.getItem('emvi_demo_seeded_v1');
       const w = window as any;
       if (!seeded && typeof w.__seedDemoContent === 'function') {
         w.__seedDemoContent().catch(() => {});
       }
-      // Console hints
-      console.info('Preview helpers: window.__seedDemoContent(), window.__clearDemoContent(), window.__clearDemoCache()');
+      console.info('Preview helpers: window.__seedDemoContent(), window.__clearDemoContent(), window.__clearDemoCache(), window.__dumpDemoState()');
     } catch {}
   }, []);
 

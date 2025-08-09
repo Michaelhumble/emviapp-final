@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
+import { ensureDemoSeededOnMount, isPreview, registerDumpDemoState, debugLog } from "@/lib/demoOverlay";
 import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
 import Testimonials from "@/components/home/Testimonials";
@@ -59,6 +60,12 @@ const Index = () => {
       'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.'
     );
     console.log("Index page loaded");
+
+    if (isPreview()) {
+      registerDumpDemoState();
+      debugLog('Home page mount: ensuring demo seed');
+      void ensureDemoSeededOnMount();
+    }
     
     // Run verification to ensure all listings have proper routing
     runListingsVerification()

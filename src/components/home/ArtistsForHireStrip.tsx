@@ -9,18 +9,21 @@ import { Badge } from "@/components/ui/badge";
 import { showDemoBadges } from "@/demo/demoFlags";
 import { useEffect, useRef } from "react";
 import { analytics } from "@/lib/analytics";
-
+import { isPreview, hasAnalyticsFired, markAnalyticsFired, setCounts, debugLog } from "@/lib/demoOverlay";
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
   const fired = useRef(false);
 
   useEffect(() => {
-    if (fired.current) return;
-    if ((artists || []).some((a: any) => a.__demo)) {
-      fired.current = true;
-      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `artists_strip:${artists.length}` }); } catch {}
+    const surface = 'artists_strip';
+    const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
+    if (!hasAnalyticsFired(surface) && overlayActive && (artists || []).some((a: any) => a.__demo)) {
+      markAnalyticsFired(surface);
+      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: artists.length as any }); } catch {}
+      debugLog('Analytics fired:', surface, { count: artists.length });
     }
+    if (overlayActive) setCounts({ artists: artists.length });
   }, [artists]);
 
   return (

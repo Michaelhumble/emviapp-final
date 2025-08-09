@@ -9,7 +9,7 @@ import { track } from '@/lib/telemetry';
 import { getDemoJobs } from '@/demo/seedOverlay';
 import { showDemoBadges } from '@/demo/demoFlags';
 import { analytics } from '@/lib/analytics';
-
+import { isPreview, hasAnalyticsFired, markAnalyticsFired, setCounts, debugLog } from '@/lib/demoOverlay';
 interface WhatYouMissedSectionProps {
   title?: string;
   maxJobs?: number;
@@ -24,6 +24,19 @@ const WhatYouMissedSection = ({
 
   useEffect(() => {
     fetchExpiredJobs();
+    // Instant prefill in preview overlay
+    const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
+    if (overlayActive) {
+      const demo = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
+      setExpiredJobs(demo);
+      setCounts({ expiredJobs: demo.length });
+      const surface = 'jobs';
+      if (!hasAnalyticsFired(surface)) {
+        try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: demo.length as any }); } catch {}
+        markAnalyticsFired(surface);
+        debugLog('Analytics fired:', surface, { count: demo.length });
+      }
+    }
   }, []);
 
   const fetchExpiredJobs = async () => {
@@ -62,14 +75,20 @@ const WhatYouMissedSection = ({
         }));
       }
 
-      const inPreview = import.meta.env.MODE !== 'production';
+      const inPreview = isPreview();
       const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
       if (inPreview && (demoForced || error || transformedJobs.length === 0)) {
         transformedJobs = getDemoJobs({ mode: 'expired', limit: Math.min(maxJobs, 12) });
-        try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `jobs:${transformedJobs.length}` }); } catch {}
+        const surface = 'jobs';
+        if (!hasAnalyticsFired(surface)) {
+          try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: transformedJobs.length as any }); } catch {}
+          markAnalyticsFired(surface);
+          debugLog('Analytics fired:', surface, { count: transformedJobs.length });
+        }
       }
 
       setExpiredJobs(transformedJobs);
+      if (isPreview()) setCounts({ expiredJobs: transformedJobs.length });
     } catch (error) {
       console.error('Error fetching expired jobs:', error);
       const inPreview = import.meta.env.MODE !== 'production';

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { getDemoSalons } from '@/demo/seedOverlay';
 import { showDemoBadges } from '@/demo/demoFlags';
 import { analytics } from '@/lib/analytics';
+import { isPreview, setCounts, hasAnalyticsFired, markAnalyticsFired, debugLog } from '@/lib/demoOverlay';
 
 // Use real salon listings data
 
@@ -28,6 +28,20 @@ export default function SalonsForSale() {
   useEffect(() => {
     const fetchSalonSales = async () => {
       try {
+        const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
+        if (overlayActive) {
+          const demo = getDemoSalons(6) as any;
+          setSalonSales(demo);
+          setLoading(false);
+          setCounts({ salons: demo.length });
+          const surface = 'salons_strip';
+          if (!hasAnalyticsFired(surface)) {
+            try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: demo.length as any }); } catch {}
+            markAnalyticsFired(surface);
+            debugLog('Analytics fired:', surface, { count: demo.length });
+          }
+        }
+
         const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
         let query = supabaseBypass
@@ -67,13 +81,14 @@ export default function SalonsForSale() {
         }));
 
         let finalSales: any[] = transformedSales;
-        const inPreview = import.meta.env.MODE !== 'production';
+        const inPreview = isPreview();
         const demoForced = inPreview && ((): boolean => { try { return !!(window as any).__DEMO_FORCE; } catch { return false; } })();
         if (inPreview && (demoForced || error || transformedSales.length === 0)) {
           finalSales = getDemoSalons(6);
         }
 
         setSalonSales(finalSales as any);
+        setCounts({ salons: finalSales.length });
       } catch (error) {
         console.error('Error loading salon sales:', error);
       } finally {
@@ -84,12 +99,13 @@ export default function SalonsForSale() {
     fetchSalonSales();
   }, [isSignedIn]);
 
-  // Demo overlay analytics
+  // Demo overlay analytics (guarded)
   useEffect(() => {
-    if (fired.current) return;
-    if (salonSales.some((s: any) => s.__demo)) {
-      fired.current = true;
-      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `salons_strip:${salonSales.length}` }); } catch {}
+    const surface = 'salons_strip';
+    if (!hasAnalyticsFired(surface) && (salonSales as any[]).some((s: any) => s.__demo)) {
+      markAnalyticsFired(surface);
+      try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: salonSales.length as any }); } catch {}
+      debugLog('Analytics fired:', surface, { count: salonSales.length });
     }
   }, [salonSales]);
 

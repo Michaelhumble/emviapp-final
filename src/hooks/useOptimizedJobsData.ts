@@ -5,7 +5,7 @@ import { useAuth } from '@/context/auth';
 import { isPreviewEnv } from '@/demo/demoFlags';
 import { getDemoJobs } from '@/demo/seedOverlay';
 import { analytics } from '@/lib/analytics';
-
+import { isPreview, debugLog, setCounts, hasAnalyticsFired, markAnalyticsFired } from '@/lib/demoOverlay';
 // In-memory cache with stale times per feed
 const jobsCache: Record<string, { data: Job[]; ts: number }> = {};
 
@@ -51,8 +51,25 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       if (cacheEntry && Date.now() - cacheEntry.ts < staleMs) {
         setJobs(cacheEntry.data);
         setLoading(false);
-        console.log(`🗂️ [OPTIMIZED-JOBS] Served from cache (${effectiveSignedIn ? 'authed' : 'public'})`);
+        debugLog(`useOptimizedJobsData cache hit: ${effectiveSignedIn ? 'authed' : 'public'}`, { count: cacheEntry.data.length });
         return;
+      }
+
+      // Preview: prefill demo instantly to avoid empty UI while fetching
+      const overlayActive = isPreview() && ((): boolean => { try { return !!((window as any).__DEMO_FORCE || (window as any).__demoState?.seeded); } catch { return false; } })();
+      if (overlayActive) {
+        const mode = effectiveSignedIn ? 'active' : 'expired';
+        const capped = Math.min(inputLimit, 12);
+        const prefill = getDemoJobs({ mode: mode as any, limit: capped });
+        setJobs(prefill);
+        setLoading(false);
+        setCounts({ jobs: prefill.length });
+        const surface = 'jobs';
+        if (!hasAnalyticsFired(surface)) {
+          try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: prefill.length as any }); } catch {}
+          markAnalyticsFired(surface);
+          debugLog('Analytics fired:', surface, { count: prefill.length });
+        }
       }
 
       setLoading(true);
@@ -118,13 +135,18 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       setJobs(transformedJobs);
       // Update cache
       jobsCache[cacheKey] = { data: transformedJobs, ts: Date.now() };
-      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})${usedDemo ? ' [demo overlay]' : ''}`);
+      debugLog('useOptimizedJobsData loaded', { count: transformedJobs.length, mode: effectiveSignedIn ? 'active' : 'expired', usedDemo });
+      setCounts({ jobs: transformedJobs.length });
 
-      // Analytics once per mount when demo used
+      // Analytics once per surface when demo used
       if (usedDemo) {
-        try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: `jobs:${transformedJobs.length}` }); } catch {}
+        const surface = 'jobs';
+        if (!hasAnalyticsFired(surface)) {
+          try { analytics.trackEvent?.({ action: 'demo_overlay_rendered', category: 'demo', label: surface, value: transformedJobs.length as any }); } catch {}
+          markAnalyticsFired(surface);
+          debugLog('Analytics fired:', surface, { count: transformedJobs.length });
+        }
       }
-      
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('Failed to load jobs');
