@@ -299,12 +299,12 @@ const OptimizedJobsPageContent = () => {
           <RealTimeActivity />
           
           {/* FOMO Sections */}
-          {isSignedIn && (
+          {isSignedIn && fomoEnabled !== false && (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
+              <WhatYouMissedSection title="Recently filled" maxJobs={12} />
             </div>
           )}
-          <WhatYouMissedSection />
           <FOMONailJobsSection />
           
           {/* Premium Plans */}

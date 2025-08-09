@@ -25,17 +25,20 @@ const WhatYouMissedSection = ({
   const fetchExpiredJobs = async () => {
     setLoading(true);
     try {
-      const { data: jobsData, error } = await supabaseBypass
+      const nowISO = new Date().toISOString();
+      const thirtyDaysAgoISO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      const { data: jobsData, error } = await (supabaseBypass as any)
         .from('jobs')
         .select('*')
-        .eq('status', 'active')
-        .not('expires_at', 'is', null)
-        .lt('expires_at', new Date().toISOString())
-        .order('expires_at', { ascending: false })
+        .eq('status' as any, 'active')
+        .or(`expires_at.lte.${nowISO},and(expires_at.is.null,created_at.lte.${thirtyDaysAgoISO})`)
+        .order('expires_at' as any, { ascending: false })
+        .order('created_at' as any, { ascending: false })
         .limit(maxJobs);
 
       if (!error && jobsData) {
-        const transformedJobs: Job[] = jobsData.map(job => ({
+        const transformedJobs: Job[] = jobsData.map((job: any) => ({
           id: job.id,
           title: job.title || 'Job Title',
           company: job.title || 'Company Name',
@@ -44,13 +47,13 @@ const WhatYouMissedSection = ({
           description: job.description || '',
           compensation_type: job.compensation_type || '',
           compensation_details: job.compensation_details || '',
-          contact_info: typeof job.contact_info === 'object' && job.contact_info ? job.contact_info as any : {},
+          contact_info: typeof job.contact_info === 'object' && job.contact_info ? (job.contact_info as any) : {},
           user_id: job.user_id || '',
           status: job.status || 'active',
           expires_at: job.expires_at || '',
           requirements: job.requirements || '',
           pricing_tier: job.pricing_tier || 'free',
-          category: job.category || "Other"
+          category: job.category || 'Other'
         }));
         setExpiredJobs(transformedJobs);
       }
