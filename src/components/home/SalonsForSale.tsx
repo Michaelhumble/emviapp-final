@@ -81,7 +81,6 @@ export default function SalonsForSale() {
         }));
 
         let finalSales: any[] = transformedSales;
-        const overlay = isOverlayEnabled();
         if (overlay && (error || transformedSales.length === 0)) {
           finalSales = getDemoSalons(6);
         }

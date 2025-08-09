@@ -86,7 +86,7 @@ const WhatYouMissedSection = ({
       }
 
       setExpiredJobs(transformedJobs);
-      if (isPreview()) setCounts({ expiredJobs: transformedJobs.length });
+      if (isOverlayEnabled()) setCounts({ expiredJobs: transformedJobs.length });
     } catch (error) {
       console.error('Error fetching expired jobs:', error);
       if (isOverlayEnabled()) {

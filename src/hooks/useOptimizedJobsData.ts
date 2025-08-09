@@ -122,7 +122,6 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         }));
       }
 
-      const overlay = isOverlayEnabled();
 
       if (overlay && (fetchError || (transformedJobs?.length ?? 0) === 0)) {
         const mode = effectiveSignedIn ? 'active' : 'expired';
