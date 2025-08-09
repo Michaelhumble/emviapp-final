@@ -16,6 +16,8 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
   const redirectTo = `${window.location.origin}/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
+  // Feature flag: enable/disable Phone option via localStorage 'ENABLE_PHONE' (defaults to true)
+  const phoneEnabled = (localStorage.getItem('ENABLE_PHONE') ?? 'true') !== 'false';
 
   const handleGoogle = async () => {
     try {
@@ -29,15 +31,17 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
 
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className={`grid grid-cols-1 ${phoneEnabled ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-2`}>
         <Button variant="outline" className="w-full justify-center" onClick={handleGoogle}>
           <Chrome className="mr-2 h-4 w-4" />
           Continue with Google
         </Button>
-        <Button variant="secondary" className="w-full justify-center" onClick={onPhoneClick}>
-          <PhoneIcon className="mr-2 h-4 w-4" />
-          {mode === "signup" ? "Sign up with phone" : "Sign in with phone"}
-        </Button>
+        {phoneEnabled && (
+          <Button variant="secondary" className="w-full justify-center" onClick={onPhoneClick}>
+            <PhoneIcon className="mr-2 h-4 w-4" />
+            {mode === "signup" ? "Sign up with phone" : "Sign in with phone"}
+          </Button>
+        )}
       </div>
     </div>
   );
