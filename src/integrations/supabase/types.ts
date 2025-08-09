@@ -500,6 +500,7 @@ export type Database = {
           hourly_rate: string | null
           id: string
           location: string | null
+          seed_tag: string | null
           shifts_available: string | null
           specialties: string | null
           updated_at: string | null
@@ -515,6 +516,7 @@ export type Database = {
           hourly_rate?: string | null
           id?: string
           location?: string | null
+          seed_tag?: string | null
           shifts_available?: string | null
           specialties?: string | null
           updated_at?: string | null
@@ -530,6 +532,7 @@ export type Database = {
           hourly_rate?: string | null
           id?: string
           location?: string | null
+          seed_tag?: string | null
           shifts_available?: string | null
           specialties?: string | null
           updated_at?: string | null
@@ -2278,6 +2281,7 @@ export type Database = {
           photos: string[] | null
           pricing_tier: string | null
           requirements: string | null
+          seed_tag: string | null
           status: string
           title: string
           updated_at: string
@@ -2302,6 +2306,7 @@ export type Database = {
           photos?: string[] | null
           pricing_tier?: string | null
           requirements?: string | null
+          seed_tag?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -2326,6 +2331,7 @@ export type Database = {
           photos?: string[] | null
           pricing_tier?: string | null
           requirements?: string | null
+          seed_tag?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -3786,6 +3792,7 @@ export type Database = {
           payment_status: string | null
           reason_for_selling: string | null
           salon_name: string
+          seed_tag: string | null
           selected_pricing_tier: string | null
           seller_financing: boolean | null
           size: string | null
@@ -3846,6 +3853,7 @@ export type Database = {
           payment_status?: string | null
           reason_for_selling?: string | null
           salon_name: string
+          seed_tag?: string | null
           selected_pricing_tier?: string | null
           seller_financing?: boolean | null
           size?: string | null
@@ -3906,6 +3914,7 @@ export type Database = {
           payment_status?: string | null
           reason_for_selling?: string | null
           salon_name?: string
+          seed_tag?: string | null
           selected_pricing_tier?: string | null
           seller_financing?: boolean | null
           size?: string | null

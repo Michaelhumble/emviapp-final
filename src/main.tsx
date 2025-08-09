@@ -154,5 +154,11 @@ if (typeof window !== 'undefined') {
     import('./dev/demoSeeds').catch(() => {});
     setTimeout(() => (window as any).emviCheckFooters(), 2000);
   }
+
+  // Load preview flags and demo content in any non-production mode
+  if (import.meta.env.MODE !== 'production') {
+    import('./dev/previewFlags').catch(() => {});
+    import('./dev/seedDemoContent').catch(() => {});
+  }
 }
 
