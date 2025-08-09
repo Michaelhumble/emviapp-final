@@ -29,6 +29,7 @@ const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner')
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { track } from '@/lib/telemetry';
 
 const OptimizedJobsPageContent = () => {
   const { isSignedIn } = useAuth();

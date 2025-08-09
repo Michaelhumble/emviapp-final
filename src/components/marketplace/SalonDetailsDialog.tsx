@@ -27,6 +27,9 @@ interface SalonDetailsDialogProps {
       vi: string;
       en: string;
     };
+    // Optional fields for expiry logic
+    created_at?: string;
+    status?: string;
   } | null;
 }
 
@@ -34,6 +37,13 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
   const { isSignedIn } = useAuth();
   
   if (!salon) return null;
+
+  // Derived expired state: status==='active' && created_at within 30d
+  const now = new Date();
+  const createdAt = (salon as any).created_at ? new Date((salon as any).created_at) : null;
+  const status = (salon as any).status ?? 'active';
+  const isActive = status === 'active' && (createdAt ? (createdAt.getTime() > now.getTime() - 30 * 24 * 60 * 60 * 1000) : true);
+  const isExpired = !isActive;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -77,6 +87,17 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
             <MapPin className="h-4 w-4 mr-1" /> {salon.location}
           </DialogDescription>
         </DialogHeader>
+        
+        {isExpired && (
+          <div className="mb-4 rounded-lg border bg-muted/30 p-4">
+            <h2 className="text-lg font-semibold">This listing is no longer available.</h2>
+            <p className="text-sm text-muted-foreground mt-1">Recently sold. Sign in to see similar listings or post your salon for sale.</p>
+            <div className="mt-3 flex gap-2">
+              <Button onClick={() => { window.location.href = '/auth/signin?redirect=/salons'; }}>Sign in to see similar</Button>
+              <Button variant="outline" onClick={() => { window.location.href = '/salon-owners'; }}>Post a listing</Button>
+            </div>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -143,7 +164,13 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
               </div>
             </div>
             
-            {isSignedIn ? (
+            {isExpired ? (
+              <div className="space-y-2">
+                <Button className="w-full" onClick={() => { window.location.href = '/auth/signin?redirect=/salons'; }}>Sign in to see similar</Button>
+                <Button variant="outline" className="w-full" onClick={() => { window.location.href = '/salon-owners'; }}>Post a listing</Button>
+                <Button variant="outline" disabled className="w-full opacity-60 cursor-not-allowed">Contact Seller (Unavailable)</Button>
+              </div>
+            ) : isSignedIn ? (
               <Button className="w-full">Contact Seller</Button>
             ) : (
               <AuthAction
@@ -157,7 +184,7 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
                   </Button>
                 }
               />
-            )}
+            )
           </div>
         </div>
       </DialogContent>

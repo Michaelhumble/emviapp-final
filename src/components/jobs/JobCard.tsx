@@ -58,9 +58,15 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
               {job.company || job.contact_info?.owner_name || 'Company Name'}
             </p>
           </div>
-          {getPriorityBadge(job.pricing_tier || 'free')}
+          <div className="flex items-center gap-2">
+            {isExpired && (
+              <Badge variant="secondary" className="bg-muted text-foreground/70 text-[10px] px-2 py-0.5 rounded-full">
+                Expired
+              </Badge>
+            )}
+            {getPriorityBadge(job.pricing_tier || 'free')}
+          </div>
         </div>
-        
         <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
           <div className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />

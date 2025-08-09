@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, DollarSign, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { track } from '@/lib/telemetry';
 
 interface WhatYouMissedSectionProps {
   title?: string;
@@ -116,7 +117,7 @@ const WhatYouMissedSection = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Card className="h-full opacity-60 border border-gray-200 bg-gray-50/50 relative overflow-hidden">
+            <Card className="h-full opacity-60 border border-gray-200 bg-gray-50/50 relative overflow-hidden" onClick={() => track('jobs_recently_filled_card_click', { job_id: job.id, source: 'recently_filled' })}>
               {/* Expired Overlay */}
               <div className="absolute top-2 right-2 z-10">
                 <Badge variant="destructive" className="text-xs">
