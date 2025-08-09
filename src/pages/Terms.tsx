@@ -14,6 +14,13 @@ const Terms = () => {
             <div className="prose prose-lg max-w-none space-y-6">
               
               <section className="space-y-4">
+                <h2 className="text-2xl font-semibold text-primary">SMS Notifications Policy</h2>
+                <p>
+                  By signing up on EmviApp, you agree to receive SMS notifications related to your account, bookings, and promotions. Reply STOP to unsubscribe at any time.
+                </p>
+              </section>
+
+              <section className="space-y-4">
                 <h2 className="text-2xl font-semibold text-primary">1. Acceptance of Terms</h2>
                 <p>
                   By accessing and using EmviApp ("the Platform"), you accept and agree to be bound by 
