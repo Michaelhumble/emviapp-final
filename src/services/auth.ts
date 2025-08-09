@@ -99,7 +99,7 @@ export async function signInWithPhone(phone: string) {
     const target = `${getAppOrigin()}/auth/redirect`;
     const { data, error } = await supabase.auth.signInWithOtp({
       phone,
-      options: { channel: 'sms' }
+      options: ({ channel: 'sms', redirectTo: target } as any)
     });
     if (error) throw error;
     return { success: true, data };
