@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { previewPremiumJobs, previewGoldJobs, previewExpiredJobs, previewSalonsForSale, previewArtists } from '@/demo/jobsPreviewData';
-import { useSupabaseBucketImages } from '@/lib/supabaseImages';
-
+import PreviewImage from './PreviewImage';
+import { useAnalytics } from '@/components/analytics/AnalyticsProvider';
 function SafeImg(props: { src?: string; alt: string; className?: string }) {
   const [err, setErr] = useState(false);
   return (
@@ -18,14 +18,17 @@ function SafeImg(props: { src?: string; alt: string; className?: string }) {
 }
 
 export default function FallbackJobsPreview(props: { 'data-preview'?: string }) {
-  const { urls } = useSupabaseBucketImages('nails', { limit: 60 });
-  const pick = useMemo(() => (i: number) => (urls && urls.length ? urls[i % urls.length] : undefined), [urls]);
+  // Static preview datasets; images will use PreviewImage if photo missing
+  const premium = useMemo(() => previewPremiumJobs, []);
+  const gold    = useMemo(() => previewGoldJobs, []);
+  const missed  = useMemo(() => previewExpiredJobs, []);
+  const salons  = useMemo(() => previewSalonsForSale, []);
+  const artists = useMemo(() => previewArtists, []);
 
-  const premium = useMemo(() => previewPremiumJobs.map((j, i) => ({ ...j, photo: pick(i) || j.photo })), [pick]);
-  const gold    = useMemo(() => previewGoldJobs.map((j, i) => ({ ...j, photo: pick(i + 10) || j.photo })), [pick]);
-  const missed  = useMemo(() => previewExpiredJobs.map((j, i) => ({ ...j, photo: pick(i + 20) || j.photo })), [pick]);
-  const salons  = useMemo(() => previewSalonsForSale.map((s, i) => ({ ...s, photo: pick(i + 30) || s.photo })), [pick]);
-  const artists = useMemo(() => previewArtists.map((a, i) => ({ ...a, photo: pick(i + 40) || a.photo })), [pick]);
+  const { trackPageView } = useAnalytics();
+  useEffect(() => {
+    trackPageView('jobs_preview', { premium: premium.length, gold: gold.length, missed: missed.length, salons: salons.length, artists: artists.length });
+  }, [trackPageView]);
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Helmet>
@@ -46,7 +49,11 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
           {premium.map((job) => (
             <div key={job.id} className="relative rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
-                <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
+                {job.photo ? (
+                  <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
+                ) : (
+                  <PreviewImage seed={job.id} kind="job-card" label={job.title} className="w-full h-full object-cover" />
+                )}
               </div>
               <div className="p-4 space-y-1">
                 <h3 className="font-semibold">{job.title}</h3>
@@ -65,7 +72,11 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
           {gold.map((job) => (
             <div key={job.id} className="relative rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
-                <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
+                {job.photo ? (
+                  <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
+                ) : (
+                  <PreviewImage seed={job.id} kind="job-card" label={job.title} className="w-full h-full object-cover" />
+                )}
               </div>
               <div className="p-4 space-y-1">
                 <h3 className="font-semibold line-clamp-2">{job.title}</h3>
@@ -92,7 +103,11 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
                 )}
               </div>
               <div className="aspect-[16/10] w-full grayscale">
-                <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
+                {job.photo ? (
+                  <SafeImg src={job.photo} alt={`${job.title} at ${job.shop}`} className="w-full h-full object-cover" />
+                ) : (
+                  <PreviewImage seed={job.id} kind="expired" label={job.title} className="w-full h-full object-cover" />
+                )}
               </div>
               <div className="p-4 space-y-1">
                 <h3 className="font-semibold line-clamp-2">{job.title}</h3>
@@ -111,7 +126,11 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
           {salons.map((salon) => (
             <div key={salon.id} className="rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
-                <SafeImg src={salon.photo} alt={salon.name} className="w-full h-full object-cover" />
+                {salon.photo ? (
+                  <SafeImg src={salon.photo} alt={salon.name} className="w-full h-full object-cover" />
+                ) : (
+                  <PreviewImage seed={salon.id} kind="salon-sale" label={salon.name} className="w-full h-full object-cover" />
+                )}
               </div>
               <div className="p-4">
                 <div className="font-semibold">{salon.name}</div>
@@ -130,7 +149,11 @@ export default function FallbackJobsPreview(props: { 'data-preview'?: string }) 
           {artists.map((artist) => (
             <div key={artist.id} className="rounded-xl border bg-background overflow-hidden shadow-sm">
               <div className="aspect-[16/10] w-full">
-                <SafeImg src={artist.photo} alt={artist.name} className="w-full h-full object-cover" />
+                {artist.photo ? (
+                  <SafeImg src={artist.photo} alt={artist.name} className="w-full h-full object-cover" />
+                ) : (
+                  <PreviewImage seed={artist.id} kind="artist-kit" label={artist.name} className="w-full h-full object-cover" />
+                )}
               </div>
               <div className="p-4">
                 <div className="font-semibold">{artist.name}</div>

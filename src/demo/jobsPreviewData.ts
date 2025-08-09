@@ -71,4 +71,6 @@ export const previewArtists: PreviewArtist[] = [
   { id: 'a2', name: 'Minh P.', specialty: 'Acrylic • Ombre', city: 'Seattle', photo: '/demo/artist-02.svg' },
   { id: 'a3', name: 'Sofia R.', specialty: 'Brow • Lamination', city: 'Houston', photo: '/demo/artist-01.svg' },
   { id: 'a4', name: 'Alex K.', specialty: 'Lash • Volume', city: 'Phoenix', photo: '/demo/artist-02.svg' },
+  { id: 'a5', name: 'Lily T.', specialty: 'Gel X • French', city: 'Dallas', photo: '/demo/artist-01.svg' },
+  { id: 'a6', name: 'Marco D.', specialty: 'Acrylic • 3D Art', city: 'San Jose', photo: '/demo/artist-02.svg' },
 ];
