@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
-
 import { useAuth } from '@/context/auth';
+import { isPreviewEnv } from '@/demo/demoFlags';
+import { getDemoJobs } from '@/demo/seedOverlay';
+import { analytics } from '@/lib/analytics';
 
 // In-memory cache with stale times per feed
 const jobsCache: Record<string, { data: Job[]; ts: number }> = {};
@@ -28,7 +30,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const fomoEnabled = getFomoEnabled();
   const effectiveSignedIn = fomoEnabled === false ? true : (params?.isSignedIn ?? authSignedIn);
   const cacheKey = `${effectiveSignedIn ? 'jobs:authed' : 'jobs:public'}:${inputLimit}`;
-  const staleMs = effectiveSignedIn ? 30 * 1000 : 5 * 60 * 1000; // Authed=30s, Public=5m
+  const staleMs = effectiveSignedIn ? 30 * 1000 : 5 * 1000; // Authed=30s, Public=5s
 
   const isStale = (job: Job) => {
     const now = Date.now();

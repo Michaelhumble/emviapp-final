@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useSafeQuery } from "@/hooks/useSafeQuery";
 import { fetchArtistsForHire, ArtistForHireListItem } from "@/utils/getArtistAvailabilityQuery";
+import { getDemoArtists } from "@/demo/seedOverlay";
+import { isPreviewEnv } from "@/demo/demoFlags";
+import { analytics } from "@/lib/analytics";
 
 interface Options {
   isSignedIn: boolean;
