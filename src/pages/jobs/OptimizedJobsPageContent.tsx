@@ -235,7 +235,7 @@ const OptimizedJobsPageContent = () => {
             {/* Industry Tabs */}
             <div className="mb-8">
               <Tabs value={activeIndustryTab} onValueChange={setActiveIndustryTab} className="w-full">
-                <TabsList className="mt-6 flex flex-wrap justify-center gap-2 sm:gap-3">
+                <TabsList className="mt-6 flex justify-center gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible whitespace-nowrap sm:whitespace-normal flex-nowrap sm:flex-wrap rounded-none bg-transparent p-0 h-auto shadow-none border-0">
                   {industryTabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
@@ -253,7 +253,7 @@ const OptimizedJobsPageContent = () => {
                   })}
                 </TabsList>
 
-                <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto text-center mt-3 sm:mt-4">
+                <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto text-center mt-6 sm:mt-5">
                   {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''} available
                 </p>
 
