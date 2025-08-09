@@ -49,6 +49,21 @@ const Jobs = () => {
     document.title = isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp";
   }, [isVietnamese]);
 
+  // Preview-only: auto-seed demo content on first visit if not already seeded
+  useEffect(() => {
+    try {
+      const isPreview = import.meta.env.MODE !== 'production' || window.location.hostname.includes('preview');
+      if (!isPreview) return;
+      const seeded = localStorage.getItem('emvi_demo_seeded_v1');
+      const w = window as any;
+      if (!seeded && typeof w.__seedDemoContent === 'function') {
+        w.__seedDemoContent().catch(() => {});
+      }
+      // Console hints
+      console.info('Preview helpers: window.__seedDemoContent(), window.__clearDemoContent()');
+    } catch {}
+  }, []);
+
   return (
     <>
       <div className="w-full">

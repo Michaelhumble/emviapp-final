@@ -36,3 +36,4 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
   }
 
   return { artists: artistsToReturn, loading: isLoading, error: error?.message || '' };
+}
