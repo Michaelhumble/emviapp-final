@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
-import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
+import ArtistForHireCardRich from "@/components/artists/ArtistForHireCardRich";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
 
@@ -37,28 +37,20 @@ const ArtistsForHireStrip = () => {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1,2,3,4,5,6].map((i) => (
-                  <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[180px]" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1,2,3,4].map((i) => (
+                  <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[220px]" />
                 ))}
               </div>
             ) : artists.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {artists.map((a) => (
-                  <ArtistForHireCard
-                    key={a.user_id}
-                    name={undefined}
-                    specialties={a.specialties}
-                    location={a.location}
-                    headline={a.headline}
-                    available={!!a.available_for_work}
-                    viewMode={isSignedIn ? "signedIn" : "public"}
-                  />
+                  <ArtistForHireCard key={a.id} a={a} />
                 ))}
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                No artists to display.
+                No artists available yet.
               </div>
             )}
           </CardContent>

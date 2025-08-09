@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
@@ -146,6 +146,8 @@ const JobDetailPage = () => {
   const isActive = job.status === 'active' && ((expiresAt && expiresAt > now) || (!expiresAt && activeWindow > now));
   const isExpired = !isActive;
 
+  const photos = useMemo(() => normalizeJobPhotos(job), [job]);
+
   // JSON-LD for JobPosting
   const jsonLd = (() => {
     const base: any = {
@@ -272,6 +274,11 @@ const JobDetailPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
+              {/* Photo Gallery */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+                <JobPhotoGallery urls={photos} />
+              </div>
+
               <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Job Description</h2>
                 <div className="prose prose-gray max-w-none">
