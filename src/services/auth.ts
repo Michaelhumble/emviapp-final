@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getAppOrigin } from "@/utils/getAppOrigin";
 
 export async function signInWithEmail(email: string, password: string) {
   try {
@@ -62,9 +63,10 @@ export async function signOut() {
 // OAuth providers
 export async function signInWithGoogle(redirectTo?: string) {
   try {
+    const target = redirectTo || `${getAppOrigin()}/auth/redirect`;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo }
+      options: { redirectTo: target }
     });
     if (error) throw error;
     return { success: true, data };
@@ -73,6 +75,7 @@ export async function signInWithGoogle(redirectTo?: string) {
     return { success: false, error };
   }
 }
+
 
 // export async function signInWithApple(redirectTo?: string) {
 //   // Disabled per strict instruction: Do not integrate Apple Sign-In
@@ -93,6 +96,7 @@ export async function signInWithGoogle(redirectTo?: string) {
 // Phone OTP
 export async function signInWithPhone(phone: string) {
   try {
+    const target = `${getAppOrigin()}/auth/redirect`;
     const { data, error } = await supabase.auth.signInWithOtp({
       phone,
       options: { channel: 'sms' }
@@ -104,6 +108,7 @@ export async function signInWithPhone(phone: string) {
     return { success: false, error };
   }
 }
+
 
 export async function verifyPhoneOtp(phone: string, token: string) {
   try {

@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { signInWithGoogle } from "@/services/auth";
 import { toast } from "sonner";
 import React from "react";
+import { getAppOrigin } from "@/utils/getAppOrigin";
 
 interface SocialAuthButtonsProps {
   mode: "signin" | "signup";
@@ -15,9 +16,9 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
-  const redirectTo = `${window.location.origin}/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
-  // Feature flag: enable/disable Phone option via localStorage 'ENABLE_PHONE' (defaults to true)
-  const phoneEnabled = (localStorage.getItem('ENABLE_PHONE') ?? 'true') !== 'false';
+  const redirectTo = `${getAppOrigin()}/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
+  // Feature flag via Vite env (default true)
+  const phoneEnabled = (((import.meta as any).env?.VITE_ENABLE_PHONE) ?? 'true') !== 'false';
 
   const handleGoogle = async () => {
     try {

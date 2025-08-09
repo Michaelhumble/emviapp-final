@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { signInWithPhone, verifyPhoneOtp } from "@/services/auth";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface PhoneOtpDialogProps {
   open: boolean;
@@ -19,6 +19,7 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
   const [loading, setLoading] = useState(false);
   const [resendIn, setResendIn] = useState(0);
   const location = useLocation();
+  const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
 
@@ -106,11 +107,10 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
       setLoading(true);
       const { error, data } = await verifyPhoneOtp(phone, code);
       if (error) throw error;
-      toast.success("Phone verified! You're signed in.");
-      onOpenChange(false);
-      // Redirect through centralized post-login route
-      const target = `${window.location.origin}/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
-      window.location.assign(target);
+      // Redirect through centralized post-login route on current origin
+      const targetPath = `/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
+      navigate(targetPath, { replace: true });
+
     } catch (e: any) {
       console.error("OTP verify error", e);
       toast.error(e?.message || "Invalid or expired code");
