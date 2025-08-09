@@ -177,6 +177,7 @@ const JobDetailPage = () => {
           name="description" 
           content={`${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`} 
         />
+        <link rel="canonical" href={`${window.location.origin}/jobs/${job.id}`} />
         <script type="application/ld+json">{jsonLd}</script>
       </Helmet>
 

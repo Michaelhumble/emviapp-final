@@ -13,6 +13,7 @@ import { Helmet } from 'react-helmet';
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobCard } from '@/components/jobs/JobCard';
 import OptimizedStickyMobileCTA from '@/components/mobile/OptimizedStickyMobileCTA';
+import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
 
 // Lazy load non-critical components for better performance
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
@@ -36,6 +37,7 @@ import { track } from '@/lib/telemetry';
 const OptimizedJobsPageContent = () => {
   const { isSignedIn } = useAuth();
   const { jobs, loading, error, refresh } = useOptimizedJobsData({ isSignedIn, limit: 50 });
+  const { artists } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
   const fomoEnabled = (() => { try { const flag = (window as any)?.__env?.FOMO_LISTING_MODE; if (flag === false || flag === 'false') return false; if (flag === true || flag === 'true') return true; } catch {} return undefined; })();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -181,6 +183,18 @@ const OptimizedJobsPageContent = () => {
             : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
           }
         />
+        <link rel="canonical" href={`${window.location.origin}/jobs`} />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Jobs Page Sections',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Featured Jobs', url: `${window.location.origin}/jobs#featured`, numberOfItems: jobs.filter(j => ['featured','premium','gold'].includes((j.pricing_tier||'').toLowerCase())).length },
+            { '@type': 'ListItem', position: 2, name: 'Artists for Hire', url: `${window.location.origin}/jobs#artists-for-hire`, numberOfItems: artists?.length || 0 },
+            { '@type': 'ListItem', position: 3, name: 'Recently Filled', url: `${window.location.origin}/jobs#recently-filled` },
+            { '@type': 'ListItem', position: 4, name: 'Salons for Sale', url: `${window.location.origin}/jobs#salons-for-sale` }
+          ]
+        })}</script>
       </Helmet>
 
       <div className="w-full">
@@ -291,17 +305,19 @@ const OptimizedJobsPageContent = () => {
         </section>
 
         {/* Classic sections rendered below the hero */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           <FeaturedTrendingJobs jobs={jobs} />
         </div>
-        {(() => { const SHOW_ARTISTS_STRIP = true; return SHOW_ARTISTS_STRIP; })() && (
+        <div id="artists-for-hire">
           <ArtistsForHireStrip />
-        )}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        </div>
+        <div id="recently-filled" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
           <WhatYouMissedSection title="Recently filled" maxJobs={12} />
         </div>
-        <SalonsForSale />
+        <div id="salons-for-sale">
+          <SalonsForSale />
+        </div>
 
         {/* LAZY LOADED SECTIONS - Below the fold */}
         <Suspense fallback={<div className="py-8" />}>
