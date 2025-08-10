@@ -8,13 +8,20 @@ import SpecialtyCityLanding from '@/pages/artists/SpecialtyCityLanding';
 vi.mock('@/hooks/useArtistsSearch', () => ({
   useArtistsSearch: () => ({
     items: [
-      { id: 'a1', user_id: 'a1', full_name: 'Pro Nail Artist', headline: 'Nail Artist', location: 'Houston, TX', specialties: 'nails' },
-    ]
+      { id: 'a1', user_id: 'a1', headline: 'Nail Artist', specialties: 'nails', location: 'Houston, TX' },
+    ],
+    loading: false,
+    hasMore: false,
+    loadMore: () => {},
+    filters: { q: '', location: '', specialty: '', available: true, vietnamese: false, sort: '' },
+    setFilters: () => {},
+    specialtyChips: [],
+    featured: []
   })
 }));
 
 describe('SpecialtyCityLanding SEO & structure', () => {
-  it('renders H1, canonical, and JSON-LD blocks', () => {
+  it('renders H1, canonical, and single JSON-LD scripts (ItemList/FAQ/Breadcrumb)', () => {
     render(
       <HelmetProvider>
         <MemoryRouter initialEntries={["/artists/nails/houston-tx"]}>
@@ -35,8 +42,9 @@ describe('SpecialtyCityLanding SEO & structure', () => {
 
     const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
     const types = scripts.map(s => { try { return JSON.parse(s.textContent || '{}')['@type']; } catch { return undefined; } });
-    expect(types).toContain('BreadcrumbList');
-    expect(types).toContain('ItemList');
-    expect(types).toContain('FAQPage');
+    const typeCounts = types.reduce((acc: Record<string, number>, t: any) => { if (!t) return acc; acc[t] = (acc[t] || 0) + 1; return acc; }, {} as any);
+    expect(typeCounts['BreadcrumbList']).toBe(1);
+    expect(typeCounts['ItemList']).toBe(1);
+    expect(typeCounts['FAQPage']).toBe(1);
   });
 });

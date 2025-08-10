@@ -4,31 +4,31 @@
   <!-- Seeded city pages (25), job role pages (150), artist pages (150) -->
   
   <!-- City pages -->
-  <url><loc>https://www.emvi.app/jobs/in/new-york-ny</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/los-angeles-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/chicago-il</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/houston-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/dallas-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/phoenix-az</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/san-antonio-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/san-diego-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/san-jose-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/philadelphia-pa</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/austin-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/jacksonville-fl</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/fort-worth-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/columbus-oh</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/charlotte-nc</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/san-francisco-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/indianapolis-in</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/seattle-wa</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/denver-co</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/washington-dc</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/boston-ma</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/nashville-tn</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/detroit-mi</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/oklahoma-city-ok</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/in/portland-or</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/new-york-ny</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/los-angeles-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/chicago-il</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/houston-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/dallas-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/phoenix-az</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/san-antonio-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/san-diego-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/san-jose-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/philadelphia-pa</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/austin-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/jacksonville-fl</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/fort-worth-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/columbus-oh</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/charlotte-nc</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/san-francisco-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/indianapolis-in</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/seattle-wa</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/denver-co</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/washington-dc</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/boston-ma</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/nashville-tn</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/detroit-mi</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/oklahoma-city-ok</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
+  <url><loc>https://www.emvi.app/jobs/portland-or</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
 
   <!-- Role pages (jobs) -->
   <!-- nails -->

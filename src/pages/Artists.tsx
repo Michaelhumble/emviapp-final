@@ -116,22 +116,23 @@ const Artists = () => {
                 ))}
               </div>
 
-              {/* Internal-link widgets */}
               <div className="mt-8">
                 <h3 className="text-lg font-semibold mb-3">Hire fast in…</h3>
                 <div className="flex flex-wrap gap-2">
-                  {[
-                    { label: 'Nails · Houston, TX', href: '/artists/nails/houston-tx' },
-                    { label: 'Hair · Los Angeles, CA', href: '/artists/hair/los-angeles-ca' },
-                    { label: 'Brows/Lashes · New York, NY', href: '/artists/brows-lashes/new-york-ny' },
-                    { label: 'Makeup · Chicago, IL', href: '/artists/makeup/chicago-il' },
-                    { label: 'Esthetics · Phoenix, AZ', href: '/artists/esthetics/phoenix-az' },
-                    { label: 'Barber · Dallas, TX', href: '/artists/barber/dallas-tx' },
-                  ].map((chip) => (
-                    <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
-                      {chip.label}
-                    </a>
-                  ))}
+                  {(() => {
+                    const { CITIES, ROLES } = require('@/seo/locations/seed');
+                    const cityChips = (CITIES as any[]).slice(0,6).map((c: any) => ({ label: `${c.city}, ${c.state}`, href: `/artists/nails/${c.slug}` }));
+                    const roleCity = (CITIES as any[]).slice(0,6).map((c: any, idx: number) => {
+                      const r = (ROLES as string[])[idx];
+                      const label = r.replace('-', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
+                      return { label: `${label} · ${c.city}, ${c.state}`, href: `/artists/${r}/${c.slug}` };
+                    });
+                    return [...cityChips, ...roleCity].map((chip) => (
+                      <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
+                        {chip.label}
+                      </a>
+                    ));
+                  })()}
                 </div>
               </div>
             </div>

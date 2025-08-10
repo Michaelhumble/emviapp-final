@@ -8,7 +8,9 @@ import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Container } from '@/components/ui/container';
 import { normalizeCityStateSlug } from '@/utils/slug';
-import { buildLeadCopy } from '@/seo/locations/lead';
+import { buildLeadCopy, findCitySeed } from '@/seo/locations/lead';
+import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
+import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
 
 function toTitle(s: string) {
   return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -42,6 +44,13 @@ export default function RoleCityJobsLanding() {
   ), [jobs, city, state, role]);
   const count = filtered.length;
   const lead = buildLeadCopy({ city, state, role, countJobs: count, slug: normalized || cityState });
+
+  const { artists = [] } = useOptimizedArtistsData({ isSignedIn: false, limit: 50 });
+  const filteredArtists = useMemo(() => artists.filter((a: any) =>
+    (a.location || '').toLowerCase().includes(city.toLowerCase()) && ((a.specialties || a.specialty || '').toLowerCase().includes(role.toLowerCase()))
+  ), [artists, city, role]);
+  const seed = findCitySeed(normalized || cityState);
+  const nearby = (seed?.nearby || []).slice(0, 6);
 
   const title = `${roleTitle} jobs in ${label} | ${count} hiring now | EmviApp`;
   const description = `Hiring ${roleTitle} in ${label}. ${count} openings from verified salons. Apply today on EmviApp.`;
@@ -98,6 +107,40 @@ export default function RoleCityJobsLanding() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.slice(0, 24).map((j: any) => (<JobCard key={j.id} job={j} />))}
+          </div>
+
+          {/* Artists strip (blue minimal) */}
+          {filteredArtists.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-xl font-semibold mb-3">Hire {roleTitle} in {label}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredArtists.slice(0, 12).map((a: any) => (
+                  <ArtistForHireCard key={(a as any).user_id || (a as any).id} artist={a as any} viewMode="public" theme="blue" hidePhoto contactGated variant="blueMinimal" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recently filled (collapsed) */}
+          <details className="mt-10">
+            <summary className="cursor-pointer text-sm text-muted-foreground">Recently filled in {label}</summary>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {(useOptimizedJobsData({ isSignedIn: false, limit: 50 }).jobs || []).filter((j: any) => (j.location || '').toLowerCase().includes(`${city.toLowerCase()}, ${state.toLowerCase()}`)).slice(0, 6).map((j: any) => (
+                <JobCard key={j.id} job={j} />
+              ))}
+            </div>
+          </details>
+
+          {/* Nearby areas */}
+          <div className="mt-10">
+            <h2 className="text-xl font-semibold mb-3">Nearby areas</h2>
+            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+              {nearby.map((c) => (
+                <a key={c} href={`/jobs/${role}/${c}`} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
+                  {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* CTAs */}

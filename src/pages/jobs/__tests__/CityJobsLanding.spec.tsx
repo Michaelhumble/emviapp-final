@@ -47,7 +47,7 @@ describe('CityJobsLanding SEO & structure', () => {
     // Canonical
     const canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     expect(canonical).not.toBeNull();
-    expect(canonical!.href).toContain('https://www.emvi.app/jobs/in/houston-tx');
+    expect(canonical!.href).toContain('https://www.emvi.app/jobs/houston-tx');
 
     // JSON-LD
     const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
