@@ -166,6 +166,7 @@ function App() {
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
                      <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
+                     <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
                      <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />

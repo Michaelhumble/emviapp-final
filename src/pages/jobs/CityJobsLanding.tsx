@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Helmet } from 'react-helmet-async';
 import BaseSEO from '@/components/seo/BaseSEO';
@@ -7,6 +7,7 @@ import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Container } from '@/components/ui/container';
+import { normalizeCityStateSlug } from '@/utils/slug';
 
 function toCityStateLabel(slug?: string) {
   if (!slug) return { city: '', state: '', label: '' };
@@ -22,8 +23,15 @@ function toCityStateLabel(slug?: string) {
 
 export default function CityJobsLanding() {
   const { cityState } = useParams();
-  const { city, state, label } = toCityStateLabel(cityState);
-  const canonical = `https://www.emvi.app/jobs/in/${cityState}`;
+  const navigate = useNavigate();
+  const normalized = cityState ? normalizeCityStateSlug(cityState) : '';
+  useEffect(() => {
+    if (cityState && normalized && cityState.toLowerCase() !== normalized) {
+      navigate(`/jobs/in/${normalized}`, { replace: true });
+    }
+  }, [cityState, normalized, navigate]);
+  const { city, state, label } = toCityStateLabel(normalized || cityState);
+  const canonical = `https://www.emvi.app/jobs/in/${normalized || cityState}`;
 
   const { jobs = [] } = useOptimizedJobsData({ isSignedIn: false, limit: 200 });
   const cityJobs = useMemo(() => jobs.filter((j: any) => (j.location || '').toLowerCase().includes(`${city.toLowerCase()}, ${state.toLowerCase()}`)), [jobs, city, state]);
@@ -50,6 +58,15 @@ export default function CityJobsLanding() {
     })),
   };
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      { '@type': 'Question', name: `What are popular beauty roles in ${label}?`, acceptedAnswer: { '@type': 'Answer', text: `Top hiring categories in ${label} include nails, hair, brows/lashes, makeup, skincare, and barber.` }},
+      { '@type': 'Question', name: `How often do jobs update in ${label}?`, acceptedAnswer: { '@type': 'Answer', text: 'Listings refresh throughout the day; check back or post a job to notify local talent.' }},
+      { '@type': 'Question', name: `What neighborhoods hire most in ${city}?`, acceptedAnswer: { '@type': 'Answer', text: 'Hiring clusters around central districts, shopping corridors, and busy residential zones.' }}
+    ]
+  };
   return (
     <Layout>
       <Helmet>
@@ -58,7 +75,7 @@ export default function CityJobsLanding() {
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <BaseSEO jsonLd={[breadcrumb, itemList]} />
+      <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
       <section className="py-10">
         <Container>

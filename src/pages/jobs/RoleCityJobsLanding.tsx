@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Helmet } from 'react-helmet-async';
 import BaseSEO from '@/components/seo/BaseSEO';
@@ -7,6 +7,7 @@ import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Container } from '@/components/ui/container';
+import { normalizeCityStateSlug } from '@/utils/slug';
 
 function toTitle(s: string) {
   return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -22,9 +23,16 @@ function parseCityState(slug?: string) {
 
 export default function RoleCityJobsLanding() {
   const { role = '', cityState } = useParams();
+  const navigate = useNavigate();
+  const normalized = cityState ? normalizeCityStateSlug(cityState) : '';
+  useEffect(() => {
+    if (cityState && normalized && cityState.toLowerCase() !== normalized) {
+      navigate(`/jobs/${role}/${normalized}`, { replace: true });
+    }
+  }, [cityState, normalized, role, navigate]);
   const roleTitle = toTitle(role);
-  const { city, state, label } = parseCityState(cityState);
-  const canonical = `https://www.emvi.app/jobs/${role}/${cityState}`;
+  const { city, state, label } = parseCityState(normalized || cityState);
+  const canonical = `https://www.emvi.app/jobs/${role}/${normalized || cityState}`;
 
   const { jobs = [] } = useOptimizedJobsData({ isSignedIn: false, limit: 200 });
   const filtered = useMemo(() => jobs.filter((j: any) =>

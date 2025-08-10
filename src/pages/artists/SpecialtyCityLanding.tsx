@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Helmet } from 'react-helmet-async';
 import BaseSEO from '@/components/seo/BaseSEO';
@@ -7,6 +7,7 @@ import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { useArtistsSearch } from '@/hooks/useArtistsSearch';
 import { Container } from '@/components/ui/container';
 import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
+import { normalizeCityStateSlug } from '@/utils/slug';
 
 function toTitle(s: string) { return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()); }
 function parseCityState(slug?: string) {
@@ -19,9 +20,16 @@ function parseCityState(slug?: string) {
 
 export default function SpecialtyCityLanding() {
   const { specialty = '', cityState } = useParams();
+  const navigate = useNavigate();
+  const normalized = cityState ? normalizeCityStateSlug(cityState) : '';
+  useEffect(() => {
+    if (cityState && normalized && cityState.toLowerCase() !== normalized) {
+      navigate(`/artists/${specialty}/${normalized}`, { replace: true });
+    }
+  }, [cityState, normalized, specialty, navigate]);
   const specTitle = toTitle(specialty);
-  const { city, state, label } = parseCityState(cityState);
-  const canonical = `https://www.emvi.app/artists/${specialty}/${cityState}`;
+  const { city, state, label } = parseCityState(normalized || cityState);
+  const canonical = `https://www.emvi.app/artists/${specialty}/${normalized || cityState}`;
 
   const { items = [] } = useArtistsSearch({ available: true });
   const filtered = useMemo(() => items.filter((a: any) =>
