@@ -219,7 +219,7 @@ const OptimizedJobsPageContent = () => {
           '@type': 'ItemList',
           name: 'Jobs Page Sections',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Featured Jobs', url: `${window.location.origin}/jobs#featured`, numberOfItems: jobs.filter(j => ['featured','premium','gold'].includes((j.pricing_tier||'').toLowerCase())).length },
+            { '@type': 'ListItem', position: 1, name: 'Featured Jobs', url: `${window.location.origin}/jobs#featured`, numberOfItems: jobs.filter(j => ['diamond','premium','gold'].includes((j.pricing_tier||'').toLowerCase())).length },
             { '@type': 'ListItem', position: 2, name: 'Artists for Hire', url: `${window.location.origin}/jobs#artists-for-hire`, numberOfItems: artists?.length || 0 },
             { '@type': 'ListItem', position: 3, name: 'Recently Filled', url: `${window.location.origin}/jobs#recently-filled` },
             { '@type': 'ListItem', position: 4, name: 'Salons for Sale', url: `${window.location.origin}/jobs#salons-for-sale` }
@@ -277,11 +277,15 @@ const OptimizedJobsPageContent = () => {
         </section>
 
         {/* Featured Paid Jobs (Paid tiers) */}
-        {paidJobsToShow.length > 0 && (
-          <div id="featured-paid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+          {paidJobsToShow.length > 0 ? (
             <FeaturedPaidJobsSection jobs={paidJobsToShow} />
-          </div>
-        )}
+          ) : (
+            <Suspense fallback={<div className="py-8" />}>
+              <FOMONailJobsSection />
+            </Suspense>
+          )}
+        </div>
 
 
         {/* Artists Available for Hire */}
@@ -364,7 +368,6 @@ const OptimizedJobsPageContent = () => {
           {/* Real-time Activity */}
           <RealTimeActivity />
           
-          <FOMONailJobsSection />
           
           
           {/* Other sections */}
