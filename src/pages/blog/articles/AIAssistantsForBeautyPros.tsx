@@ -44,7 +44,7 @@ const AIAssistantsForBeautyPros: React.FC = () => {
       {/* Premium Hero Section (mirrors AI Beauty Revolution aesthetic) */}
       <article className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-purple-900">
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-black/65" />
           <img src={HERO_IMG} alt="AI Assistant Showdown for Beauty Pros" className="w-full h-[70vh] md:h-[78vh] object-cover"/>
           <div className="absolute inset-0 flex items-center">
             <Container>
@@ -62,16 +62,16 @@ const AIAssistantsForBeautyPros: React.FC = () => {
                   <span className="flex items-center gap-1 text-white/80"><Clock className="h-4 w-4" /> {registryArticle.readTime}</span>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-4 bg-gradient-to-r from-white via-purple-200 to-rose-200 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-4 text-white">
                   {registryArticle.title}
                 </h1>
                 <p className="text-xl md:text-2xl text-white/85 max-w-3xl leading-relaxed">{subtitle}</p>
 
                 <div className="mt-8 flex flex-wrap gap-4">
-                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-500 hover:to-orange-600 font-bold">
+                  <Button size="lg" asChild>
                     <Link to="/post-job" className="flex items-center gap-2">Post a Job <ArrowRight className="h-5 w-5"/></Link>
                   </Button>
-                  <Button variant="outline" size="lg" className="border-white/40 text-white hover:bg-white/10">
+                  <Button variant="secondary" size="lg" asChild>
                     <Link to="/artists">Browse Artists</Link>
                   </Button>
                 </div>
@@ -115,15 +115,19 @@ const AIAssistantsForBeautyPros: React.FC = () => {
           </div>
 
           {/* Why this matters */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
-            <h2>Why this matters for EmviApp users</h2>
-            <p>If you’re hiring on <strong>EmviApp Jobs</strong>, promoting yourself on <strong>Artists for Hire</strong>, or planning an <strong>exit on Salons for Sale</strong>, the right AI turns hours into minutes:</p>
-            <ul>
-              <li><strong>Hiring:</strong> consistent, compelling job posts that rank and convert.</li>
-              <li><strong>Artist profiles:</strong> clear, confident bios that win trials and interviews.</li>
-              <li><strong>Client comms:</strong> policies, pricing, and promos written in brand voice.</li>
-              <li><strong>Decisions:</strong> quick, cited answers when you’re choosing markets, pay, or tools.</li>
-            </ul>
+          <section className="max-w-4xl mx-auto mt-14">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200/60 rounded-3xl p-8 md:p-10 shadow-xl">
+              <div className="prose prose-lg prose-slate max-w-none">
+                <h2>Why this matters for EmviApp users</h2>
+                <p>If you’re hiring on <strong>EmviApp Jobs</strong>, promoting yourself on <strong>Artists for Hire</strong>, or planning an <strong>exit on Salons for Sale</strong>, the right AI turns hours into minutes:</p>
+                <ul>
+                  <li><strong>Hiring:</strong> consistent, compelling job posts that rank and convert.</li>
+                  <li><strong>Artist profiles:</strong> clear, confident bios that win trials and interviews.</li>
+                  <li><strong>Client comms:</strong> policies, pricing, and promos written in brand voice.</li>
+                  <li><strong>Decisions:</strong> quick, cited answers when you’re choosing markets, pay, or tools.</li>
+                </ul>
+              </div>
+            </div>
           </section>
 
           {/* Comparison Table */}
@@ -153,85 +157,100 @@ const AIAssistantsForBeautyPros: React.FC = () => {
             </div>
           </section>
 
-          {/* Prompts */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
-            <h2>Plug-and-Play Prompts (Paste & go)</h2>
-            <p>Use any assistant. Replace bracketed bits with your details.</p>
+          <section className="max-w-4xl mx-auto mt-14">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200/60 rounded-3xl p-8 md:p-10 shadow-xl">
+              <div className="prose prose-lg prose-slate max-w-none">
+                <h2>Plug-and-Play Prompts (Paste & go)</h2>
+                <p>Use any assistant. Replace bracketed bits with your details.</p>
 
-            <h3>1) High-converting job post (for EmviApp Jobs)</h3>
-            <pre><code>{`You are a hiring copywriter for beauty salons. Draft a job post for a [Nail Technician] in [City, State].
+                <h3>1) High-converting job post (for EmviApp Jobs)</h3>
+                <pre><code>{`You are a hiring copywriter for beauty salons. Draft a job post for a [Nail Technician] in [City, State].
 Goals: clear pay range, 3–5 compelling benefits, culture in 2 sentences, bulleted requirements, inclusive tone, and a strong CTA to apply on EmviApp.
 Constraints: 180–220 words, plain language, no fluff, include {compensation}, {hours}, {growth}.
 Return: Title, Summary (1 sentence), Responsibilities (bullets), Benefits (bullets), Requirements (bullets), “Apply on EmviApp” CTA with link text only.`}</code></pre>
-            <p><Link to="/post-job">Post a Job</Link></p>
+                <p><Link to="/post-job">Post a Job</Link></p>
 
-            <h3>2) Artist bio that wins interviews (for Artists for Hire)</h3>
-            <pre><code>{`You are a career storytelling coach. Rewrite my artist bio to feel confident and client-friendly.
+                <h3>2) Artist bio that wins interviews (for Artists for Hire)</h3>
+                <pre><code>{`You are a career storytelling coach. Rewrite my artist bio to feel confident and client-friendly.
 Highlight specialties: [e.g., Gel Manicures, Nail Art], experience: [X years], awards/press: [optional], and availability: [e.g., Flexible].
 Style: friendly, professional, 90–120 words, third person, end with a soft CTA to view my EmviApp profile.`}</code></pre>
-            <p><Link to="/artists">Update your Artist profile</Link></p>
+                <p><Link to="/artists">Update your Artist profile</Link></p>
 
-            <h3>3) Salon pricing menu (clear & fair)</h3>
-            <pre><code>{`Create a tidy service menu for a [nail/hair/spa] salon in [City].
+                <h3>3) Salon pricing menu (clear & fair)</h3>
+                <pre><code>{`Create a tidy service menu for a [nail/hair/spa] salon in [City].
 Include 8–12 services with short descriptions, realistic price ranges, add-ons, and “time needed”.
 Add 3 transparent policies (late, cancellations, redo).
 Format as a markdown table suitable for a website.`}</code></pre>
 
-            <h3>4) Instagram carousel captions (booking focused)</h3>
-            <pre><code>{`Write 3 short Instagram carousel captions to showcase [spring nail trends / hair color transformations].
+                <h3>4) Instagram carousel captions (booking focused)</h3>
+                <pre><code>{`Write 3 short Instagram carousel captions to showcase [spring nail trends / hair color transformations].
 Each 40–60 words with 2 emojis and 3 niche hashtags. End with “Book via EmviApp” mention, not a raw link.`}</code></pre>
 
-            <h3>5) “What changed lately?” fact-check (use Perplexity or add citations)</h3>
-            <pre><code>{`Give me a cited summary of the latest [state/city] wage & tip rules for [nail/hair] salons.
+                <h3>5) “What changed lately?” fact-check (use Perplexity or add citations)</h3>
+                <pre><code>{`Give me a cited summary of the latest [state/city] wage & tip rules for [nail/hair] salons.
 Return 5 bullets with source links and a one-sentence owner takeaway.`}</code></pre>
-          </section>
-
-          {/* Case studies */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
-            <h2>Mini case studies (composites based on real outcomes)</h2>
-            <p><strong>1) Houston nails studio — hiring in 72 hours</strong><br/>Owner rewrote their job post with the prompt above, added a real pay range, and pinned culture & growth.<br/><strong>Result:</strong> ↑ 2.1× applies in a week, vetted one standout candidate by day 3, hire on day 5.</p>
-            <p><strong>2) Independent artist — profile clarity = more trials</strong><br/>A senior tech trimmed jargon and led with specialties + years + availability.<br/><strong>Result:</strong> ↑ 38% profile views → trials booked from two nearby salons within 10 days.</p>
-            <p><strong>3) Multi-chair salon — policies that de-stress</strong><br/>Claude drafted clear late/cancel/redo policies; staff trained with a 1-page SOP.<br/><strong>Result:</strong> Fewer awkward check-outs, better rebooking, happier team.</p>
-            <div className="rounded-xl border border-amber-300/30 bg-amber-500/10 p-4 flex items-start gap-3 text-amber-100 mt-6">
-              <AlertTriangle className="h-5 w-5 mt-1 text-amber-300"/>
-              <p>These are representative examples to illustrate process, not guaranteed results. Your outcomes depend on offer, location, portfolio, and follow-through.</p>
+              </div>
             </div>
           </section>
 
-          {/* Checklist */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
-            <h2>Your 30-Minute Setup (checklist)</h2>
-            <ul>
-              <li>[ ] Pick <strong>one</strong> assistant for writing (ChatGPT) and <strong>one</strong> for facts (Perplexity).</li>
-              <li>[ ] Draft/refresh a job post and publish on <strong>EmviApp Jobs</strong>.</li>
-              <li>[ ] Tighten your artist bio & specialties on <strong>Artists for Hire</strong>.</li>
-              <li>[ ] Add a simple, fair policy trio to your website/profile.</li>
-              <li>[ ] Schedule 2 caption batches (12 posts) for the next month.</li>
-            </ul>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button asChild><Link to="/post-job">Do the highest‑impact step now</Link></Button>
-              <Button asChild variant="outline"><Link to="/artists">Get discovered on Artists</Link></Button>
+          <section className="max-w-4xl mx-auto mt-14">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200/60 rounded-3xl p-8 md:p-10 shadow-xl">
+              <div className="prose prose-lg prose-slate max-w-none">
+                <h2>Mini case studies (composites based on real outcomes)</h2>
+                <p><strong>1) Houston nails studio — hiring in 72 hours</strong><br/>Owner rewrote their job post with the prompt above, added a real pay range, and pinned culture & growth.<br/><strong>Result:</strong> ↑ 2.1× applies in a week, vetted one standout candidate by day 3, hire on day 5.</p>
+                <p><strong>2) Independent artist — profile clarity = more trials</strong><br/>A senior tech trimmed jargon and led with specialties + years + availability.<br/><strong>Result:</strong> ↑ 38% profile views → trials booked from two nearby salons within 10 days.</p>
+                <p><strong>3) Multi-chair salon — policies that de-stress</strong><br/>Claude drafted clear late/cancel/redo policies; staff trained with a 1-page SOP.<br/><strong>Result:</strong> Fewer awkward check-outs, better rebooking, happier team.</p>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3 text-amber-900 mt-6">
+                  <AlertTriangle className="h-5 w-5 mt-1 text-amber-600"/>
+                  <p>These are representative examples to illustrate process, not guaranteed results. Your outcomes depend on offer, location, portfolio, and follow-through.</p>
+                </div>
+              </div>
             </div>
           </section>
 
-          {/* FAQ */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
-            <h2>FAQ</h2>
-            <p><strong>Is AI writing obvious to readers?</strong><br/>Not when you feed it <em>your real details</em> and edit for tone. Think of AI like a fast assistant—not a replacement for your taste.</p>
-            <p><strong>Will it make things up?</strong><br/>Creative models sometimes over‑confidently guess. For facts, <strong>use Perplexity</strong> or ask models to provide sources.</p>
-            <p><strong>What about privacy?</strong><br/>Avoid pasting sensitive client data. Summarize patterns instead of sharing names or identifiers.</p>
-            <p><strong>Which model should I start with?</strong><br/>If you’re unsure: ChatGPT for drafts + Perplexity for checks. Add Claude when you document SOPs or policies.</p>
-            <p><strong>How does this tie to EmviApp?</strong><br/>Every prompt here outputs copy you can paste straight into <strong>EmviApp Jobs</strong> or <strong>Artists for Hire</strong>—and the CTAs above link you there.</p>
+          <section className="max-w-4xl mx-auto mt-14">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200/60 rounded-3xl p-8 md:p-10 shadow-xl">
+              <div className="prose prose-lg prose-slate max-w-none">
+                <h2>Your 30-Minute Setup (checklist)</h2>
+                <ul>
+                  <li>[ ] Pick <strong>one</strong> assistant for writing (ChatGPT) and <strong>one</strong> for facts (Perplexity).</li>
+                  <li>[ ] Draft/refresh a job post and publish on <strong>EmviApp Jobs</strong>.</li>
+                  <li>[ ] Tighten your artist bio & specialties on <strong>Artists for Hire</strong>.</li>
+                  <li>[ ] Add a simple, fair policy trio to your website/profile.</li>
+                  <li>[ ] Schedule 2 caption batches (12 posts) for the next month.</li>
+                </ul>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button asChild><Link to="/post-job">Do the highest‑impact step now</Link></Button>
+                  <Button asChild variant="outline"><Link to="/artists">Get discovered on Artists</Link></Button>
+                </div>
+              </div>
+            </div>
           </section>
 
-          {/* Final word */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
-            <h2>Final word</h2>
-            <p>AI won’t run your salon—<strong>you</strong> will. But it will give you time back, sharpen your message, and help the right people find you. Start with one prompt, ship it, then iterate.</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button asChild><Link to="/post-job">Post a Job</Link></Button>
-              <Button asChild variant="outline"><Link to="/artists">Browse Artists</Link></Button>
-              <Button asChild variant="secondary"><Link to="/salons-for-sale">Salons for Sale</Link></Button>
+          <section className="max-w-4xl mx-auto mt-14">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200/60 rounded-3xl p-8 md:p-10 shadow-xl">
+              <div className="prose prose-lg prose-slate max-w-none">
+                <h2>FAQ</h2>
+                <p><strong>Is AI writing obvious to readers?</strong><br/>Not when you feed it <em>your real details</em> and edit for tone. Think of AI like a fast assistant—not a replacement for your taste.</p>
+                <p><strong>Will it make things up?</strong><br/>Creative models sometimes over‑confidently guess. For facts, <strong>use Perplexity</strong> or ask models to provide sources.</p>
+                <p><strong>What about privacy?</strong><br/>Avoid pasting sensitive client data. Summarize patterns instead of sharing names or identifiers.</p>
+                <p><strong>Which model should I start with?</strong><br/>If you’re unsure: ChatGPT for drafts + Perplexity for checks. Add Claude when you document SOPs or policies.</p>
+                <p><strong>How does this tie to EmviApp?</strong><br/>Every prompt here outputs copy you can paste straight into <strong>EmviApp Jobs</strong> or <strong>Artists for Hire</strong>—and the CTAs above link you there.</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="max-w-4xl mx-auto mt-14">
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200/60 rounded-3xl p-8 md:p-10 shadow-xl">
+              <div className="prose prose-lg prose-slate max-w-none">
+                <h2>Final word</h2>
+                <p>AI won’t run your salon—<strong>you</strong> will. But it will give you time back, sharpen your message, and help the right people find you. Start with one prompt, ship it, then iterate.</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button asChild><Link to="/post-job">Post a Job</Link></Button>
+                  <Button asChild variant="outline"><Link to="/artists">Browse Artists</Link></Button>
+                  <Button asChild variant="secondary"><Link to="/salons-for-sale">Salons for Sale</Link></Button>
+                </div>
+              </div>
             </div>
           </section>
 
