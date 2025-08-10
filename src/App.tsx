@@ -33,6 +33,9 @@ const Jobs = lazy(() => import("@/pages/Jobs"));
 const OptimizedJobsPage = lazy(() => import("@/pages/OptimizedJobsPage"));
 const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
 const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
+const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
+const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
+const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Terms = lazy(() => import("@/pages/Terms"));
@@ -161,11 +164,14 @@ function App() {
                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
+                     <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
                      <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
-<Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
-<Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
+                     <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
+                     <Route path="/artists/:specialty/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><SpecialtyCityLanding /></Suspense>} />
+                     <Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
                     {/* Industry Pages */}
