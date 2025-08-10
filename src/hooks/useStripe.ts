@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { analytics } from '@/lib/analytics';
 
 export function useStripe() {
   const [isLoading, setIsLoading] = useState(false);
@@ -142,22 +143,61 @@ export function useStripe() {
         }
       };
 
+      const tier = payload?.tier || body?.pricingOptions?.selectedPricingTier;
+      const listingId = payload?.listingId || body?.formData?.listingId;
+      // Non-blocking analytics: CTA click
+      try {
+        analytics.trackEvent({
+          action: 'salon_checkout_started',
+          category: 'checkout',
+          custom_parameters: { tier, listingId }
+        });
+      } catch (_) {}
+
       const { data, error } = await supabase.functions.invoke('create-salon-checkout', { body });
       console.log('[salon-checkout] response', { data, error });
       if (error) {
         console.error(error);
+        try {
+          analytics.trackEvent({
+            action: 'salon_checkout_failed',
+            category: 'checkout',
+            custom_parameters: { tier, listingId, error: error.message }
+          });
+        } catch (_) {}
         toast.error('Salon checkout error', { description: error.message || 'Unknown error' });
         return false;
       }
       if (data?.url) {
+        try {
+          analytics.trackEvent({
+            action: 'salon_checkout_succeeded',
+            category: 'checkout',
+            custom_parameters: { tier, listingId }
+          });
+        } catch (_) {}
         toast.message('Opening Stripe Checkout…');
         window.open(data.url, '_blank');
         return true;
       }
+      try {
+        analytics.trackEvent({
+          action: 'salon_checkout_failed',
+          category: 'checkout',
+          custom_parameters: { tier, listingId, error: 'no_url' }
+        });
+      } catch (_) {}
       toast.error('No checkout URL returned');
       return false;
     } catch (e: any) {
       console.error('[salon-checkout] exception', e);
+      try {
+        analytics.trackEvent({
+          action: 'salon_checkout_failed',
+          category: 'checkout',
+          custom_parameters: { tier: (payload?.tier || payload?.pricingOptions?.selectedPricingTier), listingId: payload?.listingId || payload?.formData?.listingId, error: e?.message }
+        });
+      } catch (_) {}
       toast.error('Salon checkout failed', { description: e?.message });
       return false;
     } finally {
