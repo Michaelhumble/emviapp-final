@@ -187,7 +187,7 @@ const FOMONailJobsSection: React.FC = () => {
               Featured & Premium Listings
             </h2>
             <p className="text-muted-foreground font-inter text-base max-w-2xl">
-              Real Vietnamese nail jobs with verified contact details
+              Real beauty industry jobs with verified contact details
             </p>
           </div>
 

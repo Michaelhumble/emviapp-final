@@ -10,7 +10,7 @@ import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Helmet } from 'react-helmet';
-import { useTranslation } from '@/hooks/useTranslation';
+
 import { JobCard } from '@/components/jobs/JobCard';
 import OptimizedStickyMobileCTA from '@/components/mobile/OptimizedStickyMobileCTA';
 import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
@@ -45,7 +45,6 @@ const OptimizedJobsPageContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { isVietnamese } = useTranslation();
 
   // Industry navigation state
   const industryParam = searchParams.get('industry');
@@ -184,15 +183,10 @@ const OptimizedJobsPageContent = () => {
   return (
     <>
       <Helmet>
-        <title>
-          {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
-        </title>
+        <title>Beauty Industry Jobs | EmviApp</title>
         <meta 
           name="description" 
-          content={isVietnamese 
-            ? "Duyệt cơ hội việc làm trong ngành làm đẹp. Tìm vị trí dành cho kỹ thuật viên nail, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa."
-            : "Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
-          }
+          content="Browse verified salon & studio roles across the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
         />
         <link rel="canonical" href={`${window.location.origin}/jobs`} />
         <script type="application/ld+json">{JSON.stringify({

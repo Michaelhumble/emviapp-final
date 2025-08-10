@@ -35,9 +35,8 @@ const JobsHero: React.FC<JobsHeroProps> = ({ jobsCount, avgRating, citiesCount, 
       vietnamese: "Công việc mơ ước đang chờ bạn",
     },
     subtitle: {
-      // Avoid "real" phrasing per brand guidance
-      english: "Browse verified salon & studio roles. Verified employers, transparent pay, proven growth.",
-      vietnamese: "Tìm việc tại salon & studio đã xác minh. Nhà tuyển dụng uy tín, lương minh bạch, cơ hội phát triển.",
+      english: "Browse verified salon & studio roles. Real employers, real pay, real growth.",
+      vietnamese: "Browse verified salon & studio roles. Real employers, real pay, real growth.",
     },
     ctaBrowse: {
       english: "Browse Jobs",
