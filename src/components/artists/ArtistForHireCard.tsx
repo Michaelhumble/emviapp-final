@@ -4,6 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { User2, MapPin, Lock } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
+import type { ArtistForHireProfile } from "@/hooks/artist/useArtistForHire";
+import type { ArtistListItem } from "@/hooks/useOptimizedArtistsData";
 
 export interface ArtistForHireCardProps {
   id?: string;
@@ -21,6 +25,8 @@ export interface ArtistForHireCardProps {
   // Added minimal variant support and gating flag (no behavioral change by default)
   variant?: 'default' | 'blueMinimal';
   contactGated?: boolean;
+  // New: allow passing the full artist object directly
+  artist?: ArtistForHireProfile | ArtistListItem;
 }
 
 const StatusBadge: React.FC<{ available?: boolean; viewMode: "public" | "signedIn" }> = ({ available, viewMode }) => {
@@ -48,16 +54,35 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
   variant = 'default',
   contactGated,
 }) => {
-  const hasName = !!(name && name.trim().length > 0);
-  const displayTitle = headline || (hasName ? name! : specialties || 'Beauty Professional');
-  const initials = (hasName ? name! : (specialties || 'Artist'))
+  const { isVietnamese } = useTranslation();
+  
+  // Derive fields from provided artist object if present
+  const data = (typeof (arguments as any) !== 'undefined' && (arguments as any)) ? undefined : undefined; // noop to keep tree-shaking happy
+  const source = (typeof (artist) !== 'undefined' && artist) ? (artist as any) : {};
+
+  const effectiveId = id ?? profileId ?? source.user_id ?? source.id;
+  const effectiveName = name ?? source.full_name ?? undefined;
+  const effectiveHeadline = headline ?? source.headline ?? undefined;
+  const effectiveSpecialties = specialties ?? source.specialties ?? undefined;
+  const effectiveLocation = location ?? source.location ?? undefined;
+  const effectiveAvailable = typeof available === 'boolean' ? available : (source.available_for_work as boolean | undefined);
+  const effectiveYears = typeof years_experience === 'number'
+    ? years_experience
+    : (typeof source.years_experience === 'number' ? source.years_experience : parseInt(source.years_experience || '', 10)) || undefined;
+  const effectiveRate = typeof hourly_rate === 'number'
+    ? hourly_rate
+    : (typeof source.hourly_rate === 'number' ? source.hourly_rate : parseInt(source.hourly_rate || '', 10)) || undefined;
+
+  const hasName = !!(effectiveName && (effectiveName as string).trim().length > 0);
+  const displayTitle = effectiveHeadline || (hasName ? (effectiveName as string) : effectiveSpecialties || 'Beauty Professional');
+  const initials = (hasName ? (effectiveName as string) : (effectiveSpecialties || 'Artist'))
     .split(' ')
     .filter(Boolean)
     .map(p => p[0])
     .slice(0, 2)
     .join('')
     .toUpperCase();
-  const profileHref = `/artists/${profileId || id || ''}`;
+  const profileHref = `/artists/${effectiveId || ''}`;
   const isBlue = theme === 'blue' || variant === 'blueMinimal';
 
   return (
@@ -82,33 +107,33 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
               {location || (hasName ? (specialties || 'Beauty Professional') : '')}
             </div>
           </div>
-          <StatusBadge available={available} viewMode={viewMode} />
+          <StatusBadge available={effectiveAvailable} viewMode={viewMode} />
         </CardHeader>
       </div>
 
       <CardContent className="space-y-3">
         {/* Meta */}
-        {(location || years_experience || hourly_rate) && (
+        {(effectiveLocation || effectiveYears || effectiveRate) && (
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            {location && (
+            {effectiveLocation && (
               <span className="inline-flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
-                <span className="truncate">{location}</span>
+                <span className="truncate">{effectiveLocation}</span>
               </span>
             )}
-            {typeof years_experience === 'number' && (
-              <span>{years_experience}+ yrs</span>
+            {typeof effectiveYears === 'number' && (
+              <span>{effectiveYears}+ yrs</span>
             )}
-            {typeof hourly_rate === 'number' && (
-              <span>${'{'}hourly_rate{'}'}/hr</span>
+            {typeof effectiveRate === 'number' && (
+              <span>${'{'}effectiveRate{'}'}/hr</span>
             )}
           </div>
         )}
 
         {/* Specialties chips */}
-        {specialties && (
+        {effectiveSpecialties && (
           <div className="flex flex-wrap gap-2">
-            {specialties.split(',').map((s, i) => (
+            {String(effectiveSpecialties).split(',').map((s, i) => (
               <span 
                 key={i}
                 className={`text-xs rounded-full px-2 py-0.5 ${isBlue ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}
@@ -121,21 +146,25 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-2">
-          <Link to={profileHref} className={`${isBlue ? 'text-primary' : 'text-foreground'} text-sm underline underline-offset-4`}>
-            View Profile
+          <Link to={profileHref} className={`${isBlue ? 'text-primary' : 'text-foreground'} text-sm underline underline-offset-4`} aria-label={isVietnamese ? 'Xem hồ sơ' : 'View Profile'}>
+            {isVietnamese ? 'Xem hồ sơ' : 'View Profile'}
           </Link>
-          <PremiumContactGate>
-            <div className="text-sm flex items-center gap-2 text-muted-foreground">
-              <Lock className="h-4 w-4" />
-              <span>Contact details are available to verified employers.</span>
-            </div>
-          </PremiumContactGate>
+          {contactGated ? (
+            <PremiumContactGate>
+              <Button size="sm" variant="outline" className={`${isBlue ? 'border-primary/30' : ''}`}>
+                <Lock className="h-4 w-4 mr-1" />
+                {isVietnamese ? 'Yêu cầu liên hệ' : 'Request Contact'}
+              </Button>
+            </PremiumContactGate>
+          ) : null}
         </div>
 
         {/* Gate copy */}
-        <div className="text-xs text-muted-foreground">
-          <span>Sign in to request access.</span>
-        </div>
+        {contactGated && (
+          <div className="text-xs text-muted-foreground">
+            <span>{isVietnamese ? 'Đăng nhập để yêu cầu quyền truy cập.' : 'Sign in to request access.'}</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
