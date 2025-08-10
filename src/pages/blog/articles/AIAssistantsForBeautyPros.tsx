@@ -97,25 +97,25 @@ const AIAssistantsForBeautyPros: React.FC = () => {
 
           {/* TL;DR Callout */}
           <div className="max-w-4xl mx-auto mt-10">
-            <div className="rounded-2xl border border-green-300/40 bg-green-50/40 p-6 md:p-8">
+            <div className="rounded-2xl border border-emerald-300/30 bg-emerald-500/10 p-6 md:p-8 text-emerald-100">
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-600 mt-1"/>
+                <CheckCircle className="h-6 w-6 text-emerald-300 mt-1"/>
                 <div>
-                  <p className="font-semibold text-green-900 mb-3 flex items-center gap-2"><Sparkles className="h-5 w-5 text-green-700"/> TL;DR</p>
-                  <ul className="space-y-2 text-green-900/90">
+                  <p className="font-semibold text-emerald-100 mb-3 flex items-center gap-2"><Sparkles className="h-5 w-5 text-emerald-300"/> TL;DR</p>
+                  <ul className="space-y-2 text-emerald-200">
                     <li><strong>ChatGPT</strong> — best all‑round writer & idea partner; great for job posts, bios, captions.</li>
                     <li><strong>Claude</strong> — calm long‑doc thinker; great for SOPs, policies, and structured output you can paste into forms.</li>
                     <li><strong>Gemini</strong> — tight with Google; handy for images, search‑adjacent tasks, and Android/mobile workflows.</li>
                     <li><strong>Perplexity</strong> — fastest research with citations; perfect for “what changed lately?” and market checks.</li>
                   </ul>
-                  <p className="mt-3 text-green-900/80">Use the playbooks below and copy the prompts. When facts matter, open sources and verify.</p>
+                  <p className="mt-3 text-emerald-300">Use the playbooks below and copy the prompts. When facts matter, open sources and verify.</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Why this matters */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-slate">
+          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
             <h2>Why this matters for EmviApp users</h2>
             <p>If you’re hiring on <strong>EmviApp Jobs</strong>, promoting yourself on <strong>Artists for Hire</strong>, or planning an <strong>exit on Salons for Sale</strong>, the right AI turns hours into minutes:</p>
             <ul>
@@ -154,7 +154,7 @@ const AIAssistantsForBeautyPros: React.FC = () => {
           </section>
 
           {/* Prompts */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-slate">
+          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
             <h2>Plug-and-Play Prompts (Paste & go)</h2>
             <p>Use any assistant. Replace bracketed bits with your details.</p>
 
@@ -163,13 +163,13 @@ const AIAssistantsForBeautyPros: React.FC = () => {
 Goals: clear pay range, 3–5 compelling benefits, culture in 2 sentences, bulleted requirements, inclusive tone, and a strong CTA to apply on EmviApp.
 Constraints: 180–220 words, plain language, no fluff, include {compensation}, {hours}, {growth}.
 Return: Title, Summary (1 sentence), Responsibilities (bullets), Benefits (bullets), Requirements (bullets), “Apply on EmviApp” CTA with link text only.`}</code></pre>
-            <p><Link to="/post-job" className="text-primary font-semibold">Post a Job</Link></p>
+            <p><Link to="/post-job">Post a Job</Link></p>
 
             <h3>2) Artist bio that wins interviews (for Artists for Hire)</h3>
             <pre><code>{`You are a career storytelling coach. Rewrite my artist bio to feel confident and client-friendly.
 Highlight specialties: [e.g., Gel Manicures, Nail Art], experience: [X years], awards/press: [optional], and availability: [e.g., Flexible].
 Style: friendly, professional, 90–120 words, third person, end with a soft CTA to view my EmviApp profile.`}</code></pre>
-            <p><Link to="/artists" className="text-primary font-semibold">Update your Artist profile</Link></p>
+            <p><Link to="/artists">Update your Artist profile</Link></p>
 
             <h3>3) Salon pricing menu (clear & fair)</h3>
             <pre><code>{`Create a tidy service menu for a [nail/hair/spa] salon in [City].
@@ -187,19 +187,19 @@ Return 5 bullets with source links and a one-sentence owner takeaway.`}</code></
           </section>
 
           {/* Case studies */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-slate">
+          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
             <h2>Mini case studies (composites based on real outcomes)</h2>
             <p><strong>1) Houston nails studio — hiring in 72 hours</strong><br/>Owner rewrote their job post with the prompt above, added a real pay range, and pinned culture & growth.<br/><strong>Result:</strong> ↑ 2.1× applies in a week, vetted one standout candidate by day 3, hire on day 5.</p>
             <p><strong>2) Independent artist — profile clarity = more trials</strong><br/>A senior tech trimmed jargon and led with specialties + years + availability.<br/><strong>Result:</strong> ↑ 38% profile views → trials booked from two nearby salons within 10 days.</p>
             <p><strong>3) Multi-chair salon — policies that de-stress</strong><br/>Claude drafted clear late/cancel/redo policies; staff trained with a 1-page SOP.<br/><strong>Result:</strong> Fewer awkward check-outs, better rebooking, happier team.</p>
-            <div className="rounded-xl border border-amber-300/50 bg-amber-50/50 p-4 flex items-start gap-3 text-amber-900 mt-6">
-              <AlertTriangle className="h-5 w-5 mt-1"/>
+            <div className="rounded-xl border border-amber-300/30 bg-amber-500/10 p-4 flex items-start gap-3 text-amber-100 mt-6">
+              <AlertTriangle className="h-5 w-5 mt-1 text-amber-300"/>
               <p>These are representative examples to illustrate process, not guaranteed results. Your outcomes depend on offer, location, portfolio, and follow-through.</p>
             </div>
           </section>
 
           {/* Checklist */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-slate">
+          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
             <h2>Your 30-Minute Setup (checklist)</h2>
             <ul>
               <li>[ ] Pick <strong>one</strong> assistant for writing (ChatGPT) and <strong>one</strong> for facts (Perplexity).</li>
@@ -215,7 +215,7 @@ Return 5 bullets with source links and a one-sentence owner takeaway.`}</code></
           </section>
 
           {/* FAQ */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-slate">
+          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
             <h2>FAQ</h2>
             <p><strong>Is AI writing obvious to readers?</strong><br/>Not when you feed it <em>your real details</em> and edit for tone. Think of AI like a fast assistant—not a replacement for your taste.</p>
             <p><strong>Will it make things up?</strong><br/>Creative models sometimes over‑confidently guess. For facts, <strong>use Perplexity</strong> or ask models to provide sources.</p>
@@ -225,7 +225,7 @@ Return 5 bullets with source links and a one-sentence owner takeaway.`}</code></
           </section>
 
           {/* Final word */}
-          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-slate">
+          <section className="max-w-4xl mx-auto mt-14 prose prose-lg prose-invert">
             <h2>Final word</h2>
             <p>AI won’t run your salon—<strong>you</strong> will. But it will give you time back, sharpen your message, and help the right people find you. Start with one prompt, ship it, then iterate.</p>
             <div className="mt-6 flex flex-wrap gap-3">
