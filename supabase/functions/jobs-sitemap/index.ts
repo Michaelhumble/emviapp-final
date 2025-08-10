@@ -97,17 +97,26 @@ async function handleDaily(dateStr: string) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  try {
     const url = new URL(req.url);
     const pathname = url.pathname;
 
-    if (pathname.endsWith('/jobs-sitemap.xml')) {
+    // Support both domain-level proxy (/jobs-sitemap.xml) and function root (/jobs-sitemap)
+    if (
+      pathname === '/jobs-sitemap' ||
+      pathname.endsWith('/jobs-sitemap') ||
+      pathname.endsWith('/jobs-sitemap.xml')
+    ) {
       return await handleIndex(url);
     }
 
-    const match = pathname.match(/\/jobs-sitemaps\/sitemap-(\d{4}-\d{2}-\d{2})\.xml$/);
-    if (match) {
-      const dateStr = match[1];
+    // Support daily shard paths whether proxied (e.g., /jobs-sitemaps/...) or
+    // nested under the function path (e.g., /jobs-sitemap/jobs-sitemaps/...)
+    let dateMatch: RegExpMatchArray | null = null;
+    if (pathname.includes('/jobs-sitemaps/')) {
+      dateMatch = pathname.match(/sitemap-(\d{4}-\d{2}-\d{2})\.xml$/);
+    }
+    if (dateMatch) {
+      const dateStr = dateMatch[1];
       return await handleDaily(dateStr);
     }
 

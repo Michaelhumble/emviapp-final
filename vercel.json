@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/jobs-sitemap.xml",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/jobs-sitemap"
+    },
+    {
+      "source": "/jobs-sitemaps/(.*)",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/jobs-sitemap/jobs-sitemaps/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/jobs-sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    },
+    {
+      "source": "/jobs-sitemaps/(.*)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    }
+  ]
+}
