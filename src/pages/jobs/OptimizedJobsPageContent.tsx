@@ -1,7 +1,7 @@
 /** PROTECTED: Do not modify without explicit approval. */
 import React, { useEffect, useState, Suspense, lazy, useMemo } from 'react';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
-import JobsGrid from '@/components/jobs/JobsGrid';
+
 import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { useAuth } from '@/context/auth';
@@ -17,11 +17,10 @@ import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
 
 // Lazy load non-critical components for better performance
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
-import FeaturedTrendingJobs from '@/components/jobs/FeaturedTrendingJobs';
 import SalonsForSale from '@/components/home/SalonsForSale';
 import ArtistsForHireStrip from '@/components/home/ArtistsForHireStrip';
+import FeaturedPaidJobsSection from '@/components/jobs/FeaturedPaidJobsSection';
 const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSection'));
-const DiamondPlanBlock = lazy(() => import('@/components/pricing/DiamondPlanBlock'));
 const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
 const SuccessStoriesCarousel = lazy(() => import('@/components/jobs/SuccessStoriesCarousel'));
 const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
@@ -74,7 +73,43 @@ const OptimizedJobsPageContent = () => {
     );
   }, [jobs, activeIndustryTab]);
 
-  const sortedFilteredJobs = useMemo(() => sortJobsByTierAndDate([...(filteredJobs || [])]).slice(0, 50), [filteredJobs]);
+  // Featured Paid Jobs: filter tiers diamond/premium/gold, order by tier priority then updated_at desc
+  const paidTierPriority: Record<string, number> = useMemo(() => ({ diamond: 3, premium: 2, gold: 1 }), []);
+  const normalizeTier = (t?: string | null) => (t || '').toLowerCase();
+  const paidJobsSorted = useMemo(() => {
+    return [...(jobs || [])]
+      .filter(j => paidTierPriority[normalizeTier((j as any).pricing_tier)] && (((j as any).is_active ?? true)))
+      .sort((a: any, b: any) => {
+        const pa = paidTierPriority[normalizeTier(a.pricing_tier)] || 0;
+        const pb = paidTierPriority[normalizeTier(b.pricing_tier)] || 0;
+        if (pb !== pa) return pb - pa;
+        const ad = new Date(a.updated_at || a.created_at || 0).getTime();
+        const bd = new Date(b.updated_at || b.created_at || 0).getTime();
+        return bd - ad;
+      });
+  }, [jobs, paidTierPriority]);
+  const paidLimit = isMobile ? 6 : 12;
+  const paidJobsToShow = useMemo(() => paidJobsSorted.slice(0, paidLimit), [paidJobsSorted, paidLimit]);
+  const remainingCap = Math.max(50 - paidJobsToShow.length, 0);
+
+  // Free jobs for the main feed (exclude all paid tiers)
+  const freeJobs = useMemo(() => {
+    return [...(jobs || [])].filter(j => !paidTierPriority[normalizeTier((j as any).pricing_tier)]);
+  }, [jobs, paidTierPriority]);
+
+  // Industry-filtered free jobs
+  const filteredFreeJobs = useMemo(() => {
+    if (activeIndustryTab === 'all') return freeJobs;
+    return freeJobs.filter((job: any) =>
+      job.category?.toLowerCase() === activeIndustryTab ||
+      job.industry?.toLowerCase() === activeIndustryTab
+    );
+  }, [freeJobs, activeIndustryTab]);
+
+  // Sort free jobs by existing sorter (date within free), then respect remaining cap
+  const sortedFilteredFreeJobsLimited = useMemo(() => {
+    return sortJobsByTierAndDate([...(filteredFreeJobs || [])]).slice(0, remainingCap);
+  }, [filteredFreeJobs, remainingCap]);
 
   // Handle industry tab pre-selection and deep linking
   useEffect(() => {
@@ -249,7 +284,19 @@ const OptimizedJobsPageContent = () => {
           </div>
         </section>
 
-        {/* JOBS SECTION */}
+        {/* Featured Paid Jobs (Paid tiers) */}
+        <div id="featured-paid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+          {paidJobsToShow.length > 0 && (
+            <FeaturedPaidJobsSection jobs={paidJobsToShow} />
+          )}
+        </div>
+
+        {/* Artists Available for Hire */}
+        <div id="artists-for-hire">
+          <ArtistsForHireStrip />
+        </div>
+
+        {/* JOBS SECTION - All Jobs / Free */}
         <section id="jobs-section" className="w-full py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {!isSignedIn && fomoEnabled !== false && (
@@ -280,21 +327,21 @@ const OptimizedJobsPageContent = () => {
                 </TabsList>
 
                 <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto text-center mt-6 sm:mt-5">
-                  {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''} available
+                  {filteredFreeJobs.length} job{filteredFreeJobs.length !== 1 ? 's' : ''} available
                 </p>
 
                 {industryTabs.map((tab) => (
                   <TabsContent key={tab.id} value={tab.id} className="mt-0">
 
-                    {/* Use optimized job display */}
-                    {filteredJobs.length === 0 ? (
+                    {/* Free jobs feed (cap adjusted after paid) */}
+                    {filteredFreeJobs.length === 0 ? (
                       <JobEmptyState />
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {sortedFilteredJobs.map((job) => (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {sortedFilteredFreeJobsLimited.map((job) => (
                           <JobCard 
                             key={job.id}
-                            job={job} 
+                            job={job as Job} 
                             onRenew={handleRenew}
                           />
                         ))}
@@ -307,13 +354,6 @@ const OptimizedJobsPageContent = () => {
           </div>
         </section>
 
-        {/* Classic sections rendered below the hero */}
-        <div id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          <FeaturedTrendingJobs jobs={jobs} />
-        </div>
-        <div id="artists-for-hire">
-          <ArtistsForHireStrip />
-        </div>
         <div id="recently-filled" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           <h2 className="text-xl font-semibold mb-4">Recently filled</h2>
           <WhatYouMissedSection title="Recently filled" maxJobs={12} />
@@ -333,8 +373,6 @@ const OptimizedJobsPageContent = () => {
           
           <FOMONailJobsSection />
           
-          {/* Premium Plans */}
-          <DiamondPlanBlock />
           
           {/* Other sections */}
           <TeaserLocked />
