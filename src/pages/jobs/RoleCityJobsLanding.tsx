@@ -51,12 +51,23 @@ export default function RoleCityJobsLanding() {
     { name: roleTitle, url: canonical },
   ]);
 
+
   const itemList = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     itemListElement: filtered.slice(0, 24).map((job: any, idx: number) => ({
       '@type': 'ListItem', position: idx + 1, url: `https://www.emvi.app${job.slug || `/jobs/${job.id}`}`, name: job.title
     })),
+  };
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      { '@type': 'Question', name: `What skills are in demand for ${roleTitle} in ${label}?`, acceptedAnswer: { '@type': 'Answer', text: `${roleTitle} roles in ${label} favor consistent quality, speed, and client care. Certifications and portfolios help.` }},
+      { '@type': 'Question', name: `How often do ${roleTitle} jobs update in ${label}?`, acceptedAnswer: { '@type': 'Answer', text: 'Listings refresh throughout the day; follow this page or post a job to reach local talent quickly.' }},
+      { '@type': 'Question', name: `Where are most ${roleTitle} jobs located in ${city}?`, acceptedAnswer: { '@type': 'Answer', text: 'Hiring clusters around central corridors, shopping areas, and busy neighborhoods.' }}
+    ]
   };
 
   return (
@@ -67,7 +78,7 @@ export default function RoleCityJobsLanding() {
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <BaseSEO jsonLd={[breadcrumb, itemList]} />
+      <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
       <section className="py-10">
         <Container>

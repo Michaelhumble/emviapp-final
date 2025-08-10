@@ -11,6 +11,9 @@ import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
 import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
 import { Link } from 'react-router-dom';
 import { normalizeCityStateSlug } from '@/utils/slug';
+import { CITIES } from '@/seo/locations/seed';
+import { buildLeadCopy } from '@/seo/locations/lead';
+import { generateMetaDescription } from '@/utils/seoHelpers';
 
 function toCityStateLabel(slug?: string) {
   if (!slug) return { city: '', state: '', label: '' };
@@ -42,8 +45,13 @@ export default function CityJobsLanding() {
   const cityArtists = useMemo(() => artists.filter((a: any) => (a.location || '').toLowerCase().includes(city.toLowerCase())), [artists, city]);
   const count = cityJobs.length;
 
+
   const title = `Beauty jobs in ${label} | ${count} open roles | EmviApp`;
-  const description = `Find beauty jobs in ${label}. Nails, hair, brows, makeup and more — ${count} open roles. Apply today on EmviApp.`;
+  const lead = buildLeadCopy({ city, state, countJobs: count, countArtists: cityArtists.length, slug: normalized || cityState });
+  const description = generateMetaDescription(lead, 180);
+  const seedCity = CITIES.find(c => c.slug === (normalized || cityState));
+  const nearby = (seedCity?.nearby || []).slice(0, 6);
+
 
   const breadcrumb = buildBreadcrumbJsonLd([
     { name: 'Home', url: 'https://www.emvi.app' },
@@ -89,7 +97,7 @@ export default function CityJobsLanding() {
       <section className="py-10">
         <Container>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Beauty jobs in {label}</h1>
-          <p className="text-muted-foreground mb-6">{count} open roles in {label}. Apply directly on EmviApp.</p>
+          <p className="text-muted-foreground mb-6">{lead}</p>
 
           {/* Top roles in city */}
           <div className="mb-6 flex flex-wrap gap-2 text-sm text-muted-foreground">
@@ -142,11 +150,12 @@ export default function CityJobsLanding() {
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-3">Nearby areas</h2>
             <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-              {["dallas-tx","austin-tx","san-antonio-tx","ft-worth-tx","oklahoma-city-ok","new-orleans-la"].map((c) => (
+              {nearby.map((c) => (
                 <Link key={c} to={`/jobs/in/${c}`} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
-                  {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ').replace('OklaHoma', 'Oklahoma').replace('Ft', 'Ft')}
+                  {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                 </Link>
               ))}
+
             </div>
           </div>
 
