@@ -59,9 +59,27 @@ const AIBeautyRevolution2025 = lazy(() => import('@/pages/blog/articles/AIBeauty
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
+const AIAssistantsForBeautyPros = lazy(() => import('@/pages/blog/articles/AIAssistantsForBeautyPros'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'ai-assistants-for-beauty-pros',
+    slug: 'ai-assistants-for-beauty-pros',
+    title: 'The AI Assistant Showdown (For Beauty Pros): ChatGPT vs Gemini vs Claude vs Perplexity',
+    description: 'A human, no-nonsense guide to the top AI assistants—what each does best for salons and independent artists, with ready-to-use prompts.',
+    author: 'EmviApp Editorial Team',
+    publishedAt: '2025-08-10',
+    readTime: '11 min read',
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['AI assistants','ChatGPT','Claude','Gemini','Perplexity','beauty pros','salon owners','artists'],
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23f5f3ff"/><stop offset="100%" stop-color="%23fde68a"/></linearGradient></defs><rect fill="url(%23g)" width="1200" height="630"/></svg>',
+    featured: true,
+    trending: true,
+    component: AIAssistantsForBeautyPros,
+    url: '/blog/industry-insights/ai-assistants-for-beauty-pros'
+  },
   {
     id: 'global-beauty-community-revolution',
     slug: 'global-beauty-community-revolution',
