@@ -3,6 +3,7 @@ import DynamicSEO from './DynamicSEO';
 import { Job } from '@/types/job';
 import { generateJobUrl } from '@/utils/seoHelpers';
 import { SEO_JOBS_ENABLED } from '@/config/seo';
+import { buildBreadcrumbJsonLd } from './jsonld';
 
 interface JobSEOProps {
   job: Job;
@@ -97,16 +98,23 @@ const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://www.emvi.app' }
     <>
       {/* Only inject SEO when enabled */}
       {SEO_JOBS_ENABLED && (
-        <DynamicSEO
-          title={title}
-          description={description}
-          image={image}
-          url={jobUrl}
-          type="article"
-          tags={[job.category, 'beauty job', 'career', job.location].filter(Boolean)}
-          structuredData={structuredData}
-          canonicalUrl={jobUrl}
-        />
+        <>
+          <DynamicSEO
+            title={title}
+            description={description}
+            image={image}
+            url={jobUrl}
+            type="article"
+            tags={[job.category, 'beauty job', 'career', job.location].filter(Boolean)}
+            structuredData={structuredData}
+            canonicalUrl={jobUrl}
+          />
+          <script type="application/ld+json">{JSON.stringify(buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Jobs', url: 'https://www.emvi.app/jobs' },
+            { name: role + (loc ? ` in ${loc}` : ''), url: jobUrl }
+          ]))}</script>
+        </>
       )}
     </>
   );

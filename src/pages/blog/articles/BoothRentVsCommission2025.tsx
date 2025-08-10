@@ -10,6 +10,7 @@ import BlogImage from '@/components/blog/BlogImage';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
 import { getArticleBySlug } from '@/data/blogArticles';
+import ContinueReadingSection from '@/components/blog/ContinueReadingSection';
 
 const HERO = '/images/blog/booth-rent-vs-commission-2025/hero.jpg';
 const IMG_TOOLS = '/images/blog/booth-rent-vs-commission-2025/tools-costs.jpg';
@@ -30,7 +31,7 @@ const BoothRentVsCommission2025: React.FC = () => {
     category: 'Industry Insights',
     tags: ['booth rent','commission','salon pay','contracts','taxes','stylists','salon owners'],
     image: HERO,
-    url: `https://emvi.app${registryArticle.url}`
+    url: `https://www.emvi.app${registryArticle.url}`
   };
 
   const faq = [
@@ -52,24 +53,24 @@ const BoothRentVsCommission2025: React.FC = () => {
         author={article.author}
         publishedTime={article.publishedISO}
         tags={article.tags}
-        structuredData={{
-          '@context': 'https://schema.org',
-          '@type': 'Article',
+        structuredData={buildArticleJsonLd({
           headline: article.title,
           description: article.description,
           image: article.image,
-          author: { '@type': 'Organization', name: article.author },
-          publisher: {
-            '@type': 'Organization',
-            name: 'EmviApp',
-            logo: { '@type': 'ImageObject', url: 'https://emvi.app/logo.png' }
-          },
+          authorName: article.author,
           datePublished: article.publishedISO,
           dateModified: article.publishedISO,
-          mainEntityOfPage: article.url
-        }}
+          canonicalUrl: article.url
+        })}
         canonicalUrl={article.url}
       />
+
+      {/* Breadcrumb JSON-LD for blog article */}
+      <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
+        { name: 'Home', url: 'https://www.emvi.app' },
+        { name: 'Blog', url: 'https://www.emvi.app/blog' },
+        { name: article.title, url: article.url }
+      ])]} />
 
       <article className="min-h-screen bg-gradient-to-b from-background to-muted/10">
         <Container className="py-6">
