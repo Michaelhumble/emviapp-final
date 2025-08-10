@@ -59,7 +59,7 @@ const AIBeautyRevolution2025 = lazy(() => import('@/pages/blog/articles/AIBeauty
 const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/BeautyProfessionalSuccessGuide'));
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
-const AIAssistantsForBeautyPros = lazy(() => import('@/pages/blog/articles/AIAssistantsForBeautyPros'));
+const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/BoothRentVsCommission2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
