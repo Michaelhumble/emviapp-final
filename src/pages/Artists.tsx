@@ -3,11 +3,12 @@ import { Helmet } from "react-helmet-async";
 import { Container } from "@/components/ui/container";
 import { useAuth } from "@/context/auth";
 import { useArtistsForHireList } from "@/hooks/useOptimizedArtistsData";
-import ArtistForHireCardRich from "@/components/artists/ArtistForHireCardRich";
+import { ArtistForHireCard } from "@/components/artists/ArtistForHireCard";
 
 const Artists = () => {
   const { isSignedIn } = useAuth();
   const { artists, loading } = useArtistsForHireList({ isSignedIn, limit: 24 });
+  const items = artists ?? [];
 
   return (
     <Layout>
@@ -34,10 +35,20 @@ const Artists = () => {
                 <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[220px]" />
               ))}
             </div>
-          ) : artists.length > 0 ? (
+          ) : items.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {artists.map((a) => (
-                <ArtistForHireCardRich key={a.id || a.user_id} a={a as any} />
+              {items.map((a) => (
+                <ArtistForHireCard
+                  key={a.user_id || a.id}
+                  name={undefined}
+                  specialties={a.specialties ?? undefined}
+                  location={a.location ?? undefined}
+                  headline={a.headline ?? undefined}
+                  available={!!a.available_for_work}
+                  viewMode={isSignedIn ? "signedIn" : "public"}
+                  theme="blue"
+                  hidePhoto
+                />
               ))}
             </div>
           ) : (

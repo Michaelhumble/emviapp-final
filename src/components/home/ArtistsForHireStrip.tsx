@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
-import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
+import { ArtistForHireCard } from "@/components/artists/ArtistForHireCard";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
 import { getUiFlag } from "@/config/premiumFeatures";
@@ -20,6 +20,8 @@ const ArtistsForHireStrip = () => {
       track('artists_strip_impression', { count: artists.length });
     }
   }, [artists]);
+
+  const items = artists ?? [];
 
   return (
     <section className="py-12 bg-background">
@@ -53,10 +55,20 @@ const ArtistsForHireStrip = () => {
                   <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[220px]" />
                 ))}
               </div>
-            ) : artists.length > 0 ? (
+            ) : items.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {artists.map((a) => (
-                  <ArtistForHireCardRich key={a.id} a={a} />
+                {items.slice(0, 6).map((a) => (
+                  <ArtistForHireCard
+                    key={a.user_id || a.id}
+                    name={undefined}
+                    specialties={a.specialties ?? undefined}
+                    location={a.location ?? undefined}
+                    headline={a.headline ?? undefined}
+                    available={!!a.available_for_work}
+                    viewMode={isSignedIn ? "signedIn" : "public"}
+                    theme="blue"
+                    hidePhoto
+                  />
                 ))}
               </div>
             ) : (

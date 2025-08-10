@@ -18,6 +18,9 @@ export interface ArtistForHireCardProps {
   viewMode: "public" | "signedIn"; // affects status badge color/text
   theme?: 'default' | 'blue';
   hidePhoto?: boolean;
+  // Added minimal variant support and gating flag (no behavioral change by default)
+  variant?: 'default' | 'blueMinimal';
+  contactGated?: boolean;
 }
 
 const StatusBadge: React.FC<{ available?: boolean; viewMode: "public" | "signedIn" }> = ({ available, viewMode }) => {
@@ -42,6 +45,8 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
   viewMode,
   theme = 'default',
   hidePhoto = false,
+  variant = 'default',
+  contactGated,
 }) => {
   const hasName = !!(name && name.trim().length > 0);
   const displayTitle = headline || (hasName ? name! : specialties || 'Beauty Professional');
@@ -53,7 +58,7 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
     .join('')
     .toUpperCase();
   const profileHref = `/artists/${profileId || id || ''}`;
-  const isBlue = theme === 'blue';
+  const isBlue = theme === 'blue' || variant === 'blueMinimal';
 
   return (
     <Card 
@@ -61,9 +66,9 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
       aria-label={`Artist profile — ${displayTitle}`}
     >
       <div className="relative">
-        <CardHeader className="flex flex-row items-center gap-3 pb-2">
+        <CardHeader className={`flex flex-row items-center gap-3 pb-2 ${variant === 'blueMinimal' ? 'py-3' : ''}`}>
           <div className={`h-12 w-12 rounded-full flex items-center justify-center ${isBlue ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>
-            {hidePhoto ? (
+            {(hidePhoto || variant === 'blueMinimal') ? (
               <span className="font-semibold">{initials}</span>
             ) : (
               <User2 className="h-6 w-6" />
@@ -137,3 +142,4 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
 };
 
 export default ArtistForHireCard;
+export { ArtistForHireCard };
