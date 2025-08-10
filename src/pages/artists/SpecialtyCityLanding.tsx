@@ -8,7 +8,7 @@ import { useArtistsSearch } from '@/hooks/useArtistsSearch';
 import { Container } from '@/components/ui/container';
 import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
 import { normalizeCityStateSlug } from '@/utils/slug';
-import { buildLeadCopy } from '@/seo/locations/lead';
+import { buildLeadCopy, findCitySeed } from '@/seo/locations/lead';
 
 function toTitle(s: string) { return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()); }
 function parseCityState(slug?: string) {
@@ -39,6 +39,8 @@ export default function SpecialtyCityLanding() {
   ), [items, city, specialty]);
   const count = filtered.length;
   const lead = buildLeadCopy({ city, state, role: specialty, countArtists: count, slug: normalized || cityState });
+  const seed = findCitySeed(normalized || cityState);
+  const nearby = (seed?.nearby || []).slice(0, 6);
 
   const title = `Hire ${specTitle} in ${label} | ${count} available | EmviApp`;
   const description = `Hire ${specTitle} in ${label}. ${count} verified pros available now. Post a job or contact talent on EmviApp.`;
@@ -100,6 +102,18 @@ export default function SpecialtyCityLanding() {
             {filtered.slice(0, 12).map((a: any) => (
               <ArtistForHireCard key={(a as any).user_id || (a as any).id} artist={a as any} viewMode="public" theme="blue" hidePhoto contactGated variant="blueMinimal" />
             ))}
+          </div>
+
+          {/* Nearby areas */}
+          <div className="mt-10">
+            <h2 className="text-xl font-semibold mb-3">Nearby areas</h2>
+            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+              {nearby.map((c) => (
+                <a key={c} href={`/artists/${specialty}/${c}`} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
+                  {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                </a>
+              ))}
+            </div>
           </div>
         </Container>
       </section>

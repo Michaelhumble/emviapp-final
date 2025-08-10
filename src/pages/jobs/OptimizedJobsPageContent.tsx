@@ -32,6 +32,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import JobsHero from '@/components/jobs/JobsHero';
+import { CITIES, ROLES } from '@/seo/locations/seed';
 
 import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 
@@ -204,18 +205,20 @@ const OptimizedJobsPageContent = () => {
         {/* Popular searches (internal-link widgets) */}
         <div className="container mx-auto px-4 mt-4">
           <div className="flex flex-wrap gap-2">
-            {[
-              { label: 'Nails', href: 'https://www.emvi.app/jobs?role=Nails' },
-              { label: 'Hair', href: 'https://www.emvi.app/jobs?role=Hair' },
-              { label: 'Brows', href: 'https://www.emvi.app/jobs?role=Brows' },
-              { label: 'Houston', href: 'https://www.emvi.app/jobs?city=Houston' },
-              { label: 'San Jose', href: 'https://www.emvi.app/jobs?city=San%20Jose' },
-              { label: 'Philadelphia', href: 'https://www.emvi.app/jobs?city=Philadelphia' },
-            ].map((chip) => (
-              <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
-                {chip.label}
+            {CITIES.slice(0,6).map((c) => (
+              <a key={`city-${c.slug}`} href={`/jobs/${c.slug}`} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
+                {`${c.city}, ${c.state}`}
               </a>
             ))}
+            {CITIES.slice(0,6).map((c, idx) => {
+              const r = ROLES[idx];
+              const roleLabel = r.replace('-', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
+              return (
+                <a key={`rc-${r}-${c.slug}`} href={`/jobs/${r}/${c.slug}`} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
+                  {`${roleLabel} · ${c.city}, ${c.state}`}
+                </a>
+              );
+            })}
           </div>
         </div>
 

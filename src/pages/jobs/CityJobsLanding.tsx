@@ -33,11 +33,11 @@ export default function CityJobsLanding() {
   const normalized = cityState ? normalizeCityStateSlug(cityState) : '';
   useEffect(() => {
     if (cityState && normalized && cityState.toLowerCase() !== normalized) {
-      navigate(`/jobs/in/${normalized}`, { replace: true });
+      navigate(`/jobs/${normalized}`, { replace: true });
     }
   }, [cityState, normalized, navigate]);
   const { city, state, label } = toCityStateLabel(normalized || cityState);
-  const canonical = `https://www.emvi.app/jobs/in/${normalized || cityState}`;
+  const canonical = `https://www.emvi.app/jobs/${normalized || cityState}`;
 
   const { jobs = [] } = useOptimizedJobsData({ isSignedIn: false, limit: 200 });
   const { artists = [] } = useOptimizedArtistsData({ isSignedIn: false, limit: 12 });
@@ -92,7 +92,7 @@ export default function CityJobsLanding() {
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <BaseSEO jsonLd={[breadcrumb, itemList, artistsItemList, faqJsonLd]} />
+      <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
       <section className="py-10">
         <Container>
@@ -151,7 +151,7 @@ export default function CityJobsLanding() {
             <h2 className="text-xl font-semibold mb-3">Nearby areas</h2>
             <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
               {nearby.map((c) => (
-                <Link key={c} to={`/jobs/in/${c}`} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
+                <Link key={c} to={`/jobs/${c}`} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
                   {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                 </Link>
               ))}

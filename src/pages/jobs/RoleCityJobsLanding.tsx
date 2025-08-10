@@ -49,7 +49,7 @@ export default function RoleCityJobsLanding() {
   const breadcrumb = buildBreadcrumbJsonLd([
     { name: 'Home', url: 'https://www.emvi.app' },
     { name: 'Jobs', url: 'https://www.emvi.app/jobs' },
-    { name: city, url: `https://www.emvi.app/jobs/in/${cityState}` },
+    { name: city, url: `https://www.emvi.app/jobs/${cityState}` },
     { name: roleTitle, url: canonical },
   ]);
 

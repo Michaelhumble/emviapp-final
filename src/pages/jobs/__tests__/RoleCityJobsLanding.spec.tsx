@@ -38,8 +38,9 @@ describe('RoleCityJobsLanding SEO & structure', () => {
 
     const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
     const types = scripts.map(s => { try { return JSON.parse(s.textContent || '{}')['@type']; } catch { return undefined; } });
-    expect(types).toContain('BreadcrumbList');
-    expect(types).toContain('ItemList');
-    expect(types).toContain('FAQPage');
+    const typeCounts = types.reduce((acc: Record<string, number>, t: any) => { if (!t) return acc; acc[t] = (acc[t] || 0) + 1; return acc; }, {} as any);
+    expect(typeCounts['BreadcrumbList']).toBe(1);
+    expect(typeCounts['ItemList']).toBe(1);
+    expect(typeCounts['FAQPage']).toBe(1);
   });
 });

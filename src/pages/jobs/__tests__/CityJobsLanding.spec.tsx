@@ -54,8 +54,25 @@ describe('CityJobsLanding SEO & structure', () => {
     const types = scripts.map(s => {
       try { return JSON.parse(s.textContent || '{}')['@type']; } catch { return undefined; }
     });
-    expect(types).toContain('BreadcrumbList');
-    expect(types).toContain('ItemList');
-    expect(types).toContain('FAQPage');
+    // Exactly one JSON-LD for BreadcrumbList, ItemList, FAQPage
+    const typeCounts = types.reduce((acc: Record<string, number>, t: any) => { if (!t) return acc; acc[t] = (acc[t] || 0) + 1; return acc; }, {} as any);
+    expect(typeCounts['BreadcrumbList']).toBe(1);
+    expect(typeCounts['ItemList']).toBe(1);
+    expect(typeCounts['FAQPage']).toBe(1);
+  });
+
+  it('redirects saint/fort aliases to canonical in jobs city', () => {
+    render(
+      <HelmetProvider>
+        <MemoryRouter initialEntries={["/jobs/saint-louis-mo"]}>
+          <Routes>
+            <Route path="/jobs/:cityState" element={<CityJobsLanding />} />
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
+    );
+    const canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    expect(canonical).not.toBeNull();
+    expect(canonical!.href).toContain('https://www.emvi.app/jobs/st-louis-mo');
   });
 });
