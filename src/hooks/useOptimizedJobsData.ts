@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
 
@@ -24,6 +24,10 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const inputLimit = params?.limit ?? 50;
   const fomoEnabled = getFomoEnabled();
   const effectiveSignedIn = fomoEnabled === false ? true : (params?.isSignedIn ?? authSignedIn);
+
+  // Guards to avoid double-fetch/subscriptions in React Strict Mode
+  const initRef = useRef(false);
+  const channelRef = useRef<any>(null);
 
   const isStale = (job: Job) => {
     const now = Date.now();
@@ -107,11 +111,19 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
 
   // Initial load
   useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
     fetchJobs();
   }, [fetchJobs]);
 
   // Real-time subscriptions for new jobs
   useEffect(() => {
+    // Ensure we don't create duplicate channels in Strict Mode
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+
     const channel = supabase
       .channel('jobs_channel')
       .on(
@@ -147,8 +159,13 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
       )
       .subscribe();
 
+    channelRef.current = channel;
+
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [effectiveSignedIn]);
 
