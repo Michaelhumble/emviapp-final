@@ -174,7 +174,13 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
           </Link>
           {contactGated ? (
             <PremiumContactGate>
-              <Button size="sm" variant="outline" className={`${isBlue ? 'border-primary/30' : ''}`}>
+              <Button size="sm" variant="outline" className={`${isBlue ? 'border-primary/30' : ''}`}
+                onClick={() => {
+                  try {
+                    window.dispatchEvent(new CustomEvent('ArtistsContactRequested', { detail: { artistId: effectiveId } }));
+                  } catch {}
+                }}
+              >
                 <Lock className="h-4 w-4 mr-1" />
                 {isVietnamese ? 'Yêu cầu liên hệ' : 'Request Contact'}
               </Button>
