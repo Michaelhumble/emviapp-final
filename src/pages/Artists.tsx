@@ -34,10 +34,17 @@ const Artists = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Artists for Hire | EmviApp</title>
+        <title>Hire Beauty Pros for Your Salon | EmviApp</title>
         <meta name="description" content="Browse verified beauty professionals and hire fast. Real profiles, contact gated for verified employers." />
-        <link rel="canonical" href={`${window.location.origin}/artists`} />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <link rel="canonical" href={`https://www.emvi.app/artists`} />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.emvi.app' },
+            { '@type': 'ListItem', position: 2, name: 'Artists', item: 'https://www.emvi.app/artists' }
+          ]
+        })}</script>
       </Helmet>
 
       {/* Hero */}
@@ -103,6 +110,25 @@ const Artists = () => {
                     contactGated
                   />
                 ))}
+              </div>
+
+              {/* Internal-link widgets */}
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-3">Hire fast in…</h3>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: 'San Jose', href: '/artists?location=San%20Jose' },
+                    { label: 'Houston', href: '/artists?location=Houston' },
+                    { label: 'Philadelphia', href: '/artists?location=Philadelphia' },
+                    { label: 'Nails', href: '/artists?specialty=nails' },
+                    { label: 'Hair', href: '/artists?specialty=hair' },
+                    { label: 'Brows', href: '/artists?specialty=brows' },
+                  ].map((chip) => (
+                    <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
+                      {chip.label}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </Container>

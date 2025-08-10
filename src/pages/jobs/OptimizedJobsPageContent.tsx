@@ -183,21 +183,18 @@ const OptimizedJobsPageContent = () => {
   return (
     <>
       <Helmet>
-        <title>Beauty Industry Jobs | EmviApp</title>
+        <title>Beauty Jobs Near You | EmviApp</title>
         <meta 
           name="description" 
-          content="Browse verified salon & studio roles across the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+          content="Nails, hair, brows, makeup and more—new roles added daily."
         />
-        <link rel="canonical" href={`${window.location.origin}/jobs`} />
+        <link rel="canonical" href={`https://www.emvi.app/jobs`} />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
-          '@type': 'ItemList',
-          name: 'Jobs Page Sections',
+          '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Featured Jobs', url: `${window.location.origin}/jobs#featured`, numberOfItems: jobs.filter(j => ['diamond','premium','gold'].includes((j.pricing_tier||'').toLowerCase())).length },
-            { '@type': 'ListItem', position: 2, name: 'Artists for Hire', url: `${window.location.origin}/jobs#artists-for-hire`, numberOfItems: artists?.length || 0 },
-            { '@type': 'ListItem', position: 3, name: 'Recently Filled', url: `${window.location.origin}/jobs#recently-filled` },
-            { '@type': 'ListItem', position: 4, name: 'Salons for Sale', url: `${window.location.origin}/jobs#salons-for-sale` }
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.emvi.app' },
+            { '@type': 'ListItem', position: 2, name: 'Jobs', item: 'https://www.emvi.app/jobs' },
           ]
         })}</script>
       </Helmet>

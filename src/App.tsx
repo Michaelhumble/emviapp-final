@@ -13,6 +13,7 @@ import { SecurityProvider } from '@/components/security/SecurityProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import LazyIndex from "./pages/LazyIndex";
+import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
 
 // Critical components loaded immediately
 import { Toaster } from "@/components/ui/toaster";
@@ -101,6 +102,8 @@ function App() {
 
   return (
     <HelmetProvider>
+      {/* Global Organization + Website JSON-LD */}
+      <GlobalSEOInjection />
       <GeneralErrorBoundary>
         <SecurityProvider>
           <AuthProvider>

@@ -66,7 +66,7 @@ const BlogArticlePage: React.FC = () => {
         <DynamicSEO
           title="Article Not Found | EmviApp Blog"
           description="The blog article you're looking for could not be found."
-          url={`https://emvi.app/blog/${articleSlug}`}
+          url={`https://www.emvi.app/blog/${articleSlug}`}
           type="website"
         />
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 flex items-center justify-center">
@@ -103,17 +103,18 @@ const BlogArticlePage: React.FC = () => {
       <DynamicSEO
         title={`${article.title} | EmviApp Blog`}
         description={article.description}
-        url={`https://emvi.app${article.url}`}
+        url={`https://www.emvi.app${article.url}`}
         type="article"
         image={article.image}
         author={article.author}
         tags={article.tags}
+        canonicalUrl={`https://www.emvi.app${article.url}`}
         structuredData={{
           "@context": "https://schema.org",
-          "@type": "BlogPosting",
+          "@type": "Article",
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": `https://emvi.app${article.url}`
+            "@id": `https://www.emvi.app${article.url}`
           },
           "headline": article.title,
           "image": article.image,
@@ -127,12 +128,25 @@ const BlogArticlePage: React.FC = () => {
             "name": "EmviApp",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://emvi.app/logo.png"
+              "url": "https://www.emvi.app/logo-512.png"
             }
           },
           "description": article.description
         }}
       />
+      {/* BreadcrumbList JSON-LD */}
+      <script type="application/ld+json">{JSON.stringify((() => {
+        const crumbs = [
+          { name: 'Home', url: 'https://www.emvi.app' },
+          { name: 'Blog', url: 'https://www.emvi.app/blog' },
+          { name: article.title, url: `https://www.emvi.app${article.url}` },
+        ];
+        return {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: c.url }))
+        };
+      })())}</script>
       
       <Suspense 
         fallback={
