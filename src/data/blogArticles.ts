@@ -64,21 +64,21 @@ const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/Booth
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
-    id: 'ai-assistants-for-beauty-pros',
-    slug: 'ai-assistants-for-beauty-pros',
-    title: 'The AI Assistant Showdown (For Beauty Pros): ChatGPT vs Gemini vs Claude vs Perplexity',
-    description: 'A human, no-nonsense guide to the top AI assistants—what each does best for salons and independent artists, with ready-to-use prompts.',
+    id: 'booth-rent-vs-commission-2025',
+    slug: 'booth-rent-vs-commission-2025',
+    title: 'Booth Rent vs Commission in 2025: What Pays More?',
+    description: 'The clearest math, contracts, tax implications, and real examples to choose the right model for stylists and salon owners—with checklists and FAQs.',
     author: 'EmviApp AI Research Team',
     publishedAt: '2025-08-10',
-    readTime: '11 min read',
+    readTime: '16 min read',
     category: 'Industry Insights',
     categorySlug: 'industry-insights',
-    tags: ['AI assistants','beauty industry','hiring','marketing','productivity'],
-    image: '/images/blog/ai-assistant-showdown-hero.jpg',
+    tags: ['booth rent','commission','salon pay','contracts','taxes','stylists','salon owners'],
+    image: '/images/blog/booth-rent-vs-commission-2025/hero.jpg',
     featured: true,
     trending: true,
-    component: AIAssistantsForBeautyPros,
-    url: '/blog/industry-insights/ai-assistants-for-beauty-pros'
+    component: BoothRentVsCommission2025,
+    url: '/blog/industry-insights/booth-rent-vs-commission-2025'
   },
   {
     id: 'global-beauty-community-revolution',

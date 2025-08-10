@@ -66,7 +66,7 @@ const BoothRentVsCommission2025: React.FC = () => {
           dateModified: article.publishedISO,
           mainEntityOfPage: article.url
         }}
-        canonical={article.url}
+        canonicalUrl={article.url}
       />
 
       <article className="min-h-screen bg-gradient-to-b from-background to-muted/10">
