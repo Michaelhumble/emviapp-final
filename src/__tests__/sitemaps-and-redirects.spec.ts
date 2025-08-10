@@ -13,12 +13,14 @@ describe('Sitemaps & Robots', () => {
     expect(robots).toContain('Sitemap: https://www.emvi.app/sitemap.xml');
     expect(robots).toContain('Sitemap: https://www.emvi.app/jobs-sitemap.xml');
     expect(robots).not.toMatch(/functions\.supabase\.co\/jobs-sitemap/);
+    expect(robots).not.toContain('locations-sitemap.xml');
   });
 
   it('sitemap.xml includes static and jobs sitemap', () => {
     const xml = read(SITEMAP_INDEX_PATH);
     expect(xml).toContain('<loc>https://www.emvi.app/sitemap-static.xml</loc>');
     expect(xml).toContain('<loc>https://www.emvi.app/jobs-sitemap.xml</loc>');
+    expect(xml).not.toContain('locations-sitemap.xml');
   });
 });
 
