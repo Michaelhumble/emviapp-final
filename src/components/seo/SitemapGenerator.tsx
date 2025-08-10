@@ -79,8 +79,25 @@ export async function generateSitemap(baseUrl: string = 'https://emvi.app'): Pro
       });
     }
 
-    // Add artist profile URLs (simplified for now)
-    // Can be expanded later with actual artist data
+    // Add artist public profile URLs
+    const { data: artists } = await supabaseBypass
+      .from('profiles' as any)
+      .select('username, updated_at, role')
+      .in('role' as any, ['artist', 'freelancer', 'nail technician/artist'])
+      .not('username' as any, 'is', null)
+      .limit(2000);
+
+    if (artists) {
+      artists.forEach((artist: any) => {
+        if (!artist.username) return;
+        urls.push({
+          url: `${baseUrl}/u/${artist.username}`,
+          lastModified: artist.updated_at || new Date().toISOString(),
+          changeFrequency: 'weekly',
+          priority: 0.6
+        });
+      });
+    }
 
   } catch (error) {
     console.error('Error generating sitemap:', error);

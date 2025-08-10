@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { UserProfile, getLocationString } from '@/types/profile';
 
 interface ArtistProfileSEOProps {
@@ -33,6 +33,7 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
       {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
+      <link rel="canonical" href={currentUrl || domain} />
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="profile" />
