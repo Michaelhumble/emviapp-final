@@ -2,19 +2,19 @@ import Layout from "@/components/layout/Layout";
 import { Helmet } from "react-helmet-async";
 import { Container } from "@/components/ui/container";
 import { useAuth } from "@/context/auth";
-import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
-import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
+import { useArtistsForHireList } from "@/hooks/useOptimizedArtistsData";
+import ArtistForHireCardRich from "@/components/artists/ArtistForHireCardRich";
 
 const Artists = () => {
   const { isSignedIn } = useAuth();
-  const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 20 });
+  const { artists, loading } = useArtistsForHireList({ isSignedIn, limit: 24 });
 
   return (
     <Layout>
       <Helmet>
         <title>Artists Available for Hire | EmviApp</title>
         <meta name="description" content="Browse talented beauty professionals across the U.S. Sign in to see who’s available now." />
-        <link rel="canonical" href="/artists" />
+        <link rel="canonical" href={`${window.location.origin}/artists`} />
       </Helmet>
 
       <section className="py-12">
@@ -29,23 +29,15 @@ const Artists = () => {
           </header>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(9)].map((_, i) => (
-                <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[180px]" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[220px]" />
               ))}
             </div>
           ) : artists.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {artists.map((a) => (
-                <ArtistForHireCard
-                  key={a.user_id}
-                  name={undefined}
-                  specialties={a.specialties}
-                  location={a.location}
-                  headline={a.headline}
-                  available={!!a.available_for_work}
-                  viewMode={isSignedIn ? "signedIn" : "public"}
-                />
+                <ArtistForHireCardRich key={a.id || a.user_id} a={a as any} />
               ))}
             </div>
           ) : (

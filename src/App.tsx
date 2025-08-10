@@ -86,6 +86,7 @@ const TattooPage = lazy(() => import("@/pages/tattoo"));
 const BookingServices = lazy(() => import("@/pages/BookingServices"));
 const Artists = lazy(() => import("@/pages/Artists"));
 const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
+const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 
 function App() {
   const location = useLocation();
@@ -160,7 +161,8 @@ function App() {
                      <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
-                     <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
+<Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
+<Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
                     {/* Industry Pages */}

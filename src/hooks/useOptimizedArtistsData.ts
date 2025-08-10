@@ -48,3 +48,29 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
 
   return { artists: data || [], loading: isLoading, error: error?.message || "" };
 }
+
+// New hooks for browse and detail pages
+export function useArtistsForHireList(params: { isSignedIn: boolean; limit?: number } ) {
+  return useOptimizedArtistsData(params);
+}
+
+export function useArtistById(id?: string) {
+  const cacheKey = `artist:detail:${id || 'none'}`;
+  const { data, isLoading, error } = useSafeQuery<ArtistListItem | null>({
+    queryKey: [cacheKey],
+    context: "useArtistById",
+    queryFn: async () => {
+      if (!id) return null;
+      const { data, error } = await (supabase as any)
+        .from("artist_for_hire_profiles")
+        .select("id, user_id, headline, specialties, location, available_for_work, hourly_rate, avatar_url, years_experience, shifts_available, bio, updated_at")
+        .eq("id" as any, id)
+        .maybeSingle();
+      if (error) throw error;
+      return data ? { ...data, user_id: (data as any).user_id || (data as any).id } as ArtistListItem : null;
+    },
+    fallbackData: null,
+    retryCount: 2,
+  });
+  return { artist: data, loading: isLoading, error: error?.message || "" };
+}
