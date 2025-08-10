@@ -60,6 +60,7 @@ const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
 const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/BoothRentVsCommission2025'));
+const NailTechSalaryByCity2025 = lazy(() => import('@/pages/blog/industry-insights/NailTechSalaryByCity2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [

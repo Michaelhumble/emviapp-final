@@ -121,12 +121,12 @@ const Artists = () => {
                 <h3 className="text-lg font-semibold mb-3">Hire fast in…</h3>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { label: 'Nails · Houston, TX', href: 'https://www.emvi.app/artists/nails/houston-tx' },
-                    { label: 'Hair · Los Angeles, CA', href: 'https://www.emvi.app/artists/hair/los-angeles-ca' },
-                    { label: 'Brows/Lashes · New York, NY', href: 'https://www.emvi.app/artists/brows%2Flashes/new-york-ny' },
-                    { label: 'Makeup · Chicago, IL', href: 'https://www.emvi.app/artists/makeup/chicago-il' },
-                    { label: 'Esthetics · Phoenix, AZ', href: 'https://www.emvi.app/artists/esthetics%2Fskincare/phoenix-az' },
-                    { label: 'Barber · Dallas, TX', href: 'https://www.emvi.app/artists/barber/dallas-tx' },
+                    { label: 'Nails · Houston, TX', href: '/artists/nails/houston-tx' },
+                    { label: 'Hair · Los Angeles, CA', href: '/artists/hair/los-angeles-ca' },
+                    { label: 'Brows/Lashes · New York, NY', href: '/artists/brows-lashes/new-york-ny' },
+                    { label: 'Makeup · Chicago, IL', href: '/artists/makeup/chicago-il' },
+                    { label: 'Esthetics · Phoenix, AZ', href: '/artists/esthetics/phoenix-az' },
+                    { label: 'Barber · Dallas, TX', href: '/artists/barber/dallas-tx' },
                   ].map((chip) => (
                     <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
                       {chip.label}
