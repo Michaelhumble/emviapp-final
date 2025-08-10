@@ -6,7 +6,7 @@ import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import { useAuth } from '@/context/auth';
 import { Job } from '@/types/job';
-import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Helmet } from 'react-helmet';
@@ -29,9 +29,9 @@ const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
+import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { track } from '@/lib/telemetry';
+
 import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 
 const OptimizedJobsPageContent = () => {
@@ -64,14 +64,6 @@ const OptimizedJobsPageContent = () => {
     { id: 'tattoo', label: 'Tattoo', icon: Brush }
   ], []);
 
-  // Memoized filtered jobs
-  const filteredJobs = useMemo(() => {
-    if (activeIndustryTab === 'all') return jobs;
-    return jobs.filter(job => 
-      job.category?.toLowerCase() === activeIndustryTab ||
-      job.industry?.toLowerCase() === activeIndustryTab
-    );
-  }, [jobs, activeIndustryTab]);
 
   // Featured Paid Jobs: filter tiers diamond/premium/gold, order by tier priority then updated_at desc
   const paidTierPriority: Record<string, number> = useMemo(() => ({ diamond: 3, premium: 2, gold: 1 }), []);
@@ -285,11 +277,12 @@ const OptimizedJobsPageContent = () => {
         </section>
 
         {/* Featured Paid Jobs (Paid tiers) */}
-        <div id="featured-paid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          {paidJobsToShow.length > 0 && (
+        {paidJobsToShow.length > 0 && (
+          <div id="featured-paid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
             <FeaturedPaidJobsSection jobs={paidJobsToShow} />
-          )}
-        </div>
+          </div>
+        )}
+
 
         {/* Artists Available for Hire */}
         <div id="artists-for-hire">
