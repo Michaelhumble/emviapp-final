@@ -44,6 +44,33 @@ export default function SpecialtyCityLanding() {
     itemListElement: filtered.slice(0, 12).map((a: any, idx: number) => ({ '@type': 'ListItem', position: idx + 1, name: a.headline || a.full_name, url: `https://www.emvi.app/artists/${a.id}` }))
   };
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What are typical ${specTitle.toLowerCase()} rates in ${label}?`,
+        acceptedAnswer: { '@type': 'Answer', text: `Rates vary by experience and service type. Many ${specTitle.toLowerCase()} pros in ${label} charge competitive market rates; request contact to get precise quotes.` }
+      },
+      {
+        '@type': 'Question',
+        name: `Do I need a license to hire ${specTitle.toLowerCase()} in ${label}?`,
+        acceptedAnswer: { '@type': 'Answer', text: `Most services require state licensing in ${state}. Always verify credentials and permits when hiring in ${label}.` }
+      },
+      {
+        '@type': 'Question',
+        name: `When is demand highest for ${specTitle.toLowerCase()} in ${label}?`,
+        acceptedAnswer: { '@type': 'Answer', text: `Peak seasons include weekends, holidays, and event-heavy months. Book early to secure talent in popular neighborhoods of ${city}.` }
+      },
+      {
+        '@type': 'Question',
+        name: `Which neighborhoods are popular for ${specTitle.toLowerCase()} services in ${city}?`,
+        acceptedAnswer: { '@type': 'Answer', text: `Demand clusters around central districts and high-traffic shopping areas. Explore nearby areas to widen your options.` }
+      }
+    ]
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -52,16 +79,16 @@ export default function SpecialtyCityLanding() {
         <link rel="canonical" href={canonical} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <BaseSEO jsonLd={[breadcrumb, itemList]} />
+      <BaseSEO jsonLd={[breadcrumb, itemList, faqJsonLd]} />
 
       <section className="py-10">
         <Container>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Hire {specTitle} in {label}</h1>
-          <p className="text-muted-foreground mb-6">{count} verified pros available in {label}.</p>
+          <p className="text-muted-foreground mb-6">{specTitle} pros in {label} are in steady demand across downtown and surrounding neighborhoods. We’ve found {count} verified artists accepting new clients right now. Compare specialties, years of experience, and availability at a glance, then request contact to confirm rates and schedule. For busy weekends and event seasons, book early to lock in your preferred time. If you don’t see the perfect fit, post a job and we’ll notify matching talent in minutes.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.slice(0, 12).map((a: any) => (
-              <ArtistForHireCard key={(a as any).user_id || (a as any).id} artist={a as any} viewMode="public" theme="blue" hidePhoto contactGated />
+              <ArtistForHireCard key={(a as any).user_id || (a as any).id} artist={a as any} viewMode="public" theme="blue" hidePhoto contactGated variant="blueMinimal" />
             ))}
           </div>
         </Container>

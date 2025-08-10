@@ -16,34 +16,39 @@ const Artists = () => {
 
   const jsonLd = useMemo(() => {
     const firstTen = items.slice(0, 10);
-    const itemListElement = firstTen.map((a, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      item: {
-        "@type": "Person",
-        name: a.headline || undefined,
-        jobTitle: a.headline || undefined,
-        areaServed: a.location || undefined,
-      },
-    }));
-    return {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      itemListElement,
-    } as any;
+    const itemListElement = firstTen.map((a: any, idx: number) => {
+      const name = a.headline || a.full_name || 'Beauty Professional';
+      const firstSpec = String(a.specialties || '').split(',').map((s: string) => s.trim()).filter(Boolean)[0] || 'Beauty Professional';
+      const loc = String(a.location || '');
+      const [city = '', regionRaw = ''] = loc.split(',').map((s: string) => s.trim());
+      const region = (regionRaw || '').split(' ')[0] || undefined; // strip country if present
+      const url = `https://www.emvi.app/artists/${(a as any).id || (a as any).user_id || ''}`;
+      return {
+        "@type": "ListItem",
+        position: idx + 1,
+        item: {
+          "@type": "Person",
+          name,
+          jobTitle: firstSpec,
+          address: city || region ? { "@type": "PostalAddress", addressLocality: city || undefined, addressRegion: region || undefined, addressCountry: 'US' } : undefined,
+          url,
+        }
+      };
+    });
+    return { "@context": "https://schema.org", "@type": "ItemList", itemListElement } as any;
   }, [items]);
 
   return (
     <Layout>
       <Helmet>
-        <title>Hire Beauty Pros for Your Salon | EmviApp</title>
-        <meta name="description" content="Browse verified beauty professionals and hire fast. Real profiles, contact gated for verified employers." />
+        <title>Hire beauty pros near you | EmviApp</title>
+        <meta name="description" content="Hire verified beauty professionals near you. View specialties, experience, location, and rates. Contact info gated for verified employers." />
         <link rel="canonical" href={`https://www.emvi.app/artists`} />
       </Helmet>
       <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
         { name: 'Home', url: 'https://www.emvi.app' },
         { name: 'Artists', url: 'https://www.emvi.app/artists' }
-      ])]} />
+      ]), jsonLd]} />
 
 
       {/* Hero */}
@@ -116,12 +121,12 @@ const Artists = () => {
                 <h3 className="text-lg font-semibold mb-3">Hire fast in…</h3>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { label: 'San Jose', href: 'https://www.emvi.app/artists?location=San%20Jose' },
-                    { label: 'Houston', href: 'https://www.emvi.app/artists?location=Houston' },
-                    { label: 'Philadelphia', href: 'https://www.emvi.app/artists?location=Philadelphia' },
-                    { label: 'Nails', href: 'https://www.emvi.app/artists?specialty=nails' },
-                    { label: 'Hair', href: 'https://www.emvi.app/artists?specialty=hair' },
-                    { label: 'Brows', href: 'https://www.emvi.app/artists?specialty=brows' },
+                    { label: 'Nails · Houston, TX', href: 'https://www.emvi.app/artists/nails/houston-tx' },
+                    { label: 'Hair · Los Angeles, CA', href: 'https://www.emvi.app/artists/hair/los-angeles-ca' },
+                    { label: 'Brows/Lashes · New York, NY', href: 'https://www.emvi.app/artists/brows%2Flashes/new-york-ny' },
+                    { label: 'Makeup · Chicago, IL', href: 'https://www.emvi.app/artists/makeup/chicago-il' },
+                    { label: 'Esthetics · Phoenix, AZ', href: 'https://www.emvi.app/artists/esthetics%2Fskincare/phoenix-az' },
+                    { label: 'Barber · Dallas, TX', href: 'https://www.emvi.app/artists/barber/dallas-tx' },
                   ].map((chip) => (
                     <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
                       {chip.label}

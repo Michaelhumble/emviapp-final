@@ -5,7 +5,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useArtistById } from '@/hooks/useOptimizedArtistsData';
 import { Button } from '@/components/ui/button';
 import ArtistProfile from '@/components/artists/ArtistProfile';
-
+import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
+import { useSuggestedArtists } from '@/hooks/useSuggestedArtists';
 export default function ArtistDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { artist, loading } = useArtistById(id);
