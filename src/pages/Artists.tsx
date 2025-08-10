@@ -53,9 +53,9 @@ const Artists = () => {
               <h1 className="font-playfair text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-amber-300 via-orange-200 to-yellow-300 bg-clip-text text-transparent">
                 Top Beauty Pros — Available Now
               </h1>
-              <p className="mt-3 text-white/85 text-base md:text-lg">
-                Real artists, verified profiles. Contact details for verified employers.
-              </p>
+            <p className="mt-3 text-white/85 text-base md:text-lg">
+              Verified beauty professionals. Contact details for verified employers.
+            </p>
               <div className="mt-6 flex items-center justify-center gap-3">
                 <a href="#artists-grid">
                   <Button size="lg" variant="default">Hire Talent</Button>
@@ -88,7 +88,7 @@ const Artists = () => {
       {featured.length > 0 && (
         <section className="py-10 bg-gradient-to-br from-slate-50 via-white to-purple-50/40">
           <Container>
-            <div className="bg-gradient-to-br from-slate-900/60 via-purple-900/50 to-indigo-900/40 text-white backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl p-6 md:p-10 animate-fade-in">
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-gray-200/50 shadow-xl p-6 md:p-10 animate-fade-in text-foreground">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl md:text-3xl font-playfair font-bold">Featured Pros</h2>
               </div>
@@ -112,14 +112,14 @@ const Artists = () => {
       {/* Artists Grid */}
       <section className="py-12 bg-gradient-to-b from-white to-purple-50/30" id="artists-grid">
         <Container>
-          <div className="bg-gradient-to-br from-slate-900/60 via-purple-900/50 to-indigo-900/40 text-white backdrop-blur-sm rounded-3xl shadow-2xl border border-white/10 p-6 md:p-10 animate-fade-in">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-200/60 p-6 md:p-10 animate-fade-in">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl md:text-3xl font-playfair font-bold">Available Now</h2>
             </div>
             {loading && items.length === 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-white/10 rounded-lg border border-white/10 p-6 animate-pulse h-[220px]" />
+                  <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[220px]" />
                 ))}
               </div>
             ) : items.length > 0 ? (
@@ -146,7 +146,7 @@ const Artists = () => {
                 )}
               </>
             ) : (
-              <div className="text-center py-16 text-white/70">
+              <div className="text-center py-16 text-muted-foreground">
                 {isSignedIn ? (
                   <div>No one available yet — post a job and we will notify matches.</div>
                 ) : (
