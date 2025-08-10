@@ -1,0 +1,174 @@
+query,brand,monthly_volume,trend_90d,trend_12m,intent,difficulty,cpc,country_leaders,notes
+chatgpt,ChatGPT,618000000,↔,↔,Navigational,hard,0.20,"US;IN;BR;ID;GB",core
+chat gpt,ChatGPT,120000000,↔,↓,Navigational,hard,0.18,"US;IN;BR;ID;PH",misspelling
+chatgpt login,ChatGPT,52000000,↔,↓,Navigational,hard,0.22,"US;IN;ID;PH;BR",login
+chatgpt app,ChatGPT,35000000,↑,↑,Navigational,hard,0.30,"US;IN;BR;ID;MX",app/mobile
+gpt-4o,ChatGPT,8000000,↑,↑,Informational,medium,0.45,"US;IN;DE;GB;CA",model/image/voice
+gpt-4.1,ChatGPT,6000000,↑,↑,Informational,medium,0.40,"US;IN;DE;GB;CA",model
+chatgpt pricing,ChatGPT,4500000,↔,↔,Transactional,medium,0.80,"US;GB;CA;AU;DE",pricing
+chatgpt plus,ChatGPT,7000000,↓,↓,Transactional,medium,0.75,"US;GB;CA;AU;DE",subscription
+chatgpt prompts,ChatGPT,9000000,↔,↔,Informational,medium,0.35,"US;IN;PH;NG;GB",prompts
+chatgpt for coding,ChatGPT,2500000,↔,↓,Informational,medium,0.65,"US;IN;DE;GB;CA",developer
+chatgpt for students,ChatGPT,3000000,↔,↔,Informational,medium,0.28,"US;IN;PH;NG;GB",education
+chatgpt image,ChatGPT,2200000,↑,↑,Informational,medium,0.40,"US;IN;DE;GB;CA",image generation
+chatgpt voice,ChatGPT,1900000,↑,↑,Informational,medium,0.38,"US;IN;GB;CA;DE",voice mode
+chatgpt api,ChatGPT,3600000,↔,↔,Transactional,hard,1.20,"US;IN;DE;GB;CA",api
+chatgpt store,ChatGPT,1300000,↓,↓,Informational,medium,0.25,"US;IN;GB;CA;DE",gpt store
+chatgpt jailbreak,ChatGPT,900000,↔,↓,Informational,medium,0.10,"US;IN;PH;BR;GB",community
+chatgpt not working,ChatGPT,1400000,↑,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+chatgpt alternatives,ChatGPT,2000000,↔,↔,Informational,medium,0.60,"US;GB;CA;DE;AU",comparisons
+chatgpt vs gemini,ChatGPT,2600000,↑,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+chatgpt vs claude,ChatGPT,1600000,↑,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+chatgpt desktop app,ChatGPT,800000,↑,↑,Informational,medium,0.20,"US;GB;DE;CA;FR",app
+chatgpt teams,ChatGPT,500000,↔,↔,Informational,medium,0.65,"US;GB;DE;CA;AU",enterprise
+chatgpt download,ChatGPT,2800000,↑,↔,Navigational,hard,0.30,"US;IN;BR;ID;MX",download
+chatgpt mac app,ChatGPT,450000,↑,↑,Informational,medium,0.25,"US;GB;DE;CA;AU",app/mac
+
+google gemini,Gemini,120000000,↑,↑,Navigational,hard,0.25,"US;IN;BR;ID;GB",core
+gemini ai,Gemini,45000000,↑,↑,Navigational,hard,0.22,"US;IN;BR;ID;PH",core
+gemini login,Gemini,15000000,↑,↑,Navigational,hard,0.24,"US;IN;ID;PH;BR",login
+gemini advanced,Gemini,5000000,↑,↑,Transactional,medium,0.70,"US;GB;CA;DE;AU",pricing/tier
+gemini pricing,Gemini,4200000,↑,↑,Transactional,medium,0.75,"US;GB;CA;DE;AU",pricing
+gemini vs chatgpt,Gemini,3800000,↑,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+gemini vs claude,Gemini,1100000,↑,↑,Informational,medium,0.50,"US;IN;GB;CA;DE",vs
+gemini image generator,Gemini,1600000,↑,↑,Informational,medium,0.45,"US;IN;GB;CA;DE",image
+gemini live,Gemini,900000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",voice/live
+gemini app,Gemini,2400000,↑,↑,Navigational,hard,0.28,"US;IN;BR;ID;MX",app/mobile
+gemini nano,Gemini,700000,↑,↑,Informational,medium,0.30,"US;IN;DE;GB;CA",on-device
+gemini extensions,Gemini,600000,↑,↑,Informational,medium,0.40,"US;IN;GB;CA;DE",workspace
+workspace gemini,Gemini,800000,↑,↑,Informational,medium,0.50,"US;GB;CA;DE;AU",workspace
+gemini api,Gemini,900000,↑,↑,Transactional,hard,1.10,"US;IN;DE;GB;CA",api
+gemini prompts,Gemini,650000,↑,↑,Informational,medium,0.32,"US;IN;PH;NG;GB",prompts
+gemini not working,Gemini,550000,↑,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+google ai overviews,Gemini,4000000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",ai overviews
+google ai mode,Gemini,1300000,↑,↑,Informational,medium,0.30,"US;IN;GB;CA;DE",ai mode
+
+perplexity ai,Perplexity,15000000,↑,↑,Navigational,medium,0.20,"US;IN;GB;CA;DE",core
+perplexity pro,Perplexity,1800000,↑,↑,Transactional,medium,0.55,"US;GB;CA;DE;AU",pricing/tier
+perplexity login,Perplexity,1600000,↑,↑,Navigational,medium,0.22,"US;IN;ID;PH;BR",login
+perplexity vs chatgpt,Perplexity,1200000,↑,↑,Informational,medium,0.50,"US;IN;GB;CA;DE",vs
+perplexity vs claude,Perplexity,700000,↑,↑,Informational,medium,0.50,"US;IN;GB;CA;DE",vs
+perplexity vs gemini,Perplexity,600000,↑,↑,Informational,medium,0.48,"US;IN;GB;CA;DE",vs
+perplexity pricing,Perplexity,900000,↑,↑,Transactional,medium,0.65,"US;GB;CA;DE;AU",pricing
+perplexity app,Perplexity,800000,↑,↑,Navigational,medium,0.26,"US;IN;BR;ID;MX",app/mobile
+perplexity image,Perplexity,450000,↑,↑,Informational,medium,0.30,"US;IN;GB;CA;DE",image
+perplexity search,Perplexity,700000,↑,↑,Informational,medium,0.25,"US;IN;GB;CA;DE",search
+perplexity notebooks,Perplexity,220000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",workflows
+perplexity api,Perplexity,300000,↑,↑,Transactional,hard,0.95,"US;IN;DE;GB;CA",api
+perplexity citations,Perplexity,200000,↑,↑,Informational,easy,0.15,"US;IN;GB;CA;DE",citations
+perplexity collections,Perplexity,120000,↑,↑,Informational,easy,0.12,"US;IN;GB;CA;DE",collections
+perplexity chrome extension,Perplexity,180000,↑,↑,Navigational,medium,0.20,"US;IN;GB;CA;DE",browser
+perplexity not working,Perplexity,240000,↑,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+perplexity data sources,Perplexity,90000,↑,↑,Informational,medium,0.18,"US;IN;GB;CA;DE",transparency
+perplexity research assistant,Perplexity,140000,↑,↑,Informational,medium,0.22,"US;IN;GB;CA;DE",workflows
+
+claude,Claude,7000000,↑,↑,Navigational,medium,0.22,"US;IN;GB;CA;DE",core
+claude ai,Claude,6000000,↑,↑,Navigational,medium,0.22,"US;IN;GB;CA;DE",core
+claude 3.5 sonnet,Claude,2500000,↑,↑,Informational,medium,0.40,"US;IN;DE;GB;CA",model
+claude opus 4,Claude,700000,↑,↑,Informational,medium,0.38,"US;IN;DE;GB;CA",model
+claude login,Claude,1500000,↑,↑,Navigational,medium,0.24,"US;IN;ID;PH;BR",login
+claude pricing,Claude,900000,↑,↑,Transactional,medium,0.70,"US;GB;CA;DE;AU",pricing
+claude vs chatgpt,Claude,1200000,↑,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+claude vs gemini,Claude,700000,↑,↑,Informational,medium,0.50,"US;IN;GB;CA;DE",vs
+claude computer use,Claude,220000,↑,↑,Informational,medium,0.35,"US;IN;DE;GB;CA",computer use
+claude artifacts,Claude,300000,↑,↑,Informational,medium,0.32,"US;IN;DE;GB;CA",artifacts
+claude image,Claude,250000,↑,↑,Informational,medium,0.30,"US;IN;GB;CA;DE",image
+claude api,Claude,500000,↑,↑,Transactional,hard,1.10,"US;IN;DE;GB;CA",api
+claude for coding,Claude,350000,↑,↑,Informational,medium,0.60,"US;IN;DE;GB;CA",developer
+claude mac app,Claude,180000,↑,↑,Navigational,medium,0.20,"US;GB;DE;CA;FR",app/mac
+claude not working,Claude,220000,↑,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+claude prompts,Claude,260000,↑,↑,Informational,medium,0.30,"US;IN;PH;NG;GB",prompts
+claude context window,Claude,150000,↑,↑,Informational,medium,0.28,"US;IN;DE;GB;CA",context
+claude enterprise,Claude,100000,↑,↑,Informational,medium,0.65,"US;GB;DE;CA;AU",enterprise
+
+microsoft copilot,Copilot,18000000,↑,↑,Navigational,hard,0.30,"US;IN;BR;ID;GB",core
+copilot login,Copilot,7000000,↑,↑,Navigational,hard,0.28,"US;IN;ID;PH;BR",login
+copilot studio,Copilot,1600000,↑,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",studio
+copilot pro,Copilot,2200000,↑,↑,Transactional,medium,0.80,"US;GB;CA;DE;AU",pricing/tier
+copilot pricing,Copilot,1500000,↑,↑,Transactional,medium,0.78,"US;GB;CA;DE;AU",pricing
+copilot vs chatgpt,Copilot,900000,↑,↑,Informational,medium,0.50,"US;IN;GB;CA;DE",vs
+copilot windows,Copilot,1200000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",windows
+copilot office,Copilot,1000000,↑,↑,Informational,medium,0.42,"US;GB;CA;DE;AU",m365
+copilot excel,Copilot,1600000,↑,↑,Informational,medium,0.60,"US;GB;CA;DE;AU",excel
+copilot powerpoint,Copilot,900000,↑,↑,Informational,medium,0.55,"US;GB;CA;DE;AU",ppt
+copilot outlook,Copilot,700000,↑,↑,Informational,medium,0.50,"US;GB;CA;DE;AU",outlook
+copilot teams,Copilot,600000,↑,↑,Informational,medium,0.48,"US;GB;CA;DE;AU",teams
+github copilot,Copilot,5000000,↔,↔,Navigational,hard,0.45,"US;IN;DE;GB;CA",github
+github copilot pricing,Copilot,900000,↔,↔,Transactional,medium,0.85,"US;GB;CA;DE;AU",pricing
+copilot designer,Copilot,500000,↑,↑,Informational,medium,0.40,"US;IN;GB;CA;DE",image
+copilot image,Copilot,400000,↑,↑,Informational,medium,0.38,"US;IN;GB;CA;DE",image
+copilot write,Copilot,300000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",writing
+copilot not working,Copilot,600000,↑,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+copilot mobile app,Copilot,250000,↑,↑,Navigational,medium,0.25,"US;IN;BR;ID;MX",app/mobile
+
+midjourney,Midjourney,9000000,↔,↔,Navigational,hard,0.35,"US;IN;BR;ID;GB",core
+midjourney login,Midjourney,2400000,↔,↔,Navigational,hard,0.30,"US;IN;ID;PH;BR",login
+midjourney pricing,Midjourney,1800000,↔,↔,Transactional,medium,0.70,"US;GB;CA;DE;AU",pricing
+midjourney v6,Midjourney,1200000,↑,↑,Informational,medium,0.45,"US;IN;GB;CA;DE",model
+midjourney prompts,Midjourney,2600000,↔,↔,Informational,medium,0.40,"US;IN;PH;NG;GB",prompts
+midjourney styles,Midjourney,700000,↔,↔,Informational,medium,0.35,"US;IN;GB;CA;DE",styles
+midjourney negative prompts,Midjourney,300000,↔,↔,Informational,medium,0.28,"US;IN;GB;CA;DE",negatives
+midjourney upscaler,Midjourney,220000,↔,↔,Informational,medium,0.30,"US;IN;GB;CA;DE",upscale
+midjourney inpainting,Midjourney,180000,↑,↑,Informational,medium,0.32,"US;IN;GB;CA;DE",inpaint
+midjourney niji,Midjourney,200000,↔,↔,Informational,medium,0.30,"US;IN;GB;CA;DE",anime
+midjourney pan,Midjourney,150000,↔,↔,Informational,medium,0.25,"US;IN;GB;CA;DE",pan
+midjourney seed,Midjourney,190000,↔,↔,Informational,medium,0.26,"US;IN;GB;CA;DE",seed
+midjourney parameters,Midjourney,260000,↔,↔,Informational,medium,0.32,"US;IN;GB;CA;DE",params
+midjourney vs stable diffusion,Midjourney,900000,↔,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+midjourney free,Midjourney,1100000,↓,↓,Informational,medium,0.30,"US;IN;BR;ID;PH",free
+midjourney discord,Midjourney,1300000,↓,↓,Navigational,medium,0.28,"US;IN;BR;ID;PH",discord
+midjourney alternatives,Midjourney,600000,↔,↔,Informational,medium,0.40,"US;GB;CA;DE;AU",alternatives
+midjourney errors,Midjourney,220000,↔,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+midjourney mobile,Midjourney,300000,↑,↔,Navigational,medium,0.22,"US;IN;BR;ID;MX",mobile
+
+stable diffusion,Stable Diffusion,6000000,↔,↔,Navigational,hard,0.30,"US;IN;BR;ID;GB",core
+sdxl,Stable Diffusion,1800000,↔,↔,Informational,medium,0.35,"US;IN;GB;CA;DE",model
+stable diffusion 3,Stable Diffusion,1300000,↑,↑,Informational,medium,0.40,"US;IN;GB;CA;DE",model
+sd3,Stable Diffusion,500000,↑,↑,Informational,medium,0.38,"US;IN;GB;CA;DE",model
+comfyui,Stable Diffusion,900000,↑,↑,Navigational,medium,0.28,"US;IN;GB;CA;DE",pipeline
+automatic1111,Stable Diffusion,1100000,↔,↔,Navigational,medium,0.26,"US;IN;GB;CA;DE",webui
+stable diffusion prompts,Stable Diffusion,1200000,↔,↔,Informational,medium,0.35,"US;IN;PH;NG;GB",prompts
+lora stable diffusion,Stable Diffusion,800000,↔,↔,Informational,medium,0.32,"US;IN;GB;CA;DE",lora
+controlnet,Stable Diffusion,1500000,↔,↔,Informational,medium,0.30,"US;IN;GB;CA;DE",controlnet
+flux vs sdxl,Stable Diffusion,300000,↑,↑,Informational,medium,0.40,"US;IN;GB;CA;DE",vs
+stable diffusion vs midjourney,Stable Diffusion,900000,↔,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+stable video,Stable Diffusion,400000,↑,↑,Informational,medium,0.34,"US;IN;GB;CA;DE",video
+automatic1111 install,Stable Diffusion,350000,↔,↔,Informational,medium,0.30,"US;IN;GB;CA;DE",install
+stable diffusion webui,Stable Diffusion,500000,↔,↔,Informational,medium,0.28,"US;IN;GB;CA;DE",webui
+kohya lora trainer,Stable Diffusion,200000,↔,↑,Informational,medium,0.26,"US;IN;GB;CA;DE",training
+sdxl lighting,Stable Diffusion,150000,↔,↔,Informational,medium,0.24,"US;IN;GB;CA;DE",lighting
+model merge sdxl,Stable Diffusion,120000,↔,↔,Informational,medium,0.24,"US;IN;GB;CA;DE",models
+stable diffusion errors,Stable Diffusion,220000,↔,↔,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+
+character ai,Character.AI,15000000,↔,↔,Navigational,hard,0.20,"US;BR;MX;PH;IN",core
+character ai login,Character.AI,4000000,↔,↔,Navigational,hard,0.22,"US;BR;MX;PH;IN",login
+character ai app,Character.AI,2000000,↔,↔,Navigational,hard,0.24,"US;BR;MX;PH;IN",app/mobile
+character ai nsfw filter,Character.AI,800000,↔,↔,Informational,medium,0.18,"US;BR;MX;PH;IN",policy
+character ai bots,Character.AI,600000,↔,↔,Informational,medium,0.20,"US;BR;MX;PH;IN",bots
+character ai not working,Character.AI,700000,↑,↔,Troubleshooting,easy,0.05,"US;BR;MX;PH;IN",errors
+character ai alternatives,Character.AI,500000,↔,↔,Informational,medium,0.30,"US;GB;CA;DE;AU",alternatives
+character ai jailbreak,Character.AI,350000,↔,↔,Informational,medium,0.12,"US;BR;MX;PH;IN",community
+character ai vs chatgpt,Character.AI,300000,↔,↔,Informational,medium,0.35,"US;IN;GB;CA;DE",vs
+character ai create character,Character.AI,260000,↔,↔,Informational,medium,0.22,"US;BR;MX;PH;IN",how-to
+character ai mobile,Character.AI,220000,↔,↔,Navigational,medium,0.22,"US;BR;MX;PH;IN",mobile
+
+meta ai,Meta AI,12000000,↑,↑,Navigational,medium,0.20,"US;IN;BR;ID;GB",core
+meta ai whatsapp,Meta AI,3000000,↑,↑,Navigational,medium,0.22,"IN;BR;US;ID;MX",whatsapp
+meta ai instagram,Meta AI,2200000,↑,↑,Navigational,medium,0.22,"US;BR;IN;ID;MX",instagram
+meta ai prompts,Meta AI,500000,↑,↑,Informational,medium,0.28,"US;IN;PH;NG;GB",prompts
+meta ai image,Meta AI,450000,↑,↑,Informational,medium,0.30,"US;IN;GB;CA;DE",image
+llama 3,Meta AI,3000000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",model
+llama 3.1,Meta AI,1200000,↑,↑,Informational,medium,0.35,"US;IN;GB;CA;DE",model
+meta ai vs chatgpt,Meta AI,400000,↑,↑,Informational,medium,0.40,"US;IN;GB;CA;DE",vs
+meta ai not working,Meta AI,600000,↑,↑,Troubleshooting,easy,0.05,"US;IN;BR;PH;ID",errors
+meta ai countries,Meta AI,350000,↑,↑,Informational,medium,0.20,"US;IN;BR;ID;GB",rollout
+meta ai opt out,Meta AI,200000,↑,↑,Informational,medium,0.18,"US;IN;GB;CA;DE",privacy
+
+ai overviews,AI Overviews,4000000,↑,↑,Informational,medium,0.32,"US;IN;GB;CA;DE",google feature
+google ai mode,AI Overviews,1300000,↑,↑,Informational,medium,0.30,"US;IN;GB;CA;DE",google feature
+apple intelligence,Apple Intelligence,2500000,↑,↑,Informational,medium,0.32,"US;GB;CA;DE;AU",apple feature
+apple intelligence features,Apple Intelligence,700000,↑,↑,Informational,medium,0.30,"US;GB;CA;DE;AU",features
+best ai assistants 2025,Multiple,900000,↑,↑,Informational,medium,0.45,"US;IN;GB;CA;DE",roundup
+chatgpt vs gemini vs claude,Multiple,1500000,↑,↑,Informational,medium,0.58,"US;IN;GB;CA;DE",vs
+perplexity vs gemini vs chatgpt,Multiple,500000,↑,↑,Informational,medium,0.55,"US;IN;GB;CA;DE",vs
+ai search engines,Multiple,700000,↑,↑,Informational,medium,0.40,"US;IN;GB;CA;DE",category
