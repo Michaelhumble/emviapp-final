@@ -189,19 +189,35 @@ const OptimizedJobsPageContent = () => {
           content="Nails, hair, brows, makeup and more—new roles added daily."
         />
         <link rel="canonical" href={`https://www.emvi.app/jobs`} />
-        <script type="application/ld+json">{JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.emvi.app' },
-            { '@type': 'ListItem', position: 2, name: 'Jobs', item: 'https://www.emvi.app/jobs' },
-          ]
-        })}</script>
       </Helmet>
+      {/* Breadcrumb JSON-LD via BaseSEO */}
+      <script type="application/ld+json">{JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.emvi.app' },
+        { '@type': 'ListItem', position: 2, name: 'Jobs', item: 'https://www.emvi.app/jobs' },
+      ] })}</script>
+
 
       <div className="w-full">
         {/* JOBS HERO (Above the fold) */}
         <JobsHero jobsCount={jobs?.length ?? 0} />
+
+        {/* Popular searches (internal-link widgets) */}
+        <div className="container mx-auto px-4 mt-4">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: 'Nails', href: 'https://www.emvi.app/jobs?role=Nails' },
+              { label: 'Hair', href: 'https://www.emvi.app/jobs?role=Hair' },
+              { label: 'Brows', href: 'https://www.emvi.app/jobs?role=Brows' },
+              { label: 'Houston', href: 'https://www.emvi.app/jobs?city=Houston' },
+              { label: 'San Jose', href: 'https://www.emvi.app/jobs?city=San%20Jose' },
+              { label: 'Philadelphia', href: 'https://www.emvi.app/jobs?city=Philadelphia' },
+            ].map((chip) => (
+              <a key={chip.href} href={chip.href} className="inline-flex items-center rounded-full border px-3 py-1 text-sm hover:bg-muted/50 transition-colors">
+                {chip.label}
+              </a>
+            ))}
+          </div>
+        </div>
 
         {/* Inline error (non-blocking) */}
         {error && (

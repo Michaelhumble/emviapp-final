@@ -4,6 +4,8 @@ import { ArrowLeft, Clock, Calendar, DollarSign, TrendingUp, Calculator, Target,
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
@@ -45,34 +47,28 @@ const SalonPricingStrategies2025 = () => {
       <DynamicSEO
         title={article.title}
         description={article.description}
-        url="https://emvi.app/blog/business/salon-pricing-strategies-2025"
+        url="https://www.emvi.app/blog/business/salon-pricing-strategies-2025"
         type="article"
         image={article.image}
         author={article.author}
         publishedTime="2025-07-01T12:00:00Z"
         tags={article.tags}
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          "headline": article.title,
-          "description": article.description,
-          "image": article.image,
-          "author": {
-            "@type": "Organization",
-            "name": article.author
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "EmviApp",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://emvi.app/logo.png"
-            }
-          },
-          "datePublished": "2025-07-01T12:00:00Z",
-          "dateModified": "2025-07-01T12:00:00Z"
-        }}
+        structuredData={buildArticleJsonLd({
+          headline: article.title,
+          description: article.description,
+          image: article.image,
+          authorName: article.author,
+          datePublished: '2025-07-01T12:00:00Z',
+          dateModified: '2025-07-01T12:00:00Z',
+          canonicalUrl: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025'
+        })}
       />
+      {/* Breadcrumb JSON-LD for blog article */}
+      <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
+        { name: 'Home', url: 'https://www.emvi.app' },
+        { name: 'Blog', url: 'https://www.emvi.app/blog' },
+        { name: article.title, url: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025' }
+      ])]} />
 
       <article className="min-h-screen bg-gradient-to-b from-background to-muted/10">
         <Container className="py-6">

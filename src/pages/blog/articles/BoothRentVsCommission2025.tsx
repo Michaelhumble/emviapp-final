@@ -367,6 +367,8 @@ const BoothRentVsCommission2025: React.FC = () => {
             </div>
           </div>
         </Container>
+
+        <ContinueReadingSection currentArticle={registryArticle} limit={3} />
       </article>
     </>
   );

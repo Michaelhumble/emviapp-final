@@ -28,6 +28,23 @@ describe('BaseSEO', () => {
   });
 });
 
+describe('BaseSEO JSON-LD count', () => {
+  it('renders one script per JSON-LD object', () => {
+    const { container } = render(
+      <BaseSEO
+        title="Count Test | EmviApp"
+        description="Json-LD count test"
+        canonical="/count-test"
+        jsonLd={[
+          { '@context': 'https://schema.org', '@type': 'WebSite', name: 'EmviApp' },
+          { '@context': 'https://schema.org', '@type': 'Organization', name: 'EmviApp' },
+        ]}
+      />
+    );
+    expect(container.querySelectorAll('script[type="application/ld+json"]').length).toBe(2);
+  });
+});
+
 describe('JobSEO meta', () => {
   it('includes canonical and og tags via DynamicSEO', () => {
     const job: any = { id: 'id1', title: 'Nail Tech', location: 'San Jose, CA, US', category: 'nails', description: 'Provide services', created_at: new Date().toISOString() };
