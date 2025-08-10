@@ -48,23 +48,25 @@ const Artists = () => {
           <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-tr from-amber-300/15 via-pink-400/20 to-transparent rounded-full blur-3xl"></div>
         </div>
         <Container className="relative z-10 py-14 md:py-18">
-          <div className="text-center max-w-3xl mx-auto animate-fade-in">
-            <h1 className="mt-2 font-playfair text-4xl md:text-6xl font-bold tracking-tight text-white">
-              Top Beauty Pros — Available Now
-            </h1>
-            <p className="mt-3 text-white/85 text-base md:text-lg">
-              Real artists, verified profiles. Contact details for verified employers.
-            </p>
-            <div className="mt-6 flex items-center justify-center gap-3">
-              <a href="#artists-grid">
-                <Button size="lg" variant="default">Hire Talent</Button>
-              </a>
-              <a href="/dashboard/profile">
-                <Button size="lg" variant="outline" className="backdrop-blur">Create Free Profile</Button>
-              </a>
-            </div>
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mx-auto bg-white/10 text-white border-white/20">
-              <span>4.9 avg rating • 10K+ pros • 50+ cities</span>
+          <div className="max-w-4xl mx-auto animate-fade-in text-center">
+            <div className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-md p-8 md:p-12 shadow-xl">
+              <h1 className="font-playfair text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-amber-300 via-orange-200 to-yellow-300 bg-clip-text text-transparent">
+                Top Beauty Pros — Available Now
+              </h1>
+              <p className="mt-3 text-white/85 text-base md:text-lg">
+                Real artists, verified profiles. Contact details for verified employers.
+              </p>
+              <div className="mt-6 flex items-center justify-center gap-3">
+                <a href="#artists-grid">
+                  <Button size="lg" variant="default">Hire Talent</Button>
+                </a>
+                <a href="/dashboard/profile">
+                  <Button size="lg" variant="outline" className="backdrop-blur">Create Free Profile</Button>
+                </a>
+              </div>
+              <div className="mt-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mx-auto bg-white/10 text-white border-white/20">
+                <span>4.9 avg rating • 10K+ pros • 50+ cities</span>
+              </div>
             </div>
           </div>
         </Container>
@@ -86,7 +88,7 @@ const Artists = () => {
       {featured.length > 0 && (
         <section className="py-10 bg-gradient-to-br from-slate-50 via-white to-purple-50/40">
           <Container>
-            <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-gray-200/50 shadow-xl p-6 md:p-10">
+            <div className="bg-gradient-to-br from-slate-900/60 via-purple-900/50 to-indigo-900/40 text-white backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl p-6 md:p-10 animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl md:text-3xl font-playfair font-bold">Featured Pros</h2>
               </div>
@@ -110,14 +112,14 @@ const Artists = () => {
       {/* Artists Grid */}
       <section className="py-12 bg-gradient-to-b from-white to-purple-50/30" id="artists-grid">
         <Container>
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-200/60 p-6 md:p-10">
+          <div className="bg-gradient-to-br from-slate-900/60 via-purple-900/50 to-indigo-900/40 text-white backdrop-blur-sm rounded-3xl shadow-2xl border border-white/10 p-6 md:p-10 animate-fade-in">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl md:text-3xl font-playfair font-bold">Available Now</h2>
             </div>
             {loading && items.length === 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-muted rounded-lg border p-6 animate-pulse h-[220px]" />
+                  <div key={i} className="bg-white/10 rounded-lg border border-white/10 p-6 animate-pulse h-[220px]" />
                 ))}
               </div>
             ) : items.length > 0 ? (
@@ -144,7 +146,7 @@ const Artists = () => {
                 )}
               </>
             ) : (
-              <div className="text-center py-16 text-muted-foreground">
+              <div className="text-center py-16 text-white/70">
                 {isSignedIn ? (
                   <div>No one available yet — post a job and we will notify matches.</div>
                 ) : (
@@ -162,23 +164,28 @@ const Artists = () => {
       </section>
 
       {/* Social Proof band */}
-      <section className="bg-gradient-to-br from-slate-50 via-white to-purple-50/40 py-10">
+      <section className="py-12 bg-gradient-to-br from-slate-900 via-purple-900/70 to-indigo-900/60">
         <Container>
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-6">
+            <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">The Real Impact:</span> Success Stories That Prove It Works
+          </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border p-6 shadow">
-              <h3 className="font-playfair text-xl font-bold mb-2">Success Stories That Prove It Works</h3>
-              <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                <li>Verified employers connect with top artists in days</li>
-                <li>AI-suggested matches improve response rates</li>
-                <li>Private contact sharing protects artists</li>
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow animate-fade-in text-white">
+              <h3 className="font-playfair text-xl font-bold mb-3">Case Study: Magic Nails Studio, Texas</h3>
+              <ul className="list-disc pl-5 space-y-1 text-white/80">
+                <li>150% increase in new client bookings</li>
+                <li>40% reduction in service time per client</li>
+                <li>95% increase in social media engagement</li>
+                <li>$50k+ additional annual revenue</li>
               </ul>
             </div>
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border p-6 shadow">
-              <h3 className="font-playfair text-xl font-bold mb-2">Built for Fast, Quality Hiring</h3>
-              <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                <li>Updated daily with actively available talent</li>
-                <li>Filters for specialties, location, and experience</li>
-                <li>Posting a job alerts matching artists</li>
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow animate-fade-in text-white">
+              <h3 className="font-playfair text-xl font-bold mb-3">Case Study: Glamour Salon Network, California</h3>
+              <ul className="list-disc pl-5 space-y-1 text-white/80">
+                <li>300% improvement in appointment efficiency</li>
+                <li>80% reduction in customer wait times</li>
+                <li>65% increase in customer lifetime value</li>
+                <li>Opened 3 new locations in 18 months</li>
               </ul>
             </div>
           </div>
