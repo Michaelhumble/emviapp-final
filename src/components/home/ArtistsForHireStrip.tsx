@@ -5,7 +5,7 @@ import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
 import { ArtistForHireCard } from "@/components/artists/ArtistForHireCard";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { track } from "@/lib/telemetry";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -34,9 +34,11 @@ const { isVietnamese } = useTranslation();
       signinPrompt: { en: "Sign in to request access.", vi: "Đăng nhập để yêu cầu quyền truy cập." }
     }
   } as const;
+  const impressionSent = useRef(false);
   useEffect(() => {
-    if (artists && artists.length > 0) {
-      track('artists_strip_impression', { count: artists.length });
+    if (!impressionSent.current && artists && artists.length > 0) {
+      track('artists_strip_impression', { count: Math.min(artists.length, 6) });
+      impressionSent.current = true;
     }
   }, [artists]);
 

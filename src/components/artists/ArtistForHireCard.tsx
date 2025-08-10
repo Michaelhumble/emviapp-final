@@ -27,15 +27,20 @@ export interface ArtistForHireCardProps {
   contactGated?: boolean;
   // New: allow passing the full artist object directly
   artist?: ArtistForHireProfile | ArtistListItem;
+  // Display controls
+  showHeadline?: boolean;
+  showExperience?: boolean;
+  showSpecialties?: boolean;
+  showRate?: boolean;
+  showLocation?: boolean;
+  showAvailability?: boolean;
+  showBio?: boolean;
 }
 
-const StatusBadge: React.FC<{ available?: boolean; viewMode: "public" | "signedIn" }> = ({ available, viewMode }) => {
-  const isAvailable = viewMode === "signedIn" && !!available;
-  const label = viewMode === "signedIn" ? (isAvailable ? "Available now" : "Unavailable") : "Recently hired";
-  const cls = isAvailable
-    ? "bg-green-600/90 text-white"
-    : "bg-muted text-muted-foreground";
-  return <Badge className={cls}>{label}</Badge>;
+const StatusBadge: React.FC<{ available?: boolean; show?: boolean; isVietnamese: boolean }> = ({ available, show = true, isVietnamese }) => {
+  if (!show || !available) return null;
+  const label = isVietnamese ? 'Có thể nhận việc' : 'Available now';
+  return <Badge className="bg-green-600/90 text-white">{label}</Badge>;
 };
 
 const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
@@ -54,6 +59,13 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
   variant = 'default',
   contactGated,
   artist,
+  showHeadline = true,
+  showExperience = true,
+  showSpecialties = true,
+  showRate = true,
+  showLocation = true,
+  showAvailability = true,
+  showBio = true,
 }) => {
   const { isVietnamese } = useTranslation();
   
@@ -85,6 +97,11 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
   const profileHref = `/artists/${effectiveId || ''}`;
   const isBlue = theme === 'blue' || variant === 'blueMinimal';
 
+  // Bio teaser
+  const bioRaw = typeof source.bio === 'string' ? source.bio : '';
+  const bioTeaser = bioRaw.trim();
+  const limitedBio = bioTeaser.length > 140 ? `${bioTeaser.slice(0, 140).trimEnd()}…` : bioTeaser;
+
   return (
     <Card 
       className={`${isBlue ? 'rounded-2xl border-primary/20 bg-primary/5 hover:bg-primary/10 transition' : 'border-muted'} overflow-hidden`}
@@ -94,7 +111,7 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
         <CardHeader className={`flex flex-row items-center gap-3 pb-2 ${variant === 'blueMinimal' ? 'py-3' : ''}`}>
           <div className={`h-12 w-12 rounded-full flex items-center justify-center ${isBlue ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>
             {(hidePhoto || variant === 'blueMinimal') ? (
-              <span className="font-semibold">{initials}</span>
+              <span role="img" aria-label={`Artist profile – ${displayTitle}`} className="font-semibold">{initials}</span>
             ) : (
               <User2 className="h-6 w-6" />
             )}
@@ -107,33 +124,36 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
               {effectiveLocation || (hasName ? (effectiveSpecialties || 'Beauty Professional') : '')}
             </div>
           </div>
-          <StatusBadge available={effectiveAvailable} viewMode={viewMode} />
+          <StatusBadge available={effectiveAvailable} show={showAvailability} isVietnamese={isVietnamese} />
         </CardHeader>
       </div>
 
       <CardContent className="space-y-3">
         {/* Meta */}
-        {(effectiveLocation || effectiveYears || effectiveRate) && (
+        {((showLocation && !!effectiveLocation) || (showExperience && typeof effectiveYears === 'number') || (showRate && typeof effectiveRate === 'number') || (showAvailability && !!source.shifts_available)) && (
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            {effectiveLocation && (
+            {showLocation && effectiveLocation && (
               <span className="inline-flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
                 <span className="truncate">{effectiveLocation}</span>
               </span>
             )}
-            {typeof effectiveYears === 'number' && (
+            {showExperience && typeof effectiveYears === 'number' && (
               <span>{effectiveYears}+ yrs</span>
             )}
-            {typeof effectiveRate === 'number' && (
+            {showRate && typeof effectiveRate === 'number' && (
               <span>${'{'}effectiveRate{'}'}/hr</span>
+            )}
+            {showAvailability && source.shifts_available && (
+              <span className="inline-flex items-center">{String(source.shifts_available)}</span>
             )}
           </div>
         )}
 
         {/* Specialties chips */}
-        {effectiveSpecialties && (
+        {showSpecialties && effectiveSpecialties && (
           <div className="flex flex-wrap gap-2">
-            {String(effectiveSpecialties).split(',').map((s, i) => (
+            {String(effectiveSpecialties).split(',').slice(0, 3).map((s, i) => (
               <span 
                 key={i}
                 className={`text-xs rounded-full px-2 py-0.5 ${isBlue ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}
@@ -144,7 +164,10 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
           </div>
         )}
 
-        {/* Actions */}
+        {/* Bio teaser */}
+        {showBio && limitedBio && (
+          <p className="text-sm text-muted-foreground">{limitedBio}</p>
+        )}
         <div className="flex items-center justify-between pt-2">
           <Link to={profileHref} className={`${isBlue ? 'text-primary' : 'text-foreground'} text-sm underline underline-offset-4`} aria-label={isVietnamese ? 'Xem hồ sơ' : 'View Profile'}>
             {isVietnamese ? 'Xem hồ sơ' : 'View Profile'}
