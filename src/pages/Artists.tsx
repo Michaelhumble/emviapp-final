@@ -48,9 +48,9 @@ const Artists = () => {
           <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-tr from-amber-300/15 via-pink-400/20 to-transparent rounded-full blur-3xl"></div>
         </div>
         <Container className="relative z-10 py-14 md:py-18">
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto animate-fade-in">
             <h1 className="mt-2 font-playfair text-4xl md:text-6xl font-bold tracking-tight text-white">
-              Top Vietnamese Beauty Pros — Available Now
+              Top Beauty Pros — Available Now
             </h1>
             <p className="mt-3 text-white/85 text-base md:text-lg">
               Real artists, verified profiles. Contact details for verified employers.

@@ -104,7 +104,7 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
 
   return (
     <Card 
-      className={`${isBlue ? 'rounded-2xl border-primary/20 bg-primary/5 hover:bg-primary/10 transition' : 'border-muted'} overflow-hidden`}
+      className={`${isBlue ? 'rounded-2xl border-primary/20 bg-primary/5 hover:bg-primary/10 transition' : 'border-muted'} overflow-hidden animate-fade-in hover-scale`}
       aria-label={`Artist profile — ${displayTitle}`}
     >
       <div className="relative">

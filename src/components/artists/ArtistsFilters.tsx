@@ -28,9 +28,9 @@ const ArtistsFilters: React.FC<ArtistsFiltersProps> = ({
 }) => {
   return (
     <div className={cn(
-      "sticky top-0 z-30",
+      "sticky top-0 z-30 animate-fade-in",
       "backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-background/90",
-      "border-b"
+      "border-b shadow-sm"
     )}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
