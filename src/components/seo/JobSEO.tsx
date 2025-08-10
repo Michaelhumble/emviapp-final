@@ -1,6 +1,8 @@
 import React from 'react';
 import DynamicSEO from './DynamicSEO';
 import { Job } from '@/types/job';
+import { generateJobUrl } from '@/utils/seoHelpers';
+import { SEO_JOBS_ENABLED } from '@/config/seo';
 
 interface JobSEOProps {
   job: Job;
@@ -8,65 +10,98 @@ interface JobSEOProps {
 }
 
 const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://emvi.app' }) => {
-  const jobUrl = `${baseUrl}/${job.category}/${job.id}`;
+  const jobUrl = generateJobUrl({ title: job.title, location: job.location, id: job.id, category: job.category });
   
   // Create SEO-friendly title
   const title = `${job.title} - ${job.location || 'Beauty Job'} | EmviApp`;
   
-  // Generate description from job details
-  const description = job.description 
-    ? `${job.description.substring(0, 150)}...`
-    : `${job.title} position available in ${job.location || 'the beauty industry'}. Apply now on EmviApp.`;
+  // Generate description from job details (plain text)
+  const rawDescription = job.description || '';
+  const description = stripHtml(rawDescription).substring(0, 150) + (rawDescription && rawDescription.length > 150 ? '...' : '');
   
   // Get primary image
   const image = job.image_urls?.[0] || job.image_url || `${baseUrl}/og-job-default.jpg`;
+
+  // Location parsing
+  const { city, region, country } = parseLocation(job.location);
+
+  // Employment type
+  const employmentType = (job.employment_type || getEmploymentType(job.category)).toUpperCase();
+
+  // Dates
+  const datePosted = job.created_at || new Date().toISOString();
+  const validThrough = job.expires_at || new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString();
+
+  // Salary parsing
+  const salary = parseSalary(job.compensation_details || job.salary_range || '');
+
+  // Hiring org
+  const hiringOrganization = {
+    "@type": "Organization",
+    name: job.company || 'EmviApp',
+    sameAs: baseUrl
+  };
   
   // Generate structured data for JobPosting
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    "title": job.title,
-    "description": job.description || description,
-    "datePosted": job.created_at,
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "sameAs": baseUrl
-    },
-    "jobLocation": job.location ? {
+    title: job.title,
+    description: description,
+    datePosted: datePosted,
+    validThrough: validThrough,
+    employmentType: employmentType,
+    hiringOrganization,
+    jobLocation: {
       "@type": "Place",
-      "address": {
+      address: {
         "@type": "PostalAddress",
-        "addressLocality": job.location
+        addressLocality: city,
+        addressRegion: region,
+        addressCountry: country
       }
-    } : undefined,
-    "employmentType": getEmploymentType(job.category),
-    "industry": "Beauty and Personal Care",
-    "occupationalCategory": job.category,
-    "baseSalary": job.compensation_details || job.salary_range ? {
-      "@type": "MonetaryAmount",
-      "currency": "USD",
-      "value": {
-        "@type": "QuantitativeValue",
-        "value": extractSalaryAmount(job.compensation_details || job.salary_range),
-        "unitText": "HOUR"
+    },
+    ...(salary ? {
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: salary.currency,
+        value: {
+          "@type": "QuantitativeValue",
+          value: salary.value,
+          minValue: salary.minValue,
+          maxValue: salary.maxValue,
+          unitText: salary.unitText
+        }
       }
-    } : undefined,
-    "url": jobUrl,
-    "image": image
-  };
+    } : {}),
+    identifier: {
+      "@type": "PropertyValue",
+      name: "EmviApp",
+      value: job.id
+    },
+    directApply: true,
+    url: jobUrl,
+    industry: job.industry || 'Beauty and Personal Care',
+    occupationalCategory: job.category,
+    image: image
+  } as any;
 
   return (
-    <DynamicSEO
-      title={title}
-      description={description}
-      image={image}
-      url={jobUrl}
-      type="article"
-      tags={[job.category, 'beauty job', 'career', job.location].filter(Boolean)}
-      structuredData={structuredData}
-      canonicalUrl={jobUrl}
-    />
+    <>
+      {/* Only inject SEO when enabled */}
+      {SEO_JOBS_ENABLED && (
+        <DynamicSEO
+          title={title}
+          description={description}
+          image={image}
+          url={jobUrl}
+          type="article"
+          tags={[job.category, 'beauty job', 'career', job.location].filter(Boolean)}
+          structuredData={structuredData}
+          canonicalUrl={jobUrl}
+        />
+      )}
+    </>
   );
 };
 
@@ -78,9 +113,40 @@ function getEmploymentType(category: string): string {
 
 function extractSalaryAmount(salaryString: string | null): number | undefined {
   if (!salaryString) return undefined;
-  
   const numbers = salaryString.match(/\d+/g);
   return numbers ? parseInt(numbers[0]) : undefined;
+}
+
+function stripHtml(input?: string): string {
+  if (!input) return '';
+  return input.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function parseLocation(loc?: string) {
+  if (!loc) return { city: undefined, region: undefined, country: 'US' };
+  const parts = loc.split(',').map((s) => s.trim());
+  const city = parts[0];
+  const region = parts[1];
+  const country = parts[2] || 'US';
+  return { city, region, country };
+}
+
+function parseSalary(input: string) {
+  if (!input) return null as any;
+  const nums = input.match(/\d+[\.,]?\d*/g);
+  const value = nums ? Number(nums[0].replace(/,/g, '')) : undefined;
+  let unitText: 'HOUR' | 'WEEK' | 'MONTH' | 'YEAR' = 'HOUR';
+  if (/year|yr|annual/i.test(input)) unitText = 'YEAR';
+  else if (/month|mo/i.test(input)) unitText = 'MONTH';
+  else if (/week|wk/i.test(input)) unitText = 'WEEK';
+  const currency = /usd|\$/i.test(input) ? 'USD' : 'USD';
+  let minValue: number | undefined;
+  let maxValue: number | undefined;
+  if (nums && nums.length >= 2) {
+    minValue = Number(nums[0].replace(/,/g, ''));
+    maxValue = Number(nums[1].replace(/,/g, ''));
+  }
+  return value ? { currency, value, unitText, minValue, maxValue } : null;
 }
 
 export default JobSEO;

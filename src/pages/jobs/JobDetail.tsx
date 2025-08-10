@@ -1,11 +1,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
 import JobDetailContent from '@/components/jobs/JobDetailContent';
 import JobNotFound from '@/components/jobs/JobNotFound';
+import JobFilledPage from '@/components/jobs/JobFilledPage';
+import JobSEO from '@/components/seo/JobSEO';
 import { Job } from '@/types/job';
 import { fetchJob } from '@/utils/jobs';
+import { shouldNoIndex, shouldReturn410, getValidThrough, isFilled } from '@/utils/seo/jobSeoLogic';
 
 const JobDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -58,7 +62,20 @@ const JobDetail = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-background">
-        <JobDetailContent job={job} />
+        {/* Inject Job SEO JSON-LD */}
+        <JobSEO job={job} />
+
+        {shouldNoIndex(job) && (
+          <Helmet>
+            <meta name="robots" content="noindex, follow" />
+            {/* Note: 410 status headers cannot be set from SPA. shouldReturn410(job) indicates when servers should return 410. */}
+          </Helmet>
+        )}
+        {isFilled(job) || getValidThrough(job) < new Date() ? (
+          <JobFilledPage job={job} />
+        ) : (
+          <JobDetailContent job={job} />
+        )}
       </div>
     </Layout>
   );
