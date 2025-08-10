@@ -20,11 +20,11 @@ const AIAssistantsForBeautyPros: React.FC = () => {
         description={registryArticle.description}
         url={articleUrl}
         type="article"
-        image={registryArticle.image}
+        image={"https://emvi.app/images/blog/ai-assistant-showdown-hero.jpg"}
         author={registryArticle.author}
         publishedTime={registryArticle.publishedAt}
         tags={registryArticle.tags}
-        canonicalUrl={"https://yourdomain.com/blog/ai-assistants-for-beauty-pros"}
+        canonicalUrl={"https://emvi.app/blog/industry-insights/ai-assistants-for-beauty-pros"}
         structuredData={{
           '@context': 'https://schema.org',
           '@type': 'Article',
@@ -33,7 +33,7 @@ const AIAssistantsForBeautyPros: React.FC = () => {
           datePublished: registryArticle.publishedAt,
           dateModified: registryArticle.publishedAt,
           author: { '@type': 'Organization', name: 'EmviApp' },
-          mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://yourdomain.com/blog/ai-assistants-for-beauty-pros' }
+          mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://emvi.app/blog/industry-insights/ai-assistants-for-beauty-pros' }
         }}
       />
 
@@ -82,8 +82,6 @@ const AIAssistantsForBeautyPros: React.FC = () => {
               variant="full"
             />
 
-            {/* Minimal hero cover using gradient (no stock image) */}
-            <div className="rounded-2xl overflow-hidden mb-12 shadow-2xl h-64 bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50" />
 
             <div className="prose prose-lg max-w-none">
               <p><strong>TL;DR</strong></p>
