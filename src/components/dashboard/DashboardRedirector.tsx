@@ -20,7 +20,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
 
   const checkUserRoleAndRedirect = useCallback(async () => {
     if (!isSignedIn || !user) {
-      navigate("/sign-in");
+      navigate("/signin");
       return;
     }
 

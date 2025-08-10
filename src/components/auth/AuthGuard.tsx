@@ -88,10 +88,9 @@ const AuthGuard = ({
     </div>;
   }
 
-  // Not logged in, redirect to sign-in with current path for redirect after login
   if (!user) {
     const currentPath = encodeURIComponent(location.pathname + location.search);
-    return <Navigate to={`/sign-in?redirect=${currentPath}`} replace />;
+    return <Navigate to={`/signin?redirect=${currentPath}`} replace />;
   }
 
   // User is logged in but email is not verified

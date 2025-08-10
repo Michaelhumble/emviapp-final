@@ -217,7 +217,7 @@ const SignupFastFomo = () => {
                   Home
                 </Link>
                 <Link 
-                  to="/sign-in" 
+                  to="/signin" 
                   className="bg-purple-600 text-white px-5 py-2.5 rounded-xl hover:bg-purple-700 transition-colors font-medium shadow-lg hover:shadow-xl"
                 >
                   Sign In

@@ -110,7 +110,7 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
   const handleViewDetails = () => {
     const path = getListingPath();
     if (!isSignedIn) {
-      navigate(`/sign-in?redirect=${encodeURIComponent(path)}`);
+      navigate(`/signin?redirect=${encodeURIComponent(path)}`);
       return;
     }
     navigate(path);

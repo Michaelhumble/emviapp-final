@@ -298,7 +298,7 @@ const OpportunityDetailPage = () => {
                       <div className="space-y-3">
                         <Button 
                           className="w-full" 
-                          onClick={() => navigate(`/sign-in?redirect=${encodeURIComponent(`/opportunities/${job.id}`)}`)}
+                          onClick={() => navigate(`/signin?redirect=${encodeURIComponent(`/opportunities/${job.id}`)}`)}
                         >
                           Sign In
                         </Button>

@@ -15,9 +15,9 @@ const Settings = () => {
   useEffect(() => {
     // Redirect if not signed in
     if (!loading && !isSignedIn) {
-      navigate("/sign-in");
+      navigate("/signin");
     }
-    
+
     document.title = "Account Settings | EmviApp";
   }, [loading, isSignedIn, navigate]);
 

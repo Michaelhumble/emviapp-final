@@ -259,9 +259,9 @@ const NewSignUp = () => {
 
               <div className="text-sm text-center text-gray-500">
                 Already have an account?{" "}
-                <Link 
-                  to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} 
-                  className="text-indigo-600 hover:text-indigo-800 font-medium"
+              <Link 
+                to={`/signin${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} 
+                className="text-indigo-600 hover:text-indigo-800 font-medium"
                 >
                   Sign in
                 </Link>

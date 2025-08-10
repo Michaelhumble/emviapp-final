@@ -36,7 +36,7 @@ const DashboardRouter: React.FC = () => {
     // AUTHENTICATION CHECK: Redirect to sign-in if not authenticated
     if (!loading && !isSignedIn) {
       console.log('🔐 DashboardRouter: User not signed in, redirecting to sign-in');
-      navigate('/sign-in');
+      navigate('/signin');
       return;
     }
 

@@ -117,7 +117,7 @@ const AuthButtons = () => {
       ) : (
         // ❌ UNAUTHENTICATED STATE: Show Sign In and Sign Up buttons
         <>
-          <Link to={`/sign-in?redirect=${currentPath}`}>
+          <Link to={`/signin?redirect=${currentPath}`}>
             <Button variant="ghost">Sign In</Button>
           </Link>
           <Link to={`/auth/signup?redirect=${currentPath}`}>

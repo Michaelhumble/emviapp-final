@@ -591,7 +591,7 @@ const PremiumSignupPage = () => {
               {/* Auth Buttons */}
               <div className="flex items-center gap-4">
                 <Link 
-                  to="/sign-in" 
+                  to="/signin" 
                   className="text-gray-600 hover:text-purple-600 font-medium transition-colors"
                 >
                   Sign In

@@ -94,13 +94,13 @@ const AuthAction: React.FC<AuthActionProps> = ({
                 )}
               </DialogDescription>
             </DialogHeader>
-            <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              <Button 
-                className="w-full" 
-                onClick={() => handleNavigation('/sign-in')}
-              >
-                Sign In
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <Button 
+                  className="w-full" 
+                  onClick={() => handleNavigation('/signin')}
+                >
+                  Sign In
+                </Button>
               <Button 
                 variant="secondary" 
                 className="w-full" 
@@ -137,7 +137,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <Button 
               className="w-full" 
-              onClick={() => handleNavigation('/sign-in')}
+              onClick={() => handleNavigation('/signin')}
             >
               Sign In
             </Button>
