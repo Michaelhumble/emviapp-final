@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { calculatePricing } from '@/utils/posting/pricing';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 interface PremiumJobPricingCardsProps {
   onPricingSelect: (tier: string, finalPrice: number, durationMonths: number) => void;
@@ -62,8 +63,8 @@ const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({
   const pricingPlans = [
     {
       id: 'free',
-      name: 'Free Listing',
-      description: 'Perfect for testing the waters',
+      name: 'Free Listing (first job only)',
+      description: 'Start free from the job template. No payment needed.',
       basePrice: 0,
       features: [
         { icon: Eye, text: 'Basic visibility' },
@@ -193,10 +194,13 @@ const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-600 mb-8"
+            className="text-xl text-gray-600 mb-2"
           >
             Only a few Gold and Diamond spots remain this quarter!
           </motion.p>
+          <p className="text-sm text-gray-500 mb-8">
+            First time posting? Your first job is free via the job template. <Link to="/post-job-free" className="underline">Use free template →</Link>
+          </p>
 
           {/* FOMO Counters */}
           <motion.div
@@ -341,14 +345,15 @@ const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({
 
                   <Card 
                     className={cn(
-                      "relative overflow-hidden border-2 transition-all duration-300 cursor-pointer h-full",
+                      "relative overflow-hidden border-2 transition-all duration-300 h-full",
                       "backdrop-blur-sm bg-white/80",
+                      plan.id === 'free' ? "cursor-not-allowed" : "cursor-pointer",
                       isSelected 
                         ? `border-transparent bg-gradient-to-br ${plan.gradient} shadow-2xl` 
                         : "border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl",
                       plan.id === 'diamond' && "hover:shadow-cyan-400/25"
                     )}
-                    onClick={() => handlePlanSelect(plan.id)}
+                    onClick={() => { if (plan.id !== 'free') handlePlanSelect(plan.id); }}
                   >
                     {/* Background Gradient Overlay */}
                     <div className={cn(
@@ -436,22 +441,42 @@ const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <Button
-                            className={cn(
-                              "w-full py-3 font-semibold transition-all duration-200",
-                              plan.id === 'free' && "bg-gray-600 hover:bg-gray-700",
-                              plan.id === 'gold' && "bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 shadow-lg hover:shadow-xl",
-                              plan.id === 'premium' && "bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg hover:shadow-xl",
-                              plan.id === 'diamond' && "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg hover:shadow-xl"
-                            )}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handlePlanSelect(plan.id);
-                            }}
-                          >
-                            {isSelected ? 'Selected' : plan.cta}
-                            {isSelected && <CheckCircle className="ml-2 h-4 w-4" />}
-                          </Button>
+                          {plan.id === 'free' ? (
+                            <>
+                              <Button
+                                className={cn(
+                                  "w-full py-3 font-semibold transition-all duration-200",
+                                  "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                )}
+                                aria-disabled
+                                disabled
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                First job only
+                              </Button>
+                              <div className="mt-2 text-center">
+                                <Link to="/post-job-free" className="text-sm underline">
+                                  Use free template →
+                                </Link>
+                              </div>
+                            </>
+                          ) : (
+                            <Button
+                              className={cn(
+                                "w-full py-3 font-semibold transition-all duration-200",
+                                plan.id === 'gold' && "bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 shadow-lg hover:shadow-xl",
+                                plan.id === 'premium' && "bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg hover:shadow-xl",
+                                plan.id === 'diamond' && "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg hover:shadow-xl"
+                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePlanSelect(plan.id);
+                              }}
+                            >
+                              {isSelected ? 'Selected' : plan.cta}
+                              {isSelected && <CheckCircle className="ml-2 h-4 w-4" />}
+                            </Button>
+                          )}
                         </motion.div>
                       </CardContent>
                     </div>

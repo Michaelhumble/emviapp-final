@@ -127,6 +127,15 @@ serve(async (req) => {
     const selectedPrice = requestBody.finalPrice || jobData.selectedPrice || 39.99;
     const selectedDuration = requestBody.durationMonths || jobData.selectedDuration || 1;
     
+    // Block free tier from checkout
+    const tier = (requestBody?.tier ?? '').toString().toLowerCase();
+    if (tier === 'free' || selectedPlan?.toLowerCase() === 'free') {
+      return new Response(JSON.stringify({ error: 'FREE_TIER_NOT_CHECKOUTABLE' }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+    
     // Convert price to cents for Stripe
     const priceInCents = Math.round(selectedPrice * 100);
     
