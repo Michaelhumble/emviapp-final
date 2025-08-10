@@ -124,6 +124,17 @@ const BoothRentVsCommission2025: React.FC = () => {
                 If you’re choosing between booth rent and commission in 2025, the honest answer is: it depends on your numbers, your goals, and your appetite for business tasks. This guide gives you the clean math, real‑world scenarios, and practical checklists both stylists and salon owners can trust.
               </p>
 
+              <div className="bg-card rounded-xl border p-6 mb-10 shadow-sm">
+                <h3 className="m-0 text-lg font-semibold mb-3">Key takeaways (2‑minute skim)</h3>
+                <ul className="m-0 grid md:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                  <li>• Commission rewards early career growth; booth rent rewards established demand</li>
+                  <li>• Flip point often appears at ~70%+ chair utilization</li>
+                  <li>• Don’t forget card fees, software, and supplies in rent math</li>
+                  <li>• W‑2 vs 1099 changes your tax admin and benefits picture</li>
+                  <li>• Hybrid models (juniors commission, seniors rent) work well in 2025</li>
+                </ul>
+              </div>
+
               <h2 className="text-3xl font-bold mb-6 text-foreground">What Searchers Want Right Now</h2>
               <p className="mb-6">Search interest for “booth rent vs commission” keeps rising amid tighter labor markets and profit pressure. Owners want predictability; stylists want upside and autonomy. Our take: make the decision on real utilization, not vibes.</p>
 
@@ -171,6 +182,50 @@ const BoothRentVsCommission2025: React.FC = () => {
                 <li><strong>Upside.</strong> After fixed rent, the extra bookings are mostly yours.</li>
               </ul>
 
+              <div className="overflow-x-auto rounded-xl border bg-card mb-8">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 text-foreground">
+                    <tr>
+                      <th className="text-left p-3">Criteria</th>
+                      <th className="text-left p-3">Commission (W‑2)</th>
+                      <th className="text-left p-3">Booth Rent (1099)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-muted-foreground">
+                    <tr className="border-t">
+                      <td className="p-3">Income volatility</td>
+                      <td className="p-3">Lower — slow days partly absorbed</td>
+                      <td className="p-3">Higher — fixed rent regardless of bookings</td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="p-3">Marketing responsibility</td>
+                      <td className="p-3">Salon-led</td>
+                      <td className="p-3">Stylist-led</td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="p-3">Admin & taxes</td>
+                      <td className="p-3">Payroll handled (W‑2)</td>
+                      <td className="p-3">Self-employment tax, quarterly estimates</td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="p-3">Supplies & retail</td>
+                      <td className="p-3">Often subsidized or chargebacks</td>
+                      <td className="p-3">Your cost, your margin</td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="p-3">Upside potential</td>
+                      <td className="p-3">Moderate — ladders/bonuses</td>
+                      <td className="p-3">High — after fixed costs</td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="p-3">Benefits</td>
+                      <td className="p-3">Possible (PTO, education)</td>
+                      <td className="p-3">None — buy privately</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
               <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl p-6 mb-10">
                 <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-5 w-5 text-emerald-600" /><h3 className="m-0 text-xl font-semibold">Rule of Thumb</h3></div>
                 <p className="m-0 text-emerald-800 dark:text-emerald-100">If your projected <strong>commission take‑home</strong> is under what you’d net after <strong>rent + supplies + fees</strong>, go booth rent. Otherwise, stay commission and grow demand until it flips.</p>
@@ -217,6 +272,18 @@ const BoothRentVsCommission2025: React.FC = () => {
 
               <div className="rounded-2xl overflow-hidden mb-10 shadow">
                 <BlogImage src={IMG_CONTRACT} alt="Contract checklist illustration for salon agreements" />
+              </div>
+
+              <h2 className="text-3xl font-bold mb-6 text-foreground">Commission Ladders that Retain Talent</h2>
+              <div className="bg-card rounded-xl border p-6 mb-8">
+                <p className="m-0 mb-3 text-muted-foreground">Use clear, non-punitive tiers tied to education and client satisfaction, not just raw revenue.</p>
+                <ul className="m-0 space-y-2 text-sm">
+                  <li>• Level 1: 40% + paid education stipend</li>
+                  <li>• Level 2: 45% + rebooking bonus at 60%+</li>
+                  <li>• Level 3: 50% + retail incentive + education days</li>
+                  <li>• Opt-in Rent Track: offered at 70%+ utilization</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-3">Clarity reduces churn; growth paths keep seniors engaged even before rent.</p>
               </div>
 
               <h2 className="text-3xl font-bold mb-6 text-foreground">Owner Economics (Predictable Profit vs Utilization Risk)</h2>
