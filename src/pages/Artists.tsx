@@ -167,7 +167,7 @@ const Artists = () => {
       <section className="py-12 bg-gradient-to-br from-slate-900 via-purple-900/70 to-indigo-900/60">
         <Container>
           <h2 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">The Real Impact:</span> Success Stories That Prove It Works
+            <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Proven Impact:</span> Success Stories That Prove It Works
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow animate-fade-in text-white">
