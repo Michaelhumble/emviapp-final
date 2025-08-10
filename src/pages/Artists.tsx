@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import ArtistsFilters from "@/components/artists/ArtistsFilters";
 import { useArtistsSearch } from "@/hooks/useArtistsSearch";
 import { useMemo } from "react";
+import BaseSEO from "@/components/seo/BaseSEO";
+import { buildBreadcrumbJsonLd } from "@/components/seo/jsonld";
 
 const Artists = () => {
   const { isSignedIn } = useAuth();
@@ -37,10 +39,12 @@ const Artists = () => {
         <title>Hire Beauty Pros for Your Salon | EmviApp</title>
         <meta name="description" content="Browse verified beauty professionals and hire fast. Real profiles, contact gated for verified employers." />
         <link rel="canonical" href={`https://www.emvi.app/artists`} />
-        {/* Breadcrumb JSON-LD via BaseSEO */}
-        <script type="application/ld+json">{JSON.stringify({})}</script>
-
       </Helmet>
+      <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
+        { name: 'Home', url: 'https://www.emvi.app' },
+        { name: 'Artists', url: 'https://www.emvi.app/artists' }
+      ])]} />
+
 
       {/* Hero */}
       <section className="relative w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
