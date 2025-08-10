@@ -8,6 +8,7 @@ import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Container } from '@/components/ui/container';
 import { normalizeCityStateSlug } from '@/utils/slug';
+import { buildLeadCopy } from '@/seo/locations/lead';
 
 function toTitle(s: string) {
   return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -40,6 +41,7 @@ export default function RoleCityJobsLanding() {
     ((j.category || '').toLowerCase().includes(role.toLowerCase()) || (j.title || '').toLowerCase().includes(role.toLowerCase()))
   ), [jobs, city, state, role]);
   const count = filtered.length;
+  const lead = buildLeadCopy({ city, state, role, countJobs: count, slug: normalized || cityState });
 
   const title = `${roleTitle} jobs in ${label} | ${count} hiring now | EmviApp`;
   const description = `Hiring ${roleTitle} in ${label}. ${count} openings from verified salons. Apply today on EmviApp.`;
@@ -83,7 +85,7 @@ export default function RoleCityJobsLanding() {
       <section className="py-10">
         <Container>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">{roleTitle} jobs in {label}</h1>
-          <p className="text-muted-foreground mb-6">{count} openings in {label}. Apply directly on EmviApp.</p>
+          <p className="text-muted-foreground mb-6">{lead}</p>
 
           {/* Sibling cities */}
           <div className="mb-6 flex flex-wrap gap-2 text-sm text-muted-foreground">

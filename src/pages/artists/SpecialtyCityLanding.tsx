@@ -8,6 +8,7 @@ import { useArtistsSearch } from '@/hooks/useArtistsSearch';
 import { Container } from '@/components/ui/container';
 import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
 import { normalizeCityStateSlug } from '@/utils/slug';
+import { buildLeadCopy } from '@/seo/locations/lead';
 
 function toTitle(s: string) { return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()); }
 function parseCityState(slug?: string) {
@@ -37,6 +38,7 @@ export default function SpecialtyCityLanding() {
     ((a.specialties || a.specialty || '').toLowerCase().includes(specialty.toLowerCase()))
   ), [items, city, specialty]);
   const count = filtered.length;
+  const lead = buildLeadCopy({ city, state, role: specialty, countArtists: count, slug: normalized || cityState });
 
   const title = `Hire ${specTitle} in ${label} | ${count} available | EmviApp`;
   const description = `Hire ${specTitle} in ${label}. ${count} verified pros available now. Post a job or contact talent on EmviApp.`;
@@ -92,7 +94,7 @@ export default function SpecialtyCityLanding() {
       <section className="py-10">
         <Container>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Hire {specTitle} in {label}</h1>
-          <p className="text-muted-foreground mb-6">{specTitle} pros in {label} are in steady demand across downtown and surrounding neighborhoods. We’ve found {count} verified artists accepting new clients right now. Compare specialties, years of experience, and availability at a glance, then request contact to confirm rates and schedule. For busy weekends and event seasons, book early to lock in your preferred time. If you don’t see the perfect fit, post a job and we’ll notify matching talent in minutes.</p>
+          <p className="text-muted-foreground mb-6">{lead}</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.slice(0, 12).map((a: any) => (
