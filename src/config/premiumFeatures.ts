@@ -20,7 +20,7 @@ export const PREMIUM_FEATURES = {
   BEAUTY_COACHING: false,      // Personalized beauty coaching
   STYLE_RECOMMENDATIONS: false, // AI-powered style recommendations
 
-  // UI Flags
+  // UI Flags (premium-related toggles)
   SHOW_HOME_METRICS: false      // Render big metrics block on Home (off by default)
 } as const;
 
@@ -29,6 +29,16 @@ export type PremiumFeature = keyof typeof PREMIUM_FEATURES;
 export const isFeatureEnabled = (feature: PremiumFeature): boolean => {
   return PREMIUM_FEATURES[feature];
 };
+
+// Non-premium UI flags/settings
+export const UI_FLAGS = {
+  SHOW_ARTISTS_STRIP: true,
+  ARTISTS_HIDE_PHOTOS: true,
+  ARTISTS_CARD_THEME: 'blue' as const,
+} as const;
+
+export type UiFlagKey = keyof typeof UI_FLAGS;
+export const getUiFlag = <K extends UiFlagKey>(key: K) => UI_FLAGS[key];
 
 // Feature descriptions for UI
 export const FEATURE_DESCRIPTIONS = {

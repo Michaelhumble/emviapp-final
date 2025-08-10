@@ -2,13 +2,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { useOptimizedArtistsData } from "@/hooks/useOptimizedArtistsData";
-import ArtistForHireCardRich from "@/components/artists/ArtistForHireCardRich";
+import ArtistForHireCard from "@/components/artists/ArtistForHireCard";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
+import { getUiFlag } from "@/config/premiumFeatures";
+import { useEffect } from "react";
+import { track } from "@/lib/telemetry";
 
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
-  const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
+  const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 8 });
+  const hidePhotos = getUiFlag('ARTISTS_HIDE_PHOTOS');
+  const theme = getUiFlag('ARTISTS_CARD_THEME');
+
+  useEffect(() => {
+    if (artists && artists.length > 0) {
+      track('artists_strip_impression', { count: artists.length });
+    }
+  }, [artists]);
 
   return (
     <section className="py-12 bg-background">

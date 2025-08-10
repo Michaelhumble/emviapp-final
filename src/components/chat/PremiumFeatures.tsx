@@ -26,7 +26,8 @@ const PremiumFeatures: React.FC<PremiumFeaturesProps> = ({ isOpen, onClose, onFe
     VIRTUAL_TRY_ON: <Camera className="w-5 h-5" />,
     APPOINTMENT_BOOKING: <Clock className="w-5 h-5" />,
     BEAUTY_COACHING: <Crown className="w-5 h-5" />,
-    STYLE_RECOMMENDATIONS: <Sparkles className="w-5 h-5" />
+    STYLE_RECOMMENDATIONS: <Sparkles className="w-5 h-5" />,
+    SHOW_HOME_METRICS: <Sparkles className="w-5 h-5" />
   };
 
   const coreFeatures: PremiumFeature[] = ['VOICE_CHAT', 'PHOTO_UPLOAD', 'AI_IMAGE_GEN', 'TEXT_TO_SPEECH'];
