@@ -29,8 +29,9 @@ const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Briefcase } from 'lucide-react';
+import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import JobsHero from '@/components/jobs/JobsHero';
 
 import { sortJobsByTierAndDate } from '@/utils/jobSorting';
 
@@ -179,26 +180,6 @@ const OptimizedJobsPageContent = () => {
     // Renewal logic would go here
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <JobLoadingState />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-8">
-          <p className="text-red-600 font-inter">Error loading jobs: {error}</p>
-          <Button onClick={refresh} className="mt-4">
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -228,53 +209,27 @@ const OptimizedJobsPageContent = () => {
       </Helmet>
 
       <div className="w-full">
-        {/* OPTIMIZED HERO SECTION - Above the fold content */}
-        <section className="relative w-full bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 overflow-hidden py-10 sm:py-14 md:py-16">
-          {/* Optimized background - reduced complexity */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-rose-400/20 via-purple-600/30 to-indigo-800/40"></div>
-            <div className="absolute top-10 right-10 w-96 h-96 bg-gradient-to-br from-pink-400/15 via-purple-500/20 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-tr from-amber-300/15 via-pink-400/20 to-transparent rounded-full blur-3xl"></div>
-          </div>
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="max-w-2xl md:max-w-3xl mx-auto text-center space-y-3 sm:space-y-4">
-              {/* Eyebrow count pill */}
-              <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs sm:text-sm mx-auto ${jobs.length > 0 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted/40 text-muted-foreground border-border'}`}>
-                <Briefcase className="h-4 w-4" />
-                <span>{jobs.length} job{jobs.length !== 1 ? 's' : ''} available</span>
-              </div>
+        {/* JOBS HERO (Above the fold) */}
+        <JobsHero jobsCount={jobs?.length ?? 0} />
 
-              {/* Headline */}
-              <div className="whitespace-normal hyphens-none">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-snug sm:leading-snug lg:leading-tight text-white">
-                  <span>Build Your American<wbr /> Dream</span>
-                </h1>
-                <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-white/90">in Nails & Beauty</p>
-              </div>
-
-              {/* CTAs */}
-              <div className="flex items-center justify-center gap-3 mt-6 flex-col">
-                <Button
-                  onClick={() => navigate('/post-job')}
-                  className="h-11 px-6 text-base rounded-xl shadow-sm"
-                >
-                  Post a Job
-                </Button>
-                <Button
-                  onClick={() => {
-                    const jobsSection = document.querySelector('#jobs-section');
-                    if (jobsSection) jobsSection.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  variant="outline"
-                  className="h-11 px-6 text-base rounded-xl"
-                >
-                  Browse Jobs
-                </Button>
+        {/* Inline error (non-blocking) */}
+        {error && (
+          <div className="container mx-auto px-4 py-6">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+              <p className="text-destructive">Error loading jobs: {error}</p>
+              <div className="mt-3">
+                <Button onClick={refresh} variant="outline">Try Again</Button>
               </div>
             </div>
           </div>
-        </section>
+        )}
+
+        {/* Optional loading state placeholder (below hero only) */}
+        {loading && (
+          <div className="container mx-auto px-4 py-8">
+            <JobLoadingState />
+          </div>
+        )}
 
         {/* Featured Paid Jobs (Paid tiers) */}
         <div id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
@@ -294,6 +249,7 @@ const OptimizedJobsPageContent = () => {
         </div>
 
         {/* JOBS SECTION - All Jobs / Free */}
+        <div id="browse" />
         <section id="jobs-section" className="w-full py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {!isSignedIn && fomoEnabled !== false && (
