@@ -11,7 +11,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 const ArtistsForHireStrip = () => {
   const { isSignedIn } = useAuth();
-  const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 8 });
+  const { artists, loading } = useOptimizedArtistsData({ isSignedIn, limit: 6 });
 const { isVietnamese } = useTranslation();
   const copy = {
     artistsStrip: {

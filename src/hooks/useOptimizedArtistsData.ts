@@ -34,6 +34,7 @@ export function useOptimizedArtistsData({ isSignedIn, limit }: Options) {
         .select("id, user_id, headline, specialties, location, available_for_work, hourly_rate, avatar_url, years_experience, shifts_available, bio, updated_at")
         .eq("available_for_work" as any, true)
         .order("updated_at", { ascending: false })
+        .order("years_experience" as any, { ascending: false })
         .limit(effectiveLimit);
       if (error) throw error;
       // Ensure user_id exists
