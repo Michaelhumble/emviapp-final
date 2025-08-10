@@ -24,6 +24,7 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const enablePendingFallback = (Deno.env.get('WEBHOOK_PENDING_FALLBACK') ?? 'true').toLowerCase() === 'true';
 
     // Initialize Stripe
     const stripe = new Stripe(stripeSecretKey || '', {
@@ -53,22 +54,88 @@ serve(async (req) => {
       const session = event.data.object;
       
       // Get metadata from the session
-      const userId = session.metadata?.user_id;
-      const pricingTier = session.metadata?.pricing_tier;
-      const featuredAddon = session.metadata?.featured_addon === 'true';
+      const metadata = session.metadata || {};
+      const userId = metadata.user_id;
+      const pricingTier = metadata.pricing_tier;
+      const featuredAddon = metadata.featured_addon === 'true';
       
-      // Parse the full form data from metadata
-      let formData = {};
-      try {
-        formData = JSON.parse(session.metadata?.form_data || '{}');
-      } catch (e) {
-        console.error('Error parsing form data from session metadata:', e);
+      // Parse the full form data from metadata or fallback to pending_salons
+      let formData: any = {};
+      if (metadata.form_data) {
+        try {
+          formData = JSON.parse(metadata.form_data || '{}');
+        } catch (e) {
+          console.error('Error parsing form data from session metadata:', e);
+        }
+      } else if (enablePendingFallback && metadata.pending_salon_id) {
+        // Fallback: read from pending_salons when form_data is absent
+        const { data: pendingSalon, error: pendingError } = await supabase
+          .from('pending_salons')
+          .select('*')
+          .eq('id', metadata.pending_salon_id)
+          .maybeSingle();
+        
+        if (pendingError) {
+          console.error('Error fetching pending salon for fallback:', pendingError);
+        } else if (pendingSalon) {
+          formData = {
+            salonName: pendingSalon.salon_name,
+            englishDescription: pendingSalon.english_description,
+            vietnameseDescription: pendingSalon.vietnamese_description,
+            reasonForSelling: pendingSalon.reason_for_selling,
+            contactName: pendingSalon.contact_name,
+            contactPhone: pendingSalon.contact_phone,
+            contactEmail: pendingSalon.contact_email,
+            contactFacebook: pendingSalon.contact_facebook,
+            contactZalo: pendingSalon.contact_zalo,
+            contactNotes: pendingSalon.contact_notes,
+            address: pendingSalon.address,
+            city: pendingSalon.city,
+            state: pendingSalon.state,
+            zipCode: pendingSalon.zip_code,
+            businessType: pendingSalon.business_type,
+            establishedYear: pendingSalon.established_year,
+            askingPrice: pendingSalon.asking_price,
+            monthlyRent: pendingSalon.monthly_rent,
+            monthlyRevenue: pendingSalon.monthly_revenue,
+            monthlyProfit: pendingSalon.monthly_profit,
+            numberOfStaff: pendingSalon.number_of_staff,
+            numberOfTables: pendingSalon.number_of_tables,
+            numberOfChairs: pendingSalon.number_of_chairs,
+            squareFeet: pendingSalon.square_feet,
+            willTrain: pendingSalon.will_train,
+            hasHousing: pendingSalon.has_housing,
+            hasWaxRoom: pendingSalon.has_wax_room,
+            hasDiningRoom: pendingSalon.has_dining_room,
+            hasLaundry: pendingSalon.has_laundry,
+            hasParking: pendingSalon.has_parking,
+            equipmentIncluded: pendingSalon.equipment_included,
+            leaseTransferable: pendingSalon.lease_transferable,
+            sellerFinancing: pendingSalon.seller_financing,
+            helpWithTransition: pendingSalon.help_with_transition,
+            virtualTourUrl: pendingSalon.virtual_tour_url,
+            photoUrls: pendingSalon.images || []
+          };
+        }
       }
       
-      const salonName = formData.salonName || session.metadata?.salon_name || '';
+      const salonName = formData.salonName || metadata.salon_name || '';
       
       console.log(`Processing successful salon payment for user ${userId}: ${pricingTier} tier, featured: ${featuredAddon}`);
       console.log('Form data received:', formData);
+      
+      // Idempotency: if we've already logged this Stripe session, skip creating duplicates
+      const { data: existingLog } = await supabase
+        .from('payment_logs')
+        .select('id')
+        .eq('stripe_payment_id', session.id)
+        .eq('plan_type', 'salon_listing')
+        .maybeSingle();
+      if (existingLog) {
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
       
       if (userId && pricingTier && salonName) {
         // Calculate expiration date (30 days for basic, 90 days for premium/gold, 365 days for annual)
