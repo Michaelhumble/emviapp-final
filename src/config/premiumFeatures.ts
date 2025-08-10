@@ -18,7 +18,10 @@ export const PREMIUM_FEATURES = {
   VIRTUAL_TRY_ON: false,       // Virtual makeup/nail try-on
   APPOINTMENT_BOOKING: false,  // Direct salon booking
   BEAUTY_COACHING: false,      // Personalized beauty coaching
-  STYLE_RECOMMENDATIONS: false // AI-powered style recommendations
+  STYLE_RECOMMENDATIONS: false, // AI-powered style recommendations
+
+  // UI Flags
+  SHOW_HOME_METRICS: false      // Render big metrics block on Home (off by default)
 } as const;
 
 export type PremiumFeature = keyof typeof PREMIUM_FEATURES;
@@ -100,5 +103,11 @@ export const FEATURE_DESCRIPTIONS = {
     description: "AI-powered style recommendations based on your preferences",
     icon: "✨",
     comingSoonDate: "Q3 2025"
+  },
+  SHOW_HOME_METRICS: {
+    title: "Home Metrics Block",
+    description: "Toggle visibility of large metrics section on Home",
+    icon: "📊",
+    comingSoonDate: "Available"
   }
 };

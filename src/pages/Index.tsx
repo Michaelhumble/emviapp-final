@@ -40,6 +40,9 @@ import TrustBadges from "@/components/home/trust/TrustBadges";
 import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
 import PartnerLogos from "@/components/home/trust/PartnerLogos";
 
+import CredibilityRibbon from "@/components/home/CredibilityRibbon";
+import { isFeatureEnabled } from "@/config/premiumFeatures";
+
 const Index = () => {
   const { user, userRole, loading } = useAuth();
   const navigate = useNavigate();
@@ -71,12 +74,10 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
-      {/* 1.1 Live Stats Bar - Trust & Social Proof */}
-      <section className="relative -mt-16 z-20 px-4 w-full max-w-full">
-        <div className="container mx-auto max-w-full">
-          <LiveStatsBar />
-        </div>
-      </section>
+      {/* Credibility ribbon under hero */}
+      <div className="px-4">
+        <CredibilityRibbon />
+      </div>
       
       {/* 1.2 Social Media Proof */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
@@ -124,6 +125,12 @@ const Index = () => {
       
       {/* 2. Premium Industry Showcases - Optimized loading with top 3 only */}
       <OptimizedIndustryListings />
+
+      {isFeatureEnabled('SHOW_HOME_METRICS') && (
+        <div className="py-12">
+          <LiveStatsBar />
+        </div>
+      )}
 
       {/* Artists Available for Hire - FOMO strip under industry showcases */}
       <ArtistsForHireStrip />

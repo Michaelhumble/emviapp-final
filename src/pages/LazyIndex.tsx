@@ -34,6 +34,9 @@ const LiveStatsBar = lazy(() => import("@/components/home/trust/LiveStatsBar"));
 const TrustBadges = lazy(() => import("@/components/home/trust/TrustBadges"));
 const RealTimeActivity = lazy(() => import("@/components/home/trust/RealTimeActivity"));
 
+import CredibilityRibbon from "@/components/home/CredibilityRibbon";
+import { isFeatureEnabled } from "@/config/premiumFeatures";
+
 const LoadingSpinner = () => (
   <div className="py-8 animate-pulse">
     <div className="container mx-auto px-4">
@@ -60,12 +63,18 @@ const LazyIndex = () => {
       {/* Critical CTA */}
       <JobsCallToAction />
       
+      <div className="px-4">
+        <CredibilityRibbon />
+      </div>
+      
       {/* LAZY: Everything below the fold */}
-      <FallbackBoundary errorMessage="Unable to load stats. Please refresh the page.">
-        <Suspense fallback={<LoadingSpinner />}>
-          <LiveStatsBar />
-        </Suspense>
-      </FallbackBoundary>
+      {isFeatureEnabled('SHOW_HOME_METRICS') && (
+        <FallbackBoundary errorMessage="Unable to load stats. Please refresh the page.">
+          <Suspense fallback={<LoadingSpinner />}>
+            <LiveStatsBar />
+          </Suspense>
+        </FallbackBoundary>
+      )}
 
       {/* Social Media Proof - Simple, no lazy loading needed */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">

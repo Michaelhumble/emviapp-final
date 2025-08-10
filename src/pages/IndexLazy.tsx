@@ -37,6 +37,9 @@ import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
 // Data imports
 import { industryConfig } from "@/data/industryListings";
 
+import CredibilityRibbon from "@/components/home/CredibilityRibbon";
+import { isFeatureEnabled } from "@/config/premiumFeatures";
+
 // Loading component for Suspense
 const SectionSkeleton = () => (
   <div className="py-12 animate-pulse">
@@ -80,12 +83,10 @@ const Index = () => {
       {/* 1. Hero section - Critical, not lazy loaded */}
       <Hero />
       
-      {/* 1.1 Live Stats Bar - Critical above-the-fold */}
-      <section className="relative -mt-16 z-20 px-4 w-full max-w-full">
-        <div className="container mx-auto max-w-full">
-          <LiveStatsBar />
-        </div>
-      </section>
+      {/* Credibility ribbon under hero */}
+      <div className="px-4">
+        <CredibilityRibbon />
+      </div>
       
       {/* 1.2 Social Media Proof - Critical for trust */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
@@ -157,6 +158,18 @@ const Index = () => {
           </div>
         ))}
       </Suspense>
+
+      {isFeatureEnabled('SHOW_HOME_METRICS') && (
+        <div className="py-12">
+          <LiveStatsBar />
+        </div>
+      )}
+      
+      {isFeatureEnabled('SHOW_HOME_METRICS') && (
+        <div className="py-12">
+          <LiveStatsBar />
+        </div>
+      )}
       
       {/* Remaining sections - All lazy loaded */}
       <Suspense fallback={<SectionSkeleton />}>
