@@ -31,10 +31,7 @@ const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://www.emvi.app' }
   // Get primary image
   const image = job.image_urls?.[0] || job.image_url || `${baseUrl}/og-job-default.jpg`;
 
-
-  // Location parsing
-  const { city, region, country } = parseLocation(job.location);
-
+// (location parsed above)
   // Employment type
   const employmentType = (job.employment_type || getEmploymentType(job.category)).toUpperCase();
 
