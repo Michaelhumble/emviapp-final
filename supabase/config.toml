@@ -105,3 +105,5 @@ backend = "postgres"
 [functions.twilio-sms]
 verify_jwt = false
 
+[functions.jobs-sitemap]
+verify_jwt = false

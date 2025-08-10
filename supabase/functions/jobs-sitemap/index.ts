@@ -72,7 +72,7 @@ async function handleIndex(url: URL) {
     try { await fetch(`https://www.bing.com/ping?sitemap=${encoded}`); } catch {}
   }
 
-  return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8', ...corsHeaders } });
+  return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300, s-maxage=600', ...corsHeaders } });
 }
 
 async function handleDaily(dateStr: string) {
@@ -91,7 +91,7 @@ async function handleDaily(dateStr: string) {
     '</urlset>'
   ].join('\n');
 
-  return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8', ...corsHeaders } });
+  return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300, s-maxage=600', ...corsHeaders } });
 }
 
 Deno.serve(async (req) => {
