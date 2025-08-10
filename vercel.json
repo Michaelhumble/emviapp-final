@@ -6,7 +6,14 @@
       "has": [{ "type": "host", "value": "emvi.app" }],
       "destination": "https://www.emvi.app/$1",
       "permanent": true
-    }
+    },
+    { "source": "/jobs/in/saint-:rest", "destination": "/jobs/in/st-:rest", "permanent": true },
+    { "source": "/jobs/in/fort-:rest", "destination": "/jobs/in/ft-:rest", "permanent": true },
+    { "source": "/jobs/saint-:rest", "destination": "/jobs/st-:rest", "permanent": true },
+    { "source": "/jobs/:role/saint-:rest", "destination": "/jobs/:role/st-:rest", "permanent": true },
+    { "source": "/jobs/:role/fort-:rest", "destination": "/jobs/:role/ft-:rest", "permanent": true },
+    { "source": "/artists/:specialty/saint-:rest", "destination": "/artists/:specialty/st-:rest", "permanent": true },
+    { "source": "/artists/:specialty/fort-:rest", "destination": "/artists/:specialty/ft-:rest", "permanent": true }
   ],
   "rewrites": [
     {
@@ -31,6 +38,13 @@
       "headers": [
         { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=600" }
+      ]
+    },
+    {
+      "source": "/locations-sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=900, s-maxage=900" }
       ]
     }
   ]

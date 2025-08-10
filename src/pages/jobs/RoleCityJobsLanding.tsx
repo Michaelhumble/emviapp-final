@@ -74,8 +74,23 @@ export default function RoleCityJobsLanding() {
           <h1 className="text-3xl md:text-4xl font-bold mb-2">{roleTitle} jobs in {label}</h1>
           <p className="text-muted-foreground mb-6">{count} openings in {label}. Apply directly on EmviApp.</p>
 
+          {/* Sibling cities */}
+          <div className="mb-6 flex flex-wrap gap-2 text-sm text-muted-foreground">
+            {["new-york-ny","los-angeles-ca","chicago-il","houston-tx","dallas-tx","phoenix-az"].map((c) => (
+              <a key={c} href={`/jobs/${role}/${c}`} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
+                {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+              </a>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.slice(0, 24).map((j: any) => (<JobCard key={j.id} job={j} />))}
+          </div>
+
+          {/* CTAs */}
+          <div className="mt-10 flex flex-wrap gap-3">
+            <a href="/post-job" className="rounded-xl border border-border bg-card px-4 py-2 hover:bg-accent/30 transition-colors">Post a job</a>
+            <a href={`/artists/${role}/${normalized || cityState}`} className="rounded-xl border border-border bg-card px-4 py-2 hover:bg-accent/30 transition-colors">Browse artists</a>
           </div>
         </Container>
       </section>

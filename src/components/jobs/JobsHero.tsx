@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Link } from "react-router-dom";
 
 interface JobsHeroProps {
   // Optional dynamic counts from parent/hooks
@@ -210,6 +211,42 @@ const JobsHero: React.FC<JobsHeroProps> = ({ jobsCount, avgRating, citiesCount, 
 
           {/* Subtle outer glow */}
           <div className="pointer-events-none select-none h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        </div>
+      </Container>
+
+      {/* Quick access: top cities and role×city links */}
+      <Container className="relative z-10 pb-8">
+        <div className="mt-4 flex flex-wrap gap-2 text-xs sm:text-sm text-muted-foreground" aria-label="quick-city-role-links">
+          {/* Top cities */}
+          {[
+            { to: "/jobs/in/new-york-ny", label: "NYC" },
+            { to: "/jobs/in/los-angeles-ca", label: "Los Angeles" },
+            { to: "/jobs/in/chicago-il", label: "Chicago" },
+            { to: "/jobs/in/houston-tx", label: "Houston" },
+            { to: "/jobs/in/dallas-tx", label: "Dallas" },
+            { to: "/jobs/in/phoenix-az", label: "Phoenix" }
+          ].map((c) => (
+            <Link key={c.to} to={c.to} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
+              {c.label}
+            </Link>
+          ))}
+
+          {/* Divider */}
+          <span className="mx-1 opacity-50">•</span>
+
+          {/* Role × city */}
+          {[
+            { to: "/jobs/nails/los-angeles-ca", label: "Nails in LA" },
+            { to: "/jobs/hair/new-york-ny", label: "Hair in NYC" },
+            { to: "/jobs/barber/chicago-il", label: "Barber in Chicago" },
+            { to: "/jobs/makeup/houston-tx", label: "Makeup in Houston" },
+            { to: "/jobs/brows-lashes/dallas-tx", label: "Brows in Dallas" },
+            { to: "/jobs/skincare/phoenix-az", label: "Skincare in Phoenix" }
+          ].map((c) => (
+            <Link key={c.to} to={c.to} className="rounded-full border border-border bg-card px-3 py-1 hover:bg-accent/30 transition-colors">
+              {c.label}
+            </Link>
+          ))}
         </div>
       </Container>
 
