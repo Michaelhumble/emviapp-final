@@ -53,12 +53,12 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
   hidePhoto = false,
   variant = 'default',
   contactGated,
+  artist,
 }) => {
   const { isVietnamese } = useTranslation();
   
   // Derive fields from provided artist object if present
-  const data = (typeof (arguments as any) !== 'undefined' && (arguments as any)) ? undefined : undefined; // noop to keep tree-shaking happy
-  const source = (typeof (artist) !== 'undefined' && artist) ? (artist as any) : {};
+  const source: any = artist || {};
 
   const effectiveId = id ?? profileId ?? source.user_id ?? source.id;
   const effectiveName = name ?? source.full_name ?? undefined;
@@ -104,7 +104,7 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
               {displayTitle}
             </CardTitle>
             <div className="text-sm text-muted-foreground truncate">
-              {location || (hasName ? (specialties || 'Beauty Professional') : '')}
+              {effectiveLocation || (hasName ? (effectiveSpecialties || 'Beauty Professional') : '')}
             </div>
           </div>
           <StatusBadge available={effectiveAvailable} viewMode={viewMode} />
