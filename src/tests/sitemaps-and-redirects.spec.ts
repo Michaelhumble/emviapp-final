@@ -18,6 +18,12 @@ describe('Sitemaps & Robots (presence checks)', () => {
     const xml = read(SITEMAP_INDEX_PATH);
     expect(xml).toContain('<loc>https://www.emvi.app/sitemap-static.xml</loc>');
     expect(xml).toContain('<loc>https://www.emvi.app/jobs-sitemap.xml</loc>');
+    // Tighten: ensure it's a sitemapindex with exactly the two entries
+    expect(xml).toMatch(/<sitemapindex[\s\S]*<\/sitemapindex>/);
+    const sitemapTags = xml.match(/<sitemap>/g) || [];
+    expect(sitemapTags.length).toBe(2);
+    const locs = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => m[1]).sort();
+    expect(locs).toEqual(['https://www.emvi.app/jobs-sitemap.xml','https://www.emvi.app/sitemap-static.xml'].sort());
   });
 });
 

@@ -65,6 +65,7 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
           "image": primaryImage,
           "url": currentUrl || `${domain}/u/${profile.username || ''}`,
           "jobTitle": profile.specialty,
+          ...(profile.specialty ? { "knowsAbout": [profile.specialty] } : {}),
           "worksFor": profile.salon_name || profile.company_name,
           ...(locationString ? {
             "address": {

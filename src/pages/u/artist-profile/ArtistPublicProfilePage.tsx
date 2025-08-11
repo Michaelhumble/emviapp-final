@@ -8,7 +8,6 @@ import ArtistProfileSEO from "@/components/seo/ArtistProfileSEO";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Helmet } from 'react-helmet-async';
-import { Helmet } from 'react-helmet-async';
 
 const ArtistPublicProfilePage: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -89,6 +88,16 @@ const ArtistPublicProfilePage: React.FC = () => {
               Return Home
             </a>
           </div>
+
+          {/* Similar artists (discovery links) */}
+          <nav aria-label="Similar artists" className="mt-10">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+              <li><a href="https://www.emvi.app/artists/hair/los-angeles-ca">Hair Artists — Los Angeles, CA</a></li>
+              <li><a href="https://www.emvi.app/artists/nails/houston-tx">Nail Artists — Houston, TX</a></li>
+              <li><a href="https://www.emvi.app/artists/makeup/new-york-ny">Makeup Artists — New York, NY</a></li>
+              <li><a href="https://www.emvi.app/artists/barber/dallas-tx">Barbers — Dallas, TX</a></li>
+            </ul>
+          </nav>
         </div>
         {/* SEO: mark unavailable profiles as noindex */}
         <Helmet>
