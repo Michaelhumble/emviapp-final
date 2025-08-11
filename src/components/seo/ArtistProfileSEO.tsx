@@ -25,7 +25,7 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
   const locationString = getLocationString(profile.location);
   
   // Domain for absolute URLs
-  const domain = 'https://emvi.app';
+  const domain = 'https://www.emvi.app';
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   
   return (
@@ -63,15 +63,18 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
           "name": profile.full_name,
           "description": profile.bio,
           "image": primaryImage,
-          "url": currentUrl,
+          "url": currentUrl || `${domain}/u/${profile.username || ''}`,
           "jobTitle": profile.specialty,
           "worksFor": profile.salon_name || profile.company_name,
           ...(locationString ? {
             "address": {
               "@type": "PostalAddress",
               "addressLocality": locationString
-            }
-          } : {})
+            },
+            "areaServed": locationString
+          } : {}),
+          ...(Array.isArray((profile as any).links) ? { "sameAs": ((profile as any).links as string[]).filter((l) => /^https?:\/\//i.test(l)) } : {}),
+          ...(profile.website && /^https?:\/\//i.test(profile.website) ? { "sameAs": [profile.website] } : {})
         })}
       </script>
     </Helmet>

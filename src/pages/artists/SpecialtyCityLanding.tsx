@@ -96,8 +96,14 @@ export default function SpecialtyCityLanding() {
       <section className="py-10">
         <Container>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Hire {specTitle} in {label}</h1>
-          <p className="text-muted-foreground mb-6">{lead}</p>
-
+          <p className="text-muted-foreground mb-3">{lead}</p>
+          <p className="text-muted-foreground mb-6">
+            Find trusted {specTitle.toLowerCase()} in {label} for on‑site or in‑salon work. EmviApp helps you compare
+            portfolios, specialties, and experience so you can book or hire with confidence. Browse verified talent,
+            check availability, and post roles to reach more candidates faster. Whether you need weekend coverage,
+            event support, or a long‑term hire, start here to discover professionals serving neighborhoods across
+            {` ${city}`}. You can also explore nearby areas to widen your options and connect with great matches.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.slice(0, 12).map((a: any) => (
               <ArtistForHireCard key={(a as any).user_id || (a as any).id} artist={a as any} viewMode="public" theme="blue" hidePhoto contactGated variant="blueMinimal" />

@@ -4,8 +4,11 @@ import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { useArtistProfileData } from "./hooks/useArtistProfileData";
 import ArtistProfile from "@/components/artist-profile/ArtistProfile";
+import ArtistProfileSEO from "@/components/seo/ArtistProfileSEO";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet-async';
 
 const ArtistPublicProfilePage: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -87,6 +90,11 @@ const ArtistPublicProfilePage: React.FC = () => {
             </a>
           </div>
         </div>
+        {/* SEO: mark unavailable profiles as noindex */}
+        <Helmet>
+          <meta name="robots" content="noindex, follow" />
+          <link rel="canonical" href={`https://www.emvi.app${typeof window !== 'undefined' ? window.location.pathname : ''}`} />
+        </Helmet>
       </Layout>
     );
   }

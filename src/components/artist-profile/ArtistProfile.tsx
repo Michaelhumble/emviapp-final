@@ -116,6 +116,16 @@ const ArtistProfile = ({
         <ServicesList services={services} />
       </div>
 
+      {/* Similar artists (internal links for discovery) */}
+      <nav aria-label="Similar artists" className="mb-10">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+          <li><a href="https://www.emvi.app/artists/hair/los-angeles-ca">Hair Artists — Los Angeles, CA</a></li>
+          <li><a href="https://www.emvi.app/artists/nails/houston-tx">Nail Artists — Houston, TX</a></li>
+          <li><a href="https://www.emvi.app/artists/makeup/new-york-ny">Makeup Artists — New York, NY</a></li>
+          <li><a href="https://www.emvi.app/artists/barber/dallas-tx">Barbers — Dallas, TX</a></li>
+        </ul>
+      </nav>
+
       {/* Desktop Book Now button (existing logic) */}
       {!isMobile && profile.accepts_bookings && (
         <div className="sticky top-24 float-right -mt-32 ml-8 z-10 max-w-xs w-full shadow-lg rounded-md overflow-hidden">
