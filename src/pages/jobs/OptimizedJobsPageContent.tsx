@@ -29,7 +29,7 @@ const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush } from 'lucide-react';
+import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Quote, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import JobsHero from '@/components/jobs/JobsHero';
 import { CITIES, ROLES } from '@/seo/locations/seed';
@@ -104,6 +104,21 @@ const OptimizedJobsPageContent = () => {
     return sortJobsByTierAndDate([...(filteredFreeJobs || [])]).slice(0, remainingCap);
   }, [filteredFreeJobs, remainingCap]);
 
+  // Metrics & live feed data (scoped to Jobs page only)
+  const activeJobsCount = jobs?.length ?? 0;
+  const featuredJobsCount = paidJobsSorted.length;
+  const availableArtistsCount = artists?.length ?? 0;
+
+  const recentJobs = useMemo(() => {
+    const arr = Array.isArray(jobs) ? [...jobs] : [];
+    return arr
+      .sort((a: any, b: any) => {
+        const bd = new Date(b.updated_at || b.created_at || 0).getTime();
+        const ad = new Date(a.updated_at || a.created_at || 0).getTime();
+        return bd - ad;
+      })
+      .slice(0, 8);
+  }, [jobs]);
   // Handle industry tab pre-selection and deep linking
   useEffect(() => {
     if (industryParam) {
@@ -326,17 +341,114 @@ const OptimizedJobsPageContent = () => {
         </div>
 
         {/* LAZY LOADED SECTIONS - Below the fold */}
-        <Suspense fallback={<div className="py-8" />}>
-          {/* Success Stories */}
-          <SuccessStoriesCarousel />
-          
-          {/* Featured Jobs moved above */}
-          {/* Real-time Activity */}
-          <RealTimeActivity />
-          
-          
-          
-          {/* Other sections */}
+        <Suspense fallback={<div className="py-8" />}>          
+          {/* 1) Real‑Time Platform Activity */}
+          <section id="platform-activity" className="w-full py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <header className="mb-6">
+                <h2 className="text-2xl font-bold tracking-tight">Real‑Time Platform Activity</h2>
+                <p className="text-muted-foreground mt-1">A quick pulse of EmviApp right now</p>
+              </header>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="rounded-2xl border bg-card p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Active jobs</span>
+                    <Star className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-2 text-3xl font-semibold">{activeJobsCount}</div>
+                </div>
+                <div className="rounded-2xl border bg-card p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Featured jobs</span>
+                    <Sparkles className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-2 text-3xl font-semibold">{featuredJobsCount}</div>
+                </div>
+                <div className="rounded-2xl border bg-card p-5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Available artists</span>
+                    <Star className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-2 text-3xl font-semibold">{availableArtistsCount}</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 2) Live Activity Feed */}
+          <section id="live-activity-feed" className="w-full py-12 bg-muted/20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <header className="mb-6">
+                <h2 className="text-2xl font-bold tracking-tight">Live Activity Feed</h2>
+                <p className="text-muted-foreground mt-1">Recent posts from salons and studios</p>
+              </header>
+              <ul className="rounded-2xl border bg-card shadow-sm divide-y">
+                {recentJobs.map((j: any) => (
+                  <li key={j.id} className="p-4 sm:p-5 flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{j.title || j.position || 'New role posted'}</p>
+                      <p className="text-sm text-muted-foreground truncate">
+                        {j.city && j.state ? `${j.city}, ${j.state}` : (j.location || '')}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {new Date(j.updated_at || j.created_at || Date.now()).toLocaleDateString()}
+                    </span>
+                  </li>
+                ))}
+                {recentJobs.length === 0 && (
+                  <li className="p-5 text-sm text-muted-foreground">No activity yet.</li>
+                )}
+              </ul>
+            </div>
+          </section>
+
+          {/* 3) Testimonials */}
+          <section id="testimonials" className="w-full py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <header className="mb-6">
+                <h2 className="text-2xl font-bold tracking-tight">What our community says</h2>
+                <p className="text-muted-foreground mt-1">Trust from beauty pros and owners across the country</p>
+              </header>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  {
+                    quote: "We hired our lead nail tech in 48 hours. The quality is night and day.",
+                    author: "Lana • Salon Owner, Houston",
+                  },
+                  {
+                    quote: "As a barber, I love how fast jobs show up near me—so clean and easy.",
+                    author: "Marcus • Barber, Phoenix",
+                  },
+                  {
+                    quote: "We filled 3 chairs this month. It’s the platform we’ve been waiting for.",
+                    author: "Sarah • Studio Manager, Seattle",
+                  },
+                ].map((t, i) => (
+                  <figure key={i} className="rounded-2xl border bg-card p-6 shadow-sm h-full flex flex-col">
+                    <Quote className="h-6 w-6 text-primary" />
+                    <blockquote className="mt-3 text-base text-foreground/90">{t.quote}</blockquote>
+                    <figcaption className="mt-4 text-sm text-muted-foreground">{t.author}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* 4) Success Stories */}
+          <section id="success-stories" className="w-full py-12 bg-muted/20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <header className="mb-6">
+                <h2 className="text-2xl font-bold tracking-tight">Success Stories</h2>
+                <p className="text-muted-foreground mt-1">Real wins from salons and independent artists</p>
+              </header>
+              <div className="rounded-2xl border bg-card p-4 sm:p-6 shadow-sm">
+                <SuccessStoriesCarousel />
+              </div>
+            </div>
+          </section>
+
+          {/* Other sections (unchanged) */}
           <TeaserLocked />
           <UrgencyBoosters jobs={jobs} />
           <LiveLeaderboards />
