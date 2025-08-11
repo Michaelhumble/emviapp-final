@@ -222,6 +222,7 @@ function App() {
                     
                     {/* Blog Routes */}
                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                    <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                     <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
                     

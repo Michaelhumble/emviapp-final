@@ -8,10 +8,11 @@ const VERCEL_JSON_PATH = 'vercel.json';
 function read(path: string) { return fs.readFileSync(path, 'utf-8'); }
 
 describe('Sitemaps & Robots', () => {
-  it('robots.txt lists only www sitemaps', () => {
+  it('robots.txt lists www sitemaps including blog', () => {
     const robots = read(ROBOTS_PATH);
     expect(robots).toContain('Sitemap: https://www.emvi.app/sitemap.xml');
     expect(robots).toContain('Sitemap: https://www.emvi.app/jobs-sitemap.xml');
+    expect(robots).toContain('Sitemap: https://www.emvi.app/blog-sitemap.xml');
     expect(robots).not.toMatch(/functions\.supabase\.co\/jobs-sitemap/);
     expect(robots).not.toContain('locations-sitemap.xml');
   });
