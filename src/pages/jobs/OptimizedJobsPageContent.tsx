@@ -22,7 +22,7 @@ import ArtistsForHireStrip from '@/components/home/ArtistsForHireStrip';
 import FeaturedPaidJobsSection from '@/components/jobs/FeaturedPaidJobsSection';
 const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSection'));
 const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
-const SuccessStoriesCarousel = lazy(() => import('@/components/jobs/SuccessStoriesCarousel'));
+
 const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
 const TeaserLocked = lazy(() => import('@/components/jobs/TeaserLocked'));
 const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
@@ -435,18 +435,6 @@ const OptimizedJobsPageContent = () => {
             </div>
           </section>
 
-          {/* 4) Success Stories */}
-          <section id="success-stories" className="w-full py-12 bg-muted/20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <header className="mb-6">
-                <h2 className="text-2xl font-bold tracking-tight">Success Stories</h2>
-                <p className="text-muted-foreground mt-1">Real wins from salons and independent artists</p>
-              </header>
-              <div className="rounded-2xl border bg-card p-4 sm:p-6 shadow-sm">
-                <SuccessStoriesCarousel />
-              </div>
-            </div>
-          </section>
 
           {/* Other sections (unchanged) */}
           <TeaserLocked />
