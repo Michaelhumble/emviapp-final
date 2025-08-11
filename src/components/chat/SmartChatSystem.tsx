@@ -7,7 +7,8 @@ import { MobileChatInput } from './MobileChatInput';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useKeyboardVisible } from '@/utils/mobileLayoutManager';
 import { MOBILE_LAYOUT } from '@/utils/mobileLayoutManager';
-
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 interface Message {
   id: string;
   text: string;
@@ -40,6 +41,95 @@ const SmartChatSystem: React.FC = () => {
   
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const location = useLocation();
+  const { isSignedIn, userRole } = useAuth();
+
+  // Build route-aware + role-aware initial CTAs
+  const getInitialCTAs = (
+    path: string,
+    signedIn: boolean,
+    role?: string
+  ): Array<{ label: string; route: string; variant?: 'primary' | 'secondary' }> => {
+    const ctas: Array<{ label: string; route: string; variant?: 'primary' | 'secondary' }> = [];
+
+    const isAuthRoute = path.startsWith('/auth') || path === '/signin' || path === '/login' || path === '/signup-fast-fomo';
+    if (isAuthRoute) {
+      ctas.push(
+        { label: 'Sign In', route: '/signin', variant: 'primary' },
+        { label: 'Sign Up', route: '/auth/signup', variant: 'secondary' }
+      );
+      return ctas;
+    }
+
+    if (path === '/jobs' || /^\/jobs\/in\//.test(path) || /^\/jobs\/[^/]+\/[^/]+$/.test(path)) {
+      ctas.push(
+        { label: '📝 Post a Job', route: '/post-job', variant: 'primary' },
+        { label: '🔍 Find Artists', route: '/artists', variant: 'secondary' }
+      );
+    } else if (/^\/jobs\/[^/]+$/.test(path) && !/^\/jobs\/in\//.test(path)) {
+      ctas.push(
+        { label: 'Apply Now', route: `${path}?action=apply`, variant: 'primary' },
+        { label: 'Contact', route: '/contact', variant: 'secondary' }
+      );
+    } else if (path === '/salons') {
+      ctas.push({ label: '🏢 List Your Salon', route: '/posting/salon', variant: 'primary' });
+    } else if (path === '/artists') {
+      ctas.push(
+        { label: 'Browse Artists', route: '/artists', variant: 'primary' },
+        { label: 'Contact Artist', route: '/contact', variant: 'secondary' }
+      );
+    } else if (/^\/artists\/[^/]+$/.test(path)) {
+      ctas.push(
+        { label: 'Contact This Artist', route: '/contact', variant: 'primary' },
+        { label: 'Book Now', route: '/booking-services', variant: 'secondary' }
+      );
+    } else if (path === '/booking-services') {
+      ctas.push({ label: 'Book Now', route: '/booking-services', variant: 'primary' });
+    } else if (path === '/contact') {
+      ctas.push({ label: 'Open Contact Form', route: '/contact', variant: 'primary' });
+    } else if (path === '/pricing' && signedIn) {
+      ctas.push({ label: 'Upgrade Plan', route: '/pricing', variant: 'primary' });
+    } else if (path === '/dashboard/artist/booking-calendar-new') {
+      ctas.push(
+        { label: 'Invite Client', route: '/dashboard/artist/booking-calendar-new?invite=1', variant: 'primary' },
+        { label: 'Upgrade Plan', route: '/pricing', variant: 'secondary' }
+      );
+    } else if (path === '/dashboard/artist/inbox') {
+      ctas.push(
+        { label: 'Respond', route: '/dashboard/artist/inbox', variant: 'primary' },
+        { label: 'Book Now', route: '/booking-services', variant: 'secondary' }
+      );
+    }
+
+    // Role-aware preference injection
+    const prependIfMissing = (btn: { label: string; route: string; variant?: 'primary' | 'secondary' }) => {
+      if (!ctas.find(b => b.label === btn.label)) ctas.unshift(btn);
+    };
+
+    if (role === 'owner') {
+      prependIfMissing({ label: '📝 Post a Job', route: '/post-job', variant: 'primary' });
+      prependIfMissing({ label: 'Upgrade Plan', route: '/pricing', variant: 'secondary' });
+    } else if (role === 'artist') {
+      prependIfMissing({ label: 'Find Jobs', route: '/jobs', variant: 'primary' });
+      prependIfMissing({ label: 'Build Portfolio', route: '/profile', variant: 'secondary' });
+    }
+
+    return ctas;
+  };
+
+  // Inject route-aware CTAs into the first assistant message
+  useEffect(() => {
+    const routeCTAs = getInitialCTAs(location.pathname, isSignedIn, userRole as any);
+    if (routeCTAs.length === 0) return;
+    setMessages(prev => {
+      if (prev.length > 0 && !prev[0].isUser) {
+        const first = prev[0];
+        const updated = { ...first, ctaButtons: first.ctaButtons && first.ctaButtons.length ? first.ctaButtons : routeCTAs };
+        return [updated, ...prev.slice(1)];
+      }
+      return prev;
+    });
+  }, [location.pathname, isSignedIn, userRole]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -52,7 +142,6 @@ const SmartChatSystem: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('chat-button-preference', chatPreference);
   }, [chatPreference]);
-
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
