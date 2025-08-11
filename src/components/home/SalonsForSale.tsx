@@ -87,7 +87,7 @@ export default function SalonsForSale() {
             <Link to="/salons">
               <Button variant="outline">View All Listings</Button>
             </Link>
-            <ValidatedLink to="/sell-salon/new" listingId="salon-owners" listingType="page" fallbackRoute="/signin?redirect=%2Fsell-salon%2Fnew">
+            <ValidatedLink to="/posting/salon" listingId="salon-owners" listingType="page" fallbackRoute="/signin?redirect=%2Fposting%2Fsalon">
               <Button>List Your Salon</Button>
             </ValidatedLink>
           </div>
