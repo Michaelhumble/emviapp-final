@@ -302,7 +302,7 @@ const SalonsPage = () => {
             <p className="text-gray-700 mb-4">
               Reach thousands of potential clients and talented nail technicians looking for their next opportunity.
             </p>
-            <Link to="/salons/list">
+            <Link to="/sell-salon">
               <Button className="bg-purple-600 hover:bg-purple-700">
                 List Your Salon
               </Button>
