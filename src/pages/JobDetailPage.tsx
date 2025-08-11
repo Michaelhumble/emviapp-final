@@ -156,15 +156,20 @@ const JobDetailPage = () => {
       '@context': 'https://schema.org',
       '@type': 'JobPosting',
       title: job.title,
-      description: job.description || '',
+      description: (job.description || ''),
       datePosted: job.created_at,
       jobLocation: job.location ? { '@type': 'Place', address: job.location } : undefined,
+      identifier: { '@type': 'PropertyValue', name: 'EmviApp', value: job.id },
+      url: `https://www.emvi.app/jobs/${job.id}`,
     } as any;
     if (isExpired) {
       const validThrough = job.expires_at || new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
       base.validThrough = validThrough;
     } else {
       base.hiringOrganization = job.company ? { '@type': 'Organization', name: job.company } : undefined;
+    }
+    if ((job as any).contact_info?.website) {
+      base.sameAs = [(job as any).contact_info.website];
     }
     return JSON.stringify(base);
   })();
@@ -177,7 +182,8 @@ const JobDetailPage = () => {
           name="description" 
           content={`${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`} 
         />
-        <link rel="canonical" href={`${window.location.origin}/jobs/${job.id}`} />
+        <link rel="canonical" href={`https://www.emvi.app/jobs/${job.id}`} />
+        {isExpired && <meta name="robots" content="noindex, follow" />}
         <script type="application/ld+json">{jsonLd}</script>
       </Helmet>
 

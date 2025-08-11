@@ -19,6 +19,8 @@ function generateJobPostingJsonLd(job: Job, isExpired: boolean) {
     datePosted: job.created_at,
     employmentType: job.compensation_type || undefined,
     jobLocation: job.location ? { '@type': 'Place', address: job.location } : undefined,
+    identifier: { '@type': 'PropertyValue', name: 'EmviApp', value: job.id },
+    url: `https://www.emvi.app/jobs/${job.id}`,
   };
 
   if (isExpired) {
@@ -28,6 +30,9 @@ function generateJobPostingJsonLd(job: Job, isExpired: boolean) {
     // Omit applyAction when expired
   } else {
     base.hiringOrganization = job.company ? { '@type': 'Organization', name: job.company } : undefined;
+  }
+  if ((job as any).contact_info?.website) {
+    (base as any).sameAs = [(job as any).contact_info.website];
   }
 
   return JSON.stringify(base);
@@ -117,6 +122,8 @@ const JobDetailDynamicPage: React.FC = () => {
       <Helmet>
         <title>{job.title} | EmviApp</title>
         <meta name="description" content={job.description?.slice(0, 150) || 'Job opportunity on EmviApp'} />
+        <link rel="canonical" href={`https://www.emvi.app/jobs/${job.id}`} />
+        {isExpired && <meta name="robots" content="noindex, follow" />}
         <script type="application/ld+json">{generateJobPostingJsonLd(job, isExpired)}</script>
       </Helmet>
 

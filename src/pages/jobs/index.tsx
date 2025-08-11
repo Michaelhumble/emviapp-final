@@ -371,6 +371,20 @@ const JobsPage = () => {
           </div>
         </section>
 
+        {/* Find artists near you (SEO links) */}
+        <section className="py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav aria-label="Find artists near you">
+              <ul className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                <li><a href="https://www.emvi.app/artists/hair/los-angeles-ca">Hair Artists in Los Angeles, CA</a></li>
+                <li><a href="https://www.emvi.app/artists/nails/houston-tx">Nail Artists in Houston, TX</a></li>
+                <li><a href="https://www.emvi.app/artists/makeup/new-york-ny">Makeup Artists in New York, NY</a></li>
+                <li><a href="https://www.emvi.app/artists/barber/dallas-tx">Barbers in Dallas, TX</a></li>
+              </ul>
+            </nav>
+          </div>
+        </section>
+
         {/* PREMIUM SECTION UNDER HERO - Stats, CTA, Social Proof */}
         <section className="relative bg-gradient-to-br from-slate-50/80 via-white to-purple-50/30 dark:from-slate-900/80 dark:via-slate-800/50 dark:to-slate-900/80 py-24 overflow-hidden">
           {/* Background Effects */}

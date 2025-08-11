@@ -123,6 +123,20 @@ const Index = () => {
       <Suspense fallback={<SectionSkeleton />}>
         <JobsCallToAction />
       </Suspense>
+
+      {/* Find artists near you (SEO links) */}
+      <section className="py-6">
+        <div className="container mx-auto px-4">
+          <nav aria-label="Find artists near you">
+            <ul className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+              <li><a href="https://www.emvi.app/artists/hair/los-angeles-ca">Hair Artists in Los Angeles, CA</a></li>
+              <li><a href="https://www.emvi.app/artists/nails/houston-tx">Nail Artists in Houston, TX</a></li>
+              <li><a href="https://www.emvi.app/artists/makeup/new-york-ny">Makeup Artists in New York, NY</a></li>
+              <li><a href="https://www.emvi.app/artists/barber/dallas-tx">Barbers in Dallas, TX</a></li>
+            </ul>
+          </nav>
+        </div>
+      </section>
       
       {/* CTA Repeater after hero/jobs section */}
       <CTARepeater variant="primary" />

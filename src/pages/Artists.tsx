@@ -38,6 +38,37 @@ const Artists = () => {
     return { "@context": "https://schema.org", "@type": "ItemList", itemListElement } as any;
   }, [items]);
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How do I hire artists on EmviApp?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Browse verified artists, view their specialties and locations, then contact or book through their profiles."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "What specialties are available?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "You can find hair, nails, makeup, barber, skincare, brows & lashes, tattoo, and massage professionals."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "Is EmviApp free for artists?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, artists can create a free profile. Employers can post jobs or contact talent directly."
+        }
+      }
+    ]
+  } as const;
+
   return (
     <Layout>
       <Helmet>
@@ -48,7 +79,7 @@ const Artists = () => {
       <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
         { name: 'Home', url: 'https://www.emvi.app' },
         { name: 'Artists', url: 'https://www.emvi.app/artists' }
-      ]), jsonLd]} />
+      ]), jsonLd, faqJsonLd]} />
 
 
       {/* Hero */}
@@ -80,6 +111,42 @@ const Artists = () => {
               </div>
             </div>
           </div>
+        </Container>
+      </section>
+
+      {/* SEO Intro Copy */}
+      <section className="py-8 bg-white">
+        <Container>
+          <article className="prose max-w-3xl mx-auto">
+            <h2 className="sr-only">About hiring artists on EmviApp</h2>
+            <p>
+              EmviApp helps salons and clients discover verified beauty professionals ready for work.
+              Browse artists by specialty and city, view real portfolios and experience, and hire with
+              confidence. Whether you need a last‑minute nail tech in Houston or a senior hair stylist in
+              Los Angeles, our marketplace makes it easy to compare talent, check availability, and connect
+              fast. Artists showcase skills, pricing, and areas served; employers post roles and reach
+              matching candidates instantly. Start exploring below to find the right professional for your
+              needs today.
+            </p>
+          </article>
+        </Container>
+      </section>
+
+      {/* Crawlable specialty/city links */}
+      <section className="py-4">
+        <Container>
+          <nav aria-label="Popular artist searches">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              <li><a href="/artists/hair/los-angeles-ca">Hair Artists in Los Angeles, CA</a></li>
+              <li><a href="/artists/nails/houston-tx">Nail Artists in Houston, TX</a></li>
+              <li><a href="/artists/makeup/new-york-ny">Makeup Artists in New York, NY</a></li>
+              <li><a href="/artists/barber/dallas-tx">Barbers in Dallas, TX</a></li>
+              <li><a href="/artists/skincare/miami-fl">Skincare Specialists in Miami, FL</a></li>
+              <li><a href="/artists/brows-lashes/phoenix-az">Brows & Lashes in Phoenix, AZ</a></li>
+              <li><a href="/artists/tattoo/atlanta-ga">Tattoo Artists in Atlanta, GA</a></li>
+              <li><a href="/artists/massage/chicago-il">Massage Therapists in Chicago, IL</a></li>
+            </ul>
+          </nav>
         </Container>
       </section>
 
@@ -183,6 +250,12 @@ const Artists = () => {
                 ) : (
                   <div>Nothing to show yet — sign in to see who is available.</div>
                 )}
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                  <a href="/artists/hair/los-angeles-ca" className="border rounded-lg p-4 text-center">Hair Artists — Los Angeles, CA</a>
+                  <a href="/artists/nails/houston-tx" className="border rounded-lg p-4 text-center">Nail Artists — Houston, TX</a>
+                  <a href="/artists/makeup/new-york-ny" className="border rounded-lg p-4 text-center">Makeup Artists — New York, NY</a>
+                  <a href="/artists/barber/dallas-tx" className="border rounded-lg p-4 text-center">Barbers — Dallas, TX</a>
+                </div>
                 <div className="mt-4">
                   <a href="/dashboard/profile">
                     <Button>Create Free Profile</Button>
