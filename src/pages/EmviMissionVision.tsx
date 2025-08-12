@@ -143,11 +143,15 @@ const EmviMissionVision: React.FC = () => {
 
       <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
         <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight font-display">
-            <span className="animate-gradient bg-clip-text text-transparent">EmviApp – Sứ mệnh & Tầm nhìn</span>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display">
+            <span className="animate-gradient bg-clip-text text-transparent">
+              {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
+            </span>
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-foreground/80">
-            Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.
+          <p className="mt-4 text-lg md:text-xl text-foreground/80 font-primary md:mt-5">
+            {view === 'vi'
+              ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
+              : 'From a family beauty story to an automation platform for the industry — bookings, SEO, and growth built in.'}
           </p>
 
           {/* Meta: byline, date, read time */}
