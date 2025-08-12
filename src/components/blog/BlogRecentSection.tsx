@@ -54,7 +54,7 @@ const BlogRecentSection: React.FC<BlogRecentSectionProps> = ({
             
             {/* Dual CTA Implementation */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/auth/signup?redirect=%2F">
+              <Link to="/signup?redirect=%2F">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
@@ -63,7 +63,7 @@ const BlogRecentSection: React.FC<BlogRecentSectionProps> = ({
                 </Button>
               </Link>
               
-              <Link to="/auth/signin?redirect=%2F">
+              <Link to="/signin?redirect=%2F">
                 <Button 
                   variant="outline" 
                   size="lg"

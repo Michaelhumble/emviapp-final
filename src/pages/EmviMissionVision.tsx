@@ -10,7 +10,7 @@ import BlogArticleLayout from '@/components/blog/BlogArticleLayout';
 // Bilingual Article Page: EmviApp Mission & Vision
 // English is default; Vietnamese shown via local toggle (does not affect global language)
 
-const CANONICAL_URL = 'https://emvi.app/emviapp-mission-vision';
+const CANONICAL_URL = 'https://www.emvi.app/emviapp-mission-vision';
 // Uploaded Sunshine chat screenshots (kept as runtime URLs)
 const sunshineChatVi1 = '/lovable-uploads/fb1b7b1f-0426-41e1-b648-f5f066cd0848.png';
 const sunshineChatVi2 = '/lovable-uploads/98bd303a-e851-44af-9e8f-c775d178a7b6.png';
@@ -34,7 +34,7 @@ const EmviMissionVision: React.FC = () => {
     image: happyCustomersImg,
   };
 
-  const articleUrl = `${CANONICAL_URL}?lang=vi`;
+  const articleUrl = CANONICAL_URL;
 
   return (
     <BlogArticleLayout

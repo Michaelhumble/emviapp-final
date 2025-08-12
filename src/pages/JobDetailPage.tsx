@@ -271,7 +271,7 @@ const JobDetailPage = () => {
               <h2 className="text-lg font-semibold">This job is no longer accepting applications.</h2>
               <p className="text-sm text-muted-foreground mt-1">Recently filled. Sign in to see open roles or post a job to hire faster.</p>
               <div className="mt-3 flex gap-2">
-                <Button onClick={() => navigate('/auth/signin?redirect=/jobs')}>Sign in to see open roles</Button>
+                <Button onClick={() => navigate('/signin?redirect=/jobs')}>Sign in to see open roles</Button>
                 <Button variant="outline" onClick={() => navigate('/post-job')}>Post a job</Button>
               </div>
             </div>

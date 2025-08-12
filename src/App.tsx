@@ -127,6 +127,7 @@ function App() {
                      {/* Auth routes */}
                      <Route path="/login" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
+                     <Route path="/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
                      <Route path="/signup-fast-fomo" element={<Suspense fallback={<SimpleLoadingFallback />}><SignupFastFomo /></Suspense>} />
                      <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
                      <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />

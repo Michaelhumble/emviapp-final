@@ -317,7 +317,7 @@ export const EnhancedSignUpForm = () => {
                 <p className="text-sm text-gray-600">
                   Already have an account?{" "}
                   <Link 
-                    to="/auth/signin" 
+                    to="/signin" 
                     className="font-semibold text-rose-600 hover:text-rose-700 transition-colors duration-200 underline-offset-2 hover:underline"
                   >
                     Welcome Back! Sign In

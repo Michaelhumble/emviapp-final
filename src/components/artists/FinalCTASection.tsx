@@ -56,7 +56,7 @@ const FinalCTASection = () => {
               <div className="space-y-4">
                 <SmartCTAButton
                   primaryText="Apply Now—Free VIP Badge!"
-                  primaryRoute="/auth/signup"
+                  primaryRoute="/signup"
                   intent="signup"
                   size="lg"
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 text-black hover:from-yellow-500 hover:to-orange-500 font-bold text-lg py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
@@ -117,7 +117,7 @@ const FinalCTASection = () => {
                   </Button>
                 </Link>
                 
-                <Link to="/explore/salons">
+                <Link to="/salons">
                   <Button 
                     variant="outline"
                     size="lg"

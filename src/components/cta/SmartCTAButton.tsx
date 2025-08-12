@@ -38,7 +38,7 @@ const SmartCTAButton: React.FC<SmartCTAButtonProps> = ({
   // Smart routing logic based on auth state and intent
   const getSmartRoute = (route: string): string => {
     if (requiresAuth && !user) {
-      return `/auth/signin?redirect=${encodeURIComponent(route)}`;
+      return `/signin?redirect=${encodeURIComponent(route)}`;
     }
     return route;
   };
@@ -64,13 +64,13 @@ const SmartCTAButton: React.FC<SmartCTAButtonProps> = ({
     } else {
       switch (intent) {
         case 'signup':
-          return { text: 'Already have account? Sign In', route: '/auth/signin' };
+          return { text: 'Already have account? Sign In', route: '/signin' };
         case 'post-job':
           return { text: 'Browse First', route: '/jobs' };
         case 'browse':
-          return { text: 'Sign Up', route: '/auth/signup' };
+          return { text: 'Sign Up', route: '/signup' };
         default:
-          return { text: 'Sign In', route: '/auth/signin' };
+          return { text: 'Sign In', route: '/signin' };
       }
     }
   };

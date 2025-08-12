@@ -23,7 +23,7 @@ export const AuthRedirect = () => {
 
     // NOT SIGNED IN: Redirect to sign in
     if (!isSignedIn || !user) {
-      navigate('/auth/signin');
+      navigate('/signin');
       return;
     }
 

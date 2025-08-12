@@ -32,4 +32,16 @@ describe('vercel.json redirects', () => {
   it('has 301 /login → /signin', () => {
     expect(findRule('/login', '/signin')).toBeTruthy();
   });
+
+  it('has 301 /auth/signup → /signup', () => {
+    expect(findRule('/auth/signup', '/signup')).toBeTruthy();
+  });
+
+  it('has 301 /auth/signin → /signin', () => {
+    expect(findRule('/auth/signin', '/signin')).toBeTruthy();
+  });
+
+  it('has 301 legacy mission-vision blog path → canonical', () => {
+    expect(findRule('/blog/emviapp-vision/emviapp-mission-vision', '/emviapp-mission-vision')).toBeTruthy();
+  });
 });
