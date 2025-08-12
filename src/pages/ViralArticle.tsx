@@ -21,7 +21,7 @@ const ViralArticle = () => {
         <meta property="og:title" content="From Invisible to Unstoppable: How EmviApp Is Changing the Future of Beauty—for Everyone" />
         <meta property="og:description" content="Discover how EmviApp is transforming lives, building community, and making beauty visible—for everyone." />
         <meta property="og:type" content="article" />
-        <link rel="canonical" href="https://emviapp.com/article/from-invisible-to-unstoppable" />
+        <link rel="canonical" href="https://www.emvi.app/article/from-invisible-to-unstoppable" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
@@ -41,7 +41,7 @@ const ViralArticle = () => {
                 <Link to="/jobs" className="text-gray-600 hover:text-purple-600 transition-colors">
                   Browse Jobs
                 </Link>
-                <Link to="/auth/signup">
+                <Link to="/signup">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                     Join EmviApp
                   </Button>
@@ -497,7 +497,7 @@ const ViralArticle = () => {
               </p>
               
               <div className="flex flex-wrap justify-center gap-4 mb-8">
-                <Link to="/auth/signup?redirect=%2F">
+                <Link to="/signup?redirect=%2F">
                   <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg">
                     <Sparkles className="w-5 h-5 mr-2" />
                     Join EmviApp Free

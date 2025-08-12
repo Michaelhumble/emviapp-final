@@ -58,7 +58,7 @@ const BookingForm = ({ artistId, artistName, services, onClose }: BookingFormPro
   const handleSubmit = async () => {
     if (!user) {
       toast.error("You must be logged in to book an appointment");
-      navigate("/auth/signin", { state: { returnTo: window.location.pathname } });
+      navigate("/signin", { state: { returnTo: window.location.pathname } });
       return;
     }
 

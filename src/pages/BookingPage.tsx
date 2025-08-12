@@ -87,7 +87,7 @@ const BookingPage = () => {
 
     if (!user) {
       toast.error('You must be logged in to make a booking');
-      navigate('/auth/signin');
+      navigate('/signin');
       return;
     }
 

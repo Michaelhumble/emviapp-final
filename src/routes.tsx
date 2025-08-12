@@ -405,7 +405,7 @@ const routes = [
     element: <MyBookingsPage />,
   },
   {
-    path: '/sign-in',
+    path: '/signin',
     element: <SignIn />,
   },
   {
