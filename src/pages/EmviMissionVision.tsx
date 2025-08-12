@@ -1,11 +1,11 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
 import sunshineChatImg from '@/assets/emvi/sunshine-chat-premium.jpg';
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
 import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
 // Bilingual Article Page: EmviApp Mission & Vision
