@@ -291,128 +291,170 @@ function EnglishArticle() {
 
 function VietnameseArticle() {
   return (
-    <div className="whitespace-pre-wrap">
-EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa
-Câu chuyện bắt đầu từ quầy tiếp tân
-Tôi sinh ra và lớn lên trong một gia đình làm đẹp. Nhà tôi làm đủ mọi thứ: nails, tóc, nối mi, spa, massage… Tôi lớn lên giữa mùi nước sơn, tiếng máy sấy tóc, và tiếng trò chuyện rộn ràng của khách hàng.
+    <div className="space-y-6">
+      <h2>EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa</h2>
 
-Tôi thấy ba mẹ và anh chị vừa phục vụ khách, vừa ghi chép tay, vừa phải nhớ lịch hẹn, vừa tính toán tip và lương cho nhân viên.
+      <h3>Câu chuyện bắt đầu từ quầy tiếp tân</h3>
+      <p>Tôi sinh ra và lớn lên trong một gia đình làm đẹp. Nhà tôi làm đủ mọi thứ: nails, tóc, nối mi, spa, massage… Tôi lớn lên giữa mùi nước sơn, tiếng máy sấy tóc, và tiếng trò chuyện rộn ràng của khách hàng.</p>
+      <p>Tôi thấy ba mẹ và anh chị vừa phục vụ khách, vừa ghi chép tay, vừa phải nhớ lịch hẹn, vừa tính toán tip và lương cho nhân viên.</p>
+      <p>Tôi luôn nghĩ:</p>
+      <blockquote>“Nếu có một hệ thống để tất cả mọi thứ này tự động hóa, để gia đình chỉ tập trung vào khách hàng, thì tốt biết mấy…”</blockquote>
 
-Tôi luôn nghĩ:
+      <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+        <div className="aspect-[21/9] w-full">
+          <OptimizedBlogImage
+            src={happyCustomersImg}
+            alt="Khoảnh khắc chân thực tại salon – khách hàng và nghệ nhân làm đẹp"
+            aspectRatio="21/9"
+            sizes="(min-width: 1024px) 1100px, 100vw"
+            className="w-full h-full object-cover"
+            priority
+          />
+        </div>
+        <figcaption className="px-4 py-2 text-sm text-muted-foreground">Khoảnh khắc chân thực tại salon</figcaption>
+      </figure>
 
-“Nếu có một hệ thống để tất cả mọi thứ này tự động hóa, để gia đình chỉ tập trung vào khách hàng, thì tốt biết mấy…”
+      <h3>Từ web app gia đình đến EmviApp</h3>
+      <p>Ban đầu, tôi chỉ định xây một web app cho gia đình.</p>
+      <p>Tại sao không phải app di động? Vì tôi biết một sự thật mà ít chủ salon để ý:</p>
+      <p>Nếu phát hành qua App Store, Apple sẽ thu 30% phí trên mỗi giao dịch trong ứng dụng.</p>
+      <p>Nghĩa là, cứ $100 khách thanh toán qua app, Apple lấy $30 — số tiền đáng lẽ ra nên dùng để tái đầu tư vào dịch vụ và khách hàng.</p>
+      <p>Khi web app của gia đình tôi vận hành trơn tru, mẹ tôi nói:</p>
+      <blockquote>“App này tốt quá, sao con không làm để mọi người dùng luôn?”</blockquote>
+      <p>Vậy là từ một ý định nhỏ, tôi tạo ra EmviApp – nền tảng để mọi salon có ứng dụng riêng ngay lập tức, mà không phải tốn hàng chục ngàn đô để phát triển và vận hành.</p>
 
-Từ web app gia đình đến EmviApp
-Ban đầu, tôi chỉ định xây một web app cho gia đình.
-Tại sao không phải app di động? Vì tôi biết một sự thật mà ít chủ salon để ý:
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <div className="aspect-[16/9] w-full">
+            <OptimizedBlogImage
+              src={bookingCalendarImg}
+              alt="Đặt lịch nhanh, trực quan của EmviApp"
+              aspectRatio="16/9"
+              sizes="(min-width: 1024px) 540px, 100vw"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
+        </figure>
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <div className="aspect-[16/9] w-full">
+            <OptimizedBlogImage
+              src={sunshineChatImg}
+              alt="Chatbot Little Sunshine hỗ trợ 24/7"
+              aspectRatio="16/9"
+              sizes="(min-width: 1024px) 540px, 100vw"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Trợ lý 24/7</figcaption>
+        </figure>
+      </div>
 
-Nếu phát hành qua App Store, Apple sẽ thu 30% phí trên mỗi giao dịch trong ứng dụng.
+      <h3>Sự thật về việc tự xây app</h3>
+      <p>Nhiều chủ salon nghĩ: “Mình có thể tự làm app để giữ khách hàng.” Nhưng đây là thực tế:</p>
+      <h3>1. Chi phí phát triển ban đầu</h3>
+      <p>App cơ bản: $10.000 – $50.000</p>
+      <p>App tùy chỉnh: $50.000 – $200.000+</p>
+      <h3>2. Hosting & duy trì</h3>
+      <p>$100 – $500/tháng cho máy chủ ổn định</p>
+      <p>Thêm phí bảo mật, sao lưu dữ liệu, chứng chỉ SSL</p>
+      <h3>3. Cập nhật & bảo trì</h3>
+      <p>Mỗi lần iOS/Android cập nhật, cần thuê lập trình viên để nâng cấp mã nguồn: $500 – $5.000/lần</p>
+      <h3>4. Marketing & quảng cáo</h3>
+      <p>Không ai biết app của bạn nếu không chạy quảng cáo Google/Facebook: $1.000 – $5.000/tháng</p>
+      <h3>5. SEO</h3>
+      <p>Muốn app xuất hiện khi khách tìm “nail salon gần tôi” cần chiến lược SEO chuyên nghiệp: $500 – $2.000/tháng</p>
+      <h3>6. Hoa hồng App Store</h3>
+      <p>30% trên mỗi giao dịch in-app — tiền ra đi trước khi bạn kịp chạm vào.</p>
+      <p>Kết quả? Sau khi trả mọi chi phí, nhiều app vẫn không đem lại khách mới. Và trong khi đó, khách hàng quay lại giảm dần vì không có chiến lược giữ chân hiệu quả.</p>
 
-Nghĩa là, cứ $100 khách thanh toán qua app, Apple lấy $30 — số tiền đáng lẽ ra nên dùng để tái đầu tư vào dịch vụ và khách hàng.
+      <h3>Các ứng dụng khác vs EmviApp</h3>
+      <table className="w-full border-separate border-spacing-y-2">
+        <thead>
+          <tr>
+            <th className="text-left px-4 py-2">Các ứng dụng khác</th>
+            <th className="text-left px-4 py-2">EmviApp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr className="bg-muted/50"><td className="px-4 py-3 rounded-l-xl">Thu phí hoa hồng và phí ẩn</td><td className="px-4 py-3 rounded-r-xl">Không hoa hồng, giá minh bạch</td></tr>
+          <tr className="bg-muted/40"><td className="px-4 py-3 rounded-l-xl">Tập trung vào bán quảng cáo</td><td className="px-4 py-3 rounded-r-xl">Tập trung đưa khách hàng đến salon</td></tr>
+          <tr className="bg-muted/50"><td className="px-4 py-3 rounded-l-xl">Không hiểu ngành làm đẹp</td><td className="px-4 py-3 rounded-r-xl">Xây dựng bởi người sinh ra và lớn lên trong ngành</td></tr>
+          <tr className="bg-muted/40"><td className="px-4 py-3 rounded-l-xl">Không có SEO tự động</td><td className="px-4 py-3 rounded-r-xl">SEO tự động theo ZIP code & dịch vụ</td></tr>
+          <tr className="bg-muted/50"><td className="px-4 py-3 rounded-l-xl">Cần kỹ năng công nghệ cao</td><td className="px-4 py-3 rounded-r-xl">Chỉ cần đăng ký, mọi thứ đã sẵn sàng</td></tr>
+        </tbody>
+      </table>
 
-Khi web app của gia đình tôi vận hành trơn tru, mẹ tôi nói:
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <div className="aspect-[16/9] w-full">
+            <OptimizedBlogImage
+              src={salonOffersImg}
+              alt="Ưu đãi và khuyến mãi của salon"
+              aspectRatio="16/9"
+              sizes="(min-width: 1024px) 540px, 100vw"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Ưu đãi được cá nhân hoá</figcaption>
+        </figure>
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <div className="aspect-[16/9] w-full">
+            <OptimizedBlogImage
+              src={seoLocalSearchImg}
+              alt="SEO địa phương tự động – bản đồ và kết quả tìm kiếm"
+              aspectRatio="16/9"
+              sizes="(min-width: 1024px) 540px, 100vw"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">SEO địa phương tự động</figcaption>
+        </figure>
+      </div>
 
-“App này tốt quá, sao con không làm để mọi người dùng luôn?”
+      <h3>SEO – Bí mật để có khách hàng không giới hạn</h3>
+      <p>SEO (Search Engine Optimization) là cách giúp salon xuất hiện trên Google khi khách tìm kiếm dịch vụ.</p>
+      <p>Với EmviApp:</p>
+      <p>Mỗi khi bạn đăng salon hoặc tin tuyển dụng, hệ thống tự tạo một trang web tối ưu SEO theo vị trí, dịch vụ, và từ khóa.</p>
+      <p>Google lập chỉ mục và hiển thị salon của bạn khi khách tìm “tiệm nail gần tôi” hoặc “cắt tóc ở [Tên Thành Phố]”.</p>
+      <p>Không cần thuê agency, không cần chạy quảng cáo — mọi thứ diễn ra tự động.</p>
+      <p>Điều này biến mỗi salon trên EmviApp thành một “mini-website” có khả năng thu hút khách hàng mới hàng ngày.</p>
 
-Vậy là từ một ý định nhỏ, tôi tạo ra EmviApp – nền tảng để mọi salon có ứng dụng riêng ngay lập tức, mà không phải tốn hàng chục ngàn đô để phát triển và vận hành.
+      <h3>Little Sunshine – Trợ lý không bao giờ ngủ</h3>
+      <p>Little Sunshine không chỉ là một chatbot.</p>
+      <p>Cô ấy là:</p>
+      <ul className="list-disc ml-5 space-y-1">
+        <li>Lễ tân 24/7: Luôn sẵn sàng tiếp nhận và trả lời khách.</li>
+        <li>Nhân viên bán hàng: Giới thiệu dịch vụ, upsell các gói chăm sóc.</li>
+        <li>Trợ lý cá nhân: Hỗ trợ salon quản lý lịch, khách hàng, và ưu đãi.</li>
+      </ul>
 
-Sự thật về việc tự xây app
-Nhiều chủ salon nghĩ: “Mình có thể tự làm app để giữ khách hàng.” Nhưng đây là thực tế:
+      <p>📌 Tương lai:</p>
+      <ul className="list-disc ml-5 space-y-1">
+        <li>Mỗi khách hàng, nghệ nhân, và salon sẽ có chatbot riêng.</li>
+        <li>Chatbot sẽ nói chuyện trực tiếp với nhau để đặt và xác nhận lịch hẹn.</li>
+      </ul>
 
-1. Chi phí phát triển ban đầu
+      <p>Ví dụ:</p>
+      <p>Chị Hoa mở EmviApp, thấy ưu đãi uốn tóc + dưỡng phục hồi từ salon gần nhà.</p>
+      <p>Chị nhắn chatbot: “Đặt cho chị sáng thứ Bảy, khoảng 10 giờ.”</p>
+      <p>Chatbot của chị Hoa tự động tìm salon phù hợp, kiểm tra lịch rảnh, và liên hệ chatbot của salon.</p>
+      <p>Hai chatbot thống nhất thời gian, gửi thông báo xác nhận cho cả hai bên.</p>
+      <p>Salon chỉ cần xác nhận — lịch đã được đặt.</p>
 
-App cơ bản: $10.000 – $50.000
+      <h3>Hệ thống mang khách hàng đến liên tục</h3>
+      <p>Không chỉ giữ khách cũ, EmviApp được thiết kế để mang khách mới đến mỗi ngày thông qua:</p>
+      <ul className="list-disc ml-5 space-y-1">
+        <li>SEO tự động.</li>
+        <li>Đề xuất dịch vụ và ưu đãi cho khách gần khu vực.</li>
+        <li>Hệ thống đặt lịch nhanh chỉ với vài thao tác.</li>
+        <li>Chatbot chủ động gợi ý và nhắc lịch cho khách.</li>
+      </ul>
 
-App tùy chỉnh: $50.000 – $200.000+
-
-2. Hosting & duy trì
-
-$100 – $500/tháng cho máy chủ ổn định
-
-Thêm phí bảo mật, sao lưu dữ liệu, chứng chỉ SSL
-
-3. Cập nhật & bảo trì
-
-Mỗi lần iOS/Android cập nhật, cần thuê lập trình viên để nâng cấp mã nguồn: $500 – $5.000/lần
-
-4. Marketing & quảng cáo
-
-Không ai biết app của bạn nếu không chạy quảng cáo Google/Facebook: $1.000 – $5.000/tháng
-
-5. SEO
-
-Muốn app xuất hiện khi khách tìm “nail salon gần tôi” cần chiến lược SEO chuyên nghiệp: $500 – $2.000/tháng
-
-6. Hoa hồng App Store
-
-30% trên mỗi giao dịch in-app — tiền ra đi trước khi bạn kịp chạm vào.
-
-Kết quả? Sau khi trả mọi chi phí, nhiều app vẫn không đem lại khách mới. Và trong khi đó, khách hàng quay lại giảm dần vì không có chiến lược giữ chân hiệu quả.
-
-Các ứng dụng khác vs EmviApp
-Các ứng dụng khác	EmviApp
-Thu phí hoa hồng và phí ẩn	Không hoa hồng, giá minh bạch
-Tập trung vào bán quảng cáo	Tập trung đưa khách hàng đến salon
-Không hiểu ngành làm đẹp	Xây dựng bởi người sinh ra và lớn lên trong ngành
-Không có SEO tự động	SEO tự động theo ZIP code & dịch vụ
-Cần kỹ năng công nghệ cao	Chỉ cần đăng ký, mọi thứ đã sẵn sàng
-
-SEO – Bí mật để có khách hàng không giới hạn
-SEO (Search Engine Optimization) là cách giúp salon xuất hiện trên Google khi khách tìm kiếm dịch vụ.
-
-Với EmviApp:
-
-Mỗi khi bạn đăng salon hoặc tin tuyển dụng, hệ thống tự tạo một trang web tối ưu SEO theo vị trí, dịch vụ, và từ khóa.
-
-Google lập chỉ mục và hiển thị salon của bạn khi khách tìm “tiệm nail gần tôi” hoặc “cắt tóc ở [Tên Thành Phố]”.
-
-Không cần thuê agency, không cần chạy quảng cáo — mọi thứ diễn ra tự động.
-
-Điều này biến mỗi salon trên EmviApp thành một “mini-website” có khả năng thu hút khách hàng mới hàng ngày.
-
-Little Sunshine – Trợ lý không bao giờ ngủ
-Little Sunshine không chỉ là một chatbot.
-Cô ấy là:
-
-Lễ tân 24/7: Luôn sẵn sàng tiếp nhận và trả lời khách.
-
-Nhân viên bán hàng: Giới thiệu dịch vụ, upsell các gói chăm sóc.
-
-Trợ lý cá nhân: Hỗ trợ salon quản lý lịch, khách hàng, và ưu đãi.
-
-📌 Tương lai:
-
-Mỗi khách hàng, nghệ nhân, và salon sẽ có chatbot riêng.
-
-Chatbot sẽ nói chuyện trực tiếp với nhau để đặt và xác nhận lịch hẹn.
-
-Ví dụ:
-
-Chị Hoa mở EmviApp, thấy ưu đãi uốn tóc + dưỡng phục hồi từ salon gần nhà.
-
-Chị nhắn chatbot: “Đặt cho chị sáng thứ Bảy, khoảng 10 giờ.”
-
-Chatbot của chị Hoa tự động tìm salon phù hợp, kiểm tra lịch rảnh, và liên hệ chatbot của salon.
-
-Hai chatbot thống nhất thời gian, gửi thông báo xác nhận cho cả hai bên.
-
-Salon chỉ cần xác nhận — lịch đã được đặt.
-
-Hệ thống mang khách hàng đến liên tục
-Không chỉ giữ khách cũ, EmviApp được thiết kế để mang khách mới đến mỗi ngày thông qua:
-
-SEO tự động.
-
-Đề xuất dịch vụ và ưu đãi cho khách gần khu vực.
-
-Hệ thống đặt lịch nhanh chỉ với vài thao tác.
-
-Chatbot chủ động gợi ý và nhắc lịch cho khách.
-
-Lời mời của EmviApp
-Bạn không cần tự mình xây dựng, trả phí hosting, thuê đội ngũ kỹ thuật, chạy SEO, hoặc lo quảng cáo.
-Chúng tôi đã làm tất cả.
-Bạn chỉ cần bắt đầu, và để EmviApp làm phần còn lại.
+      <h3>Lời mời của EmviApp</h3>
+      <p>Bạn không cần tự mình xây dựng, trả phí hosting, thuê đội ngũ kỹ thuật, chạy SEO, hoặc lo quảng cáo.</p>
+      <p>Chúng tôi đã làm tất cả.</p>
+      <p>Bạn chỉ cần bắt đầu, và để EmviApp làm phần còn lại.</p>
     </div>
   );
 }
