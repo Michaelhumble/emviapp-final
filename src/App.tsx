@@ -91,6 +91,7 @@ const BookingServices = lazy(() => import("@/pages/BookingServices"));
 const Artists = lazy(() => import("@/pages/Artists"));
 const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
+const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 
 function App() {
   const location = useLocation();
@@ -188,6 +189,7 @@ function App() {
                      <Route path="/about" element={<Layout><About /></Layout>} />
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
+                     <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
                      <Route path="/terms" element={<Layout><Terms /></Layout>} />
                      <Route path="/refund" element={<Layout><Refund /></Layout>} />
                      <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
