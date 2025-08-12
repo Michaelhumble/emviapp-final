@@ -102,7 +102,7 @@ const BlogArticleLayout: React.FC<BlogArticleLayoutProps> = ({
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent font-display">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 {article.title}
               </h1>
 
@@ -146,7 +146,7 @@ const BlogArticleLayout: React.FC<BlogArticleLayoutProps> = ({
             </div>
 
             {/* Article Content */}
-            <div className="prose prose-lg max-w-none leading-relaxed prose-headings:font-display">
+            <div className="prose prose-lg max-w-none">
               {children}
             </div>
 

@@ -60,7 +60,7 @@ const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
 const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/BoothRentVsCommission2025'));
-const EmviStoryVietnamese = lazy(() => import('@/pages/blog/EmviStoryVietnamese'));
+const EmviMissionVisionRedirect = lazy(() => import('@/pages/blog/articles/EmviMissionVisionRedirect'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
@@ -116,21 +116,21 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     url: '/blog/the-beauty-revolution'
   },
   {
-    id: 'emviapp-story-vi',
-    slug: 'emviapp-story-vi',
-    title: 'EmviApp — Câu Chuyện Vượt Chuẩn, Tự Động Hóa Ngành Làm Đẹp',
-    description: 'Bài viết chuẩn cao cấp: từ câu chuyện gia đình đến nền tảng tự động hoá — đặt lịch, SEO địa phương và Little Sunshine mang khách đến mỗi ngày.',
-    author: 'EmviApp Editorial',
+    id: 'emviapp-mission-vision',
+    slug: 'emviapp-mission-vision',
+    title: 'EmviApp — Mission & Vision',
+    description: 'From a family salon story to a platform that automates bookings, SEO, and growth for every beauty business.',
+    author: 'EmviApp Founder',
     publishedAt: '2025-08-12',
-    readTime: '12 phút đọc',
+    readTime: '12 min read',
     category: 'EmviApp Vision',
     categorySlug: 'emviapp-vision',
-    tags: ['EmviApp','Little Sunshine','SEO','Đặt lịch','Tự động hoá'],
+    tags: ['EmviApp','beauty business app','salon booking system','salon SEO','Little Sunshine','ứng dụng quản lý salon','SEO cho salon','chatbot làm đẹp'],
     image: beautyIndustryMissingPieceImage,
     featured: true,
     trending: true,
-    component: EmviStoryVietnamese,
-    url: '/blog/emviapp-vision/emviapp-story-vi'
+    component: EmviMissionVisionRedirect,
+    url: '/blog/emviapp-vision/emviapp-mission-vision'
   },
   {
     id: 'ai-beauty-revolution-2025-new',
