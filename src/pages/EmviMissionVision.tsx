@@ -72,7 +72,7 @@ const EmviMissionVision: React.FC = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, elegant booking'}</figcaption>
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Giao diện lịch EmviApp' : 'Booking calendar UI'}</figcaption>
           </figure>
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[9/16] w-full">
@@ -84,7 +84,7 @@ const EmviMissionVision: React.FC = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Trợ lý 24/7' : '24/7 assistant'}</figcaption>
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, intuitive booking'}</figcaption>
           </figure>
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[16/9] w-full">
@@ -337,7 +337,7 @@ function VietnameseArticle() {
               className="w-full h-full object-cover"
             />
           </div>
-          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Giao diện lịch EmviApp</figcaption>
         </figure>
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
           <div className="aspect-[9/16] w-full">
@@ -349,7 +349,7 @@ function VietnameseArticle() {
               className="w-full h-full object-contain"
             />
           </div>
-          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Trợ lý 24/7</figcaption>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
         </figure>
       </div>
 
