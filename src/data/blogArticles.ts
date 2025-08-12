@@ -130,7 +130,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     featured: true,
     trending: true,
     component: EmviMissionVisionRedirect,
-    url: '/blog/emviapp-vision/emviapp-mission-vision'
+    url: '/emviapp-mission-vision'
   },
   {
     id: 'ai-beauty-revolution-2025-new',
