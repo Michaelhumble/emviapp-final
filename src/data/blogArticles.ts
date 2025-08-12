@@ -60,7 +60,7 @@ const BeautyProfessionalSuccessGuide = lazy(() => import('@/pages/blog/articles/
 const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevolution'));
 const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
 const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/BoothRentVsCommission2025'));
-const NailTechSalaryByCity2025 = lazy(() => import('@/pages/blog/industry-insights/NailTechSalaryByCity2025'));
+const EmviMissionVisionRedirect = lazy(() => import('@/pages/blog/articles/EmviMissionVisionRedirect'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
@@ -114,6 +114,23 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     trending: true,
     component: TheBeautyRevolutionArticle,
     url: '/blog/the-beauty-revolution'
+  },
+  {
+    id: 'emviapp-mission-vision',
+    slug: 'emviapp-mission-vision',
+    title: 'EmviApp — Mission & Vision',
+    description: 'From a family salon story to a platform that automates bookings, SEO, and growth for every beauty business.',
+    author: 'EmviApp Founder',
+    publishedAt: '2025-08-12',
+    readTime: '12 min read',
+    category: 'EmviApp Vision',
+    categorySlug: 'emviapp-vision',
+    tags: ['EmviApp','beauty business app','salon booking system','salon SEO','Little Sunshine','ứng dụng quản lý salon','SEO cho salon','chatbot làm đẹp'],
+    image: beautyIndustryMissingPieceImage,
+    featured: true,
+    trending: true,
+    component: EmviMissionVisionRedirect,
+    url: '/blog/emviapp-vision/emviapp-mission-vision'
   },
   {
     id: 'ai-beauty-revolution-2025-new',
