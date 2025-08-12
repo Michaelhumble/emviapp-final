@@ -142,24 +142,23 @@ const EmviMissionVision: React.FC = () => {
         <script type="application/ld+json">{JSON.stringify(jsonLd.vi)}</script>
       </Helmet>
 
-      <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
-        <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display">
-            <span className="animate-gradient bg-clip-text text-transparent">
-              {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
-            </span>
+      <header className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="text-center">
+          <span className="inline-block bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            {view === 'vi' ? 'Bài viết nổi bật' : 'Featured Story'}
+          </span>
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent mb-6 leading-tight">
+            {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-foreground/80 font-primary md:mt-5">
+          <h2 className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
             {view === 'vi'
               ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
               : 'From a family beauty story to an automation platform for the industry — bookings, SEO, and growth built in.'}
-          </p>
+          </h2>
 
-          {/* Meta: byline, date, read time */}
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1">EmviApp Founder</span>
-            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1"><CalendarIcon className="mr-1 h-4 w-4" /> Aug 2025</span>
-            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1"><ClockIcon className="mr-1 h-4 w-4" /> 12 min</span>
+          <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
+            <span className="flex items-center"><CalendarIcon className="w-4 h-4 mr-1" /> Aug 2025</span>
+            <span className="flex items-center"><ClockIcon className="w-4 h-4 mr-1" /> 12 min</span>
           </div>
 
           {/* Local language view controls */}
@@ -182,7 +181,7 @@ const EmviMissionVision: React.FC = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl w-full px-4 md:px-6 pb-16">
+      <main className="container mx-auto px-4 py-12 max-w-4xl">
         {view === 'vi' && (
           <LangSection lang="vi">
             <VietnameseArticle />
