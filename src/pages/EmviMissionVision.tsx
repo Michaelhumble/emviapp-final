@@ -210,9 +210,18 @@ const EmviMissionVision: React.FC = () => {
 };
 
 function LangSection({ lang, children }: { lang: ViewMode; children: React.ReactNode }) {
+  const isVi = lang === 'vi';
   return (
-    <section lang={lang === 'vi' ? 'vi' : 'en'} className="relative rounded-2xl border bg-background/60 p-6 md:p-8 shadow-sm">
-      <div className="mx-auto max-w-3xl space-y-6 text-base md:text-lg leading-8 text-foreground/90 [&_h2]:text-3xl md:[&_h2]:text-4xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-2xl md:[&_h3]:text-3xl [&_h3]:mt-8 [&_ol]:list-decimal [&_ul]:list-disc [&_li]:ml-5 [&_li]:my-1.5 [&_blockquote]:border-l [&_blockquote]:pl-4 [&_blockquote]:italic [&_table]:w-full [&_table]:border-separate [&_table]:border-spacing-y-2 [&_th]:text-left [&_thead_th]:font-semibold [&_td]:align-top">
+    <section
+      lang={isVi ? 'vi' : 'en'}
+      className={isVi
+        ? 'mx-auto max-w-4xl w-full px-4 md:px-6'
+        : 'relative rounded-2xl border bg-background/60 p-6 md:p-8 shadow-sm'}
+    >
+      <div className={isVi
+        ? 'prose prose-lg max-w-none text-foreground/90'
+        : 'mx-auto max-w-3xl space-y-6 text-base md:text-lg leading-8 text-foreground/90 [&_h2]:text-3xl md:[&_h2]:text-4xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-2xl md:[&_h3]:text-3xl [&_h3]:mt-8 [&_ol]:list-decimal [&_ul]:list-disc [&_li]:ml-5 [&_li]:my-1.5 [&_blockquote]:border-l [&_blockquote]:pl-4 [&_blockquote]:italic [&_table]:w-full [&_table]:border-separate [&_table]:border-spacing-y-2 [&_th]:text-left [&_thead_th]:font-semibold [&_td]:align-top'}
+      >
         {children}
       </div>
     </section>
