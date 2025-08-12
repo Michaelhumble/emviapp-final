@@ -26,6 +26,7 @@ export default function ProfileDashboardPage() {
   return (
     <Layout>
       <Helmet>
+        <meta name="robots" content="noindex,nofollow" />
         <title>{getPageTitle()}</title>
       </Helmet>
       <ProfileCompletionProvider>

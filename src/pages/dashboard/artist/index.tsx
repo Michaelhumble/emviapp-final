@@ -14,6 +14,7 @@ export default function ArtistDashboardPage() {
   return (
     <Layout>
       <Helmet>
+        <meta name="robots" content="noindex,nofollow" />
         <title>Artist Dashboard | EmviApp</title>
       </Helmet>
       <ProfileCompletionProvider>

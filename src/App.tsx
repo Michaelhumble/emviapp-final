@@ -14,6 +14,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import LazyIndex from "./pages/LazyIndex";
 import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
+import ConsentBanner from '@/components/ConsentBanner';
 
 // Critical components loaded immediately
 import { Toaster } from "@/components/ui/toaster";
@@ -251,7 +252,8 @@ function App() {
                        </Suspense>
                        </GlobalPremiumSignupModalProvider>
                        </FirstTimeVisitorRedirect>
-                       <Toaster />
+                        <Toaster />
+                        <ConsentBanner />
                      </OnboardingProvider>
                   </RecommendationProvider>
               </NotificationProvider>
