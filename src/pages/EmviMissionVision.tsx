@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
-import sunshineChatImg from '@/assets/emvi/sunshine-chat-premium.jpg';
+// using uploaded Sunshine chat screenshots (runtime URLs)
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
@@ -12,6 +12,9 @@ import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
 // English is default; Vietnamese shown via local toggle (does not affect global language)
 
 const CANONICAL_URL = 'https://emvi.app/emviapp-mission-vision';
+// Uploaded Sunshine chat screenshots (kept as runtime URLs)
+const sunshineChat1 = '/lovable-uploads/fb1b7b1f-0426-41e1-b648-f5f066cd0848.png';
+const sunshineChat2 = '/lovable-uploads/98bd303a-e851-44af-9e8f-c775d178a7b6.png';
 
 function useQuery() {
   const { search } = useLocation();
@@ -74,7 +77,7 @@ const EmviMissionVision: React.FC = () => {
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
-                src={sunshineChatImg}
+                src={sunshineChat1}
                 alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
                 aspectRatio="16/9"
                 sizes="(min-width: 1024px) 540px, 100vw"
@@ -339,7 +342,7 @@ function VietnameseArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[16/9] w-full">
             <OptimizedBlogImage
-              src={sunshineChatImg}
+              src={sunshineChat2}
               alt="Chatbot Little Sunshine hỗ trợ 24/7"
               aspectRatio="16/9"
               sizes="(min-width: 1024px) 540px, 100vw"
