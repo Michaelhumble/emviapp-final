@@ -17,6 +17,7 @@ const sunshineChatVi1 = '/lovable-uploads/fb1b7b1f-0426-41e1-b648-f5f066cd0848.p
 const sunshineChatVi2 = '/lovable-uploads/98bd303a-e851-44af-9e8f-c775d178a7b6.png';
 const sunshineChatEn1 = '/lovable-uploads/1be5b4b6-b375-4c54-86a1-34531fe3e73f.png';
 const sunshineChatEn2 = '/lovable-uploads/cf7603a5-1b7f-4ec3-b0f9-74fb787c1180.png';
+const bookingConfirmCard = '/lovable-uploads/9e4bf897-c709-446d-a057-e8d9fbb18622.png';
 
 function useQuery() {
   const { search } = useLocation();
@@ -318,7 +319,7 @@ function EnglishArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={sunshineChatEn1}
+              src={bookingConfirmCard}
               alt="Little Sunshine chat interface — fast, intuitive booking"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
@@ -493,7 +494,7 @@ function VietnameseArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={sunshineChatVi1}
+              src={bookingConfirmCard}
               alt="Giao diện hội thoại Little Sunshine – Đặt lịch nhanh, trực quan"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
