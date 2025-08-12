@@ -326,32 +326,18 @@ function VietnameseArticle() {
       <blockquote>“App này tốt quá, sao con không làm để mọi người dùng luôn?”</blockquote>
       <p>Vậy là từ một ý định nhỏ, tôi tạo ra EmviApp – nền tảng để mọi salon có ứng dụng riêng ngay lập tức, mà không phải tốn hàng chục ngàn đô để phát triển và vận hành.</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
-          <div className="aspect-[16/9] w-full">
-            <OptimizedBlogImage
-              src={bookingCalendarImg}
-              alt="Đặt lịch nhanh, trực quan của EmviApp"
-              aspectRatio="16/9"
-              sizes="(min-width: 1024px) 540px, 100vw"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Giao diện lịch EmviApp</figcaption>
-        </figure>
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
-          <div className="aspect-[9/16] w-full">
-            <OptimizedBlogImage
-              src={sunshineChat2}
-              alt="Chatbot Little Sunshine hỗ trợ 24/7"
-              aspectRatio="9/16"
-              sizes="(min-width: 1024px) 480px, 100vw"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
-        </figure>
-      </div>
+      <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg animate-fade-in">
+        <div className="aspect-[16/9] w-full">
+          <OptimizedBlogImage
+            src={bookingCalendarImg}
+            alt="Đặt lịch nhanh, trực quan của EmviApp"
+            aspectRatio="16/9"
+            sizes="(min-width: 1024px) 1100px, 100vw"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <figcaption className="px-4 py-3 text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
+      </figure>
 
       <h3>Sự thật về việc tự xây app</h3>
       <p>Nhiều chủ salon nghĩ: “Mình có thể tự làm app để giữ khách hàng.” Nhưng đây là thực tế:</p>
@@ -437,6 +423,33 @@ function VietnameseArticle() {
         <li>Mỗi khách hàng, nghệ nhân, và salon sẽ có chatbot riêng.</li>
         <li>Chatbot sẽ nói chuyện trực tiếp với nhau để đặt và xác nhận lịch hẹn.</li>
       </ul>
+
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+          <div className="aspect-[9/16] w-full">
+            <OptimizedBlogImage
+              src={sunshineChat1}
+              alt="Giao diện hội thoại Little Sunshine – Đặt lịch nhanh, trực quan"
+              aspectRatio="9/16"
+              sizes="(min-width: 1024px) 520px, 100vw"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
+        </figure>
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+          <div className="aspect-[9/16] w-full">
+            <OptimizedBlogImage
+              src={sunshineChat2}
+              alt="Little Sunshine hỗ trợ 24/7 – trò chuyện đặt lịch thông minh"
+              aspectRatio="9/16"
+              sizes="(min-width: 1024px) 520px, 100vw"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Trợ lý 24/7</figcaption>
+        </figure>
+      </div>
 
       <p>Ví dụ:</p>
       <p>Chị Hoa mở EmviApp, thấy ưu đãi uốn tóc + dưỡng phục hồi từ salon gần nhà.</p>
