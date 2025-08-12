@@ -139,12 +139,10 @@ const EmviMissionVision: React.FC = () => {
       <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
         <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-            {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
+            EmviApp – Sứ mệnh & Tầm nhìn
           </h1>
           <p className="mt-4 text-lg md:text-xl opacity-80">
-            {view === 'vi'
-              ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
-              : 'From a family salon story to an automation platform for the beauty industry.'}
+            Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.
           </p>
 
           {/* Meta: byline, date, read time */}
@@ -157,13 +155,6 @@ const EmviMissionVision: React.FC = () => {
           {/* Local language view controls */}
           <div className="mt-6 inline-flex items-center rounded-full border bg-background/80 shadow-inner overflow-hidden">
             <button
-              aria-label="View English"
-              onClick={() => setView('en')}
-              className={`px-4 py-2 text-sm transition-colors ${view==='en' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
-            >
-              English
-            </button>
-            <button
               aria-label="Xem Tiếng Việt"
               onClick={() => setView('vi')}
               className={`px-4 py-2 text-sm transition-colors ${view==='vi' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
@@ -171,35 +162,20 @@ const EmviMissionVision: React.FC = () => {
               Tiếng Việt
             </button>
             <button
-              aria-label="View both languages"
-              onClick={() => setView('both')}
-              className={`hidden md:inline-flex px-4 py-2 text-sm transition-colors ${view==='both' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
+              aria-label="Read in English"
+              onClick={() => setView('en')}
+              className={`px-4 py-2 text-sm transition-colors ${view==='en' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
             >
-              {view === 'vi' ? 'Xem song song' : 'View side‑by‑side'}
+              English
             </button>
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl w-full px-4 md:px-6 pb-16">
-        {view === 'both' ? (
-          <div className="grid md:grid-cols-2 gap-8 items-start">
-            <LangSection lang="en">
-              <EnglishArticle />
-            </LangSection>
-            <LangSection lang="vi">
-              <VietnameseArticle />
-            </LangSection>
-            <div className="md:col-span-2 mt-6">{renderImages()}</div>
-          </div>
-        ) : (
-          <div className="space-y-10">
-            <LangSection lang={view}>
-              {view === 'en' ? <EnglishArticle /> : <VietnameseArticle />}
-            </LangSection>
-            {renderImages()}
-          </div>
-        )}
+        <LangSection lang="vi">
+          <VietnameseArticle />
+        </LangSection>
       </main>
     </article>
   );
