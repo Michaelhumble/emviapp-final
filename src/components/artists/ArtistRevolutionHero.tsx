@@ -114,7 +114,7 @@ const ArtistRevolutionHero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <Link to="/auth/signup">
+              <Link to="/signup">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold px-8 py-6 text-lg shadow-xl"
@@ -124,7 +124,7 @@ const ArtistRevolutionHero = () => {
                 </Button>
               </Link>
               
-              <Link to="/explore/artists">
+              <Link to="/artists">
                 <Button 
                   variant="outline" 
                   size="lg"

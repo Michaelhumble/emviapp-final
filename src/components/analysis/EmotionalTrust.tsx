@@ -18,7 +18,7 @@ const EmotionalTrust = () => {
           <p className="text-lg text-gray-600 mb-8">
             Everything about EmviApp was built for people like you. We don't just connect — we care.
           </p>
-          <Link to="/auth/signup">
+          <Link to="/signup">
             <Button size="lg" className="font-medium px-8 py-6 text-base">
               Get Started — Free Forever
             </Button>

@@ -89,13 +89,13 @@ const JobsCallToAction = () => {
             
             {/* Secondary CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-3">
-              <Link to="/auth/signup?redirect=%2F">
+              <Link to="/signup?redirect=%2F">
                 <Button variant="outline" className="bg-white hover:bg-gray-50 text-purple-700 border-purple-200 hover:border-purple-300 font-inter font-semibold">
                   ✨ Create Your Free Account
                 </Button>
               </Link>
               
-              <Link to="/auth/signin?redirect=%2F">
+              <Link to="/signin?redirect=%2F">
                 <Button variant="ghost" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-inter font-medium">
                   Welcome Back! Sign In
                 </Button>

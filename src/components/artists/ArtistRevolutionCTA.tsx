@@ -119,7 +119,7 @@ const ArtistRevolutionCTA = () => {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Link to="/auth/signup">
+                  <Link to="/signup">
                     <Button className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold px-12 py-6 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all duration-300">
                       <span className="flex items-center">
                         <Crown className="mr-3 h-6 w-6" />
@@ -135,7 +135,7 @@ const ArtistRevolutionCTA = () => {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Link to="/explore/artists">
+                  <Link to="/artists">
                     <Button className="border-2 border-purple-400/50 text-white bg-white/5 hover:bg-white/10 backdrop-blur-sm font-bold px-12 py-6 rounded-2xl text-xl hover:shadow-lg transition-all duration-300">
                       <span className="flex items-center">
                         <Star className="mr-3 h-6 w-6" />
