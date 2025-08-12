@@ -118,7 +118,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'emviapp-mission-vision',
     slug: 'emviapp-mission-vision',
-    title: 'EmviApp — Mission & Vision',
+    title: 'EmviApp – Sứ mệnh & Tầm nhìn',
     description: 'From a family salon story to a platform that automates bookings, SEO, and growth for every beauty business.',
     author: 'EmviApp Founder',
     publishedAt: '2025-08-12',
