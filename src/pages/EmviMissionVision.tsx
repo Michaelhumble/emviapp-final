@@ -7,7 +7,7 @@ import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
 import { useLocation } from 'react-router-dom';
 import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
-import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
+
 // Bilingual Article Page: EmviApp Mission & Vision
 // English is default; Vietnamese shown via local toggle (does not affect global language)
 
@@ -144,66 +144,16 @@ const EmviMissionVision: React.FC = () => {
 
       <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
         <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display">
-            <span className="animate-gradient bg-clip-text text-transparent">
-              {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
-            </span>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-pink-500">
+            EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-foreground/80 font-primary md:mt-5">
-            {view === 'vi'
-              ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
-              : 'From a family beauty story to an automation platform for the industry — bookings, SEO, and growth built in.'}
-          </p>
-
-          {/* Meta: byline, date, read time */}
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1">EmviApp Founder</span>
-            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1"><CalendarIcon className="mr-1 h-4 w-4" /> Aug 2025</span>
-            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1"><ClockIcon className="mr-1 h-4 w-4" /> 12 min</span>
-          </div>
-
-          {/* Local language view controls */}
-          <div className="mt-6 inline-flex items-center rounded-full border bg-background/80 shadow-inner overflow-hidden">
-            <button
-              aria-label="Xem Tiếng Việt"
-              onClick={() => setView('vi')}
-              className={`px-4 py-2 text-sm transition-colors ${view==='vi' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
-            >
-              Tiếng Việt
-            </button>
-            <button
-              aria-label="Read in English"
-              onClick={() => setView('en')}
-              className={`px-4 py-2 text-sm transition-colors ${view==='en' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
-            >
-              English
-            </button>
-          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl w-full px-4 md:px-6 pb-16">
-        {view === 'vi' && (
-          <LangSection lang="vi">
-            <VietnameseArticle />
-          </LangSection>
-        )}
-        {view === 'en' && (
-          <LangSection lang="en">
-            <EnglishArticle />
-          </LangSection>
-        )}
-        {view === 'both' && (
-          <>
-            <LangSection lang="vi">
-              <VietnameseArticle />
-            </LangSection>
-            <div className="my-10" />
-            <LangSection lang="en">
-              <EnglishArticle />
-            </LangSection>
-          </>
-        )}
+        <LangSection lang="vi">
+          <VietnameseArticle />
+        </LangSection>
       </main>
     </article>
   );
@@ -365,9 +315,9 @@ function EnglishArticle() {
 function VietnameseArticle() {
   return (
     <div className="space-y-6">
-      <h2>EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa</h2>
+      <h2 className="sr-only">EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa</h2>
 
-      <h3>Câu chuyện bắt đầu từ quầy tiếp tân</h3>
+      <h2>Câu chuyện bắt đầu từ quầy tiếp tân</h2>
       <p>Tôi sinh ra và lớn lên trong một gia đình làm đẹp. Nhà tôi làm đủ mọi thứ: nails, tóc, nối mi, spa, massage… Tôi lớn lên giữa mùi nước sơn, tiếng máy sấy tóc, và tiếng trò chuyện rộn ràng của khách hàng.</p>
       <p>Tôi thấy ba mẹ và anh chị vừa phục vụ khách, vừa ghi chép tay, vừa phải nhớ lịch hẹn, vừa tính toán tip và lương cho nhân viên.</p>
       <p>Tôi luôn nghĩ:</p>
@@ -387,7 +337,7 @@ function VietnameseArticle() {
         <figcaption className="px-4 py-2 text-sm text-muted-foreground">Khoảnh khắc chân thực tại salon</figcaption>
       </figure>
 
-      <h3>Từ web app gia đình đến EmviApp</h3>
+      <h2>Từ web app gia đình đến EmviApp</h2>
       <p>Ban đầu, tôi chỉ định xây một web app cho gia đình.</p>
       <p>Tại sao không phải app di động? Vì tôi biết một sự thật mà ít chủ salon để ý:</p>
       <p>Nếu phát hành qua App Store, Apple sẽ thu 30% phí trên mỗi giao dịch trong ứng dụng.</p>
@@ -409,7 +359,7 @@ function VietnameseArticle() {
         <figcaption className="px-4 py-3 text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
       </figure>
 
-      <h3>Sự thật về việc tự xây app</h3>
+      <h2>Sự thật về việc tự xây app</h2>
       <p>Nhiều chủ salon nghĩ: “Mình có thể tự làm app để giữ khách hàng.” Nhưng đây là thực tế:</p>
       <h3>1. Chi phí phát triển ban đầu</h3>
       <p>App cơ bản: $10.000 – $50.000</p>
@@ -427,7 +377,7 @@ function VietnameseArticle() {
       <p>30% trên mỗi giao dịch in-app — tiền ra đi trước khi bạn kịp chạm vào.</p>
       <p>Kết quả? Sau khi trả mọi chi phí, nhiều app vẫn không đem lại khách mới. Và trong khi đó, khách hàng quay lại giảm dần vì không có chiến lược giữ chân hiệu quả.</p>
 
-      <h3>Các ứng dụng khác vs EmviApp</h3>
+      <h2>Các ứng dụng khác vs EmviApp</h2>
       <table className="w-full border-separate border-spacing-y-2">
         <thead>
           <tr>
@@ -471,7 +421,7 @@ function VietnameseArticle() {
         </figure>
       </div>
 
-      <h3>SEO – Bí mật để có khách hàng không giới hạn</h3>
+      <h2>SEO – Bí mật để có khách hàng không giới hạn</h2>
       <p>SEO (Search Engine Optimization) là cách giúp salon xuất hiện trên Google khi khách tìm kiếm dịch vụ.</p>
       <p>Với EmviApp:</p>
       <p>Mỗi khi bạn đăng salon hoặc tin tuyển dụng, hệ thống tự tạo một trang web tối ưu SEO theo vị trí, dịch vụ, và từ khóa.</p>
@@ -479,7 +429,7 @@ function VietnameseArticle() {
       <p>Không cần thuê agency, không cần chạy quảng cáo — mọi thứ diễn ra tự động.</p>
       <p>Điều này biến mỗi salon trên EmviApp thành một “mini-website” có khả năng thu hút khách hàng mới hàng ngày.</p>
 
-      <h3>Little Sunshine – Trợ lý không bao giờ ngủ</h3>
+      <h2>Little Sunshine – Trợ lý không bao giờ ngủ</h2>
       <p>Little Sunshine không chỉ là một chatbot.</p>
       <p>Cô ấy là:</p>
       <ul className="list-disc ml-5 space-y-1">
@@ -528,7 +478,7 @@ function VietnameseArticle() {
       <p>Hai chatbot thống nhất thời gian, gửi thông báo xác nhận cho cả hai bên.</p>
       <p>Salon chỉ cần xác nhận — lịch đã được đặt.</p>
 
-      <h3>Hệ thống mang khách hàng đến liên tục</h3>
+      <h2>Hệ thống mang khách hàng đến liên tục</h2>
       <p>Không chỉ giữ khách cũ, EmviApp được thiết kế để mang khách mới đến mỗi ngày thông qua:</p>
       <ul className="list-disc ml-5 space-y-1">
         <li>SEO tự động.</li>
@@ -537,7 +487,7 @@ function VietnameseArticle() {
         <li>Chatbot chủ động gợi ý và nhắc lịch cho khách.</li>
       </ul>
 
-      <h3>Lời mời của EmviApp</h3>
+      <h2>Lời mời của EmviApp</h2>
       <p>Bạn không cần tự mình xây dựng, trả phí hosting, thuê đội ngũ kỹ thuật, chạy SEO, hoặc lo quảng cáo.</p>
       <p>Chúng tôi đã làm tất cả.</p>
       <p>Bạn chỉ cần bắt đầu, và để EmviApp làm phần còn lại.</p>
