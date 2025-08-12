@@ -37,27 +37,59 @@ const EmviMissionVision: React.FC = () => {
   const jsonLd = getJsonLd();
 
   const renderImages = () => (
-    <section aria-labelledby="visuals" className="mx-auto max-w-6xl w-full">
+  <section aria-labelledby="visuals" className="mx-auto max-w-6xl w-full">
       <h2 id="visuals" className="text-xl md:text-2xl font-semibold tracking-tight mb-4">{view === 'vi' ? 'Hình ảnh minh hoạ' : 'Visual Previews'}</h2>
-      <div className="grid gap-6">
-        {/* Hero editorial visual */}
-        <figure className="overflow-hidden rounded-2xl shadow-xl">
-          <img src={happyCustomersImg} loading="lazy" alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'} className="w-full h-auto" />
+      <div className="grid gap-8">
+        {/* Editorial hero visual */}
+        <figure className="overflow-hidden rounded-3xl border shadow-lg bg-background">
+          <img
+            src={happyCustomersImg}
+            loading="lazy"
+            alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'}
+            className="w-full h-[420px] md:h-[540px] object-cover"
+          />
+          <figcaption className="px-4 py-3 text-sm text-foreground/70">
+            {view === 'vi' ? 'Khoảnh khắc chân thực tại salon' : 'Authentic salon moment'}
+          </figcaption>
         </figure>
 
         {/* Premium product mockups */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <figure className="overflow-hidden rounded-2xl shadow-xl">
-            <img src={bookingCalendarImg} loading="lazy" alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'} className="w-full h-auto" />
+          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
+            <img
+              src={bookingCalendarImg}
+              loading="lazy"
+              alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'}
+              className="w-full h-[300px] object-cover"
+            />
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, elegant booking'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl shadow-xl">
-            <img src={sunshineChatImg} loading="lazy" alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'} className="w-full h-auto" />
+          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
+            <img
+              src={sunshineChatImg}
+              loading="lazy"
+              alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
+              className="w-full h-[300px] object-cover"
+            />
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'Trợ lý 24/7' : '24/7 assistant'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl shadow-xl">
-            <img src={salonOffersImg} loading="lazy" alt={view === 'vi' ? 'Ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'} className="w-full h-auto" />
+          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
+            <img
+              src={salonOffersImg}
+              loading="lazy"
+              alt={view === 'vi' ? 'Ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'}
+              className="w-full h-[300px] object-cover"
+            />
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'Ưu đãi được cá nhân hoá' : 'Personalized offers'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl shadow-xl">
-            <img src={seoLocalSearchImg} loading="lazy" alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'} className="w-full h-auto" />
+          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
+            <img
+              src={seoLocalSearchImg}
+              loading="lazy"
+              alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'}
+              className="w-full h-[300px] object-cover"
+            />
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'SEO địa phương tự động' : 'Automatic local SEO'}</figcaption>
           </figure>
         </div>
       </div>
@@ -89,26 +121,40 @@ const EmviMissionVision: React.FC = () => {
       </Helmet>
 
       <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-          {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
-        </h1>
-        <p className="mt-3 text-base md:text-lg opacity-80">
-          {view === 'vi'
-            ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
-            : 'From a family salon story to an automation platform for the beauty industry.'}
-        </p>
+        <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+            {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
+          </h1>
+          <p className="mt-4 text-lg md:text-xl opacity-80">
+            {view === 'vi'
+              ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
+              : 'From a family salon story to an automation platform for the beauty industry.'}
+          </p>
 
-        {/* Local language view controls */}
-        <div className="mt-6 flex items-center gap-2">
-          <button aria-label="View English" onClick={() => setView('en')} className={`px-3 py-1 rounded-full text-sm border ${view==='en'?'':'opacity-70'}`}>
-            English
-          </button>
-          <button aria-label="Xem Tiếng Việt" onClick={() => setView('vi')} className={`px-3 py-1 rounded-full text-sm border ${view==='vi'?'':'opacity-70'}`}>
-            Tiếng Việt
-          </button>
-          <button aria-label="View both languages" onClick={() => setView('both')} className={`hidden md:inline-block px-3 py-1 rounded-full text-sm border ${view==='both'?'':'opacity-70'}`}>
-            {view === 'vi' ? 'Xem song song' : 'View side‑by‑side'}
-          </button>
+          {/* Local language view controls */}
+          <div className="mt-6 inline-flex items-center rounded-full border bg-background/80 shadow-inner overflow-hidden">
+            <button
+              aria-label="View English"
+              onClick={() => setView('en')}
+              className={`px-4 py-2 text-sm transition-colors ${view==='en' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
+            >
+              English
+            </button>
+            <button
+              aria-label="Xem Tiếng Việt"
+              onClick={() => setView('vi')}
+              className={`px-4 py-2 text-sm transition-colors ${view==='vi' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
+            >
+              Tiếng Việt
+            </button>
+            <button
+              aria-label="View both languages"
+              onClick={() => setView('both')}
+              className={`hidden md:inline-flex px-4 py-2 text-sm transition-colors ${view==='both' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
+            >
+              {view === 'vi' ? 'Xem song song' : 'View side‑by‑side'}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -138,8 +184,10 @@ const EmviMissionVision: React.FC = () => {
 
 function LangSection({ lang, children }: { lang: ViewMode; children: React.ReactNode }) {
   return (
-    <section lang={lang === 'vi' ? 'vi' : 'en'} className="prose max-w-none">
-      {children}
+    <section lang={lang === 'vi' ? 'vi' : 'en'} className="relative rounded-2xl border bg-background/60 p-6 md:p-8 shadow-sm">
+      <div className="space-y-5 text-base md:text-lg leading-7 md:leading-8 text-foreground/90 [&_h2]:text-2xl md:[&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-xl md:[&_h3]:text-2xl [&_h3]:mt-8 [&_ol]:list-decimal [&_ul]:list-disc [&_li]:ml-5 [&_table]:w-full [&_table]:border-separate [&_table]:border-spacing-y-2 [&_th]:text-left [&_thead_th]:font-semibold [&_td]:align-top">
+        {children}
+      </div>
     </section>
   );
 }
