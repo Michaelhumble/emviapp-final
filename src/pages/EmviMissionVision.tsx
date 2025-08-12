@@ -13,8 +13,10 @@ import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
 
 const CANONICAL_URL = 'https://emvi.app/emviapp-mission-vision';
 // Uploaded Sunshine chat screenshots (kept as runtime URLs)
-const sunshineChat1 = '/lovable-uploads/fb1b7b1f-0426-41e1-b648-f5f066cd0848.png';
-const sunshineChat2 = '/lovable-uploads/98bd303a-e851-44af-9e8f-c775d178a7b6.png';
+const sunshineChatVi1 = '/lovable-uploads/fb1b7b1f-0426-41e1-b648-f5f066cd0848.png';
+const sunshineChatVi2 = '/lovable-uploads/98bd303a-e851-44af-9e8f-c775d178a7b6.png';
+const sunshineChatEn1 = '/lovable-uploads/1be5b4b6-b375-4c54-86a1-34531fe3e73f.png';
+const sunshineChatEn2 = '/lovable-uploads/cf7603a5-1b7f-4ec3-b0f9-74fb787c1180.png';
 
 function useQuery() {
   const { search } = useLocation();
@@ -77,7 +79,7 @@ const EmviMissionVision: React.FC = () => {
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[9/16] w-full">
               <OptimizedBlogImage
-                src={sunshineChat1}
+                src={view === 'vi' ? sunshineChatVi1 : sunshineChatEn1}
                 alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
                 aspectRatio="9/16"
                 sizes="(min-width: 1024px) 480px, 100vw"
@@ -312,7 +314,7 @@ function EnglishArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={sunshineChat1}
+              src={sunshineChatEn1}
               alt="Little Sunshine chat interface — fast, intuitive booking"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
@@ -324,7 +326,7 @@ function EnglishArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={sunshineChat2}
+              src={sunshineChatEn2}
               alt="Little Sunshine assists 24/7 — smart booking conversations"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
@@ -487,7 +489,7 @@ function VietnameseArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={sunshineChat1}
+              src={sunshineChatVi1}
               alt="Giao diện hội thoại Little Sunshine – Đặt lịch nhanh, trực quan"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
@@ -499,7 +501,7 @@ function VietnameseArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={sunshineChat2}
+              src={sunshineChatVi2}
               alt="Little Sunshine hỗ trợ 24/7 – trò chuyện đặt lịch thông minh"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
