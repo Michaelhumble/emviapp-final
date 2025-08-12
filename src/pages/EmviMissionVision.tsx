@@ -237,7 +237,7 @@ function EnglishArticle() {
       <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg animate-fade-in">
         <div className="aspect-[16/9] w-full">
           <OptimizedBlogImage
-            src={bookingCalendarImg}
+            src={bookingConfirmCard}
             alt="Fast, intuitive booking with EmviApp"
             aspectRatio="16/9"
             sizes="(min-width: 1024px) 1100px, 100vw"
@@ -319,7 +319,7 @@ function EnglishArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={bookingConfirmCard}
+              src={sunshineChatEn1}
               alt="Little Sunshine chat interface — fast, intuitive booking"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
@@ -395,7 +395,7 @@ function VietnameseArticle() {
       <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg animate-fade-in">
         <div className="aspect-[16/9] w-full">
           <OptimizedBlogImage
-            src={bookingCalendarImg}
+            src={bookingConfirmCard}
             alt="Đặt lịch nhanh, trực quan của EmviApp"
             aspectRatio="16/9"
             sizes="(min-width: 1024px) 1100px, 100vw"
@@ -494,7 +494,7 @@ function VietnameseArticle() {
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
-              src={bookingConfirmCard}
+              src={sunshineChatVi1}
               alt="Giao diện hội thoại Little Sunshine – Đặt lịch nhanh, trực quan"
               aspectRatio="9/16"
               sizes="(min-width: 1024px) 520px, 100vw"
