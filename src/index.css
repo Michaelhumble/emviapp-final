@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 @import './styles/chat-premium.css';
+@import './styles/prose-enhanced.css';
 
 /* Image Loading Animation */
 @keyframes shimmer {
