@@ -47,7 +47,7 @@ const EmviMissionVision: React.FC = () => {
       <h2 id="visuals" className="text-xl md:text-2xl font-semibold tracking-tight mb-4">{view === 'vi' ? 'Hình ảnh minh hoạ' : 'Visual Previews'}</h2>
       <div className="grid gap-8">
         {/* Editorial hero visual */}
-        <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg transition-transform hover:scale-[1.01] will-change-transform">
+        <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg">
           <div className="aspect-[21/9] w-full">
             <OptimizedBlogImage
               src={happyCustomersImg}
@@ -65,7 +65,7 @@ const EmviMissionVision: React.FC = () => {
 
         {/* Premium product visuals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
                 src={bookingCalendarImg}
@@ -77,7 +77,7 @@ const EmviMissionVision: React.FC = () => {
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Giao diện lịch EmviApp' : 'Booking calendar UI'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
             <div className="aspect-[9/16] w-full">
               <OptimizedBlogImage
                 src={view === 'vi' ? sunshineChatVi1 : sunshineChatEn1}
@@ -89,7 +89,7 @@ const EmviMissionVision: React.FC = () => {
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, intuitive booking'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
                 src={salonOffersImg}
@@ -101,7 +101,7 @@ const EmviMissionVision: React.FC = () => {
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Ưu đãi được cá nhân hoá' : 'Personalized offers'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
                 src={seoLocalSearchImg}
@@ -237,7 +237,7 @@ function EnglishArticle() {
       <p>When our family web app ran smoothly, my mom said: “This is so good — why not make it available for everyone?”</p>
       <p>From that small intention, I created EmviApp — a platform that gives every salon its own app instantly, without spending tens of thousands of dollars to develop and maintain it.</p>
 
-      <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg animate-fade-in">
+      <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg">
         <div className="aspect-[16/9] w-full">
           <OptimizedBlogImage
             src={bookingConfirmCard}
@@ -319,7 +319,7 @@ function EnglishArticle() {
       <p><strong>The future:</strong> Every client, artist, and salon will have their own chatbot. They’ll talk to each other to book and confirm appointments.</p>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
               src={sunshineChatEn1}
@@ -331,7 +331,7 @@ function EnglishArticle() {
           </div>
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Fast, intuitive booking</figcaption>
         </figure>
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
               src={sunshineChatEn2}
@@ -372,7 +372,7 @@ function VietnameseArticle() {
       <p>Tôi luôn nghĩ:</p>
       <blockquote>“Nếu có một hệ thống để tất cả mọi thứ này tự động hóa, để gia đình chỉ tập trung vào khách hàng, thì tốt biết mấy…”</blockquote>
 
-      <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+      <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
         <div className="aspect-[21/9] w-full">
           <OptimizedBlogImage
             src={happyCustomersImg}
@@ -395,7 +395,7 @@ function VietnameseArticle() {
       <blockquote>“App này tốt quá, sao con không làm để mọi người dùng luôn?”</blockquote>
       <p>Vậy là từ một ý định nhỏ, tôi tạo ra EmviApp – nền tảng để mọi salon có ứng dụng riêng ngay lập tức, mà không phải tốn hàng chục ngàn đô để phát triển và vận hành.</p>
 
-      <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg animate-fade-in">
+      <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg">
         <div className="aspect-[16/9] w-full">
           <OptimizedBlogImage
             src={bookingConfirmCard}
@@ -444,7 +444,7 @@ function VietnameseArticle() {
       </table>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[16/9] w-full">
             <OptimizedBlogImage
               src={salonOffersImg}
@@ -456,7 +456,7 @@ function VietnameseArticle() {
           </div>
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Ưu đãi được cá nhân hoá</figcaption>
         </figure>
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[16/9] w-full">
             <OptimizedBlogImage
               src={seoLocalSearchImg}
@@ -494,7 +494,7 @@ function VietnameseArticle() {
       </ul>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
               src={sunshineChatVi1}
@@ -506,7 +506,7 @@ function VietnameseArticle() {
           </div>
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
         </figure>
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
               src={sunshineChatVi2}
