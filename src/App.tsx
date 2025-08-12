@@ -70,6 +70,8 @@ const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
 const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 const ViralArticle = lazy(() => import("@/pages/ViralArticle"));
+const MissionVisionEnglish = lazy(() => import("@/pages/blog/MissionVisionEnglish"));
+const MissionVisionVietnamese = lazy(() => import("@/pages/blog/MissionVisionVietnamese"));
 
 // Blog Category Pages
 const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
@@ -228,6 +230,8 @@ function App() {
                     <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                     <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
+                    <Route path="/blog/emviapp-vision/mission-vision-en" element={<Layout><MissionVisionEnglish /></Layout>} />
+                    <Route path="/blog/emviapp-vision/mission-vision-vi" element={<Layout><MissionVisionVietnamese /></Layout>} />
                     
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />

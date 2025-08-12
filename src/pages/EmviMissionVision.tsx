@@ -118,94 +118,15 @@ const EmviMissionVision: React.FC = () => {
     </section>
   );
 
-  return (
-    <article className="w-full">
-      <Helmet>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <meta name="keywords" content={meta.keywords} />
-        <link rel="canonical" href={CANONICAL_URL} />
-        {/* hreflang alternates */}
-        <link rel="alternate" hrefLang="en" href={`${CANONICAL_URL}`} />
-        <link rel="alternate" hrefLang="vi" href={`${CANONICAL_URL}?lang=vi`} />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:url" content={CANONICAL_URL} />
-        <meta property="og:site_name" content="EmviApp" />
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={meta.title} />
-        <meta name="twitter:description" content={meta.description} />
-        {/* Structured data for both languages */}
-        <script type="application/ld+json">{JSON.stringify(jsonLd.en)}</script>
-        <script type="application/ld+json">{JSON.stringify(jsonLd.vi)}</script>
-      </Helmet>
-
-      <header className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center">
-          <span className="inline-block bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            {view === 'vi' ? 'Bài viết nổi bật' : 'Featured Story'}
-          </span>
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent mb-6 leading-tight">
-            {view === 'vi' ? 'EmviApp – Sứ mệnh & Tầm nhìn' : 'EmviApp — Mission & Vision'}
-          </h1>
-          <h2 className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-            {view === 'vi'
-              ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
-              : 'From a family beauty story to an automation platform for the industry — bookings, SEO, and growth built in.'}
-          </h2>
-
-          <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
-            <span className="flex items-center"><CalendarIcon className="w-4 h-4 mr-1" /> Aug 2025</span>
-            <span className="flex items-center"><ClockIcon className="w-4 h-4 mr-1" /> 12 min</span>
-          </div>
-
-          {/* Local language view controls */}
-          <div className="mt-6 inline-flex items-center rounded-full border bg-background/80 shadow-inner overflow-hidden">
-            <button
-              aria-label="Xem Tiếng Việt"
-              onClick={() => setView('vi')}
-              className={`px-4 py-2 text-sm transition-colors ${view==='vi' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
-            >
-              Tiếng Việt
-            </button>
-            <button
-              aria-label="Read in English"
-              onClick={() => setView('en')}
-              className={`px-4 py-2 text-sm transition-colors ${view==='en' ? 'bg-primary/10 text-primary' : 'text-foreground/80 hover:bg-primary/5'}`}
-            >
-              English
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        {view === 'vi' && (
-          <LangSection lang="vi">
-            <VietnameseArticle />
-          </LangSection>
-        )}
-        {view === 'en' && (
-          <LangSection lang="en">
-            <EnglishArticle />
-          </LangSection>
-        )}
-        {view === 'both' && (
-          <>
-            <LangSection lang="vi">
-              <VietnameseArticle />
-            </LangSection>
-            <div className="my-10" />
-            <LangSection lang="en">
-              <EnglishArticle />
-            </LangSection>
-          </>
-        )}
-      </main>
-    </article>
-  );
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = (params.get('lang') as ViewMode) || 'en';
+    const target = langParam === 'vi'
+      ? '/blog/emviapp-vision/mission-vision-vi'
+      : '/blog/emviapp-vision/mission-vision-en';
+    window.location.replace(target);
+  }, []);
+  return null;
 };
 
 function LangSection({ lang, children }: { lang: ViewMode; children: React.ReactNode }) {
