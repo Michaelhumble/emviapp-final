@@ -5,7 +5,7 @@ import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
 import heroImage from '@/assets/viral-article-community.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
-import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
+
 
 const CANONICAL = 'https://emvi.app/blog/emviapp-vision/mission-vision-vi';
 
@@ -64,8 +64,8 @@ const MissionVisionVietnamese: React.FC = () => {
           </ul>
 
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md my-8">
-            <OptimizedBlogImage src={bookingCalendarImg} alt="Lịch đặt EmviApp — cao cấp và tinh gọn" aspectRatio="16/9" sizes="(min-width: 1024px) 1100px, 100vw" className="w-full h-full object-cover" />
-            <figcaption className="px-4 py-2 text-sm text-muted-foreground">Quản lý lịch khoa học cho salon bận rộn</figcaption>
+            <OptimizedBlogImage src="/lovable-uploads/bdef2029-146a-4a98-aaef-39e85aa6add3.png" alt="Thẻ xác nhận lịch hẹn — thiết kế cao cấp, tinh tế" aspectRatio="16/9" sizes="(min-width: 1024px) 1100px, 100vw" className="w-full h-full object-cover" />
+            <figcaption className="px-4 py-2 text-sm text-muted-foreground">Xác nhận lịch hẹn đẹp và đáng tin cậy</figcaption>
           </figure>
 
           <h3>Sự thật kinh tế</h3>
@@ -84,6 +84,17 @@ const MissionVisionVietnamese: React.FC = () => {
 
           <h3>Little Sunshine — trợ lý không ngủ</h3>
           <p>Không chỉ là chatbot — cô ấy như concierge: gợi ý dịch vụ, xác nhận lịch, hướng dẫn khách bằng Tiếng Việt và Tiếng Anh. Sắp tới, các trợ lý sẽ phối hợp trực tiếp — khách và salon thống nhất thời gian chỉ trong vài giây.</p>
+
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+              <OptimizedBlogImage src="/lovable-uploads/9821b730-8ec5-410d-9102-a5ebb74be6c5.png" alt="Giao diện Little Sunshine — Tiếng Việt" aspectRatio="9/16" sizes="(min-width: 1024px) 520px, 100vw" className="w-full h-full object-contain" />
+              <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Little Sunshine — Tiếng Việt</figcaption>
+            </figure>
+            <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+              <OptimizedBlogImage src="/lovable-uploads/49d61ee7-a56d-4594-9874-7202526bdca7.png" alt="Little Sunshine — English interface" aspectRatio="9/16" sizes="(min-width: 1024px) 520px, 100vw" className="w-full h-full object-contain" />
+              <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Little Sunshine — English</figcaption>
+            </figure>
+          </div>
 
           <h3>Tầm nhìn</h3>
           <p>Chúng tôi tin mỗi khu phố xứng đáng có những cửa tiệm làm đẹp thịnh vượng. EmviApp dệt nên mạng lưới cơ hội nơi nghệ nhân được tìm thấy vì tay nghề, salon kín lịch đúng giá, và khách hàng cảm thấy thân thuộc.</p>

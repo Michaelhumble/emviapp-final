@@ -6,7 +6,7 @@ import heroImage from '@/assets/viral-article-hero.jpg';
 import communityImage from '@/assets/viral-article-community.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
-import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
+
 
 const CANONICAL = 'https://emvi.app/blog/emviapp-vision/mission-vision-en';
 
@@ -65,8 +65,8 @@ const MissionVisionEnglish: React.FC = () => {
           </ul>
 
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md my-8">
-            <OptimizedBlogImage src={bookingCalendarImg} alt="EmviApp booking calendar — premium scheduling" aspectRatio="16/9" sizes="(min-width: 1024px) 1100px, 100vw" className="w-full h-full object-cover" />
-            <figcaption className="px-4 py-2 text-sm text-muted-foreground">Effortless scheduling designed for busy salons</figcaption>
+            <OptimizedBlogImage src="/lovable-uploads/bdef2029-146a-4a98-aaef-39e85aa6add3.png" alt="EmviApp booking confirmation — premium, beautiful design" aspectRatio="16/9" sizes="(min-width: 1024px) 1100px, 100vw" className="w-full h-full object-cover" />
+            <figcaption className="px-4 py-2 text-sm text-muted-foreground">Elegant booking confirmation, designed for trust</figcaption>
           </figure>
 
           <h3>The economic truth</h3>
@@ -85,6 +85,17 @@ const MissionVisionEnglish: React.FC = () => {
 
           <h3>Little Sunshine — the assistant who never sleeps</h3>
           <p>She’s not a chatbot. She’s a concierge: recommending services, confirming bookings, and guiding clients in English and Vietnamese. Soon, assistants will coordinate directly with each other—client to salon—confirming time, service, and preparation in seconds.</p>
+
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+              <OptimizedBlogImage src="/lovable-uploads/49d61ee7-a56d-4594-9874-7202526bdca7.png" alt="Little Sunshine chat — English interface preview" aspectRatio="9/16" sizes="(min-width: 1024px) 520px, 100vw" className="w-full h-full object-contain" />
+              <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Little Sunshine — English</figcaption>
+            </figure>
+            <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+              <OptimizedBlogImage src="/lovable-uploads/9821b730-8ec5-410d-9102-a5ebb74be6c5.png" alt="Little Sunshine chat — Vietnamese interface preview" aspectRatio="9/16" sizes="(min-width: 1024px) 520px, 100vw" className="w-full h-full object-contain" />
+              <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Little Sunshine — Vietnamese</figcaption>
+            </figure>
+          </div>
 
           <h3>Vision</h3>
           <p>We believe every neighborhood deserves thriving beauty businesses. EmviApp creates a web of opportunity where artists are discovered for their craft, salons are booked at the right price, and clients feel at home.</p>
