@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
 import sunshineChatImg from '@/assets/emvi/sunshine-chat-premium.jpg';
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
-import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
 import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
 // Bilingual Article Page: EmviApp Mission & Vision
@@ -22,9 +22,8 @@ type ViewMode = 'en' | 'vi' | 'both';
 
 const EmviMissionVision: React.FC = () => {
   const query = useQuery();
-  const navigate = useNavigate();
-  const initialFromQuery = (query.get('lang') as ViewMode) || 'en';
-  const [view, setView] = useState<ViewMode>(['en', 'vi', 'both'].includes(initialFromQuery) ? initialFromQuery : 'en');
+  const initialFromQuery = (query.get('lang') as ViewMode) || 'vi';
+  const [view, setView] = useState<ViewMode>(['en', 'vi', 'both'].includes(initialFromQuery) ? initialFromQuery : 'vi');
 
   useEffect(() => {
     // keep URL in sync for hreflang and shareability
