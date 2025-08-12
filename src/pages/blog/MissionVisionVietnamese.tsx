@@ -35,7 +35,7 @@ const MissionVisionVietnamese: React.FC = () => {
       backText="Back to Blog"
     >
       <section>
-        <h2>Câu chuyện bắt đầu từ quầy tiếp tân</h2>
+        <h3>Câu chuyện bắt đầu từ quầy tiếp tân</h3>
         <p>
           Tôi sinh ra và lớn lên trong một gia đình làm đẹp. Nhà tôi làm đủ mọi thứ:
           nails, tóc, nối mi, spa, massage… Tôi lớn lên giữa mùi nước sơn, tiếng
@@ -51,7 +51,7 @@ const MissionVisionVietnamese: React.FC = () => {
           tập trung vào khách hàng, thì tốt biết mấy…”
         </blockquote>
 
-        <h2>Từ web app gia đình đến EmviApp</h2>
+        <h3>Từ web app gia đình đến EmviApp</h3>
         <p>Ban đầu, tôi chỉ định xây một web app cho gia đình.</p>
         <p>
           Tại sao không phải app di động? Vì tôi biết một sự thật mà ít chủ salon
@@ -88,7 +88,7 @@ const MissionVisionVietnamese: React.FC = () => {
           </figcaption>
         </figure>
 
-        <h2>Sự thật về việc tự xây app</h2>
+        <h3>Sự thật về việc tự xây app</h3>
         <p>
           Nhiều chủ salon nghĩ: “Mình có thể tự làm app để giữ khách hàng.” Nhưng
           đây là thực tế:
@@ -133,7 +133,7 @@ const MissionVisionVietnamese: React.FC = () => {
           chân hiệu quả.
         </p>
 
-        <h2>Các ứng dụng khác vs EmviApp</h2>
+        <h3>Các ứng dụng khác vs EmviApp</h3>
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
             <tr>
@@ -173,7 +173,7 @@ const MissionVisionVietnamese: React.FC = () => {
           </tbody>
         </table>
 
-        <h2>SEO – Bí mật để có khách hàng không giới hạn</h2>
+        <h3>SEO – Bí mật để có khách hàng không giới hạn</h3>
         <p>
           SEO (Search Engine Optimization) là cách giúp salon xuất hiện trên
           Google khi khách tìm kiếm dịch vụ.
@@ -195,7 +195,7 @@ const MissionVisionVietnamese: React.FC = () => {
           năng thu hút khách hàng mới hàng ngày.
         </p>
 
-        <h2>Little Sunshine – Trợ lý không bao giờ ngủ</h2>
+        <h3>Little Sunshine – Trợ lý không bao giờ ngủ</h3>
         <p>Little Sunshine không chỉ là một chatbot. Cô ấy là:</p>
         <ul>
           <li>
@@ -237,7 +237,7 @@ const MissionVisionVietnamese: React.FC = () => {
           </figure>
         </div>
 
-        <h2>📌 Tương lai</h2>
+        <h3>📌 Tương lai</h3>
         <p>
           Mỗi khách hàng, nghệ nhân, và salon sẽ có chatbot riêng. Chatbot sẽ nói
           chuyện trực tiếp với nhau để đặt và xác nhận lịch hẹn.
@@ -250,7 +250,7 @@ const MissionVisionVietnamese: React.FC = () => {
           báo xác nhận cho cả hai bên. Salon chỉ cần xác nhận — lịch đã được đặt.
         </p>
 
-        <h2>Hệ thống mang khách hàng đến liên tục</h2>
+        <h3>Hệ thống mang khách hàng đến liên tục</h3>
         <ul>
           <li>SEO tự động.</li>
           <li>Đề xuất dịch vụ và ưu đãi cho khách gần khu vực.</li>
@@ -258,7 +258,7 @@ const MissionVisionVietnamese: React.FC = () => {
           <li>Chatbot chủ động gợi ý và nhắc lịch cho khách.</li>
         </ul>
 
-        <h2>Lời mời của EmviApp</h2>
+        <h3>Lời mời của EmviApp</h3>
         <p>
           Bạn không cần tự mình xây dựng, trả phí hosting, thuê đội ngũ kỹ thuật,
           chạy SEO, hoặc lo quảng cáo. Chúng tôi đã làm tất cả. Bạn chỉ cần bắt
