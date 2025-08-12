@@ -70,8 +70,7 @@ const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
 const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 const ViralArticle = lazy(() => import("@/pages/ViralArticle"));
-const MissionVisionEnglish = lazy(() => import("@/pages/blog/MissionVisionEnglish"));
-const MissionVisionVietnamese = lazy(() => import("@/pages/blog/MissionVisionVietnamese"));
+const EmviStoryVietnamese = lazy(() => import("@/pages/blog/EmviStoryVietnamese"));
 
 // Blog Category Pages
 const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
@@ -94,7 +93,7 @@ const BookingServices = lazy(() => import("@/pages/BookingServices"));
 const Artists = lazy(() => import("@/pages/Artists"));
 const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
-const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
+
 
 function App() {
   const location = useLocation();
@@ -192,7 +191,7 @@ function App() {
                      <Route path="/about" element={<Layout><About /></Layout>} />
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
-                     <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
+                     
                      <Route path="/terms" element={<Layout><Terms /></Layout>} />
                      <Route path="/refund" element={<Layout><Refund /></Layout>} />
                      <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
@@ -230,8 +229,7 @@ function App() {
                     <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                     <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
-                    <Route path="/blog/emviapp-vision/mission-vision-en" element={<Layout><MissionVisionEnglish /></Layout>} />
-                    <Route path="/blog/emviapp-vision/mission-vision-vi" element={<Layout><MissionVisionVietnamese /></Layout>} />
+                    <Route path="/blog/emviapp-vision/emviapp-story-vi" element={<Layout><EmviStoryVietnamese /></Layout>} />
                     
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />
