@@ -176,9 +176,27 @@ const EmviMissionVision: React.FC = () => {
       </header>
 
       <main className="mx-auto max-w-6xl w-full px-4 md:px-6 pb-16">
-        <LangSection lang="vi">
-          <VietnameseArticle />
-        </LangSection>
+        {view === 'vi' && (
+          <LangSection lang="vi">
+            <VietnameseArticle />
+          </LangSection>
+        )}
+        {view === 'en' && (
+          <LangSection lang="en">
+            <EnglishArticle />
+          </LangSection>
+        )}
+        {view === 'both' && (
+          <>
+            <LangSection lang="vi">
+              <VietnameseArticle />
+            </LangSection>
+            <div className="my-10" />
+            <LangSection lang="en">
+              <EnglishArticle />
+            </LangSection>
+          </>
+        )}
       </main>
     </article>
   );
@@ -208,6 +226,19 @@ function EnglishArticle() {
       <p>If you publish through the App Store, Apple takes a 30% fee on every in‑app transaction. That means for every $100 a client pays, Apple takes $30 — money that should be reinvested into service and client experience.</p>
       <p>When our family web app ran smoothly, my mom said: “This is so good — why not make it available for everyone?”</p>
       <p>From that small intention, I created EmviApp — a platform that gives every salon its own app instantly, without spending tens of thousands of dollars to develop and maintain it.</p>
+
+      <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg animate-fade-in">
+        <div className="aspect-[16/9] w-full">
+          <OptimizedBlogImage
+            src={bookingCalendarImg}
+            alt="Fast, intuitive booking with EmviApp"
+            aspectRatio="16/9"
+            sizes="(min-width: 1024px) 1100px, 100vw"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <figcaption className="px-4 py-3 text-sm text-muted-foreground">Fast, intuitive booking</figcaption>
+      </figure>
 
       <h3>The truth about building your own app</h3>
       <ol>
@@ -276,6 +307,34 @@ function EnglishArticle() {
       <h3>Little Sunshine — the assistant who never sleeps</h3>
       <p>Little Sunshine isn’t “just a chatbot.” She’s your 24/7 receptionist, your sales specialist who introduces services and upsells care packages, and your personal assistant helping manage schedules, clients, and promotions.</p>
       <p><strong>The future:</strong> Every client, artist, and salon will have their own chatbot. They’ll talk to each other to book and confirm appointments.</p>
+
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+          <div className="aspect-[9/16] w-full">
+            <OptimizedBlogImage
+              src={sunshineChat1}
+              alt="Little Sunshine chat interface — fast, intuitive booking"
+              aspectRatio="9/16"
+              sizes="(min-width: 1024px) 520px, 100vw"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Fast, intuitive booking</figcaption>
+        </figure>
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md animate-fade-in hover-scale">
+          <div className="aspect-[9/16] w-full">
+            <OptimizedBlogImage
+              src={sunshineChat2}
+              alt="Little Sunshine assists 24/7 — smart booking conversations"
+              aspectRatio="9/16"
+              sizes="(min-width: 1024px) 520px, 100vw"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">24/7 assistant</figcaption>
+        </figure>
+      </div>
+
       <p><em>Example:</em> Hoa opens EmviApp and sees a nearby offer: perm + restorative treatment. She messages, “Book Saturday morning around 10.” Hoa’s chatbot finds a suitable salon, checks open slots, and contacts the salon’s chatbot. The two chatbots agree on a time and send confirmations to both sides. The salon taps confirm — and the booking is done.</p>
 
       <h3>A system that brings clients continuously</h3>
