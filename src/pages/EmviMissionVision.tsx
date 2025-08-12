@@ -44,7 +44,7 @@ const EmviMissionVision: React.FC = () => {
       <h2 id="visuals" className="text-xl md:text-2xl font-semibold tracking-tight mb-4">{view === 'vi' ? 'Hình ảnh minh hoạ' : 'Visual Previews'}</h2>
       <div className="grid gap-8">
         {/* Editorial hero visual */}
-        <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg">
+        <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg transition-transform hover:scale-[1.01] will-change-transform">
           <div className="aspect-[21/9] w-full">
             <OptimizedBlogImage
               src={happyCustomersImg}
@@ -62,7 +62,7 @@ const EmviMissionVision: React.FC = () => {
 
         {/* Premium product visuals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
                 src={bookingCalendarImg}
@@ -74,19 +74,19 @@ const EmviMissionVision: React.FC = () => {
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, elegant booking'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[9/16] w-full">
               <OptimizedBlogImage
                 src={sunshineChat1}
                 alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
                 aspectRatio="9/16"
-                sizes="(min-width: 1024px) 420px, 80vw"
+                sizes="(min-width: 1024px) 480px, 100vw"
                 className="w-full h-full object-contain"
               />
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Trợ lý 24/7' : '24/7 assistant'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
                 src={salonOffersImg}
@@ -98,7 +98,7 @@ const EmviMissionVision: React.FC = () => {
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Ưu đãi được cá nhân hoá' : 'Personalized offers'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
             <div className="aspect-[16/9] w-full">
               <OptimizedBlogImage
                 src={seoLocalSearchImg}
@@ -141,10 +141,10 @@ const EmviMissionVision: React.FC = () => {
 
       <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
         <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-            EmviApp – Sứ mệnh & Tầm nhìn
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight font-display">
+            <span className="animate-gradient bg-clip-text text-transparent">EmviApp – Sứ mệnh & Tầm nhìn</span>
           </h1>
-          <p className="mt-4 text-lg md:text-xl opacity-80">
+          <p className="mt-4 text-lg md:text-xl text-foreground/80">
             Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.
           </p>
 
@@ -303,7 +303,7 @@ function VietnameseArticle() {
       <p>Tôi luôn nghĩ:</p>
       <blockquote>“Nếu có một hệ thống để tất cả mọi thứ này tự động hóa, để gia đình chỉ tập trung vào khách hàng, thì tốt biết mấy…”</blockquote>
 
-      <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+      <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
         <div className="aspect-[21/9] w-full">
           <OptimizedBlogImage
             src={happyCustomersImg}
@@ -327,7 +327,7 @@ function VietnameseArticle() {
       <p>Vậy là từ một ý định nhỏ, tôi tạo ra EmviApp – nền tảng để mọi salon có ứng dụng riêng ngay lập tức, mà không phải tốn hàng chục ngàn đô để phát triển và vận hành.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
           <div className="aspect-[16/9] w-full">
             <OptimizedBlogImage
               src={bookingCalendarImg}
@@ -339,13 +339,13 @@ function VietnameseArticle() {
           </div>
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
         </figure>
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
           <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
               src={sunshineChat2}
               alt="Chatbot Little Sunshine hỗ trợ 24/7"
               aspectRatio="9/16"
-              sizes="(min-width: 1024px) 420px, 80vw"
+              sizes="(min-width: 1024px) 480px, 100vw"
               className="w-full h-full object-contain"
             />
           </div>
@@ -389,7 +389,7 @@ function VietnameseArticle() {
       </table>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
           <div className="aspect-[16/9] w-full">
             <OptimizedBlogImage
               src={salonOffersImg}
@@ -401,7 +401,7 @@ function VietnameseArticle() {
           </div>
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Ưu đãi được cá nhân hoá</figcaption>
         </figure>
-        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+        <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
           <div className="aspect-[16/9] w-full">
             <OptimizedBlogImage
               src={seoLocalSearchImg}
