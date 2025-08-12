@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import bookingCalendarImg from '@/assets/emvi/booking-calendar-mockup.jpg';
-import sunshineChatImg from '@/assets/emvi/little-sunshine-chat.jpg';
-import salonOffersImg from '@/assets/emvi/salon-offers.jpg';
-import seoLocalSearchImg from '@/assets/emvi/seo-local-search.jpg';
-import happyCustomersImg from '@/assets/emvi/happy-customers-pros.jpg';
+import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
+import sunshineChatImg from '@/assets/emvi/sunshine-chat-premium.jpg';
+import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
+import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
+import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // Bilingual Article Page: EmviApp Mission & Vision
@@ -39,12 +39,27 @@ const EmviMissionVision: React.FC = () => {
   const renderImages = () => (
     <section aria-labelledby="visuals" className="mx-auto max-w-6xl w-full">
       <h2 id="visuals" className="text-xl md:text-2xl font-semibold tracking-tight mb-4">{view === 'vi' ? 'Hình ảnh minh hoạ' : 'Visual Previews'}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <figure className="overflow-hidden rounded-xl"><img src={bookingCalendarImg} loading="lazy" alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'} className="w-full h-auto" /></figure>
-        <figure className="overflow-hidden rounded-xl"><img src={sunshineChatImg} loading="lazy" alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'} className="w-full h-auto" /></figure>
-        <figure className="overflow-hidden rounded-xl"><img src={salonOffersImg} loading="lazy" alt={view === 'vi' ? 'Mô phỏng ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'} className="w-full h-auto" /></figure>
-        <figure className="overflow-hidden rounded-xl"><img src={seoLocalSearchImg} loading="lazy" alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'} className="w-full h-auto" /></figure>
-        <figure className="overflow-hidden rounded-xl md:col-span-2"><img src={happyCustomersImg} loading="lazy" alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'} className="w-full h-auto" /></figure>
+      <div className="grid gap-6">
+        {/* Hero editorial visual */}
+        <figure className="overflow-hidden rounded-2xl shadow-xl">
+          <img src={happyCustomersImg} loading="lazy" alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'} className="w-full h-auto" />
+        </figure>
+
+        {/* Premium product mockups */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <figure className="overflow-hidden rounded-2xl shadow-xl">
+            <img src={bookingCalendarImg} loading="lazy" alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'} className="w-full h-auto" />
+          </figure>
+          <figure className="overflow-hidden rounded-2xl shadow-xl">
+            <img src={sunshineChatImg} loading="lazy" alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'} className="w-full h-auto" />
+          </figure>
+          <figure className="overflow-hidden rounded-2xl shadow-xl">
+            <img src={salonOffersImg} loading="lazy" alt={view === 'vi' ? 'Ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'} className="w-full h-auto" />
+          </figure>
+          <figure className="overflow-hidden rounded-2xl shadow-xl">
+            <img src={seoLocalSearchImg} loading="lazy" alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'} className="w-full h-auto" />
+          </figure>
+        </div>
       </div>
     </section>
   );
