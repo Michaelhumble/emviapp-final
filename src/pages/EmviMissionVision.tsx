@@ -6,7 +6,8 @@ import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
+import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
 // Bilingual Article Page: EmviApp Mission & Vision
 // English is default; Vietnamese shown via local toggle (does not affect global language)
 
@@ -41,55 +42,71 @@ const EmviMissionVision: React.FC = () => {
       <h2 id="visuals" className="text-xl md:text-2xl font-semibold tracking-tight mb-4">{view === 'vi' ? 'Hình ảnh minh hoạ' : 'Visual Previews'}</h2>
       <div className="grid gap-8">
         {/* Editorial hero visual */}
-        <figure className="overflow-hidden rounded-3xl border shadow-lg bg-background">
-          <img
-            src={happyCustomersImg}
-            loading="lazy"
-            alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'}
-            className="w-full h-[420px] md:h-[540px] object-cover"
-          />
-          <figcaption className="px-4 py-3 text-sm text-foreground/70">
+        <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg">
+          <div className="aspect-[21/9] w-full">
+            <OptimizedBlogImage
+              src={happyCustomersImg}
+              alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'}
+              aspectRatio="21/9"
+              sizes="(min-width: 1024px) 1100px, 100vw"
+              className="w-full h-full object-cover"
+              priority
+            />
+          </div>
+          <figcaption className="px-4 py-3 text-sm text-muted-foreground">
             {view === 'vi' ? 'Khoảnh khắc chân thực tại salon' : 'Authentic salon moment'}
           </figcaption>
         </figure>
 
-        {/* Premium product mockups */}
+        {/* Premium product visuals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
-            <img
-              src={bookingCalendarImg}
-              loading="lazy"
-              alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'}
-              className="w-full h-[300px] object-cover"
-            />
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, elegant booking'}</figcaption>
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+            <div className="aspect-[16/9] w-full">
+              <OptimizedBlogImage
+                src={bookingCalendarImg}
+                alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'}
+                aspectRatio="16/9"
+                sizes="(min-width: 1024px) 540px, 100vw"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, elegant booking'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
-            <img
-              src={sunshineChatImg}
-              loading="lazy"
-              alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
-              className="w-full h-[300px] object-cover"
-            />
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'Trợ lý 24/7' : '24/7 assistant'}</figcaption>
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+            <div className="aspect-[16/9] w-full">
+              <OptimizedBlogImage
+                src={sunshineChatImg}
+                alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
+                aspectRatio="16/9"
+                sizes="(min-width: 1024px) 540px, 100vw"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Trợ lý 24/7' : '24/7 assistant'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
-            <img
-              src={salonOffersImg}
-              loading="lazy"
-              alt={view === 'vi' ? 'Ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'}
-              className="w-full h-[300px] object-cover"
-            />
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'Ưu đãi được cá nhân hoá' : 'Personalized offers'}</figcaption>
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+            <div className="aspect-[16/9] w-full">
+              <OptimizedBlogImage
+                src={salonOffersImg}
+                alt={view === 'vi' ? 'Ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'}
+                aspectRatio="16/9"
+                sizes="(min-width: 1024px) 540px, 100vw"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Ưu đãi được cá nhân hoá' : 'Personalized offers'}</figcaption>
           </figure>
-          <figure className="overflow-hidden rounded-2xl border shadow-md bg-background">
-            <img
-              src={seoLocalSearchImg}
-              loading="lazy"
-              alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'}
-              className="w-full h-[300px] object-cover"
-            />
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-foreground/70">{view === 'vi' ? 'SEO địa phương tự động' : 'Automatic local SEO'}</figcaption>
+          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
+            <div className="aspect-[16/9] w-full">
+              <OptimizedBlogImage
+                src={seoLocalSearchImg}
+                alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'}
+                aspectRatio="16/9"
+                sizes="(min-width: 1024px) 540px, 100vw"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'SEO địa phương tự động' : 'Automatic local SEO'}</figcaption>
           </figure>
         </div>
       </div>
@@ -130,6 +147,13 @@ const EmviMissionVision: React.FC = () => {
               ? 'Hành trình từ một gia đình làm đẹp đến nền tảng tự động hoá cho toàn ngành.'
               : 'From a family salon story to an automation platform for the beauty industry.'}
           </p>
+
+          {/* Meta: byline, date, read time */}
+          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1">EmviApp Founder</span>
+            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1"><CalendarIcon className="mr-1 h-4 w-4" /> Aug 2025</span>
+            <span className="inline-flex items-center rounded-full border bg-background/70 px-3 py-1"><ClockIcon className="mr-1 h-4 w-4" /> 12 min</span>
+          </div>
 
           {/* Local language view controls */}
           <div className="mt-6 inline-flex items-center rounded-full border bg-background/80 shadow-inner overflow-hidden">
@@ -185,7 +209,7 @@ const EmviMissionVision: React.FC = () => {
 function LangSection({ lang, children }: { lang: ViewMode; children: React.ReactNode }) {
   return (
     <section lang={lang === 'vi' ? 'vi' : 'en'} className="relative rounded-2xl border bg-background/60 p-6 md:p-8 shadow-sm">
-      <div className="space-y-5 text-base md:text-lg leading-7 md:leading-8 text-foreground/90 [&_h2]:text-2xl md:[&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-xl md:[&_h3]:text-2xl [&_h3]:mt-8 [&_ol]:list-decimal [&_ul]:list-disc [&_li]:ml-5 [&_table]:w-full [&_table]:border-separate [&_table]:border-spacing-y-2 [&_th]:text-left [&_thead_th]:font-semibold [&_td]:align-top">
+      <div className="mx-auto max-w-3xl space-y-6 text-base md:text-lg leading-8 text-foreground/90 [&_h2]:text-3xl md:[&_h2]:text-4xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-2xl md:[&_h3]:text-3xl [&_h3]:mt-8 [&_ol]:list-decimal [&_ul]:list-disc [&_li]:ml-5 [&_li]:my-1.5 [&_blockquote]:border-l [&_blockquote]:pl-4 [&_blockquote]:italic [&_table]:w-full [&_table]:border-separate [&_table]:border-spacing-y-2 [&_th]:text-left [&_thead_th]:font-semibold [&_td]:align-top">
         {children}
       </div>
     </section>
@@ -237,36 +261,36 @@ function EnglishArticle() {
       <p>After all those costs, many apps still don’t bring new clients. Meanwhile, return visits decline without a solid retention strategy.</p>
 
       <h3>Other apps vs. EmviApp</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Other Apps</th>
-            <th>EmviApp</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Commissions and hidden fees</td>
-            <td>No commissions, transparent pricing</td>
-          </tr>
-          <tr>
-            <td>Optimized to sell ads</td>
-            <td>Optimized to bring clients to salons</td>
-          </tr>
-          <tr>
-            <td>Don’t understand beauty industry</td>
-            <td>Built by someone raised in the industry</td>
-          </tr>
-          <tr>
-            <td>No automatic SEO</td>
-            <td>Automatic SEO by ZIP code and service</td>
-          </tr>
-          <tr>
-            <td>High technical burden</td>
-            <td>Just sign up — everything works</td>
-          </tr>
-        </tbody>
-      </table>
+        <table className="w-full border-separate border-spacing-y-2">
+          <thead>
+            <tr>
+              <th className="text-left px-4 py-2">Other Apps</th>
+              <th className="text-left px-4 py-2">EmviApp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-muted/50">
+              <td className="px-4 py-3 rounded-l-xl">Commissions and hidden fees</td>
+              <td className="px-4 py-3 rounded-r-xl">No commissions, transparent pricing</td>
+            </tr>
+            <tr className="bg-muted/40">
+              <td className="px-4 py-3 rounded-l-xl">Optimized to sell ads</td>
+              <td className="px-4 py-3 rounded-r-xl">Optimized to bring clients to salons</td>
+            </tr>
+            <tr className="bg-muted/50">
+              <td className="px-4 py-3 rounded-l-xl">Don’t understand beauty industry</td>
+              <td className="px-4 py-3 rounded-r-xl">Built by someone raised in the industry</td>
+            </tr>
+            <tr className="bg-muted/40">
+              <td className="px-4 py-3 rounded-l-xl">No automatic SEO</td>
+              <td className="px-4 py-3 rounded-r-xl">Automatic SEO by ZIP code and service</td>
+            </tr>
+            <tr className="bg-muted/50">
+              <td className="px-4 py-3 rounded-l-xl">High technical burden</td>
+              <td className="px-4 py-3 rounded-r-xl">Just sign up — everything works</td>
+            </tr>
+          </tbody>
+        </table>
 
       <h3>SEO — the secret to limitless clients</h3>
       <p>SEO helps your salon appear on Google when people search. With EmviApp, every time you publish a salon or job post, the system auto‑creates an SEO‑optimized page by location, service, and keyword. Google indexes it and shows your salon for “nail salon near me” or “haircut in [City].” No agency, no ads — it just works. Every salon becomes a mini‑website that can attract new clients daily.</p>
