@@ -5,7 +5,7 @@ import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
 import { Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
 // Bilingual Article Page: EmviApp Mission & Vision
@@ -118,15 +118,12 @@ const EmviMissionVision: React.FC = () => {
     </section>
   );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const langParam = (params.get('lang') as ViewMode) || 'en';
-    const target = langParam === 'vi'
-      ? '/blog/emviapp-vision/mission-vision-vi'
-      : '/blog/emviapp-vision/mission-vision-en';
-    window.location.replace(target);
-  }, []);
-  return null;
+  const params = new URLSearchParams(window.location.search);
+  const langParam = (params.get('lang') as ViewMode) || 'en';
+  const target = langParam === 'vi'
+    ? '/blog/emviapp-vision/mission-vision-vi'
+    : '/blog/emviapp-vision/mission-vision-en';
+  return <Navigate to={target} replace />;
 };
 
 function LangSection({ lang, children }: { lang: ViewMode; children: React.ReactNode }) {
