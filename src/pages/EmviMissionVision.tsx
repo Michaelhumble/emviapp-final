@@ -75,13 +75,13 @@ const EmviMissionVision: React.FC = () => {
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, elegant booking'}</figcaption>
           </figure>
           <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
-            <div className="aspect-[16/9] w-full">
+            <div className="aspect-[9/16] w-full">
               <OptimizedBlogImage
                 src={sunshineChat1}
                 alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
-                aspectRatio="16/9"
-                sizes="(min-width: 1024px) 540px, 100vw"
-                className="w-full h-full object-cover"
+                aspectRatio="9/16"
+                sizes="(min-width: 1024px) 420px, 80vw"
+                className="w-full h-full object-contain"
               />
             </div>
             <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Trợ lý 24/7' : '24/7 assistant'}</figcaption>
@@ -340,13 +340,13 @@ function VietnameseArticle() {
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Đặt lịch nhanh, trực quan</figcaption>
         </figure>
         <figure className="overflow-hidden rounded-2xl border bg-background shadow-md">
-          <div className="aspect-[16/9] w-full">
+          <div className="aspect-[9/16] w-full">
             <OptimizedBlogImage
               src={sunshineChat2}
               alt="Chatbot Little Sunshine hỗ trợ 24/7"
-              aspectRatio="16/9"
-              sizes="(min-width: 1024px) 540px, 100vw"
-              className="w-full h-full object-cover"
+              aspectRatio="9/16"
+              sizes="(min-width: 1024px) 420px, 80vw"
+              className="w-full h-full object-contain"
             />
           </div>
           <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">Trợ lý 24/7</figcaption>
