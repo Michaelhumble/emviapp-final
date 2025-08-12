@@ -1,12 +1,11 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import React from 'react';
 import bookingCalendarImg from '@/assets/emvi/booking-calendar-premium.jpg';
 // using uploaded Sunshine chat screenshots (runtime URLs)
 import salonOffersImg from '@/assets/emvi/salon-offers-premium.jpg';
 import seoLocalSearchImg from '@/assets/emvi/seo-local-search-premium.jpg';
 import happyCustomersImg from '@/assets/emvi/happy-customers-pros-premium.jpg';
-import { useLocation } from 'react-router-dom';
 import OptimizedBlogImage from '@/components/blog/OptimizedBlogImage';
+import BlogArticleLayout from '@/components/blog/BlogArticleLayout';
 
 // Bilingual Article Page: EmviApp Mission & Vision
 // English is default; Vietnamese shown via local toggle (does not affect global language)
@@ -19,143 +18,33 @@ const sunshineChatEn1 = '/lovable-uploads/1be5b4b6-b375-4c54-86a1-34531fe3e73f.p
 const sunshineChatEn2 = '/lovable-uploads/cf7603a5-1b7f-4ec3-b0f9-74fb787c1180.png';
 const bookingConfirmCard = '/lovable-uploads/9e4bf897-c709-446d-a057-e8d9fbb18622.png';
 
-function useQuery() {
-  const { search } = useLocation();
-  return useMemo(() => new URLSearchParams(search), [search]);
-}
 
 type ViewMode = 'en' | 'vi' | 'both';
 
 const EmviMissionVision: React.FC = () => {
-  const query = useQuery();
-  const initialFromQuery = (query.get('lang') as ViewMode) || 'vi';
-  const [view, setView] = useState<ViewMode>(['en', 'vi', 'both'].includes(initialFromQuery) ? initialFromQuery : 'vi');
+  const article = {
+    title: 'EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa',
+    description:
+      'Tôi sinh ra và lớn lên trong một gia đình làm đẹp. Nhà tôi làm đủ mọi thứ: nails, tóc, nối mi, spa, massage… Tôi lớn lên giữa mùi nước sơn, tiếng máy sấy tóc, và tiếng trò chuyện rộn ràng của khách hàng.',
+    author: 'EmviApp',
+    publishedAt: 'Aug 2025',
+    readTime: '12 phút đọc',
+    category: 'Sứ mệnh & Tầm nhìn',
+    tags: ['EmviApp', 'Sứ mệnh', 'Tầm nhìn', 'Tự động hóa', 'Làm đẹp'],
+    image: happyCustomersImg,
+  };
 
-  useEffect(() => {
-    // keep URL in sync for hreflang and shareability
-    const params = new URLSearchParams(window.location.search);
-    params.set('lang', view);
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState(null, '', newUrl);
-  }, [view]);
-
-  const meta = getMeta(view);
-  const jsonLd = getJsonLd();
-
-  const renderImages = () => (
-  <section aria-labelledby="visuals" className="mx-auto max-w-6xl w-full">
-      <h2 id="visuals" className="text-xl md:text-2xl font-semibold tracking-tight mb-4">{view === 'vi' ? 'Hình ảnh minh hoạ' : 'Visual Previews'}</h2>
-      <div className="grid gap-8">
-        {/* Editorial hero visual */}
-        <figure className="overflow-hidden rounded-3xl border bg-background shadow-lg transition-transform hover:scale-[1.01] will-change-transform">
-          <div className="aspect-[21/9] w-full">
-            <OptimizedBlogImage
-              src={happyCustomersImg}
-              alt={view === 'vi' ? 'Khách hàng và chuyên gia làm đẹp hạnh phúc tại salon' : 'Happy customers and beauty professionals in action'}
-              aspectRatio="21/9"
-              sizes="(min-width: 1024px) 1100px, 100vw"
-              className="w-full h-full object-cover"
-              priority
-            />
-          </div>
-          <figcaption className="px-4 py-3 text-sm text-muted-foreground">
-            {view === 'vi' ? 'Khoảnh khắc chân thực tại salon' : 'Authentic salon moment'}
-          </figcaption>
-        </figure>
-
-        {/* Premium product visuals */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
-            <div className="aspect-[16/9] w-full">
-              <OptimizedBlogImage
-                src={bookingCalendarImg}
-                alt={view === 'vi' ? 'Mô phỏng giao diện lịch đặt chỗ của EmviApp' : 'EmviApp booking calendar UI mockup'}
-                aspectRatio="16/9"
-                sizes="(min-width: 1024px) 540px, 100vw"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Giao diện lịch EmviApp' : 'Booking calendar UI'}</figcaption>
-          </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
-            <div className="aspect-[9/16] w-full">
-              <OptimizedBlogImage
-                src={view === 'vi' ? sunshineChatVi1 : sunshineChatEn1}
-                alt={view === 'vi' ? 'Xem trước hội thoại chatbot Little Sunshine' : 'Little Sunshine chatbot conversation preview'}
-                aspectRatio="9/16"
-                sizes="(min-width: 1024px) 480px, 100vw"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Đặt lịch nhanh, trực quan' : 'Fast, intuitive booking'}</figcaption>
-          </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
-            <div className="aspect-[16/9] w-full">
-              <OptimizedBlogImage
-                src={salonOffersImg}
-                alt={view === 'vi' ? 'Ưu đãi và khuyến mãi của salon' : 'Salon offers and promotions mockup'}
-                aspectRatio="16/9"
-                sizes="(min-width: 1024px) 540px, 100vw"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'Ưu đãi được cá nhân hoá' : 'Personalized offers'}</figcaption>
-          </figure>
-          <figure className="overflow-hidden rounded-2xl border bg-background shadow-md transition-transform hover:scale-[1.01] will-change-transform">
-            <div className="aspect-[16/9] w-full">
-              <OptimizedBlogImage
-                src={seoLocalSearchImg}
-                alt={view === 'vi' ? 'Đồ hoạ SEO: bản đồ với ghim vị trí và kết quả tìm kiếm' : 'SEO local search graphic with map pin and results'}
-                aspectRatio="16/9"
-                sizes="(min-width: 1024px) 540px, 100vw"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <figcaption className="px-4 py-2 text-xs md:text-sm text-muted-foreground">{view === 'vi' ? 'SEO địa phương tự động' : 'Automatic local SEO'}</figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-  );
+  const articleUrl = `${CANONICAL_URL}?lang=vi`;
 
   return (
-    <article className="w-full">
-      <Helmet>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <meta name="keywords" content={meta.keywords} />
-        <link rel="canonical" href={CANONICAL_URL} />
-        {/* hreflang alternates */}
-        <link rel="alternate" hrefLang="en" href={`${CANONICAL_URL}`} />
-        <link rel="alternate" hrefLang="vi" href={`${CANONICAL_URL}?lang=vi`} />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:url" content={CANONICAL_URL} />
-        <meta property="og:site_name" content="EmviApp" />
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={meta.title} />
-        <meta name="twitter:description" content={meta.description} />
-        {/* Structured data for both languages */}
-        <script type="application/ld+json">{JSON.stringify(jsonLd.en)}</script>
-        <script type="application/ld+json">{JSON.stringify(jsonLd.vi)}</script>
-      </Helmet>
-
-      <header className="mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-12">
-        <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background/60 p-6 md:p-10 shadow-sm">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-pink-500">
-            EmviApp – Từ Một Gia Đình Làm Đẹp Đến Nền Tảng Giúp Ngành Làm Đẹp Tự Động Hóa
-          </h1>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-6xl w-full px-4 md:px-6 pb-16">
-        <LangSection lang="vi">
-          <VietnameseArticle />
-        </LangSection>
-      </main>
-    </article>
+    <BlogArticleLayout
+      article={article}
+      articleSlug="emviapp-mission-vision"
+      articleUrl={articleUrl}
+      backLink="/blog"
+    >
+      <VietnameseArticle />
+    </BlogArticleLayout>
   );
 };
 
