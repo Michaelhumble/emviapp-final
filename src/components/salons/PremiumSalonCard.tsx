@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye, Lock } from 'lucide-react';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { useAuth } from '@/context/auth';
 import PremiumContactGate from '@/components/common/PremiumContactGate';
@@ -19,6 +19,7 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
   className = ""
 }) => {
   const { isSignedIn, user, session, loading } = useAuth();
+  const isLocked = !isSignedIn;
   
   // 🔍 DEBUG: Log auth state for PremiumSalonCard
   console.log('🔍 [PREMIUM-SALON-CARD] Auth state:', {
@@ -72,8 +73,20 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
               <img
                 src={salon.images[currentImageIndex]}
                 alt={salon.name}
-                className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isLocked ? 'blur-sm brightness-75 saturate-50 scale-[1.02]' : ''}`}
+                style={isLocked ? { imageRendering: 'pixelated' as any } : undefined}
               />
+              {isLocked && (
+                <div className="pointer-events-none absolute inset-0 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center text-center z-10">
+                  <div className="relative mb-2">
+                    <div className="absolute inset-0 bg-yellow-400/60 rounded-full blur-md opacity-70"></div>
+                    <div className="relative bg-yellow-500 p-2 rounded-full shadow">
+                      <Lock className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <p className="text-xs sm:text-sm text-gray-700 font-medium">Sign in to view full details and clear images</p>
+                </div>
+              )}
               
               {/* Desktop Gallery Navigation */}
               {salon.images.length > 1 && (
@@ -220,17 +233,17 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
       <CardContent className="p-3 sm:p-4 md:p-5 flex-grow flex flex-col">
         {/* Title and Location - Mobile optimized */}
         <div className="mb-2 sm:mb-3">
-          <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors">
+          <h3 className={`text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors ${isLocked ? 'opacity-60' : ''}`}>
             {salon.name}
           </h3>
-          <div className="flex items-center gap-1.5 sm:gap-2 text-gray-600 text-xs sm:text-sm">
+          <div className={`flex items-center gap-1.5 sm:gap-2 text-gray-600 text-xs sm:text-sm ${isLocked ? 'opacity-60' : ''}`}>
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-purple-500" />
             <span className="font-medium">{salon.location}</span>
           </div>
         </div>
 
         {/* Key Stats - Mobile optimized */}
-        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 text-xs">
+        <div className={`grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 text-xs ${isLocked ? 'opacity-60' : ''}`}>
           {salon.sqft && (
             <div className="flex items-center gap-1 sm:gap-2">
               <Home className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />

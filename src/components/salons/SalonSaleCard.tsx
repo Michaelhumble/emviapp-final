@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye, Edit, Trash2 } from 'lucide-react';
+import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye, Edit, Trash2, Lock } from 'lucide-react';
 import { SalonSale } from '@/types/salonSale';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +23,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
   className = ""
 }) => {
   const { isSignedIn, user, userRole } = useAuth();
+  const isLocked = !isSignedIn;
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -144,9 +145,21 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         <ImageWithFallback
           src={getCurrentImage()}
           alt={salon.salon_name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isLocked ? 'blur-sm brightness-75 saturate-50 scale-[1.02]' : ''}`}
           businessName={salon.salon_name}
+          style={isLocked ? ({ imageRendering: 'pixelated' } as React.CSSProperties) : undefined}
         />
+        {isLocked && (
+          <div className="pointer-events-none absolute inset-0 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center text-center z-10">
+            <div className="relative mb-2">
+              <div className="absolute inset-0 bg-yellow-400/60 rounded-full blur-md opacity-70"></div>
+              <div className="relative bg-yellow-500 p-2 rounded-full shadow">
+                <Lock className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <p className="text-xs sm:text-sm text-gray-700 font-medium">Sign in to view full details and clear images</p>
+          </div>
+        )}
         
         {/* Gallery Navigation - Mobile optimized */}
         {images.length > 1 && (
@@ -188,7 +201,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0">
+            <h3 className={`font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0 ${isLocked ? 'opacity-60' : ''}`}>
               {salon.salon_name}
             </h3>
             <span className="font-inter font-bold text-base sm:text-lg text-primary whitespace-nowrap flex-shrink-0">
@@ -196,7 +209,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
             </span>
           </div>
           
-          <div className="flex items-center text-muted-foreground">
+          <div className={`flex items-center text-muted-foreground ${isLocked ? 'opacity-60' : ''}`}>
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
             <span className="text-xs sm:text-sm font-inter line-clamp-1">{getLocation()}</span>
           </div>
@@ -224,7 +237,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         )}
 
         {/* Business Details - Mobile optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm ${isLocked ? 'opacity-60' : ''}`}>
           {salon.business_type && (
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
               <Home className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
