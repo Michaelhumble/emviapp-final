@@ -23,7 +23,10 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
   className = ""
 }) => {
   const { isSignedIn, user, userRole } = useAuth();
-  const isLocked = !isSignedIn;
+  
+  // Smart lock detection: Only lock premium listings or those with contact info
+  const shouldLock = !isSignedIn && (salon.is_featured || salon.is_urgent || salon.contact_phone || salon.contact_email || salon.selected_pricing_tier !== 'basic');
+  
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -145,12 +148,12 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         <ImageWithFallback
           src={getCurrentImage()}
           alt={salon.salon_name}
-          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isLocked ? 'blur-sm brightness-75 saturate-50 scale-[1.02]' : ''}`}
+          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${shouldLock ? 'blur-sm brightness-75 saturate-50 scale-[1.02]' : ''}`}
           businessName={salon.salon_name}
-          style={isLocked ? ({ imageRendering: 'pixelated' } as React.CSSProperties) : undefined}
+          style={shouldLock ? ({ imageRendering: 'pixelated' } as React.CSSProperties) : undefined}
         />
-        {isLocked && (
-          <div className="pointer-events-none absolute inset-0 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center text-center z-10">
+        {shouldLock && (
+          <div className="pointer-events-none absolute inset-0 bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center text-center z-10">
             <div className="relative mb-2">
               <div className="absolute inset-0 bg-yellow-400/60 rounded-full blur-md opacity-70"></div>
               <div className="relative bg-yellow-500 p-2 rounded-full shadow">
@@ -201,7 +204,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h3 className={`font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0 ${isLocked ? 'opacity-60' : ''}`}>
+            <h3 className={`font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0 ${shouldLock ? 'opacity-60' : ''}`}>
               {salon.salon_name}
             </h3>
             <span className="font-inter font-bold text-base sm:text-lg text-primary whitespace-nowrap flex-shrink-0">
@@ -209,7 +212,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
             </span>
           </div>
           
-          <div className={`flex items-center text-muted-foreground ${isLocked ? 'opacity-60' : ''}`}>
+          <div className={`flex items-center text-muted-foreground ${shouldLock ? 'opacity-60' : ''}`}>
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
             <span className="text-xs sm:text-sm font-inter line-clamp-1">{getLocation()}</span>
           </div>
@@ -237,7 +240,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         )}
 
         {/* Business Details - Mobile optimized */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm ${isLocked ? 'opacity-60' : ''}`}>
+        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm ${shouldLock ? 'opacity-60' : ''}`}>
           {salon.business_type && (
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
               <Home className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
