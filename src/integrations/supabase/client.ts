@@ -14,12 +14,34 @@ console.log('🔧 [SUPABASE-CONFIG] Anon Key (first 20 chars):', SUPABASE_PUBLIS
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Safe storage shim for non-browser environments (tests/SSR)
+const getSafeStorage = (): Storage => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
+  } catch (e) {
+    // ignore access errors (privacy mode, etc.)
+  }
+  console.warn('🔧 [SUPABASE-AUTH] localStorage not available, using in-memory storage.');
+  const map = new Map<string, string>();
+  const memoryStorage = {
+    getItem: (key: string) => (map.has(key) ? map.get(key)! : null),
+    setItem: (key: string, value: string) => { map.set(key, String(value)); },
+    removeItem: (key: string) => { map.delete(key); },
+    clear: () => { map.clear(); },
+    key: (index: number) => Array.from(map.keys())[index] ?? null,
+    get length() { return map.size; },
+  } as unknown as Storage;
+  return memoryStorage;
+};
+
+const SAFE_STORAGE = getSafeStorage();
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    storage: localStorage,
+    detectSessionInUrl: typeof window !== 'undefined',
+    storage: SAFE_STORAGE,
     storageKey: 'sb-wwhqbjrhbajpabfdwnip-auth-token',
     flowType: 'pkce',
     // Extended session settings for better persistence
