@@ -5,13 +5,13 @@ import heroImage from '@/assets/blog/nail-salon-social-media.jpg';
 
 const ViecLamNailOMy2025: React.FC = () => {
   const article = {
-    title: 'Việc làm nail ở Mỹ 2025: Vào khu “Mỹ trắng”, săn khách sang, tip cao – Bí kíp thật lòng',
-    description: 'Bí kíp chọn khu, chọn dịch vụ, kể câu chuyện đúng gu để vào khu Mỹ trắng, hút khách sang và tăng tip ổn định trong 2025 – kèm lộ trình lên chủ tiệm.',
+    title: 'Việc làm nail ở Mỹ 2025: Vào khu cao cấp, săn khách sang, tip cao – Bí kíp thật lòng',
+    description: 'Bí kíp chọn khu, chọn dịch vụ, kể câu chuyện đúng gu để vào khu cao cấp, hút khách sang và tăng tip ổn định trong 2025 – kèm lộ trình lên chủ tiệm.',
     author: 'EmviApp Editorial VN',
     publishedAt: '2025-08-13',
     readTime: '14 min read',
     category: 'Industry Insights',
-    tags: ['việc làm nail ở Mỹ','khách sang','tip cao','khu Mỹ trắng','nail 2025','jelly','chrome','glazed donut','EmviApp'],
+    tags: ['việc làm nail ở Mỹ','khách sang','tip cao','khu cao cấp','khu thu nhập cao','nail 2025','jelly','chrome','glazed donut','EmviApp'],
     image: heroImage
   };
 
@@ -23,7 +23,7 @@ const ViecLamNailOMy2025: React.FC = () => {
     >
       <div className="space-y-8">
         <p className="text-xl leading-relaxed text-muted-foreground">
-          “Làm sao vô khu Mỹ trắng để tip cao?” – câu hỏi quen thuộc trong cộng đồng thợ Việt ở Mỹ. Không có đường tắt, chỉ có chiến lược đúng: chọn khu, chọn dịch vụ, chọn cách kể câu chuyện của chính mình. 2025 rồi, nghề nail không chỉ “làm cho đẹp” mà là “bán trải nghiệm” – ai làm khéo, khách sang tự tìm tới.
+          “Làm sao vô khu cao cấp để tip cao?” – câu hỏi quen thuộc trong cộng đồng thợ Việt ở Mỹ. Không có đường tắt, chỉ có chiến lược đúng: chọn khu, chọn dịch vụ, chọn cách kể câu chuyện của chính mình. 2025 rồi, nghề nail không chỉ “làm cho đẹp” mà là “bán trải nghiệm” – ai làm khéo, khách sang tự tìm tới.
         </p>
 
         <section>
@@ -44,9 +44,9 @@ const ViecLamNailOMy2025: React.FC = () => {
             <p>
               Thu nhập = Giá dịch vụ cơ bản + Upsell + Tip. “Khách sang” không chỉ là người trả nhiều tiền, mà là người “chịu chi cho trải nghiệm”, trung thành và đi đều. Muốn bền, mình phải khiến họ cảm thấy: “đáng tiền – đáng quay lại – đáng rủ bạn tới”.
             </p>
-            <h3 className="text-xl font-semibold">Khu Mỹ trắng vs. khu bình dân</h3>
+            <h3 className="text-xl font-semibold">Khu cao cấp vs. khu phổ thông</h3>
             <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Khu Mỹ trắng/khu thu nhập cao:</strong> giá niêm yết cao hơn 20–40%, tip rộng tay hơn. Đổi lại tiêu chuẩn khắt khe: sạch, đúng hẹn, trải nghiệm “mượt”, giao tiếp tinh tế.</li>
+              <li><strong>Khu cao cấp/khu thu nhập cao:</strong> giá niêm yết cao hơn 20–40%, tip rộng tay hơn. Đổi lại tiêu chuẩn khắt khe: sạch, đúng hẹn, trải nghiệm “mượt”, giao tiếp tinh tế.</li>
               <li><strong>Khu bình dân/cạnh tranh dày:</strong> giá thấp, làm theo volume, tip thất thường. Phù hợp tích lũy tay nghề, gom review 5* giai đoạn đầu.</li>
             </ul>
             <p>
@@ -102,7 +102,7 @@ const ViecLamNailOMy2025: React.FC = () => {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold mb-4">Giao tiếp tinh tế: khác biệt ở khu Mỹ trắng</h2>
+          <h2 className="text-2xl font-bold mb-4">Giao tiếp tinh tế: khác biệt ở khu cao cấp</h2>
           <div className="space-y-4">
             <ul className="list-disc pl-6 space-y-2">
               <li>Đúng hẹn tuyệt đối, xác nhận lịch tự động, nhắn “see you soon” trước 24h.</li>
@@ -175,7 +175,7 @@ const ViecLamNailOMy2025: React.FC = () => {
               2025 là năm của trải nghiệm + câu chuyện + giá trị. Ai hiểu khách và chịu tối ưu hiện diện online, khách sang sẽ tự đến. Hãy bắt đầu từ một combo signature, một clip mini‑viral, một trang Google Business chỉn chu – rồi dùng EmviApp để chốt job nhanh, mở rộng network, và lên “đời” nghề một cách bền vững.
             </p>
             <div className="rounded-2xl overflow-hidden">
-              <BlogImage src={heroImage} alt="Việc làm nail ở Mỹ 2025 – chiến lược vào khu Mỹ trắng, săn khách sang, tip cao" />
+              <BlogImage src={heroImage} alt="Việc làm nail ở Mỹ 2025 – chiến lược vào khu cao cấp, săn khách sang, tip cao" />
             </div>
           </div>
         </section>
