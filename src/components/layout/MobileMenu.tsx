@@ -80,9 +80,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   React.useEffect(() => {
     // Only close if menu is open and route actually changed
     if (isOpen) {
-      onClose();
+      // Add small delay to prevent race conditions
+      const timeoutId = setTimeout(() => {
+        onClose();
+      }, 100);
+      return () => clearTimeout(timeoutId);
     }
-  }, [location.pathname]); // Removed onClose dependency to prevent re-trigger loops
+  }, [location.pathname, isOpen, onClose]);
 
   // Add ESC key handler to close menu
   React.useEffect(() => {
@@ -98,29 +102,35 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  // Prevent background scrolling when menu is open
+  // Prevent background scrolling when menu is open with better handling
   React.useEffect(() => {
     if (isOpen) {
+      const scrollY = window.scrollY;
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.top = `-${scrollY}px`;
+      document.documentElement.style.overflow = 'hidden'; // Also prevent html scrolling
     } else {
       const scrollY = document.body.style.top;
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
       document.body.style.top = '';
+      document.documentElement.style.overflow = '';
       if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        const scrollTop = parseInt(scrollY || '0') * -1;
+        window.scrollTo({ top: scrollTop, behavior: 'instant' });
       }
     }
 
     return () => {
+      // Cleanup function to ensure styles are always reset
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
       document.body.style.top = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
 
@@ -134,12 +144,21 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md md:hidden touch-manipulation"
             style={{ 
               zIndex: 9998, // Below menu panel
-              backdropFilter: 'blur(8px)' 
+              backdropFilter: 'blur(8px)',
+              touchAction: 'none', // Prevent touch conflicts
+              WebkitTouchCallout: 'none', // Prevent iOS callout
+              WebkitUserSelect: 'none', // Prevent text selection
+              userSelect: 'none'
             }}
             onClick={onClose}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
           />
 
           {/* Menu Panel */}
@@ -153,13 +172,16 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               stiffness: 300,
               duration: 0.3 
             }}
-            className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col touch-manipulation"
             style={{ 
               zIndex: 9999, // Highest priority
               height: '100dvh',
               minHeight: '100svh',
-              overflowY: 'hidden'
+              overflowY: 'hidden',
+              touchAction: 'manipulation', // Allow basic touch but prevent conflicts
+              WebkitOverflowScrolling: 'touch'
             }}
+            onClick={(e) => e.stopPropagation()} // Prevent backdrop click when clicking menu
           >
             {/* Header with Profile Integration */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
