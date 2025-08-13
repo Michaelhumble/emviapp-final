@@ -36,39 +36,42 @@
 
 /* Headings */
 .prose h1 {
-  font-size: 2.25rem;
-  line-height: 1.15;
+  color: hsl(var(--foreground));
+  font-size: 2.5rem;
+  line-height: 1.12;
   font-weight: 800;
-  letter-spacing: -0.025em;
-  margin: 0 0 0.75em 0;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.9em 0;
 }
 
 @media (min-width: 768px) {
-  .prose h1 { font-size: 2.75rem; }
+  .prose h1 { font-size: 3rem; }
 }
 
 .prose h2 {
+  color: hsl(var(--foreground));
   margin-top: 2.6em;
-  margin-bottom: 0.9em;
-  font-size: 1.875rem; /* ~text-3xl */
+  margin-bottom: 0.95em;
+  font-size: 2rem; /* ~text-3xl */
   line-height: 1.22;
   font-weight: 800;
 }
 
 @media (min-width: 768px) {
-  .prose h2 { font-size: 2.125rem; }
+  .prose h2 { font-size: 2.25rem; }
 }
 
 .prose h3 {
+  color: hsl(var(--foreground));
   margin-top: 2.1em;
-  margin-bottom: 0.6em;
-  font-size: 1.5rem; /* ~text-2xl */
-  line-height: 1.28;
+  margin-bottom: 0.75em;
+  font-size: 1.625rem; /* ~text-2xl */
+  line-height: 1.26;
   font-weight: 700;
 }
 
 @media (min-width: 768px) {
-  .prose h3 { font-size: 1.625rem; }
+  .prose h3 { font-size: 1.75rem; }
 }
 
 /* Emphasis */
