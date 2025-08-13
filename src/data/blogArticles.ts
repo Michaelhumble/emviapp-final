@@ -61,9 +61,27 @@ const TheBeautyRevolutionArticle = lazy(() => import('@/pages/blog/TheBeautyRevo
 const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles/GlobalBeautyCommunityRevolution'));
 const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/BoothRentVsCommission2025'));
 const EmviMissionVisionRedirect = lazy(() => import('@/pages/blog/articles/EmviMissionVisionRedirect'));
+const ViecLamNailOMy2025 = lazy(() => import('@/pages/blog/articles/ViecLamNailOMy2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'viec-lam-nail-o-my-2025',
+    slug: 'viec-lam-nail-o-my-2025',
+    title: 'Việc làm nail ở Mỹ 2025: Vào khu “Mỹ trắng”, săn khách sang, tip cao – Bí kíp thật lòng',
+    description: 'Bí kíp vào khu Mỹ trắng, săn khách sang, tăng tip 2025. Xu hướng jelly/chrome/glazed donut. Kết nối job thật trên EmviApp.',
+    author: 'EmviApp Editorial VN',
+    publishedAt: '2025-08-13',
+    readTime: '14 min read',
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['việc làm nail ở Mỹ','khách sang','tip cao','khu Mỹ trắng','nail 2025','jelly','chrome','glazed donut','EmviApp'],
+    image: nailSalonSocialMediaImage,
+    featured: true,
+    trending: true,
+    component: ViecLamNailOMy2025,
+    url: '/blog/industry-insights/viec-lam-nail-o-my-2025'
+  },
   {
     id: 'booth-rent-vs-commission-2025',
     slug: 'booth-rent-vs-commission-2025',
