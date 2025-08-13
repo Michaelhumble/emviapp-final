@@ -55,7 +55,7 @@ function LangSection({ lang, children }: { lang: ViewMode; children: React.React
       lang={isVi ? 'vi' : 'en'}
       className="mx-auto max-w-4xl w-full px-4 md:px-6"
     >
-      <div className="prose prose-lg max-w-none text-foreground/90">
+      <div className="prose prose-lg">
         {children}
       </div>
     </section>
