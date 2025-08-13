@@ -148,21 +148,9 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         <ImageWithFallback
           src={getCurrentImage()}
           alt={salon.salon_name}
-          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${shouldLock ? 'blur-sm brightness-75 saturate-50 scale-[1.02]' : ''}`}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           businessName={salon.salon_name}
-          style={shouldLock ? ({ imageRendering: 'pixelated' } as React.CSSProperties) : undefined}
         />
-        {shouldLock && (
-          <div className="pointer-events-none absolute inset-0 bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center text-center z-10">
-            <div className="relative mb-2">
-              <div className="absolute inset-0 bg-yellow-400/60 rounded-full blur-md opacity-70"></div>
-              <div className="relative bg-yellow-500 p-2 rounded-full shadow">
-                <Lock className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <p className="text-xs sm:text-sm text-gray-700 font-medium">Sign in to view full details and clear images</p>
-          </div>
-        )}
         
         {/* Gallery Navigation - Mobile optimized */}
         {images.length > 1 && (
@@ -204,7 +192,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h3 className={`font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0 ${shouldLock ? 'opacity-60' : ''}`}>
+            <h3 className="font-playfair font-semibold text-lg sm:text-xl text-foreground line-clamp-1 min-w-0">
               {salon.salon_name}
             </h3>
             <span className="font-inter font-bold text-base sm:text-lg text-primary whitespace-nowrap flex-shrink-0">
@@ -212,7 +200,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
             </span>
           </div>
           
-          <div className={`flex items-center text-muted-foreground ${shouldLock ? 'opacity-60' : ''}`}>
+          <div className="flex items-center text-muted-foreground">
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
             <span className="text-xs sm:text-sm font-inter line-clamp-1">{getLocation()}</span>
           </div>
@@ -240,7 +228,7 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
         )}
 
         {/* Business Details - Mobile optimized */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm ${shouldLock ? 'opacity-60' : ''}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
           {salon.business_type && (
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
               <Home className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
@@ -291,26 +279,34 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
           </div>
         </div>
 
-        {/* Contact Info (Login Gated) */}
-        <PremiumContactGate contactName={salon.contact_name} contactPhone={salon.contact_phone} contactEmail={salon.contact_email}>
-          <div className="space-y-1 text-sm">
-            {salon.contact_name && (
-              <p className="font-inter">Contact: {salon.contact_name}</p>
-            )}
-            {salon.contact_phone && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-3 w-3 text-muted-foreground" />
-                <span className="font-inter">{salon.contact_phone}</span>
-              </div>
-            )}
-            {salon.contact_email && (
-              <div className="flex items-center gap-2">
-                <Mail className="h-3 w-3 text-muted-foreground" />
-                <span className="font-inter">{salon.contact_email}</span>
-              </div>
-            )}
+        {/* Contact Info - Clean auth gate like main page */}
+        {shouldLock ? (
+          <div className="space-y-1 text-sm p-3 bg-gray-50 border border-gray-200 rounded-lg text-center">
+            <div className="text-blue-600 hover:text-blue-700 cursor-pointer font-medium">
+              🔒 Sign in to view contact info
+            </div>
           </div>
-        </PremiumContactGate>
+        ) : (
+          <PremiumContactGate contactName={salon.contact_name} contactPhone={salon.contact_phone} contactEmail={salon.contact_email}>
+            <div className="space-y-1 text-sm">
+              {salon.contact_name && (
+                <p className="font-inter">Contact: {salon.contact_name}</p>
+              )}
+              {salon.contact_phone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-muted-foreground" />
+                  <span className="font-inter">{salon.contact_phone}</span>
+                </div>
+              )}
+              {salon.contact_email && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-3 w-3 text-muted-foreground" />
+                  <span className="font-inter">{salon.contact_email}</span>
+                </div>
+              )}
+            </div>
+          </PremiumContactGate>
+        )}
 
         {/* FOMO & Social Proof Elements */}
         <div className="space-y-2 mb-3">

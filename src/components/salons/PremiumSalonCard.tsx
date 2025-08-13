@@ -73,20 +73,8 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
               <img
                 src={salon.images[currentImageIndex]}
                 alt={salon.name}
-                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${shouldLock ? 'blur-sm brightness-75 saturate-50 scale-[1.02]' : ''}`}
-                style={shouldLock ? { imageRendering: 'pixelated' as any } : undefined}
+                className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
               />
-              {shouldLock && (
-                <div className="pointer-events-none absolute inset-0 bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center text-center z-10">
-                  <div className="relative mb-2">
-                    <div className="absolute inset-0 bg-yellow-400/60 rounded-full blur-md opacity-70"></div>
-                    <div className="relative bg-yellow-500 p-2 rounded-full shadow">
-                      <Lock className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                  <p className="text-xs sm:text-sm text-gray-700 font-medium">Sign in to view full details and clear images</p>
-                </div>
-              )}
               
               {/* Desktop Gallery Navigation */}
               {salon.images.length > 1 && (
@@ -233,17 +221,17 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
       <CardContent className="p-3 sm:p-4 md:p-5 flex-grow flex flex-col">
         {/* Title and Location - Mobile optimized */}
         <div className="mb-2 sm:mb-3">
-          <h3 className={`text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors ${shouldLock ? 'opacity-60' : ''}`}>
+          <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-purple-600 transition-colors">
             {salon.name}
           </h3>
-          <div className={`flex items-center gap-1.5 sm:gap-2 text-gray-600 text-xs sm:text-sm ${shouldLock ? 'opacity-60' : ''}`}>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-gray-600 text-xs sm:text-sm">
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-purple-500" />
             <span className="font-medium">{salon.location}</span>
           </div>
         </div>
 
         {/* Key Stats - Mobile optimized */}
-        <div className={`grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 text-xs ${shouldLock ? 'opacity-60' : ''}`}>
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 text-xs">
           {salon.sqft && (
             <div className="flex items-center gap-1 sm:gap-2">
               <Home className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
@@ -313,36 +301,44 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
           </div>
         )}
 
-        {/* Contact Info Preview - Mobile optimized, Auth Gated */}
-        <PremiumContactGate contactName={salon.contact.name} contactPhone={salon.contact.phone} contactEmail={salon.contact.email}>
-        <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <div className="text-xs text-gray-600 space-y-1">
-            {salon.contact.name && (
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Contact: {salon.contact.name}</span>
-              </div>
-            )}
-            {salon.contact.phone && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-3 w-3 text-green-600" />
-                <span className="font-medium text-green-600">{salon.contact.phone}</span>
-              </div>
-            )}
-            {salon.contact.email && (
-              <div className="flex items-center gap-2">
-                <Mail className="h-3 w-3 text-blue-600" />
-                <span className="font-medium text-blue-600">{salon.contact.email}</span>
-              </div>
-            )}
-            {!salon.contact.phone && !salon.contact.email && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-3 w-3" />
-                <span className="font-medium">Contact via EmviApp only</span>
-              </div>
-            )}
+        {/* Contact Info Preview - Clean auth gate like main page */}
+        {shouldLock ? (
+          <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 border border-gray-200 rounded-lg text-center">
+            <div className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer font-medium">
+              🔒 Sign in to view contact info
+            </div>
           </div>
-        </div>
-        </PremiumContactGate>
+        ) : (
+          <PremiumContactGate contactName={salon.contact.name} contactPhone={salon.contact.phone} contactEmail={salon.contact.email}>
+            <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <div className="text-xs text-gray-600 space-y-1">
+                {salon.contact.name && (
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Contact: {salon.contact.name}</span>
+                  </div>
+                )}
+                {salon.contact.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3 w-3 text-green-600" />
+                    <span className="font-medium text-green-600">{salon.contact.phone}</span>
+                  </div>
+                )}
+                {salon.contact.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-3 w-3 text-blue-600" />
+                    <span className="font-medium text-blue-600">{salon.contact.email}</span>
+                  </div>
+                )}
+                {!salon.contact.phone && !salon.contact.email && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3 w-3" />
+                    <span className="font-medium">Contact via EmviApp only</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </PremiumContactGate>
+        )}
 
         {/* View Details Button - Mobile optimized */}
         <Button 
