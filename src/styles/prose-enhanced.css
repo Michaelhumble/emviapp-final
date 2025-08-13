@@ -3,6 +3,10 @@
 
 .prose {
   color: hsl(var(--foreground) / 0.92);
+  /* Optimal reading measure */
+  max-width: 72ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Base paragraph */
@@ -40,7 +44,7 @@
 }
 
 @media (min-width: 768px) {
-  .prose h1 { font-size: 3rem; }
+  .prose h1 { font-size: 2.75rem; }
 }
 
 .prose h2 {
@@ -52,7 +56,7 @@
 }
 
 @media (min-width: 768px) {
-  .prose h2 { font-size: 2.25rem; }
+  .prose h2 { font-size: 2.125rem; }
 }
 
 .prose h3 {
@@ -64,7 +68,7 @@
 }
 
 @media (min-width: 768px) {
-  .prose h3 { font-size: 1.75rem; }
+  .prose h3 { font-size: 1.625rem; }
 }
 
 /* Emphasis */
