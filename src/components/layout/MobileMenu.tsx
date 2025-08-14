@@ -77,15 +77,18 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     .filter(i => uiState.isAuthenticated ? true : !(i.roles && i.roles.length));
 
   // Close menu on route change to prevent stuck menu
+  const previousPath = React.useRef(location.pathname);
   React.useEffect(() => {
-    // Only close if menu is open and route actually changed
-    if (isOpen) {
+    // Only close if menu is open and the route actually changed from a previous route
+    if (isOpen && previousPath.current !== location.pathname) {
       // Add small delay to prevent race conditions
       const timeoutId = setTimeout(() => {
         onClose();
       }, 100);
       return () => clearTimeout(timeoutId);
     }
+    // Update the previous path after checking
+    previousPath.current = location.pathname;
   }, [location.pathname, isOpen, onClose]);
 
   // Add ESC key handler to close menu
