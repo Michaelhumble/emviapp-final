@@ -16,7 +16,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import LanguageToggle from './LanguageToggle';
-import MobileHamburgerMenu from './MobileHamburgerMenu';
+import UniversalMobileMenu from './UniversalMobileMenu';
 import AuthButtons from './navbar/AuthButtons';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
@@ -97,7 +97,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            <MobileHamburgerMenu />
+            <UniversalMobileMenu />
           </div>
         </div>
       </div>
