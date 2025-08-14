@@ -29,8 +29,9 @@ const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Quote, Star } from 'lucide-react';
+import { Sparkles, Scissors, Hand, Droplets, Palette, Eye, Brush, Quote, Star, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AuthAction from '@/components/common/AuthAction';
 import JobsHero from '@/components/jobs/JobsHero';
 import { CITIES, ROLES } from '@/seo/locations/seed';
 
