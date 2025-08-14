@@ -241,11 +241,12 @@ const Footer: React.FC = () => {
                 Company
               </h3>
               <ul className="space-y-4">
-                {[
-                  { to: "/about", label: "About" },
-                  { to: "/contact", label: "Contact" },
-                  { href: "/sitemap.xml", label: "Sitemap", external: true }
-                ].map((link, index) => (
+                 {[
+                   { to: "/about", label: "About" },
+                   { to: "/contact", label: "Contact" },
+                   { to: "/investors-partners", label: "Investors & Partners" },
+                   { href: "/sitemap.xml", label: "Sitemap", external: true }
+                 ].map((link, index) => (
                   <motion.li key={index} whileHover={{ x: 5 }}>
                     {link.to ? (
                       <Link 
