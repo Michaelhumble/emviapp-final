@@ -4,10 +4,17 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://www.emvi.app",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+// Dynamic CORS based on origin
+const getCorsHeaders = (origin: string) => {
+  const ALLOWED_ORIGINS = ['https://www.emvi.app', 'https://emvi.app'];
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : 'https://www.emvi.app';
+  
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'content-type,authorization',
+    'Vary': 'Origin'
+  };
 };
 
 // Rate limiting (in-memory, basic)
@@ -52,6 +59,9 @@ const checkRateLimit = (clientIP: string): boolean => {
 };
 
 const handler = async (req: Request): Promise<Response> => {
+  const origin = req.headers.get('origin') ?? '';
+  const corsHeaders = getCorsHeaders(origin);
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
