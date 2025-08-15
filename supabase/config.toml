@@ -1,6 +1,9 @@
 
 project_id = "wwhqbjrhbajpabfdwnip"
 
+[functions.partner-contact]
+verify_jwt = false
+
 [api]
 enabled = true
 port = 54321
