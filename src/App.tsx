@@ -94,6 +94,7 @@ const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
+const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
 
 function App() {
   const location = useLocation();
@@ -193,7 +194,9 @@ function App() {
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
                      <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
-                     <Route path="/investors-partners" element={<Layout><InvestorsPartners /></Layout>} />
+                     <Route path="/partners" element={<Layout><InvestorsPartners /></Layout>} />
+                     <Route path="/investors-partners" element={<Navigate to="/partners" replace />} />
+                     <Route path="/partners/thank-you" element={<Layout><PartnersThankYou /></Layout>} />
                      <Route path="/terms" element={<Layout><Terms /></Layout>} />
                      <Route path="/refund" element={<Layout><Refund /></Layout>} />
                      <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
