@@ -1,0 +1,28 @@
+# Google Search Console Indexing Request URLs
+# Generated: 2025-01-15
+# Priority: High-value content hub and location pages
+
+## Content Hub Pages (NEW - High Priority)
+https://www.emvi.app/blog/beauty-jobs-guide
+https://www.emvi.app/blog/nail-tech-career-path
+https://www.emvi.app/blog/salon-management-essentials
+https://www.emvi.app/blog/beauty-industry-trends-2025
+https://www.emvi.app/blog/beauty-portfolio-guide
+
+## High-Traffic Location Pages
+https://www.emvi.app/jobs/houston-tx
+https://www.emvi.app/jobs/miami-fl
+https://www.emvi.app/jobs/dallas-tx
+https://www.emvi.app/jobs/nails/houston-tx
+https://www.emvi.app/jobs/hair/new-york-ny
+https://www.emvi.app/artists/nails/los-angeles-ca
+https://www.emvi.app/artists/hair/chicago-il
+
+## Core Business Pages
+https://www.emvi.app/jobs
+https://www.emvi.app/artists
+https://www.emvi.app/salons
+https://www.emvi.app/post-job
+
+## Total URLs to Submit: 16
+## Estimated Indexing Timeline: 3-7 days for content hub, 7-14 days for location pages
