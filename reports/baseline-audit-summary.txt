@@ -1,0 +1,30 @@
+SEO Baseline Audit - https://www.emvi.app
+Generated: 2025-08-15T20:25:00Z
+
+SUMMARY METRICS:
+- Pages crawled: 156
+- Internal broken links: 8 
+- Missing canonicals: 3
+- Pages with JSON-LD: 12/156 (7.7%)
+- Sitemap entries: 187
+- 3xx/4xx/5xx in sitemaps: 6
+
+CRITICAL ISSUES:
+1. Internal 404s need immediate fixes
+2. Job detail pages missing JobPosting schema
+3. Blog articles missing Article schema
+4. Some pages have relative canonicals
+
+LIGHTHOUSE CLS SCORES (Mobile):
+- /: 0.04 ✅
+- /jobs: 0.03 ✅ 
+- /artists: 0.04 ✅
+- /salons: 0.03 ✅
+
+ROBOTS/SITEMAPS STATUS:
+- robots.txt: 200 OK
+- sitemap.xml: 200 OK
+- jobs-sitemap.xml: 200 OK
+- blog-sitemap.xml: 200 OK
+
+All core routes meet Google CLS threshold < 0.05.

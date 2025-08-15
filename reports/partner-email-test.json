@@ -1,0 +1,12 @@
+{
+  "test_payload": {
+    "name": "P0 Audit Test",
+    "email": "audit@example.com", 
+    "company": "EmviApp QA",
+    "website": "https://example.com",
+    "notes": "Production partner email validation - P0 verification"
+  },
+  "expected_destination": "support@emvi.app",
+  "test_timestamp": "2025-08-15T20:25:00Z",
+  "status": "pending_verification"
+}

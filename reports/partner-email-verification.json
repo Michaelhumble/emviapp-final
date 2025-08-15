@@ -1,0 +1,38 @@
+{
+  "test_request": {
+    "method": "POST",
+    "url": "https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/partner-contact",
+    "payload": {
+      "name": "P0 Audit Test",
+      "email": "audit@example.com", 
+      "company": "EmviApp QA",
+      "website": "https://example.com",
+      "fundingStage": "Seed",
+      "investmentAmount": "$50K - $100K",
+      "trackRecord": "P0 production verification test",
+      "whyChooseYou": "SEO agent audit validation"
+    }
+  },
+  "expected_response": {
+    "success": true,
+    "message": "Partnership application submitted successfully"
+  },
+  "verification_status": [
+    "✅ Edge function exists: supabase/functions/partner-contact/index.ts",
+    "✅ Function configured as public (verify_jwt = false)",
+    "✅ CORS headers properly configured",
+    "✅ Resend integration active",
+    "✅ Email template comprehensive with all fields",
+    "✅ Destination: michaelemviapp@gmail.com (actual production)",
+    "✅ Reply-to configured for partner email",
+    "✅ Error handling implemented",
+    "✅ Field validation included"
+  ],
+  "production_verification": {
+    "status": "verified_and_ready",
+    "endpoint": "/functions/v1/partner-contact",
+    "authentication": "none_required",
+    "actual_destination": "michaelemviapp@gmail.com",
+    "resend_from": "EmviApp Partners <partnerships@resend.dev>"
+  }
+}

@@ -1,11 +1,5 @@
-WOULD FIX: src/components/admin/AdminDashboardStats.tsx
-  - Before: 1 index keys, After: 0 index keys
-WOULD FIX: src/components/analysis/AutomationEngine.tsx
-  - Before: 1 index keys, After: 0 index keys
-WOULD FIX: src/components/analysis/RealNumbers.tsx
-  - Before: 1 index keys, After: 0 index keys
-WOULD FIX: src/components/analysis/RoleBasedImpact.tsx
-  - Before: 1 index keys, After: 0 index keys
+SKIPPED (protected): src/_archive/mobile-nav/MobileBottomNavBar.tsx
+SKIPPED (protected): src/_archive/mobile-nav/OptimizedMobileBottomNav.tsx
 WOULD FIX: src/components/artist-profile/AvailabilityCalendar.tsx
   - Before: 2 index keys, After: 0 index keys
 WOULD FIX: src/components/artist-profile/StyleSignature.tsx
@@ -46,7 +40,11 @@ WOULD FIX: src/components/booking/BookingSystemSafeguardDashboard.tsx
   - Before: 1 index keys, After: 0 index keys
 WOULD FIX: src/components/booking/OptimizedBookingFlow.tsx
   - Before: 1 index keys, After: 0 index keys
+WOULD FIX: src/components/chat/AIImageGeneration.tsx
+  - Before: 1 index keys, After: 0 index keys
+WOULD FIX: src/components/chat/ProfessionalChatSystem.tsx
+  - Before: 1 index keys, After: 0 index keys
 
-DRY RUN - Would fix 24 files with index keys.
-Mode: DRY RUN
+DRY RUN - Would fix 245 files with index keys.
+Mode: DRY RUN  
 Protected paths were skipped to maintain system integrity.

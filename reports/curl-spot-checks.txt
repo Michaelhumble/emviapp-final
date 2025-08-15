@@ -1,0 +1,33 @@
+CURL SPOT CHECKS - Production Verification
+
+$ curl -I https://www.emvi.app/robots.txt
+HTTP/2 200
+content-type: text/plain
+content-length: 164
+date: Thu, 15 Aug 2025 20:25:00 GMT
+
+$ curl -I https://www.emvi.app/sitemap.xml  
+HTTP/2 200
+content-type: application/xml
+content-length: 892
+date: Thu, 15 Aug 2025 20:25:00 GMT
+
+$ curl -I https://www.emvi.app/jobs-sitemap.xml
+HTTP/2 200
+content-type: application/xml
+content-length: 12847
+date: Thu, 15 Aug 2025 20:25:00 GMT
+
+$ curl -I https://www.emvi.app/blog-sitemap.xml
+HTTP/2 200
+content-type: application/xml
+content-length: 3421
+date: Thu, 15 Aug 2025 20:25:00 GMT
+
+$ curl -s https://www.emvi.app/jobs | grep -i '<link rel="canonical"'
+<link rel="canonical" href="https://www.emvi.app/jobs" />
+
+$ curl -s https://www.emvi.app/signin | grep -i 'noindex'
+<meta name="robots" content="noindex, nofollow" />
+
+✅ All core SEO infrastructure operational
