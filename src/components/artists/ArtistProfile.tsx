@@ -50,9 +50,9 @@ export default function ArtistProfile({ artist }: Props) {
             </div>
           </div>
         </div>
-        <PremiumContactGate>
-          <button className="underline text-sm md:text-base">Reveal Contact</button>
-        </PremiumContactGate>
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-3">
+          <div className="text-sm font-medium text-gray-800">Contact Information Available</div>
+        </div>
       </header>
 
       {/* Skills */}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye, Edit, Trash2, Lock } from 'lucide-react';
+import { MapPin, Calendar, Home, DollarSign, Phone, Mail, User, ChevronLeft, ChevronRight, Eye, Edit, Trash2, Lock } from 'lucide-react';
 import { SalonSale } from '@/types/salonSale';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
@@ -287,25 +287,35 @@ const SalonSaleCard: React.FC<SalonSaleCardProps> = ({
             </div>
           </div>
         ) : (
-          <PremiumContactGate contactName={salon.contact_name} contactPhone={salon.contact_phone} contactEmail={salon.contact_email}>
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-3 space-y-2 mb-3">
+            <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Contact Information
+            </div>
+            
             <div className="space-y-1 text-sm">
               {salon.contact_name && (
-                <p className="font-inter">Contact: {salon.contact_name}</p>
-              )}
-              {salon.contact_phone && (
                 <div className="flex items-center gap-2">
-                  <Phone className="h-3 w-3 text-muted-foreground" />
-                  <span className="font-inter">{salon.contact_phone}</span>
+                  <User className="h-3 w-3 text-gray-600" />
+                  <span className="font-medium text-gray-800">{salon.contact_name}</span>
                 </div>
               )}
+              
+              {salon.contact_phone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-green-600" />
+                  <span className="font-medium text-green-700">{salon.contact_phone}</span>
+                </div>
+              )}
+              
               {salon.contact_email && (
                 <div className="flex items-center gap-2">
-                  <Mail className="h-3 w-3 text-muted-foreground" />
-                  <span className="font-inter">{salon.contact_email}</span>
+                  <Mail className="h-3 w-3 text-blue-600" />
+                  <span className="font-medium text-blue-700">{salon.contact_email}</span>
                 </div>
               )}
             </div>
-          </PremiumContactGate>
+          </div>
         )}
 
         {/* FOMO & Social Proof Elements */}

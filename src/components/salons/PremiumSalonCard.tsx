@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Calendar, Home, DollarSign, Phone, Mail, ChevronLeft, ChevronRight, Eye, Lock } from 'lucide-react';
+import { MapPin, Calendar, Home, DollarSign, Phone, Mail, User, ChevronLeft, ChevronRight, Eye, Lock } from 'lucide-react';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { useAuth } from '@/context/auth';
 import PremiumContactGate from '@/components/common/PremiumContactGate';
@@ -309,35 +309,42 @@ const PremiumSalonCard: React.FC<PremiumSalonCardProps> = ({
             </div>
           </div>
         ) : (
-          <PremiumContactGate contactName={salon.contact.name} contactPhone={salon.contact.phone} contactEmail={salon.contact.email}>
-            <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <div className="text-xs text-gray-600 space-y-1">
-                {salon.contact.name && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Contact: {salon.contact.name}</span>
-                  </div>
-                )}
-                {salon.contact.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3 w-3 text-green-600" />
-                    <span className="font-medium text-green-600">{salon.contact.phone}</span>
-                  </div>
-                )}
-                {salon.contact.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3 w-3 text-blue-600" />
-                    <span className="font-medium text-blue-600">{salon.contact.email}</span>
-                  </div>
-                )}
-                {!salon.contact.phone && !salon.contact.email && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3 w-3" />
-                    <span className="font-medium">Contact via EmviApp only</span>
-                  </div>
-                )}
-              </div>
+          <div className="mb-3 sm:mb-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg">
+            <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Contact Information
             </div>
-          </PremiumContactGate>
+            
+            <div className="space-y-1.5 text-xs">
+              {salon.contact.name && (
+                <div className="flex items-center gap-2">
+                  <User className="h-3 w-3 text-gray-600" />
+                  <span className="font-medium text-gray-800">{salon.contact.name}</span>
+                </div>
+              )}
+              
+              {salon.contact.phone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-green-600" />
+                  <span className="font-medium text-green-700">{salon.contact.phone}</span>
+                </div>
+              )}
+              
+              {salon.contact.email && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-3 w-3 text-blue-600" />
+                  <span className="font-medium text-blue-700">{salon.contact.email}</span>
+                </div>
+              )}
+              
+              {!salon.contact.phone && !salon.contact.email && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-gray-600" />
+                  <span className="font-medium text-gray-700">Contact via EmviApp only</span>
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* View Details Button - Mobile optimized */}

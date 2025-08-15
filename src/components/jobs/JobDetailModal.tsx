@@ -350,11 +350,41 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       );
                     })()
                   ) : (
-                    <PremiumContactGate 
-                      contactName={job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name}
-                      contactPhone={job.metadata?.contact_info?.phone || job.contact_info?.phone}
-                      contactEmail={job.metadata?.contact_info?.email || job.contact_info?.email}
-                    />
+                    <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-4 space-y-3">
+                      <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        Contact Information
+                      </div>
+                      
+                      <div className="space-y-2">
+                        {(job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name) && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <User className="h-4 w-4 text-gray-600" />
+                            <span className="font-medium text-gray-800">
+                              {job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {(job.metadata?.contact_info?.phone || job.contact_info?.phone) && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Phone className="h-4 w-4 text-green-600" />
+                            <span className="font-medium text-green-700">
+                              {job.metadata?.contact_info?.phone || job.contact_info?.phone}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {(job.metadata?.contact_info?.email || job.contact_info?.email) && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Mail className="h-4 w-4 text-blue-600" />
+                            <span className="font-medium text-blue-700">
+                              {job.metadata?.contact_info?.email || job.contact_info?.email}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   )}
                 </div>
 

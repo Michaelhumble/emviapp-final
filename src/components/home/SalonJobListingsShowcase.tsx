@@ -284,12 +284,10 @@ export default function SalonJobListingsShowcase() {
                 
                 <div className="flex items-center justify-between">
                   {job.contact_info?.phone && (
-                    <PremiumContactGate contactPhone={job.contact_info.phone}>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Phone className="h-3 w-3 mr-1" />
-                        <span>{job.contact_info.phone}</span>
-                      </div>
-                    </PremiumContactGate>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Phone className="h-3 w-3 mr-1" />
+                      <span>{job.contact_info.phone}</span>
+                    </div>
                   )}
                   
                   <div className="flex gap-1">

@@ -4,7 +4,7 @@ import { Job } from '@/types/job';
 import { JobCardHeader } from './card-sections/JobCardHeader';
 import { JobCardActions } from './card-sections/JobCardActions';
 import { JobSummary } from './card-sections/JobSummary';
-import { MapPin, Calendar, DollarSign, Edit, Crown, Star } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, Edit, Crown, Star, User, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -408,12 +408,35 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
 
         return (
           <div className="border-t border-gray-100 pt-3 mb-4">
-            <PremiumContactGate
-              contactName={contactInfo.owner_name}
-              contactPhone={contactInfo.phone}
-              contactEmail={contactInfo.email}
-              className="text-sm"
-            />
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-3 space-y-2">
+              <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                Contact Information
+              </div>
+              
+              <div className="space-y-1.5 text-sm">
+                {contactInfo.owner_name && (
+                  <div className="flex items-center gap-2">
+                    <User className="h-3.5 w-3.5 text-gray-600" />
+                    <span className="font-medium text-gray-800">{contactInfo.owner_name}</span>
+                  </div>
+                )}
+                
+                {contactInfo.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-green-600" />
+                    <span className="font-medium text-green-700">{contactInfo.phone}</span>
+                  </div>
+                )}
+                
+                {contactInfo.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-3.5 w-3.5 text-blue-600" />
+                    <span className="font-medium text-blue-700">{contactInfo.email}</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         );
       })()}
