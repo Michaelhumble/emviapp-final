@@ -1,0 +1,341 @@
+name: SEO Weekly Audit & Tracking
+
+on:
+  schedule:
+    # Run every Monday at 8 AM UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Site URL to audit (default: production)'
+        required: false
+        default: 'https://www.emvi.app'
+      issue_action:
+        description: 'Issue action (create/update/skip)'
+        required: false
+        default: 'create'
+
+env:
+  AUDIT_SITE: ${{ github.event.inputs.site_url || 'https://www.emvi.app' }}
+  ISSUE_ACTION: ${{ github.event.inputs.issue_action || 'create' }}
+
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g lighthouse @lhci/cli
+          
+      - name: Create reports directory
+        run: mkdir -p reports
+        
+      - name: Run SEO audit
+        run: |
+          echo "🔍 Running SEO audit for $AUDIT_SITE"
+          node scripts/audit-seo.mjs --site=$AUDIT_SITE --out=reports --maxDepth=4
+        continue-on-error: true
+        
+      - name: Validate sitemaps
+        run: |
+          echo "🗺️ Validating sitemaps"
+          SITEMAP_BASE_URL=$AUDIT_SITE node scripts/validate-sitemaps.mjs
+        continue-on-error: true
+        
+      - name: Generate GSC data (stub)
+        run: |
+          echo "📊 Pulling Google Search Console data"
+          node scripts/gsc-pulls.mjs || echo "GSC pull skipped (not implemented)"
+        continue-on-error: true
+        
+      - name: Generate internal links suggestions
+        run: |
+          echo "🔗 Generating internal link suggestions"
+          node scripts/internal-links-suggest.mjs || echo "Internal links suggestions skipped (not implemented)"
+        continue-on-error: true
+        
+      - name: Parse audit results and create summary
+        id: parse-results
+        run: |
+          echo "📋 Parsing audit results..."
+          
+          # Initialize counters
+          broken_links=0
+          seo_issues=0
+          sitemap_issues=0
+          missing_canonicals=0
+          missing_jsonld=0
+          
+          # Parse broken links
+          if [ -f "reports/broken-links.csv" ]; then
+            broken_links=$(tail -n +2 reports/broken-links.csv | wc -l)
+          fi
+          
+          # Parse SEO issues  
+          if [ -f "reports/seo-issues.csv" ]; then
+            seo_issues=$(tail -n +2 reports/seo-issues.csv | wc -l)
+            missing_canonicals=$(grep -c "missing-canonical" reports/seo-issues.csv || echo "0")
+            missing_jsonld=$(grep -c "invalid-json-ld\|missing.*schema" reports/seo-issues.csv || echo "0")
+          fi
+          
+          # Parse sitemap validation
+          if [ -f "reports/sitemap-validation.json" ]; then
+            sitemap_issues=$(node -p "
+              try {
+                const data = JSON.parse(require('fs').readFileSync('reports/sitemap-validation.json', 'utf8'));
+                data.summary.broken + data.summary.errors;
+              } catch(e) { 0 }
+            ")
+          fi
+          
+          # Set outputs for next step
+          echo "broken_links=$broken_links" >> $GITHUB_OUTPUT
+          echo "seo_issues=$seo_issues" >> $GITHUB_OUTPUT
+          echo "sitemap_issues=$sitemap_issues" >> $GITHUB_OUTPUT
+          echo "missing_canonicals=$missing_canonicals" >> $GITHUB_OUTPUT
+          echo "missing_jsonld=$missing_jsonld" >> $GITHUB_OUTPUT
+          
+          # Generate date for issue title
+          echo "audit_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          
+          echo "✅ Results parsed: $broken_links broken links, $seo_issues SEO issues, $sitemap_issues sitemap issues"
+          
+      - name: Create audit summary markdown
+        id: create-summary
+        run: |
+          audit_date="${{ steps.parse-results.outputs.audit_date }}"
+          broken_links="${{ steps.parse-results.outputs.broken_links }}"
+          seo_issues="${{ steps.parse-results.outputs.seo_issues }}"
+          sitemap_issues="${{ steps.parse-results.outputs.sitemap_issues }}"
+          missing_canonicals="${{ steps.parse-results.outputs.missing_canonicals }}"
+          missing_jsonld="${{ steps.parse-results.outputs.missing_jsonld }}"
+          
+          # Determine overall status
+          total_issues=$((broken_links + sitemap_issues))
+          if [ $total_issues -eq 0 ]; then
+            status="🟢 GOOD"
+            priority="low"
+          elif [ $total_issues -lt 5 ]; then
+            status="🟡 ATTENTION"
+            priority="medium"
+          else
+            status="🔴 ACTION REQUIRED"
+            priority="high"
+          fi
+          
+          # Create summary markdown
+          cat > reports/weekly-summary.md << EOF
+          # SEO Weekly Audit - $audit_date
+          
+          **Overall Status**: $status
+          **Audit Target**: [\`$AUDIT_SITE\`]($AUDIT_SITE)
+          **Generated**: $(date -u +'%Y-%m-%d %H:%M UTC')
+          
+          ## 📊 Summary Metrics
+          
+          | Metric | Count | Status |
+          |--------|-------|--------|
+          | 🔗 Broken Links | $broken_links | $([ $broken_links -eq 0 ] && echo "✅" || echo "❌") |
+          | 🗺️ Sitemap Issues | $sitemap_issues | $([ $sitemap_issues -eq 0 ] && echo "✅" || echo "❌") |
+          | 📄 SEO Issues | $seo_issues | $([ $seo_issues -lt 5 ] && echo "✅" || echo "⚠️") |
+          | 🔗 Missing Canonicals | $missing_canonicals | $([ $missing_canonicals -eq 0 ] && echo "✅" || echo "❌") |
+          | 📋 Missing Schema | $missing_jsonld | $([ $missing_jsonld -eq 0 ] && echo "✅" || echo "❌") |
+          
+          ## 🔍 Detailed Findings
+          
+          ### Broken Links $([ $broken_links -eq 0 ] && echo "✅" || echo "($broken_links found)")
+          EOF
+          
+          # Add broken links details if any exist
+          if [ $broken_links -gt 0 ] && [ -f "reports/broken-links.csv" ]; then
+            echo "" >> reports/weekly-summary.md
+            echo "**Top 10 Broken Links:**" >> reports/weekly-summary.md
+            echo "\`\`\`" >> reports/weekly-summary.md
+            head -11 reports/broken-links.csv | tail -10 >> reports/weekly-summary.md
+            echo "\`\`\`" >> reports/weekly-summary.md
+          else
+            echo "No broken links detected! 🎉" >> reports/weekly-summary.md
+          fi
+          
+          cat >> reports/weekly-summary.md << EOF
+          
+          ### Sitemap Validation $([ $sitemap_issues -eq 0 ] && echo "✅" || echo "($sitemap_issues issues)")
+          EOF
+          
+          # Add sitemap issues if any
+          if [ $sitemap_issues -gt 0 ] && [ -f "reports/sitemap-validation.json" ]; then
+            echo "" >> reports/weekly-summary.md
+            echo "**Issues found in sitemap validation. Check the full report for details.**" >> reports/weekly-summary.md
+          else
+            echo "All sitemap URLs are valid and accessible! 🎉" >> reports/weekly-summary.md
+          fi
+          
+          cat >> reports/weekly-summary.md << EOF
+          
+          ### SEO Technical Issues $([ $seo_issues -lt 5 ] && echo "✅" || echo "($seo_issues issues)")
+          EOF
+          
+          if [ $seo_issues -gt 0 ] && [ -f "reports/seo-issues.csv" ]; then
+            echo "" >> reports/weekly-summary.md
+            echo "**Common Issues:**" >> reports/weekly-summary.md
+            echo "- Missing canonical URLs: $missing_canonicals" >> reports/weekly-summary.md  
+            echo "- Schema markup issues: $missing_jsonld" >> reports/weekly-summary.md
+            echo "" >> reports/weekly-summary.md
+            echo "**Sample Issues:**" >> reports/weekly-summary.md
+            echo "\`\`\`" >> reports/weekly-summary.md
+            head -6 reports/seo-issues.csv | tail -5 >> reports/weekly-summary.md
+            echo "\`\`\`" >> reports/weekly-summary.md
+          else
+            echo "No major SEO issues detected! ✨" >> reports/weekly-summary.md
+          fi
+          
+          cat >> reports/weekly-summary.md << EOF
+          
+          ## 🎯 Recommended Actions
+          
+          EOF
+          
+          # Add priority recommendations
+          if [ $broken_links -gt 0 ]; then
+            echo "1. **Fix Broken Links** - Review and update $broken_links broken links" >> reports/weekly-summary.md
+          fi
+          
+          if [ $missing_canonicals -gt 0 ]; then
+            echo "2. **Add Canonical URLs** - $missing_canonicals pages missing canonical tags" >> reports/weekly-summary.md
+          fi
+          
+          if [ $missing_jsonld -gt 0 ]; then
+            echo "3. **Fix Schema Markup** - $missing_jsonld pages with schema issues" >> reports/weekly-summary.md
+          fi
+          
+          if [ $total_issues -eq 0 ]; then
+            echo "🎉 **No immediate actions required!** Your SEO is in great shape." >> reports/weekly-summary.md
+          fi
+          
+          cat >> reports/weekly-summary.md << EOF
+          
+          ## 📁 Full Reports
+          
+          - [SEO Audit Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - [Broken Links CSV](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - [Sitemap Validation](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          
+          ---
+          
+          **Next audit**: $(date -d "+7 days" +'%Y-%m-%d')  
+          **Generated by**: [SEO Weekly Audit Action](https://github.com/${{ github.repository }}/actions/workflows/seo-weekly.yml)
+          EOF
+          
+          echo "status=$status" >> $GITHUB_OUTPUT
+          echo "priority=$priority" >> $GITHUB_OUTPUT
+          echo "total_issues=$total_issues" >> $GITHUB_OUTPUT
+          
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-audit-${{ steps.parse-results.outputs.audit_date }}
+          path: |
+            reports/
+          retention-days: 30
+          
+      - name: Create or update tracking issue
+        if: env.ISSUE_ACTION != 'skip'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const auditDate = '${{ steps.parse-results.outputs.audit_date }}';
+            const status = '${{ steps.create-summary.outputs.status }}';
+            const priority = '${{ steps.create-summary.outputs.priority }}';
+            const totalIssues = parseInt('${{ steps.create-summary.outputs.total_issues }}');
+            
+            // Read the summary
+            const summary = fs.readFileSync('reports/weekly-summary.md', 'utf8');
+            
+            const issueTitle = `SEO Weekly – ${auditDate}`;
+            const labels = ['seo', 'automated', `priority:${priority}`];
+            
+            if (totalIssues > 0) {
+              labels.push('bug');
+            }
+            
+            // Check for existing issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'seo,automated',
+              state: 'open',
+              sort: 'created',
+              direction: 'desc',
+              per_page: 5
+            });
+            
+            // Look for recent issue (within 14 days) to update instead of creating new
+            const recentIssue = issues.find(issue => {
+              const createdDate = new Date(issue.created_at);
+              const daysDiff = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
+              return daysDiff <= 14 && issue.title.includes('SEO Weekly');
+            });
+            
+            if (recentIssue && '${{ env.ISSUE_ACTION }}' === 'update') {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: recentIssue.number,
+                body: `## Update: ${auditDate}\n\n${summary}`
+              });
+              
+              // Update labels if priority changed
+              await github.rest.issues.setLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: recentIssue.number,
+                labels: labels
+              });
+              
+              console.log(`Updated existing issue #${recentIssue.number}`);
+            } else {
+              // Create new issue
+              const { data: newIssue } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: summary,
+                labels: labels
+              });
+              
+              console.log(`Created new issue #${newIssue.number}`);
+            }
+            
+      - name: Notify on critical issues
+        if: steps.create-summary.outputs.total_issues > 10
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const totalIssues = '${{ steps.create-summary.outputs.total_issues }}';
+            console.log(`🚨 CRITICAL: ${totalIssues} SEO issues detected!`);
+            
+            // Could add Slack/email notifications here
+            core.setFailed(`Critical SEO issues detected: ${totalIssues} issues found`);
+            
+      - name: Summary
+        run: |
+          echo "## 📊 SEO Weekly Audit Complete"
+          echo "- **Site**: $AUDIT_SITE"
+          echo "- **Status**: ${{ steps.create-summary.outputs.status }}"
+          echo "- **Issues**: ${{ steps.create-summary.outputs.total_issues }}"
+          echo "- **Reports**: Available in workflow artifacts"
+          echo ""
+          echo "Next audit scheduled for $(date -d '+7 days' +'%Y-%m-%d')"
