@@ -1,0 +1,48 @@
+domain: "https://www.emvi.app"
+allowed_edits:
+  - "public/robots.txt"
+  - "public/sitemap*.xml"             # generation scripts only, not static dumps
+  - "vercel.json"                     # redirects only
+  - "src/components/seo/**"
+  - "src/pages/**"
+  - "src/app/**"
+  - "scripts/**"
+protected_paths:
+  - "src/components/nav/**"
+  - "src/pages/auth/**"
+  - "src/components/jobs/curated/**"
+  - "src/components/layout/MobileMenu.tsx"
+  - "src/components/layout/Navbar.tsx"
+  - "src/components/layout/PostWizardLayout.tsx"
+  - "src/data/protected/**"
+policies:
+  canonical_host: "https://www.emvi.app"
+  fix_broken_internal_links: true
+  remove_3xx_4xx_5xx_from_sitemaps: true
+  jobs_rule: "unified_layout_inline_gating_only"
+  jsonld:
+    job_detail: true
+    blog_article: true
+    website_org_once: true
+testing_thresholds:
+  max_internal_broken_links: 0
+  max_duplicate_jsonld: 0
+  lighthouse:
+    mobile_cls: 0.05
+    mobile_lcp: 2.5
+    mobile_fid: 100
+agent:
+  model: "gpt-4"
+  temperature: 0.1
+  max_tokens: 2000
+  guardrails:
+    - "Only touch files in allowed_edits"
+    - "Always keep canonical_host = https://www.emvi.app"
+    - "Jobs rule: no FOMO overlays ever, inline gating only"
+    - "Produce minimal diffs + test updates"
+    - "Never modify protected_paths"
+notifications:
+  github_issues: true
+  slack_optional: true
+  pr_threshold: 3  # Open PR if 3+ fixes needed
+  issue_threshold: 10  # Open issue if 10+ problems found

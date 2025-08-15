@@ -1,0 +1,240 @@
+name: 🤖 SEO Agent - Automated SEO Monitoring & Fixes
+
+on:
+  schedule:
+    # Daily at 9:00 AM PT (5:00 PM UTC)
+    - cron: '0 17 * * *'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'scripts/**'
+      - '.github/workflows/seo-agent.yml'
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Site URL to audit'
+        required: false
+        default: 'https://www.emvi.app'
+      apply_fixes:
+        description: 'Apply safe auto-fixes'
+        type: boolean
+        default: true
+
+jobs:
+  seo-agent:
+    name: 🔍 SEO Agent Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 🔧 Install dependencies
+        run: |
+          npm ci
+          npm install -g fast-xml-parser js-yaml
+      
+      - name: 🏗️ Build project
+        run: npm run build
+        continue-on-error: true
+      
+      - name: 📁 Create reports directory
+        run: mkdir -p reports
+      
+      - name: 🔍 Run SEO Agent
+        env:
+          SITE_URL: ${{ github.event.inputs.site_url || 'https://www.emvi.app' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
+          APPLY_FIXES: ${{ github.event.inputs.apply_fixes || 'true' }}
+        run: |
+          echo "🤖 Running SEO Agent on $SITE_URL"
+          node scripts/seo-agent.mjs --site=$SITE_URL --out=reports
+        continue-on-error: true
+      
+      - name: 🧪 Run tests
+        run: |
+          npm run test 2>&1 | tee reports/test-results.txt || true
+        continue-on-error: true
+      
+      - name: 🏃‍♂️ Run specific SEO tests
+        run: |
+          npx vitest run src/__tests__/seoComponents.test.tsx --reporter=verbose 2>&1 | tee reports/seo-tests.txt || true
+          npx vitest run src/__tests__/jobsFomoRemoval.test.tsx --reporter=verbose 2>&1 | tee reports/jobs-tests.txt || true
+        continue-on-error: true
+      
+      - name: 🌐 Production spot checks
+        env:
+          SITE_URL: ${{ github.event.inputs.site_url || 'https://www.emvi.app' }}
+        run: |
+          echo "🔍 Running production spot checks..."
+          
+          echo "## 🌐 Production Spot Checks" > reports/spot-checks.md
+          echo "Site: $SITE_URL" >> reports/spot-checks.md
+          echo "Date: $(date)" >> reports/spot-checks.md
+          echo "" >> reports/spot-checks.md
+          
+          echo "### robots.txt" >> reports/spot-checks.md
+          curl -I $SITE_URL/robots.txt 2>/dev/null | head -n 5 >> reports/spot-checks.md || echo "❌ Failed" >> reports/spot-checks.md
+          echo "" >> reports/spot-checks.md
+          
+          echo "### sitemap.xml" >> reports/spot-checks.md  
+          curl -I $SITE_URL/sitemap.xml 2>/dev/null | head -n 5 >> reports/spot-checks.md || echo "❌ Failed" >> reports/spot-checks.md
+          echo "" >> reports/spot-checks.md
+          
+          echo "### Jobs page canonical" >> reports/spot-checks.md
+          curl -s $SITE_URL/jobs 2>/dev/null | grep -i '<link rel="canonical"' | head -n 3 >> reports/spot-checks.md || echo "❌ No canonical found" >> reports/spot-checks.md
+        continue-on-error: true
+      
+      - name: 📊 Parse results
+        id: parse_results
+        run: |
+          echo "🔍 Parsing SEO Agent results..."
+          
+          # Check for critical issues
+          BROKEN_LINKS=0
+          if [ -f "reports/broken-links.csv" ]; then
+            BROKEN_LINKS=$(grep -c "emvi.app" reports/broken-links.csv || echo "0")
+          fi
+          
+          # Check test results
+          TEST_FAILURES=0
+          if [ -f "reports/test-results.txt" ]; then
+            TEST_FAILURES=$(grep -c "FAILED" reports/test-results.txt || echo "0")
+          fi
+          
+          echo "broken_links=$BROKEN_LINKS" >> $GITHUB_OUTPUT
+          echo "test_failures=$TEST_FAILURES" >> $GITHUB_OUTPUT
+          
+          # Create summary
+          echo "# 🤖 SEO Agent Summary" > reports/github-summary.md
+          echo "" >> reports/github-summary.md
+          echo "- **Broken Internal Links**: $BROKEN_LINKS" >> reports/github-summary.md
+          echo "- **Test Failures**: $TEST_FAILURES" >> reports/github-summary.md
+          echo "- **Site**: ${{ github.event.inputs.site_url || 'https://www.emvi.app' }}" >> reports/github-summary.md
+          echo "- **Workflow**: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> reports/github-summary.md
+      
+      - name: 📄 Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-agent-reports-${{ github.run_id }}
+          path: reports/
+          retention-days: 30
+        if: always()
+      
+      - name: 🚨 Check for critical issues
+        run: |
+          BROKEN_LINKS="${{ steps.parse_results.outputs.broken_links }}"
+          TEST_FAILURES="${{ steps.parse_results.outputs.test_failures }}"
+          
+          echo "🔍 Critical issues check:"
+          echo "- Broken links: $BROKEN_LINKS"
+          echo "- Test failures: $TEST_FAILURES"
+          
+          if [ "$BROKEN_LINKS" -gt "0" ]; then
+            echo "❌ CRITICAL: $BROKEN_LINKS internal broken links found"
+            exit 1
+          fi
+          
+          if [ "$TEST_FAILURES" -gt "5" ]; then
+            echo "❌ CRITICAL: $TEST_FAILURES test failures detected"
+            exit 1
+          fi
+          
+          echo "✅ No critical issues detected"
+      
+      - name: 📝 Create/Update Issue
+        uses: actions/github-script@v7
+        if: always() && github.event_name == 'schedule'
+        with:
+          script: |
+            const fs = require('fs');
+            const date = new Date().toISOString().split('T')[0];
+            const title = `🤖 SEO Weekly Report - ${date}`;
+            
+            let body = '# 🤖 SEO Agent Weekly Report\n\n';
+            
+            // Add summary if available
+            if (fs.existsSync('reports/github-summary.md')) {
+              body += fs.readFileSync('reports/github-summary.md', 'utf8');
+              body += '\n\n';
+            }
+            
+            body += '## 📊 Detailed Reports\n\n';
+            body += `- 📁 [Download All Reports](${context.payload.repository.html_url}/actions/runs/${context.runId})\n`;
+            body += `- 🔗 [View Workflow](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`;
+            
+            body += '## 🎯 Next Actions\n\n';
+            body += '- [ ] Review broken links report\n';
+            body += '- [ ] Check SEO component test results\n';
+            body += '- [ ] Validate canonical URLs\n';
+            body += '- [ ] Monitor Core Web Vitals\n\n';
+            
+            body += `---\n*Auto-generated by SEO Agent on ${new Date().toLocaleString()}*`;
+            
+            // Look for existing issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['seo-agent', 'weekly-report'],
+              state: 'open'
+            });
+            
+            const existingIssue = issues.find(issue => issue.title.includes(date));
+            
+            if (existingIssue) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: body
+              });
+              console.log(`Updated issue #${existingIssue.number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['seo-agent', 'weekly-report']
+              });
+              console.log('Created new weekly SEO report issue');
+            }
+      
+      - name: 💬 Comment on PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '## 🤖 SEO Agent Report\n\n';
+            
+            if (fs.existsSync('reports/github-summary.md')) {
+              comment += fs.readFileSync('reports/github-summary.md', 'utf8');
+            } else {
+              comment += '⚠️ No summary available - check workflow logs';
+            }
+            
+            comment += '\n\n📁 [View detailed reports in workflow artifacts]';
+            comment += `(${context.payload.repository.html_url}/actions/runs/${context.runId})`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
