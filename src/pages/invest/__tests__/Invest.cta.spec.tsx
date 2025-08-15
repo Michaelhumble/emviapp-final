@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import InvestorsPartnersPage from '../../../pages/InvestorsPartners';
 
@@ -35,28 +36,29 @@ describe('Investors & Partners Page CTA Tests', () => {
   });
 
   it('renders the page without errors', () => {
-    renderWithRouter(<InvestorsPartnersPage />);
-    expect(screen.getByText('We Don\'t Work With')).toBeInTheDocument();
+    const { getByText } = renderWithRouter(<InvestorsPartnersPage />);
+    expect(getByText('We Don\'t Work With')).toBeInTheDocument();
   });
 
-  it('has the main hero CTA button that scrolls to contact form', () => {
-    renderWithRouter(<InvestorsPartnersPage />);
+  it('has the main hero CTA button that scrolls to contact form', async () => {
+    const { getByRole } = renderWithRouter(<InvestorsPartnersPage />);
+    const user = userEvent.setup();
     
-    const heroCTA = screen.getByRole('button', { name: /prove you're the one/i });
+    const heroCTA = getByRole('button', { name: /prove you're the one/i });
     expect(heroCTA).toBeInTheDocument();
     
     // Mock scrollIntoView
     const mockScrollIntoView = vi.fn();
     Element.prototype.scrollIntoView = mockScrollIntoView;
     
-    fireEvent.click(heroCTA);
+    await user.click(heroCTA);
     expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
   });
 
   it('has a contact form with submit button', () => {
-    renderWithRouter(<InvestorsPartnersPage />);
+    const { getByRole } = renderWithRouter(<InvestorsPartnersPage />);
     
-    const submitButton = screen.getByRole('button', { name: /submit application/i });
+    const submitButton = getByRole('button', { name: /submit application/i });
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toHaveAttribute('type', 'submit');
   });
@@ -69,15 +71,15 @@ describe('Investors & Partners Page CTA Tests', () => {
   });
 
   it('has all required form fields', () => {
-    renderWithRouter(<InvestorsPartnersPage />);
+    const { getByPlaceholderText } = renderWithRouter(<InvestorsPartnersPage />);
     
     // Check for all form inputs
-    expect(screen.getByPlaceholderText('Your full name')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('your@email.com')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Company name')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('https://yourcompany.com')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('LinkedIn profile URL')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/your track record/i)).toBeInTheDocument();
+    expect(getByPlaceholderText('Your full name')).toBeInTheDocument();
+    expect(getByPlaceholderText('your@email.com')).toBeInTheDocument();
+    expect(getByPlaceholderText('Company name')).toBeInTheDocument();
+    expect(getByPlaceholderText('https://yourcompany.com')).toBeInTheDocument();
+    expect(getByPlaceholderText('LinkedIn profile URL')).toBeInTheDocument();
+    expect(getByPlaceholderText(/your track record/i)).toBeInTheDocument();
   });
 
   it('submits the form with correct data', async () => {
@@ -86,25 +88,18 @@ describe('Investors & Partners Page CTA Tests', () => {
       json: async () => ({ success: true }),
     });
 
-    renderWithRouter(<InvestorsPartnersPage />);
+    const { getByPlaceholderText, getByRole } = renderWithRouter(<InvestorsPartnersPage />);
+    const user = userEvent.setup();
     
     // Fill out the form
-    fireEvent.change(screen.getByPlaceholderText('Your full name'), {
-      target: { value: 'Test User' }
-    });
-    fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
-      target: { value: 'test@example.com' }
-    });
-    fireEvent.change(screen.getByPlaceholderText('Company name'), {
-      target: { value: 'Test Company' }
-    });
-    fireEvent.change(screen.getByPlaceholderText(/your track record/i), {
-      target: { value: 'Test message' }
-    });
+    await user.type(getByPlaceholderText('Your full name'), 'Test User');
+    await user.type(getByPlaceholderText('your@email.com'), 'test@example.com');
+    await user.type(getByPlaceholderText('Company name'), 'Test Company');
+    await user.type(getByPlaceholderText(/your track record/i), 'Test message');
 
     // Submit the form
-    const submitButton = screen.getByRole('button', { name: /submit application/i });
-    fireEvent.click(submitButton);
+    const submitButton = getByRole('button', { name: /submit application/i });
+    await user.click(submitButton);
 
     expect(global.fetch).toHaveBeenCalledWith('/api/partner-contact', {
       method: 'POST',
@@ -130,24 +125,24 @@ describe('Investors & Partners Page CTA Tests', () => {
   });
 
   it('has the main sections visible on the page', () => {
-    renderWithRouter(<InvestorsPartnersPage />);
+    const { getByText } = renderWithRouter(<InvestorsPartnersPage />);
     
     // Check for main content sections
-    expect(screen.getByText('We Don\'t Work With')).toBeInTheDocument();
-    expect(screen.getByText('Everyone')).toBeInTheDocument();
-    expect(screen.getByText('Requirements')).toBeInTheDocument();
-    expect(screen.getByText('Partnership Spots Are')).toBeInTheDocument();
-    expect(screen.getByText('Extremely Limited')).toBeInTheDocument();
-    expect(screen.getByText('Think You\'re the One?')).toBeInTheDocument();
+    expect(getByText('We Don\'t Work With')).toBeInTheDocument();
+    expect(getByText('Everyone')).toBeInTheDocument();
+    expect(getByText('Requirements')).toBeInTheDocument();
+    expect(getByText('Partnership Spots Are')).toBeInTheDocument();
+    expect(getByText('Extremely Limited')).toBeInTheDocument();
+    expect(getByText('Think You\'re the One?')).toBeInTheDocument();
   });
 
   it('has proper accessibility attributes for form elements', () => {
-    renderWithRouter(<InvestorsPartnersPage />);
+    const { getByPlaceholderText } = renderWithRouter(<InvestorsPartnersPage />);
     
-    const nameInput = screen.getByPlaceholderText('Your full name');
-    const emailInput = screen.getByPlaceholderText('your@email.com');
-    const companyInput = screen.getByPlaceholderText('Company name');
-    const messageTextarea = screen.getByPlaceholderText(/your track record/i);
+    const nameInput = getByPlaceholderText('Your full name');
+    const emailInput = getByPlaceholderText('your@email.com');
+    const companyInput = getByPlaceholderText('Company name');
+    const messageTextarea = getByPlaceholderText(/your track record/i);
     
     expect(nameInput).toHaveAttribute('required');
     expect(emailInput).toHaveAttribute('required');

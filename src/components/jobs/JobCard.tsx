@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, DollarSign, Star } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import JobCardContact from '@/components/jobs/JobCardContact';
 
 interface JobCardProps {
   job: Job;
@@ -112,21 +113,26 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
       </CardContent>
 
       <CardFooter className="pt-3 border-t">
-        <div className="flex gap-2 w-full">
-          <Button 
-            className="flex-1 touch-manipulation min-h-[44px]" 
-            size="sm"
-          >
-            View Details
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="touch-manipulation min-h-[44px]"
-            onClick={() => {/* Handle apply */}}
-          >
-            Apply
-          </Button>
+        <div className="space-y-3">
+          {/* Contact Information with Premium Gate */}
+          <JobCardContact phoneNumber={job.contact_info?.phone} />
+          
+          <div className="flex gap-2 w-full">
+            <Button 
+              className="flex-1 touch-manipulation min-h-[44px]" 
+              size="sm"
+            >
+              View Details
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="touch-manipulation min-h-[44px]"
+              onClick={() => {/* Handle apply */}}
+            >
+              Apply
+            </Button>
+          </div>
         </div>
       </CardFooter>
     </Card>
