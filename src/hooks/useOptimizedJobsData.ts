@@ -51,21 +51,12 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         .select('*')
         .eq('status' as any, 'active');
 
-      if (effectiveSignedIn) {
-        // ACTIVE: expires_at > now OR (expires_at IS NULL AND created_at > now()-30d)
-        query = query
-          .or(`expires_at.gt.${nowISO},and(expires_at.is.null,created_at.gt.${thirtyDaysAgoISO})`)
-          .order('pricing_tier' as any, { ascending: false })
-          .order('created_at' as any, { ascending: false })
-          .limit(inputLimit);
-      } else {
-        // EXPIRED (Public FOMO): expires_at <= now OR (expires_at IS NULL AND created_at <= now()-30d)
-        query = query
-          .or(`expires_at.lte.${nowISO},and(expires_at.is.null,created_at.lte.${thirtyDaysAgoISO})`)
-          .order('expires_at' as any, { ascending: false })
-          .order('created_at' as any, { ascending: false })
-          .limit(inputLimit);
-      }
+      // Unified query: Show active jobs to all users (contact info gated by auth state in UI)
+      query = query
+        .or(`expires_at.gt.${nowISO},and(expires_at.is.null,created_at.gt.${thirtyDaysAgoISO})`)
+        .order('pricing_tier' as any, { ascending: false })
+        .order('created_at' as any, { ascending: false })
+        .limit(inputLimit);
 
       const { data, error: fetchError } = await query;
 
