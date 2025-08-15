@@ -121,9 +121,12 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
       document.body.style.width = '';
       document.body.style.top = '';
       document.documentElement.style.overflow = '';
-      if (scrollY) {
+      if (scrollY && scrollY !== '0') {
         const scrollTop = parseInt(scrollY || '0') * -1;
-        window.scrollTo({ top: scrollTop, behavior: 'instant' });
+        // Only restore scroll if it's a meaningful position
+        if (Math.abs(scrollTop) > 50) {
+          window.scrollTo({ top: scrollTop, behavior: 'instant' });
+        }
       }
     }
 

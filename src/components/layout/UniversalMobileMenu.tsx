@@ -51,7 +51,10 @@ const UniversalMobileMenu = () => {
       `;
       return () => {
         document.body.style.cssText = '';
-        window.scrollTo(0, scrollY);
+        // Only restore meaningful scroll positions
+        if (scrollY > 50) {
+          window.scrollTo(0, scrollY);
+        }
       };
     }
   }, [isOpen]);

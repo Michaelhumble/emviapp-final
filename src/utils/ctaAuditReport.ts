@@ -64,20 +64,6 @@ export const ctaAuditReport: CTAAuditItem[] = [
     fixRequired: false,
     recommendation: 'Perfect - navigates to job detail page with auth gate'
   },
-  {
-    id: 'fomo-nail-jobs-details',
-    component: 'FOMONailJobsSection',
-    location: 'Premium job listings',
-    ctaText: 'Xem Chi Tiết',
-    currentRoute: 'Modal popup',
-    targetRoute: 'Modal popup',
-    status: 'working',
-    priority: 'high',
-    userType: 'both',
-    conversionImpact: 'medium',
-    fixRequired: false,
-    recommendation: 'Modal works for demo data, but ensure contact info gated'
-  },
 
   // ========== CHAT SYSTEM CTAs ==========
   {
@@ -227,20 +213,20 @@ export const ctaAuditReport: CTAAuditItem[] = [
     recommendation: 'CRITICAL: Change to internal route /auth/signup'
   },
 
-  // ========== PREMIUM CONTACT GATES ==========
+  // ========== INLINE CONTACT GATES ==========
   {
-    id: 'premium-contact-signup',
-    component: 'PremiumContactGate',
-    location: 'Job detail pages',
-    ctaText: 'Sign Up & View Contact Info',
-    currentRoute: '/auth/signup',
-    targetRoute: '/auth/signup',
+    id: 'inline-contact-signin',
+    component: 'JobCard',
+    location: 'Job listings',
+    ctaText: 'Sign in to view contact info',
+    currentRoute: '/signin',
+    targetRoute: '/signin',
     status: 'working',
     priority: 'critical',
     userType: 'guest',
     conversionImpact: 'high',
     fixRequired: false,
-    recommendation: 'Perfect conversion gate - keep as is'
+    recommendation: 'Perfect inline gate - non-intrusive but effective'
   },
 
   // ========== MISSING DUAL CTAs ==========
