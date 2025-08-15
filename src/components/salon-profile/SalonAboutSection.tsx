@@ -1,5 +1,6 @@
 
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { Salon } from '@/types/salon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info } from 'lucide-react';
@@ -9,7 +10,7 @@ interface SalonAboutSectionProps {
 }
 
 const SalonAboutSection: React.FC<SalonAboutSectionProps> = ({ salon }) => {
-  // Function to convert text with line breaks to paragraphs with emoji support
+  // Function to convert text with line breaks to paragraphs with emoji support (XSS safe)
   const formatBio = (text: string) => {
     if (!text) return null;
     
@@ -24,11 +25,17 @@ const SalonAboutSection: React.FC<SalonAboutSectionProps> = ({ salon }) => {
         // Italic text using underscores (e.g., _italic_)
         .replace(/_([^_]+)_/g, '<em>$1</em>');
       
+      // Sanitize HTML to prevent XSS attacks
+      const sanitizedHTML = DOMPurify.sanitize(formattedParagraph, {
+        ALLOWED_TAGS: ['strong', 'em', 'br'],
+        ALLOWED_ATTR: []
+      });
+      
       return (
         <p 
           key={i} 
           className="mb-3" 
-          dangerouslySetInnerHTML={{ __html: formattedParagraph }} 
+          dangerouslySetInnerHTML={{ __html: sanitizedHTML }} 
         />
       );
     });

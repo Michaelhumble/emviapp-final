@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const data: PartnerContactData = await req.json();
 
-    // Validate required fields
+    // Enhanced validation with sanitization
     if (!data.name || !data.email || !data.company || !data.trackRecord || !data.whyChooseYou) {
       return new Response(
         JSON.stringify({ error: "All required fields must be filled" }),
@@ -39,6 +39,31 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Sanitize inputs to prevent XSS
+    const sanitizeInput = (input: string) => input.trim().slice(0, 5000); // Limit length
+    const sanitizedData = {
+      name: sanitizeInput(data.name),
+      email: sanitizeInput(data.email),
+      company: sanitizeInput(data.company),
+      website: data.website ? sanitizeInput(data.website) : undefined,
+      fundingStage: sanitizeInput(data.fundingStage),
+      investmentAmount: sanitizeInput(data.investmentAmount),
+      trackRecord: sanitizeInput(data.trackRecord),
+      whyChooseYou: sanitizeInput(data.whyChooseYou),
+    };
 
     // Send email to EmviApp team
     const emailResponse = await resend.emails.send({
@@ -63,29 +88,29 @@ const handler = async (req: Request): Promise<Response> => {
               <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600; width: 120px;">Name:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${data.name}</td>
+                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.name}</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Email:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${data.email}</td>
+                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.email}</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Company:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${data.company}</td>
+                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.company}</td>
                 </tr>
-                ${data.website ? `
+                ${sanitizedData.website ? `
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Website:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;"><a href="${data.website}" style="color: #667eea; text-decoration: none;">${data.website}</a></td>
+                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;"><a href="${sanitizedData.website}" style="color: #667eea; text-decoration: none;">${sanitizedData.website}</a></td>
                 </tr>
                 ` : ''}
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Stage:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${data.fundingStage}</td>
+                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.fundingStage}</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Investment:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${data.investmentAmount}</td>
+                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.investmentAmount}</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Submitted:</td>
@@ -97,13 +122,13 @@ const handler = async (req: Request): Promise<Response> => {
             <!-- Track Record -->
             <div style="background: #ecfdf5; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #10b981;">
               <h3 style="color: #065f46; margin: 0 0 15px 0; font-size: 18px;">📈 Track Record & Experience</h3>
-              <p style="color: #064e3b; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 15px;">${data.trackRecord}</p>
+              <p style="color: #064e3b; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 15px;">${sanitizedData.trackRecord}</p>
             </div>
 
             <!-- Why Choose You -->
             <div style="background: #fef3c7; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #f59e0b;">
               <h3 style="color: #92400e; margin: 0 0 15px 0; font-size: 18px;">💡 Why Should We Choose You?</h3>
-              <p style="color: #78350f; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 15px;">${data.whyChooseYou}</p>
+              <p style="color: #78350f; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 15px;">${sanitizedData.whyChooseYou}</p>
             </div>
 
             <!-- Action Required -->
@@ -118,7 +143,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         </div>
       `,
-      replyTo: data.email,
+      replyTo: sanitizedData.email,
     });
 
     console.log("Partnership application email sent successfully:", emailResponse);
