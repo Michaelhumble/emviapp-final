@@ -113,17 +113,7 @@ const FOMOJobDetailModal: React.FC<FOMOJobDetailModalProps> = ({
                   <span className="text-sm font-medium">Contact details unlocked! Call now to apply.</span>
                 </div>
               </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="font-bold text-red-600">🔒 Contact details are locked</p>
-                <p className="text-sm text-red-700 mb-4">
-                  Sign in to unlock phone numbers and direct contact information.
-                </p>
-                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium">
-                  Sign In to Unlock Contact Info
-                </Button>
-              </div>
-            )}
+            ) : null}
           </div>
 
           {/* Job Description - EXACT Reference Position */}

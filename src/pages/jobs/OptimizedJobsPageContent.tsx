@@ -24,7 +24,7 @@ const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSec
 const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
 
 const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
-const TeaserLocked = lazy(() => import('@/components/jobs/TeaserLocked'));
+
 const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
 
@@ -439,7 +439,6 @@ const OptimizedJobsPageContent = () => {
 
 
           {/* Other sections (unchanged) */}
-          <TeaserLocked />
           <UrgencyBoosters jobs={jobs} />
           <LiveLeaderboards />
           <InviteEarnBanner />
