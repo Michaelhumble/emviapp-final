@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -5020,10 +5020,10 @@ export type Database = {
       }
       accept_universal_invite: {
         Args: {
-          p_invite_code: string
-          p_full_name: string
-          p_phone_number: string
           p_email?: string
+          p_full_name: string
+          p_invite_code: string
+          p_phone_number: string
         }
         Returns: Json
       }
@@ -5034,28 +5034,28 @@ export type Database = {
       audit_user_action: {
         Args: {
           p_action: string
-          p_resource_type: string
-          p_resource_id?: string
           p_metadata?: Json
+          p_resource_id?: string
+          p_resource_type: string
         }
         Returns: undefined
       }
       award_credits: {
         Args:
           | {
-              p_user_id: string
               p_action_type: string
-              p_value: number
               p_description?: string
+              p_user_id: string
+              p_value: number
             }
           | {
-              p_user_id: string
               p_credits: number
-              p_reason: string
-              p_metadata?: Json
               p_ip_address?: string
-              p_user_agent?: string
+              p_metadata?: Json
+              p_reason: string
               p_referral_code?: string
+              p_user_agent?: string
+              p_user_id: string
             }
         Returns: boolean
       }
@@ -5065,20 +5065,20 @@ export type Database = {
       }
       award_salon_credits: {
         Args: {
-          p_salon_id: string
           p_amount: number
-          p_source: string
           p_description?: string
           p_metadata?: Json
+          p_salon_id: string
+          p_source: string
         }
         Returns: boolean
       }
       award_team_badge: {
-        Args: { p_member_id: string; p_badge_type: string; p_metadata?: Json }
+        Args: { p_badge_type: string; p_member_id: string; p_metadata?: Json }
         Returns: boolean
       }
       award_tip_credits: {
-        Args: { p_user_id: string; p_amount: number; p_transaction_id: string }
+        Args: { p_amount: number; p_transaction_id: string; p_user_id: string }
         Returns: boolean
       }
       calculate_profile_completion: {
@@ -5098,7 +5098,7 @@ export type Database = {
         Returns: boolean
       }
       can_user_post: {
-        Args: { p_user_id: string; p_post_type: string }
+        Args: { p_post_type: string; p_user_id: string }
         Returns: boolean
       }
       check_ai_rate_limit: {
@@ -5107,8 +5107,8 @@ export type Database = {
       }
       check_api_rate_limit: {
         Args: {
-          p_identifier: string
           p_endpoint: string
+          p_identifier: string
           p_max_requests?: number
           p_window_minutes?: number
         }
@@ -5124,13 +5124,13 @@ export type Database = {
       }
       create_community_notification: {
         Args: {
-          p_user_id: string
-          p_type: string
-          p_message: string
-          p_post_id?: string
           p_comment_id?: string
-          p_triggered_by?: string
+          p_message: string
           p_metadata?: Json
+          p_post_id?: string
+          p_triggered_by?: string
+          p_type: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -5140,30 +5140,30 @@ export type Database = {
       }
       create_notification: {
         Args: {
-          p_user_id: string
-          p_message: string
-          p_type?: string
           p_link?: string
+          p_message: string
           p_metadata?: Json
+          p_type?: string
+          p_user_id: string
         }
         Returns: string
       }
       create_team_invite: {
-        Args: { p_salon_id: string; p_phone_number: string; p_role: string }
+        Args: { p_phone_number: string; p_role: string; p_salon_id: string }
         Returns: {
-          invite_code: string
           expires_at: string
+          invite_code: string
         }[]
       }
       create_universal_team_invite: {
         Args: {
-          p_salon_id: string
-          p_max_uses: number
           p_default_role?: string
+          p_max_uses: number
+          p_salon_id: string
         }
         Returns: {
-          invite_code: string
           expires_at: string
+          invite_code: string
         }[]
       }
       decrement_post_likes: {
@@ -5171,7 +5171,7 @@ export type Database = {
         Returns: undefined
       }
       detect_prompt_abuse: {
-        Args: { p_user_id: string; p_prompt: string; p_prompt_hash: string }
+        Args: { p_prompt: string; p_prompt_hash: string; p_user_id: string }
         Returns: string
       }
       generate_team_invite_code: {
@@ -5189,12 +5189,12 @@ export type Database = {
       get_artist_earnings_for_user: {
         Args: { p_artist_id: string }
         Returns: {
-          week_start: string
           booking_count: number
-          total_revenue: number
-          total_earnings: number
-          salon_id: string
           paid: boolean
+          salon_id: string
+          total_earnings: number
+          total_revenue: number
+          week_start: string
         }[]
       }
       get_artist_rating: {
@@ -5205,35 +5205,35 @@ export type Database = {
         }[]
       }
       get_community_leaderboard: {
-        Args: { period_start: string; limit_count?: number }
+        Args: { limit_count?: number; period_start: string }
         Returns: {
-          id: string
-          full_name: string
+          ai_posts: number
           avatar_url: string
+          first_ai_user: boolean
+          full_name: string
+          id: string
+          level: string
+          points: number
           total_likes: number
           total_posts: number
-          ai_posts: number
-          points: number
-          level: string
-          first_ai_user: boolean
         }[]
       }
       get_customer_booking_info: {
         Args: { booking_id: string }
         Returns: {
-          customer_name: string
-          customer_email: string
-          customer_phone: string
           customer_avatar: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
         }[]
       }
       get_customer_info: {
         Args: { customer_id: string }
         Returns: {
-          id: string
-          full_name: string
-          email: string
           avatar_url: string
+          email: string
+          full_name: string
+          id: string
         }[]
       }
       get_next_referral_milestone: {
@@ -5243,21 +5243,21 @@ export type Database = {
       get_post_status_for_user: {
         Args: { p_user_id: string }
         Returns: {
+          payment_status: string
           post_id: string
           status: string
-          payment_status: string
         }[]
       }
       get_public_artist_profiles: {
         Args: { p_limit?: number; p_offset?: number }
         Returns: {
-          id: string
-          full_name: string
           avatar_url: string
-          specialty: string
-          location: string
-          years_experience: number
+          full_name: string
+          id: string
           is_verified: boolean
+          location: string
+          specialty: string
+          years_experience: number
         }[]
       }
       get_salon_credits: {
@@ -5267,12 +5267,12 @@ export type Database = {
       get_salon_earnings: {
         Args: { p_salon_id: string }
         Returns: {
+          artist_earnings: number
           artist_id: string
           artist_name: string
-          month: string
           booking_count: number
+          month: string
           total_revenue: number
-          artist_earnings: number
         }[]
       }
       get_user_count: {
@@ -5288,10 +5288,10 @@ export type Database = {
         Returns: number
       }
       get_user_rank: {
-        Args: { target_user_id: string; period_start: string }
+        Args: { period_start: string; target_user_id: string }
         Returns: {
-          rank: number
           points: number
+          rank: number
         }[]
       }
       get_user_referral_stats: {
@@ -5320,8 +5320,8 @@ export type Database = {
         Args: {
           p_artist_id: string
           p_date: string
-          p_start_time: string
           p_end_time: string
+          p_start_time: string
         }
         Returns: boolean
       }
@@ -5342,27 +5342,27 @@ export type Database = {
         Returns: boolean
       }
       process_referral: {
-        Args: { referral_code: string; new_user_id: string }
+        Args: { new_user_id: string; referral_code: string }
         Returns: boolean
       }
       process_referral_credits: {
-        Args: { p_referrer_code: string; p_new_user_id: string }
+        Args: { p_new_user_id: string; p_referrer_code: string }
         Returns: boolean
       }
       process_team_referral: {
         Args: {
-          p_referrer_id: string
-          p_referred_id: string
           p_is_artist: boolean
+          p_referred_id: string
+          p_referrer_id: string
         }
         Returns: boolean
       }
       redeem_credits: {
         Args: {
-          p_user_id: string
           p_amount: number
           p_redemption_type: string
           p_target_id?: string
+          p_user_id: string
         }
         Returns: boolean
       }
@@ -5376,57 +5376,57 @@ export type Database = {
       }
       search_salon_sales_optimized: {
         Args: {
-          search_text?: string
-          location_filter?: string
-          price_min?: number
-          price_max?: number
           business_type_filter?: string
+          location_filter?: string
           page_limit?: number
           page_offset?: number
+          price_max?: number
+          price_min?: number
+          search_text?: string
         }
         Returns: {
-          id: string
-          salon_name: string
-          city: string
-          state: string
           asking_price: number
           business_type: string
+          city: string
+          created_at: string
           description_combined: string
+          id: string
           images: string[]
           is_featured: boolean
           is_urgent: boolean
-          created_at: string
+          salon_name: string
+          state: string
         }[]
       }
       send_team_invite: {
         Args: {
-          p_salon_id: string
           p_email: string
-          p_role: string
           p_full_name: string
+          p_role: string
+          p_salon_id: string
         }
         Returns: string
       }
       setup_salon_owner: {
-        Args: { p_salon_id: string; p_owner_id: string }
+        Args: { p_owner_id: string; p_salon_id: string }
         Returns: boolean
       }
       spend_credits: {
         Args: {
-          p_user_id: string
           p_credits: number
-          p_reason: string
           p_metadata?: Json
+          p_reason: string
+          p_user_id: string
         }
         Returns: boolean
       }
       submit_review_with_credits: {
         Args: {
-          p_user_id: string
           p_artist_id: string
           p_booking_id: string
           p_rating: number
           p_review_text: string
+          p_user_id: string
         }
         Returns: boolean
       }
@@ -5439,28 +5439,28 @@ export type Database = {
         Returns: undefined
       }
       tag_user: {
-        Args: { p_user_id: string; p_tag: string }
+        Args: { p_tag: string; p_user_id: string }
         Returns: boolean
       }
       track_salon_view: {
-        Args: { p_salon_id: string; p_viewer_id?: string; p_source?: string }
+        Args: { p_salon_id: string; p_source?: string; p_viewer_id?: string }
         Returns: undefined
       }
       unlock_level: {
         Args: {
-          p_user_id: string
-          p_level: number
           p_credits_required: number
           p_ip_address?: string
+          p_level: number
           p_user_agent?: string
+          p_user_id: string
         }
         Returns: boolean
       }
       user_has_salon_access: {
         Args: {
-          p_user_id: string
-          p_salon_id: string
           p_access_types?: string[]
+          p_salon_id: string
+          p_user_id: string
         }
         Returns: boolean
       }
