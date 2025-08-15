@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const DRY_RUN = process.argv.includes('--dry-run');
+
 // Find all TSX/TS files in src
 function findFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
@@ -22,8 +24,34 @@ function findFiles(dir, files = []) {
   return files;
 }
 
+// Protected paths that should NOT be modified
+const PROTECTED_PATHS = [
+  'src/components/nav/',
+  'MobileMenu.tsx',
+  'Navbar.tsx', 
+  'PostWizardLayout.tsx',
+  'src/components/payment/',
+  'src/components/stripe/',
+  'src/data/protected/',
+  'curated',
+  'vietnamese'
+];
+
+// Check if file is protected
+function isProtectedFile(filePath) {
+  return PROTECTED_PATHS.some(protected => filePath.includes(protected));
+}
+
 // Fix index keys in a file
 function fixIndexKeys(filePath) {
+  // Skip protected files
+  if (isProtectedFile(filePath)) {
+    if (DRY_RUN) {
+      console.log(`SKIPPED (protected): ${filePath}`);
+    }
+    return false;
+  }
+
   const content = fs.readFileSync(filePath, 'utf-8');
   let modified = false;
   
@@ -86,8 +114,15 @@ function fixIndexKeys(filePath) {
   newContent = newContent.replace(/key=\{idx\}/g, `key={\`item-\${idx}\`}`);
 
   if (newContent !== content) {
-    fs.writeFileSync(filePath, newContent);
-    console.log(`Fixed: ${filePath}`);
+    if (DRY_RUN) {
+      console.log(`WOULD FIX: ${filePath}`);
+      const beforeCount = (content.match(/key=\{(index|i|idx)\}/g) || []).length;
+      const afterCount = (newContent.match(/key=\{(index|i|idx)\}/g) || []).length;
+      console.log(`  - Before: ${beforeCount} index keys, After: ${afterCount} index keys`);
+    } else {
+      fs.writeFileSync(filePath, newContent);
+      console.log(`Fixed: ${filePath}`);
+    }
     return true;
   }
   
@@ -109,4 +144,6 @@ for (const file of files) {
   }
 }
 
-console.log(`\nFixed ${fixedCount} files with index keys.`);
+console.log(`\n${DRY_RUN ? 'DRY RUN - Would fix' : 'Fixed'} ${fixedCount} files with index keys.`);
+console.log(`Mode: ${DRY_RUN ? 'DRY RUN' : 'APPLY CHANGES'}`);
+console.log('Protected paths were skipped to maintain system integrity.');

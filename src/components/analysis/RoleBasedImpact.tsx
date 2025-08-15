@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { BrainCircuit, Sparkles, Users, Zap } from "lucide-react";
+import { getStableKey } from '@/utils/getStableKey';
 
 const RoleBasedImpact = () => {
   const roles = [
@@ -46,7 +47,7 @@ const RoleBasedImpact = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {roles.map((role, index) => (
             <motion.div
-              key={index}
+              key={getStableKey({title: role.title, description: role.description}, 'role-impact')}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: index * 0.1 }}

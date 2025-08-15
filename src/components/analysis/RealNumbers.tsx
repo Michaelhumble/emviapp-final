@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import { getStableKey } from '@/utils/getStableKey';
 
 const RealNumbers = () => {
   const stats = [
@@ -41,7 +42,7 @@ const RealNumbers = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((item, index) => (
             <motion.div
-              key={index}
+              key={getStableKey({stat: item.stat, description: item.description}, 'real-numbers')}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: index * 0.1 }}

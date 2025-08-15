@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import { getStableKey } from '@/utils/getStableKey';
 
 const AutomationEngine = () => {
   const features = [
@@ -44,7 +45,7 @@ const AutomationEngine = () => {
             <CardContent className="p-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {features.map((feature, index) => (
-                  <div key={index} className="flex flex-col items-center text-center">
+                  <div key={getStableKey({title: feature.title, index}, 'automation-feature')} className="flex flex-col items-center text-center">
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                       <span className="text-primary font-semibold">{index + 1}</span>
                     </div>
