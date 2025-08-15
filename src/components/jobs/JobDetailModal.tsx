@@ -350,39 +350,19 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       );
                     })()
                   ) : (
-                    <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-4 space-y-3">
-                      <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        Contact Information
-                      </div>
-                      
-                      <div className="space-y-2">
-                        {(job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name) && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <User className="h-4 w-4 text-gray-600" />
-                            <span className="font-medium text-gray-800">
-                              {job.metadata?.contact_info?.owner_name || job.contact_info?.owner_name}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {(job.metadata?.contact_info?.phone || job.contact_info?.phone) && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Phone className="h-4 w-4 text-green-600" />
-                            <span className="font-medium text-green-700">
-                              {job.metadata?.contact_info?.phone || job.contact_info?.phone}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {(job.metadata?.contact_info?.email || job.contact_info?.email) && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Mail className="h-4 w-4 text-blue-600" />
-                            <span className="font-medium text-blue-700">
-                              {job.metadata?.contact_info?.email || job.contact_info?.email}
-                            </span>
-                          </div>
-                        )}
+                    <div className="text-center py-6">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div className="text-blue-600 mb-3">🔒</div>
+                        <p className="text-blue-800 font-medium mb-2">Contact details available to signed-in users</p>
+                        <p className="text-blue-700 text-sm mb-4">
+                          Sign in free to view complete contact information and apply directly
+                        </p>
+                        <Button 
+                          onClick={() => window.location.href = '/auth/signin?redirect=/jobs'}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+                        >
+                          Sign In to View Contact Info
+                        </Button>
                       </div>
                     </div>
                   )}

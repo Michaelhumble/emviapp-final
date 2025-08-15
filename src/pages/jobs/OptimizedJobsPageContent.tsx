@@ -278,7 +278,8 @@ const OptimizedJobsPageContent = () => {
         <div id="browse" />
         <section id="jobs-section" className="w-full py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {!isSignedIn && fomoEnabled !== false && (
+            {/* Removed FOMO message - same content for all users */}
+            {false && !isSignedIn && fomoEnabled !== false && (
               <div className="mb-6 rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
                 These roles were just filled. Sign in free to see today’s open jobs.
               </div>

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, DollarSign, Star } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import JobCardContact from '@/components/jobs/JobCardContact';
+import { useAuth } from '@/context/auth';
 
 interface JobCardProps {
   job: Job;
@@ -13,6 +14,7 @@ interface JobCardProps {
 }
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
+  const { isSignedIn } = useAuth();
   const formatSalary = (salary: any) => {
     if (typeof salary === 'number') return `$${salary.toLocaleString()}`;
     if (typeof salary === 'string') return salary;
@@ -114,12 +116,14 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
 
       <CardFooter className="pt-3 border-t">
         <div className="w-full space-y-3">
-          {/* Contact Information - Always visible */}
-          <JobCardContact 
-            phoneNumber={job.contact_info?.phone} 
-            email={job.contact_info?.email}
-            contactName={job.contact_info?.owner_name || job.company}
-          />
+          {/* Contact Information - Conditional based on auth */}
+          {isSignedIn && (
+            <JobCardContact 
+              phoneNumber={job.contact_info?.phone} 
+              email={job.contact_info?.email}
+              contactName={job.contact_info?.owner_name || job.company}
+            />
+          )}
           
           <div className="flex gap-2 w-full">
             <Button 
