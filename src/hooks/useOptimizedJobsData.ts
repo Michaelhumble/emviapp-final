@@ -54,7 +54,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         .select('*')
         .eq('status' as any, 'active');
 
-      // Unified query: Show active jobs to all users (contact info gated by auth state in UI)
+      // Always show active / fresh jobs for everyone
       query = query
         .or(`expires_at.gt.${nowISO},and(expires_at.is.null,created_at.gt.${thirtyDaysAgoISO})`)
         .order('pricing_tier' as any, { ascending: false })
@@ -107,7 +107,7 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         jobsMapRef.current = newJobsMap;
         return transformedJobs;
       });
-      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})`);
+      console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} active jobs`);
       
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -148,7 +148,6 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         },
         (payload) => {
           console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
-          if (!effectiveSignedIn) return; // Only inject into active view
           const newJob = payload.new as Job;
           
           // Non-destructive update - prepend without losing scroll position
@@ -169,7 +168,6 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         },
         (payload) => {
           console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
-          if (!effectiveSignedIn) return; // Ignore updates in public FOMO view
           const updatedJob = payload.new as Job;
           
           // Stable update - only change if different

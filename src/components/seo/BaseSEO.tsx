@@ -28,8 +28,8 @@ const toAbs = (url?: string) => {
 };
 
 const BaseSEO: React.FC<BaseSEOProps> = ({
-  title,
-  description,
+  title = "EmviApp - The Beauty Industry's Missing Piece",
+  description = "Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.",
   canonical,
   ogImage,
   noindex = false,
@@ -42,27 +42,27 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
 
   return (
     <Helmet>
-      {title && <title>{title}</title>}
-      {description && <meta name="description" content={description} />}
-      {absCanonical && <link rel="canonical" href={absCanonical} />}
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <link rel="canonical" href={absCanonical} />
 
       {/* Robots */}
       <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
       <meta name="googlebot" content={noindex ? 'noindex, follow' : 'index, follow'} />
 
       {/* Open Graph */}
-      {title && <meta property="og:title" content={title} />}
-      {description && <meta property="og:description" content={description} />}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
-      {absCanonical && <meta property="og:url" content={absCanonical} />} 
-      {absOgImage && <meta property="og:image" content={absOgImage} />}
+      <meta property="og:url" content={absCanonical} /> 
+      <meta property="og:image" content={absOgImage} />
       <meta property="og:site_name" content="EmviApp" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      {title && <meta name="twitter:title" content={title} />}
-      {description && <meta name="twitter:description" content={description} />}
-      {absOgImage && <meta name="twitter:image" content={absOgImage} />}
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={absOgImage} />
       <meta name="twitter:site" content="@EmviApp" />
 
       {/* Hreflang alternates */}

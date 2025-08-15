@@ -54,6 +54,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
     <Card 
       className="h-full hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200 bg-white"
       data-job-id={job.id}
+      style={{ width: '100%', height: '100%', aspectRatio: '3/4' }}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
