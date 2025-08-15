@@ -1,0 +1,150 @@
+name: SEO Audit
+
+on:
+  pull_request:
+    paths:
+      - 'src/pages/**'
+      - 'src/components/seo/**'
+      - 'public/robots.txt'
+      - 'public/sitemap*.xml'
+      - 'vercel.json'
+  schedule:
+    # Run weekly on Sundays at 6 AM UTC
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+    inputs:
+      audit_url:
+        description: 'URL to audit (default: production)'
+        required: false
+        default: 'https://www.emvi.app'
+
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g @lhci/cli lighthouse
+          
+      - name: Run SEO Audit
+        env:
+          AUDIT_URL: ${{ github.event.inputs.audit_url || 'https://www.emvi.app' }}
+        run: |
+          node scripts/audit-seo.mjs
+          
+      - name: Validate Sitemaps
+        env:
+          SITEMAP_BASE_URL: ${{ github.event.inputs.audit_url || 'https://www.emvi.app' }}
+        run: |
+          node scripts/validate-sitemaps.mjs
+          
+      - name: Upload Audit Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-audit-reports
+          path: |
+            reports/
+            !reports/*.tmp
+          retention-days: 30
+          
+      - name: Comment PR with SEO Summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              // Read sitemap validation results
+              const sitemapReport = JSON.parse(
+                fs.readFileSync('./reports/sitemap-validation.json', 'utf8')
+              );
+              
+              // Check if broken links CSV exists and count issues
+              let brokenLinksCount = 0;
+              try {
+                const csvContent = fs.readFileSync('./reports/broken-links.csv', 'utf8');
+                brokenLinksCount = csvContent.split('\n').length - 2; // Subtract header and empty line
+              } catch (e) {
+                console.log('Broken links CSV not found');
+              }
+              
+              const summary = sitemapReport.summary;
+              const hasIssues = summary.broken > 0 || summary.errors > 0 || brokenLinksCount > 0;
+              
+              const commentBody = `## 🔍 SEO Audit Results
+              
+**Sitemap Validation:**
+- ✅ Valid URLs: ${summary.valid}
+- 🔀 Redirects: ${summary.redirects}
+- ❌ Broken URLs: ${summary.broken}
+- ⚠️ Soft 404s: ${summary.soft404s}
+- 💥 Errors: ${summary.errors}
+
+**Broken Links:** ${brokenLinksCount} found
+
+${hasIssues ? 
+  '🚨 **Action Required**: Issues detected that may impact SEO. Please review the audit reports.' : 
+  '✅ **All Good**: No critical SEO issues detected!'
+}
+
+📊 **Full Reports**: Check the workflow artifacts for detailed HTML and CSV reports.
+
+<details>
+<summary>View Audit Configuration</summary>
+
+- **Audited URL**: ${process.env.AUDIT_URL || 'https://www.emvi.app'}
+- **Timestamp**: ${sitemapReport.timestamp}
+- **Total URLs Checked**: ${summary.total}
+
+</details>`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+              
+            } catch (error) {
+              console.error('Failed to read audit results:', error);
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 🔍 SEO Audit Results
+                
+❌ **Audit Failed**: Could not complete SEO audit. Please check the workflow logs for details.
+
+Error: \`${error.message}\``
+              });
+            }
+            
+      - name: Fail on Critical Issues
+        run: |
+          # Check if we have critical SEO issues that should fail the build
+          if [ -f "./reports/sitemap-validation.json" ]; then
+            BROKEN=$(node -p "JSON.parse(require('fs').readFileSync('./reports/sitemap-validation.json', 'utf8')).summary.broken")
+            ERRORS=$(node -p "JSON.parse(require('fs').readFileSync('./reports/sitemap-validation.json', 'utf8')).summary.errors")
+            
+            if [ "$BROKEN" -gt 5 ] || [ "$ERRORS" -gt 5 ]; then
+              echo "❌ Too many broken URLs or errors detected (broken: $BROKEN, errors: $ERRORS)"
+              echo "This indicates serious SEO issues that need immediate attention."
+              exit 1
+            fi
+          fi
+          
+          echo "✅ SEO audit passed quality gates"
