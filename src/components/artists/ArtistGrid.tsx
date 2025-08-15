@@ -2,6 +2,7 @@
 import { UserProfile } from "@/types/profile";
 import { Skeleton } from "@/components/ui/skeleton";
 import ArtistCard from "./ArtistCard";
+import { getStableKey } from '@/utils/getStableKey';
 
 interface ArtistGridProps {
   artists: UserProfile[];
@@ -14,7 +15,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, isLoading, error }) =>
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {Array.from({ length: 9 }).map((_, i) => (
-          <ArtistCardSkeleton key={i} />
+          <ArtistCardSkeleton key={`artist-skeleton-${i}`} />
         ))}
       </div>
     );

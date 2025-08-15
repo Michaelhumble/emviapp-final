@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
+import { getStableKey } from '@/utils/getStableKey';
 
 
 interface BilingualJobCardProps {
@@ -144,7 +145,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             <div className="px-6 py-3 bg-gray-50 flex gap-3">
               {additionalPhotos.map((imageUrl, index) => (
                 <div 
-                  key={index}
+                  key={getStableKey({imageUrl, index}, 'photo')}
                   className="relative w-16 h-16 rounded border overflow-hidden bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 >
                   <img

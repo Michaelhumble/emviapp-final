@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Clock, Calendar, User, ArrowRight } from 'lucide-react';
 import { BlogArticle } from '@/data/blogArticles';
 import OptimizedBlogImage from './OptimizedBlogImage';
+import { getStableKey } from '@/utils/getStableKey';
 
 interface BlogArticleCardProps {
   article: BlogArticle;
@@ -97,7 +98,7 @@ const BlogArticleCard: React.FC<BlogArticleCardProps> = ({
           <div className="flex flex-wrap gap-2 mb-4">
             {article.tags.slice(0, 3).map((tag, index) => (
               <Link
-                key={index}
+                key={getStableKey({tag, index}, 'tag')}
                 to={`/blog?tag=${encodeURIComponent(tag)}`}
                 className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full hover:bg-gray-200 transition-colors"
               >

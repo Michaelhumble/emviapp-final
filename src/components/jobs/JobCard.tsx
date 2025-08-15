@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { MapPin, Clock, DollarSign, Star } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import JobCardContact from '@/components/jobs/JobCardContact';
+import { getStableKey } from '@/utils/getStableKey';
 
 interface JobCardProps {
   job: Job;
@@ -105,7 +106,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onRenew }) => {
           {job.specialties && job.specialties.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {job.specialties.slice(0, 3).map((skill, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
+                <Badge key={getStableKey({skill, index}, 'specialty')} variant="secondary" className="text-xs">
                   {skill}
                 </Badge>
               ))}

@@ -151,7 +151,7 @@ const OptimizedCommunityFeed: React.FC<OptimizedCommunityFeedProps> = ({
           : 'grid-cols-2'
       }`}>
         {imageUrls.slice(0, 4).map((url, index) => (
-          <div key={index} className="relative">
+          <div key={`post-image-${url.slice(-10)}-${index}`} className="relative">
             <LazyImage
               src={optimizeImageUrl(url, 'medium')}
               alt={`Post image ${index + 1}`}

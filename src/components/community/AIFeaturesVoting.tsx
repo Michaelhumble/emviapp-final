@@ -279,11 +279,11 @@ const AIFeaturesVoting = () => {
                 rating: 5
               }
             ].map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-md">
+              <Card key={`testimonial-${testimonial.name}-${index}`} className="border-0 shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-1 mb-3">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <Star key={`star-${testimonial.name}-${i}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
                   <p className="text-gray-700 mb-4 italic">

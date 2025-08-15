@@ -83,7 +83,7 @@ const FreelancersHighlight = () => {
           {loading ? (
             // Show loading skeletons for freelancers
             Array.from({ length: 4 }).map((_, index) => (
-              <Card key={index} className="h-80 bg-white/80 backdrop-blur-sm animate-pulse">
+              <Card key={`freelancer-skeleton-${index}`} className="h-80 bg-white/80 backdrop-blur-sm animate-pulse">
                 <CardContent className="p-6 flex flex-col h-full">
                   <div className="flex items-center mb-4">
                     <div className="w-16 h-16 rounded-full bg-gray-200 mr-4"></div>
