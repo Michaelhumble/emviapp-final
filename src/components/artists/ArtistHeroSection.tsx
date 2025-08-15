@@ -217,9 +217,9 @@ const ArtistHeroSection = () => {
               </div>
 
               <div className="flex justify-center mt-6 space-x-2">
-                {topArtists.map((_, index) => (
+                {topArtists.map((artist, index) => (
                   <button
-                    key={index}
+                    key={`indicator-${artist.id || artist.name || index}`}
                     onClick={() => setCurrentArtist(index)}
                     className={`w-3 h-3 rounded-full transition-all duration-300 ${
                       index === currentArtist 

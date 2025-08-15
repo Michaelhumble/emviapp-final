@@ -133,7 +133,7 @@ const EnhancedCommunityFeed: React.FC<EnhancedCommunityFeedProps> = ({
       }`}>
         {imageUrls.slice(0, 4).map((url, index) => (
           <motion.div 
-            key={index} 
+            key={`image-${url.slice(-10)}-${index}`}
             className="relative overflow-hidden rounded-lg"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}

@@ -183,9 +183,9 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
                       
                       {/* Image indicators */}
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                        {jobImages.map((_, index) => (
+                        {jobImages.map((url, index) => (
                           <button
-                            key={index}
+                            key={`indicator-${index}-${url.slice(-10)}`}
                             className={`w-2 h-2 rounded-full ${
                               index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                             }`}

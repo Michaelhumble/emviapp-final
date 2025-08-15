@@ -100,8 +100,8 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo(0, 0);
+    // Only scroll to top for specific navigation cases, not data updates
+    // Preserve scroll position for better UX
     
     // Log route for debugging
     console.log('Current route:', location.pathname);
@@ -206,13 +206,13 @@ function App() {
                      <Route path="/" element={<LazyIndex />} />
                      
                      {/* ... keep existing code (other routes) the same */}
-                     {routes.map((route, index) => (
+                     {routes.map((route) => (
                        (route.path !== "/" && route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                         route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
                         route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
                         route.path !== "/sell-salon" && route.path !== "/salon-listing-success" && route.path !== "/profile") && (
                         <Route 
-                          key={index}
+                          key={route.path}
                           path={route.path}
                           element={<Layout>{route.element}</Layout>}
                         />

@@ -19,6 +19,9 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [hasMore, setHasMore] = useState(true);
+  
+  // Stable reference tracking to prevent unnecessary re-renders
+  const jobsMapRef = useRef<Map<string, Job>>(new Map());
 
   const { isSignedIn: authSignedIn } = useAuth();
   const inputLimit = params?.limit ?? 50;
@@ -85,7 +88,25 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
         contact_info: typeof job.contact_info === 'object' ? (job.contact_info as any) : {},
       }));
 
-      setJobs(transformedJobs);
+      // Update jobs using stable references to prevent scroll jumping
+      setJobs(prevJobs => {
+        const newJobsMap = new Map<string, Job>();
+        transformedJobs.forEach(job => newJobsMap.set(job.id, job));
+        
+        // Check if jobs actually changed to prevent unnecessary updates
+        const hasChanges = prevJobs.length !== transformedJobs.length || 
+          prevJobs.some(job => {
+            const newJob = newJobsMap.get(job.id);
+            return !newJob || JSON.stringify(job) !== JSON.stringify(newJob);
+          });
+        
+        if (!hasChanges) {
+          return prevJobs; // Keep same reference if no changes
+        }
+        
+        jobsMapRef.current = newJobsMap;
+        return transformedJobs;
+      });
       console.log(`✅ [OPTIMIZED-JOBS] Loaded ${transformedJobs.length} jobs (${effectiveSignedIn ? 'active' : 'FOMO'})`);
       
     } catch (err) {
@@ -129,7 +150,14 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
           console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
           if (!effectiveSignedIn) return; // Only inject into active view
           const newJob = payload.new as Job;
-          setJobs(prev => [newJob, ...prev]);
+          
+          // Non-destructive update - prepend without losing scroll position
+          setJobs(prev => {
+            if (prev.some(job => job.id === newJob.id)) {
+              return prev; // Avoid duplicates
+            }
+            return [newJob, ...prev];
+          });
         }
       )
       .on(
@@ -143,9 +171,21 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
           console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
           if (!effectiveSignedIn) return; // Ignore updates in public FOMO view
           const updatedJob = payload.new as Job;
-          setJobs(prev => prev.map(job => 
-            job.id === updatedJob.id ? updatedJob : job
-          ));
+          
+          // Stable update - only change if different
+          setJobs(prev => {
+            const index = prev.findIndex(job => job.id === updatedJob.id);
+            if (index === -1) return prev;
+            
+            const existing = prev[index];
+            if (JSON.stringify(existing) === JSON.stringify(updatedJob)) {
+              return prev; // No changes, keep same reference
+            }
+            
+            const newJobs = [...prev];
+            newJobs[index] = updatedJob;
+            return newJobs;
+          });
         }
       )
       .subscribe();

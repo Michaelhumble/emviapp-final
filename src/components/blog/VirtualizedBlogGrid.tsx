@@ -93,7 +93,7 @@ const VirtualizedBlogGrid: React.FC<VirtualizedBlogGridProps> = ({
       <div className={`grid ${gridClasses[columns]} gap-8`}>
         {visibleArticles.map((article, index) => (
           <BlogArticleCard
-            key={article.id}
+            key={article.id || `article-${index}`}
             article={article}
             variant={variant}
             showCategory={showCategory}

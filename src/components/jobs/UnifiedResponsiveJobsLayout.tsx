@@ -199,7 +199,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
           {/* Mobile carousel */}
           <div className="flex space-x-4 px-4" style={{ minWidth: `${displayJobs.length * 280}px` }}>
             {displayJobs.map((job) => (
-              <div key={job.id} className="flex-shrink-0 w-64 sm:w-72">
+              <div key={job.id || `job-${Math.random()}`} className="flex-shrink-0 w-64 sm:w-72">
                 <MobileJobCard 
                   job={job}
                   onViewDetails={() => handleJobTap(job)}
@@ -217,7 +217,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
         <div className="hidden lg:block px-4 lg:px-0">
           <div className={getGridCols()}>
             {displayJobs.map((job) => (
-              <div key={job.id} className="w-full">
+              <div key={job.id || `desktop-job-${Math.random()}`} className="w-full">
                 <MobileJobCard 
                   job={job}
                   onViewDetails={() => handleJobTap(job)}
@@ -240,7 +240,7 @@ const UnifiedResponsiveJobsLayout: React.FC<UnifiedResponsiveJobsLayoutProps> = 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {compactJobs.map((job) => (
                 <MobileCompactJobCard
-                  key={job.id}
+                  key={job.id || `compact-${Math.random()}`}
                   job={job}
                   onTap={() => handleJobTap(job)}
                   isExpanded={expandedJob === job.id}

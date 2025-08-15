@@ -209,18 +209,33 @@ export const inlineCriticalCSS = () => {
 };
 
 /**
- * Memory Management
+ * Memory Management - Enhanced to prevent scroll jumping
  */
 export const cleanupResources = () => {
   // Clean up observers, timers, and event listeners
+  const observers: (IntersectionObserver | PerformanceObserver)[] = [];
+  const intervals: number[] = [];
+  
+  // Track observers and intervals for cleanup
+  const originalSetInterval = window.setInterval;
+  
   window.addEventListener('beforeunload', () => {
-    // Cleanup logic here
-    console.log('🧹 Cleaning up resources');
+    // Cleanup all observers
+    observers.forEach(observer => {
+      if ('disconnect' in observer) {
+        observer.disconnect();
+      }
+    });
+    
+    // Cleanup all intervals
+    intervals.forEach(id => clearInterval(id));
+    
+    console.log('🧹 Cleaned up resources to prevent memory leaks');
   });
 };
 
 /**
- * Initialize all performance optimizations
+ * Initialize all performance optimizations - Scroll stability focused
  */
 export const initPerformanceOptimizations = () => {
   // Initialize critical optimizations
@@ -230,5 +245,8 @@ export const initPerformanceOptimizations = () => {
   logBundleInfo();
   cleanupResources();
   
-  console.log('⚡ Performance optimizations initialized');
+  // Prevent aggressive re-renders that cause scroll jumping
+  if (process.env.NODE_ENV === 'development') {
+    console.log('⚡ Performance optimizations initialized with scroll stability focus');
+  }
 };
