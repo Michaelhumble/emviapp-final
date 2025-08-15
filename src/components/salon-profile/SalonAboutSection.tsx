@@ -1,7 +1,7 @@
 
 import React from 'react';
-import DOMPurify from 'dompurify';
 import { Salon } from '@/types/salon';
+import { sanitizeHtml } from '@/utils/security/sanitizeHtml';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info } from 'lucide-react';
 
@@ -26,10 +26,7 @@ const SalonAboutSection: React.FC<SalonAboutSectionProps> = ({ salon }) => {
         .replace(/_([^_]+)_/g, '<em>$1</em>');
       
       // Sanitize HTML to prevent XSS attacks
-      const sanitizedHTML = DOMPurify.sanitize(formattedParagraph, {
-        ALLOWED_TAGS: ['strong', 'em', 'br'],
-        ALLOWED_ATTR: []
-      });
+      const sanitizedHTML = sanitizeHtml(formattedParagraph);
       
       return (
         <p 

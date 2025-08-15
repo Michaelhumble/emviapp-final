@@ -1,7 +1,7 @@
 
 import React from 'react';
-import DOMPurify from 'dompurify';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { sanitizeHtml } from '@/utils/security/sanitizeHtml';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Building, Calendar, DollarSign, Phone, Mail, LockIcon, Star } from 'lucide-react';
 import { Job } from '@/types/job';
@@ -99,10 +99,7 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
                 <div className="prose max-w-none">
                   {salon.description ? (
                     <div dangerouslySetInnerHTML={{ 
-                      __html: DOMPurify.sanitize(salon.description, {
-                        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-                        ALLOWED_ATTR: []
-                      })
+                      __html: sanitizeHtml(salon.description)
                     }} />
                   ) : (
                     <p className="text-gray-600">No description available.</p>

@@ -1,24 +1,55 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Origin": "https://www.emvi.app",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-interface PartnerContactData {
-  name: string;
-  email: string;
-  company: string;
-  website?: string;
-  fundingStage: string;
-  investmentAmount: string;
-  trackRecord: string;
-  whyChooseYou: string;
-}
+// Rate limiting (in-memory, basic)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+// Partner contact validation schema
+const partnerContactSchema = z.object({
+  name: z.string().min(2).max(100).trim(),
+  email: z.string().email().max(255),
+  company: z.string().min(2).max(200).trim(),
+  website: z.string().url().max(500),
+  fundingStage: z.string().max(100).optional(),
+  investmentAmount: z.string().max(100).optional(),
+  trackRecord: z.string().max(2000).trim().optional(),
+  whyChooseYou: z.string().max(2000).trim().optional(),
+  website2: z.string().max(1).optional(), // Honeypot field
+});
+
+// Sanitize input to prevent CRLF injection
+const sanitizeInput = (input: string): string => {
+  return input.replace(/[\r\n]/g, '').trim();
+};
+
+// Check rate limiting
+const checkRateLimit = (clientIP: string): boolean => {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 10;
+  
+  const current = rateLimitMap.get(clientIP);
+  if (!current || now > current.resetTime) {
+    rateLimitMap.set(clientIP, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (current.count >= maxRequests) {
+    return false;
+  }
+  
+  current.count++;
+  return true;
+};
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -27,12 +58,37 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const data: PartnerContactData = await req.json();
-
-    // Enhanced validation with sanitization
-    if (!data.name || !data.email || !data.company || !data.trackRecord || !data.whyChooseYou) {
+    // Check request size (5KB limit)
+    const contentLength = req.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > 5 * 1024) {
       return new Response(
-        JSON.stringify({ error: "All required fields must be filled" }),
+        JSON.stringify({ error: "Request too large" }),
+        {
+          status: 413,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Rate limiting
+    const clientIP = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
+    if (!checkRateLimit(clientIP)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests" }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const rawData = await req.json();
+    
+    // Honeypot check
+    if (rawData.website2 && rawData.website2.trim() !== "") {
+      console.warn("Honeypot triggered from IP:", clientIP);
+      return new Response(
+        JSON.stringify({ error: "Invalid submission" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -40,118 +96,83 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(data.email)) {
-      return new Response(
-        JSON.stringify({ error: "Invalid email format" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
+    // Validate and sanitize data
+    const validatedData = partnerContactSchema.parse({
+      ...rawData,
+      name: sanitizeInput(rawData.name || ""),
+      company: sanitizeInput(rawData.company || ""),
+      trackRecord: rawData.trackRecord ? sanitizeInput(rawData.trackRecord) : undefined,
+      whyChooseYou: rawData.whyChooseYou ? sanitizeInput(rawData.whyChooseYou) : undefined,
+    });
 
-    // Sanitize inputs to prevent XSS
-    const sanitizeInput = (input: string) => input.trim().slice(0, 5000); // Limit length
-    const sanitizedData = {
-      name: sanitizeInput(data.name),
-      email: sanitizeInput(data.email),
-      company: sanitizeInput(data.company),
-      website: data.website ? sanitizeInput(data.website) : undefined,
-      fundingStage: sanitizeInput(data.fundingStage),
-      investmentAmount: sanitizeInput(data.investmentAmount),
-      trackRecord: sanitizeInput(data.trackRecord),
-      whyChooseYou: sanitizeInput(data.whyChooseYou),
-    };
-
-    // Send email to EmviApp team
+    // Send email to support@emvi.app with BCC to founder
     const emailResponse = await resend.emails.send({
       from: "EmviApp Partners <partnerships@resend.dev>",
       to: ["support@emvi.app"],
       bcc: ["michaelemviapp@gmail.com"],
-      subject: `🚀 New Partnership Application - ${data.company}`,
+      subject: `Partnership Inquiry from ${validatedData.company}`,
       html: `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1px;">
-          <div style="background: white; margin: 1px; padding: 40px; border-radius: 8px;">
-            <!-- Header -->
-            <div style="text-align: center; margin-bottom: 40px;">
-              <h1 style="color: #4c1d95; font-size: 28px; margin: 0; font-weight: 700;">
-                🚀 New Partnership Application
-              </h1>
-              <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #667eea, #764ba2); margin: 20px auto; border-radius: 2px;"></div>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333; border-bottom: 2px solid #6366f1; padding-bottom: 10px;">
+            New Partnership Inquiry
+          </h2>
+          
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">Contact Details:</h3>
+            <p><strong>Contact Person:</strong> ${validatedData.name}</p>
+            <p><strong>Email:</strong> ${validatedData.email}</p>
+            <p><strong>Company:</strong> ${validatedData.company}</p>
+            <p><strong>Website:</strong> <a href="${validatedData.website}" target="_blank">${validatedData.website}</a></p>
+            <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+          </div>
+          
+          ${validatedData.fundingStage ? `
+            <div style="margin-top: 15px;">
+              <h4 style="color: #374151; margin-bottom: 5px;">Funding Stage:</h4>
+              <p style="margin: 0;">${validatedData.fundingStage}</p>
             </div>
-
-            <!-- Applicant Details -->
-            <div style="background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #667eea;">
-              <h2 style="color: #1e293b; margin: 0 0 20px 0; font-size: 20px;">👤 Applicant Information</h2>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600; width: 120px;">Name:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.name}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Email:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.email}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Company:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.company}</td>
-                </tr>
-                ${sanitizedData.website ? `
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Website:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;"><a href="${sanitizedData.website}" style="color: #667eea; text-decoration: none;">${sanitizedData.website}</a></td>
-                </tr>
-                ` : ''}
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Stage:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.fundingStage}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Investment:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${sanitizedData.investmentAmount}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Submitted:</td>
-                  <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${new Date().toLocaleString()}</td>
-                </tr>
-              </table>
+          ` : ''}
+          
+          ${validatedData.investmentAmount ? `
+            <div style="margin-top: 15px;">
+              <h4 style="color: #374151; margin-bottom: 5px;">Investment Amount:</h4>
+              <p style="margin: 0;">${validatedData.investmentAmount}</p>
             </div>
-
-            <!-- Track Record -->
-            <div style="background: #ecfdf5; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #10b981;">
-              <h3 style="color: #065f46; margin: 0 0 15px 0; font-size: 18px;">📈 Track Record & Experience</h3>
-              <p style="color: #064e3b; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 15px;">${sanitizedData.trackRecord}</p>
+          ` : ''}
+          
+          ${validatedData.trackRecord ? `
+            <div style="margin-top: 15px;">
+              <h4 style="color: #374151; margin-bottom: 5px;">Track Record:</h4>
+              <p style="white-space: pre-wrap; line-height: 1.6; margin: 0;">${validatedData.trackRecord}</p>
             </div>
-
-            <!-- Why Choose You -->
-            <div style="background: #fef3c7; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #f59e0b;">
-              <h3 style="color: #92400e; margin: 0 0 15px 0; font-size: 18px;">💡 Why Should We Choose You?</h3>
-              <p style="color: #78350f; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 15px;">${sanitizedData.whyChooseYou}</p>
+          ` : ''}
+          
+          ${validatedData.whyChooseYou ? `
+            <div style="margin-top: 15px;">
+              <h4 style="color: #374151; margin-bottom: 5px;">Why Choose You:</h4>
+              <p style="white-space: pre-wrap; line-height: 1.6; margin: 0;">${validatedData.whyChooseYou}</p>
             </div>
-
-            <!-- Action Required -->
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; text-align: center;">
-              <p style="color: white; margin: 0; font-weight: 600; font-size: 16px;">
-                ⚡ High-Quality Application Received
-              </p>
-              <p style="color: #e2e8f0; margin: 10px 0 0 0; font-size: 14px;">
-                Review this partnership opportunity and respond if there's a strategic fit.
-              </p>
-            </div>
+          ` : ''}
+          
+          <div style="margin-top: 20px; padding: 15px; background-color: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <p style="margin: 0; color: #92400e;">
+              <strong>Action Required:</strong> Please respond to this partnership inquiry at your earliest convenience.
+            </p>
           </div>
         </div>
       `,
-      replyTo: sanitizedData.email,
+      replyTo: validatedData.email, // Allow direct reply to the partner
     });
 
-    console.log("Partnership application email sent successfully:", emailResponse);
+    // Log success with masked message ID
+    const maskedId = emailResponse.data?.id ? `${emailResponse.data.id.slice(0, 8)}...` : 'unknown';
+    console.log("Partnership email sent successfully. Message ID:", maskedId);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Partnership application submitted successfully" 
+        message: "Partnership inquiry submitted successfully",
+        messageId: maskedId
       }),
       {
         status: 200,
@@ -163,10 +184,24 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     console.error("Error in partner-contact function:", error);
+    
+    // Handle validation errors
+    if (error.name === 'ZodError') {
+      return new Response(
+        JSON.stringify({ 
+          error: "Validation failed",
+          details: error.errors 
+        }),
+        {
+          status: 422,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+    
     return new Response(
       JSON.stringify({ 
-        error: "Failed to submit partnership application",
-        details: error.message 
+        error: "Failed to submit partnership inquiry"
       }),
       {
         status: 500,
