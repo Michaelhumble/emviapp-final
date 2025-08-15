@@ -1,0 +1,23 @@
+{
+  "test_timestamp": "2025-01-15T12:00:00Z",
+  "endpoint": "/api/partner-contact",
+  "method": "POST",
+  "payload": {
+    "name": "Test Partnership",
+    "email": "test@example.com",
+    "company": "Test Company",
+    "website": "https://example.com",
+    "fundingStage": "Series A",
+    "investmentAmount": "$1M - $5M",
+    "trackRecord": "10+ years building tech companies",
+    "whyChooseYou": "Proven track record in beauty tech investments"
+  },
+  "updated_config": {
+    "to": ["support@emvi.app"],
+    "bcc": ["michaelemviapp@gmail.com"],
+    "from": "EmviApp Partners <partnerships@resend.dev>"
+  },
+  "changes_made": "Surgical update to route partner emails to support@emvi.app with BCC to michaelemviapp@gmail.com",
+  "verification_needed": "Screenshot of email received at support@emvi.app",
+  "test_command": "curl -X POST https://www.emvi.app/api/partner-contact -H 'Content-Type: application/json' -d '{\"name\":\"Test Partnership\",\"email\":\"test@example.com\",\"company\":\"Test Company\",\"website\":\"https://example.com\",\"fundingStage\":\"Series A\",\"investmentAmount\":\"$1M - $5M\",\"trackRecord\":\"10+ years building tech companies\",\"whyChooseYou\":\"Proven track record in beauty tech investments\"}'"
+}

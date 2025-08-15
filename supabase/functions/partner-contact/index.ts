@@ -43,7 +43,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email to EmviApp team
     const emailResponse = await resend.emails.send({
       from: "EmviApp Partners <partnerships@resend.dev>",
-      to: ["michaelemviapp@gmail.com"],
+      to: ["support@emvi.app"],
+      bcc: ["michaelemviapp@gmail.com"],
       subject: `🚀 New Partnership Application - ${data.company}`,
       html: `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1px;">
