@@ -54,13 +54,13 @@ const SalonPricingStrategies2025 = () => {
         publishedTime="2025-07-01T12:00:00Z"
         tags={article.tags}
         structuredData={buildArticleJsonLd({
-          headline: article.title,
+          title: article.title,
           description: article.description,
           image: article.image,
-          authorName: article.author,
+          author: article.author,
           datePublished: '2025-07-01T12:00:00Z',
           dateModified: '2025-07-01T12:00:00Z',
-          canonicalUrl: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025'
+          url: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025'
         })}
       />
       {/* Breadcrumb JSON-LD for blog article */}

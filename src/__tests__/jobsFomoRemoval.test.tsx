@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { JobCard } from '@/components/jobs/JobCard';
@@ -44,24 +44,24 @@ describe('Jobs FOMO Removal Tests', () => {
   });
 
   it('JobCard shows active jobs to signed-out users', () => {
-    render(
+    const { getByText } = render(
       <TestWrapper>
         <JobCard job={mockJob} />
       </TestWrapper>
     );
     
-    expect(screen.getByText('Senior Nail Technician')).toBeInTheDocument();
-    expect(screen.getByText('Austin, TX')).toBeInTheDocument();
+    expect(getByText('Senior Nail Technician')).toBeInTheDocument();
+    expect(getByText('Austin, TX')).toBeInTheDocument();
   });
 
   it('JobCard shows inline signin button when signed out', () => {
-    render(
+    const { getByTestId } = render(
       <TestWrapper>
         <JobCard job={mockJob} />
       </TestWrapper>
     );
     
-    const signinButton = screen.getByTestId('signin-to-view-contact');
+    const signinButton = getByTestId('signin-to-view-contact');
     expect(signinButton).toBeInTheDocument();
     expect(signinButton).toHaveTextContent('Sign in to view contact info');
   });
@@ -69,18 +69,18 @@ describe('Jobs FOMO Removal Tests', () => {
   it('JobCard shows contact info when signed in', () => {
     mockAuthContext.isSignedIn = true;
     
-    render(
+    const { queryByTestId } = render(
       <TestWrapper>
         <JobCard job={mockJob} />
       </TestWrapper>
     );
     
     // Contact component should be rendered (not the signin button)
-    expect(screen.queryByTestId('signin-to-view-contact')).not.toBeInTheDocument();
+    expect(queryByTestId('signin-to-view-contact')).not.toBeInTheDocument();
   });
 
   it('BilingualJobCard shows inline signin button when signed out', () => {
-    render(
+    const { getByTestId } = render(
       <TestWrapper>
         <BilingualJobCard 
           job={mockJob} 
@@ -91,13 +91,13 @@ describe('Jobs FOMO Removal Tests', () => {
       </TestWrapper>
     );
     
-    const signinButton = screen.getByTestId('signin-to-view-contact');
+    const signinButton = getByTestId('signin-to-view-contact');
     expect(signinButton).toBeInTheDocument();
     expect(signinButton).toHaveTextContent('Sign in to view contact info');
   });
 
   it('No FOMO/lock overlay elements present', () => {
-    const { container } = render(
+    const { container, queryByText } = render(
       <TestWrapper>
         <JobCard job={mockJob} />
       </TestWrapper>
@@ -107,8 +107,8 @@ describe('Jobs FOMO Removal Tests', () => {
     expect(container.querySelector('.lockBadge')).not.toBeInTheDocument();
     expect(container.querySelector('.lockedOverlay')).not.toBeInTheDocument();
     expect(container.querySelector('.blurContact')).not.toBeInTheDocument();
-    expect(screen.queryByText(/unlock/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/sign up.*view contact/i)).not.toBeInTheDocument();
+    expect(queryByText(/unlock/i)).not.toBeInTheDocument();
+    expect(queryByText(/sign up.*view contact/i)).not.toBeInTheDocument();
   });
 
   it('Job cards have stable keys for list rendering', () => {
@@ -118,7 +118,7 @@ describe('Jobs FOMO Removal Tests', () => {
       { ...mockJob, id: 'job-3' }
     ];
     
-    const { rerender } = render(
+    const { rerender, getAllByText } = render(
       <TestWrapper>
         <div>
           {jobs.map(job => (
@@ -129,7 +129,7 @@ describe('Jobs FOMO Removal Tests', () => {
     );
     
     // Verify all cards are rendered with proper keys
-    expect(screen.getAllByText('Senior Nail Technician')).toHaveLength(3);
+    expect(getAllByText('Senior Nail Technician')).toHaveLength(3);
     
     // Rerender with same order should maintain elements
     rerender(
@@ -142,7 +142,7 @@ describe('Jobs FOMO Removal Tests', () => {
       </TestWrapper>
     );
     
-    expect(screen.getAllByText('Senior Nail Technician')).toHaveLength(3);
+    expect(getAllByText('Senior Nail Technician')).toHaveLength(3);
   });
 
   it('No references to removed FOMO components in DOM', () => {

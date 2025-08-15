@@ -72,13 +72,13 @@ const NailTechSalaryByCity2025: React.FC = () => {
         publishedTime={article.publishedISO}
         tags={article.tags}
         structuredData={buildArticleJsonLd({
-          headline: article.title,
+          title: article.title,
           description: article.description,
           image: article.image,
-          authorName: article.author,
+          author: article.author,
           datePublished: article.publishedISO,
           dateModified: article.publishedISO,
-          canonicalUrl: article.url
+          url: article.url
         })}
         canonicalUrl={article.url}
       />

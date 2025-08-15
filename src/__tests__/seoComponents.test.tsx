@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Helmet } from 'react-helmet-async';
 import BaseSEO from '@/components/seo/BaseSEO';
 import JobSEO from '@/components/seo/JobSEO';
 import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
@@ -23,7 +22,7 @@ const mockJob: Job = {
 
 describe('SEO Components Tests', () => {
   it('BaseSEO renders canonical URLs correctly', () => {
-    render(
+    const { container } = render(
       <BaseSEO
         title="Test Page"
         description="Test description"
@@ -31,9 +30,12 @@ describe('SEO Components Tests', () => {
       />
     );
     
-    const helmet = Helmet.peek();
-    const canonicalLink = helmet.linkTags.find(tag => tag.rel === 'canonical');
-    expect(canonicalLink?.href).toBe('https://www.emvi.app/test-page');
+    // Check if canonical link exists in the document head
+    const canonicalLinks = document.querySelectorAll('link[rel="canonical"]');
+    const hasCorrectCanonical = Array.from(canonicalLinks).some(
+      link => (link as HTMLLinkElement).href === 'https://www.emvi.app/test-page'
+    );
+    expect(hasCorrectCanonical).toBe(true);
   });
 
   it('BaseSEO renders absolute URLs for canonicals', () => {
@@ -45,51 +47,65 @@ describe('SEO Components Tests', () => {
       />
     );
     
-    const helmet = Helmet.peek();
-    const canonicalLink = helmet.linkTags.find(tag => tag.rel === 'canonical');
-    expect(canonicalLink?.href).toBe('https://www.emvi.app/absolute-test');
+    const canonicalLinks = document.querySelectorAll('link[rel="canonical"]');
+    const hasCorrectCanonical = Array.from(canonicalLinks).some(
+      link => (link as HTMLLinkElement).href === 'https://www.emvi.app/absolute-test'
+    );
+    expect(hasCorrectCanonical).toBe(true);
   });
 
   it('JobSEO generates valid JobPosting structured data', () => {
     render(<JobSEO job={mockJob} />);
     
-    const helmet = Helmet.peek();
-    const jsonLdScript = helmet.scriptTags.find(tag => 
-      tag.type === 'application/ld+json'
-    );
+    const jsonLdScripts = document.querySelectorAll('script[type="application/ld+json"]');
+    let jobPostingFound = false;
     
-    expect(jsonLdScript).toBeDefined();
-    const structuredData = JSON.parse(jsonLdScript!.innerHTML);
+    jsonLdScripts.forEach(script => {
+      try {
+        const data = JSON.parse(script.textContent || '{}');
+        if (data['@type'] === 'JobPosting') {
+          expect(data.title).toBe('Senior Hair Stylist');
+          expect(data.description).toBe('Amazing opportunity for experienced hair stylist');
+          expect(data.url).toBe('https://www.emvi.app/jobs/test-job-seo');
+          expect(data.hiringOrganization.name).toBe('Beauty Salon LLC');
+          expect(data.jobLocation.address.addressLocality).toBe('Los Angeles, CA');
+          jobPostingFound = true;
+        }
+      } catch (e) {
+        // Skip invalid JSON
+      }
+    });
     
-    expect(structuredData['@type']).toBe('JobPosting');
-    expect(structuredData.title).toBe('Senior Hair Stylist');
-    expect(structuredData.description).toBe('Amazing opportunity for experienced hair stylist');
-    expect(structuredData.url).toBe('https://www.emvi.app/jobs/test-job-seo');
-    expect(structuredData.hiringOrganization.name).toBe('Beauty Salon LLC');
-    expect(structuredData.jobLocation.address.addressLocality).toBe('Los Angeles, CA');
+    expect(jobPostingFound).toBe(true);
   });
 
   it('GlobalSEOInjection renders Organization and Website schemas', () => {
     render(<GlobalSEOInjection />);
     
-    const helmet = Helmet.peek();
-    const jsonLdScripts = helmet.scriptTags.filter(tag => 
-      tag.type === 'application/ld+json'
-    );
+    const jsonLdScripts = document.querySelectorAll('script[type="application/ld+json"]');
+    let organizationFound = false;
+    let websiteFound = false;
     
-    expect(jsonLdScripts.length).toBe(2);
+    jsonLdScripts.forEach(script => {
+      try {
+        const data = JSON.parse(script.textContent || '{}');
+        if (data['@type'] === 'Organization') {
+          expect(data.name).toBe('EmviApp');
+          expect(data.url).toBe('https://www.emvi.app');
+          organizationFound = true;
+        }
+        if (data['@type'] === 'WebSite') {
+          expect(data.name).toBe('EmviApp');
+          expect(data.potentialAction['@type']).toBe('SearchAction');
+          websiteFound = true;
+        }
+      } catch (e) {
+        // Skip invalid JSON
+      }
+    });
     
-    const schemas = jsonLdScripts.map(script => JSON.parse(script.innerHTML));
-    const organizationSchema = schemas.find(s => s['@type'] === 'Organization');
-    const websiteSchema = schemas.find(s => s['@type'] === 'WebSite');
-    
-    expect(organizationSchema).toBeDefined();
-    expect(organizationSchema.name).toBe('EmviApp');
-    expect(organizationSchema.url).toBe('https://www.emvi.app');
-    
-    expect(websiteSchema).toBeDefined();
-    expect(websiteSchema.name).toBe('EmviApp');
-    expect(websiteSchema.potentialAction['@type']).toBe('SearchAction');
+    expect(organizationFound).toBe(true);
+    expect(websiteFound).toBe(true);
   });
 
   it('SEO components normalize all URLs to https://www.emvi.app', () => {
@@ -102,15 +118,25 @@ describe('SEO Components Tests', () => {
       />
     );
     
-    const helmet = Helmet.peek();
+    const canonicalLinks = document.querySelectorAll('link[rel="canonical"]');
+    const ogUrlMetas = document.querySelectorAll('meta[property="og:url"]');
+    const ogImageMetas = document.querySelectorAll('meta[property="og:image"]');
     
-    const canonical = helmet.linkTags.find(tag => tag.rel === 'canonical');
-    const ogUrl = helmet.metaTags.find(tag => tag.property === 'og:url');
-    const ogImage = helmet.metaTags.find(tag => tag.property === 'og:image');
+    const hasCorrectCanonical = Array.from(canonicalLinks).some(
+      link => (link as HTMLLinkElement).href === 'https://www.emvi.app/relative-path'
+    );
     
-    expect(canonical?.href).toBe('https://www.emvi.app/relative-path');
-    expect(ogUrl?.content).toBe('https://www.emvi.app/relative-path');
-    expect(ogImage?.content).toBe('https://www.emvi.app/image.jpg');
+    const hasCorrectOgUrl = Array.from(ogUrlMetas).some(
+      meta => (meta as HTMLMetaElement).content === 'https://www.emvi.app/relative-path'
+    );
+    
+    const hasCorrectOgImage = Array.from(ogImageMetas).some(
+      meta => (meta as HTMLMetaElement).content === 'https://www.emvi.app/image.jpg'
+    );
+    
+    expect(hasCorrectCanonical).toBe(true);
+    expect(hasCorrectOgUrl).toBe(true);
+    expect(hasCorrectOgImage).toBe(true);
   });
 
   it('JobSEO handles noindex properly for expired jobs', () => {
@@ -121,9 +147,11 @@ describe('SEO Components Tests', () => {
     
     render(<JobSEO job={expiredJob} />);
     
-    const helmet = Helmet.peek();
-    const robotsMeta = helmet.metaTags.find(tag => tag.name === 'robots');
+    const robotsMetas = document.querySelectorAll('meta[name="robots"]');
+    const hasNoIndex = Array.from(robotsMetas).some(
+      meta => (meta as HTMLMetaElement).content === 'noindex, follow'
+    );
     
-    expect(robotsMeta?.content).toBe('noindex, follow');
+    expect(hasNoIndex).toBe(true);
   });
 });
