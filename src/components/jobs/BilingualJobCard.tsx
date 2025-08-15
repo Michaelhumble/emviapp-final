@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import PremiumContactGate from '@/components/common/PremiumContactGate';
+
 
 interface BilingualJobCardProps {
   job: Job;
@@ -25,7 +25,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   isRenewing
 }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isSignedIn } = useAuth();
   
   // Add comprehensive defensive checks for job object
   if (!job || typeof job !== 'object') {
@@ -373,8 +373,8 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         </p>
       )}
 
-      {/* FIXED: Contact Info for Paid Jobs - Enhanced with metadata support */}
-      {(() => {
+      {/* Contact Info - Only show if signed in */}
+      {isSignedIn && (() => {
         if (!isPaidJob) return null;
 
         const jobAny = job as any;
