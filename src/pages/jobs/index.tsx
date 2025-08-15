@@ -11,13 +11,13 @@ import { useToast } from '@/hooks/use-toast';
 
 // Lazy load heavy components for better performance
 const WhatYouMissedSection = lazy(() => import('@/components/jobs/WhatYouMissedSection'));
-const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSection'));
+
 const DiamondPlanBlock = lazy(() => import('@/components/pricing/DiamondPlanBlock'));
 const FeaturedTrendingJobs = lazy(() => import('@/components/jobs/FeaturedTrendingJobs'));
 const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
 const SuccessStoriesCarousel = lazy(() => import('@/components/jobs/SuccessStoriesCarousel'));
 const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
-const TeaserLocked = lazy(() => import('@/components/jobs/TeaserLocked'));
+
 const UrgencyBoosters = lazy(() => import('@/components/jobs/UrgencyBoosters'));
 const StickyMobileCTA = lazy(() => import('@/components/jobs/StickyMobileCTA'));
 const InviteEarnBanner = lazy(() => import('@/components/jobs/InviteEarnBanner'));
@@ -798,7 +798,7 @@ const JobsPage = () => {
         <LiveLeaderboards />
         <SuccessStoriesCarousel />
         <RealTimeActivity />
-        <TeaserLocked />
+        
         <UrgencyBoosters jobs={jobs} />
         <InviteEarnBanner />
         <StickyMobileCTA />

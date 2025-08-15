@@ -152,12 +152,11 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
             {user ? (
               <div className="flex items-center">
                 <Phone className="h-3.5 w-3.5 mr-1.5" />
-                <span className="font-medium">{job.contact_info?.phone}</span>
+                <span className="font-medium">{job.contact_info?.phone || 'Contact available'}</span>
               </div>
             ) : (
               <div className="flex items-center text-gray-500">
-                <Lock className="h-3.5 w-3.5 mr-1.5" />
-                <span>🔒 Đăng nhập để xem liên hệ</span>
+                <span className="text-xs">Đăng nhập để xem liên hệ</span>
               </div>
             )}
           </div>

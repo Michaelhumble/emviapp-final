@@ -20,7 +20,7 @@ import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import SalonsForSale from '@/components/home/SalonsForSale';
 import ArtistsForHireStrip from '@/components/home/ArtistsForHireStrip';
 import FeaturedPaidJobsSection from '@/components/jobs/FeaturedPaidJobsSection';
-const FOMONailJobsSection = lazy(() => import('@/components/jobs/FOMONailJobsSection'));
+
 const LiveLeaderboards = lazy(() => import('@/components/jobs/LiveLeaderboards'));
 
 const RealTimeActivity = lazy(() => import('@/components/jobs/RealTimeActivity'));
@@ -259,12 +259,8 @@ const OptimizedJobsPageContent = () => {
 
         {/* Featured Paid Jobs (Paid tiers) */}
         <div id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          {paidJobsToShow.length > 0 ? (
+          {paidJobsToShow.length > 0 && (
             <FeaturedPaidJobsSection jobs={paidJobsToShow} />
-          ) : (
-            <Suspense fallback={<div className="py-8" />}>
-              <FOMONailJobsSection />
-            </Suspense>
           )}
         </div>
 
