@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Calendar, Home, DollarSign, Phone, Mail, User, ChevronLeft, ChevronRight, Eye, Lock } from 'lucide-react';
 import { RealSalonListing } from '@/data/salons/realSalonListings';
 import { useAuth } from '@/context/auth';
-import PremiumContactGate from '@/components/common/PremiumContactGate';
+import ContactInfoGate from "@/components/jobs/ContactInfoGate";
 
 interface PremiumSalonCardProps {
   salon: RealSalonListing;

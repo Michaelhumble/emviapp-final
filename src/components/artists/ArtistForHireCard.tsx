@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import PremiumContactGate from "@/components/common/PremiumContactGate";
+import ContactInfoGate from "@/components/jobs/ContactInfoGate";
 import { Badge } from "@/components/ui/badge";
 import { User2, MapPin, Lock } from "lucide-react";
 import React from "react";
@@ -173,19 +173,21 @@ const ArtistForHireCard: React.FC<ArtistForHireCardProps> = ({
             {isVietnamese ? 'Xem hồ sơ' : 'View Profile'}
           </Link>
           {contactGated ? (
-            <PremiumContactGate>
-              <Button size="sm" variant="outline" className={`${isBlue ? 'border-primary/30' : ''}`}
-                onClick={() => {
-                  try {
-                    window.dispatchEvent(new CustomEvent('ArtistsContactRequested', { detail: { artistId: effectiveId } }));
-                  } catch {}
-                }}
-              >
-                <Lock className="h-4 w-4 mr-1" />
-                {isVietnamese ? 'Yêu cầu liên hệ' : 'Request Contact'}
-              </Button>
-            </PremiumContactGate>
-          ) : null}
+            <ContactInfoGate
+              contactName="Contact available after sign-in"
+              className=""
+            />
+          ) : (
+            <Button size="sm" variant="outline" className={`${isBlue ? 'border-primary/30' : ''}`}
+              onClick={() => {
+                try {
+                  window.dispatchEvent(new CustomEvent('ArtistsContactRequested', { detail: { artistId: effectiveId } }));
+                } catch {}
+              }}
+            >
+              {isVietnamese ? 'Yêu cầu liên hệ' : 'Request Contact'}
+            </Button>
+          )}
         </div>
 
         {/* Gate copy */}

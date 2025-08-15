@@ -1,5 +1,5 @@
 import React from "react";
-import PremiumContactGate from "@/components/common/PremiumContactGate";
+import ContactInfoGate from "@/components/jobs/ContactInfoGate";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ShieldCheck } from "lucide-react";
 import { ArtistListItem } from "@/hooks/useOptimizedArtistsData";

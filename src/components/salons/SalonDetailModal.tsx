@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { toast } from 'sonner';
-import PremiumContactGate from '@/components/common/PremiumContactGate';
+import ContactInfoGate from "@/components/jobs/ContactInfoGate";
 
 interface SalonDetailModalProps {
   salon: RealSalonListing | null;

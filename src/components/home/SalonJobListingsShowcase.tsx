@@ -7,7 +7,7 @@ import { Container } from '@/components/ui/container';
 import { MapPin, Users, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
-import PremiumContactGate from '@/components/common/PremiumContactGate';
+import ContactInfoGate from "@/components/jobs/ContactInfoGate";
 
 const featuredJobs: Job[] = [
   {
