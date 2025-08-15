@@ -7,7 +7,7 @@ import { JobSummary } from './card-sections/JobSummary';
 import { MapPin, Calendar, DollarSign, Edit, Crown, Star, User, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 
 
@@ -25,6 +25,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   isRenewing
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isSignedIn } = useAuth();
   
   // Add comprehensive defensive checks for job object
@@ -373,73 +374,79 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         </p>
       )}
 
-      {/* Contact Info - Only show if signed in */}
-      {isSignedIn && (() => {
-        if (!isPaidJob) return null;
+      {/* Contact Info - Simple inline approach */}
+      {isPaidJob && (
+        <div className="border-t border-gray-100 pt-3 mb-4">
+          {isSignedIn ? (() => {
+            const jobAny = job as any;
+            let contactInfo = null;
 
-        const jobAny = job as any;
-        let contactInfo = null;
+            // Check metadata for contact_info (webhook processed jobs)
+            if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
+              contactInfo = jobAny.metadata.contact_info;
+            }
+            // Check for direct contact_info in job object
+            else if (job.contact_info && typeof job.contact_info === 'object') {
+              contactInfo = job.contact_info;
+            }
+            // Check for legacy contact fields
+            else if (jobAny.contactPhone || jobAny.contactName || jobAny.contactEmail) {
+              contactInfo = {
+                phone: jobAny.contactPhone,
+                owner_name: jobAny.contactName,
+                email: jobAny.contactEmail,
+                notes: jobAny.contactNotes
+              };
+            }
 
-        // Check metadata for contact_info (webhook processed jobs)
-        if (jobAny.metadata?.contact_info && typeof jobAny.metadata.contact_info === 'object') {
-          contactInfo = jobAny.metadata.contact_info;
-          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Using metadata contact_info:', contactInfo);
-        }
-        // Check for direct contact_info in job object
-        else if (job.contact_info && typeof job.contact_info === 'object') {
-          contactInfo = job.contact_info;
-          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Using direct contact_info:', contactInfo);
-        }
-        // Check for legacy contact fields
-        else if (jobAny.contactPhone || jobAny.contactName || jobAny.contactEmail) {
-          contactInfo = {
-            phone: jobAny.contactPhone,
-            owner_name: jobAny.contactName,
-            email: jobAny.contactEmail,
-            notes: jobAny.contactNotes
-          };
-          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] Using legacy contact fields:', contactInfo);
-        }
+            if (!contactInfo) return null;
 
-        if (!contactInfo) {
-          console.log('🔍 [BILINGUAL-JOB-CARD-DEBUG] No contact info found for paid job');
-          return null;
-        }
-
-        return (
-          <div className="border-t border-gray-100 pt-3 mb-4">
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-3 space-y-2">
-              <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                Contact Information
-              </div>
-              
-              <div className="space-y-1.5 text-sm">
-                {contactInfo.owner_name && (
-                  <div className="flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 text-gray-600" />
-                    <span className="font-medium text-gray-800">{contactInfo.owner_name}</span>
-                  </div>
-                )}
+            return (
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200/50 rounded-lg p-3 space-y-2">
+                <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  Contact Information
+                </div>
                 
-                {contactInfo.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-green-600" />
-                    <span className="font-medium text-green-700">{contactInfo.phone}</span>
-                  </div>
-                )}
-                
-                {contactInfo.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3.5 w-3.5 text-blue-600" />
-                    <span className="font-medium text-blue-700">{contactInfo.email}</span>
-                  </div>
-                )}
+                <div className="space-y-1.5 text-sm">
+                  {contactInfo.owner_name && (
+                    <div className="flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 text-gray-600" />
+                      <span className="font-medium text-gray-800">{contactInfo.owner_name}</span>
+                    </div>
+                  )}
+                  
+                  {contactInfo.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 text-green-600" />
+                      <span className="font-medium text-green-700">{contactInfo.phone}</span>
+                    </div>
+                  )}
+                  
+                  {contactInfo.email && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-3.5 w-3.5 text-blue-600" />
+                      <span className="font-medium text-blue-700">{contactInfo.email}</span>
+                    </div>
+                  )}
+                </div>
               </div>
+            );
+          })() : (
+            <div className="text-sm">
+              <button
+                type="button"
+                data-testid="signin-to-view-contact"
+                className="text-primary hover:underline"
+                onClick={() => navigate('/signin', { state: { redirectTo: location.pathname } })}
+                aria-label="Sign in to view contact information"
+              >
+                Sign in to view contact info
+              </button>
             </div>
-          </div>
-        );
-      })()}
+          )}
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
