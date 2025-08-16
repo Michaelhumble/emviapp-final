@@ -10,8 +10,11 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 
-const SITE_URL = process.env.SITE_URL || 'https://www.emvi.app';
-const REPORTS_DIR = process.env.REPORTS_DIR || 'reports';
+// Parse command line arguments
+const args = process.argv.slice(2);
+const SITE_URL = args.find(arg => arg.startsWith('--site='))?.split('=')[1] || process.env.SITE_URL || 'https://www.emvi.app';
+const REPORTS_DIR = args.find(arg => arg.startsWith('--out='))?.split('=')[1] || process.env.REPORTS_DIR || 'reports';
+const DRY_RUN = args.includes('--dry-run') || process.env.DRY_RUN === 'true';
 const CONFIG_PATH = 'agents/seo-agent/config.yaml';
 
 // Ensure reports directory exists
@@ -22,6 +25,7 @@ if (!fs.existsSync(REPORTS_DIR)) {
 console.log('🤖 EmviApp SEO Agent Starting...');
 console.log(`📍 Site: ${SITE_URL}`);
 console.log(`📁 Reports: ${REPORTS_DIR}/`);
+console.log(`🔄 Mode: ${DRY_RUN ? 'DRY-RUN (no changes)' : 'LIVE (will apply fixes)'}`);
 
 // Load configuration
 let config;
@@ -125,33 +129,43 @@ async function analyzeAndFix() {
     }
   }
   
-  // Apply safe auto-fixes
+  // Apply safe auto-fixes or simulate for dry-run
   if (fixPlan.length > 0) {
-    console.log(`🔧 Applying ${fixPlan.length} safe fixes...`);
-    
-    try {
-      // Run broken links fixer
-      const fixOutput = execSync(`node scripts/fix-broken-links.mjs --plan='${JSON.stringify(fixPlan)}' --dry-run=false`, {
-        encoding: 'utf8',
-        stdio: 'pipe'
-      });
-      
-      results.fixes.auto.push({
-        type: 'broken_links',
-        count: fixPlan.length,
-        output: fixOutput
-      });
-      
-      results.summary.auto_fixed += fixPlan.length;
-      console.log(`✅ Applied ${fixPlan.length} auto-fixes`);
-      
-    } catch (error) {
-      console.warn('⚠️ Some auto-fixes failed:', error.message);
+    if (DRY_RUN) {
+      console.log(`🔧 DRY-RUN: Would apply ${fixPlan.length} fixes...`);
       results.fixes.manual.push({
-        type: 'broken_links_manual',
+        type: 'broken_links_dry_run',
         issues: fixPlan,
-        reason: 'Auto-fix failed'
+        reason: 'Dry-run mode - no changes applied'
       });
+      results.summary.needs_review += fixPlan.length;
+    } else {
+      console.log(`🔧 Applying ${fixPlan.length} safe fixes...`);
+      
+      try {
+        // Run broken links fixer
+        const fixOutput = execSync(`node scripts/fix-broken-links.mjs --plan='${JSON.stringify(fixPlan)}' --dry-run=false`, {
+          encoding: 'utf8',
+          stdio: 'pipe'
+        });
+        
+        results.fixes.auto.push({
+          type: 'broken_links',
+          count: fixPlan.length,
+          output: fixOutput
+        });
+        
+        results.summary.auto_fixed += fixPlan.length;
+        console.log(`✅ Applied ${fixPlan.length} auto-fixes`);
+        
+      } catch (error) {
+        console.warn('⚠️ Some auto-fixes failed:', error.message);
+        results.fixes.manual.push({
+          type: 'broken_links_manual',
+          issues: fixPlan,
+          reason: 'Auto-fix failed'
+        });
+      }
     }
   }
   
