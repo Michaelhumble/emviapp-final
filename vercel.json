@@ -37,6 +37,10 @@
     {
       "source": "/jobs-sitemaps/(.*)",
       "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/jobs-sitemap/jobs-sitemaps/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
