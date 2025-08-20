@@ -147,6 +147,7 @@ const JobDetailPage = () => {
   const activeWindow = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000);
   const isActive = job.status === 'active' && ((expiresAt && expiresAt > now) || (!expiresAt && activeWindow > now));
   const isExpired = !isActive;
+  const isFilled = job.status === 'filled' || job.status === 'closed';
 
   const photos = useMemo(() => normalizeJobPhotos(job), [job]);
 
@@ -183,7 +184,7 @@ const JobDetailPage = () => {
           content={`${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`} 
         />
         <link rel="canonical" href={`https://www.emvi.app/jobs/${job.id}`} />
-        {isExpired && <meta name="robots" content="noindex, follow" />}
+        {(isExpired || isFilled) && <meta name="robots" content="noindex, follow" />}
         <script type="application/ld+json">{jsonLd}</script>
       </Helmet>
 
@@ -285,7 +286,11 @@ const JobDetailPage = () => {
             <div className="lg:col-span-2">
               {/* Photo Gallery */}
               <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-                <JobPhotoGallery urls={photos} />
+                <JobPhotoGallery 
+                  urls={photos} 
+                  jobTitle={job.title}
+                  category={job.category}
+                />
               </div>
 
               <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">

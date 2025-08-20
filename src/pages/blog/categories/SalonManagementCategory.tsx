@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, Calendar, TrendingUp } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogArticleGrid from '@/components/blog/BlogArticleGrid';
 import { getArticlesByCategory } from '@/data/blogArticles';
 import BlogImage from '@/components/blog/BlogImage';
@@ -77,12 +78,40 @@ const SalonManagementCategory = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO 
         title="Salon Management | Business Growth & Operations Guide"
         description="Master salon management with expert strategies for operations, marketing, staff management, and growth. Get the insights successful salon owners use to thrive."
-        url="https://emvi.app/blog/category/salon-management"
+        canonical="https://www.emvi.app/blog/categories/salon-management"
         type="website"
-        tags={['salon management', 'business operations', 'salon marketing', 'staff management']}
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Blog', url: 'https://www.emvi.app/blog' },
+            { name: 'Salon Management', url: 'https://www.emvi.app/blog/categories/salon-management' }
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How can I increase bookings at my salon?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Focus on online presence, implement booking software, offer promotions for new clients, encourage reviews, and maintain consistent social media marketing to attract and retain clients."
+                }
+              },
+              {
+                "@type": "Question", 
+                "name": "What are the key metrics to track in salon management?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Track revenue per client, appointment booking rates, client retention rates, staff productivity, inventory turnover, and profit margins to optimize salon performance."
+                }
+              }
+            ]
+          }
+        ]}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

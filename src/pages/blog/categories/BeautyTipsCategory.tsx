@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Clock, Calendar } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 
 const BeautyTipsCategory = () => {
@@ -39,12 +40,40 @@ const BeautyTipsCategory = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO 
         title="Beauty Tips & Tutorials | Expert Advice for Professional Results"
         description="Get professional beauty tips and tutorials from industry experts. Learn techniques for hair, nails, makeup, and skincare that deliver salon-quality results at home."
-        url="https://emvi.app/blog/category/beauty-tips"
+        canonical="https://www.emvi.app/blog/categories/beauty-tips"
         type="website"
-        tags={['beauty tips', 'beauty tutorials', 'professional techniques', 'beauty advice']}
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Blog', url: 'https://www.emvi.app/blog' },
+            { name: 'Beauty Tips', url: 'https://www.emvi.app/blog/categories/beauty-tips' }
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How can I make my makeup last longer?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use a primer before foundation, set with powder, use setting spray, and choose long-wearing formulas. Professional makeup artists recommend layering techniques for maximum durability."
+                }
+              },
+              {
+                "@type": "Question", 
+                "name": "What are the best nail care tips for healthy nails?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Keep nails clean and moisturized, use a base coat before polish, avoid using nails as tools, and maintain regular trimming and filing for optimal nail health."
+                }
+              }
+            ]
+          }
+        ]}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

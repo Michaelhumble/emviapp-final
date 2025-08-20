@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, BarChart3, Clock, Calendar } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 
 const IndustryCategory = () => {
@@ -31,12 +32,40 @@ const IndustryCategory = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO 
         title="Beauty Industry News & Analysis | Market Trends & Insights"
         description="Stay informed with the latest beauty industry news, market analysis, and professional insights. Get data-driven perspectives on trends shaping the beauty business."
-        url="https://emvi.app/blog/category/industry"
+        canonical="https://www.emvi.app/blog/categories/industry"
         type="website"
-        tags={['beauty industry', 'market analysis', 'industry news', 'beauty business']}
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Blog', url: 'https://www.emvi.app/blog' },
+            { name: 'Industry News', url: 'https://www.emvi.app/blog/categories/industry' }
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What are the current trends in the beauty industry?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The beauty industry is seeing growth in personalized services, AI-powered tools, sustainable practices, and mobile-first experiences that prioritize convenience and quality."
+                }
+              },
+              {
+                "@type": "Question", 
+                "name": "How is technology changing the beauty industry?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Technology is revolutionizing beauty through virtual try-ons, AI-powered recommendations, automated booking systems, and digital platforms that connect professionals with clients."
+                }
+              }
+            ]
+          }
+        ]}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

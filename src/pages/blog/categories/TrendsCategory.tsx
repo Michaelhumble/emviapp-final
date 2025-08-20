@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, Clock, Calendar } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 
 const TrendsCategory = () => {
@@ -30,12 +31,40 @@ const TrendsCategory = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO 
         title="Beauty Trends 2025 | Latest Industry Insights & Innovations"
         description="Stay ahead of the latest beauty industry trends. Discover emerging techniques, technology innovations, and consumer preferences shaping the beauty world in 2025."
-        url="https://emvi.app/blog/category/trends"
+        canonical="https://www.emvi.app/blog/categories/trends"
         type="website"
-        tags={['beauty trends', 'industry trends', 'beauty innovation', '2025 trends']}
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Blog', url: 'https://www.emvi.app/blog' },
+            { name: 'Beauty Trends', url: 'https://www.emvi.app/blog/categories/trends' }
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What are the biggest beauty trends for 2025?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The biggest beauty trends for 2025 include AI-powered beauty tools, mobile-first salon experiences, personalized skincare, and sustainable beauty practices."
+                }
+              },
+              {
+                "@type": "Question", 
+                "name": "How can beauty professionals stay updated on trends?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Beauty professionals can stay updated through industry publications, social media, trade shows, continuing education courses, and platforms like EmviApp that curate the latest insights."
+                }
+              }
+            ]
+          }
+        ]}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Trophy, Clock, Calendar, TrendingUp } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 
 const SuccessStoriesCategory = () => {
@@ -34,12 +35,40 @@ const SuccessStoriesCategory = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO 
         title="Success Stories | Real Beauty Business Transformations"
         description="Read inspiring success stories from beauty professionals who transformed their careers and businesses. Discover proven strategies for building a thriving beauty business."
-        url="https://emvi.app/blog/category/success-stories"
+        canonical="https://www.emvi.app/blog/categories/success-stories"
         type="website"
-        tags={['success stories', 'beauty business', 'entrepreneur stories', 'salon success']}
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Blog', url: 'https://www.emvi.app/blog' },
+            { name: 'Success Stories', url: 'https://www.emvi.app/blog/categories/success-stories' }
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do beauty professionals achieve business success?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Successful beauty professionals focus on excellent service delivery, client retention, smart marketing, continuous skill development, and leveraging technology platforms to grow their reach."
+                }
+              },
+              {
+                "@type": "Question", 
+                "name": "What are common traits of successful beauty businesses?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Successful beauty businesses typically have strong branding, consistent quality, excellent customer service, effective online presence, and strategic use of booking and management tools."
+                }
+              }
+            ]
+          }
+        ]}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

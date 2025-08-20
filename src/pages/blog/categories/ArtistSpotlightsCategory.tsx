@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Award, Clock, Calendar, Star } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 
 const ArtistSpotlightsCategory = () => {
@@ -48,12 +49,40 @@ const ArtistSpotlightsCategory = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO 
         title="Artist Spotlights | Meet the Beauty Industry's Rising Stars"
         description="Discover inspiring stories from talented beauty professionals making their mark in the industry. Get behind-the-scenes insights from artists who are redefining beauty standards."
-        url="https://emvi.app/blog/category/artist-spotlights"
+        canonical="https://www.emvi.app/blog/categories/artist-spotlights"
         type="website"
-        tags={['artist spotlights', 'beauty professionals', 'success stories', 'artist interviews']}
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: 'https://www.emvi.app' },
+            { name: 'Blog', url: 'https://www.emvi.app/blog' },
+            { name: 'Artist Spotlights', url: 'https://www.emvi.app/blog/categories/artist-spotlights' }
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How can I get featured as an artist spotlight?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Artists can get featured by demonstrating exceptional work, building a strong client base, and actively engaging with the beauty community through platforms like EmviApp."
+                }
+              },
+              {
+                "@type": "Question", 
+                "name": "What makes a successful beauty artist?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Successful beauty artists combine technical skill, creativity, strong client relationships, continuous learning, and effective marketing to build thriving businesses."
+                }
+              }
+            ]
+          }
+        ]}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
