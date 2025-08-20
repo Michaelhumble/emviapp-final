@@ -1,0 +1,89 @@
+name: Submit Sitemaps to Google Search Console
+
+on:
+  workflow_dispatch:
+    inputs:
+      jobs_shard_url:
+        description: 'Jobs sitemap shard URL (optional, auto-detects latest if omitted)'
+        required: false
+        type: string
+
+jobs:
+  submit-sitemaps:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install googleapis
+
+      - name: Submit sitemaps to GSC
+        env:
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
+        run: |
+          cat > submit-sitemaps.js << 'EOF'
+          const { google } = require('googleapis');
+          
+          async function submitSitemaps() {
+            try {
+              // Configure Google Search Console API client
+              const auth = new google.auth.GoogleAuth({
+                credentials: {
+                  client_email: process.env.GSC_CLIENT_EMAIL,
+                  private_key: process.env.GSC_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                },
+                scopes: ['https://www.googleapis.com/auth/webmasters'],
+              });
+              
+              const searchconsole = google.searchconsole({ version: 'v1', auth });
+              const siteUrl = 'https://www.emvi.app/';
+              
+              // Main sitemaps to submit
+              const sitemaps = [
+                'https://www.emvi.app/sitemap.xml',
+                'https://www.emvi.app/artists-sitemap.xml'
+              ];
+              
+              // Add jobs shard if provided, otherwise try to get latest
+              const jobsShardUrl = process.env.JOBS_SHARD_URL || '${{ inputs.jobs_shard_url }}';
+              if (jobsShardUrl && jobsShardUrl !== '') {
+                sitemaps.push(jobsShardUrl);
+              } else {
+                // Default to jobs sitemap index which handles shards internally
+                sitemaps.push('https://www.emvi.app/jobs-sitemap.xml');
+              }
+              
+              console.log('Submitting sitemaps to Google Search Console...');
+              
+              for (const sitemapUrl of sitemaps) {
+                try {
+                  await searchconsole.sitemaps.submit({
+                    siteUrl: siteUrl,
+                    feedpath: sitemapUrl,
+                  });
+                  console.log(`✓ Successfully submitted: ${sitemapUrl}`);
+                } catch (error) {
+                  console.error(`✗ Failed to submit ${sitemapUrl}:`, error.message);
+                }
+              }
+              
+              console.log('Sitemap submission completed.');
+              
+            } catch (error) {
+              console.error('Error in sitemap submission:', error.message);
+              process.exit(1);
+            }
+          }
+          
+          submitSitemaps();
+          EOF
+          
+          JOBS_SHARD_URL="${{ inputs.jobs_shard_url }}" node submit-sitemaps.js
