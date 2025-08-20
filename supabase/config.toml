@@ -110,3 +110,6 @@ verify_jwt = false
 
 [functions.jobs-sitemap]
 verify_jwt = false
+
+[functions.artists-sitemap]
+verify_jwt = false

@@ -132,21 +132,58 @@ const Artists = () => {
         </Container>
       </section>
 
-      {/* Crawlable specialty/city links */}
-      <section className="py-4">
+      {/* Browse Cities & Roles */}
+      <section className="py-8 bg-gray-50">
         <Container>
-          <nav aria-label="Popular artist searches">
-            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-              <li><a href="/artists/hair/los-angeles-ca">Hair Artists in Los Angeles, CA</a></li>
-              <li><a href="/artists/nails/houston-tx">Nail Artists in Houston, TX</a></li>
-              <li><a href="/artists/makeup/new-york-ny">Makeup Artists in New York, NY</a></li>
-              <li><a href="/artists/barber/dallas-tx">Barbers in Dallas, TX</a></li>
-              <li><a href="/artists/skincare/miami-fl">Skincare Specialists in Miami, FL</a></li>
-              <li><a href="/artists/brows-lashes/phoenix-az">Brows & Lashes in Phoenix, AZ</a></li>
-              <li><a href="/artists/tattoo/atlanta-ga">Tattoo Artists in Atlanta, GA</a></li>
-              <li><a href="/artists/massage/chicago-il">Massage Therapists in Chicago, IL</a></li>
-            </ul>
-          </nav>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2">Browse Artists by City & Specialty</h2>
+              <p className="text-muted-foreground">Find top beauty professionals in your area</p>
+            </div>
+            
+            <nav aria-label="Popular artist searches">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <a href="/artists/nails/houston-tx" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Nail Artists</span>
+                  <span className="text-sm text-muted-foreground block">Houston, TX</span>
+                </a>
+                <a href="/artists/hair/los-angeles-ca" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Hair Stylists</span>
+                  <span className="text-sm text-muted-foreground block">Los Angeles, CA</span>
+                </a>
+                <a href="/artists/barber/new-york-ny" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Barbers</span>
+                  <span className="text-sm text-muted-foreground block">New York, NY</span>
+                </a>
+                <a href="/artists/lashes/miami-fl" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Lash Artists</span>
+                  <span className="text-sm text-muted-foreground block">Miami, FL</span>
+                </a>
+                <a href="/artists/skincare/chicago-il" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Estheticians</span>
+                  <span className="text-sm text-muted-foreground block">Chicago, IL</span>
+                </a>
+                <a href="/artists/massage/phoenix-az" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Massage Therapists</span>
+                  <span className="text-sm text-muted-foreground block">Phoenix, AZ</span>
+                </a>
+                <a href="/artists/nails/dallas-tx" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Nail Artists</span>
+                  <span className="text-sm text-muted-foreground block">Dallas, TX</span>
+                </a>
+                <a href="/artists/hair/atlanta-ga" className="block p-3 border rounded-lg hover:bg-white hover:shadow-sm transition-all">
+                  <span className="font-medium">Hair Stylists</span>
+                  <span className="text-sm text-muted-foreground block">Atlanta, GA</span>
+                </a>
+              </div>
+              
+              <div className="text-center mt-6">
+                <p className="text-sm text-muted-foreground">
+                  Explore professionals in 25+ cities across 6 specialties
+                </p>
+              </div>
+            </nav>
+          </div>
         </Container>
       </section>
 

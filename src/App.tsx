@@ -37,6 +37,7 @@ const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
 const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
+const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Terms = lazy(() => import("@/pages/Terms"));
@@ -177,6 +178,7 @@ function App() {
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
                      <Route path="/artists/:specialty/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><SpecialtyCityLanding /></Suspense>} />
+                     <Route path="/artists/:role/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><RoleCityPage /></Suspense>} />
                      <Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                     
