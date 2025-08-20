@@ -9,7 +9,8 @@ import { Job } from '@/types/job';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Helmet } from 'react-helmet';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 
 import { JobCard } from '@/components/jobs/JobCard';
 import OptimizedStickyMobileCTA from '@/components/mobile/OptimizedStickyMobileCTA';
@@ -197,24 +198,23 @@ const OptimizedJobsPageContent = () => {
   };
 
 
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Home', url: 'https://www.emvi.app' },
+    { name: 'Jobs', url: 'https://www.emvi.app/jobs' }
+  ]);
+
   return (
     <>
-      <Helmet>
-        <title>Beauty Jobs Near You | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Nails, hair, brows, makeup and more—new roles added daily."
-        />
-        <link rel="canonical" href={`https://www.emvi.app/jobs`} />
-      </Helmet>
-      {/* Breadcrumb JSON-LD via BaseSEO */}
-      <script type="application/ld+json">{JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.emvi.app' },
-        { '@type': 'ListItem', position: 2, name: 'Jobs', item: 'https://www.emvi.app/jobs' },
-      ] })}</script>
+      <BaseSEO
+        title="Beauty Jobs Near You | EmviApp"
+        description="Find nails, hair, brows, makeup and more jobs—new roles added daily. Browse verified salon opportunities from top employers."
+        canonical="https://www.emvi.app/jobs"
+        ogImage="https://www.emvi.app/og-jobs.jpg"
+        jsonLd={[breadcrumbJsonLd]}
+        type="website"
+      />
 
-
-      <div className="w-full">
+      <main className="w-full">
         {/* JOBS HERO (Above the fold) */}
         <JobsHero jobsCount={jobs?.length ?? 0} />
 
@@ -274,6 +274,10 @@ const OptimizedJobsPageContent = () => {
         <div id="browse" />
         <section id="jobs-section" className="w-full py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <header className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Latest Beauty Jobs</h1>
+              <p className="mt-2 text-muted-foreground">Find your next opportunity in the beauty industry</p>
+            </header>
             {/* Removed FOMO message - same content for all users */}
             {false && !isSignedIn && fomoEnabled !== false && (
               <div className="mb-6 rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
@@ -442,7 +446,7 @@ const OptimizedJobsPageContent = () => {
 
         {/* Mobile CTA */}
         {isMobile && <OptimizedStickyMobileCTA />}
-      </div>
+      </main>
     </>
   );
 };
