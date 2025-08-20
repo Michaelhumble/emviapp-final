@@ -72,6 +72,12 @@ const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
 const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 const ViralArticle = lazy(() => import("@/pages/ViralArticle"));
 
+const NailSalonInterviewQA = lazy(() => import("@/pages/blog/nail-salon-interview-questions-answers"));
+const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
+const NailTechSalaryGuide = lazy(() => import("@/pages/blog/nail-tech-salary-by-city-2025"));
+const NailArtistPortfolioExamples = lazy(() => import("@/pages/blog/nail-artist-portfolio-examples"));
+const HowToGetMoreNailClients = lazy(() => import("@/pages/blog/how-to-get-more-nail-clients"));
+
 // Blog Category Pages
 const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
 const BeautyTipsCategory = lazy(() => import("@/pages/blog/categories/BeautyTipsCategory"));
@@ -236,6 +242,13 @@ function App() {
                     <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                     <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
+                    
+                    {/* Content Hub Routes */}
+                    <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />
+                    <Route path="/blog/nail-tech-salary-by-city-2025" element={<Layout><NailTechSalaryGuide /></Layout>} />
+                    <Route path="/blog/nail-artist-portfolio-examples" element={<Layout><NailArtistPortfolioExamples /></Layout>} />
+                    <Route path="/blog/how-to-get-more-nail-clients" element={<Layout><HowToGetMoreNailClients /></Layout>} />
+                    <Route path="/blog/nail-salon-interview-questions-answers" element={<Layout><NailSalonInterviewQA /></Layout>} />
                     
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />
