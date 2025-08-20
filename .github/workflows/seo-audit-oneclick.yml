@@ -1,0 +1,93 @@
+name: One-Click SEO Audit with Auto-Commit
+
+on:
+  workflow_dispatch:
+    inputs:
+      audit_url:
+        description: 'URL to audit'
+        required: false
+        default: 'https://www.emvi.app'
+        type: string
+
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run SEO Audit
+        env:
+          AUDIT_URL: ${{ inputs.audit_url || 'https://www.emvi.app' }}
+        run: |
+          echo "🚀 Running SEO audit for: $AUDIT_URL"
+          
+          # Create reports directory
+          mkdir -p reports
+          
+          # Run the existing audit script
+          node scripts/run-audit.mjs --site=$AUDIT_URL --out=./reports
+          
+          # List generated files for debugging
+          echo "Generated files:"
+          ls -la reports/
+
+      - name: Collect and commit audit results
+        env:
+          AUDIT_URL: ${{ inputs.audit_url || 'https://www.emvi.app' }}
+        run: |
+          # Run the collection script
+          node scripts/seo/collect-and-commit-audit.mjs
+        
+      - name: Generate Job Summary
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          REPORT_DIR="reports/seo/$DATE"
+          
+          echo "## 📊 SEO Audit Results - $DATE" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Audit URL:** ${{ inputs.audit_url || 'https://www.emvi.app' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Extract summary from audit-summary.json if it exists
+          if [ -f "reports/audit-summary.json" ]; then
+            echo "### Summary" >> $GITHUB_STEP_SUMMARY
+            echo "- **Pages Crawled:** $(jq -r '.seo.pagesFound // "N/A"' reports/audit-summary.json)" >> $GITHUB_STEP_SUMMARY
+            echo "- **SEO Issues:** $(jq -r '.seo.seoIssues // "N/A"' reports/audit-summary.json)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Broken Links:** $(jq -r '.seo.brokenLinks // "N/A"' reports/audit-summary.json)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Sitemap URLs:** $(jq -r '.sitemap.totalUrls // "N/A"' reports/audit-summary.json)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Count broken links from CSV if it exists
+          if [ -f "$REPORT_DIR/broken-links.csv" ]; then
+            BROKEN_COUNT=$(tail -n +2 "$REPORT_DIR/broken-links.csv" | wc -l)
+            echo "- **Internal Broken Links:** $BROKEN_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "### 📁 Generated Reports" >> $GITHUB_STEP_SUMMARY
+          echo "- \`$REPORT_DIR/seo-report.html\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`$REPORT_DIR/broken-links.csv\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Reports have been committed to the repository and are available as artifacts." >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-audit-${{ github.run_number }}
+          path: |
+            reports/seo/*/seo-report.html
+            reports/seo/*/broken-links.csv
+          retention-days: 30
