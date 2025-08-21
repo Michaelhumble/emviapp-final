@@ -19,7 +19,15 @@
     { "source": "/jobs/:role/saint-:rest", "destination": "/jobs/:role/st-:rest", "permanent": true },
     { "source": "/jobs/:role/fort-:rest", "destination": "/jobs/:role/ft-:rest", "permanent": true },
     { "source": "/artists/:specialty/saint-:rest", "destination": "/artists/:specialty/st-:rest", "permanent": true },
-    { "source": "/artists/:specialty/fort-:rest", "destination": "/artists/:specialty/ft-:rest", "permanent": true }
+    { "source": "/artists/:specialty/fort-:rest", "destination": "/artists/:specialty/ft-:rest", "permanent": true },
+    { "source": "/blog/:slug.html", "destination": "/blog/:slug", "permanent": true },
+    { "source": "/jobs/search", "destination": "/jobs", "permanent": true },
+    { "source": "/jobs/find", "destination": "/jobs", "permanent": true },
+    { "source": "/artists/search", "destination": "/artists", "permanent": true },
+    { "source": "/artists/find", "destination": "/artists", "permanent": true },
+    { "source": "/salons/search", "destination": "/salons", "permanent": true },
+    { "source": "/u/:username.html", "destination": "/u/:username", "permanent": true },
+    { "source": "/profile/:username", "destination": "/u/:username", "permanent": true }
   ],
   "rewrites": [
     {

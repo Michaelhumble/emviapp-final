@@ -14,8 +14,9 @@ export const buildOrganizationJsonLd = () => ({
   },
   "sameAs": [
     "https://linkedin.com/company/emviapp",
-    "https://instagram.com/emviapp",
-    "https://tiktok.com/@emviapp"
+    "https://instagram.com/emviapp", 
+    "https://tiktok.com/@emviapp",
+    "https://youtube.com/@emviapp"
   ]
 });
 
