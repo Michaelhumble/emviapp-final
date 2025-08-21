@@ -27,7 +27,13 @@
     { "source": "/artists/find", "destination": "/artists", "permanent": true },
     { "source": "/salons/search", "destination": "/salons", "permanent": true },
     { "source": "/u/:username.html", "destination": "/u/:username", "permanent": true },
-    { "source": "/profile/:username", "destination": "/u/:username", "permanent": true }
+    { "source": "/profile/:username", "destination": "/u/:username", "permanent": true },
+    { "source": "/artist/:id", "destination": "/u/:id", "permanent": true },
+    { "source": "/job/:jobId", "destination": "/jobs/:jobId", "permanent": true },
+    { "source": "/artits/:rest*", "destination": "/artists/:rest*", "permanent": true },
+    { "source": "/salon", "destination": "/salons", "permanent": true },
+    { "source": "/Jobs", "destination": "/jobs", "permanent": true },
+    { "source": "/Jobs/:rest*", "destination": "/jobs/:rest*", "permanent": true }
   ],
   "rewrites": [
     {

@@ -165,10 +165,10 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
             </div>
             <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
               <Button asChild>
-                <a href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F">Đăng Ký / Sign Up</a>
+                <a href="/signup">Đăng Ký / Sign Up</a>
               </Button>
               <Button variant="outline" asChild>
-                <Link to="/auth/login">Đăng Nhập / Login</Link>
+                <Link to="/signin">Đăng Nhập / Login</Link>
               </Button>
             </div>
           </div>

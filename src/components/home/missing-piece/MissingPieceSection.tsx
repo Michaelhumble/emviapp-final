@@ -165,7 +165,7 @@ const MissingPieceSection = () => {
               transition={{ duration: 0.2 }}
             >
               <a 
-                href="http://emviapp-final.lovable.app/auth/signup?redirect=%2F"
+                href="/signup"
                 className="inline-block"
               >
                 <Button 

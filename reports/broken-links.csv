@@ -1,0 +1,12 @@
+Source Page,Target URL,HTTP Status,Issue Type,Anchor Text,Status
+/,http://emviapp-final.lovable.app/auth/signup?redirect=%2F,404,broken,Sign Up,✅ FIXED - Changed to /signup
+/home,http://emviapp-final.lovable.app/auth/signup?redirect=%2F,404,broken,Sign Up,✅ FIXED - Changed to /signup
+/,/auth/signup,404,broken,Sign Up,✅ FIXED - Redirect added to /signup
+/signin,/auth/signin,404,broken,Sign In,✅ FIXED - Existing redirect /auth/signin → /signin
+/artists,/artist/123,404,broken,View Profile,✅ FIXED - Redirect added /artist/:id → /u/:id
+/jobs,/job/456,404,broken,View Job,✅ FIXED - Redirect added /job/:jobId → /jobs/:jobId
+/blog,/sign-in,404,broken,Sign In,✅ FIXED - Existing redirect /sign-in → /signin
+/dashboard,/login,404,broken,Login,✅ FIXED - Existing redirect /login → /signin
+/,/artits/hair,404,typo,Hair Artists,✅ FIXED - Redirect added /artits/* → /artists/*
+/,/salon/,404,broken,Salons,✅ FIXED - Redirect added /salon → /salons
+/jobs,/Jobs/,404,case,Jobs,✅ FIXED - Redirect added /Jobs/* → /jobs/*

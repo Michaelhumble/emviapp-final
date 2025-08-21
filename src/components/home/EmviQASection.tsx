@@ -476,7 +476,7 @@ const EmviQASection = () => {
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.2 }}
             >
-              <a href="/signup?redirect=%2F">
+               <a href="/signup?redirect=%2F">
                 <Button 
                   size="lg"
                   className="font-primary font-bold px-10 py-5 text-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
