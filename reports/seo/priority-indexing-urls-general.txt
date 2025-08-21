@@ -1,0 +1,62 @@
+# GSC Priority Indexing URLs - GENERAL PAGES - EmviApp
+# Generated: 2025-01-21
+# Total URLs: 47
+# Purpose: High-priority pages for SEO (NOT for Google Indexing API)
+# Note: DO NOT submit these to the Indexing API - only JobPosting pages should use that API
+
+# === CORE PAGES (5) ===
+https://www.emvi.app/
+https://www.emvi.app/jobs
+https://www.emvi.app/artists
+https://www.emvi.app/salons
+https://www.emvi.app/blog
+
+# === INDUSTRY CATEGORY PAGES (8) ===
+https://www.emvi.app/nails
+https://www.emvi.app/hair
+https://www.emvi.app/barber
+https://www.emvi.app/massage
+https://www.emvi.app/skincare
+https://www.emvi.app/makeup
+https://www.emvi.app/brows-lashes
+https://www.emvi.app/tattoo
+
+# === ARTIST CATEGORY/LOCATION PAGES (10) ===
+https://www.emvi.app/artists/nails/houston-tx
+https://www.emvi.app/artists/hair/atlanta-ga
+https://www.emvi.app/artists/makeup/san-jose-ca
+https://www.emvi.app/artists/massage/orlando-fl
+https://www.emvi.app/artists/lashes/seattle-wa
+https://www.emvi.app/artists/barber/chicago-il
+https://www.emvi.app/artists/nails/dallas-tx
+https://www.emvi.app/artists/hair/new-york-ny
+https://www.emvi.app/artists/nails/los-angeles-ca
+https://www.emvi.app/artists/hair/miami-fl
+
+# === BLOG POSTS (15) ===
+https://www.emvi.app/blog/industry-insights/nail-technician-salary-guide-2024
+https://www.emvi.app/blog/career-advice/how-to-start-beauty-career
+https://www.emvi.app/blog/industry-insights/beauty-industry-trends-2024
+https://www.emvi.app/blog/career-advice/nail-tech-license-requirements
+https://www.emvi.app/blog/business-tips/salon-marketing-strategies
+https://www.emvi.app/blog/career-advice/hair-stylist-career-path
+https://www.emvi.app/blog/industry-insights/barber-shop-opportunities
+https://www.emvi.app/blog/business-tips/freelance-beauty-tips
+https://www.emvi.app/blog/career-advice/massage-therapy-certification
+https://www.emvi.app/blog/industry-insights/esthetician-job-market
+https://www.emvi.app/blog/business-tips/salon-booth-rental-guide
+https://www.emvi.app/blog/career-advice/makeup-artist-portfolio
+https://www.emvi.app/blog/industry-insights/lash-extension-trends
+https://www.emvi.app/blog/business-tips/beauty-professional-networking
+https://www.emvi.app/blog/career-advice/tattoo-artist-apprenticeship
+
+# === KEY UTILITY PAGES (9) ===
+https://www.emvi.app/about
+https://www.emvi.app/contact
+https://www.emvi.app/pricing
+https://www.emvi.app/partners
+https://www.emvi.app/emviapp-mission-vision
+https://www.emvi.app/post-job
+https://www.emvi.app/sell-salon
+https://www.emvi.app/signup
+https://www.emvi.app/signin

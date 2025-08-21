@@ -1,37 +1,37 @@
 #!/usr/bin/env node
 
 /**
- * 🚀 GSC URL Indexing Request Tool
+ * 🚀 GSC URL Indexing Request Tool - Jobs Only
  * 
- * Submits high-priority URLs to Google Search Console for immediate indexing.
- * Uses the GSC Indexing API with quota-aware batching and rate limiting.
+ * Submits ONLY JobPosting URLs to Google Search Console Indexing API.
+ * Uses Service Account authentication with proper JWT tokens.
  * 
  * Usage: 
- *   node scripts/gsc-indexing-request.mjs [--batch-size=10] [--delay=2000]
+ *   node scripts/gsc-indexing-request.mjs [--dry-run]
  *   
- * Environment Variables Required:
- *   GOOGLE_API_KEY or GOOGLE_SERVICE_ACCOUNT_KEY (JSON)
+ * Environment Variables:
+ *   GOOGLE_APPLICATION_CREDENTIALS (path to service account JSON file)
  *   
  * Quota Limits (per day):
  *   - Standard: 200 URL submissions
- *   - With service account: 200 URL submissions
+ *   - Safety limit: 180 requests to avoid quota exhaustion
  *   
  * Reference: https://developers.google.com/search/apis/indexing-api/v3/quota-usage
  */
 
 import fs from 'fs/promises';
 import path from 'path';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 const CONFIG = {
   siteUrl: 'https://www.emvi.app',
-  urlsFile: './reports/seo/priority-indexing-urls.txt',
-  outputDir: './reports/seo',
-  batchSize: parseInt(process.argv.find(arg => arg.startsWith('--batch-size='))?.split('=')[1] || '10'),
-  delay: parseInt(process.argv.find(arg => arg.startsWith('--delay='))?.split('=')[1] || '2000'), // 2 second delay
+  urlsFile: './reports/seo/priority-indexing-urls-jobs.txt',
+  outputDir: './reports/seo/indexing-logs',
+  delay: 2000, // 2 seconds between requests
   dryRun: process.argv.includes('--dry-run'),
   maxDaily: 180, // Conservative limit to avoid quota exhaustion
-  apiKey: process.env.GOOGLE_API_KEY,
-  serviceAccount: process.env.GOOGLE_SERVICE_ACCOUNT_KEY // JSON string
+  serviceAccountPath: process.env.GOOGLE_APPLICATION_CREDENTIALS || './secrets/google-service-account.json'
 };
 
 class GSCIndexingRequester {
@@ -42,43 +42,44 @@ class GSCIndexingRequester {
       requested: 0,
       success: 0,
       failed: 0,
-      skipped: 0,
-      errors: []
+      errors: [],
+      responses: []
     };
   }
 
   async init() {
     await fs.mkdir(CONFIG.outputDir, { recursive: true });
-    console.log(`🚀 GSC Indexing Request Tool`);
-    console.log(`📁 URLs file: ${CONFIG.urlsFile}`);
-    console.log(`📊 Batch size: ${CONFIG.batchSize}`);
-    console.log(`⏱️  Delay: ${CONFIG.delay}ms`);
-    console.log(`🔒 Dry run: ${CONFIG.dryRun ? 'YES' : 'NO'}`);
+    console.log(`🚀 GSC Indexing Request Tool - Jobs Only`);
+    console.log(`📁 Jobs URLs file: ${CONFIG.urlsFile}`);
+    console.log(`⏱️  Rate limit: ${CONFIG.delay}ms between requests`);
+    console.log(`🔒 Mode: ${CONFIG.dryRun ? 'DRY RUN' : 'LIVE SUBMISSION'}`);
     console.log(`⚠️  Daily quota limit: ${CONFIG.maxDaily} requests`);
+    console.log(`🔐 Service Account: ${CONFIG.serviceAccountPath}`);
   }
 
   async authenticate() {
     try {
-      let authData;
+      console.log('🔐 Authenticating with Google Service Account...');
       
-      if (CONFIG.serviceAccount) {
-        // Service Account authentication (recommended)
-        console.log('🔐 Using service account authentication...');
-        const serviceAccount = JSON.parse(CONFIG.serviceAccount);
-        authData = await this.getServiceAccountToken(serviceAccount);
-      } else if (CONFIG.apiKey) {
-        // API Key authentication (limited)
-        console.log('🔑 Using API key authentication...');
-        this.accessToken = CONFIG.apiKey;
-        return true;
-      } else {
-        console.error('❌ Missing authentication credentials');
-        console.log('Provide one of:');
-        console.log('  GOOGLE_API_KEY=your_api_key');
-        console.log('  GOOGLE_SERVICE_ACCOUNT_KEY=\'{"type":"service_account",...}\'');
-        console.log('');
-        console.log('🔗 Setup guide: https://developers.google.com/search/apis/indexing-api/v3/prereqs');
-        return false;
+      // Check if service account file exists
+      const serviceAccountData = await fs.readFile(CONFIG.serviceAccountPath, 'utf8');
+      const serviceAccount = JSON.parse(serviceAccountData);
+      
+      // Validate service account structure
+      if (!serviceAccount.client_email || !serviceAccount.private_key) {
+        throw new Error('Invalid service account JSON - missing client_email or private_key');
+      }
+      
+      console.log(`📧 Service Account Email: ${serviceAccount.client_email}`);
+      console.log('⚠️  IMPORTANT: Ensure this service account email is added as an OWNER in Google Search Console');
+      console.log('   Visit: https://search.google.com/search-console/users');
+      console.log('   Add as Owner (not just User) for domain verification.');
+      
+      // Get OAuth2 token using JWT
+      const authData = await this.getServiceAccountToken(serviceAccount);
+      
+      if (!authData.access_token) {
+        throw new Error(`OAuth2 token request failed: ${JSON.stringify(authData)}`);
       }
       
       this.accessToken = authData.access_token;
@@ -86,12 +87,21 @@ class GSCIndexingRequester {
       return true;
     } catch (error) {
       console.error('❌ Authentication failed:', error.message);
+      
+      if (error.code === 'ENOENT') {
+        console.log('');
+        console.log('🔧 To fix this:');
+        console.log('1. Create a Google Service Account: https://console.cloud.google.com/');
+        console.log('2. Download the JSON key file');
+        console.log(`3. Save it as: ${CONFIG.serviceAccountPath}`);
+        console.log('4. Add the service account email as OWNER in Google Search Console');
+      }
+      
       return false;
     }
   }
 
   async getServiceAccountToken(serviceAccount) {
-    // JWT-based service account authentication
     const jwt = require('jsonwebtoken');
     const now = Math.floor(Date.now() / 1000);
     
@@ -114,7 +124,13 @@ class GSCIndexingRequester {
       })
     });
     
-    return await response.json();
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(`OAuth2 request failed: ${response.status} ${JSON.stringify(data)}`);
+    }
+    
+    return data;
   }
 
   async loadUrls() {
@@ -125,7 +141,7 @@ class GSCIndexingRequester {
         .map(line => line.trim())
         .filter(line => line && !line.startsWith('#') && line.startsWith('http'));
       
-      console.log(`📋 Loaded ${urls.length} URLs for indexing`);
+      console.log(`📋 Loaded ${urls.length} job URLs for indexing`);
       
       // Respect daily quota limit
       if (urls.length > CONFIG.maxDaily) {
@@ -144,6 +160,7 @@ class GSCIndexingRequester {
     if (CONFIG.dryRun) {
       console.log(`  🧪 DRY RUN: Would request indexing for ${url}`);
       this.results.success++;
+      this.results.responses.push({ url, status: 'dry_run', timestamp: new Date().toISOString() });
       return { success: true, dryRun: true };
     }
 
@@ -162,59 +179,96 @@ class GSCIndexingRequester {
         body: JSON.stringify(requestBody)
       });
 
+      const responseData = await response.text();
+      
       if (response.ok) {
-        console.log(`  ✅ Requested indexing: ${url}`);
+        console.log(`  ✅ Success: ${url}`);
         this.results.success++;
+        this.results.responses.push({ 
+          url, 
+          status: 'success', 
+          timestamp: new Date().toISOString(),
+          response: responseData 
+        });
         return { success: true };
       } else {
-        const error = await response.text();
-        console.log(`  ❌ Failed: ${url} - ${response.status} ${error}`);
+        console.log(`  ❌ Failed: ${url} - ${response.status} ${responseData}`);
         this.results.failed++;
-        this.results.errors.push({ url, error: `${response.status}: ${error}` });
-        return { success: false, error };
+        this.results.errors.push({ url, error: `${response.status}: ${responseData}` });
+        this.results.responses.push({ 
+          url, 
+          status: 'failed', 
+          timestamp: new Date().toISOString(),
+          error: `${response.status}: ${responseData}` 
+        });
+        return { success: false, error: responseData };
       }
     } catch (error) {
       console.log(`  ❌ Error: ${url} - ${error.message}`);
       this.results.failed++;
       this.results.errors.push({ url, error: error.message });
+      this.results.responses.push({ 
+        url, 
+        status: 'error', 
+        timestamp: new Date().toISOString(),
+        error: error.message 
+      });
       return { success: false, error: error.message };
     }
   }
 
-  async processBatch(urls) {
-    console.log(`\n🔄 Processing batch of ${urls.length} URLs...`);
+  async processUrls(urls) {
+    console.log(`\n🔄 Processing ${urls.length} job URLs...`);
     
-    for (const url of urls) {
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i];
       this.results.requested++;
+      
+      console.log(`[${i + 1}/${urls.length}] Processing: ${url}`);
       await this.requestIndexing(url);
       
-      // Rate limiting delay
-      if (CONFIG.delay > 0) {
+      // Rate limiting delay (except for last URL)
+      if (i < urls.length - 1) {
+        console.log(`  ⏳ Waiting ${CONFIG.delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, CONFIG.delay));
+      }
+      
+      // Progress update every 10 URLs
+      if ((i + 1) % 10 === 0) {
+        const progress = Math.round(((i + 1) / urls.length) * 100);
+        console.log(`📊 Progress: ${progress}% (${i + 1}/${urls.length})`);
       }
     }
   }
 
   async generateReport() {
     const timestamp = new Date().toISOString().split('T')[0];
-    const reportFile = path.join(CONFIG.outputDir, `gsc-indexing-report-${timestamp}.json`);
+    const reportFile = path.join(CONFIG.outputDir, `${timestamp}.json`);
     
     const report = {
       timestamp: new Date().toISOString(),
       site: CONFIG.siteUrl,
-      dry_run: CONFIG.dryRun,
-      batch_size: CONFIG.batchSize,
-      delay_ms: CONFIG.delay,
-      results: this.results,
-      quota_info: {
-        daily_limit: CONFIG.maxDaily,
+      mode: CONFIG.dryRun ? 'dry_run' : 'live',
+      job_urls_only: true,
+      rate_limit_ms: CONFIG.delay,
+      daily_limit: CONFIG.maxDaily,
+      results: {
+        total_requested: this.results.requested,
+        successful: this.results.success,
+        failed: this.results.failed,
+        success_rate_percent: this.results.requested > 0 ? Math.round((this.results.success / this.results.requested) * 100) : 0
+      },
+      quota_usage: {
         requests_made: this.results.requested,
+        daily_limit: CONFIG.maxDaily,
         remaining_estimate: CONFIG.maxDaily - this.results.requested
-      }
+      },
+      errors: this.results.errors.slice(0, 20), // Limit error details
+      detailed_responses: this.results.responses
     };
 
     await fs.writeFile(reportFile, JSON.stringify(report, null, 2));
-    console.log(`📄 Report saved: ${reportFile}`);
+    console.log(`📄 Detailed log saved: ${reportFile}`);
     return report;
   }
 
@@ -228,25 +282,24 @@ class GSCIndexingRequester {
 
       const urls = await this.loadUrls();
       if (urls.length === 0) {
-        console.log('❌ No URLs to process');
+        console.log('❌ No job URLs to process');
         process.exit(1);
       }
 
-      // Process URLs in batches
-      for (let i = 0; i < urls.length; i += CONFIG.batchSize) {
-        const batch = urls.slice(i, i + CONFIG.batchSize);
-        await this.processBatch(batch);
-        
-        // Progress update
-        const progress = Math.round(((i + batch.length) / urls.length) * 100);
-        console.log(`📊 Progress: ${progress}% (${i + batch.length}/${urls.length})`);
-        
-        // Longer delay between batches to respect API limits
-        if (i + CONFIG.batchSize < urls.length) {
-          console.log(`⏳ Waiting before next batch...`);
-          await new Promise(resolve => setTimeout(resolve, CONFIG.delay * 2));
+      // Show first 10 URLs in dry-run mode
+      if (CONFIG.dryRun) {
+        console.log('\n🧪 DRY RUN - First 10 URLs that would be submitted:');
+        urls.slice(0, 10).forEach((url, i) => {
+          console.log(`  ${i + 1}. ${url}`);
+        });
+        if (urls.length > 10) {
+          console.log(`  ... and ${urls.length - 10} more URLs`);
         }
+        console.log('');
       }
+
+      // Process all URLs
+      await this.processUrls(urls);
 
       // Generate final report
       const report = await this.generateReport();
@@ -255,15 +308,15 @@ class GSCIndexingRequester {
       console.log(`   URLs Processed: ${this.results.requested}`);
       console.log(`   Successful: ${this.results.success}`);
       console.log(`   Failed: ${this.results.failed}`);
-      console.log(`   Success Rate: ${Math.round((this.results.success / this.results.requested) * 100)}%`);
+      console.log(`   Success Rate: ${report.results.success_rate_percent}%`);
       
       if (this.results.errors.length > 0) {
-        console.log('\n❌ Errors encountered:');
+        console.log('\n❌ First 5 errors:');
         this.results.errors.slice(0, 5).forEach(error => {
           console.log(`   ${error.url}: ${error.error}`);
         });
         if (this.results.errors.length > 5) {
-          console.log(`   ... and ${this.results.errors.length - 5} more errors`);
+          console.log(`   ... and ${this.results.errors.length - 5} more errors (see log file)`);
         }
       }
 
@@ -271,7 +324,7 @@ class GSCIndexingRequester {
         console.log('\n🧪 This was a dry run. No actual requests were sent to Google.');
         console.log('Remove --dry-run flag to submit real indexing requests.');
       } else {
-        console.log('\n✅ Indexing requests completed.');
+        console.log('\n✅ Job indexing requests completed.');
         console.log('⏰ Google typically processes requests within minutes to hours.');
         console.log('📊 Monitor status in Google Search Console.');
       }
