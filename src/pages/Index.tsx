@@ -58,7 +58,7 @@ const Index = () => {
   useEffect(() => {
     document.title = "EmviApp - The Beauty Industry's Missing Piece | Premium Beauty Platform";
     document.querySelector('meta[name="description"]')?.setAttribute('content', 
-      'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.'
+      'EmviApp is the first AI-powered platform for beauty jobs, salons, and artists. Find nail artists, salons for sale, and beauty careers in your city.'
     );
     console.log("Index page loaded");
     
@@ -82,9 +82,12 @@ const Index = () => {
       {/* 1.2 Social Media Proof */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
+            Join the EmviApp Community
+          </h2>
+          <p className="text-gray-600 mb-6">
             Thousands of beauty professionals are growing with EmviApp every day. Read real stories on our social channels.
-          </h3>
+          </p>
           <div className="flex justify-center items-center gap-8">
             <a href="#" className="text-red-600 hover:text-red-700 transition-colors" aria-label="YouTube">
               <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -111,7 +114,10 @@ const Index = () => {
       </section>
       
       {/* 1.5. Jobs Call to Action - Above the fold */}
-      <JobsCallToAction />
+      <section>
+        <h2 className="sr-only">Nail & Beauty Jobs</h2>
+        <JobsCallToAction />
+      </section>
       
       {/* Quick Action Buttons for Testing */}
       <QuickActionButtons />
@@ -124,7 +130,10 @@ const Index = () => {
       </section>
       
       {/* 2. Premium Industry Showcases - Optimized loading with top 3 only */}
-      <OptimizedIndustryListings />
+      <section>
+        <h2 className="sr-only">Salons for Sale</h2>
+        <OptimizedIndustryListings />
+      </section>
 
       {isFeatureEnabled('SHOW_HOME_METRICS') && (
         <div className="py-12">
@@ -133,7 +142,10 @@ const Index = () => {
       )}
 
       {/* Artists Available for Hire - FOMO strip under industry showcases */}
-      <ArtistsForHireStrip />
+      <section>
+        <h2 className="sr-only">Top Artists in Your City</h2>
+        <ArtistsForHireStrip />
+      </section>
 
       {/* Trust Badges after industry showcases */}
       <section className="py-12 bg-gradient-to-r from-purple-50/30 to-pink-50/20">

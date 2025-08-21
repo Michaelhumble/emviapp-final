@@ -2,30 +2,58 @@ import React from 'react';
 import DynamicSEO from './DynamicSEO';
 
 const HomepageSEO = () => {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "EmviApp",
-    "description": "The Beauty Industry's Missing Piece - Premium platform for beauty professionals",
-    "url": "https://emvi.app",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://emvi.app/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    },
-    "about": {
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
       "@type": "Organization",
       "name": "EmviApp",
       "description": "Premium beauty platform connecting professionals with opportunities",
-      "url": "https://emvi.app",
+      "url": "https://www.emvi.app",
+      "logo": "https://www.emvi.app/logo.png",
       "sameAs": [
         "https://linkedin.com/company/emviapp",
         "https://instagram.com/emviapp",
         "https://tiktok.com/@emviapp",
         "https://youtube.com/@emviapp"
-      ]
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "url": "https://www.emvi.app/contact"
+      }
     },
-    "mainEntity": {
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "EmviApp",
+      "description": "The Beauty Industry's Missing Piece - Premium platform for beauty professionals",
+      "url": "https://www.emvi.app",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.emvi.app/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "EmviApp",
+      "description": "AI-powered platform for beauty jobs, salons, and artists",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://www.emvi.app",
+      "author": {
+        "@type": "Organization",
+        "name": "EmviApp"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@context": "https://schema.org",
       "@type": "ItemList",
       "name": "Beauty Industry Opportunities",
       "description": "Premium job listings and opportunities for beauty professionals",
@@ -62,12 +90,13 @@ const HomepageSEO = () => {
         }
       ]
     }
-  };
+  ];
 
   return (
     <DynamicSEO
       title="EmviApp - The Beauty Industry's Missing Piece | Premium Beauty Platform"
-      description="Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals."
+      description="EmviApp is the first AI-powered platform for beauty jobs, salons, and artists. Find nail artists, salons for sale, and beauty careers in your city."
+      canonicalUrl="https://www.emvi.app/"
       tags={[
         "beauty jobs",
         "nail technician",
