@@ -21,6 +21,7 @@ import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missi
 import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 import globalBeautyCommunityHeroImage from '@/assets/blog/global-beauty-community-hero.jpg';
 import heroImage from '@/assets/blog/emviapp-hero-vietnamese-nail-tech.jpg';
+import heroJobsImage from '@/assets/blog/hero-nail-tech-finding-jobs.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -64,9 +65,27 @@ const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/Booth
 const EmviMissionVisionRedirect = lazy(() => import('@/pages/blog/articles/EmviMissionVisionRedirect'));
 const ViecLamNailOMy2025 = lazy(() => import('@/pages/blog/articles/ViecLamNailOMy2025'));
 const EmviAppBeautyMovement = lazy(() => import('@/pages/blog/emviapp-beauty-movement/EmviAppBeautyMovement'));
+const FindBeautyJobsAndSalons2025 = lazy(() => import('@/pages/blog/find-beauty-jobs-and-salons-2025/FindBeautyJobsAndSalons2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'find-beauty-jobs-and-salons-2025',
+    slug: 'find-beauty-jobs-and-salons-2025',
+    title: 'The #1 Place to Find Beauty Jobs & Salons in 2025 — EmviApp',
+    description: 'Stop wasting time on Craigslist and Facebook scams. EmviApp is the first verified, authentic platform for nail jobs USA, salon for sale listings, hair stylist jobs, barber jobs, and lash tech opportunities. Join millions of beauty professionals today.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '12 min read',
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['nail jobs USA', 'beauty jobs near me', 'salon for sale USA', 'hair stylist jobs 2025', 'barber jobs', 'lash tech jobs', 'EmviApp', 'beauty community', 'nail technician jobs', 'salon marketplace'],
+    image: heroJobsImage,
+    featured: true,
+    trending: true,
+    component: FindBeautyJobsAndSalons2025,
+    url: '/blog/find-beauty-jobs-and-salons-2025'
+  },
   {
     id: 'emviapp-beauty-movement',
     slug: 'emviapp-beauty-movement',
