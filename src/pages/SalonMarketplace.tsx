@@ -113,7 +113,7 @@ const SalonMarketplace = () => {
       {/* SEO Meta */}
       <div style={{ display: 'none' }}>
         <script type="application/ld+json">
-          {JSON.stringify({
+          {JSON.stringify([{
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             "name": "EmviApp Salon Marketplace",
@@ -125,7 +125,44 @@ const SalonMarketplace = () => {
               "@type": "Offer",
               "description": "Salon businesses for sale with verified financials and established clientele"
             }
-          })}
+          }, {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How are salon businesses verified on EmviApp?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Every salon listing undergoes thorough verification including financial records review, license verification, and operational assessment to ensure legitimate investment opportunities."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What information is provided about each salon for sale?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Listings include detailed financial history, client retention rates, revenue streams, equipment inventory, lease terms, and growth potential analysis for informed decision-making."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I finance a salon purchase through EmviApp?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "While we don't provide direct financing, we connect buyers with trusted lenders specializing in beauty business acquisitions and offer guidance on SBA loans and other financing options."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What support is available after purchasing a salon?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Our platform provides ongoing support including staff recruitment assistance, business optimization resources, and connections to industry suppliers and marketing specialists."
+                }
+              }
+            ]
+          }])}
         </script>
       </div>
 
@@ -155,6 +192,31 @@ const SalonMarketplace = () => {
                     Connect with <a href="/jobs" className="text-primary underline">top beauty professionals</a> to staff your new location, or explore our <a href="/artists" className="text-primary underline">network of skilled artists</a> for partnership opportunities. Building the right team is crucial for continued success.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center mb-8">Salon Investment FAQs</h2>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">How are salon businesses verified on EmviApp?</h3>
+                <p className="text-gray-700">Every salon listing undergoes thorough verification including financial records review, license verification, and operational assessment to ensure legitimate investment opportunities.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">What information is provided about each salon for sale?</h3>
+                <p className="text-gray-700">Listings include detailed financial history, client retention rates, revenue streams, equipment inventory, lease terms, and growth potential analysis for informed decision-making.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Can I finance a salon purchase through EmviApp?</h3>
+                <p className="text-gray-700">While we don't provide direct financing, we connect buyers with trusted lenders specializing in beauty business acquisitions and offer guidance on SBA loans and other financing options.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">What support is available after purchasing a salon?</h3>
+                <p className="text-gray-700">Our platform provides ongoing support including staff recruitment assistance, business optimization resources, and connections to industry suppliers and marketing specialists.</p>
               </div>
             </div>
           </div>

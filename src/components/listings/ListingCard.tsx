@@ -18,8 +18,10 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
       <div className="aspect-video relative bg-gray-100">
         <img
           src={listing.image || '/placeholder.svg'}
-          alt={listing.title}
+          alt={`${listing.title} - premium beauty salon for sale in ${listing.location} with established clientele and proven revenue streams`}
           className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <CardContent className="p-4">

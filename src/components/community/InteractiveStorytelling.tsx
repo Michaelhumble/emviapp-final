@@ -110,7 +110,7 @@ const InteractiveStorytelling = () => {
           <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-3">
-                <img src={story.avatar} alt={story.author} className="w-10 h-10 rounded-full" />
+                <img src={story.avatar} alt={`${story.author} - beauty professional profile`} className="w-10 h-10 rounded-full" loading="lazy" decoding="async" />
                 <div>
                   <h4 className="font-semibold text-gray-900">{story.author}</h4>
                   <p className="text-sm text-gray-500">{story.timestamp}</p>
@@ -126,7 +126,7 @@ const InteractiveStorytelling = () => {
                   {story.media.map((item, idx) => (
                     <div key={idx} className="relative rounded-lg overflow-hidden bg-gray-100">
                       {item.type === 'image' && (
-                        <img src={item.url} alt="Story media" className="w-full h-32 object-cover" />
+                        <img src={item.url} alt={`${story.author}'s beauty work showcase - professional technique demonstration`} className="w-full h-32 object-cover" loading="lazy" decoding="async" />
                       )}
                       {item.type === 'video' && (
                         <div className="w-full h-32 bg-gray-200 flex items-center justify-center">

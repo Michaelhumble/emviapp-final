@@ -26,7 +26,7 @@ const BookAgainCard: React.FC<BookAgainCardProps> = ({
   <Card className="min-w-[240px] max-w-xs snap-start relative group hover:shadow-lg transition-shadow" style={{ minHeight: 200 }}>
     <div className="flex items-center gap-2 px-5 pt-3">
       {artistAvatar
-        ? <img src={artistAvatar} alt="" className="w-10 h-10 rounded-full object-cover border bg-white" />
+        ? <img src={artistAvatar} alt={`${artistName} - beauty professional profile`} className="w-10 h-10 rounded-full object-cover border bg-white" loading="lazy" decoding="async" />
         : <User className="h-9 w-9 text-gray-200" aria-label="Avatar" />}
       <span className="font-medium text-sm truncate">{artistName}</span>
     </div>

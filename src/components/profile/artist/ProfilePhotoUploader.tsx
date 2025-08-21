@@ -224,9 +224,9 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       <div className="relative">
         <div className="h-32 w-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-purple-200">
           {preview ? (
-            <img src={preview} alt="Preview" className="h-full w-full object-cover" />
+            <img src={preview} alt="Profile photo preview - beauty professional headshot" className="h-full w-full object-cover" loading="lazy" decoding="async" />
           ) : avatarUrl ? (
-            <img src={avatarUrl} alt="Profile" className="h-full w-full object-cover" />
+            <img src={avatarUrl} alt="Current profile photo - beauty professional headshot" className="h-full w-full object-cover" loading="lazy" decoding="async" />
           ) : (
             <User className="h-16 w-16 text-gray-400" />
           )}

@@ -153,7 +153,7 @@ const SalonDetailModalRedesigned: React.FC<SalonDetailModalProps> = ({ salon, is
                     }`}
                   >
                     {img && img.trim() !== '' ? (
-                      <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                      <img src={img} alt={`Premium salon interior photo ${index + 1} - established beauty business with khách sang clientele and tip cao potential`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     ) : (
                       // PLACEHOLDER: Thumbnail placeholder
                       <div className="w-full h-full bg-gray-100 flex items-center justify-center">

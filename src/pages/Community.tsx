@@ -106,6 +106,47 @@ const Community = () => {
         })
       }} />
 
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do I earn money in the EmviApp community?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Share valuable content, participate in challenges, mentor other professionals, and build your reputation. Top contributors earn featured placement, direct client connections, and exclusive earning opportunities."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is the community free to join?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! Joining our beauty professional community is completely free. Create your profile, share your work, and start connecting with industry peers and potential clients immediately."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What types of challenges can I participate in?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Weekly creative challenges, skill-building competitions, client service excellence contests, and seasonal beauty trends challenges with real prizes and recognition opportunities."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I connect with other beauty professionals?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Browse member profiles, join specialty groups, participate in discussions, attend virtual events, and use our AI-powered matching system to find collaboration partners and mentors."
+              }
+            }
+          ]
+        })
+      }} />
+
       {/* SEO Intro Content - Visible Above Hero */}
       <section className="py-8 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -134,6 +175,32 @@ const Community = () => {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-8">Community FAQs</h2>
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="text-lg font-semibold mb-3">How do I earn money in the EmviApp community?</h3>
+              <p className="text-gray-700">Share valuable content, participate in challenges, mentor other professionals, and build your reputation. Top contributors earn featured placement, direct client connections, and exclusive earning opportunities.</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="text-lg font-semibold mb-3">Is the community free to join?</h3>
+              <p className="text-gray-700">Yes! Joining our beauty professional community is completely free. Create your profile, share your work, and start connecting with industry peers and potential clients immediately.</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="text-lg font-semibold mb-3">What types of challenges can I participate in?</h3>
+              <p className="text-gray-700">Weekly creative challenges, skill-building competitions, client service excellence contests, and seasonal beauty trends challenges with real prizes and recognition opportunities.</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="text-lg font-semibold mb-3">How do I connect with other beauty professionals?</h3>
+              <p className="text-gray-700">Browse member profiles, join specialty groups, participate in discussions, attend virtual events, and use our AI-powered matching system to find collaboration partners and mentors.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Premium Sunrise Hero Section - Viral Energy */}
       <div className="relative overflow-hidden">
         {/* Sunrise Gradient Background */}

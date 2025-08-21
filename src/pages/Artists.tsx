@@ -104,6 +104,43 @@ const Artists = () => {
             "name": "Beauty Professional",
             "experienceRequirements": "Verified expertise in beauty services"
           }
+        }, {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do I connect with artists on EmviApp?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Browse verified artist profiles, view their specialties and portfolios, then contact them directly through our secure messaging system or request their services for immediate booking."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are all artists verified and licensed?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! Every artist undergoes verification including license validation, portfolio review, and background checks to ensure you're connecting with qualified professionals who maintain khách sang standards."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What specialties can I find on the platform?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our network includes nail technicians, hair stylists, barbers, massage therapists, estheticians, makeup artists, brow & lash specialists, and tattoo artists with proven tip cao results."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I hire artists for events or temporary positions?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Absolutely! Many artists offer freelance services for events, temporary coverage, or short-term contracts. Filter by availability and booking preferences to find the perfect match."
+              }
+            }
+          ]
         }]} 
       />
 
@@ -227,6 +264,33 @@ const Artists = () => {
                 </p>
               </div>
             </nav>
+          </div>
+        </Container>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 bg-gray-50">
+        <Container>
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">Artist Hiring FAQs</h2>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">How do I connect with artists on EmviApp?</h3>
+                <p className="text-gray-700">Browse verified artist profiles, view their specialties and portfolios, then contact them directly through our secure messaging system or request their services for immediate booking.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Are all artists verified and licensed?</h3>
+                <p className="text-gray-700">Yes! Every artist undergoes verification including license validation, portfolio review, and background checks to ensure you're connecting with qualified professionals who maintain khách sang standards.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">What specialties can I find on the platform?</h3>
+                <p className="text-gray-700">Our network includes nail technicians, hair stylists, barbers, massage therapists, estheticians, makeup artists, brow & lash specialists, and tattoo artists with proven tip cao results.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Can I hire artists for events or temporary positions?</h3>
+                <p className="text-gray-700">Absolutely! Many artists offer freelance services for events, temporary coverage, or short-term contracts. Filter by availability and booking preferences to find the perfect match.</p>
+              </div>
+            </div>
           </div>
         </Container>
       </section>

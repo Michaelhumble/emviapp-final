@@ -18,8 +18,8 @@ export default function JobPhotoGallery({ urls, jobTitle, category }: JobPhotoGa
             loading="lazy"
             decoding="async"
             alt={jobTitle 
-              ? `${jobTitle} ${category ? `${category} ` : ''}job photo ${i+1} - ${generateImageAlt(jobTitle, category)}` 
-              : `Professional ${category || 'beauty'} workspace photo showing job environment and setup`
+              ? `${jobTitle} ${category ? `${category} ` : ''}salon workspace - professional beauty environment with khách sang clientele and tip cao earning potential`
+              : `Premium ${category || 'beauty'} salon for sale in Dallas area - established business with loyal client base and proven revenue stream`
             }
             className="h-full w-full object-cover"
             onError={(e)=>{ (e.currentTarget as HTMLImageElement).src="/images/placeholder-job.jpg"; }}

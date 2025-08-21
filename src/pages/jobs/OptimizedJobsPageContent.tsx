@@ -229,6 +229,43 @@ const OptimizedJobsPageContent = () => {
             }
           },
           "industry": "Beauty and Personal Care"
+        }, {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do I apply for beauty jobs on EmviApp?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Browse our curated job listings, click on positions that match your skills, and apply directly through the platform. Verified employers receive your application instantly."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What types of beauty positions are available?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "We feature nail technician, hair stylist, barber, massage therapist, skincare specialist, makeup artist, and brow & lash technician positions at premium salons with khách sang clientele."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do EmviApp jobs offer high earning potential?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! Our platform focuses on tip cao opportunities at upscale salons. Many positions offer commission-based pay, booth rental options, and access to loyal, high-spending clientele."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is EmviApp free for job seekers?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Absolutely! Creating your profile and applying for positions is completely free. Employers pay to post premium job listings, ensuring quality opportunities for professionals."
+              }
+            }
+          ]
         }]}
         type="website"
       />
@@ -263,6 +300,31 @@ const OptimizedJobsPageContent = () => {
                 </div>
               </div>
             </article>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">How do I apply for beauty jobs on EmviApp?</h3>
+                <p className="text-gray-700">Browse our curated job listings, click on positions that match your skills, and apply directly through the platform. Verified employers receive your application instantly.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">What types of beauty positions are available?</h3>
+                <p className="text-gray-700">We feature nail technician, hair stylist, barber, massage therapist, skincare specialist, makeup artist, and brow & lash technician positions at premium salons with khách sang clientele.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Do EmviApp jobs offer high earning potential?</h3>
+                <p className="text-gray-700">Yes! Our platform focuses on tip cao opportunities at upscale salons. Many positions offer commission-based pay, booth rental options, and access to loyal, high-spending clientele.</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Is EmviApp free for job seekers?</h3>
+                <p className="text-gray-700">Absolutely! Creating your profile and applying for positions is completely free. Employers pay to post premium job listings, ensuring quality opportunities for professionals.</p>
+              </div>
+            </div>
           </div>
         </section>
 
