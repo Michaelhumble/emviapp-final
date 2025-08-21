@@ -3,6 +3,8 @@
 //  - /artists-sitemap.xml (index)
 //  - /artists-sitemaps/sitemap-YYYY-MM-DD.xml (daily shard)
 
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
 // Inline data instead of imports for edge function compatibility
 const SEO_ROLES = [
   { id: 'nails', name: 'Nail', pluralName: 'Nail Artists' },
@@ -87,17 +89,17 @@ async function handleDaily(dateStr: string) {
   const urls: string[] = [];
   const lastmod = formatDate(new Date());
   
-  // Generate all 150 programmatic pages (25 cities × 6 roles)
-  for (const role of SEO_ROLES) {
-    for (const location of SEO_LOCATIONS) {
-      const loc = `${BASE_URL}/artists/${role.id}/${location.id}`;
-      urls.push(`  <url>
+  // Only include specialty/location combinations that have actual data
+  const validCombinations = await fetchValidArtistCombinations();
+  
+  for (const combo of validCombinations) {
+    const loc = `${BASE_URL}/artists/${combo.specialty}/${combo.location_slug}`;
+    urls.push(`  <url>
     <loc>${loc}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`);
-    }
   }
 
   const xml = [
@@ -114,6 +116,63 @@ async function handleDaily(dateStr: string) {
       ...corsHeaders 
     } 
   });
+}
+
+async function fetchValidArtistCombinations() {
+  const SUPABASE_URL = 'https://wwhqbjrhbajpabfdwnip.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('role, specialty, location')
+    .in('role', ['artist', 'nail technician/artist'])
+    .not('location', 'is', null)
+    .neq('location', '');
+
+  if (error) {
+    console.error('Error fetching artists:', error);
+    return [];
+  }
+
+  const combinations = new Map();
+  
+  (data || []).forEach(profile => {
+    // Map role/specialty to sitemap categories
+    let specialty = 'other';
+    const roleText = (profile.role || '').toLowerCase();
+    const specialtyText = (profile.specialty || '').toLowerCase();
+    
+    if (roleText.includes('nail') || specialtyText.includes('nail')) {
+      specialty = 'nails';
+    } else if (roleText.includes('hair') || specialtyText.includes('hair')) {
+      specialty = 'hair';
+    } else if (roleText.includes('barber') || specialtyText.includes('barber')) {
+      specialty = 'barber';
+    } else if (roleText.includes('lash') || specialtyText.includes('lash')) {
+      specialty = 'lashes';
+    } else if (roleText.includes('massage') || specialtyText.includes('massage')) {
+      specialty = 'massage';
+    } else if (roleText.includes('esthetic') || specialtyText.includes('skincare')) {
+      specialty = 'skincare';
+    }
+    
+    // Convert location to URL slug format
+    const location = profile.location || '';
+    const locationSlug = location.toLowerCase()
+      .replace(/[^a-zA-Z0-9\s,-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/,-/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+    
+    if (specialty !== 'other' && locationSlug) {
+      const key = `${specialty}-${locationSlug}`;
+      combinations.set(key, { specialty, location_slug: locationSlug });
+    }
+  });
+  
+  return Array.from(combinations.values());
 }
 
 Deno.serve(async (req) => {

@@ -2,7 +2,7 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertTriangle, Home, HelpCircle, Search } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Home, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import ErrorLayout from "@/components/layout/ErrorLayout";
@@ -14,6 +14,21 @@ const NotFound = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   
   useEffect(() => {
+    // Set proper 404 status for SSR/crawlers
+    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+      // For client-side routing, we can't directly set HTTP status
+      // but we can set document title and meta for SEO
+      document.title = "404 - Page Not Found | EmviApp";
+      
+      // Add noindex meta to prevent crawling of 404 pages
+      const existingNoIndex = document.querySelector('meta[name="robots"]');
+      if (!existingNoIndex) {
+        const noIndexMeta = document.createElement('meta');
+        noIndexMeta.name = 'robots';
+        noIndexMeta.content = 'noindex, nofollow';
+        document.head.appendChild(noIndexMeta);
+      }
+    }
     // Capture the path that was attempted
     const currentPath = location.pathname;
     setAttemptedPath(currentPath);

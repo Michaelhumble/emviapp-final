@@ -30,7 +30,7 @@ async function fetchActiveJobsUpdatedOn(dateStr?: string) {
   const nowIso = new Date().toISOString();
   let query = supabase
     .from('jobs')
-    .select('id, updated_at, expires_at, status')
+    .select('id, updated_at, expires_at, status, title, location, category')
     .eq('status', 'active')
     .or('expires_at.is.null,expires_at.gt.' + nowIso)
     .order('updated_at', { ascending: false })
@@ -45,7 +45,15 @@ async function fetchActiveJobsUpdatedOn(dateStr?: string) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data || [];
+  
+  // Only return jobs that have required fields for valid URLs
+  return (data || []).filter(job => 
+    job.id && 
+    job.title && 
+    job.title.trim() !== '' &&
+    job.location && 
+    job.location.trim() !== ''
+  );
 }
 
 async function handleIndex(url: URL) {
