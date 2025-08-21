@@ -20,6 +20,7 @@ import aiBeautyRevolutionHeroImage from '@/assets/blog/ai-beauty-revolution-hero
 import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missing-piece.jpg';
 import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 import globalBeautyCommunityHeroImage from '@/assets/blog/global-beauty-community-hero.jpg';
+import heroImage from '@/assets/blog/emviapp-hero-vietnamese-nail-tech.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -62,9 +63,27 @@ const GlobalBeautyCommunityRevolution = lazy(() => import('@/pages/blog/articles
 const BoothRentVsCommission2025 = lazy(() => import('@/pages/blog/articles/BoothRentVsCommission2025'));
 const EmviMissionVisionRedirect = lazy(() => import('@/pages/blog/articles/EmviMissionVisionRedirect'));
 const ViecLamNailOMy2025 = lazy(() => import('@/pages/blog/articles/ViecLamNailOMy2025'));
+const EmviAppBeautyMovement = lazy(() => import('@/pages/blog/emviapp-beauty-movement/EmviAppBeautyMovement'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'emviapp-beauty-movement',
+    slug: 'emviapp-beauty-movement',
+    title: 'Why EmviApp is the Future of Beauty — And Why You Can\'t Miss It',
+    description: 'Discover why millions of nail techs, hair stylists, barbers, and beauty professionals are joining EmviApp - the revolutionary beauty community platform built by beauty, for beauty. From Vietnamese nail salons to global expansion, this is your chance to be part of the movement.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '8 min read',
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['beauty industry', 'nail jobs USA', 'Vietnamese nail techs', 'salon for sale', 'beauty community', 'hair stylist jobs', 'barber jobs', 'EmviApp'],
+    image: heroImage,
+    featured: true,
+    trending: true,
+    component: EmviAppBeautyMovement,
+    url: '/blog/emviapp-beauty-movement'
+  },
   {
     id: 'viec-lam-nail-o-my-2025',
     slug: 'viec-lam-nail-o-my-2025',
