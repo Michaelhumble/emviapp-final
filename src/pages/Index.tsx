@@ -56,10 +56,7 @@ const Index = () => {
   } = useRoleSelection();
   
   useEffect(() => {
-    document.title = "EmviApp - The Beauty Industry's Missing Piece | Premium Beauty Platform";
-    document.querySelector('meta[name="description"]')?.setAttribute('content', 
-      'EmviApp is the first AI-powered platform for beauty jobs, salons, and artists. Find nail artists, salons for sale, and beauty careers in your city.'
-    );
+    document.title = "Find Nail Artists & Beauty Jobs with AI | EmviApp";
     console.log("Index page loaded");
     
     // Run verification to ensure all listings have proper routing
@@ -71,6 +68,34 @@ const Index = () => {
   return (
     <Layout>
       <HomepageSEO />
+      {/* SEO Content Section - Optimized intro content */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6 leading-tight">
+              Find Nail Artists & Beauty Jobs with AI | EmviApp
+            </h1>
+            <div className="prose prose-lg mx-auto text-slate-700">
+              <p className="text-xl leading-relaxed mb-6">
+                EmviApp is revolutionizing the beauty industry by connecting talented professionals with their dream opportunities through cutting-edge AI technology. Whether you're a skilled nail artist seeking your next career move, a salon owner looking to hire top talent, or an aspiring beauty professional ready to take the next step, EmviApp is your comprehensive platform for success.
+              </p>
+              
+              <p className="text-lg leading-relaxed mb-6">
+                Our AI-powered matching system understands the unique needs of beauty professionals across all specialties - from nail technicians and hair stylists to makeup artists and estheticians. We've built intelligent algorithms that consider your skills, experience, location preferences, and career goals to connect you with opportunities that truly match your potential.
+              </p>
+              
+              <p className="text-lg leading-relaxed mb-6">
+                For salon owners and businesses, EmviApp eliminates the guesswork in hiring. Our platform showcases verified professionals with detailed portfolios, genuine reviews, and comprehensive skill assessments. Find the perfect team member who not only has the technical expertise you need but also aligns with your salon's culture and values.
+              </p>
+              
+              <p className="text-lg leading-relaxed">
+                Join thousands of beauty professionals who have already discovered their perfect match through EmviApp. From bustling metropolitan areas to growing suburban markets, we're building a connected community where talent meets opportunity, and careers flourish in the beauty industry.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 1. Hero section as first */}
       <Hero />
       
@@ -115,7 +140,7 @@ const Index = () => {
       
       {/* 1.5. Jobs Call to Action - Above the fold */}
       <section>
-        <h2 className="sr-only">Nail & Beauty Jobs</h2>
+        <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-slate-900 mb-8">Nail & Beauty Jobs</h2>
         <JobsCallToAction />
       </section>
       
@@ -131,7 +156,7 @@ const Index = () => {
       
       {/* 2. Premium Industry Showcases - Optimized loading with top 3 only */}
       <section>
-        <h2 className="sr-only">Salons for Sale</h2>
+        <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-slate-900 mb-8">Salons for Sale</h2>
         <OptimizedIndustryListings />
       </section>
 
@@ -143,7 +168,7 @@ const Index = () => {
 
       {/* Artists Available for Hire - FOMO strip under industry showcases */}
       <section>
-        <h2 className="sr-only">Top Artists in Your City</h2>
+        <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-slate-900 mb-8">Top Artists in Your City</h2>
         <ArtistsForHireStrip />
       </section>
 

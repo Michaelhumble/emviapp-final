@@ -85,11 +85,11 @@ const HeroContent = ({
         >
           {isMobile ? (
             <>
-              Find the Best Beauty Jobs, <br />
-              Salons & Artists Near You
+              Discover Your Perfect<br />
+              Beauty Career Match
             </>
           ) : (
-            "Find the Best Beauty Jobs, Salons & Artists Near You"
+            "Discover Your Perfect Beauty Career Match"
           )}
         </motion.h1>
         
