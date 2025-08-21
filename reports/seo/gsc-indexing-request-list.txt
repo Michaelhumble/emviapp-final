@@ -1,0 +1,50 @@
+# GSC Indexing Request Execution Plan
+# Generated: 2025-01-21
+# Purpose: Track indexing request status and quota usage
+
+## QUOTA LIMITS
+- Daily Limit: 200 URL submissions per project
+- Rate Limit: 2 requests per second recommended
+- Service Account: Same limits as OAuth
+
+## EXECUTION SCHEDULE
+Phase 1 (Immediate): Core Pages (13 URLs)
+- Homepage, main categories, key utility pages
+- Estimated quota usage: 13/200 (6.5%)
+
+Phase 2 (Same Day): High-Value Content (35 URLs)  
+- Top job pages, popular city/role combinations
+- Estimated quota usage: 48/200 (24%)
+
+Phase 3 (Next Day): Extended Content (39 URLs)
+- Blog posts, additional location pages
+- Estimated quota usage: 39/200 (19.5%)
+
+## MONITORING
+- Check Google Search Console for processing status
+- Track success/failure rates in generated reports
+- Monitor quota usage to avoid exhaustion
+
+## SAFETY MEASURES
+- Dry run mode available (--dry-run flag)
+- Batch processing with rate limiting
+- Conservative daily limits (180 vs 200 max)
+- Error logging and recovery
+
+## USAGE EXAMPLES
+```bash
+# Test run (no actual requests)
+node scripts/gsc-indexing-request.mjs --dry-run
+
+# Submit first 20 URLs with 3-second delays
+node scripts/gsc-indexing-request.mjs --batch-size=5 --delay=3000
+
+# Full submission (respects daily limits)
+node scripts/gsc-indexing-request.mjs
+```
+
+## EXPECTED RESULTS
+- Faster indexing of priority pages
+- Improved organic search visibility
+- Better crawl efficiency allocation
+- Enhanced new content discovery

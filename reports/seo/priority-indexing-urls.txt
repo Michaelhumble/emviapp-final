@@ -1,0 +1,105 @@
+# GSC Priority Indexing URLs - EmviApp
+# Generated: 2025-01-21
+# Total URLs: 87
+# Purpose: Submit high-priority pages to Google Search Console for immediate indexing
+
+# === CORE PAGES (5) ===
+https://www.emvi.app/
+https://www.emvi.app/jobs
+https://www.emvi.app/artists
+https://www.emvi.app/salons
+https://www.emvi.app/blog
+
+# === INDUSTRY CATEGORY PAGES (8) ===
+https://www.emvi.app/nails
+https://www.emvi.app/hair
+https://www.emvi.app/barber
+https://www.emvi.app/massage
+https://www.emvi.app/skincare
+https://www.emvi.app/makeup
+https://www.emvi.app/brows-lashes
+https://www.emvi.app/tattoo
+
+# === TOP JOB DETAIL PAGES (10) ===
+https://www.emvi.app/jobs/702242c7-6280-4bab-b1ea-e098580a10b8
+https://www.emvi.app/jobs/cb515e78-104b-4b3e-9490-6adea45d9bc0
+https://www.emvi.app/jobs/6590d1d2-c195-45dd-8314-ed72ee61e329
+https://www.emvi.app/jobs/d04cc712-a3b1-4b18-8397-4d22fa17b246
+https://www.emvi.app/jobs/62b4969d-9e98-4b9c-bd1e-c35b8d2f5b2b
+https://www.emvi.app/jobs/642b3df3-7bb6-4b48-836a-11fea5d00c17
+https://www.emvi.app/jobs/0537056d-f930-474f-b1cf-c1d39ed9278f
+https://www.emvi.app/jobs/e95dae1b-f5c1-4927-8b0a-02130317d7ba
+https://www.emvi.app/jobs/9bcb9ecd-a494-4467-83d6-02525387c6f2
+https://www.emvi.app/jobs/f98a3c29-339b-4795-9cc2-c6fde356d439
+
+# === TOP CITY/ROLE LANDING PAGES (25) ===
+https://www.emvi.app/artists/nails/houston-tx
+https://www.emvi.app/artists/hair/atlanta-ga
+https://www.emvi.app/artists/makeup/san-jose-ca
+https://www.emvi.app/artists/massage/orlando-fl
+https://www.emvi.app/artists/lashes/seattle-wa
+https://www.emvi.app/artists/barber/chicago-il
+https://www.emvi.app/artists/nails/dallas-tx
+https://www.emvi.app/artists/hair/new-york-ny
+https://www.emvi.app/artists/nails/los-angeles-ca
+https://www.emvi.app/artists/hair/miami-fl
+https://www.emvi.app/jobs/nails/houston-tx
+https://www.emvi.app/jobs/hair/atlanta-ga
+https://www.emvi.app/jobs/makeup/san-jose-ca
+https://www.emvi.app/jobs/massage/orlando-fl
+https://www.emvi.app/jobs/barber/chicago-il
+https://www.emvi.app/jobs/nails/dallas-tx
+https://www.emvi.app/jobs/hair/new-york-ny
+https://www.emvi.app/jobs/nails/los-angeles-ca
+https://www.emvi.app/jobs/hair/miami-fl
+https://www.emvi.app/jobs/nails/san-francisco-ca
+https://www.emvi.app/jobs/hair/boston-ma
+https://www.emvi.app/jobs/barber/philadelphia-pa
+https://www.emvi.app/jobs/massage/denver-co
+https://www.emvi.app/jobs/skincare/portland-or
+https://www.emvi.app/jobs/nails/phoenix-az
+
+# === BLOG POSTS (15) ===
+https://www.emvi.app/blog/industry-insights/nail-technician-salary-guide-2024
+https://www.emvi.app/blog/career-advice/how-to-start-beauty-career
+https://www.emvi.app/blog/industry-insights/beauty-industry-trends-2024
+https://www.emvi.app/blog/career-advice/nail-tech-license-requirements
+https://www.emvi.app/blog/business-tips/salon-marketing-strategies
+https://www.emvi.app/blog/career-advice/hair-stylist-career-path
+https://www.emvi.app/blog/industry-insights/barber-shop-opportunities
+https://www.emvi.app/blog/business-tips/freelance-beauty-tips
+https://www.emvi.app/blog/career-advice/massage-therapy-certification
+https://www.emvi.app/blog/industry-insights/esthetician-job-market
+https://www.emvi.app/blog/business-tips/salon-booth-rental-guide
+https://www.emvi.app/blog/career-advice/makeup-artist-portfolio
+https://www.emvi.app/blog/industry-insights/lash-extension-trends
+https://www.emvi.app/blog/business-tips/beauty-professional-networking
+https://www.emvi.app/blog/career-advice/tattoo-artist-apprenticeship
+
+# === KEY UTILITY PAGES (9) ===
+https://www.emvi.app/about
+https://www.emvi.app/contact
+https://www.emvi.app/pricing
+https://www.emvi.app/partners
+https://www.emvi.app/emviapp-mission-vision
+https://www.emvi.app/post-job
+https://www.emvi.app/sell-salon
+https://www.emvi.app/signup
+https://www.emvi.app/signin
+
+# === LOCATION PAGES (15) ===
+https://www.emvi.app/jobs/houston-tx
+https://www.emvi.app/jobs/atlanta-ga
+https://www.emvi.app/jobs/dallas-tx
+https://www.emvi.app/jobs/new-york-ny
+https://www.emvi.app/jobs/los-angeles-ca
+https://www.emvi.app/jobs/chicago-il
+https://www.emvi.app/jobs/miami-fl
+https://www.emvi.app/jobs/phoenix-az
+https://www.emvi.app/jobs/san-francisco-ca
+https://www.emvi.app/jobs/boston-ma
+https://www.emvi.app/jobs/seattle-wa
+https://www.emvi.app/jobs/denver-co
+https://www.emvi.app/jobs/orlando-fl
+https://www.emvi.app/jobs/philadelphia-pa
+https://www.emvi.app/jobs/portland-or
