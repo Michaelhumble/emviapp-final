@@ -21,7 +21,6 @@ import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missi
 import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 import globalBeautyCommunityHeroImage from '@/assets/blog/global-beauty-community-hero.jpg';
 import heroImage from '@/assets/blog/emviapp-hero-vietnamese-nail-tech.jpg';
-import heroJobsImage from '@/assets/blog/hero-nail-tech-finding-jobs.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -80,7 +79,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Industry Insights',
     categorySlug: 'industry-insights',
     tags: ['nail jobs USA', 'beauty jobs near me', 'salon for sale USA', 'hair stylist jobs 2025', 'barber jobs', 'lash tech jobs', 'EmviApp', 'beauty community', 'nail technician jobs', 'salon marketplace'],
-    image: heroJobsImage,
+    image: salonStaffingCrisisImage,
     featured: true,
     trending: true,
     component: FindBeautyJobsAndSalons2025,

@@ -3,11 +3,11 @@ import { Helmet } from 'react-helmet-async';
 import BlogSEO from '@/components/seo/BlogSEO';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
-// Import images
-import heroImage from '@/assets/blog/hero-nail-tech-finding-jobs.jpg';
-import frustrationImage from '@/assets/blog/frustrated-facebook-job-search.jpg';
-import opportunityImage from '@/assets/blog/salon-for-sale-opportunity.jpg';
-import futureImage from '@/assets/blog/emviapp-global-network.jpg';
+// Import images - using existing images as placeholders
+import heroImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
+import frustrationImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
+import opportunityImage from '@/assets/blog/sell-salon-guide-2025.jpg';
+import futureImage from '@/assets/blog/global-beauty-community-hero.jpg';
 
 const FindBeautyJobsAndSalons2025: React.FC = () => {
   const jsonLdArticle = {
