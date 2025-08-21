@@ -93,24 +93,27 @@ const HomepageSEO = () => {
   ];
 
   return (
-    <DynamicSEO
-      title="EmviApp - The Beauty Industry's Missing Piece | Premium Beauty Platform"
-      description="EmviApp is the first AI-powered platform for beauty jobs, salons, and artists. Find nail artists, salons for sale, and beauty careers in your city."
-      canonicalUrl="https://www.emvi.app/"
-      tags={[
-        "beauty jobs",
-        "nail technician",
-        "hair stylist",
-        "barber jobs",
-        "makeup artist",
-        "esthetician",
-        "beauty careers",
-        "salon opportunities",
-        "premium beauty platform"
-      ]}
-      structuredData={structuredData}
-      type="website"
-    />
+    <>
+      <DynamicSEO
+        title="EmviApp - The Beauty Industry's Missing Piece | Premium Beauty Platform"
+        description="EmviApp is the first AI-powered platform for beauty jobs, salons, and artists. Find nail artists, salons for sale, and beauty careers in your city."
+        canonicalUrl="https://www.emvi.app/"
+        tags={[
+          "beauty jobs",
+          "nail technician",
+          "hair stylist",
+          "barber jobs",
+          "makeup artist",
+          "esthetician",
+          "beauty careers",
+          "salon opportunities",
+          "premium beauty platform"
+        ]}
+        structuredData={structuredData}
+        type="website"
+      />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    </>
   );
 };
 

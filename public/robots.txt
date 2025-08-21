@@ -1,47 +1,9 @@
 
 User-agent: *
-Allow: /
-
-# Allow specific important paths
-Allow: /jobs
-Allow: /salons
-Allow: /artists
-Allow: /nails
-Allow: /hair
-Allow: /barber
-Allow: /massage
-Allow: /makeup
-Allow: /skincare
-Allow: /tattoo
-Allow: /brows-lashes
-Allow: /about
-Allow: /contact
-Allow: /terms
-Allow: /privacy
-
-# Disallow admin and user-specific areas
-Disallow: /dashboard/
-Disallow: /admin/
-Disallow: /profile/
-Disallow: /settings/
-Disallow: /auth/
 Disallow: /signin
 Disallow: /signup
-Disallow: /login
-Disallow: /onboarding
 
-# Disallow test and development pages
-Disallow: /test*
-Disallow: /dev*
-Disallow: /debug*
-
-# Disallow checkout and payment pages
-Disallow: /checkout
-Disallow: /payment*
-Disallow: /post-success
-Disallow: /post-canceled
-
-# Sitemap location
 Sitemap: https://www.emvi.app/sitemap.xml
 Sitemap: https://www.emvi.app/jobs-sitemap.xml
 Sitemap: https://www.emvi.app/artists-sitemap.xml
+Sitemap: https://www.emvi.app/blog-sitemap.xml
