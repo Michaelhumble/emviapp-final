@@ -7,16 +7,16 @@ interface SalonSEOProps {
   baseUrl?: string;
 }
 
-const SalonSEO: React.FC<SalonSEOProps> = ({ salon, baseUrl = 'https://emvi.app' }) => {
+const SalonSEO: React.FC<SalonSEOProps> = ({ salon, baseUrl = 'https://www.emvi.app' }) => {
   const salonUrl = `${baseUrl}/salons/${salon.id}`;
   
-  // Create SEO-friendly title
-  const title = `${salon.title} - ${salon.location || 'Beauty Salon'} | EmviApp`;
+  // Enhanced SEO-friendly title with services and location
+  const title = `${salon.title}${salon.location ? ` - ${salon.location}` : ''} | Top Beauty Salon | EmviApp`;
   
-  // Generate description from salon details
+  // Enhanced description with key selling points
   const description = salon.description 
-    ? `${salon.description.substring(0, 150)}...`
-    : `${salon.title} - Professional beauty salon in ${salon.location || 'your area'}. Book services and discover talented beauty professionals on EmviApp.`;
+    ? `${salon.description.substring(0, 130)}... ${salon.location ? `Located in ${salon.location}. ` : ''}Book services on EmviApp.`
+    : `${salon.title} - Premier beauty salon${salon.location ? ` in ${salon.location}` : ''} offering professional beauty services. Book appointments with top-rated stylists and discover the best beauty treatments on EmviApp.`;
   
   // Get primary image
   const image = salon.image_urls?.[0] || salon.image_url || `${baseUrl}/og-salon-default.jpg`;

@@ -53,6 +53,8 @@ export const buildJobPostingJsonLd = (job: {
   company?: string;
   created_at: string;
   expires_at?: string;
+  employmentType?: string;
+  workFromHome?: boolean;
 }) => ({
   "@context": "https://schema.org",
   "@type": "JobPosting",
@@ -60,8 +62,13 @@ export const buildJobPostingJsonLd = (job: {
   "description": job.description.replace(/<[^>]*>/g, ''), // Strip HTML
   "datePosted": job.created_at,
   "validThrough": job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-  "employmentType": "CONTRACTOR",
+  "employmentType": job.employmentType || "CONTRACTOR",
   "url": `https://www.emvi.app/jobs/${job.id}`,
+  "applicantLocationRequirements": {
+    "@type": "Country",
+    "name": "US"
+  },
+  "jobLocationType": job.workFromHome ? "TELECOMMUTE" : undefined,
   "identifier": {
     "@type": "PropertyValue",
     "name": "EmviApp",
@@ -70,7 +77,8 @@ export const buildJobPostingJsonLd = (job: {
   "hiringOrganization": {
     "@type": "Organization",
     "name": job.company || "EmviApp Partner",
-    "url": "https://www.emvi.app"
+    "url": "https://www.emvi.app",
+    "logo": "https://www.emvi.app/logo.png"
   },
   "jobLocation": {
     "@type": "Place",
@@ -80,6 +88,8 @@ export const buildJobPostingJsonLd = (job: {
       "addressCountry": "US"
     }
   },
+  "industry": "Beauty and Personal Care",
+  "occupationalCategory": "Beauty and Personal Care",
   ...(job.salary && {
     "baseSalary": {
       "@type": "MonetaryAmount",
@@ -89,6 +99,47 @@ export const buildJobPostingJsonLd = (job: {
         "value": job.salary,
         "unitText": "HOUR"
       }
+    }
+  })
+});
+
+export const buildPersonJsonLd = (person: {
+  name: string;
+  jobTitle?: string;
+  location?: string;
+  bio?: string;
+  image?: string;
+  url: string;
+  sameAs?: string[];
+  worksFor?: string;
+  yearsOfExperience?: number;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": person.name,
+  "jobTitle": person.jobTitle || "Beauty Professional",
+  "description": person.bio,
+  "image": person.image,
+  "url": person.url,
+  "mainEntityOfPage": person.url,
+  ...(person.location && {
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": person.location
+    }
+  }),
+  ...(person.sameAs && { "sameAs": person.sameAs }),
+  ...(person.worksFor && {
+    "worksFor": {
+      "@type": "Organization", 
+      "name": person.worksFor
+    }
+  }),
+  ...(person.yearsOfExperience && {
+    "hasOccupation": {
+      "@type": "Occupation",
+      "name": person.jobTitle || "Beauty Professional",
+      "experienceRequirements": `${person.yearsOfExperience}+ years`
     }
   })
 });
@@ -128,4 +179,17 @@ export const buildArticleJsonLd = (article: {
       "url": article.image
     }
   })
+});
+
+export const buildFAQJsonLd = (faqs: Array<{ question: string; answer: string }>) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
 });

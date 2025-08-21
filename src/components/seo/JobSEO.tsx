@@ -12,9 +12,13 @@ interface JobSEOProps {
 const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://www.emvi.app' }) => {
   const jobUrl = `${baseUrl}/jobs/${job.id}`;
   
-  const title = `${job.title} - ${job.location || 'Remote'} | EmviApp`;
-  const description = stripHtml(job.description)?.substring(0, 160) || 
-    `${job.title} position in ${job.location || 'Remote'}. Apply now on EmviApp.`;
+  // Enhanced title with location, role, and salary if available
+  const title = `${job.title}${job.location ? ` in ${job.location}` : ''}${job.salary_range ? ` - ${job.salary_range}` : ''} | EmviApp Jobs`;
+  
+  // Enhanced meta description with key details
+  const description = job.description 
+    ? `${stripHtml(job.description).substring(0, 120)}... ${job.location ? `Located in ${job.location}. ` : ''}Apply now on EmviApp.`
+    : `${job.title} position${job.location ? ` in ${job.location}` : ''}${job.salary_range ? ` - ${job.salary_range}` : ''}${job.company ? ` at ${job.company}` : ''}. Apply now on EmviApp's beauty job platform.`;
   
   const noIndex = shouldNoIndex(job);
   

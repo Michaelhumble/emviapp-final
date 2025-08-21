@@ -56,7 +56,10 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={absCanonical} /> 
       <meta property="og:image" content={absOgImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:site_name" content="EmviApp" />
+      <meta property="og:locale" content="en_US" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -64,6 +67,7 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={absOgImage} />
       <meta name="twitter:site" content="@EmviApp" />
+      <meta name="twitter:creator" content="@EmviApp" />
 
       {/* Hreflang alternates */}
       {hreflangs.map((h) => (
