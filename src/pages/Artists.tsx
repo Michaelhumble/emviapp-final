@@ -78,17 +78,33 @@ const Artists = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Hire beauty pros near you | EmviApp</title>
-        <meta name="description" content="Hire verified beauty professionals near you. View specialties, experience, location, and rates. Contact info gated for verified employers." />
+        <title>Hire Top Beauty Artists - Nail Tech, Hair Stylists & More | EmviApp</title>
+        <meta name="description" content="Connect with verified beauty artists offering premium services. Browse nail technicians, hair stylists, barbers with proven khách sang experience and tip cao results." />
       </Helmet>
       <BaseSEO 
-        title="Hire Beauty Professionals Near You | EmviApp Artists"
-        description="Hire verified beauty professionals near you. View specialties, experience, location, and rates. Contact info gated for verified employers."
+        title="Hire Top Beauty Artists - Nail Tech, Hair Stylists & More | EmviApp"
+        description="Connect with verified beauty artists offering premium services. Browse nail technicians, hair stylists, barbers with proven khách sang experience and tip cao results."
         canonical="/artists"
         jsonLd={[buildBreadcrumbJsonLd([
           { name: 'Home', url: 'https://www.emvi.app' },
           { name: 'Artists', url: 'https://www.emvi.app/artists' }
-        ]), jsonLd, faqJsonLd]} 
+        ]), jsonLd, faqJsonLd, {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Premium Beauty Artists",
+          "jobTitle": "Beauty Professional",
+          "description": "Verified beauty professionals offering nail tech, hair styling, barber, and wellness services with proven expertise.",
+          "url": "https://www.emvi.app/artists",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "EmviApp"
+          },
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "Beauty Professional",
+            "experienceRequirements": "Verified expertise in beauty services"
+          }
+        }]} 
       />
 
       {/* Breadcrumbs */}
@@ -109,9 +125,9 @@ const Artists = () => {
         <Container className="relative z-10 py-14 md:py-18">
           <div className="max-w-4xl mx-auto animate-fade-in text-center">
             <div className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-md p-8 md:p-12 shadow-xl">
-              <h1 className="font-playfair text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-amber-300 via-orange-200 to-yellow-300 bg-clip-text text-transparent">
+              <h2 className="font-playfair text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-amber-300 via-orange-200 to-yellow-300 bg-clip-text text-transparent">
                 Top Beauty Pros — Available Now
-              </h1>
+              </h2>
             <p className="mt-3 text-white/85 text-base md:text-lg">
               Verified beauty professionals. Contact details for verified employers.
             </p>
@@ -134,17 +150,28 @@ const Artists = () => {
       {/* SEO Intro Copy */}
       <section className="py-8 bg-white">
         <Container>
-          <article className="prose max-w-3xl mx-auto">
-            <h2 className="sr-only">About hiring artists on EmviApp</h2>
-            <p>
-              EmviApp helps salons and clients discover verified beauty professionals ready for work.
-              Browse artists by specialty and city, view real portfolios and experience, and hire with
-              confidence. Whether you need a last‑minute nail tech in Houston or a senior hair stylist in
-              Los Angeles, our marketplace makes it easy to compare talent, check availability, and connect
-              fast. Artists showcase skills, pricing, and areas served; employers post roles and reach
-              matching candidates instantly. Start exploring below to find the right professional for your
-              needs today.
-            </p>
+          <article className="prose max-w-4xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-6">Premium Beauty Artists - Khách Sang Service Providers</h1>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Connect with Elite Beauty Professionals</h2>
+                <p className="mb-4">
+                  EmviApp's artist marketplace showcases the industry's most skilled beauty professionals, each verified for expertise and commitment to delivering khách sang level service. Our curated network includes nail technicians who consistently achieve tip cao results, hair stylists with proven track records at premium salons, and specialized artists who excel in creating exceptional client experiences.
+                </p>
+                <p className="mb-4">
+                  Every professional in our network has been thoroughly vetted, with verified portfolios, client testimonials, and demonstrated expertise. Whether you need last-minute coverage for your salon or are seeking long-term partnership opportunities, our platform makes it easy to connect with artists who understand the importance of maintaining high standards and professional excellence.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Find Artists Who Deliver Results</h2>
+                <p className="mb-4">
+                  From nail technicians specializing in intricate designs to hair stylists with expertise in advanced color techniques, our platform connects you with professionals who bring both technical skill and business acumen to every appointment. Each artist profile includes specialties, experience level, service areas, and availability status for immediate matching.
+                </p>
+                <p className="mb-4">
+                  Looking to expand your team? Browse our <a href="/jobs" className="text-primary underline">premium job opportunities</a> to attract top talent, or explore <a href="/salons" className="text-primary underline">established salons for sale</a> if you're ready to build your own team of exceptional artists.
+                </p>
+              </div>
+            </div>
           </article>
         </Container>
       </section>

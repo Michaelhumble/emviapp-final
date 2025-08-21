@@ -206,17 +206,65 @@ const OptimizedJobsPageContent = () => {
   return (
     <>
       <BaseSEO
-        title="Beauty Jobs Near You | EmviApp"
-        description="Find nails, hair, brows, makeup and more jobs—new roles added daily. Browse verified salon opportunities from top employers."
+        title="Beauty Jobs Near You - Nail Tech, Hair Stylist & More | EmviApp"
+        description="Find premium beauty jobs with tip cao opportunities. Join 10k+ professionals finding nail tech, hair stylist, barber & massage roles at top khách sang salons."
         canonical="https://www.emvi.app/jobs"
         ogImage="https://www.emvi.app/og-jobs.jpg"
-        jsonLd={[breadcrumbJsonLd]}
+        jsonLd={[breadcrumbJsonLd, {
+          "@context": "https://schema.org",
+          "@type": "JobPosting",
+          "title": "Beauty Jobs - Nail Tech, Hair Stylist & More",
+          "description": "Find premium beauty jobs with high-tip opportunities across nail tech, hair styling, barber, and massage therapy roles.",
+          "employmentType": "CONTRACTOR",
+          "hiringOrganization": {
+            "@type": "Organization",
+            "name": "EmviApp",
+            "url": "https://www.emvi.app"
+          },
+          "jobLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "US"
+            }
+          },
+          "industry": "Beauty and Personal Care"
+        }]}
         type="website"
       />
 
       <main className="w-full">
         {/* JOBS HERO (Above the fold) */}
         <JobsHero jobsCount={jobs?.length ?? 0} />
+
+        {/* SEO Intro Content */}
+        <section className="py-8 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <article className="prose max-w-none">
+              <h1 className="text-3xl md:text-4xl font-bold text-center mb-6">Premium Beauty Jobs - High Tips & Khách Sang Clientele</h1>
+              <div className="grid md:grid-cols-2 gap-8 items-start">
+                <div>
+                  <h2 className="text-2xl font-semibold mb-4">Discover Your Next Beauty Career Opportunity</h2>
+                  <p className="text-gray-700 mb-4">
+                    Welcome to EmviApp's premium job marketplace, where beauty professionals discover exceptional opportunities with tip cao earning potential. Our curated platform connects skilled nail technicians, hair stylists, barbers, and massage therapists with upscale salons seeking khách sang service providers.
+                  </p>
+                  <p className="text-gray-700 mb-4">
+                    Every opportunity on our platform is verified, ensuring you connect with legitimate salon owners who value professional excellence. From luxury nail studios in major cities to high-end hair salons with established clientele, we bridge the gap between talented artists and premium establishments that appreciate quality craftsmanship.
+                  </p>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-4">Why Top Professionals Choose EmviApp</h2>
+                  <p className="text-gray-700 mb-4">
+                    Our AI-powered matching system understands both your skills and career aspirations, connecting you with roles that offer genuine growth potential. Whether you're seeking flexible booth rental opportunities, commission-based positions with high earning potential, or full-time roles with comprehensive benefits, EmviApp delivers opportunities that align with your professional goals.
+                  </p>
+                  <p className="text-gray-700 mb-4">
+                    Join thousands of professionals who've found their perfect match through our platform. Browse <a href="/salons" className="text-primary underline">premium salons for sale</a> if you're ready to become an owner, or explore our <a href="/artists" className="text-primary underline">network of top beauty artists</a> to see the caliber of professionals in our community.
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
 
         {/* Popular searches (internal-link widgets) */}
         <div className="container mx-auto px-4 mt-4">
@@ -275,7 +323,7 @@ const OptimizedJobsPageContent = () => {
         <section id="jobs-section" className="w-full py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <header className="text-center mb-8">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Latest Beauty Jobs</h1>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Latest Beauty Jobs</h2>
               <p className="mt-2 text-muted-foreground">Find your next opportunity in the beauty industry</p>
             </header>
             {/* Removed FOMO message - same content for all users */}

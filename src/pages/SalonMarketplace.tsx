@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -103,9 +104,61 @@ const SalonMarketplace = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Premium Salon Marketplace - Established Beauty Businesses for Sale | EmviApp</title>
+        <meta name="description" content="Browse verified salon businesses with khách sang clientele and tip cao potential. Established beauty businesses with proven financials and loyal customer bases." />
+        <link rel="canonical" href="https://www.emvi.app/salons" />
+      </Helmet>
+
+      {/* SEO Meta */}
+      <div style={{ display: 'none' }}>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "EmviApp Salon Marketplace",
+            "description": "Premium salon marketplace featuring established beauty businesses for sale across the United States.",
+            "url": "https://www.emvi.app/salons",
+            "industry": "Beauty and Personal Care",
+            "areaServed": "US",
+            "offers": {
+              "@type": "Offer",
+              "description": "Salon businesses for sale with verified financials and established clientele"
+            }
+          })}
+        </script>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
-        <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
+        {/* SEO Intro Content */}
+        <section className="mb-12">
+          <h1 className="text-4xl font-serif font-bold mb-4 text-center">Premium Salon Marketplace - Established Beauty Businesses</h1>
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-4 text-center">Discover Profitable Salon Opportunities with Khách Sang Clientele</h2>
+            <div className="prose max-w-none text-gray-700">
+              <p className="text-center mb-6">Browse verified salon businesses for sale across the country, each offering established revenue streams and loyal customer bases.</p>
+              
+              <div className="grid md:grid-cols-2 gap-8 mb-8">
+                <div>
+                  <p className="mb-4">
+                    EmviApp's salon marketplace connects serious buyers with premium beauty businesses that have proven track records of success. Every listing features detailed financial information, including revenue history, client retention rates, and growth potential analysis. Our curated selection ensures you're investing in salons with genuine khách sang clientele and sustainable business models.
+                  </p>
+                  <p className="mb-4">
+                    From established nail studios generating consistent tip cao income to full-service salons with diversified revenue streams, our marketplace offers opportunities across all beauty sectors. Each business has been thoroughly vetted, with verified financial records and transparent operational metrics.
+                  </p>
+                </div>
+                <div>
+                  <p className="mb-4">
+                    Whether you're an experienced salon owner looking to expand your portfolio or a skilled beauty professional ready to transition into business ownership, EmviApp provides the tools and insights needed to make informed investment decisions. Our platform includes detailed market analysis, competitive positioning data, and growth projections for each listed property.
+                  </p>
+                  <p className="mb-4">
+                    Connect with <a href="/jobs" className="text-primary underline">top beauty professionals</a> to staff your new location, or explore our <a href="/artists" className="text-primary underline">network of skilled artists</a> for partnership opportunities. Building the right team is crucial for continued success.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         
         <SalonFilter
           searchTerm={searchTerm}

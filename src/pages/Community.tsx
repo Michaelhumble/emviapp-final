@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Users, Heart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -78,6 +79,61 @@ const Community = () => {
   };
   return (
     <div className="min-h-screen bg-background text-foreground relative">
+      {/* SEO Meta */}
+      <Helmet>
+        <title>Beauty Community - Where Professionals Earn & Connect | EmviApp</title>
+        <meta name="description" content="Join 12k+ beauty professionals earning while sharing tips. Premium community for nail techs, hair stylists with khách sang opportunities and tip cao rewards." />
+        <link rel="canonical" href="https://www.emvi.app/community" />
+      </Helmet>
+
+      {/* SEO Meta and JSON-LD */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "EmviApp Beauty Community",
+          "description": "Premium beauty community where professionals share tips, earn rewards, and connect with khách sang opportunities.",
+          "url": "https://www.emvi.app/community",
+          "industry": "Beauty and Personal Care",
+          "memberOf": {
+            "@type": "Organization",
+            "name": "EmviApp"
+          },
+          "offers": {
+            "@type": "Offer",
+            "description": "Community platform for beauty professionals to share knowledge, earn rewards, and grow their careers"
+          }
+        })
+      }} />
+
+      {/* SEO Intro Content - Visible Above Hero */}
+      <section className="py-8 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-6">Beauty Community - Where Professionals Thrive Together</h1>
+          <div className="prose max-w-none">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Join the Premier Beauty Professional Network</h2>
+                <p className="text-gray-700 mb-4">
+                  Welcome to EmviApp's exclusive community where beauty professionals connect, collaborate, and build prosperity together. Our platform brings together nail technicians, hair stylists, barbers, and wellness experts who understand the value of khách sang service and tip cao earning potential. Share techniques, celebrate successes, and learn from industry leaders who've mastered the art of premium beauty services.
+                </p>
+                <p className="text-gray-700 mb-4">
+                  Whether you're sharing your latest nail art masterpiece, discussing advanced color techniques, or celebrating a major career milestone, our community provides the supportive environment where professionals can showcase their expertise and connect with like-minded artists who share their commitment to excellence.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Earn While You Engage</h2>
+                <p className="text-gray-700 mb-4">
+                  Our innovative reward system recognizes valuable contributions with real earning opportunities. Share your knowledge, mentor emerging artists, participate in challenges, and build your reputation while generating additional income streams. Top contributors earn featured placement, exclusive opportunities, and direct connections with premium salon owners seeking exceptional talent.
+                </p>
+                <p className="text-gray-700 mb-4">
+                  Ready to expand your professional network? Explore <a href="/jobs" className="text-primary underline">high-paying beauty positions</a> shared by community members, discover <a href="/salons" className="text-primary underline">salon ownership opportunities</a>, or connect with <a href="/artists" className="text-primary underline">fellow professionals</a> for collaboration and mentorship.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Premium Sunrise Hero Section - Viral Energy */}
       <div className="relative overflow-hidden">
         {/* Sunrise Gradient Background */}
@@ -200,13 +256,13 @@ const Community = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
                 <span className="bg-gradient-to-r from-purple-800 via-pink-700 to-orange-600 bg-clip-text text-transparent">
                   Beauty Creators
                 </span>
                 <br />
                 <span className="text-orange-800">Making Bank! 💎</span>
-              </h1>
+              </h2>
               <p className="text-xl md:text-2xl text-orange-700 mb-8 max-w-3xl mx-auto font-medium">
                 Join 12,000+ creators earning serious money from their beauty skills
               </p>
@@ -315,7 +371,7 @@ const Community = () => {
                 
                 <div className="relative z-10 grid grid-cols-2 gap-8 items-center">
                   <div>
-                    <motion.h1 
+                    <motion.h2 
                       className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-800 via-pink-700 to-orange-600 bg-clip-text text-transparent"
                       animate={{ 
                         backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] 
@@ -323,7 +379,7 @@ const Community = () => {
                       transition={{ duration: 4, repeat: Infinity }}
                     >
                       Beauty Creators Making Bank! 💎
-                    </motion.h1>
+                    </motion.h2>
                     <p className="text-xl text-orange-800 mb-6 font-medium">
                       Join the most profitable beauty community. Start earning from your passion today.
                     </p>
