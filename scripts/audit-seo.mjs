@@ -529,16 +529,31 @@ class SEOAuditor {
         );
         
         const report = JSON.parse(result);
+        
+        // Defensive guard for undefined categories - prevent crashes
+        const categories = report?.lhr?.categories || {};
+        const audits = report?.lhr?.audits || {};
+        
         this.performanceMetrics[page] = {
-          performance: report.lhr.categories.performance.score * 100,
-          seo: report.lhr.categories.seo.score * 100,
-          lcp: report.lhr.audits['largest-contentful-paint'].numericValue,
-          cls: report.lhr.audits['cumulative-layout-shift'].numericValue,
-          fid: report.lhr.audits['max-potential-fid']?.numericValue || 0
+          performance: categories.performance?.score ? Math.round(categories.performance.score * 100) : null,
+          seo: categories.seo?.score ? Math.round(categories.seo.score * 100) : null,
+          lcp: audits['largest-contentful-paint']?.numericValue || null,
+          cls: audits['cumulative-layout-shift']?.numericValue || null,
+          fid: audits['max-potential-fid']?.numericValue || null,
+          error: (!categories.performance && !categories.seo) ? 'Lighthouse categories undefined' : null
         };
         
       } catch (error) {
         console.warn(`❌ Lighthouse failed for ${page}: ${error.message}`);
+        // Record error in metrics but continue processing
+        this.performanceMetrics[page] = {
+          performance: null,
+          seo: null,
+          lcp: null,
+          cls: null,
+          fid: null,
+          error: `Lighthouse execution failed: ${error.message}`
+        };
       }
     }
   }
