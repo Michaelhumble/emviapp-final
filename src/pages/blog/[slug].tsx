@@ -6,6 +6,7 @@ import { extractSlugFromUrl } from '@/utils/blogLinks';
 import DynamicSEO from '@/components/seo/DynamicSEO';
 import { runBlogDiagnostics } from '@/utils/blogDiagnostics';
 import { performComprehensiveAudit } from '@/utils/blogAudit';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const BlogArticlePage: React.FC = () => {
   const { slug, category } = useParams<{ slug: string; category: string }>();
@@ -97,6 +98,12 @@ const BlogArticlePage: React.FC = () => {
   }
   
   const ArticleComponent = article.component;
+
+  const breadcrumbItems = [
+    { name: 'Home', href: '/' },
+    { name: 'Blog', href: '/blog' },
+    { name: article.title, href: article.url, current: true }
+  ];
   
   return (
     <>

@@ -9,6 +9,7 @@ import { useArtistsSearch } from "@/hooks/useArtistsSearch";
 import { useMemo } from "react";
 import BaseSEO from "@/components/seo/BaseSEO";
 import { buildBreadcrumbJsonLd } from "@/components/seo/jsonld";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Artists = () => {
   const { isSignedIn } = useAuth();
@@ -69,17 +70,33 @@ const Artists = () => {
     ]
   } as const;
 
+  const breadcrumbItems = [
+    { name: 'Home', href: '/' },
+    { name: 'Artists', href: '/artists', current: true }
+  ];
+
   return (
     <Layout>
       <Helmet>
         <title>Hire beauty pros near you | EmviApp</title>
         <meta name="description" content="Hire verified beauty professionals near you. View specialties, experience, location, and rates. Contact info gated for verified employers." />
-        <link rel="canonical" href={`https://www.emvi.app/artists`} />
       </Helmet>
-      <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
-        { name: 'Home', url: 'https://www.emvi.app' },
-        { name: 'Artists', url: 'https://www.emvi.app/artists' }
-      ]), jsonLd, faqJsonLd]} />
+      <BaseSEO 
+        title="Hire Beauty Professionals Near You | EmviApp Artists"
+        description="Hire verified beauty professionals near you. View specialties, experience, location, and rates. Contact info gated for verified employers."
+        canonical="/artists"
+        jsonLd={[buildBreadcrumbJsonLd([
+          { name: 'Home', url: 'https://www.emvi.app' },
+          { name: 'Artists', url: 'https://www.emvi.app/artists' }
+        ]), jsonLd, faqJsonLd]} 
+      />
+
+      {/* Breadcrumbs */}
+      <section className="bg-white border-b border-gray-200">
+        <Container className="py-4">
+          <Breadcrumbs items={breadcrumbItems} />
+        </Container>
+      </section>
 
 
       {/* Hero */}

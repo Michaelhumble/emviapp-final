@@ -12,6 +12,8 @@ import { supabaseBypass } from '@/types/supabase-bypass';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import { normalizeJobPhotos } from '@/lib/images';
 import JobPhotoGallery from '@/components/jobs/JobPhotoGallery';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import JobSEO from '@/components/seo/JobSEO';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -151,7 +153,13 @@ const JobDetailPage = () => {
 
   const photos = useMemo(() => normalizeJobPhotos(job), [job]);
 
-  // JSON-LD for JobPosting
+  const breadcrumbItems = [
+    { name: 'Home', href: '/' },
+    { name: 'Jobs', href: '/jobs' },
+    { name: job.title, href: `/jobs/${job.id}`, current: true }
+  ];
+
+  // Enhanced JSON-LD for JobPosting
   const jsonLd = (() => {
     const base: any = {
       '@context': 'https://schema.org',
@@ -177,21 +185,17 @@ const JobDetailPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{job.title} - Beauty Industry Job | EmviApp</title>
-        <meta 
-          name="description" 
-          content={`${job.title} position ${job.location ? `in ${job.location}` : ''}. ${job.description?.substring(0, 150) || 'Apply now for this beauty industry opportunity.'}`} 
-        />
-        <link rel="canonical" href={`https://www.emvi.app/jobs/${job.id}`} />
-        {(isExpired || isFilled) && <meta name="robots" content="noindex, follow" />}
-        <script type="application/ld+json">{jsonLd}</script>
-      </Helmet>
+      <JobSEO job={job} />
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
         {/* Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 py-6">
+            {/* Breadcrumbs */}
+            <div className="mb-4">
+              <Breadcrumbs items={breadcrumbItems} />
+            </div>
+            
             <Button 
               onClick={handleBack}
               variant="ghost"

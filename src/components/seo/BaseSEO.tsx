@@ -27,6 +27,24 @@ const toAbs = (url?: string) => {
   return `${ABS_BASE}/${url}`;
 };
 
+const getCleanCanonical = (canonical?: string) => {
+  if (!canonical) return `${ABS_BASE}/`;
+  
+  // If it's already absolute, clean query params
+  if (canonical.startsWith('http')) {
+    try {
+      const url = new URL(canonical);
+      return `${url.protocol}//${url.host}${url.pathname}`;
+    } catch {
+      return canonical;
+    }
+  }
+  
+  // For relative URLs, remove query params and make absolute
+  const cleanPath = canonical.split('?')[0].split('#')[0];
+  return toAbs(cleanPath);
+};
+
 const BaseSEO: React.FC<BaseSEOProps> = ({
   title = "EmviApp - The Beauty Industry's Missing Piece",
   description = "Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.",
@@ -37,7 +55,7 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
   jsonLd = [],
   type = 'website',
 }) => {
-  const absCanonical = toAbs(canonical || '/');
+  const absCanonical = getCleanCanonical(canonical);
   const absOgImage = toAbs(ogImage || '/og-image.jpg');
 
   return (
