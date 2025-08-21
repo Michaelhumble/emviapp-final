@@ -112,7 +112,7 @@ const HomepageSEO = () => {
         structuredData={structuredData}
         type="website"
       />
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
     </>
   );
 };
