@@ -12,6 +12,8 @@ interface BaseSEOProps {
   description?: string;
   canonical?: string;
   ogImage?: string;
+  ogImageWidth?: string;
+  ogImageHeight?: string;
   noindex?: boolean;
   hreflangs?: Hreflang[];
   jsonLd?: any[]; // Array of JSON-LD objects
@@ -50,13 +52,29 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
   description = "Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.",
   canonical,
   ogImage,
+  ogImageWidth = "1200",
+  ogImageHeight = "630",
   noindex = false,
   hreflangs = [],
   jsonLd = [],
   type = 'website',
 }) => {
   const absCanonical = getCleanCanonical(canonical);
-  const absOgImage = toAbs(ogImage || '/og-image.jpg');
+  
+  // Enhanced fallback logic for og:image
+  const getValidOgImage = (providedImage?: string) => {
+    if (providedImage) {
+      const absImage = toAbs(providedImage);
+      // If it's a valid URL, use it
+      if (absImage && (absImage.startsWith('http') || absImage.startsWith('/'))) {
+        return absImage;
+      }
+    }
+    // Fallback to default og image
+    return toAbs('/og-default.jpg');
+  };
+  
+  const finalOgImage = getValidOgImage(ogImage);
 
   return (
     <Helmet>
@@ -73,9 +91,10 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={absCanonical} /> 
-      <meta property="og:image" content={absOgImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      <meta property="og:image" content={finalOgImage} />
+      <meta property="og:image:width" content={ogImageWidth} />
+      <meta property="og:image:height" content={ogImageHeight} />
+      <meta property="og:image:type" content="image/jpeg" />
       <meta property="og:site_name" content="EmviApp" />
       <meta property="og:locale" content="en_US" />
 
@@ -83,7 +102,7 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={absOgImage} />
+      <meta name="twitter:image" content={finalOgImage} />
       <meta name="twitter:site" content="@EmviApp" />
       <meta name="twitter:creator" content="@EmviApp" />
 

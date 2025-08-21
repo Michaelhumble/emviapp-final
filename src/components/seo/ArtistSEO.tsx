@@ -32,10 +32,14 @@ const ArtistSEO: React.FC<ArtistSEOProps> = ({ artist, baseUrl = 'https://www.em
     ? `${artist.bio.substring(0, 140)}... View portfolio on EmviApp.`
     : `${artist.full_name || artist.username}${artist.specialty ? ` - Professional ${artist.specialty}` : ' - Beauty Professional'}${artist.location ? ` based in ${artist.location}` : ''}${artist.years_experience ? ` with ${artist.years_experience}+ years experience` : ''}. View portfolio and book services on EmviApp.`;
   
-  // Get primary profile image
-  const ogImage = artist.profile_image || 
-                  artist.portfolio_images?.[0] || 
-                  `${baseUrl}/og-artist-default.jpg`;
+  // Get primary profile image with proper fallback
+  const getArtistOgImage = () => {
+    if (artist.profile_image) return artist.profile_image;
+    if (artist.portfolio_images?.[0]) return artist.portfolio_images[0];
+    return '/og-artist.jpg'; // Fallback to default artist og image
+  };
+  
+  const ogImage = getArtistOgImage();
   
   // Person JSON-LD for artist profile
   const personJsonLd = buildPersonJsonLd({

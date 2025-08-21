@@ -22,6 +22,9 @@ const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://www.emvi.app' }
   
   const noIndex = shouldNoIndex(job);
   
+  // Determine og:image with fallback
+  const ogImage = (job as any).image || '/og-job.jpg';
+  
   // JobPosting JSON-LD
   const jobJsonLd = buildJobPostingJsonLd({
     id: job.id,
@@ -39,7 +42,7 @@ const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://www.emvi.app' }
       title={title}
       description={description}
       canonical={jobUrl}
-      ogImage={`${baseUrl}/og-job.jpg`}
+      ogImage={ogImage}
       noindex={noIndex}
       jsonLd={[jobJsonLd]}
       type="article"

@@ -60,8 +60,13 @@ const BlogSEO: React.FC<BlogSEOProps> = ({ post, baseUrl = 'https://www.emvi.app
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(breadcrumbItems);
 
-  // Enhanced Open Graph image
-  const ogImage = post.featuredImage || `${baseUrl}/og-blog-default.jpg`;
+  // Enhanced Open Graph image with proper fallback
+  const getBlogOgImage = () => {
+    if (post.featuredImage) return post.featuredImage;
+    return '/og-blog.jpg'; // Fallback to default blog og image
+  };
+  
+  const ogImage = getBlogOgImage();
 
   return (
     <BaseSEO
