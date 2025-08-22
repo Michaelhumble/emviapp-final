@@ -53,7 +53,7 @@ const FreelancerProfile = () => {
               <div className="flex flex-col md:flex-row items-center gap-6">
                 <div className="w-32 h-32 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
                   {profilePhoto ? (
-                    <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={profilePhoto} alt="Professional freelance nail technician profile - experienced beauty artist available for khách sang salons with tip cao potential" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   ) : (
                     <Users className="h-16 w-16 text-white/80" />
                   )}

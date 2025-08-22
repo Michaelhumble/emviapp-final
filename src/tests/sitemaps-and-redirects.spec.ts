@@ -8,24 +8,26 @@ const VERCEL_JSON_PATH = 'vercel.json';
 function read(path: string) { return fs.readFileSync(path, 'utf-8'); }
 
 describe('Sitemaps & Robots (presence checks)', () => {
-  it('robots.txt includes the three www sitemap lines', () => {
+  it('robots.txt includes the four www sitemap lines', () => {
     const robots = read(ROBOTS_PATH);
     expect(robots).toContain('Sitemap: https://www.emvi.app/sitemap.xml');
     expect(robots).toContain('Sitemap: https://www.emvi.app/jobs-sitemap.xml');
+    expect(robots).toContain('Sitemap: https://www.emvi.app/salons-sitemap.xml');
     expect(robots).toContain('Sitemap: https://www.emvi.app/blog-sitemap.xml');
   });
 
-  it('sitemap.xml includes static, jobs, and blog sitemap (www)', () => {
+  it('sitemap.xml includes static, jobs, salons, and artists sitemap (www)', () => {
     const xml = read(SITEMAP_INDEX_PATH);
     expect(xml).toContain('<loc>https://www.emvi.app/sitemap-static.xml</loc>');
     expect(xml).toContain('<loc>https://www.emvi.app/jobs-sitemap.xml</loc>');
-    expect(xml).toContain('<loc>https://www.emvi.app/blog-sitemap.xml</loc>');
-    // Tighten: ensure it's a sitemapindex with exactly the three entries
+    expect(xml).toContain('<loc>https://www.emvi.app/salons-sitemap.xml</loc>');
+    expect(xml).toContain('<loc>https://www.emvi.app/artists-sitemap.xml</loc>');
+    // Tighten: ensure it's a sitemapindex with exactly the four entries
     expect(xml).toMatch(/<sitemapindex[\s\S]*<\/sitemapindex>/);
     const sitemapTags = xml.match(/<sitemap>/g) || [];
-    expect(sitemapTags.length).toBe(3);
+    expect(sitemapTags.length).toBe(4);
     const locs = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => m[1]).sort();
-    expect(locs).toEqual(['https://www.emvi.app/jobs-sitemap.xml','https://www.emvi.app/sitemap-static.xml','https://www.emvi.app/blog-sitemap.xml'].sort());
+    expect(locs).toEqual(['https://www.emvi.app/jobs-sitemap.xml','https://www.emvi.app/sitemap-static.xml','https://www.emvi.app/salons-sitemap.xml','https://www.emvi.app/artists-sitemap.xml'].sort());
   });
 });
 

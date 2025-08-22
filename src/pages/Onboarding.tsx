@@ -151,7 +151,7 @@ const Onboarding = () => {
               <div className="relative">
                 <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                   {avatarPreview ? (
-                    <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
+                    <img src={avatarPreview} alt="Profile photo preview - beauty professional headshot for premium salon and khách sang clientele engagement" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   ) : (
                     <Camera className="h-8 w-8 text-gray-400" />
                   )}

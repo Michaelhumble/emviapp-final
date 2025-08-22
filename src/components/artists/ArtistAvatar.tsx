@@ -57,7 +57,7 @@ const ArtistAvatar = ({
       case "icon":
         return <User className={cn("text-muted-foreground", size === "sm" ? "h-4 w-4" : "h-6 w-6")} />;
       case "placeholder":
-        return <img src={getPlaceholderImage(name)} alt={name || "Artist"} className="object-cover" />;
+        return <img src={getPlaceholderImage(name)} alt={`${name || 'Professional beauty artist'} - expert nail technician and stylist with khách sang clientele experience`} className="object-cover" loading="lazy" decoding="async" />;
       default:
         return <span className="font-medium">{getInitials(name)}</span>;
     }
@@ -68,8 +68,9 @@ const ArtistAvatar = ({
       {imageUrl && (
         <AvatarImage 
           src={imageUrl} 
-          alt={`${name || 'Artist'}'s profile picture`}
+          alt={`${name || 'Professional beauty artist'} profile photo - experienced nail tech and beauty specialist serving khách sang clientele`}
           className="object-cover"
+          loading="lazy"
         />
       )}
       <AvatarFallback 
