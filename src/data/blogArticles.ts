@@ -65,9 +65,27 @@ const EmviMissionVisionRedirect = lazy(() => import('@/pages/blog/articles/EmviM
 const ViecLamNailOMy2025 = lazy(() => import('@/pages/blog/articles/ViecLamNailOMy2025'));
 const EmviAppBeautyMovement = lazy(() => import('@/pages/blog/emviapp-beauty-movement/EmviAppBeautyMovement'));
 const FindBeautyJobsAndSalons2025 = lazy(() => import('@/pages/blog/find-beauty-jobs-and-salons-2025/FindBeautyJobsAndSalons2025'));
+const TopNailSalonJobsUS2025 = lazy(() => import('@/pages/blog/articles/TopNailSalonJobsUS2025'));
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'top-nail-salon-jobs-us-2025',
+    slug: 'top-nail-salon-jobs-us-2025',
+    title: 'Top 10 Nail Salon Jobs in the U.S. (Updated 2025)',
+    description: 'Discover the highest-paying nail salon jobs across the U.S. in 2025. From khách sang salons to tip cao locations, find your perfect nail tech career opportunity.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-01',
+    readTime: '8 min read',
+    category: 'Career Growth',
+    categorySlug: 'career-growth',
+    tags: ['nail jobs USA', 'nail salon careers', 'khách sang', 'tip cao', 'nail technician salary', 'beauty jobs 2025', 'premium nail salons', 'nail tech opportunities'],
+    image: salonStaffingCrisisImage,
+    featured: true,
+    trending: true,
+    component: TopNailSalonJobsUS2025,
+    url: '/blog/career-growth/top-nail-salon-jobs-us-2025'
+  },
   {
     id: 'find-beauty-jobs-and-salons-2025',
     slug: 'find-beauty-jobs-and-salons-2025',
