@@ -74,10 +74,10 @@ const HeroContent = ({
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/20 pointer-events-none z-[-1]" />
         
         <motion.h1 
-          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-4xl mx-auto ${
+          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-[900px] mx-auto ${
             isMobile 
               ? 'text-4xl sm:text-5xl leading-tight mb-6' 
-              : 'text-6xl xl:text-7xl mb-6 leading-tight'
+              : 'text-5xl xl:text-6xl mb-6 leading-tight'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ const HeroContent = ({
           className={`font-inter font-light text-center text-white/95 drop-shadow-lg ${
             isMobile 
               ? 'text-lg leading-relaxed mb-8 max-w-md mx-auto px-2' 
-              : 'text-2xl max-w-4xl mx-auto mb-6 leading-relaxed'
+              : 'text-xl max-w-[900px] mx-auto mb-6 leading-relaxed'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,7 +113,19 @@ const HeroContent = ({
           transition={{ duration: 0.7, delay: 0.6 }}
         >
           {/* Simple Browse Jobs CTA */}
-          <Link to="/jobs">
+          <Link 
+            to="/jobs"
+            onClick={() => {
+              // Analytics tracking
+              if (typeof window !== 'undefined' && (window as any).gtag) {
+                (window as any).gtag('event', 'hero_cta_click', {
+                  event_category: 'engagement',
+                  event_label: 'Browse Jobs',
+                  cta_location: 'hero'
+                });
+              }
+            }}
+          >
             <Button 
               variant="outline"
               size="lg"

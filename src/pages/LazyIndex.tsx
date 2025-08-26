@@ -33,6 +33,9 @@ const ArtistsForHireSection = lazy(() => import("@/components/home/ArtistsForHir
 const LiveStatsBar = lazy(() => import("@/components/home/trust/LiveStatsBar"));
 const TrustBadges = lazy(() => import("@/components/home/trust/TrustBadges"));
 const RealTimeActivity = lazy(() => import("@/components/home/trust/RealTimeActivity"));
+const TrustBadgeRow = lazy(() => import("@/components/home/TrustBadgeRow"));
+const PressTrustBar = lazy(() => import("@/components/home/PressTrustBar"));
+const HomepageFAQ = lazy(() => import("@/components/home/HomepageFAQ"));
 
 import CredibilityRibbon from "@/components/home/CredibilityRibbon";
 import { isFeatureEnabled } from "@/config/premiumFeatures";
@@ -62,6 +65,16 @@ const LazyIndex = () => {
       
       {/* Critical CTA */}
       <JobsCallToAction />
+      
+      {/* Trust badges below hero */}
+      <Suspense fallback={null}>
+        <TrustBadgeRow />
+      </Suspense>
+      
+      {/* Press trust bar */}
+      <Suspense fallback={null}>
+        <PressTrustBar />
+      </Suspense>
       
       <div className="px-4">
         <CredibilityRibbon />
@@ -198,6 +211,13 @@ const LazyIndex = () => {
       <FallbackBoundary errorMessage="Unable to load Q&A section.">
         <Suspense fallback={<LoadingSpinner />}>
           <EmviQASection />
+        </Suspense>
+      </FallbackBoundary>
+      
+      {/* Homepage FAQ with structured data */}
+      <FallbackBoundary errorMessage="Unable to load FAQ section.">
+        <Suspense fallback={<LoadingSpinner />}>
+          <HomepageFAQ />
         </Suspense>
       </FallbackBoundary>
       

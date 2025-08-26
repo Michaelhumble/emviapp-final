@@ -61,26 +61,40 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           }}
           style={{ zIndex: index === activeIndex ? 2 : 1 }}
         >
-          {/* Performance-optimized image with WebP support */}
+          {/* Performance-optimized responsive image */}
           <div className="fixed-image-container absolute inset-0">
             <picture>
               <source 
-                srcSet={`${image.url}?format=webp&quality=85${isMobile ? '&w=768' : '&w=1920'}`}
+                srcSet={`${image.url}?format=webp&quality=90&w=1600&h=900`}
                 type="image/webp"
+                media="(min-width: 768px)"
               />
               <source 
-                srcSet={`${image.url}?format=avif&quality=80${isMobile ? '&w=768' : '&w=1920'}`}
+                srcSet={`${image.url}?format=webp&quality=85&w=768&h=600`}
+                type="image/webp"
+                media="(max-width: 767px)"
+              />
+              <source 
+                srcSet={`${image.url}?format=avif&quality=85&w=1600&h=900`}
                 type="image/avif"
+                media="(min-width: 768px)"
+              />
+              <source 
+                srcSet={`${image.url}?format=avif&quality=80&w=768&h=600`}
+                type="image/avif"
+                media="(max-width: 767px)"
               />
               <img
-                src={`${image.url}?quality=85${isMobile ? '&w=768' : '&w=1920'}`}
+                src={`${image.url}?quality=85&w=1600&h=900`}
                 alt={image.alt}
                 className="w-screen h-screen object-cover"
                 loading={index === 0 ? "eager" : "lazy"}
                 decoding="async"
                 fetchPriority={index === 0 ? "high" : "low"}
+                width={1600}
+                height={900}
                 style={{ 
-                  objectPosition: isMobile ? "center center" : "center", 
+                  objectPosition: "center",
                   width: "100vw",
                   height: "100dvh",
                   minHeight: "100svh",
@@ -92,7 +106,6 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                   right: 0,
                   bottom: 0,
                   filter: 'brightness(0.85) contrast(1.1) saturate(1.2)',
-                  imageRendering: 'crisp-edges',
                   transform: 'translate3d(0,0,0)',
                   backfaceVisibility: 'hidden',
                   willChange: index === activeIndex ? 'opacity' : 'auto'
