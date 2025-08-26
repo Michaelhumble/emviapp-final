@@ -105,6 +105,7 @@ const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 const EmviAppPressPage = lazy(() => import("@/pages/press/EmviAppPressPage"));
+const PressPage = lazy(() => import("@/pages/press/PressPage"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
 const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
 const PerformanceAudit = lazy(() => import("@/pages/PerformanceAudit"));
@@ -211,7 +212,8 @@ function App() {
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
                      <Route path="/performance" element={<Layout><PerformanceAudit /></Layout>} />
-                     <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><EmviAppPressPage /></Layout>} />
+                     <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><PressPage /></Layout>} />
+                     <Route path="/press" element={<Layout><PressPage /></Layout>} />
                      <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
                      <Route path="/partners" element={<Layout><InvestorsPartners /></Layout>} />
                      <Route path="/investors-partners" element={<Navigate to="/partners" replace />} />
