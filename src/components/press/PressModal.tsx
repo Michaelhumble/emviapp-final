@@ -49,22 +49,19 @@ const PressModal: React.FC<PressModalProps> = ({
     };
   }, [open, onOpenChange]);
 
-  const handlePrimaryClick = (url?: string) => {
-    if (outlet && url) {
-      const host = getHostFromUrl(url);
-      
+  const handlePrimaryClick = () => {
+    if (outlet && outlet.url) {
       // Analytics tracking
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
         (window as any).dataLayer.push({
           event: 'outlet_click',
           outlet_key: outlet.key,
-          outlet_name: outlet.name,
-          link_type: 'primary'
+          outlet_name: outlet.name
         });
       }
       
-      // Open in new tab
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Open in new tab with nofollow
+      window.open(outlet.url, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -132,7 +129,7 @@ const PressModal: React.FC<PressModalProps> = ({
             </h3>
             
             <p className="text-sm text-muted-foreground">
-              {formatDate(outlet.dateISO)} • {outlet.market}
+              {formatDate(outlet.dateISO)} • {outlet.city}
             </p>
           </div>
 
@@ -140,12 +137,23 @@ const PressModal: React.FC<PressModalProps> = ({
           <div className="flex flex-col gap-3">
             <button
               ref={primaryButtonRef}
-              onClick={() => handlePrimaryClick(outlet.url)}
+              onClick={handlePrimaryClick}
               className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             >
               <span>Read on {getHostFromUrl(outlet.url)}</span>
               <ExternalLink className="ml-2 h-4 w-4" />
             </button>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              asChild
+            >
+              <Link to={`/press?outlet=${outlet.key}`}>
+                See all coverage
+              </Link>
+            </Button>
             
             {/* More sources if available */}
             {outlet.altUrls && outlet.altUrls.length > 0 && (

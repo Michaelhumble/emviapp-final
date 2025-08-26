@@ -9,8 +9,8 @@ const PressMarquee: React.FC = () => {
   const [selectedOutlet, setSelectedOutlet] = useState<string | null>(null);
   const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Get weighted outlets for display (16 total)
-  const displayOutlets = getWeightedOutlets(16);
+  // Get weighted outlets for display (10 total)
+  const displayOutlets = getWeightedOutlets(10);
   
   // Duplicate for seamless infinite scroll
   const list = [...displayOutlets, ...displayOutlets];
@@ -70,11 +70,15 @@ const PressMarquee: React.FC = () => {
                     loading="lazy"
                     decoding="async"
                     onError={(e) => {
-                      // Hide failed logos instead of showing initials
-                      const button = e.currentTarget.parentElement as HTMLButtonElement;
-                      if (button) {
-                        button.style.display = 'none';
-                      }
+                      // Try fallback to default logo
+                      e.currentTarget.src = '/press/default.svg';
+                      e.currentTarget.onerror = () => {
+                        // Hide if even fallback fails
+                        const button = e.currentTarget.parentElement as HTMLButtonElement;
+                        if (button) {
+                          button.style.display = 'none';
+                        }
+                      };
                     }}
                   />
                 </button>

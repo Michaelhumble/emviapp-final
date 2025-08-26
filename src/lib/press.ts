@@ -3,25 +3,23 @@ import outletsData from '@/data/outlets.json';
 export interface Outlet {
   key: string;
   name: string;
-  tier: 'national' | 'finance' | 'local_tv' | 'search' | 'other';
-  market: string;
-  city: string;
+  tier: 'national' | 'finance' | 'local_tv' | 'search' | 'business' | 'aggregator';
   domain: string;
   logo?: string;
-  logoAlt?: string;
+  city: string;
+  dateISO: string;
+  headline: string;
   url: string;
   altUrls: string[];
-  headline: string;
-  dateISO: string;
-  type: 'article';
+  type: 'article' | 'aggregator';
 }
 
 export const OUTLETS: Outlet[] = outletsData as Outlet[];
 
-// Get logo URL with Clearbit fallback
+// Get logo URL with Clearbit fallback and final fallback
 export const getLogoUrl = (outlet: Outlet): string => {
   // Use local logo first
-  if (outlet.logo) {
+  if (outlet.logo && outlet.logo.trim()) {
     return outlet.logo;
   }
   
@@ -29,34 +27,31 @@ export const getLogoUrl = (outlet: Outlet): string => {
   return `https://logo.clearbit.com/${outlet.domain}?size=256`;
 };
 
+// Priority order for marquee display
+const PRIORITY_ORDER = ['ap', 'yahoo', 'googlenews', 'bingnews', 'benzinga', 'kron4', 'fox40', 'kget17', 'wfla', 'cbs13', 'wgn9', 'kxan'];
+
 // Tier weights for marquee rotation
 const TIER_WEIGHTS = {
   national: 4,
   finance: 3,
   search: 2,
   local_tv: 1,
-  other: 1
+  business: 1,
+  aggregator: 1
 };
 
-// Get weighted outlets for marquee display
-export const getWeightedOutlets = (count: number = 16): Outlet[] => {
-  const weighted: Outlet[] = [];
+// Get weighted outlets for marquee display with priority order
+export const getWeightedOutlets = (count: number = 10): Outlet[] => {
+  // Start with priority outlets in order
+  const priorityOutlets = PRIORITY_ORDER
+    .map(key => OUTLETS.find(o => o.key === key))
+    .filter(Boolean) as Outlet[];
   
-  // Add outlets based on tier weights
-  OUTLETS.forEach(outlet => {
-    const weight = TIER_WEIGHTS[outlet.tier] || 1;
-    for (let i = 0; i < weight; i++) {
-      weighted.push(outlet);
-    }
-  });
+  // Add remaining outlets if needed
+  const remaining = OUTLETS.filter(o => !PRIORITY_ORDER.includes(o.key));
+  const allOutlets = [...priorityOutlets, ...remaining];
   
-  // Shuffle and take unique outlets (no duplicates on screen)
-  const shuffled = weighted.sort(() => Math.random() - 0.5);
-  const unique = Array.from(new Set(shuffled.map(o => o.key)))
-    .map(key => OUTLETS.find(o => o.key === key)!)
-    .slice(0, count);
-  
-  return unique;
+  return allOutlets.slice(0, count);
 };
 
 // Get outlet by key
@@ -81,7 +76,8 @@ export const getTierDisplayName = (tier: string): string => {
     finance: 'Finance',
     search: 'Search',
     local_tv: 'Local TV',
-    other: 'Business'
+    business: 'Business',
+    aggregator: 'Aggregator'
   };
   return tierMap[tier] || 'Business';
 };

@@ -4,7 +4,7 @@ import { Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { OUTLETS } from '@/lib/press';
+import { OUTLETS, getLogoUrl } from '@/lib/press';
 
 const PressGrid: React.FC = () => {
   const location = useLocation();
@@ -26,14 +26,14 @@ const PressGrid: React.FC = () => {
     }
   }, [location.search]);
 
-  // Get unique markets for filter
-  const markets = Array.from(new Set(allOutlets.map(outlet => outlet.market)));
+  // Get unique cities for filter
+  const cities = Array.from(new Set(allOutlets.map(outlet => outlet.city)));
 
-  // Filter outlets based on search and market
+  // Filter outlets based on search and city
   const filteredOutlets = allOutlets.filter(outlet => {
     const matchesSearch = outlet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         outlet.market.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesMarket = !selectedMarket || outlet.market === selectedMarket;
+                         outlet.city.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesMarket = !selectedMarket || outlet.city === selectedMarket;
     return matchesSearch && matchesMarket;
   });
 
@@ -101,14 +101,14 @@ const PressGrid: React.FC = () => {
             >
               All Markets
             </Button>
-            {markets.map(market => (
+            {cities.map(city => (
               <Button
-                key={market}
-                variant={selectedMarket === market ? 'default' : 'outline'}
+                key={city}
+                variant={selectedMarket === city ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedMarket(market)}
+                onClick={() => setSelectedMarket(city)}
               >
-                {market}
+                {city}
               </Button>
             ))}
           </div>
@@ -130,11 +130,15 @@ const PressGrid: React.FC = () => {
               <div className="flex items-center justify-center mb-4">
                 <div className="pressLogoWrap">
                   <img
-                    src={outlet.logo}
+                    src={getLogoUrl(outlet)}
                     alt={`${outlet.name} logo`}
                     loading="lazy"
                     decoding="async"
-                    onError={(e) => handleLogoError(e, outlet.name)}
+                    onError={(e) => {
+                      // Try fallback to default logo
+                      e.currentTarget.src = '/press/default.svg';
+                      e.currentTarget.onerror = () => handleLogoError(e, outlet.name);
+                    }}
                   />
                 </div>
               </div>
@@ -144,7 +148,7 @@ const PressGrid: React.FC = () => {
                 <h3 className="font-semibold text-foreground text-sm">{outlet.name}</h3>
                 
                 <Badge variant="secondary" className="text-xs">
-                  {outlet.market}
+                  {outlet.city}
                 </Badge>
 
                 {/* Read Coverage Link */}

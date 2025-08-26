@@ -54,9 +54,9 @@ const PressCard: React.FC<PressCardProps> = ({ outlet, market = 'Business' }) =>
         </div>
         
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-          {outlet.altUrls && outlet.altUrls.length > 0 ? 
-            `Coverage syndicated to ${outlet.altUrls.length + 1} outlets` :
-            `Coverage from ${outlet.market}`
+          {outlet.type === 'aggregator' ? 
+            `Coverage syndicated to multiple outlets` :
+            `Coverage from ${outlet.city}`
           }
         </p>
 

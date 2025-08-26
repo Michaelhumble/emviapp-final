@@ -1,8 +1,8 @@
 :root {
   /* Premium sizing - billion-dollar look */
-  --press-logo-h-desktop: 92px;  /* container height desktop */
-  --press-logo-h-tablet: 84px;   /* container height tablet */
-  --press-logo-h-mobile: 72px;   /* container height mobile */
+  --press-logo-h-desktop: 80px;  /* container height desktop */
+  --press-logo-h-tablet: 64px;   /* container height tablet */
+  --press-logo-h-mobile: 56px;   /* container height mobile */
 }
 
 @keyframes marquee {
@@ -102,6 +102,11 @@
   display: block;
   content-visibility: auto;
   filter: none; /* Full-color logos only */
+}
+
+.pressLogoWrap img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* No responsive overrides needed - container handles sizing */

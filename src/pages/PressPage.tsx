@@ -57,7 +57,7 @@ const PressPage: React.FC = () => {
       filtered = filtered.filter(outlet => 
         outlet.name.toLowerCase().includes(search) ||
         outlet.headline.toLowerCase().includes(search) ||
-        (outlet.market && outlet.market.toLowerCase().includes(search))
+        (outlet.city && outlet.city.toLowerCase().includes(search))
       );
     }
 
@@ -202,13 +202,14 @@ const PressPage: React.FC = () => {
         {/* Media Kit */}
         <MediaKit />
 
-        {/* From Our Team Quote Section */}
+        {/* Our Mission Quote Section */}
         <div className="bg-card border rounded-lg p-8 text-center">
           <div className="bg-card border-l-4 border-primary p-6 rounded-r-lg">
-            <h3 className="text-lg font-semibold mb-4">From Our Team</h3>
+            <h3 className="text-lg font-semibold mb-4">Our Mission</h3>
             <p className="text-muted-foreground">
               "We're thrilled to see EmviApp's mission to revolutionize the beauty industry resonate with media outlets nationwide. This coverage represents more than press attention—it validates our commitment to empowering beauty professionals and businesses with cutting-edge AI technology."
             </p>
+            <p className="text-sm text-muted-foreground mt-3">— EmviApp Founder</p>
           </div>
         </div>
 
