@@ -1,25 +1,39 @@
-import outletsData from '@/data/press/outlets.json';
+import outletsData from '@/data/outlets.json';
 
 export interface Outlet {
   key: string;
   name: string;
-  tier: 'national' | 'finance' | 'local_tv' | 'other';
-  logo: string;
+  tier: 'national' | 'finance' | 'local_tv' | 'search' | 'other';
   market: string;
   city: string;
-  dateISO: string;
-  headline: string;
-  url?: string;
+  domain: string;
+  logo?: string;
+  logoAlt?: string;
+  url: string;
   altUrls: string[];
-  type: 'article' | 'aggregator';
+  headline: string;
+  dateISO: string;
+  type: 'article';
 }
 
 export const OUTLETS: Outlet[] = outletsData as Outlet[];
+
+// Get logo URL with Clearbit fallback
+export const getLogoUrl = (outlet: Outlet): string => {
+  // Use local logo first
+  if (outlet.logo) {
+    return outlet.logo;
+  }
+  
+  // Use Clearbit API with domain
+  return `https://logo.clearbit.com/${outlet.domain}?size=256`;
+};
 
 // Tier weights for marquee rotation
 const TIER_WEIGHTS = {
   national: 4,
   finance: 3,
+  search: 2,
   local_tv: 1,
   other: 1
 };
@@ -65,6 +79,7 @@ export const getTierDisplayName = (tier: string): string => {
   const tierMap: Record<string, string> = {
     national: 'National',
     finance: 'Finance',
+    search: 'Search',
     local_tv: 'Local TV',
     other: 'Business'
   };

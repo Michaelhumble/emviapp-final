@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { getWeightedOutlets, getOutletByKey, type Outlet } from '@/lib/press';
+import { getWeightedOutlets, getOutletByKey, getLogoUrl, type Outlet } from '@/lib/press';
 import PressModal from './PressModal';
 import './PressMarquee.css';
 
@@ -19,10 +19,9 @@ const PressMarquee: React.FC = () => {
     // Analytics tracking
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({
-        event: 'press_logo_click',
+        event: 'outlet_click',
         outlet_key: outlet.key,
         outlet_name: outlet.name,
-        type: outlet.type,
         location: 'home-marquee'
       });
     }
@@ -62,23 +61,20 @@ const PressMarquee: React.FC = () => {
                   key={`${outlet.key}-${index}`}
                   ref={(el) => setTriggerRef(`${outlet.key}-${index}`, el)}
                   onClick={() => handleLogoClick(outlet)}
-                  aria-label={`${outlet.name} coverage for EmviApp`}
+                  aria-label={`Open ${outlet.name} coverage`}
                   className="pressLogoWrap cursor-pointer"
                 >
                   <img
-                    src={outlet.logo}
+                    src={getLogoUrl(outlet)}
                     alt={`${outlet.name} logo`}
                     loading="lazy"
                     decoding="async"
-                    style={{ 
-                      contentVisibility: 'auto',
-                      width: 'auto',
-                      height: '100%'
-                    }}
                     onError={(e) => {
-                      const parent = (e.currentTarget.parentElement as HTMLElement);
-                      const initials = outlet.name.split(' ').map(w => w[0]).join('').toUpperCase();
-                      parent.innerHTML = `<div class="inline-flex items-center justify-center w-full h-full rounded-xl bg-card border text-card-foreground text-sm font-semibold">${initials}</div>`;
+                      // Hide failed logos instead of showing initials
+                      const button = e.currentTarget.parentElement as HTMLButtonElement;
+                      if (button) {
+                        button.style.display = 'none';
+                      }
                     }}
                   />
                 </button>

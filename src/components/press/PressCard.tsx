@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar } from 'lucide-react';
-import { type Outlet, formatDate } from '@/lib/press';
+import { type Outlet, formatDate, getLogoUrl } from '@/lib/press';
 
 interface PressCardProps {
   outlet: Outlet;
@@ -24,11 +24,10 @@ const PressCard: React.FC<PressCardProps> = ({ outlet, market = 'Business' }) =>
     <div className="bg-card border rounded-lg p-6 hover:shadow-lg transition-all duration-300 group">
       {/* Outlet logo and info */}
       <div className="flex items-start gap-4 mb-4">
-        <div className="pressLogoWrap flex-shrink-0 !h-12 !w-auto !p-2">
+        <div className="pressLogoWrap flex-shrink-0 !h-12 !w-12 !p-2">
           <img
-            src={outlet.logo}
+            src={getLogoUrl(outlet)}
             alt={`${outlet.name} logo`}
-            className="!max-h-8 w-auto"
             loading="lazy"
             decoding="async"
           />
@@ -55,8 +54,8 @@ const PressCard: React.FC<PressCardProps> = ({ outlet, market = 'Business' }) =>
         </div>
         
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-          {outlet.type === 'aggregator' ? 
-            `Coverage aggregated from ${outlet.altUrls.length} sources` :
+          {outlet.altUrls && outlet.altUrls.length > 0 ? 
+            `Coverage syndicated to ${outlet.altUrls.length + 1} outlets` :
             `Coverage from ${outlet.market}`
           }
         </p>
@@ -69,7 +68,7 @@ const PressCard: React.FC<PressCardProps> = ({ outlet, market = 'Business' }) =>
           asChild
         >
           <a
-            href={outlet.type === 'article' ? outlet.url : outlet.altUrls[0]}
+            href={outlet.url}
             target="_blank"
             rel="nofollow noopener"
             onClick={handleCoverageClick}

@@ -1,11 +1,8 @@
 :root {
   /* Premium sizing - billion-dollar look */
-  --press-logo-h-desktop: 96px;  /* container height desktop */
-  --press-logo-max-desktop: 72px; /* logo max-height desktop */
-  --press-logo-h-tablet: 80px;   /* container height tablet */
-  --press-logo-max-tablet: 60px; /* logo max-height tablet */
-  --press-logo-h-mobile: 68px;   /* container height mobile */
-  --press-logo-max-mobile: 52px; /* logo max-height mobile */
+  --press-logo-h-desktop: 92px;  /* container height desktop */
+  --press-logo-h-tablet: 84px;   /* container height tablet */
+  --press-logo-h-mobile: 72px;   /* container height mobile */
 }
 
 @keyframes marquee {
@@ -46,13 +43,14 @@
 /* Premium logo wrapper - billion-dollar styling */
 .pressLogoWrap {
   height: var(--press-logo-h-mobile);
-  padding: 8px 12px;
+  width: var(--press-logo-h-mobile);
+  padding: 12px;
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(17, 24, 39, 0.06) inset;
-  opacity: 0.92;
+  opacity: 0.96;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -61,12 +59,14 @@
   border: none;
   cursor: pointer;
   position: relative;
+  object-fit: contain;
 }
 
 @media (min-width: 768px) {
   .pressLogoWrap {
     height: var(--press-logo-h-tablet);
-    padding: 10px 16px;
+    width: var(--press-logo-h-tablet);
+    padding: 14px;
     border-radius: 18px;
   }
 }
@@ -74,16 +74,17 @@
 @media (min-width: 1280px) {
   .pressLogoWrap {
     height: var(--press-logo-h-desktop);
-    padding: 12px 20px;
+    width: var(--press-logo-h-desktop);
+    padding: 16px;
     border-radius: 20px;
   }
 }
 
 .pressLogoWrap:hover {
   opacity: 1;
-  transform: translateY(-1px) scale(1.04);
+  transform: translateY(-1px) scale(1.03);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(17, 24, 39, 0.08) inset;
 }
 
@@ -95,28 +96,15 @@
 
 .pressLogoWrap img,
 .pressLogoWrap svg {
-  max-height: var(--press-logo-max-mobile);
-  width: auto;
-  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
-  margin: 0 auto;
   content-visibility: auto;
   filter: none; /* Full-color logos only */
 }
 
-@media (min-width: 768px) {
-  .pressLogoWrap img,
-  .pressLogoWrap svg {
-    max-height: var(--press-logo-max-tablet);
-  }
-}
-
-@media (min-width: 1280px) {
-  .pressLogoWrap img,
-  .pressLogoWrap svg {
-    max-height: var(--press-logo-max-desktop);
-  }
-}
+/* No responsive overrides needed - container handles sizing */
 
 /* Press grid consistency - cap at 48px for grid tiles */
 .pressGrid .pressLogoWrap {

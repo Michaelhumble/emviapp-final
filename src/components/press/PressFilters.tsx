@@ -21,6 +21,7 @@ const PressFilters: React.FC<PressFiltersProps> = ({
     { key: 'national', label: 'National' },
     { key: 'local', label: 'Local TV' },
     { key: 'finance', label: 'Finance' },
+    { key: 'search', label: 'Search' },
     { key: 'business', label: 'Business' }
   ];
 

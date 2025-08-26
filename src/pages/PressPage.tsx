@@ -42,6 +42,7 @@ const PressPage: React.FC = () => {
         'national': 'national',
         'finance': 'finance', 
         'local': 'local_tv',
+        'search': 'search',
         'business': 'other'
       };
       const targetTier = tierMap[activeFilter];
@@ -201,17 +202,14 @@ const PressPage: React.FC = () => {
         {/* Media Kit */}
         <MediaKit />
 
-        {/* Founder Quote Section */}
+        {/* From Our Team Quote Section */}
         <div className="bg-card border rounded-lg p-8 text-center">
-          <h3 className="text-2xl font-bold mb-6 text-foreground">From Our Founder</h3>
-          <blockquote className="text-lg text-muted-foreground italic mb-6 max-w-3xl mx-auto leading-relaxed">
-            "The beauty industry has been fragmented for too long. EmviApp bridges the gap between 
-            talent and opportunity, creating a thriving ecosystem where professionals can discover 
-            their potential and businesses can find the perfect match."
-          </blockquote>
-          <p className="text-foreground font-semibold">
-            — EmviApp Founder
-          </p>
+          <div className="bg-card border-l-4 border-primary p-6 rounded-r-lg">
+            <h3 className="text-lg font-semibold mb-4">From Our Team</h3>
+            <p className="text-muted-foreground">
+              "We're thrilled to see EmviApp's mission to revolutionize the beauty industry resonate with media outlets nationwide. This coverage represents more than press attention—it validates our commitment to empowering beauty professionals and businesses with cutting-edge AI technology."
+            </p>
+          </div>
         </div>
 
         {/* Legal disclaimer */}

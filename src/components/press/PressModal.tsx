@@ -3,7 +3,7 @@ import { X, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { type Outlet, formatDate, getHostFromUrl } from '@/lib/press';
+import { type Outlet, formatDate, getHostFromUrl, getLogoUrl } from '@/lib/press';
 
 interface PressModalProps {
   open: boolean;
@@ -56,29 +56,35 @@ const PressModal: React.FC<PressModalProps> = ({
       // Analytics tracking
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
         (window as any).dataLayer.push({
-          event: 'press_modal_primary_click',
-          host: host,
-          outlet_key: outlet.key
+          event: 'outlet_click',
+          outlet_key: outlet.key,
+          outlet_name: outlet.name,
+          link_type: 'primary'
         });
       }
       
       // Open in new tab
-      window.open(url, '_blank', 'nofollow noopener');
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 
-  const handleSeeAllClick = () => {
+  const handleAltClick = (url: string) => {
     if (outlet) {
+      const host = getHostFromUrl(url);
+      
       // Analytics tracking
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
         (window as any).dataLayer.push({
-          event: 'press_modal_secondary_click',
-          action: 'see_all',
-          outlet_key: outlet.key
+          event: 'outlet_click',
+          outlet_key: outlet.key,
+          outlet_name: outlet.name,
+          link_type: 'alt'
         });
       }
+      
+      // Open in new tab
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
-    onOpenChange(false);
   };
 
   if (!outlet) return null;
@@ -106,11 +112,10 @@ const PressModal: React.FC<PressModalProps> = ({
         <div className="space-y-6 py-4">
           {/* Outlet Logo and Name */}
           <div className="flex items-center space-x-3">
-            <div className="pressLogoWrap flex-shrink-0">
+            <div className="pressLogoWrap !h-16 !w-16 !p-3 flex-shrink-0">
               <img
-                src={outlet.logo}
+                src={getLogoUrl(outlet)}
                 alt={`${outlet.name} logo`}
-                className="max-w-full"
                 loading="eager"
                 decoding="sync"
               />
@@ -131,50 +136,35 @@ const PressModal: React.FC<PressModalProps> = ({
             </p>
           </div>
 
-          {/* Action Buttons - different for article vs aggregator */}
+          {/* Action Buttons - Primary article link */}
           <div className="flex flex-col gap-3">
-            {outlet.type === 'article' ? (
-              // Single article - primary and secondary buttons
-              <>
-                <button
-                  ref={primaryButtonRef}
-                  onClick={() => handlePrimaryClick(outlet.url)}
-                  className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <span>Read on {outlet.name}</span>
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </button>
-                
-                <Link
-                  to={`/press?outlet=${outlet.key}`}
-                  onClick={handleSeeAllClick}
-                  className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  See all coverage
-                </Link>
-              </>
-            ) : (
-              // Aggregator - list canonical options
-              <>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Choose where to read the coverage:
-                </p>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {outlet.altUrls.map((url, index) => {
-                    const host = getHostFromUrl(url);
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => handlePrimaryClick(url)}
-                        className="w-full inline-flex items-center justify-between rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                      >
-                        <span>Read on {host}</span>
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
+            <button
+              ref={primaryButtonRef}
+              onClick={() => handlePrimaryClick(outlet.url)}
+              className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <span>Read on {getHostFromUrl(outlet.url)}</span>
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </button>
+            
+            {/* More sources if available */}
+            {outlet.altUrls && outlet.altUrls.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">More sources:</p>
+                {outlet.altUrls.slice(0, 3).map((url, index) => {
+                  const host = getHostFromUrl(url);
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleAltClick(url)}
+                      className="w-full inline-flex items-center justify-between rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <span>Read on {host}</span>
+                      <ExternalLink className="ml-2 h-3 w-3" />
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
         </div>
