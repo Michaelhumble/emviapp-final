@@ -42,9 +42,16 @@ jobs:
         run: mkdir -p reports
         
       - name: Run SEO audit
+        env:
+          AUDIT_SITE: ${{ env.AUDIT_SITE }}
         run: |
           echo "🔍 Running SEO audit for $AUDIT_SITE"
-          node scripts/audit-seo.mjs --site=$AUDIT_SITE --out=reports --maxDepth=4
+          if [ -f "scripts/audit-seo.mjs" ]; then
+            node scripts/audit-seo.mjs --site=$AUDIT_SITE --out=reports --maxDepth=4
+          else
+            echo "⚠️ audit-seo.mjs not found, running basic lighthouse audit"
+            lighthouse $AUDIT_SITE --output=html --output-path=reports/seo-report.html --only-categories=seo --chrome-flags="--headless --no-sandbox"
+          fi
         continue-on-error: true
         
       - name: Validate sitemaps
@@ -54,9 +61,16 @@ jobs:
         continue-on-error: true
         
       - name: Generate GSC data (stub)
+        env:
+          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
         run: |
           echo "📊 Pulling Google Search Console data"
-          node scripts/gsc-pulls.mjs || echo "GSC pull skipped (not implemented)"
+          if [ -f "scripts/gsc-pulls.mjs" ]; then
+            node scripts/gsc-pulls.mjs || echo "GSC pull failed, continuing..."
+          else
+            echo "GSC pull script not found, skipping..."
+          fi
         continue-on-error: true
         
       - name: Generate internal links suggestions
@@ -108,6 +122,10 @@ jobs:
           
           # Generate date for issue title
           echo "audit_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          
+          # Set total issues count
+          total_issues=$((broken_links + sitemap_issues))
+          echo "total_issues=$total_issues" >> $GITHUB_OUTPUT
           
           echo "✅ Results parsed: $broken_links broken links, $seo_issues SEO issues, $sitemap_issues sitemap issues"
           

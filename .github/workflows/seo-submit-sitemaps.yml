@@ -26,6 +26,7 @@ jobs:
 
       - name: Submit sitemaps to GSC
         env:
+          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
           GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
           GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
         run: |
@@ -34,12 +35,32 @@ jobs:
           
           async function submitSitemaps() {
             try {
-              // Configure Google Search Console API client
-              const auth = new google.auth.GoogleAuth({
-                credentials: {
+              // Configure Google Search Console API client with fallback
+              let credentials;
+              
+              if (process.env.GSC_CREDENTIALS) {
+                // Try JSON credentials first
+                try {
+                  credentials = JSON.parse(process.env.GSC_CREDENTIALS);
+                } catch (e) {
+                  console.log('GSC_CREDENTIALS is not valid JSON, trying individual fields...');
+                }
+              }
+              
+              if (!credentials && process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY) {
+                // Fallback to individual fields
+                credentials = {
                   client_email: process.env.GSC_CLIENT_EMAIL,
                   private_key: process.env.GSC_PRIVATE_KEY.replace(/\\n/g, '\n'),
-                },
+                };
+              }
+              
+              if (!credentials) {
+                throw new Error('No GSC credentials found. Set GSC_CREDENTIALS or GSC_CLIENT_EMAIL/GSC_PRIVATE_KEY');
+              }
+              
+              const auth = new google.auth.GoogleAuth({
+                credentials: credentials,
                 scopes: ['https://www.googleapis.com/auth/webmasters'],
               });
               
@@ -49,16 +70,16 @@ jobs:
               // Main sitemaps to submit
               const sitemaps = [
                 'https://www.emvi.app/sitemap.xml',
-                'https://www.emvi.app/artists-sitemap.xml'
+                'https://www.emvi.app/jobs-sitemap.xml',
+                'https://www.emvi.app/artists-sitemap.xml',
+                'https://www.emvi.app/salons-sitemap.xml',
+                'https://www.emvi.app/blog-sitemap.xml'
               ];
               
-              // Add jobs shard if provided, otherwise try to get latest
+              // Add jobs shard if provided
               const jobsShardUrl = process.env.JOBS_SHARD_URL || '${{ inputs.jobs_shard_url }}';
-              if (jobsShardUrl && jobsShardUrl !== '') {
+              if (jobsShardUrl && jobsShardUrl !== '' && !sitemaps.includes(jobsShardUrl)) {
                 sitemaps.push(jobsShardUrl);
-              } else {
-                // Default to jobs sitemap index which handles shards internally
-                sitemaps.push('https://www.emvi.app/jobs-sitemap.xml');
               }
               
               console.log('Submitting sitemaps to Google Search Console...');

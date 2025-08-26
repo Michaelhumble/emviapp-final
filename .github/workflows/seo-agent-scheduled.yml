@@ -19,64 +19,110 @@ jobs:
       with:
         node-version: '18'
         
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
       
-    - name: Run SEO Agent Analysis
-      run: |
-        node scripts/seo-agent.mjs \
-          --site=https://www.emvi.app \
-          --out=reports \
-          --maxDepth=6 \
-          --includeSitemaps \
-          --dry-run
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Run SEO Agent Analysis
+        run: |
+          echo "🤖 Running SEO Agent analysis..."
+          if [ -f "scripts/seo-agent.mjs" ]; then
+            node scripts/seo-agent.mjs \
+              --site=https://www.emvi.app \
+              --out=reports \
+              --maxDepth=6 \
+              --includeSitemaps \
+              --dry-run=false
+          else
+            echo "⚠️ SEO Agent script not found, running basic audit..."
+            node scripts/audit-seo.mjs --site=https://www.emvi.app --out=reports --maxDepth=4 || echo "Basic audit failed"
+            node scripts/validate-sitemaps.mjs || echo "Sitemap validation failed"
+          fi
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
+        continue-on-error: true
         
-    - name: Generate Weekly Report
-      run: |
-        echo "# SEO Weekly Digest - $(date +%Y-%m-%d)" > reports/weekly-digest.md
-        echo "" >> reports/weekly-digest.md
-        echo "## Analysis Summary" >> reports/weekly-digest.md
-        cat reports/seo-agent-summary.md >> reports/weekly-digest.md
-        echo "" >> reports/weekly-digest.md
-        echo "## Broken Links Detected" >> reports/weekly-digest.md
-        if [ -f reports/broken-links.csv ]; then
-          echo "Found $(wc -l < reports/broken-links.csv) broken links" >> reports/weekly-digest.md
-        else
-          echo "No broken links detected ✅" >> reports/weekly-digest.md
-        fi
+      - name: Generate Weekly Report
+        run: |
+          REPORT_DATE=$(date +%Y-%m-%d)
+          echo "# SEO Weekly Digest - $REPORT_DATE" > reports/weekly-digest.md
+          echo "" >> reports/weekly-digest.md
+          echo "## Analysis Summary" >> reports/weekly-digest.md
+          
+          if [ -f reports/seo-agent-summary.md ]; then
+            cat reports/seo-agent-summary.md >> reports/weekly-digest.md
+          else
+            echo "⚠️ SEO agent summary not available" >> reports/weekly-digest.md
+          fi
+          
+          echo "" >> reports/weekly-digest.md
+          echo "## Broken Links Detected" >> reports/weekly-digest.md
+          if [ -f reports/broken-links.csv ]; then
+            BROKEN_COUNT=$(tail -n +2 reports/broken-links.csv | wc -l)
+            echo "Found $BROKEN_COUNT broken links" >> reports/weekly-digest.md
+            
+            if [ $BROKEN_COUNT -gt 0 ]; then
+              echo "" >> reports/weekly-digest.md
+              echo "**Top Issues:**" >> reports/weekly-digest.md
+              echo "\`\`\`" >> reports/weekly-digest.md
+              head -11 reports/broken-links.csv | tail -10 >> reports/weekly-digest.md
+              echo "\`\`\`" >> reports/weekly-digest.md
+            fi
+          else
+            echo "No broken links detected ✅" >> reports/weekly-digest.md
+          fi
+          
+          echo "" >> reports/weekly-digest.md
+          echo "## Sitemap Status" >> reports/weekly-digest.md
+          if [ -f reports/sitemap-validation.json ]; then
+            echo "✅ Sitemap validation completed - check full report for details" >> reports/weekly-digest.md
+          else
+            echo "⚠️ Sitemap validation not available" >> reports/weekly-digest.md
+          fi
+          
+          echo "" >> reports/weekly-digest.md
+          echo "## Next Actions" >> reports/weekly-digest.md
+          echo "- Review broken links and fix them" >> reports/weekly-digest.md
+          echo "- Check sitemap health" >> reports/weekly-digest.md
+          echo "- Monitor Core Web Vitals" >> reports/weekly-digest.md
+          echo "" >> reports/weekly-digest.md
+          echo "---" >> reports/weekly-digest.md
+          echo "*Generated on $(date) by SEO Agent*" >> reports/weekly-digest.md
         
-    - name: Create PR with Fixes
-      if: github.event_name == 'schedule'
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: 'chore(seo): weekly agent fixes and optimizations'
-        title: 'SEO Agent Weekly Fixes - Week of ${{ github.run_id }}'
-        body: |
-          🤖 **Automated SEO Agent Weekly Digest**
-          
-          This PR contains SEO improvements identified by the automated agent:
-          
-          - Canonical URL normalizations
-          - JSON-LD schema enhancements  
-          - Internal broken link fixes
-          - Meta description improvements
-          
-          **Review carefully before merging** - all changes are surgical and preserve business logic.
-          
-          Generated by: SEO Agent v1.0
-          Report: see `reports/weekly-digest.md`
-        branch: seo-agent-weekly-${{ github.run_number }}
-        delete-branch: true
+      - name: Create PR with Fixes
+        if: github.event_name == 'schedule'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(seo): weekly agent fixes and optimizations'
+          title: 'SEO Agent Weekly Fixes - Week of ${{ github.run_number }}'
+          body: |
+            🤖 **Automated SEO Agent Weekly Digest**
+            
+            This PR contains SEO improvements identified by the automated agent:
+            
+            - Canonical URL normalizations
+            - JSON-LD schema enhancements  
+            - Internal broken link fixes
+            - Meta description improvements
+            
+            **Review carefully before merging** - all changes are surgical and preserve business logic.
+            
+            Generated by: SEO Agent v1.0
+            Report: see `reports/weekly-digest.md`
+          branch: seo-agent-weekly-${{ github.run_number }}
+          delete-branch: true
+        continue-on-error: true
         
-    - name: Upload Reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: seo-weekly-digest-${{ github.run_number }}
-        path: |
-          reports/weekly-digest.md
-          reports/seo-agent-summary.md
-          reports/broken-links.csv
-        retention-days: 30
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-weekly-digest-${{ github.run_number }}
+          path: |
+            reports/weekly-digest.md
+            reports/seo-agent-summary.md
+            reports/broken-links.csv
+            reports/sitemap-validation.json
+            reports/seo-report.html
+          retention-days: 30
+        if: always()

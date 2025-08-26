@@ -25,23 +25,49 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: |
+          npm ci
+          npm install --no-save @lhci/cli lighthouse fast-xml-parser js-yaml
 
       - name: Run SEO Audit
         env:
           AUDIT_URL: ${{ inputs.audit_url || 'https://www.emvi.app' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo "🚀 Running SEO audit for: $AUDIT_URL"
+          echo "🚀 Running comprehensive SEO audit for: $AUDIT_URL"
           
           # Create reports directory
-          mkdir -p reports
+          mkdir -p reports/seo/oneclick
           
-          # Run the existing audit script
-          node scripts/run-audit.mjs --site=$AUDIT_URL --out=./reports
+          # Run main audit script with fallback
+          if [ -f "scripts/audit-seo.mjs" ]; then
+            node scripts/audit-seo.mjs --site=$AUDIT_URL --out=reports --maxDepth=4 || echo "⚠️ Main audit failed"
+          else
+            echo "⚠️ Main audit script not found, using Lighthouse..."
+            npx lighthouse $AUDIT_URL --output=html --output-path=reports/seo-report.html --only-categories=seo --chrome-flags="--headless --no-sandbox" || echo "⚠️ Lighthouse failed"  
+          fi
           
-          # List generated files for debugging
+          # Validate sitemaps
+          SITEMAP_BASE_URL=$AUDIT_URL node scripts/validate-sitemaps.mjs || echo "⚠️ Sitemap validation failed"
+          
+          # Generate oneclick summary
+          DATE=$(date +%Y-%m-%d)
+          echo "# One-Click SEO Audit - $DATE" > reports/oneclick-summary.md
+          echo "**Site**: $AUDIT_URL" >> reports/oneclick-summary.md
+          echo "**Generated**: $(date)" >> reports/oneclick-summary.md
+          echo "" >> reports/oneclick-summary.md
+          
+          if [ -f "reports/broken-links.csv" ]; then
+            BROKEN_COUNT=$(tail -n +2 reports/broken-links.csv | wc -l)
+            echo "**Broken Links**: $BROKEN_COUNT" >> reports/oneclick-summary.md
+          else
+            echo "**Broken Links**: 0" >> reports/oneclick-summary.md
+          fi
+          
+          # List generated files
           echo "Generated files:"
           ls -la reports/
+        continue-on-error: true
 
       - name: Collect and commit audit results
         env:

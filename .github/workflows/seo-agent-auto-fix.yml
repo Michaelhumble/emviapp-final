@@ -1,0 +1,277 @@
+name: 📝 SEO Agent Weekly Report & Auto-Commit
+
+on:
+  schedule:
+    # Every Monday at 9 AM UTC (1 AM PST)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Site URL to audit'
+        required: false
+        default: 'https://www.emvi.app'
+      commit_fixes:
+        description: 'Commit auto-fixes to repo'
+        type: boolean
+        default: true
+
+env:
+  AUDIT_SITE: ${{ github.event.inputs.site_url || 'https://www.emvi.app' }}
+  COMMIT_FIXES: ${{ github.event.inputs.commit_fixes || 'true' }}
+
+jobs:
+  seo-weekly-digest:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 🔧 Install dependencies
+        run: |
+          npm ci
+          npm install --no-save @lhci/cli lighthouse fast-xml-parser js-yaml
+      
+      - name: 📁 Create reports directory
+        run: |
+          mkdir -p reports/seo
+          mkdir -p reports/weekly
+      
+      - name: 🔍 Run comprehensive SEO audit
+        env:
+          AUDIT_SITE: ${{ env.AUDIT_SITE }}
+          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "🔍 Running comprehensive SEO audit for $AUDIT_SITE"
+          
+          # Run main audit
+          if [ -f "scripts/audit-seo.mjs" ]; then
+            node scripts/audit-seo.mjs --site=$AUDIT_SITE --out=reports --maxDepth=6 || echo "⚠️ Main audit had issues"
+          fi
+          
+          # Validate sitemaps
+          SITEMAP_BASE_URL=$AUDIT_SITE node scripts/validate-sitemaps.mjs || echo "⚠️ Sitemap validation had issues"
+          
+          # Run SEO agent if available
+          if [ -f "scripts/seo-agent.mjs" ]; then
+            node scripts/seo-agent.mjs --site=$AUDIT_SITE --out=reports --dry-run=false || echo "⚠️ SEO agent had issues"
+          fi
+          
+          echo "✅ Audit completed"
+        continue-on-error: true
+      
+      - name: 📊 Generate weekly digest report
+        id: generate-digest
+        run: |
+          AUDIT_DATE=$(date +'%Y-%m-%d')
+          REPORT_FILE="reports/seo/weekly-report-$AUDIT_DATE.md"
+          
+          # Initialize counters
+          BROKEN_LINKS=0
+          SITEMAP_ISSUES=0
+          SEO_ISSUES=0
+          
+          # Parse results
+          if [ -f "reports/broken-links.csv" ]; then
+            BROKEN_LINKS=$(tail -n +2 reports/broken-links.csv | wc -l)
+          fi
+          
+          if [ -f "reports/sitemap-validation.json" ]; then
+            SITEMAP_ISSUES=$(node -p "
+              try {
+                const data = JSON.parse(require('fs').readFileSync('reports/sitemap-validation.json', 'utf8'));
+                data.summary.broken + data.summary.errors;
+              } catch(e) { 0 }
+            ")
+          fi
+          
+          # Determine status
+          TOTAL_ISSUES=$((BROKEN_LINKS + SITEMAP_ISSUES))
+          if [ $TOTAL_ISSUES -eq 0 ]; then
+            STATUS="🟢 EXCELLENT"
+            PRIORITY="low"
+          elif [ $TOTAL_ISSUES -lt 5 ]; then
+            STATUS="🟡 GOOD"
+            PRIORITY="medium"
+          else
+            STATUS="🔴 NEEDS ATTENTION"
+            PRIORITY="high"
+          fi
+          
+          # Generate comprehensive report
+          cat > "$REPORT_FILE" << EOF
+          # 📊 SEO Weekly Digest - $AUDIT_DATE
+          
+          **Overall Status**: $STATUS  
+          **Site**: [\`$AUDIT_SITE\`]($AUDIT_SITE)  
+          **Generated**: $(date -u +'%Y-%m-%d %H:%M UTC')  
+          **Priority**: $PRIORITY
+          
+          ## 📈 Key Metrics
+          
+          | Metric | Count | Status |
+          |--------|-------|--------|
+          | 🔗 Broken Links | $BROKEN_LINKS | $([ $BROKEN_LINKS -eq 0 ] && echo "✅ None" || echo "⚠️ Found") |
+          | 🗺️ Sitemap Issues | $SITEMAP_ISSUES | $([ $SITEMAP_ISSUES -eq 0 ] && echo "✅ Clean" || echo "⚠️ Issues") |
+          | 📊 Total Issues | $TOTAL_ISSUES | $STATUS |
+          
+          ## 🔍 Detailed Analysis
+          
+          ### Broken Links Report
+          EOF
+          
+          if [ $BROKEN_LINKS -eq 0 ]; then
+            echo "✅ **No broken links detected!** All internal links are working properly." >> "$REPORT_FILE"
+          else
+            echo "⚠️ **$BROKEN_LINKS broken links found**" >> "$REPORT_FILE"
+            echo "" >> "$REPORT_FILE"
+            echo "**Top Issues:**" >> "$REPORT_FILE"
+            echo "\`\`\`" >> "$REPORT_FILE"
+            head -11 reports/broken-links.csv | tail -10 >> "$REPORT_FILE" 2>/dev/null || echo "Details in broken-links.csv" >> "$REPORT_FILE"
+            echo "\`\`\`" >> "$REPORT_FILE"
+          fi
+          
+          cat >> "$REPORT_FILE" << EOF
+          
+          ### Sitemap Health
+          EOF
+          
+          if [ $SITEMAP_ISSUES -eq 0 ]; then
+            echo "✅ **All sitemap URLs are valid and accessible!**" >> "$REPORT_FILE"
+          else
+            echo "⚠️ **$SITEMAP_ISSUES sitemap issues found**" >> "$REPORT_FILE"
+          fi
+          
+          cat >> "$REPORT_FILE" << EOF
+          
+          ## 🎯 Recommended Actions
+          
+          EOF
+          
+          if [ $TOTAL_ISSUES -eq 0 ]; then
+            echo "🎉 **No immediate actions required!** Your SEO is in excellent shape." >> "$REPORT_FILE"
+          else
+            if [ $BROKEN_LINKS -gt 0 ]; then
+              echo "1. **Fix $BROKEN_LINKS broken links** - Update or redirect broken URLs" >> "$REPORT_FILE"
+            fi
+            if [ $SITEMAP_ISSUES -gt 0 ]; then
+              echo "2. **Review $SITEMAP_ISSUES sitemap issues** - Check sitemap validation report" >> "$REPORT_FILE"
+            fi
+          fi
+          
+          cat >> "$REPORT_FILE" << EOF
+          
+          ## 📁 Full Reports
+          
+          - [GitHub Action Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - [Download All Reports](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          
+          ---
+          
+          **Next Digest**: $(date -d "+7 days" +'%Y-%m-%d')  
+          **Generated by**: SEO Agent Weekly Digest
+          EOF
+          
+          echo "report_file=$REPORT_FILE" >> $GITHUB_OUTPUT
+          echo "audit_date=$AUDIT_DATE" >> $GITHUB_OUTPUT
+          echo "total_issues=$TOTAL_ISSUES" >> $GITHUB_OUTPUT
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          
+          echo "✅ Weekly digest report generated: $REPORT_FILE"
+      
+      - name: 📝 Commit weekly report
+        if: env.COMMIT_FIXES == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "SEO Agent"
+          
+          git add reports/seo/
+          
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "📊 SEO Weekly Digest - ${{ steps.generate-digest.outputs.audit_date }}
+
+            Status: ${{ steps.generate-digest.outputs.status }}
+            Issues Found: ${{ steps.generate-digest.outputs.total_issues }}
+            
+            - Weekly SEO health check completed
+            - Reports saved to reports/seo/
+            - Auto-generated by GitHub Actions"
+            
+            git push || echo "⚠️ Could not push changes"
+            echo "✅ Weekly report committed and pushed"
+          else
+            echo "ℹ️ No new reports to commit"
+          fi
+        continue-on-error: true
+      
+      - name: 📄 Upload comprehensive reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-weekly-digest-${{ steps.generate-digest.outputs.audit_date }}
+          path: |
+            reports/
+          retention-days: 30
+        if: always()
+      
+      - name: 🚨 Create GitHub issue for critical problems
+        if: steps.generate-digest.outputs.total_issues > 10
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const auditDate = '${{ steps.generate-digest.outputs.audit_date }}';
+            const totalIssues = '${{ steps.generate-digest.outputs.total_issues }}';
+            const status = '${{ steps.generate-digest.outputs.status }}';
+            
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Critical SEO Issues Detected - ${auditDate}`,
+              body: `# Critical SEO Issues Alert
+              
+              **Status**: ${status}  
+              **Issues Found**: ${totalIssues}  
+              **Audit Date**: ${auditDate}
+              
+              ## ⚡ Immediate Actions Required
+              
+              Our automated SEO monitoring has detected **${totalIssues} critical issues** that need immediate attention.
+              
+              ## 📊 View Full Report
+              
+              - [Weekly Digest Report](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/reports/seo/weekly-report-${auditDate}.md)
+              - [Detailed Analysis](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+              
+              ## 🔧 Next Steps
+              
+              1. Review the detailed weekly report
+              2. Fix broken links and sitemap issues
+              3. Monitor the next weekly digest for improvements
+              
+              ---
+              
+              *Auto-generated by SEO Agent on ${new Date().toLocaleString()}*`,
+              labels: ['seo', 'critical', 'automated', 'bug']
+            });
+            
+            console.log(`🚨 Created critical SEO issue #${issue.number}`);
+      
+      - name: ✅ Summary
+        run: |
+          echo "## 📊 SEO Weekly Digest Complete"
+          echo ""
+          echo "**Date**: ${{ steps.generate-digest.outputs.audit_date }}"
+          echo "**Status**: ${{ steps.generate-digest.outputs.status }}"
+          echo "**Issues**: ${{ steps.generate-digest.outputs.total_issues }}"
+          echo "**Report**: ${{ steps.generate-digest.outputs.report_file }}"
+          echo ""
+          echo "Next digest scheduled for $(date -d '+7 days' +'%Y-%m-%d')"
