@@ -16,6 +16,14 @@ import LazyIndex from "./pages/LazyIndex";
 import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
 import ConsentBanner from '@/components/ConsentBanner';
 
+// Core Web Vitals optimization components
+import LCPOptimizer from '@/components/performance/LCPOptimizer';
+import CLSPrevention from '@/components/performance/CLSPrevention';
+import INPOptimizer from '@/components/performance/INPOptimizer'; 
+import AdvancedPerformanceMonitor from '@/components/performance/AdvancedPerformanceMonitor';
+import CriticalCSS from '@/components/performance/CriticalCSS';
+import SEOKeyboardShortcuts from '@/components/performance/SEOKeyboardShortcuts';
+
 // Critical components loaded immediately
 import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
@@ -102,6 +110,7 @@ const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
 const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
+const PerformanceAudit = lazy(() => import("@/pages/PerformanceAudit"));
 
 function App() {
   const location = useLocation();
@@ -116,6 +125,14 @@ function App() {
 
   return (
     <HelmetProvider>
+      {/* Core Web Vitals Optimization */}
+      <CriticalCSS />
+      <LCPOptimizer criticalImages={['/hero-image.jpg']} />
+      <CLSPrevention />
+      <INPOptimizer />
+      <AdvancedPerformanceMonitor />
+      <SEOKeyboardShortcuts />
+      
       {/* Global Organization + Website JSON-LD */}
       <GlobalSEOInjection />
       <GeneralErrorBoundary>
@@ -201,6 +218,7 @@ function App() {
                      <Route path="/about" element={<Layout><About /></Layout>} />
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
+                     <Route path="/performance" element={<Layout><PerformanceAudit /></Layout>} />
                      <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
                      <Route path="/partners" element={<Layout><InvestorsPartners /></Layout>} />
                      <Route path="/investors-partners" element={<Navigate to="/partners" replace />} />
