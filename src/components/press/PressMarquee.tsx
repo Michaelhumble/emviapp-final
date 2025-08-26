@@ -1,111 +1,58 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { getFeaturedLogos } from '@/data/pressLogos';
+import outlets from '@/data/press_outlets.json';
 import './PressMarquee.css';
 
 const PressMarquee: React.FC = () => {
-  const featuredLogos = getFeaturedLogos();
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  // Duplicate the outlets for seamless infinite scroll
+  const list = [...outlets, ...outlets];
 
-  // Duplicate the logos for seamless infinite scroll
-  const duplicatedLogos = [...featuredLogos, ...featuredLogos];
-
-  const handleLogoClick = (logoName: string, articleUrl: string) => {
+  const handleLogoClick = (outletName: string, articleUrl: string) => {
     // Analytics tracking
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'press_logo_click', {
         event_category: 'engagement',
-        event_label: logoName,
-        outlet_name: logoName,
+        event_label: outletName,
+        outlet_name: outletName,
         article_url: articleUrl
       });
     }
   };
 
   return (
-    <section 
-      className="py-8 bg-muted/20 overflow-hidden"
-      aria-label="As Featured In"
-    >
+    <section aria-labelledby="press-title" className="py-10">
       <div className="container mx-auto px-4">
-        {/* Section Label */}
-        <div className="text-center mb-6">
-          <p className="text-sm font-medium text-muted-foreground">
-            As Featured In
-          </p>
-        </div>
+        <h2 id="press-title" className="text-center text-xs font-semibold tracking-[0.18em] text-muted-foreground mb-6">
+          AS FEATURED IN
+        </h2>
 
-        {/* Desktop: Infinite Marquee */}
-        <div className="hidden md:block relative">
-          {/* Edge fade gradients */}
-          <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-background via-background/80 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none" />
-          
-          <div 
-            className="flex gap-8 animate-marquee hover:pause h-16 items-center"
-            style={{
-              width: 'calc(200% + 2rem)',
-              animationDuration: '30s',
-              animationTimingFunction: 'linear',
-              animationIterationCount: 'infinite'
-            }}
+        <div className="overflow-hidden">
+          <div
+            className="flex gap-6 [animation:marquee_42s_linear_infinite] hover:[animation-play-state:paused] will-change-transform"
+            aria-hidden="true"
           >
-            {duplicatedLogos.map((logo, index) => (
+            {list.map((outlet, index) => (
               <a
-                key={`${logo.slug}-${index}`}
-                href={logo.articleUrl.startsWith('http') ? logo.articleUrl : logo.href}
-                target={logo.articleUrl.startsWith('http') ? '_blank' : '_self'}
-                rel={logo.articleUrl.startsWith('http') ? 'nofollow noopener' : undefined}
-                className="flex-shrink-0 flex items-center justify-center h-16 min-w-[120px] group cursor-pointer"
-                onClick={() => handleLogoClick(logo.name, logo.articleUrl)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                aria-label={`Read ${logo.name} coverage`}
+                key={`${outlet.domain}-${index}`}
+                href={outlet.article_url}
+                target="_blank"
+                rel="noopener nofollow"
+                aria-label={`Read coverage on ${outlet.name}`}
+                className="shrink-0 rounded-2xl bg-white/90 backdrop-blur ring-1 ring-slate-200 px-4 py-3 hover:bg-white transition-shadow hover:shadow-sm"
+                onClick={() => handleLogoClick(outlet.name, outlet.article_url)}
               >
                 <img
-                  src={`/press-logos/${logo.slug}.svg`}
-                  alt=""
-                  aria-hidden="true"
-                  className={`max-w-full h-[26px] object-contain transition-all duration-300 text-muted-foreground ${
-                    hoveredIndex === index ? 'filter-none opacity-100' : 'grayscale opacity-60'
-                  }`}
+                  src={`https://logo.clearbit.com/${outlet.domain}?size=256`}
+                  alt={outlet.name}
+                  width={120}
+                  height={28}
+                  className="h-7 w-auto transition"
                   loading="lazy"
                   decoding="async"
-                  style={{ width: 'auto', maxWidth: '120px' }}
-                />
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* Mobile: Horizontal Scroll */}
-        <div className="md:hidden">
-          <div 
-            className="flex gap-6 overflow-x-auto px-4 py-2 scroll-smooth press-marquee-scroll h-16 items-center"
-            style={{ 
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch'
-            }}
-          >
-            {featuredLogos.map((logo) => (
-              <a
-                key={logo.slug}
-                href={logo.articleUrl.startsWith('http') ? logo.articleUrl : logo.href}
-                target={logo.articleUrl.startsWith('http') ? '_blank' : '_self'}
-                rel={logo.articleUrl.startsWith('http') ? 'nofollow noopener' : undefined}
-                className="flex-shrink-0 flex items-center justify-center h-14 min-w-[100px] group cursor-pointer"
-                style={{ scrollSnapAlign: 'start' }}
-                onClick={() => handleLogoClick(logo.name, logo.articleUrl)}
-                aria-label={`Read ${logo.name} coverage`}
-              >
-                <img
-                  src={`/press-logos/${logo.slug}.svg`}
-                  alt=""
-                  aria-hidden="true"
-                  className="max-w-full h-[22px] object-contain grayscale opacity-60 group-active:filter-none group-active:opacity-100 transition-all duration-200 text-muted-foreground"
-                  loading="lazy"
-                  decoding="async"
-                  style={{ width: 'auto', maxWidth: '100px' }}
+                  onError={(e) => {
+                    const parent = (e.currentTarget.parentElement as HTMLElement);
+                    parent.innerHTML = `<span class="inline-flex h-7 items-center justify-center px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium">${outlet.name}</span>`;
+                  }}
                 />
               </a>
             ))}
@@ -113,7 +60,7 @@ const PressMarquee: React.FC = () => {
         </div>
 
         {/* Read Press Coverage Link */}
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <Link 
             to="/press"
             className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
@@ -122,13 +69,13 @@ const PressMarquee: React.FC = () => {
               if (typeof window !== 'undefined' && (window as any).gtag) {
                 (window as any).gtag('event', 'press_coverage_click', {
                   event_category: 'engagement',
-                  event_label: 'See all press (300+)',
+                  event_label: 'Read full press coverage',
                   link_location: 'press_marquee'
                 });
               }
             }}
           >
-            See all press (300+) →
+            Read full press coverage →
           </Link>
         </div>
       </div>
