@@ -167,6 +167,16 @@ jobs:
           node scripts/fix-jsonld.mjs --auto-fix || echo "⚠️ JSON-LD fixes skipped"
         continue-on-error: true
       
+      - name: 🗺️ Validate Dynamic Sitemaps
+        run: |
+          echo "🔍 Validating all dynamic sitemaps..."
+          if [ -f "scripts/validateSitemaps.ts" ]; then
+            npx tsx scripts/validateSitemaps.ts || echo "⚠️ Sitemap validation had warnings"
+          else
+            echo "⚠️ Sitemap validation script not found"
+          fi
+        continue-on-error: true
+      
       - name: 📝 Commit Auto-Fixes
         if: github.event.inputs.apply_fixes == 'true' && github.event_name != 'pull_request'
         run: |
