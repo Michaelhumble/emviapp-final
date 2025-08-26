@@ -1,12 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
-import { OUTLETS } from '@/data/pressCoverage';
+import { OUTLETS, getTierDisplayName } from '@/lib/press';
 import PressPageHero from '@/components/press/PressPageHero';
 import PressFilters from '@/components/press/PressFilters';
 import PressCard from '@/components/press/PressCard';
 import MediaKit from '@/components/press/MediaKit';
-import Layout from '@/components/layout/Layout';
 
 const PressPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -16,13 +15,16 @@ const PressPage: React.FC = () => {
   // Get outlet filter from URL params
   const outletFilter = searchParams.get('outlet');
 
-  // Market categorization helper
-  const getMarketCategory = (outlet: any) => {
-    const name = outlet.name.toLowerCase();
-    if (name.includes('ap ') || name.includes('yahoo') || name.includes('google') || name.includes('bing')) return 'national';
-    if (name.includes('benzinga') || name.includes('financial')) return 'finance';
-    if (name.includes('tv') || name.includes('nbc') || name.includes('cbs') || name.includes('fox') || name.includes('abc')) return 'local';
-    return 'business';
+  // Filter mapping
+  const getFilterForTier = (tier: string): string => {
+    const filterMap: Record<string, string> = {
+      'all': 'all',
+      'national': 'national',
+      'finance': 'finance',
+      'local': 'local_tv',
+      'business': 'other'
+    };
+    return Object.keys(filterMap).find(key => filterMap[key] === tier) || 'business';
   };
 
   // Filter and search logic
@@ -34,9 +36,18 @@ const PressPage: React.FC = () => {
       filtered = filtered.filter(outlet => outlet.key === outletFilter);
     }
 
-    // Apply market filter
+    // Apply tier filter
     if (activeFilter !== 'all') {
-      filtered = filtered.filter(outlet => getMarketCategory(outlet) === activeFilter);
+      const tierMap: Record<string, string> = {
+        'national': 'national',
+        'finance': 'finance', 
+        'local': 'local_tv',
+        'business': 'other'
+      };
+      const targetTier = tierMap[activeFilter];
+      if (targetTier) {
+        filtered = filtered.filter(outlet => outlet.tier === targetTier);
+      }
     }
 
     // Apply search filter
@@ -45,7 +56,7 @@ const PressPage: React.FC = () => {
       filtered = filtered.filter(outlet => 
         outlet.name.toLowerCase().includes(search) ||
         outlet.headline.toLowerCase().includes(search) ||
-        outlet.excerpt.toLowerCase().includes(search)
+        (outlet.market && outlet.market.toLowerCase().includes(search))
       );
     }
 
@@ -123,7 +134,7 @@ const PressPage: React.FC = () => {
   ];
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Press & Media - EmviApp AI Beauty Platform Coverage</title>
         <meta name="description" content="Read media coverage about EmviApp's launch as the first AI-powered growth engine for beauty professionals, salons, and artists. Featured in AP News, Yahoo News, major TV networks and financial outlets." />
@@ -176,7 +187,7 @@ const PressPage: React.FC = () => {
                 <PressCard
                   key={outlet.key}
                   outlet={outlet}
-                  market={getMarketCategory(outlet)}
+                  market={getTierDisplayName(outlet.tier)}
                 />
               ))}
             </div>
@@ -199,7 +210,7 @@ const PressPage: React.FC = () => {
             their potential and businesses can find the perfect match."
           </blockquote>
           <p className="text-foreground font-semibold">
-            — Michael Humble, Founder & CEO, EmviApp
+            — EmviApp Founder
           </p>
         </div>
 
@@ -210,7 +221,7 @@ const PressPage: React.FC = () => {
           </p>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

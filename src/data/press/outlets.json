@@ -1,0 +1,182 @@
+[
+  {
+    "key":"ap",
+    "name":"AP News",
+    "tier":"national",
+    "logo":"/press/ap.svg",
+    "market":"National",
+    "city":"",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
+    "altUrls":["https://www.einpresswire.com/article/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"],
+    "type":"article"
+  },
+  {
+    "key":"benzinga",
+    "name":"Benzinga",
+    "tier":"finance",
+    "logo":"/press/benzinga.svg",
+    "market":"Finance",
+    "city":"",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":["https://business.einnews.com/pr_news/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"],
+    "type":"article"
+  },
+  {
+    "key":"kron4",
+    "name":"KRON4",
+    "tier":"local_tv",
+    "logo":"/press/kron4.svg",
+    "market":"SF Bay Area",
+    "city":"San Francisco, CA",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches AI-Powered Growth Engine for Beauty Industry",
+    "url":"https://www.kron4.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":[],
+    "type":"article"
+  },
+  {
+    "key":"fox40",
+    "name":"FOX40",
+    "tier":"local_tv",
+    "logo":"/press/fox40.svg",
+    "market":"Sacramento",
+    "city":"Sacramento, CA",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://fox40.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":["https://www.californiacommercedaily.com/article/843218633-emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"],
+    "type":"article"
+  },
+  {
+    "key":"kxan",
+    "name":"KXAN NBC 36",
+    "tier":"local_tv",
+    "logo":"/press/kxan.svg",
+    "market":"Austin",
+    "city":"Austin, TX",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://www.kxan.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":["https://www.valleycentral.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"],
+    "type":"article"
+  },
+  {
+    "key":"wgn9",
+    "name":"WGN 9",
+    "tier":"local_tv",
+    "logo":"/press/wgn9.svg",
+    "market":"Chicago",
+    "city":"Chicago, IL",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://wgntv.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":[],
+    "type":"article"
+  },
+  {
+    "key":"fox59",
+    "name":"FOX59",
+    "tier":"local_tv",
+    "logo":"/press/fox59.svg",
+    "market":"Indianapolis",
+    "city":"Indianapolis, IN",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://fox59.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":[],
+    "type":"article"
+  },
+  {
+    "key":"kget17",
+    "name":"KGET 17",
+    "tier":"local_tv",
+    "logo":"/press/kget17.svg",
+    "market":"Bakersfield",
+    "city":"Bakersfield, CA",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://www.kget.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":[],
+    "type":"article"
+  },
+  {
+    "key":"cbs13",
+    "name":"CBS 13",
+    "tier":"local_tv",
+    "logo":"/press/cbs13.svg",
+    "market":"Albuquerque",
+    "city":"Albuquerque, NM",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://cbs4indy.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":[],
+    "type":"article"
+  },
+  {
+    "key":"wfla",
+    "name":"WFLA NBC 8",
+    "tier":"local_tv",
+    "logo":"/press/wfla.svg",
+    "market":"Tampa Bay",
+    "city":"Tampa, FL",
+    "dateISO":"2025-08-25",
+    "headline":"EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url":"https://www.wfla.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+    "altUrls":[],
+    "type":"article"
+  },
+  {
+    "key":"yahoo_news",
+    "name":"Yahoo News",
+    "tier":"national",
+    "logo":"/press/yahoo-news.svg",
+    "market":"National",
+    "city":"",
+    "dateISO":"2025-08-25",
+    "headline":"Coverage roundup",
+    "altUrls":[
+      "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
+      "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+      "https://www.kron4.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+      "https://fox40.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+      "https://www.kxan.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+      "https://wgntv.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+    ],
+    "type":"aggregator"
+  },
+  {
+    "key":"google_news",
+    "name":"Google News",
+    "tier":"national",
+    "logo":"/press/google-news.svg",
+    "market":"National",
+    "city":"",
+    "dateISO":"2025-08-25",
+    "headline":"Coverage roundup",
+    "altUrls":[
+      "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
+      "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
+      "https://www.kron4.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+    ],
+    "type":"aggregator"
+  },
+  {
+    "key":"bing_news",
+    "name":"Bing News",
+    "tier":"national",
+    "logo":"/press/bing-news.svg",
+    "market":"National",
+    "city":"",
+    "dateISO":"2025-08-25",
+    "headline":"Coverage roundup",
+    "altUrls":[
+      "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
+      "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+    ],
+    "type":"aggregator"
+  }
+]

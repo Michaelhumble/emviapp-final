@@ -4,12 +4,11 @@ import { Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { getAllOutlets, generateLogoPlaceholder } from '@/data/pressOutlets';
-import { OUTLETS } from '@/data/pressCoverage';
+import { OUTLETS } from '@/lib/press';
 
 const PressGrid: React.FC = () => {
   const location = useLocation();
-  const allOutlets = getAllOutlets();
+  const allOutlets = OUTLETS;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMarket, setSelectedMarket] = useState<string>('');
 
@@ -40,7 +39,12 @@ const PressGrid: React.FC = () => {
 
   const handleLogoError = (e: React.SyntheticEvent<HTMLImageElement>, name: string) => {
     const img = e.currentTarget;
-    img.src = generateLogoPlaceholder(name);
+    const initials = name.split(' ').map(w => w[0]).join('').toUpperCase();
+    img.style.display = 'none';
+    const parent = img.parentElement;
+    if (parent) {
+      parent.innerHTML = `<div class="inline-flex items-center justify-center w-full h-full rounded-xl bg-card border text-card-foreground text-sm font-semibold">${initials}</div>`;
+    }
   };
 
   const handleOutletClick = (outletName: string, url: string) => {
@@ -119,14 +123,14 @@ const PressGrid: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pressGrid">
           {filteredOutlets.map((outlet) => (
             <div
-              key={outlet.slug}
+              key={outlet.key}
               className="bg-card border rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
             >
               {/* Logo */}
               <div className="flex items-center justify-center mb-4">
                 <div className="pressLogoWrap">
                   <img
-                    src={`/press-logos/${outlet.slug}.svg`}
+                    src={outlet.logo}
                     alt={`${outlet.name} logo`}
                     loading="lazy"
                     decoding="async"
@@ -145,11 +149,11 @@ const PressGrid: React.FC = () => {
 
                 {/* Read Coverage Link */}
                 <a
-                  href={outlet.url}
+                  href={outlet.type === 'article' ? outlet.url : outlet.altUrls[0]}
                   target="_blank"
                   rel="noopener nofollow"
                   aria-label={`Read coverage on ${outlet.name} (opens in new tab)`}
-                  onClick={() => handleOutletClick(outlet.name, outlet.url)}
+                  onClick={() => handleOutletClick(outlet.name, outlet.url || outlet.altUrls[0] || '')}
                   className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors font-medium"
                 >
                   Read coverage →

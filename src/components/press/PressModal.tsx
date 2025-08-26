@@ -3,7 +3,7 @@ import { X, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Outlet, formatDate } from '@/data/pressCoverage';
+import { type Outlet, formatDate, getHostFromUrl } from '@/lib/press';
 
 interface PressModalProps {
   open: boolean;
@@ -19,7 +19,7 @@ const PressModal: React.FC<PressModalProps> = ({
   triggerRef 
 }) => {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const primaryButtonRef = useRef<HTMLAnchorElement>(null);
+  const primaryButtonRef = useRef<HTMLButtonElement>(null);
 
   // Focus management
   useEffect(() => {
@@ -49,18 +49,21 @@ const PressModal: React.FC<PressModalProps> = ({
     };
   }, [open, onOpenChange]);
 
-  const handlePrimaryClick = () => {
-    if (outlet) {
+  const handlePrimaryClick = (url?: string) => {
+    if (outlet && url) {
+      const host = getHostFromUrl(url);
+      
       // Analytics tracking
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
         (window as any).dataLayer.push({
-          event: 'press_primary_open',
-          outlet: outlet.key
+          event: 'press_modal_primary_click',
+          host: host,
+          outlet_key: outlet.key
         });
       }
       
       // Open in new tab
-      window.open(outlet.primaryUrl, '_blank', 'noopener,noreferrer');
+      window.open(url, '_blank', 'nofollow noopener');
     }
   };
 
@@ -69,8 +72,9 @@ const PressModal: React.FC<PressModalProps> = ({
       // Analytics tracking
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
         (window as any).dataLayer.push({
-          event: 'press_filter_open',
-          outlet: outlet.key
+          event: 'press_modal_secondary_click',
+          action: 'see_all',
+          outlet_key: outlet.key
         });
       }
     }
@@ -123,38 +127,55 @@ const PressModal: React.FC<PressModalProps> = ({
             </h3>
             
             <p className="text-sm text-muted-foreground">
-              {formatDate(outlet.dateISO)}
-            </p>
-            
-            <p 
-              id="press-modal-description" 
-              className="text-sm text-muted-foreground leading-relaxed"
-            >
-              {outlet.excerpt}
+              {formatDate(outlet.dateISO)} • {outlet.market}
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              ref={primaryButtonRef}
-              href={outlet.primaryUrl}
-              target="_blank"
-              rel="nofollow noopener"
-              onClick={handlePrimaryClick}
-              className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 flex-1"
-            >
-              <span>Read on {outlet.name}</span>
-              <ExternalLink className="ml-2 h-4 w-4" />
-            </a>
-            
-            <Link
-              to={`/press?outlet=${outlet.key}`}
-              onClick={handleSeeAllClick}
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 flex-1"
-            >
-              See all coverage
-            </Link>
+          {/* Action Buttons - different for article vs aggregator */}
+          <div className="flex flex-col gap-3">
+            {outlet.type === 'article' ? (
+              // Single article - primary and secondary buttons
+              <>
+                <button
+                  ref={primaryButtonRef}
+                  onClick={() => handlePrimaryClick(outlet.url)}
+                  className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  <span>Read on {outlet.name}</span>
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </button>
+                
+                <Link
+                  to={`/press?outlet=${outlet.key}`}
+                  onClick={handleSeeAllClick}
+                  className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  See all coverage
+                </Link>
+              </>
+            ) : (
+              // Aggregator - list canonical options
+              <>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Choose where to read the coverage:
+                </p>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {outlet.altUrls.map((url, index) => {
+                    const host = getHostFromUrl(url);
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handlePrimaryClick(url)}
+                        className="w-full inline-flex items-center justify-between rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      >
+                        <span>Read on {host}</span>
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </DialogContent>

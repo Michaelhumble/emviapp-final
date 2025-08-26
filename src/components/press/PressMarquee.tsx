@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { OUTLETS, getOutletByKey } from '@/data/pressCoverage';
+import { getWeightedOutlets, getOutletByKey, type Outlet } from '@/lib/press';
 import PressModal from './PressModal';
 import './PressMarquee.css';
 
@@ -9,30 +9,25 @@ const PressMarquee: React.FC = () => {
   const [selectedOutlet, setSelectedOutlet] = useState<string | null>(null);
   const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Priority order for weighted rotation - show 16 at a time
-  const priorityKeys = [
-    'ap', 'yahoo', 'google', 'bing', 'benzinga',
-    'kron4', 'wgn9', 'fox40', 'fox59', 'wfla', 'kxan', 'cbs13',
-    'kget17', 'krqe', 'wgno', 'klas'
-  ];
-  
-  // Get outlets in priority order (16 total)
-  const priorityOutlets = priorityKeys.map(key => OUTLETS.find(outlet => outlet.key === key)).filter(Boolean);
+  // Get weighted outlets for display (16 total)
+  const displayOutlets = getWeightedOutlets(16);
   
   // Duplicate for seamless infinite scroll
-  const list = [...priorityOutlets, ...priorityOutlets];
+  const list = [...displayOutlets, ...displayOutlets];
 
-  const handleLogoClick = (outletKey: string) => {
+  const handleLogoClick = (outlet: Outlet) => {
     // Analytics tracking
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({
         event: 'press_logo_click',
-        outlet: outletKey,
+        outlet_key: outlet.key,
+        outlet_name: outlet.name,
+        type: outlet.type,
         location: 'home-marquee'
       });
     }
 
-    setSelectedOutlet(outletKey);
+    setSelectedOutlet(outlet.key);
     setModalOpen(true);
   };
 
@@ -66,24 +61,24 @@ const PressMarquee: React.FC = () => {
                 <button
                   key={`${outlet.key}-${index}`}
                   ref={(el) => setTriggerRef(`${outlet.key}-${index}`, el)}
-                  onClick={() => handleLogoClick(outlet.key)}
-                  aria-label={`Press coverage on ${outlet.name} (opens details)`}
+                  onClick={() => handleLogoClick(outlet)}
+                  aria-label={`${outlet.name} coverage for EmviApp`}
                   className="pressLogoWrap cursor-pointer"
                 >
                   <img
-                    src={outlet.logo.startsWith('http') ? outlet.logo : outlet.logo}
+                    src={outlet.logo}
                     alt={`${outlet.name} logo`}
                     loading="lazy"
                     decoding="async"
                     style={{ 
                       contentVisibility: 'auto',
                       width: 'auto',
-                      height: '100%',
-                      maxHeight: 'var(--press-logo-h-mobile)'
+                      height: '100%'
                     }}
                     onError={(e) => {
                       const parent = (e.currentTarget.parentElement as HTMLElement);
-                      parent.innerHTML = `<span class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap" style="height: var(--press-logo-h-mobile)">${outlet.name}</span>`;
+                      const initials = outlet.name.split(' ').map(w => w[0]).join('').toUpperCase();
+                      parent.innerHTML = `<div class="inline-flex items-center justify-center w-full h-full rounded-xl bg-card border text-card-foreground text-sm font-semibold">${initials}</div>`;
                     }}
                   />
                 </button>

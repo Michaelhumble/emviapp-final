@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar } from 'lucide-react';
-import { Outlet, formatDate } from '@/data/pressCoverage';
+import { type Outlet, formatDate } from '@/lib/press';
 
 interface PressCardProps {
   outlet: Outlet;
@@ -55,7 +55,10 @@ const PressCard: React.FC<PressCardProps> = ({ outlet, market = 'Business' }) =>
         </div>
         
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-          {outlet.excerpt}
+          {outlet.type === 'aggregator' ? 
+            `Coverage aggregated from ${outlet.altUrls.length} sources` :
+            `Coverage from ${outlet.market}`
+          }
         </p>
 
         {/* CTA */}
@@ -66,13 +69,13 @@ const PressCard: React.FC<PressCardProps> = ({ outlet, market = 'Business' }) =>
           asChild
         >
           <a
-            href={outlet.primaryUrl}
+            href={outlet.type === 'article' ? outlet.url : outlet.altUrls[0]}
             target="_blank"
             rel="nofollow noopener"
             onClick={handleCoverageClick}
           >
             <ExternalLink className="w-3 h-3 mr-2" />
-            Read coverage
+            Read coverage →
           </a>
         </Button>
       </div>
