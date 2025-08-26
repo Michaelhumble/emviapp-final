@@ -273,8 +273,8 @@ function App() {
                        </Suspense>
                        </GlobalPremiumSignupModalProvider>
                        </FirstTimeVisitorRedirect>
-                        <Toaster />
-                        <ConsentBanner />
+                         <Toaster />
+                         <ConsentBanner />
                      </OnboardingProvider>
                   </RecommendationProvider>
               </NotificationProvider>
