@@ -1,8 +1,9 @@
-// Production Environment Configuration
+import { IS_PROD, IS_DEV } from '@/lib/env';
+
 export const PRODUCTION_CONFIG = {
   // Environment checks
-  IS_PRODUCTION: process.env.NODE_ENV === 'production',
-  IS_DEVELOPMENT: process.env.NODE_ENV === 'development',
+  IS_PRODUCTION: IS_PROD,
+  IS_DEVELOPMENT: IS_DEV,
   
   // Performance settings
   MAX_RESULTS_PER_PAGE: 20,

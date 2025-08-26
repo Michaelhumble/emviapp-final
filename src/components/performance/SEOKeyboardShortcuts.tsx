@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { IS_DEV } from '@/lib/env';
 import { useNavigate } from 'react-router-dom';
 
 export default function SEOKeyboardShortcuts() {
@@ -7,7 +8,7 @@ export default function SEOKeyboardShortcuts() {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       // Only in development mode
-      if (process.env.NODE_ENV !== 'development') return;
+      if (!IS_DEV) return;
       
       // Ctrl/Cmd + Shift + P = Performance Dashboard
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'P') {
@@ -38,7 +39,7 @@ export default function SEOKeyboardShortcuts() {
     window.addEventListener('keydown', handleKeyPress);
     
     // Log available shortcuts in development
-    if (process.env.NODE_ENV === 'development') {
+    if (IS_DEV) {
       console.log('⌨️ SEO Dev Shortcuts Available:');
       console.log('  Ctrl/Cmd + Shift + P: Performance Dashboard');
       console.log('  Ctrl/Cmd + Shift + S: SEO Analysis');

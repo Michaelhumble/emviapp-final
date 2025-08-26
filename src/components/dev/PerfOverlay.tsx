@@ -13,14 +13,8 @@ import SEOKeyboardShortcuts from '@/components/performance/SEOKeyboardShortcuts'
  * Only renders when NEXT_PUBLIC_PERF_OVERLAY=true and NODE_ENV !== production
  */
 export default function PerfOverlay() {
-  // Double-check environment guards
-  const shouldRender = 
-    process.env.NEXT_PUBLIC_PERF_OVERLAY === 'true' && 
-    process.env.NODE_ENV !== 'production';
-
-  if (!shouldRender) {
-    return null;
-  }
+  // This component is only rendered when explicitly enabled in dev
+  // Environment guards are handled by the parent component
 
   return (
     <>

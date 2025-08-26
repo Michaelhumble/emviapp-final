@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { IS_DEV } from '@/lib/env';
 
 interface PerformanceMetrics {
   lcp: number | null;
@@ -303,7 +304,7 @@ export default function AdvancedPerformanceMonitor() {
   }, [metrics, grades]);
 
   // Development mode display
-  if (process.env.NODE_ENV === 'development') {
+  if (IS_DEV) {
     return (
       <>
         {/* Performance metrics display */}

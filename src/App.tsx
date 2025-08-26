@@ -17,6 +17,7 @@ import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
 import ConsentBanner from '@/components/ConsentBanner';
 
 // Dev-only performance tools
+import { IS_PROD, PERF_OVERLAY } from '@/lib/env';
 import PerfOverlay from '@/components/dev/PerfOverlay';
 
 // Critical components loaded immediately
@@ -121,7 +122,7 @@ function App() {
   return (
     <HelmetProvider>
       {/* Dev-only performance tools */}
-      {process.env.NEXT_PUBLIC_PERF_OVERLAY === 'true' && process.env.NODE_ENV !== 'production' ? <PerfOverlay /> : null}
+      {!IS_PROD && PERF_OVERLAY ? <PerfOverlay /> : null}
       
       {/* Global Organization + Website JSON-LD */}
       <GlobalSEOInjection />
