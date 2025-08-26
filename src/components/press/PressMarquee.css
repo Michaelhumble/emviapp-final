@@ -1,5 +1,6 @@
 :root {
-  --press-logo-h: clamp(28px, 3vw, 44px);
+  --press-logo-h: clamp(56px, 5vw, 72px);
+  --press-logo-h-mobile: clamp(48px, 4vw, 56px);
 }
 
 @keyframes marquee {
@@ -11,65 +12,97 @@
   }
 }
 
-/* Marquee animation */
+/* Marquee animation - slower for larger logos */
 .pressMarquee {
-  animation: marquee 48s linear infinite;
-  gap: 24px;
-  padding-inline: 8px;
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  animation: marquee 60s linear infinite;
+  gap: 32px;
+  padding-inline: 12px;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-.pressMarquee:hover {
+.pressMarquee:hover,
+.pressMarquee:focus-within {
   animation-play-state: paused;
+}
+
+@media (min-width: 768px) {
+  .pressMarquee {
+    gap: 36px;
+  }
 }
 
 @media (min-width: 1280px) {
   .pressMarquee {
-    gap: 28px;
+    gap: 40px;
   }
 }
 
 /* Logo wrapper styling */
 .pressLogoWrap {
-  height: calc(var(--press-logo-h) + 20px);
-  padding: 8px 12px;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06) inset;
-  opacity: 0.92;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  height: calc(var(--press-logo-h-mobile) + 24px);
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(17, 24, 39, 0.06) inset;
+  opacity: 0.94;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   border: none;
   cursor: pointer;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .pressLogoWrap {
+    height: calc(var(--press-logo-h) + 28px);
+    padding: 14px 20px;
+    border-radius: 18px;
+  }
 }
 
 .pressLogoWrap:hover {
   opacity: 1;
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(17, 24, 39, 0.08) inset;
 }
 
 .pressLogoWrap:focus {
   outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
+  outline-offset: 3px;
+  opacity: 1;
 }
 
 .pressLogoWrap img,
 .pressLogoWrap svg {
-  max-height: var(--press-logo-h);
+  max-height: var(--press-logo-h-mobile);
   width: auto;
   aspect-ratio: auto;
   display: block;
   margin: 0 auto;
   content-visibility: auto;
+  filter: none; /* Ensure full color logos */
+}
+
+@media (min-width: 768px) {
+  .pressLogoWrap img,
+  .pressLogoWrap svg {
+    max-height: var(--press-logo-h);
+  }
 }
 
 /* Press grid consistency */
 .pressGrid .pressLogoWrap {
-  --press-logo-h: clamp(30px, 3.2vw, 48px);
+  --press-logo-h: clamp(40px, 4vw, 64px);
+  --press-logo-h-mobile: clamp(36px, 3.5vw, 48px);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -9,27 +9,18 @@ const PressMarquee: React.FC = () => {
   const [selectedOutlet, setSelectedOutlet] = useState<string | null>(null);
   const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Map outlets from press_outlets.json to press coverage data
-  const outletData = OUTLETS.map(outlet => ({
-    domain: outlet.primaryUrl.split('/')[2], // Extract domain from URL
-    name: outlet.name,
-    article_url: outlet.primaryUrl,
-    key: outlet.key
-  }));
-
-  // Prioritize high-trust outlets for first loop
+  // Priority order for weighted rotation - show 16 at a time
   const priorityKeys = [
-    'ap', 'kron4', 'fox40', 'cbs13', 'kxan', 'wgn9', 
-    'kget17', 'krqe', 'wfla', 'benzinga'
+    'ap', 'yahoo', 'google', 'bing', 'benzinga',
+    'kron4', 'wgn9', 'fox40', 'fox59', 'wfla', 'kxan', 'cbs13',
+    'kget17', 'krqe', 'wgno', 'klas'
   ];
   
-  const orderedOutlets = [
-    ...outletData.filter(o => priorityKeys.includes(o.key)),
-    ...outletData.filter(o => !priorityKeys.includes(o.key)).sort((a, b) => a.name.localeCompare(b.name))
-  ];
+  // Get outlets in priority order (16 total)
+  const priorityOutlets = priorityKeys.map(key => OUTLETS.find(outlet => outlet.key === key)).filter(Boolean);
   
   // Duplicate for seamless infinite scroll
-  const list = [...orderedOutlets, ...orderedOutlets];
+  const list = [...priorityOutlets, ...priorityOutlets];
 
   const handleLogoClick = (outletKey: string) => {
     // Analytics tracking
@@ -63,10 +54,10 @@ const PressMarquee: React.FC = () => {
 
   return (
     <>
-      <section aria-labelledby="press-title" className="py-10">
+      <section aria-labelledby="press-title" className="py-12 bg-gradient-to-b from-background to-muted/20">
         <div className="container mx-auto px-4">
-          <h2 id="press-title" className="text-center text-xs font-semibold tracking-[0.18em] text-muted-foreground mb-6">
-            AS FEATURED IN
+          <h2 id="press-title" className="text-center text-sm font-semibold tracking-[0.16em] text-muted-foreground mb-8 uppercase">
+            As seen on
           </h2>
 
           <div className="overflow-hidden">
@@ -80,14 +71,19 @@ const PressMarquee: React.FC = () => {
                   className="pressLogoWrap cursor-pointer"
                 >
                   <img
-                    src={`https://logo.clearbit.com/${outlet.domain}?size=256`}
+                    src={outlet.logo.startsWith('http') ? outlet.logo : outlet.logo}
                     alt={`${outlet.name} logo`}
                     loading="lazy"
                     decoding="async"
-                    style={{ contentVisibility: 'auto' }}
+                    style={{ 
+                      contentVisibility: 'auto',
+                      width: 'auto',
+                      height: '100%',
+                      maxHeight: 'var(--press-logo-h-mobile)'
+                    }}
                     onError={(e) => {
                       const parent = (e.currentTarget.parentElement as HTMLElement);
-                      parent.innerHTML = `<span class="inline-flex items-center justify-center px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium" style="height: var(--press-logo-h)">${outlet.name}</span>`;
+                      parent.innerHTML = `<span class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap" style="height: var(--press-logo-h-mobile)">${outlet.name}</span>`;
                     }}
                   />
                 </button>
@@ -96,10 +92,10 @@ const PressMarquee: React.FC = () => {
           </div>
 
           {/* Read Press Coverage Link */}
-          <div className="text-center mt-8">
+          <div className="text-center mt-10">
             <Link 
               to="/press"
-              className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+              className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors font-medium group"
               onClick={() => {
                 // Analytics tracking
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
@@ -110,8 +106,16 @@ const PressMarquee: React.FC = () => {
                 }
               }}
             >
-              Read full press coverage →
+              Read full press coverage 
+              <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
+          </div>
+          
+          {/* Legal disclaimer */}
+          <div className="text-center mt-4">
+            <p className="text-xs text-muted-foreground">
+              All trademarks are property of their respective owners.
+            </p>
           </div>
         </div>
       </section>

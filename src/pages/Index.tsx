@@ -40,7 +40,7 @@ import TrustBadges from "@/components/home/trust/TrustBadges";
 import RealTimeActivity from "@/components/home/trust/RealTimeActivity";
 import PartnerLogos from "@/components/home/trust/PartnerLogos";
 
-import CredibilityRibbon from "@/components/home/CredibilityRibbon";
+import PressMarquee from "@/components/press/PressMarquee";
 import { isFeatureEnabled } from "@/config/premiumFeatures";
 
 const Index = () => {
@@ -98,11 +98,6 @@ const Index = () => {
 
       {/* 1. Hero section as first */}
       <Hero />
-      
-      {/* Credibility ribbon under hero */}
-      <div className="px-4">
-        <CredibilityRibbon />
-      </div>
       
       {/* 1.2 Social Media Proof */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
@@ -178,6 +173,9 @@ const Index = () => {
           <TrustBadges />
         </div>
       </section>
+
+      {/* Press Coverage - As seen on */}
+      <PressMarquee />
       
       {/* 3. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
