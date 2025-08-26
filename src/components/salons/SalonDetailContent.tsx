@@ -7,6 +7,9 @@ import { MapPin, Building, Calendar, DollarSign, Phone, Mail, LockIcon, Star } f
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
+import LocalBusinessJSONLD from '@/seo/jsonld/LocalBusinessJSONLD';
+import ReviewJSONLD from '@/seo/jsonld/ReviewJSONLD';
+import { Helmet } from 'react-helmet-async';
 
 interface SalonDetailContentProps {
   salon: Job | null;
@@ -37,8 +40,70 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
     return `$${price}`;
   };
 
+  // Extract location parts for structured data
+  const getLocationParts = (location: string | undefined) => {
+    if (!location) return {};
+    
+    // Simple parsing - could be enhanced based on actual data format
+    const parts = location.split(',').map(part => part.trim());
+    if (parts.length >= 2) {
+      return {
+        addressLocality: parts[0],
+        addressRegion: parts[1]
+      };
+    }
+    return { addressLocality: location };
+  };
+
+  // Generate local business data for JSON-LD
+  const salonUrl = `https://www.emvi.app/salons/${salon.id}`;
+  const locationParts = getLocationParts(salon.location);
+  
+  const localBusinessData = {
+    name: salon.title || salon.company || 'Beauty Salon',
+    url: salonUrl,
+    telephone: salon.contact_info?.phone,
+    ...locationParts,
+    addressCountry: 'US',
+    priceRange: salon.price ? '$$' : undefined,
+    image: salon.image_urls?.length ? salon.image_urls : (salon.image ? [salon.image] : undefined),
+    sameAs: salon.contact_info?.email ? [`mailto:${salon.contact_info.email}`] : undefined
+  };
+
+  // Enhanced SEO metadata
+  const pageTitle = `${salon.title || salon.company}${salon.location ? ` - ${salon.location}` : ''} | Beauty Salon | EmviApp`;
+  const pageDescription = salon.description 
+    ? `${salon.description.substring(0, 130)}...${salon.location ? ` Located in ${salon.location}.` : ''} View details on EmviApp.`
+    : `${salon.title || salon.company} - Professional beauty salon${salon.location ? ` in ${salon.location}` : ''} offering premium services. View contact details and booking information on EmviApp.`;
+  const canonicalUrl = salonUrl;
+
   return (
-    <div className="container mx-auto py-8 px-4">
+    <>
+      {/* SEO Meta Tags */}
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`beauty salon, nail salon, hair salon, ${salon.location}, beauty services, salon booking`} />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph Tags */}
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={salonUrl} />
+        <meta property="og:type" content="business.business" />
+        {salon.image && <meta property="og:image" content={salon.image} />}
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        {salon.image && <meta name="twitter:image" content={salon.image} />}
+      </Helmet>
+
+      {/* JSON-LD Structured Data */}
+      <LocalBusinessJSONLD {...localBusinessData} />
+      
+      <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
@@ -208,7 +273,8 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
