@@ -1,4 +1,10 @@
-<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="120" height="40" rx="8" fill="#f1f5f9"/>
-  <text x="60" y="22" text-anchor="middle" dominant-baseline="middle" fill="#64748b" font-family="sans-serif" font-size="10" font-weight="600">KGET17</text>
+<svg width="120" height="26" viewBox="0 0 120 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="currentColor">
+    <path d="M4 20V6H6V12L11 6H13.5L9 12L13.5 20H11L7.5 14L6 16V20H4Z"/>
+    <path d="M16 17.5V16C16 12.5 18.5 9 22.5 9C24.8 9 26.5 10 27.5 11.5V6H29.5V20H27.5V18.5C26.5 19.8 24.8 20.5 22.5 20.5C18.5 20.5 16 17 16 17.5ZM18.5 16C18.5 17.9 20.1 19 22 19C23.9 19 25.5 17.9 25.5 16C25.5 14.1 23.9 13 22 13C20.1 13 18.5 14.1 18.5 16Z"/>
+    <path d="M33 17.5V16C33 12.5 35.5 9 39.5 9C43.5 9 46 12.5 46 16C46 16.5 46 17 45.9 17.5H35.5C35.7 18.8 36.8 19.5 38.5 19.5C39.8 19.5 40.7 19 41.2 18.2L43.5 19.5C42.5 21 40.8 21.5 38.5 21.5C34.5 21.5 33 18 33 17.5ZM35.5 15.5H43.5C43.3 13.2 42.2 11.5 39.5 11.5C36.8 11.5 35.7 13.2 35.5 15.5Z"/>
+    <path d="M49 6H53V8H55V10H53V16C53 17 53.5 17.5 54.5 17.5H55V20H54C51.5 20 49 19.5 49 16V10H47V8H49V6Z"/>
+    <path d="M62 6H64V8H66V10H64V16C64 17 64.5 17.5 65.5 17.5H66V20H65C62.5 20 60 19.5 60 16V10H58V8H60V6H62Z"/>
+    <path d="M72 6H76V14H80V6H84V20H80V16H76V20H72V6Z"/>
+  </g>
 </svg>

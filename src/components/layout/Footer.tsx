@@ -214,13 +214,14 @@ const Footer: React.FC = () => {
                 Explore
               </h3>
               <ul className="space-y-4">
-                {[
-                  { to: "/", label: "Home" },
-                  { to: "/artists", label: "Artists" },
-                  { to: "/blog", label: "Blog" },
-                  { to: "/jobs", label: "Jobs" },
-                  { to: "/salons", label: "Salons for Sale" }
-                ].map((link, index) => (
+                 {[
+                   { to: "/", label: "Home" },
+                   { to: "/artists", label: "Artists" },
+                   { to: "/blog", label: "Blog" },
+                   { to: "/jobs", label: "Jobs" },
+                   { to: "/salons", label: "Salons for Sale" },
+                   { to: "/press", label: "Press & Media" }
+                 ].map((link, index) => (
                   <motion.li key={index} whileHover={{ x: 5 }}>
                     <Link 
                       to={link.to}
@@ -321,6 +322,19 @@ const Footer: React.FC = () => {
                 ))}
               </ul>
             </motion.div>
+          </motion.div>
+
+          {/* Press Disclaimer */}
+          <motion.div 
+            className="pt-6 mb-6"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-purple-300 text-xs text-center max-w-4xl mx-auto">
+              All logos are trademarks of their respective owners and are used for editorial purposes only. Press coverage reflects media reporting and does not imply endorsement.
+            </p>
           </motion.div>
 
           {/* Bottom Section */}

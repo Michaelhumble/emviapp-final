@@ -1,4 +1,11 @@
-<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="120" height="40" rx="8" fill="#f1f5f9"/>
-  <text x="60" y="22" text-anchor="middle" dominant-baseline="middle" fill="#64748b" font-family="sans-serif" font-size="12" font-weight="600">KRON4</text>
+<svg width="120" height="26" viewBox="0 0 120 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="currentColor">
+    <path d="M4 20V6H6V12L11 6H13.5L9 12L13.5 20H11L7.5 14L6 16V20H4Z"/>
+    <path d="M16 20V9H18V10.5C18.8 9.5 20 9 21.5 9C23.8 9 25.5 10.7 25.5 13V20H23.5V13.5C23.5 11.8 22.7 11 21.5 11C20.3 11 19.5 11.8 19.5 13.5V20H16Z"/>
+    <path d="M29 17.5V16C29 12.5 31.5 9 35.5 9C39.5 9 42 12.5 42 16C42 16.5 42 17 41.9 17.5H31.5C31.7 18.8 32.8 19.5 34.5 19.5C35.8 19.5 36.7 19 37.2 18.2L39.5 19.5C38.5 21 36.8 21.5 34.5 21.5C30.5 21.5 29 18 29 17.5ZM31.5 15.5H39.5C39.3 13.2 38.2 11.5 35.5 11.5C32.8 11.5 31.7 13.2 31.5 15.5Z"/>
+    <path d="M45 20V9H47V10.5C47.8 9.5 49 9 50.5 9C52.8 9 54.5 10.7 54.5 13V20H52.5V13.5C52.5 11.8 51.7 11 50.5 11C49.3 11 48.5 11.8 48.5 13.5V20H45Z"/>
+    <circle cx="60" cy="14.5" r="5.5" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M56.5 11L63.5 18M63.5 11L56.5 18"/>
+    <path d="M70 6H74V8H76V10H74V16C74 17 74.5 17.5 75.5 17.5H76V20H75C72.5 20 70 19.5 70 16V10H68V8H70V6Z"/>
+  </g>
 </svg>
