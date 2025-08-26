@@ -1,3 +1,7 @@
+:root {
+  --press-logo-h: clamp(28px, 3vw, 44px);
+}
+
 @keyframes marquee {
   from { 
     transform: translateX(0); 
@@ -7,12 +11,61 @@
   }
 }
 
-.\[animation\:marquee_42s_linear_infinite\] {
-  animation: marquee 42s linear infinite;
+/* Marquee animation */
+.pressMarquee {
+  animation: marquee 48s linear infinite;
+  gap: 24px;
+  padding-inline: 8px;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.pressMarquee:hover {
+  animation-play-state: paused;
+}
+
+@media (min-width: 1280px) {
+  .pressMarquee {
+    gap: 28px;
+  }
+}
+
+/* Logo wrapper styling */
+.pressLogoWrap {
+  height: calc(var(--press-logo-h) + 20px);
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06) inset;
+  opacity: 0.92;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pressLogoWrap:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.pressLogoWrap img,
+.pressLogoWrap svg {
+  max-height: var(--press-logo-h);
+  width: auto;
+  aspect-ratio: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Press grid consistency */
+.pressGrid .pressLogoWrap {
+  --press-logo-h: clamp(30px, 3.2vw, 48px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .\[animation\:marquee_42s_linear_infinite\] {
+  .pressMarquee {
     animation: none !important;
   }
 }

@@ -4,8 +4,19 @@ import outlets from '@/data/press_outlets.json';
 import './PressMarquee.css';
 
 const PressMarquee: React.FC = () => {
-  // Duplicate the outlets for seamless infinite scroll
-  const list = [...outlets, ...outlets];
+  // Prioritize high-trust outlets for first loop
+  const priorityOutlets = [
+    'apnews.com', 'kron4.com', 'fox40.com', 'krqe.com', 
+    'kxan.com', 'wgntv.com', 'kget.com', 'wfla.com', 'benzinga.com'
+  ];
+  
+  const orderedOutlets = [
+    ...outlets.filter(o => priorityOutlets.includes(o.domain)),
+    ...outlets.filter(o => !priorityOutlets.includes(o.domain)).sort((a, b) => a.name.localeCompare(b.name))
+  ];
+  
+  // Duplicate for seamless infinite scroll
+  const list = [...orderedOutlets, ...orderedOutlets];
 
   const handleLogoClick = (outletName: string, articleUrl: string) => {
     // Analytics tracking
@@ -27,31 +38,25 @@ const PressMarquee: React.FC = () => {
         </h2>
 
         <div className="overflow-hidden">
-          <div
-            className="flex gap-6 [animation:marquee_42s_linear_infinite] hover:[animation-play-state:paused] will-change-transform"
-            aria-hidden="true"
-          >
+          <div className="flex pressMarquee will-change-transform">
             {list.map((outlet, index) => (
               <a
                 key={`${outlet.domain}-${index}`}
                 href={outlet.article_url}
                 target="_blank"
                 rel="noopener nofollow"
-                aria-label={`Read coverage on ${outlet.name}`}
-                className="shrink-0 rounded-2xl bg-white/90 backdrop-blur ring-1 ring-slate-200 px-4 py-3 hover:bg-white transition-shadow hover:shadow-sm"
+                aria-label={`Read coverage on ${outlet.name} (opens in new tab)`}
+                className="pressLogoWrap"
                 onClick={() => handleLogoClick(outlet.name, outlet.article_url)}
               >
                 <img
                   src={`https://logo.clearbit.com/${outlet.domain}?size=256`}
-                  alt={outlet.name}
-                  width={120}
-                  height={28}
-                  className="h-7 w-auto transition"
+                  alt={`${outlet.name} logo`}
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
                     const parent = (e.currentTarget.parentElement as HTMLElement);
-                    parent.innerHTML = `<span class="inline-flex h-7 items-center justify-center px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium">${outlet.name}</span>`;
+                    parent.innerHTML = `<span class="inline-flex items-center justify-center px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium" style="height: var(--press-logo-h)">${outlet.name}</span>`;
                   }}
                 />
               </a>

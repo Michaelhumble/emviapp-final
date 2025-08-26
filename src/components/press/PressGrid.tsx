@@ -79,27 +79,28 @@ const PressGrid: React.FC = () => {
       </div>
 
       {/* Press Outlets Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pressGrid">
         {filteredOutlets.map((outlet) => (
           <div
             key={outlet.slug}
             className="bg-card border rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
           >
             {/* Logo */}
-            <div className="flex items-center justify-center h-16 mb-4">
-              <img
-                src={`/press-logos/${outlet.slug}.svg`}
-                alt={outlet.name}
-                className="max-w-full max-h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                loading="lazy"
-                decoding="async"
-                onError={(e) => handleLogoError(e, outlet.name)}
-              />
+            <div className="flex items-center justify-center mb-4">
+              <div className="pressLogoWrap">
+                <img
+                  src={`/press-logos/${outlet.slug}.svg`}
+                  alt={`${outlet.name} logo`}
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => handleLogoError(e, outlet.name)}
+                />
+              </div>
             </div>
 
             {/* Outlet Info */}
             <div className="text-center space-y-3">
-              <h3 className="font-semibold text-foreground">{outlet.name}</h3>
+              <h3 className="font-semibold text-foreground text-sm">{outlet.name}</h3>
               
               <Badge variant="secondary" className="text-xs">
                 {outlet.market}
@@ -110,6 +111,7 @@ const PressGrid: React.FC = () => {
                 href={outlet.url}
                 target="_blank"
                 rel="noopener nofollow"
+                aria-label={`Read coverage on ${outlet.name} (opens in new tab)`}
                 onClick={() => handleOutletClick(outlet.name, outlet.url)}
                 className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors font-medium"
               >
