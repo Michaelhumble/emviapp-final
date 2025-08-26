@@ -16,13 +16,8 @@ import LazyIndex from "./pages/LazyIndex";
 import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
 import ConsentBanner from '@/components/ConsentBanner';
 
-// Core Web Vitals optimization components
-import LCPOptimizer from '@/components/performance/LCPOptimizer';
-import CLSPrevention from '@/components/performance/CLSPrevention';
-import INPOptimizer from '@/components/performance/INPOptimizer'; 
-import AdvancedPerformanceMonitor from '@/components/performance/AdvancedPerformanceMonitor';
-import CriticalCSS from '@/components/performance/CriticalCSS';
-import SEOKeyboardShortcuts from '@/components/performance/SEOKeyboardShortcuts';
+// Dev-only performance tools
+import PerfOverlay from '@/components/dev/PerfOverlay';
 
 // Critical components loaded immediately
 import { Toaster } from "@/components/ui/toaster";
@@ -125,13 +120,8 @@ function App() {
 
   return (
     <HelmetProvider>
-      {/* Core Web Vitals Optimization */}
-      <CriticalCSS />
-      <LCPOptimizer criticalImages={['/hero-image.jpg']} />
-      <CLSPrevention />
-      <INPOptimizer />
-      <AdvancedPerformanceMonitor />
-      <SEOKeyboardShortcuts />
+      {/* Dev-only performance tools */}
+      {process.env.NEXT_PUBLIC_PERF_OVERLAY === 'true' && process.env.NODE_ENV !== 'production' ? <PerfOverlay /> : null}
       
       {/* Global Organization + Website JSON-LD */}
       <GlobalSEOInjection />
