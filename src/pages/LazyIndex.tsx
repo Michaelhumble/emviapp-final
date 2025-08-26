@@ -34,7 +34,7 @@ const LiveStatsBar = lazy(() => import("@/components/home/trust/LiveStatsBar"));
 const TrustBadges = lazy(() => import("@/components/home/trust/TrustBadges"));
 const RealTimeActivity = lazy(() => import("@/components/home/trust/RealTimeActivity"));
 const TrustBadgeRow = lazy(() => import("@/components/home/TrustBadgeRow"));
-const PressBand = lazy(() => import("@/components/trust/PressBand"));
+const PressMarquee = lazy(() => import("@/components/press/PressMarquee"));
 const HomepageFAQ = lazy(() => import("@/components/home/HomepageFAQ"));
 
 import CredibilityRibbon from "@/components/home/CredibilityRibbon";
@@ -71,9 +71,9 @@ const LazyIndex = () => {
         <TrustBadgeRow />
       </Suspense>
       
-      {/* Press trust bar */}
+      {/* Press marquee */}
       <Suspense fallback={null}>
-        <PressBand />
+        <PressMarquee />
       </Suspense>
       
       <div className="px-4">

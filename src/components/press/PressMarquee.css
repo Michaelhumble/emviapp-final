@@ -1,0 +1,29 @@
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+.animate-marquee.pause,
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Hide scrollbar on mobile */
+.press-marquee-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.press-marquee-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

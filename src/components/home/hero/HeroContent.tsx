@@ -129,16 +129,45 @@ const HeroContent = ({
           </Link>
         </motion.div>
         
+        {/* Press release link */}
+        <motion.div 
+          className="text-center mt-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.8 }}
+        >
+          <a
+            href="https://www.einpresswire.com/article/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+            target="_blank"
+            rel="noopener nofollow"
+            className={`text-white/80 hover:text-white transition-colors font-medium ${
+              isMobile ? 'text-sm' : 'text-base'
+            }`}
+            onClick={() => {
+              // Analytics tracking
+              if (typeof window !== 'undefined' && (window as any).gtag) {
+                (window as any).gtag('event', 'press_release_click', {
+                  event_category: 'engagement',
+                  event_label: 'EIN Presswire',
+                  link_location: 'hero'
+                });
+              }
+            }}
+          >
+            Read our launch press release →
+          </a>
+        </motion.div>
+        
         {/* Subtle Vietnamese line */}
         <motion.p 
-          className={`font-inter text-center text-white/70 drop-shadow-md ${
+          className={`font-inter text-center text-white/70 drop-shadow-md mt-4 ${
             isMobile 
               ? 'text-sm leading-relaxed max-w-xs mx-auto px-2' 
               : 'text-base max-w-2xl mx-auto'
           }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.8 }}
+          transition={{ duration: 0.7, delay: 1.0 }}
         >
           Mảnh ghép còn thiếu của ngành làm đẹp — Nay đã có EmviApp.
         </motion.p>
