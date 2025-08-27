@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { analytics } from '@/lib/analytics';
 import { ContactConversionTracker } from '@/components/analytics/ConversionTracking';
+import { createHubSpotIntegration } from '@/utils/hubspot';
 
 interface ContactReason {
   id: string;
@@ -79,6 +80,43 @@ const ContactForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
 
+  /**
+   * Get UTM and attribution data from localStorage
+   * Uses the same storage key as our UTM script
+   */
+  const getUTMData = () => {
+    try {
+      const stored = localStorage.getItem('emvi_attribution');
+      if (stored) {
+        const data = JSON.parse(stored);
+        // Check if TTL has expired
+        if (Date.now() < data.expires) {
+          return {
+            utm_source: data.utm_source || '',
+            utm_medium: data.utm_medium || '',
+            utm_campaign: data.utm_campaign || '',
+            utm_term: data.utm_term || '',
+            utm_content: data.utm_content || '',
+            initial_referrer: data.initial_referrer || '',
+            landing_page: data.landing_page || ''
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to parse UTM attribution data:', error);
+    }
+    
+    return {
+      utm_source: '',
+      utm_medium: '',
+      utm_campaign: '',
+      utm_term: '',
+      utm_content: '',
+      initial_referrer: document.referrer || 'direct',
+      landing_page: window.location.pathname
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -98,16 +136,23 @@ const ContactForm = () => {
 
     setIsSubmitting(true);
 
+    // Show status toast for HubSpot submission
+    toast({
+      title: "Submitting...",
+      description: "Sending your message to HubSpot",
+      duration: 2000,
+    });
+
     try {
-      // Get the selected reason title for the email
+      // Get the selected reason title for context
       const selectedReason = contactReasons.find(r => r.id === formData.reason);
       const reasonText = selectedReason ? selectedReason.title : 'General Inquiry';
       
       // Prepare the message with reason context
-      const fullMessage = `Contact Reason: ${reasonText}\n\n${formData.message}`;
+      const fullMessage = formData.reason ? `Contact Reason: ${reasonText}\n\n${formData.message}` : formData.message;
 
-      // Call the edge function
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+      // Try HubSpot integration first via edge function
+      const hubspotResult = await supabase.functions.invoke('hubspot-contact', {
         body: {
           firstname: formData.firstname,
           lastname: formData.lastname,
@@ -115,34 +160,84 @@ const ContactForm = () => {
           phone: formData.phone,
           company: formData.company,
           message: fullMessage,
-          currentUrl: window.location.href,
-          userAgent: navigator.userAgent
+          reason: reasonText,
+          // Include UTM data from localStorage if available
+          ...getUTMData()
         }
       });
 
-      if (error) {
-        console.error('Error sending contact email:', error);
+      let hubspotSuccess = false;
+
+      if (!hubspotResult.error && hubspotResult.data?.success) {
+        hubspotSuccess = true;
+        console.log('✅ HS form submitted:', formData.email);
+        
         toast({
-          title: "Error",
-          description: "Failed to send message. Please try again.",
-          variant: "destructive",
+          title: "Success! 🎉",
+          description: "Your message was sent to HubSpot successfully",
+          variant: "default",
         });
-        return;
+      } else {
+        console.error('HubSpot submission failed:', hubspotResult.error || hubspotResult.data?.error);
+        toast({
+          title: "HubSpot Warning",
+          description: `HubSpot submission issue - falling back to email`,
+          variant: "default",
+        });
       }
 
-      // Store in database for tracking
-      const { error: dbError } = await supabase
-        .from('contact_messages')
-        .insert({
-          name: `${formData.firstname} ${formData.lastname}`.trim(),
-          email: formData.email,
-          message: fullMessage,
-          status: 'new'
-        } as any); // Type assertion to bypass schema mismatch
+      // Fallback to existing edge function if HubSpot fails or is not configured
+      if (!hubspotSuccess) {
+        console.log('🔄 Falling back to edge function submission');
+        
+        const { data, error } = await supabase.functions.invoke('send-contact-email', {
+          body: {
+            firstname: formData.firstname,
+            lastname: formData.lastname,
+            email: formData.email,
+            phone: formData.phone,
+            company: formData.company,
+            message: fullMessage,
+            currentUrl: window.location.href,
+            userAgent: navigator.userAgent
+          }
+        });
 
-      if (dbError) {
-        console.error('Error storing contact message:', dbError);
-        // Don't show error to user as email was sent successfully
+        if (error) {
+          console.error('Error sending contact email:', error);
+          toast({
+            title: "Error",
+            description: "Failed to send message. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: "Success!",
+          description: "Your message was sent successfully",
+          variant: "default",
+        });
+      }
+
+      // Store in database for tracking (optional, even if HubSpot succeeded)
+      try {
+        const { error: dbError } = await supabase
+          .from('contact_messages')
+          .insert({
+            name: `${formData.firstname} ${formData.lastname}`.trim(),
+            email: formData.email,
+            message: fullMessage,
+            status: 'new'
+          } as any);
+
+        if (dbError) {
+          console.error('Error storing contact message:', dbError);
+          // Don't show error to user as primary submission was successful
+        }
+      } catch (dbError) {
+        console.error('Database storage failed:', dbError);
+        // Continue with success flow
       }
 
       // Success feedback with analytics tracking
