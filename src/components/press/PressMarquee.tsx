@@ -1,24 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getWeightedOutlets, getOutletByKey, getLogoUrl, type Outlet } from '@/lib/press';
+import { getOutletByKey, type Outlet } from '@/lib/press';
+import outlets from '@/data/outlets.json';
 import PressModal from './PressModal';
-import './PressMarquee.css';
+import '../../styles/marquee.css';
 
 const PressMarquee: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOutlet, setSelectedOutlet] = useState<string | null>(null);
-  const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const triggerRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
 
-  // Build sources synchronously - no runtime fetch
-  const sources = getWeightedOutlets(20).map(outlet => ({
+  // Build sources synchronously from static data
+  const sources = outlets.map(outlet => ({
     key: outlet.key,
     name: outlet.name,
     href: outlet.url,
-    src: getLogoUrl(outlet)
+    src: outlet.logo || `https://logo.clearbit.com/${outlet.domain}?size=256`
   }));
   
   // Duplicate the array once for seamless scroll before render
   const track = [...sources, ...sources];
+  const itemCount = sources.length;
 
   // Preload logos to avoid late fills - eagerly warm cache for first 24 logos
   useEffect(() => {
@@ -45,7 +47,7 @@ const PressMarquee: React.FC = () => {
     setModalOpen(true);
   };
 
-  const setTriggerRef = (key: string, element: HTMLButtonElement | null) => {
+  const setTriggerRef = (key: string, element: HTMLAnchorElement | null) => {
     if (element) {
       triggerRefs.current.set(key, element);
     } else {
@@ -69,18 +71,23 @@ const PressMarquee: React.FC = () => {
             As seen on
           </h2>
 
-          <div className="overflow-hidden">
-            <div className="flex pressMarquee will-change-transform">
+          <div className="marquee">
+            <div className="track" aria-label="As seen on logos">
               {track.map((item, index) => (
-                <button
-                  key={`${item.key}-${index}`}
+                <a
+                  key={`${item.key}-${index < itemCount ? 'a' : 'b'}`}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   ref={(el) => setTriggerRef(`${item.key}-${index}`, el)}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     const outlet = getOutletByKey(item.key);
                     if (outlet) handleLogoClick(outlet);
                   }}
+                  className="cell"
+                  data-name={item.name}
                   aria-label={`Open ${item.name} coverage`}
-                  className="pressLogoWrap cursor-pointer"
                 >
                   <img
                     src={item.src}
@@ -91,20 +98,20 @@ const PressMarquee: React.FC = () => {
                     fetchPriority="high"
                     decoding="async"
                     referrerPolicy="no-referrer"
-                    className="h-12 w-12 md:h-16 md:w-16 object-contain"
+                    className="img"
                     onError={(e) => {
                       // Try fallback to default logo
                       e.currentTarget.src = '/press/default.svg';
                       e.currentTarget.onerror = () => {
                         // Hide if even fallback fails
-                        const button = e.currentTarget.parentElement as HTMLButtonElement;
-                        if (button) {
-                          button.style.display = 'none';
+                        const link = e.currentTarget.parentElement as HTMLAnchorElement;
+                        if (link) {
+                          link.style.display = 'none';
                         }
                       };
                     }}
                   />
-                </button>
+                </a>
               ))}
             </div>
           </div>

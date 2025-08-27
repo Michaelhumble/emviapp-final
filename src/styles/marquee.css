@@ -1,0 +1,82 @@
+.marquee {
+  --duration: 18s;
+  --gap: 1.25rem;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.marquee .track {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  width: max-content;
+  will-change: transform;
+  animation: marquee var(--duration) linear infinite;
+  transform: translate3d(0, 0, 0); /* GPU acceleration */
+}
+
+/* Each cell has fixed width so both halves match => seamless */
+.marquee .cell {
+  flex: 0 0 auto;
+  width: 6rem;   /* 96px, fixed size to prevent CLS */
+  height: 6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.marquee .cell:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.marquee .img {
+  width: 4rem;   /* 64px logo inside 96px cell */
+  height: 4rem;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); } /* move one half; second half is identical */
+}
+
+/* UX niceties */
+.marquee:hover .track { 
+  animation-play-state: paused; 
+}
+
+.marquee:focus-within .track {
+  animation-play-state: paused;
+}
+
+/* Mobile speed optimization */
+@media (max-width: 768px) {
+  .marquee {
+    --duration: 14s;
+    --gap: 1rem;
+  }
+  
+  .marquee .cell {
+    width: 5rem;   /* 80px on mobile */
+    height: 5rem;
+  }
+  
+  .marquee .img {
+    width: 3rem;   /* 48px logo on mobile */
+    height: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee .track { 
+    animation: none !important; 
+  }
+}
