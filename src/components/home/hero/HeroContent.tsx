@@ -67,11 +67,11 @@ const HeroContent = ({
       <div className={`${isMobile ? 'space-y-8 px-6 py-12' : 'space-y-4'}`}>
         {/* Soft gradient overlay for text readability on mobile */}
         {isMobile && (
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-transparent pointer-events-none z-[-1]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/10 to-transparent pointer-events-none z-[-1]" />
         )}
         
         {/* Enhanced gradient overlay for perfect text readability on mobile */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/20 pointer-events-none z-[-1]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/18 to-black/10 pointer-events-none z-[-1]" />
         
         <motion.h1 
           className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-[900px] mx-auto ${
@@ -137,9 +137,9 @@ const HeroContent = ({
           transition={{ duration: 0.7, delay: 0.8 }}
         >
           <a
-            href="https://www.einpresswire.com/article/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+            href="https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
             target="_blank"
-            rel="noopener nofollow"
+            rel="noopener noreferrer"
             className={`text-white/80 hover:text-white transition-colors font-medium ${
               isMobile ? 'text-sm' : 'text-base'
             }`}
@@ -148,7 +148,7 @@ const HeroContent = ({
               if (typeof window !== 'undefined' && (window as any).gtag) {
                 (window as any).gtag('event', 'press_release_click', {
                   event_category: 'engagement',
-                  event_label: 'EIN Presswire',
+                  event_label: 'Benzinga',
                   link_location: 'hero'
                 });
               }

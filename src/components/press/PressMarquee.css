@@ -16,11 +16,18 @@
 
 /* Marquee animation - optimized for premium larger logos */
 .pressMarquee {
-  animation: marquee 60s linear infinite;
+  animation: marquee 28s linear infinite;
   gap: 28px;
   padding-inline: 8px;
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+/* Mobile speed optimization */
+@media (max-width: 767px) {
+  .pressMarquee {
+    animation: marquee 24s linear infinite;
+  }
 }
 
 .pressMarquee:hover,

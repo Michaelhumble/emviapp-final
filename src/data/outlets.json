@@ -13,45 +13,6 @@
     "type": "article"
   },
   {
-    "key": "yahoo",
-    "name": "Yahoo News",
-    "tier": "national",
-    "domain": "yahoo.com",
-    "logo": "",
-    "city": "National",
-    "dateISO": "2025-08-24",
-    "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
-    "url": "https://news.search.yahoo.com/search?p=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
-    "altUrls": [],
-    "type": "aggregator"
-  },
-  {
-    "key": "googlenews",
-    "name": "Google News",
-    "tier": "search",
-    "domain": "google.com",
-    "logo": "",
-    "city": "National",
-    "dateISO": "2025-08-24",
-    "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
-    "url": "https://www.google.com/search?tbm=nws&q=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
-    "altUrls": [],
-    "type": "aggregator"
-  },
-  {
-    "key": "bingnews",
-    "name": "Bing News",
-    "tier": "search",
-    "domain": "bing.com",
-    "logo": "",
-    "city": "National",
-    "dateISO": "2025-08-24",
-    "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
-    "url": "https://www.bing.com/news/search?q=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
-    "altUrls": [],
-    "type": "aggregator"
-  },
-  {
     "key": "benzinga",
     "name": "Benzinga",
     "tier": "finance",
@@ -78,6 +39,19 @@
     "type": "article"
   },
   {
+    "key": "bingnews",
+    "name": "Bing News",
+    "tier": "search",
+    "domain": "bing.com",
+    "logo": "",
+    "city": "National",
+    "dateISO": "2025-08-24",
+    "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url": "https://www.bing.com/news/search?q=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
+    "altUrls": [],
+    "type": "aggregator"
+  },
+  {
     "key": "kget17",
     "name": "KGET 17 (Bakersfield)",
     "tier": "local_tv",
@@ -102,6 +76,32 @@
     "url": "https://wgntv.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
     "altUrls": [],
     "type": "article"
+  },
+  {
+    "key": "yahoo",
+    "name": "Yahoo News",
+    "tier": "national",
+    "domain": "yahoo.com",
+    "logo": "",
+    "city": "National",
+    "dateISO": "2025-08-24",
+    "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url": "https://news.search.yahoo.com/search?p=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
+    "altUrls": [],
+    "type": "aggregator"
+  },
+  {
+    "key": "googlenews",
+    "name": "Google News",
+    "tier": "search",
+    "domain": "google.com",
+    "logo": "",
+    "city": "National",
+    "dateISO": "2025-08-24",
+    "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+    "url": "https://www.google.com/search?tbm=nws&q=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
+    "altUrls": [],
+    "type": "aggregator"
   },
   {
     "key": "wfla",
