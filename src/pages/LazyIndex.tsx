@@ -6,6 +6,7 @@ import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import SEODevLogger from "@/components/seo/SEODevLogger";
+import ComprehensiveSEO from "@/components/seo/ComprehensiveSEO";
 
 // Critical above-the-fold components (loaded immediately)
 import JobsCallToAction from "@/components/home/JobsCallToAction";

@@ -9,9 +9,9 @@ import { Job } from '@/types/job';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import ComprehensiveSEO from '@/components/seo/ComprehensiveSEO';
 import JobsPageSEO from '@/components/seo/JobsPageSEO';
-import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
+import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
+import SEODevLogger from '@/components/seo/SEODevLogger';
 
 import { JobCard } from '@/components/jobs/JobCard';
 import OptimizedStickyMobileCTA from '@/components/mobile/OptimizedStickyMobileCTA';
@@ -199,78 +199,10 @@ const OptimizedJobsPageContent = () => {
   };
 
 
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: 'Home', url: 'https://www.emvi.app' },
-    { name: 'Jobs', url: 'https://www.emvi.app/jobs' }
-  ]);
 
   return (
     <>
       <JobsPageSEO jobs={jobs} />
-      <BaseSEO
-        title="Beauty Jobs Near You - Nail Tech, Hair Stylist & More | EmviApp"
-        description="Find premium beauty jobs with tip cao opportunities. Join 10k+ professionals finding nail tech, hair stylist, barber & massage roles at top khách sang salons."
-        canonical="https://www.emvi.app/jobs"
-        ogImage="https://www.emvi.app/og-jobs.jpg"
-        jsonLd={[breadcrumbJsonLd, {
-          "@context": "https://schema.org",
-          "@type": "JobPosting",
-          "title": "Beauty Jobs - Nail Tech, Hair Stylist & More",
-          "description": "Find premium beauty jobs with high-tip opportunities across nail tech, hair styling, barber, and massage therapy roles.",
-          "employmentType": "CONTRACTOR",
-          "hiringOrganization": {
-            "@type": "Organization",
-            "name": "EmviApp",
-            "url": "https://www.emvi.app"
-          },
-          "jobLocation": {
-            "@type": "Place",
-            "address": {
-              "@type": "PostalAddress",
-              "addressCountry": "US"
-            }
-          },
-          "industry": "Beauty and Personal Care"
-        }, {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "How do I apply for beauty jobs on EmviApp?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Browse our curated job listings, click on positions that match your skills, and apply directly through the platform. Verified employers receive your application instantly."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "What types of beauty positions are available?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We feature nail technician, hair stylist, barber, massage therapist, skincare specialist, makeup artist, and brow & lash technician positions at premium salons with khách sang clientele."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Do EmviApp jobs offer high earning potential?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes! Our platform focuses on tip cao opportunities at upscale salons. Many positions offer commission-based pay, booth rental options, and access to loyal, high-spending clientele."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Is EmviApp free for job seekers?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Absolutely! Creating your profile and applying for positions is completely free. Employers pay to post premium job listings, ensuring quality opportunities for professionals."
-              }
-            }
-          ]
-        }]}
-        type="website"
-      />
 
       <main className="w-full">
         {/* JOBS HERO (Above the fold) */}
@@ -556,8 +488,11 @@ const OptimizedJobsPageContent = () => {
           <InviteEarnBanner />
         </Suspense>
 
-        {/* Mobile CTA */}
-        {isMobile && <OptimizedStickyMobileCTA />}
+        {/* Rich Results Test Link and Dev Logger */}
+        <div className="fixed bottom-4 right-4 space-y-2 z-50">
+          <RichResultsTestLink url={`https://www.emvi.app/jobs`} />
+        </div>
+        <SEODevLogger />
       </main>
     </>
   );

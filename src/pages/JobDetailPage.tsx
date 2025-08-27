@@ -174,8 +174,9 @@ const JobDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <JobDetailSEO job={job} />
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200">
+      
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 py-6">
             {/* Breadcrumbs */}
             <div className="mb-4">
@@ -399,7 +400,6 @@ const JobDetailPage = () => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

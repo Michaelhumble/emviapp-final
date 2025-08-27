@@ -17,10 +17,14 @@ import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
 import SuccessStoriesSection from '@/components/salons/hero/SuccessStoriesSection';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import SalonsPageSEO from '@/components/seo/SalonsPageSEO';
+import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
+import SEODevLogger from '@/components/seo/SEODevLogger';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const SalonsPageRedesigned = () => {
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   // Modal state
   const [selectedSalon, setSelectedSalon] = useState<RealSalonListing | null>(null);
@@ -441,6 +445,11 @@ const SalonsPageRedesigned = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
+        {/* Rich Results Test Link and Dev Logger */}
+        <div className="fixed bottom-4 right-4 space-y-2 z-50">
+          <RichResultsTestLink url={`https://www.emvi.app/salons`} />
+        </div>
+        <SEODevLogger />
       </div>
     </>
   );

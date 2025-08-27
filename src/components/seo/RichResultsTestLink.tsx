@@ -3,15 +3,16 @@ import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface RichResultsTestLinkProps {
-  jobUrl: string;
+  jobUrl?: string;
+  url?: string;
 }
 
 /**
  * Component that provides a link to Google's Rich Results Test
- * for validating JobPosting structured data
+ * for validating structured data
  */
-const RichResultsTestLink: React.FC<RichResultsTestLinkProps> = ({ jobUrl }) => {
-  const testUrl = `https://search.google.com/test/rich-results?url=${encodeURIComponent(jobUrl)}`;
+const RichResultsTestLink: React.FC<RichResultsTestLinkProps> = ({ jobUrl, url }) => {
+  const testUrl = `https://search.google.com/test/rich-results?url=${encodeURIComponent(jobUrl || url || window.location.href)}`;
   
   return (
     <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -21,7 +22,7 @@ const RichResultsTestLink: React.FC<RichResultsTestLinkProps> = ({ jobUrl }) => 
             SEO Validation
           </h4>
           <p className="text-xs text-blue-700 mb-2">
-            This page includes comprehensive JobPosting structured data for search engines.
+            This page includes comprehensive structured data for search engines.
           </p>
         </div>
       </div>
