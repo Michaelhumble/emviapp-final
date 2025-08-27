@@ -189,7 +189,9 @@ function App() {
                     <Route path="/job-posted-success" element={<JobPostingSuccessPage />} />
                     <Route path="/nails-job-success" element={<NailJobSuccessPage />} />
                     
-                     {/* Other pages */}
+                      <Route path="/sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap" replace />} />
+                      
+                      {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />

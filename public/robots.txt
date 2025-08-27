@@ -1,10 +1,32 @@
-
 User-agent: *
-Disallow: /signin
-Disallow: /signup
+Allow: /
 
-Sitemap: https://www.emvi.app/sitemap.xml
-Sitemap: https://www.emvi.app/jobs-sitemap.xml
-Sitemap: https://www.emvi.app/salons-sitemap.xml
-Sitemap: https://www.emvi.app/artists-sitemap.xml
-Sitemap: https://www.emvi.app/blog-sitemap.xml
+# Disallow non-public pages
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /onboarding/
+Disallow: /profile/
+Disallow: /checkout/
+Disallow: /post-job*
+Disallow: /sell-salon*
+Disallow: /posting/
+Disallow: /invite/
+Disallow: /thank-you
+Disallow: /partners/thank-you
+Disallow: /salon-listing-success
+Disallow: /salon-success
+Disallow: /post-success
+Disallow: /post-canceled
+Disallow: /job-posted-success
+Disallow: /nails-job-success
+
+# Allow important public directories
+Allow: /images/
+Allow: /icons/
+Allow: /assets/
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap
