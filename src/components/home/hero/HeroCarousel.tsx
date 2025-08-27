@@ -113,9 +113,8 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
               />
             </picture>
             
-            {/* Premium gradient overlays for perfect text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/10 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+            {/* Softer glass overlay for perfect text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/18 to-black/48 pointer-events-none" />
             
             {/* Industry badge - positioned beautifully with animation */}
             {image.industry && index === activeIndex && (

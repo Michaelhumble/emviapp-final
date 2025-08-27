@@ -10,8 +10,17 @@ const PressMarquee: React.FC = () => {
   const [selectedOutlet, setSelectedOutlet] = useState<string | null>(null);
   const triggerRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
 
-  // Build sources synchronously from static data
-  const sources = outlets.map(outlet => ({
+  // Build sources synchronously from static data with reordering
+  const reorderSources = (outletData: Array<{key: string, name: string, domain: string, url: string, logo: string}>) => {
+    const priorityFirst = outletData.filter(o => ['benzinga', 'ap'].includes(o.key));
+    const yahooGoogle = outletData.filter(o => ['yahoo', 'googlenews'].includes(o.key));
+    const rest = outletData.filter(o => !['benzinga', 'ap', 'yahoo', 'googlenews'].includes(o.key));
+    
+    return [...priorityFirst, ...rest, ...yahooGoogle];
+  };
+
+  const orderedOutlets = reorderSources(outlets);
+  const sources = orderedOutlets.map(outlet => ({
     key: outlet.key,
     name: outlet.name,
     href: outlet.url,
@@ -94,16 +103,25 @@ const PressMarquee: React.FC = () => {
                     alt={`${item.name} logo`}
                     width={72}
                     height={72}
-                    loading="eager"
-                    fetchPriority="high"
+                    loading={index < 8 ? "eager" : "lazy"}
+                    fetchPriority={index < 8 ? "high" : "low"}
                     decoding="async"
                     referrerPolicy="no-referrer"
                     className="img"
                     onError={(e) => {
-                      // Try fallback to default logo
-                      e.currentTarget.src = '/press/default.svg';
+                      // Extract domain for fallback
+                      const domain = item.key === 'ap' ? 'apnews.com' : 
+                                   item.key === 'benzinga' ? 'benzinga.com' :
+                                   item.key === 'kron4' ? 'kron4.com' :
+                                   item.key === 'bingnews' ? 'bing.com' :
+                                   item.key === 'yahoo' ? 'yahoo.com' :
+                                   item.key === 'googlenews' ? 'google.com' :
+                                   outlets.find(o => o.key === item.key)?.domain || 'example.com';
+                      
+                      // Try Clearbit fallback
+                      e.currentTarget.src = `https://logo.clearbit.com/${domain}?size=256`;
                       e.currentTarget.onerror = () => {
-                        // Hide if even fallback fails
+                        // Final fallback: hide element
                         const link = e.currentTarget.parentElement as HTMLAnchorElement;
                         if (link) {
                           link.style.display = 'none';

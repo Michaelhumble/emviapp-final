@@ -74,11 +74,15 @@ const HeroContent = ({
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/18 to-black/10 pointer-events-none z-[-1]" />
         
         <motion.h1 
-          className={`font-playfair font-bold text-center tracking-tight text-white drop-shadow-xl max-w-[900px] mx-auto ${
+          className={`font-playfair font-bold text-center text-white max-w-[900px] mx-auto ${
             isMobile 
               ? 'text-4xl sm:text-5xl leading-tight mb-6' 
               : 'text-5xl xl:text-6xl mb-6 leading-tight'
           }`}
+          style={{ 
+            letterSpacing: '0.2px',
+            textShadow: '0 1px 2px rgba(0,0,0,0.25)'
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -154,7 +158,7 @@ const HeroContent = ({
               }
             }}
           >
-            Read our launch press release →
+            Featured on Benzinga — Read the launch →
           </a>
         </motion.div>
         
@@ -192,7 +196,7 @@ const HeroContent = ({
             className={`w-11 h-11 rounded-full transition-all flex items-center justify-center ${
               activeIndex === index 
                 ? 'bg-white/90 scale-110' 
-                : 'bg-white/40 hover:bg-white/60'
+                : 'bg-white/50 hover:bg-white/60 opacity-50'
             }`}
             aria-label={`View slide ${index + 1}`}
           >

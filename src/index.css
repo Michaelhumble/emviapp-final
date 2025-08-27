@@ -5,6 +5,7 @@
 @tailwind utilities;
 @import './styles/chat-premium.css';
 @import './styles/prose-enhanced.css';
+@import './styles/gradient-text.css';
 
 /* Image Loading Animation */
 @keyframes shimmer {

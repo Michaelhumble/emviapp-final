@@ -1,8 +1,8 @@
-// CRITICAL: Only 1 hero image loads first for <1s first paint
+// CRITICAL: Pink-glove hero image loads first for <1s first paint
 export const heroImages = [
   {
-    url: "/lovable-uploads/f7491bd3-25bf-43f9-80e2-d53b137a70d7.png",
-    alt: "EmviApp - Beauty professionals platform",
+    url: "/lovable-uploads/cc08b673-f0ae-4542-b752-f595a4a5ac3f.png",
+    alt: "Professional nail technician providing premium nail services",
     industry: "Beauty Platform",
     subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
     cta: {

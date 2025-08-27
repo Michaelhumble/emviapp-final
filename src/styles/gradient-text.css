@@ -1,0 +1,31 @@
+/* Emvi Gradient Text Utility - Purple to Pink to Orange Brand Colors */
+.gradient-text-emvi {
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Static version without animation */
+.gradient-text-emvi-static {
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Apply to page headlines */
+.page-headline {
+  @apply gradient-text-emvi-static text-4xl lg:text-5xl font-bold;
+}
