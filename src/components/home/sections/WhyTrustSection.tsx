@@ -1,31 +1,29 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import type { Variants, Transition } from "framer-motion";
 import { Shield, Users, Heart, Home, Lock, Star, Globe, Sparkles, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { staggerContainer, fadeInScale, tEase } from "@/lib/motion";
 
 // Animation variants
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
+  visible: { opacity: 1 }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 50, scale: 0.8 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.8,
-      ease: [0.25, 0.46, 0.45, 0.94]
-    }
-  }
+  visible: { opacity: 1, y: 0, scale: 1 }
+};
+
+const customTransition: Transition = {
+  duration: 0.8,
+  ease: [0.25, 0.46, 0.45, 0.94]
+};
+
+const staggerTransition: Transition = {
+  staggerChildren: 0.2
 };
 
 // Animated Counter Component
@@ -168,12 +166,14 @@ const WhyTrustSection: React.FC = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
+          transition={staggerTransition}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 mb-24"
         >
           {trustStats.map((stat, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
+              transition={customTransition}
               className="group relative"
               whileHover={{ 
                 y: -8, 

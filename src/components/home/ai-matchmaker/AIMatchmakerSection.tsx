@@ -1,32 +1,20 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import LanguageToggleButton from "../missing-piece/LanguageToggleButton";
 import AIMatchmakerContent from "./AIMatchmakerContent";
 import AIMatchmakerTitle from "./AIMatchmakerTitle";
+import { sparkle, tSlow, sparkleTransition } from "@/lib/motion";
 
 const AIMatchmakerSection = () => {
   const { isVietnamese, toggleLanguage } = useTranslation();
   
   // Enhanced motion variants for luxury animations
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-  };
-
-  // Refined sparkle animation
-  const sparkleVariants = {
-    animate: {
-      scale: [1, 1.2, 1],
-      opacity: [0.4, 1, 0.4],
-      rotate: [0, 180, 360],
-      transition: {
-        duration: 6,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
+    visible: { opacity: 1, y: 0 }
   };
 
   return (
@@ -41,24 +29,25 @@ const AIMatchmakerSection = () => {
       {/* Floating sparkles */}
       <motion.div
         className="absolute top-20 left-1/4 text-purple-400 text-2xl opacity-70"
-        variants={sparkleVariants}
+        variants={sparkle}
         animate="animate"
+        transition={sparkleTransition}
       >
         ✨
       </motion.div>
       <motion.div
         className="absolute top-40 right-1/3 text-amber-400 text-xl opacity-70"
-        variants={sparkleVariants}
+        variants={sparkle}
         animate="animate"
-        style={{ animationDelay: "2s" }}
+        transition={{ ...sparkleTransition, delay: 2 }}
       >
         ✨
       </motion.div>
       <motion.div
         className="absolute bottom-32 left-1/6 text-pink-400 text-2xl opacity-70"
-        variants={sparkleVariants}
+        variants={sparkle}
         animate="animate"
-        style={{ animationDelay: "4s" }}
+        transition={{ ...sparkleTransition, delay: 4 }}
       >
         ✨
       </motion.div>
@@ -66,12 +55,12 @@ const AIMatchmakerSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <AIMatchmakerTitle 
           language={isVietnamese ? "vi" : "en"} 
-          itemVariants={itemVariants} 
+          itemVariants={itemVariants}
         />
         
         <AIMatchmakerContent 
           language={isVietnamese ? "vi" : "en"} 
-          itemVariants={itemVariants} 
+          itemVariants={itemVariants}
         />
         
         {/* Language toggle positioned at bottom */}

@@ -9,84 +9,85 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building, Users, DollarSign, Home, Zap, Star, Sparkles, Crown } from "lucide-react";
 import { motion } from "framer-motion";
+import type { Variants, Transition } from "framer-motion";
+import { staggerContainer, fadeInScale, tEase } from "@/lib/motion";
 
 interface SalonDetailsStepProps {
   form: UseFormReturn<SalonFormValues>;
 }
 
 export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.8,
-        staggerChildren: 0.1,
-        ease: "easeOut"
-      }
-    }
+    visible: { opacity: 1, y: 0 }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: { 
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+    visible: { opacity: 1, y: 0, scale: 1 }
   };
 
-  const floatingVariants = {
+  const floatingVariants: Variants = {
     animate: {
       y: [-3, 3, -3],
-      x: [-2, 2, -2],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
+      x: [-2, 2, -2]
     }
+  };
+
+  const containerTransition: Transition = { 
+    duration: 0.8,
+    staggerChildren: 0.1,
+    ease: "easeOut"
+  };
+
+  const itemTransition: Transition = {
+    duration: 0.6,
+    ease: "easeOut"
+  };
+
+  const floatingTransition: Transition = {
+    duration: 4,
+    repeat: Infinity,
+    ease: "easeInOut"
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          className="absolute top-32 right-10 w-36 h-36 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-xl"
-          variants={floatingVariants}
-          animate="animate"
-        />
-        <motion.div 
-          className="absolute bottom-40 left-16 w-28 h-28 bg-gradient-to-br from-purple-200/40 to-pink-200/40 rounded-full blur-xl"
-          variants={floatingVariants}
-          animate="animate"
-          transition={{ delay: 1.5 }}
-        />
-        <motion.div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-pink-200/20 to-indigo-200/20 rounded-full blur-2xl"
-          variants={floatingVariants}
-          animate="animate"
-          transition={{ delay: 3 }}
-        />
+         <motion.div 
+           className="absolute top-32 right-10 w-36 h-36 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-xl"
+           variants={floatingVariants}
+           animate="animate"
+           transition={floatingTransition}
+         />
+         <motion.div 
+           className="absolute bottom-40 left-16 w-28 h-28 bg-gradient-to-br from-purple-200/40 to-pink-200/40 rounded-full blur-xl"
+           variants={floatingVariants}
+           animate="animate"
+           transition={{ ...floatingTransition, delay: 1.5 }}
+         />
+         <motion.div 
+           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-pink-200/20 to-indigo-200/20 rounded-full blur-2xl"
+           variants={floatingVariants}
+           animate="animate"
+           transition={{ ...floatingTransition, delay: 3 }}
+         />
       </div>
 
-      <motion.div 
-        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Premium Header */}
-        <motion.div 
-          className="text-center mb-12 lg:mb-16"
-          variants={itemVariants}
-        >
+       <motion.div 
+         className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12"
+         variants={containerVariants}
+         initial="hidden"
+         animate="visible"
+         transition={containerTransition}
+       >
+         {/* Premium Header */}
+         <motion.div 
+           className="text-center mb-12 lg:mb-16"
+           variants={itemVariants}
+           transition={itemTransition}
+         >
           <div className="flex items-center justify-center gap-4 mb-6">
             <motion.div 
               className="relative"
@@ -128,10 +129,11 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           {/* Financial Information Section */}
-          <motion.div 
-            className="space-y-8"
-            variants={itemVariants}
-          >
+           <motion.div 
+             className="space-y-8"
+             variants={itemVariants}
+             transition={itemTransition}
+           >
             <div className="relative overflow-hidden rounded-3xl bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/10 p-8">
               <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/40" />
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400" />
@@ -224,10 +226,11 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
           </motion.div>
 
           {/* Business Information Section */}
-          <motion.div 
-            className="space-y-8"
-            variants={itemVariants}
-          >
+           <motion.div 
+             className="space-y-8"
+             variants={itemVariants}
+             transition={itemTransition}
+           >
             <div className="relative overflow-hidden rounded-3xl bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl shadow-purple-500/10 p-8">
               <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/40" />
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400" />
@@ -341,10 +344,11 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
         </div>
 
         {/* Features Section */}
-        <motion.div 
-          className="mt-12"
-          variants={itemVariants}
-        >
+         <motion.div 
+           className="mt-12"
+           variants={itemVariants}
+           transition={itemTransition}
+         >
           <div className="relative overflow-hidden rounded-3xl bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl shadow-pink-500/10 p-8 lg:p-10">
             <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/40" />
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400" />
@@ -405,10 +409,11 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
         </motion.div>
 
         {/* Progress Indicator */}
-        <motion.div 
-          className="flex justify-center pt-12"
-          variants={itemVariants}
-        >
+         <motion.div 
+           className="flex justify-center pt-12"
+           variants={itemVariants}
+           transition={itemTransition}
+         >
           <div className="flex items-center space-x-4">
             <div className="w-4 h-4 bg-green-400 rounded-full shadow-lg" />
             <div className="w-12 h-2 bg-gradient-to-r from-green-200 to-purple-200 rounded-full" />

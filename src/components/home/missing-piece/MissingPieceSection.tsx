@@ -1,33 +1,21 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import LanguageToggleButton from "./LanguageToggleButton";
 import ContentCard from "./ContentCard";
 import SectionTitle from "./SectionTitle";
+import { sparkle, tSlow, sparkleTransition } from "@/lib/motion";
 
 const MissingPieceSection = () => {
   const { isVietnamese, toggleLanguage } = useTranslation();
   
   // Enhanced motion variants for luxury feel
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-  };
-
-  // Refined sparkle animation
-  const sparkleVariants = {
-    animate: {
-      scale: [1, 1.15, 1],
-      opacity: [0.4, 1, 0.4],
-      rotate: [0, 180, 360],
-      transition: {
-        duration: 5,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
+    visible: { opacity: 1, y: 0 }
   };
 
   return (
@@ -41,24 +29,25 @@ const MissingPieceSection = () => {
       {/* Enhanced floating sparkles */}
       <motion.div
         className="absolute top-20 left-1/4 text-purple-500 text-2xl"
-        variants={sparkleVariants}
+        variants={sparkle}
         animate="animate"
+        transition={sparkleTransition}
       >
         ✨
       </motion.div>
       <motion.div
         className="absolute top-32 right-1/3 text-amber-500 text-xl"
-        variants={sparkleVariants}
+        variants={sparkle}
         animate="animate"
-        style={{ animationDelay: "2s" }}
+        transition={{ ...sparkleTransition, delay: 2 }}
       >
         ⭐
       </motion.div>
       <motion.div
         className="absolute bottom-24 left-1/5 text-pink-500 text-2xl"
-        variants={sparkleVariants}
+        variants={sparkle}
         animate="animate"
-        style={{ animationDelay: "4s" }}
+        transition={{ ...sparkleTransition, delay: 4 }}
       >
         💫
       </motion.div>
