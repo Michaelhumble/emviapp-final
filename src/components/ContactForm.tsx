@@ -148,33 +148,12 @@ const ContactForm = () => {
       // Success feedback with analytics tracking
       const submissionTimestamp = Date.now().toString();
       setSubmissionId(submissionTimestamp);
-      setIsSubmitted(true);
       
       // Track conversion with GA4
       analytics.trackContactSubmission(reasonText, 'contact_page');
       
-      toast({
-        title: "Message Sent! 🎉",
-        description: "We've received your message and will get back to you within 24 hours.",
-      });
-      
-      // Reset form after a short delay to let user see success state
-      setTimeout(() => {
-        setFormData({
-          firstname: '',
-          lastname: '',
-          email: '',
-          phone: '',
-          company: '',
-          reason: '',
-          message: '',
-          honeypot: ''
-        });
-        // Reset success state after 5 seconds
-        setTimeout(() => {
-          setIsSubmitted(false);
-        }, 5000);
-      }, 1000);
+      // Redirect to thank you page
+      window.location.href = '/thank-you?source=contact';
 
     } catch (error) {
       console.error('Contact form submission error:', error);
@@ -204,7 +183,7 @@ const ContactForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form name="Contact EmviApp" onSubmit={handleSubmit} className="space-y-8">
         {/* Contact Information Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">

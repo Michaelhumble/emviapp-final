@@ -44,6 +44,7 @@ const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLan
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
+const ThankYou = lazy(() => import("@/pages/ThankYou"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const Refund = lazy(() => import("@/pages/Refund"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
@@ -221,6 +222,7 @@ function App() {
                     
                      <Route path="/about" element={<Layout><About /></Layout>} />
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                     <Route path="/thank-you" element={<Suspense fallback={<SimpleLoadingFallback />}><ThankYou /></Suspense>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
                      <Route path="/performance" element={<Layout><PerformanceAudit /></Layout>} />
                       <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><EmviAppPressPage /></Layout>} />
