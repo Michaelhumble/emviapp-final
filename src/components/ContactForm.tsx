@@ -66,10 +66,14 @@ const contactReasons: ContactReason[] = [
 const ContactForm = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: '',
+    firstname: '',
+    lastname: '',
     email: '',
+    phone: '',
+    company: '',
     reason: '',
-    message: ''
+    message: '',
+    honeypot: '' // Spam protection
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -78,13 +82,18 @@ const ContactForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.firstname || !formData.email || !formData.message) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
         variant: "destructive",
       });
       return;
+    }
+
+    // Honeypot spam protection
+    if (formData.honeypot) {
+      return; // Silent fail for bots
     }
 
     setIsSubmitting(true);
@@ -100,9 +109,14 @@ const ContactForm = () => {
       // Call the edge function
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: {
-          name: formData.name,
+          firstname: formData.firstname,
+          lastname: formData.lastname,
           email: formData.email,
-          message: fullMessage
+          phone: formData.phone,
+          company: formData.company,
+          message: fullMessage,
+          currentUrl: window.location.href,
+          userAgent: navigator.userAgent
         }
       });
 
@@ -120,7 +134,7 @@ const ContactForm = () => {
       const { error: dbError } = await supabase
         .from('contact_messages')
         .insert({
-          name: formData.name,
+          name: `${formData.firstname} ${formData.lastname}`.trim(),
           email: formData.email,
           message: fullMessage,
           status: 'new'
@@ -147,10 +161,14 @@ const ContactForm = () => {
       // Reset form after a short delay to let user see success state
       setTimeout(() => {
         setFormData({
-          name: '',
+          firstname: '',
+          lastname: '',
           email: '',
+          phone: '',
+          company: '',
           reason: '',
-          message: ''
+          message: '',
+          honeypot: ''
         });
         // Reset success state after 5 seconds
         setTimeout(() => {
@@ -187,21 +205,36 @@ const ContactForm = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Name and Email Fields */}
+        {/* Contact Information Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+            <label htmlFor="firstname" className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <User className="h-4 w-4" />
-              Name
+              First Name
             </label>
             <Input
-              id="name"
-              name="name"
+              id="firstname"
+              name="firstname"
               type="text"
-              placeholder="Your name"
-              value={formData.name}
+              placeholder="First name"
+              value={formData.firstname}
               onChange={handleChange}
               required
+              className="w-full h-12"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="lastname" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Last Name
+            </label>
+            <Input
+              id="lastname"
+              name="lastname"
+              type="text"
+              placeholder="Last name"
+              value={formData.lastname}
+              onChange={handleChange}
               className="w-full h-12"
             />
           </div>
@@ -221,6 +254,46 @@ const ContactForm = () => {
               className="w-full h-12"
             />
           </div>
+          <div className="space-y-2">
+            <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+              Phone (Optional)
+            </label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="(555) 123-4567"
+              value={formData.phone}
+              onChange={handleChange}
+              className="w-full h-12"
+            />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <label htmlFor="company" className="text-sm font-medium text-gray-700">
+              Company (Optional)
+            </label>
+            <Input
+              id="company"
+              name="company"
+              type="text"
+              placeholder="Your company"
+              value={formData.company}
+              onChange={handleChange}
+              className="w-full h-12"
+            />
+          </div>
+        </div>
+
+        {/* Honeypot field - hidden from users */}
+        <div style={{ display: 'none' }}>
+          <Input
+            name="honeypot"
+            type="text"
+            value={formData.honeypot}
+            onChange={handleChange}
+            tabIndex={-1}
+            autoComplete="off"
+          />
         </div>
 
         {/* Choose a Reason Section */}
@@ -295,7 +368,7 @@ const ContactForm = () => {
             </p>
             <div className="bg-white/50 rounded-lg p-4 mt-4">
               <p className="text-sm text-green-600 font-medium">
-                💌 Your message has been delivered to michaelemviapp@gmail.com
+                💌 Your message has been delivered to support@emvi.app
               </p>
             </div>
           </div>

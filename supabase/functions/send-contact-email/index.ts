@@ -11,10 +11,14 @@ const corsHeaders = {
 };
 
 interface ContactFormData {
-  name: string;
+  firstname: string;
+  lastname?: string;
   email: string;
+  phone?: string;
+  company?: string;
   message: string;
-  reason?: string;
+  currentUrl?: string;
+  userAgent?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -24,12 +28,12 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, message, reason }: ContactFormData = await req.json();
+    const { firstname, lastname, email, phone, company, message, currentUrl, userAgent }: ContactFormData = await req.json();
 
     // Validate required fields
-    if (!name || !email || !message) {
+    if (!firstname || !email || !message) {
       return new Response(
-        JSON.stringify({ error: "All fields are required" }),
+        JSON.stringify({ error: "All required fields must be filled" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -37,11 +41,14 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send email to michaelemviapp@gmail.com
+    const fullName = `${firstname} ${lastname || ''}`.trim();
+
+    // Send email to support@emvi.app with CC to michaelemviapp@gmail.com
     const emailResponse = await resend.emails.send({
-      from: "EmviApp Contact Form <onboarding@resend.dev>",
-      to: ["michaelemviapp@gmail.com"],
-      subject: `New Contact Form Message from ${name}`,
+      from: "EmviApp Contact Form <no-reply@emvi.app>",
+      to: ["support@emvi.app"],
+      cc: ["michaelemviapp@gmail.com"],
+      subject: `[EmviApp Contact] ${fullName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333; border-bottom: 2px solid #6366f1; padding-bottom: 10px;">
@@ -50,9 +57,13 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #374151; margin-top: 0;">Contact Details:</h3>
-            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Name:</strong> ${fullName}</p>
             <p><strong>Email:</strong> ${email}</p>
+            ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
+            ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
             <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+            ${currentUrl ? `<p><strong>Page URL:</strong> ${currentUrl}</p>` : ''}
+            ${userAgent ? `<p><strong>User Agent:</strong> ${userAgent}</p>` : ''}
           </div>
           
           <div style="background-color: #fff; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
