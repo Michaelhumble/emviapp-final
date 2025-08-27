@@ -1,10 +1,11 @@
-import { lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import { useAuth } from "@/context/auth";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
+import ComprehensiveSEO from "@/components/seo/ComprehensiveSEO";
 
 // Critical above-the-fold components (loaded immediately)
 import JobsCallToAction from "@/components/home/JobsCallToAction";
@@ -60,6 +61,22 @@ const LazyIndex = () => {
   
   return (
     <Layout>
+      <ComprehensiveSEO
+        title="Find Nail Artists & Beauty Jobs with AI | EmviApp"
+        description="EmviApp is the premier AI-powered platform connecting beauty professionals with jobs, salons, and artists. Discover nail technician careers, salon opportunities, and top beauty talent in your city."
+        canonicalUrl="https://www.emvi.app/"
+        tags={[
+          "beauty jobs",
+          "nail technician",
+          "hair stylist",
+          "barber jobs",
+          "makeup artist",
+          "esthetician",
+          "beauty careers",
+          "salon opportunities",
+          "premium beauty platform"
+        ]}
+      />
       {/* CRITICAL: Above-the-fold content loads immediately */}
       <Hero />
       

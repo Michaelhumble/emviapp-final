@@ -2,14 +2,17 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import ContactForm from '@/components/ContactForm';
+import ComprehensiveSEO from '@/components/seo/ComprehensiveSEO';
 
 const ContactPage = () => {
   return (
     <>
-      <Helmet>
-        <title>Contact EmviApp</title>
-        <meta name="description" content="Contact EmviApp - We'd love to hear from you!" />
-      </Helmet>
+      <ComprehensiveSEO
+        title="Contact Us - Get in Touch with EmviApp"
+        description="Contact EmviApp for support, partnerships, or feedback. We're here to help beauty professionals and salons connect and grow together."
+        canonicalUrl="https://www.emvi.app/contact"
+        tags={["contact", "support", "beauty industry", "customer service"]}
+      />
       <div className="min-h-screen bg-gray-50">
           {/* Header Section */}
           <div className="bg-white border-b border-gray-200">

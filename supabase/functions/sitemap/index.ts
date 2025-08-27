@@ -1,158 +1,173 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+// Comprehensive sitemap generator for EmviApp
+// Generates main sitemap index that references all sub-sitemaps
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+const SUPABASE_URL = 'https://wwhqbjrhbajpabfdwnip.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM';
+const BASE_URL = 'https://www.emvi.app';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function xmlHeader() {
+  return '<?xml version="1.0" encoding="UTF-8"?>';
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+function formatDate(d: string | Date) {
+  const date = typeof d === 'string' ? new Date(d) : d;
+  return date.toISOString().split('T')[0];
+}
+
+async function generateStaticSitemap() {
+  const staticPages = [
+    { url: '', priority: 1.0, changeFreq: 'daily' },
+    { url: '/jobs', priority: 0.9, changeFreq: 'hourly' },
+    { url: '/salons', priority: 0.9, changeFreq: 'hourly' },
+    { url: '/artists', priority: 0.8, changeFreq: 'daily' },
+    { url: '/nails', priority: 0.8, changeFreq: 'daily' },
+    { url: '/hair', priority: 0.8, changeFreq: 'daily' },
+    { url: '/barber', priority: 0.8, changeFreq: 'daily' },
+    { url: '/massage', priority: 0.8, changeFreq: 'daily' },
+    { url: '/makeup', priority: 0.8, changeFreq: 'daily' },
+    { url: '/skincare', priority: 0.8, changeFreq: 'daily' },
+    { url: '/tattoo', priority: 0.8, changeFreq: 'daily' },
+    { url: '/brows-lashes', priority: 0.8, changeFreq: 'daily' },
+    { url: '/booking-services', priority: 0.7, changeFreq: 'weekly' },
+    { url: '/about', priority: 0.6, changeFreq: 'monthly' },
+    { url: '/contact', priority: 0.6, changeFreq: 'monthly' },
+    { url: '/pricing', priority: 0.7, changeFreq: 'weekly' },
+    { url: '/blog', priority: 0.8, changeFreq: 'daily' },
+    { url: '/press', priority: 0.5, changeFreq: 'monthly' },
+    { url: '/for-salons', priority: 0.7, changeFreq: 'weekly' },
+    { url: '/for-artists', priority: 0.7, changeFreq: 'weekly' },
+    { url: '/beauty-jobs', priority: 0.7, changeFreq: 'weekly' },
+    { url: '/hire-beauty-professionals', priority: 0.7, changeFreq: 'weekly' },
+    { url: '/terms', priority: 0.3, changeFreq: 'yearly' },
+    { url: '/privacy', priority: 0.3, changeFreq: 'yearly' },
+    { url: '/cookies', priority: 0.3, changeFreq: 'yearly' }
+  ];
+
+  const urls = staticPages.map(page => {
+    return `  <url>
+    <loc>${BASE_URL}${page.url}</loc>
+    <lastmod>${formatDate(new Date())}</lastmod>
+    <changefreq>${page.changeFreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`;
+  });
+
+  const xml = [
+    xmlHeader(),
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls,
+    '</urlset>'
+  ].join('\n');
+
+  return xml;
+}
+
+async function generateSitemapIndex() {
+  const today = formatDate(new Date());
+  
+  const sitemaps = [
+    {
+      loc: `${BASE_URL}/sitemap-static.xml`,
+      lastmod: today
+    },
+    {
+      loc: `${BASE_URL}/jobs-sitemap.xml`,
+      lastmod: today
+    },
+    {
+      loc: `${BASE_URL}/salons-sitemap.xml`,
+      lastmod: today
+    },
+    {
+      loc: `${BASE_URL}/artists-sitemap.xml`,
+      lastmod: today
+    },
+    {
+      loc: `${BASE_URL}/blog-sitemap.xml`,
+      lastmod: today
+    }
+  ];
+
+  const sitemapEntries = sitemaps.map(sitemap => 
+    `  <sitemap>
+    <loc>${sitemap.loc}</loc>
+    <lastmod>${sitemap.lastmod}</lastmod>
+  </sitemap>`
+  );
+
+  const xml = [
+    xmlHeader(),
+    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...sitemapEntries,
+    '</sitemapindex>'
+  ].join('\n');
+
+  return xml;
+}
+
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseClient = createClient(
-      'https://wwhqbjrhbajpabfdwnip.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM'
-    )
+    const url = new URL(req.url);
+    const pathname = url.pathname;
 
-    const baseUrl = 'https://www.emvi.app'
-    const currentDate = new Date().toISOString()
+    const commonHeaders = {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=300, s-maxage=600',
+      ...corsHeaders,
+    };
 
-    // Static routes with their priorities and change frequencies
-    const staticRoutes = [
-      { url: '/', changefreq: 'daily', priority: '1.0', lastmod: currentDate },
-      { url: '/jobs', changefreq: 'daily', priority: '0.9', lastmod: currentDate },
-      { url: '/salons', changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
-      { url: '/artists', changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
-      { url: '/blog', changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
-      
-      // Industry pages
-      { url: '/nails', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      { url: '/hair', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      { url: '/barber', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      { url: '/massage', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/skincare', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/makeup', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/brows-lashes', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/tattoo', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      
-      // Content hub pages
-      { url: '/beauty-jobs', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      { url: '/hire-beauty-professionals', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      { url: '/for-salons', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      { url: '/for-artists', changefreq: 'weekly', priority: '0.7', lastmod: currentDate },
-      
-      // Core pages
-      { url: '/about', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-      { url: '/contact', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-      { url: '/pricing', changefreq: 'monthly', priority: '0.6', lastmod: currentDate },
-      { url: '/partners', changefreq: 'monthly', priority: '0.4', lastmod: currentDate },
-      { url: '/press', changefreq: 'monthly', priority: '0.4', lastmod: currentDate },
-      
-      // Legal pages
-      { url: '/terms', changefreq: 'yearly', priority: '0.2', lastmod: currentDate },
-      { url: '/privacy', changefreq: 'yearly', priority: '0.2', lastmod: currentDate },
-      { url: '/refund', changefreq: 'yearly', priority: '0.2', lastmod: currentDate },
-      { url: '/cookies', changefreq: 'yearly', priority: '0.2', lastmod: currentDate },
-      
-      // Blog categories
-      { url: '/blog/categories/trends', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/categories/beauty-tips', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/categories/industry', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/categories/artist-spotlights', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/categories/success-stories', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/categories/salon-management', changefreq: 'weekly', priority: '0.6', lastmod: currentDate },
-      
-      // Specific blog articles
-      { url: '/blog/the-beauty-revolution', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-      { url: '/article/from-invisible-to-unstoppable', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-      { url: '/guides/nail-jobs-in-the-us', changefreq: 'monthly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/nail-tech-salary-by-city-2025', changefreq: 'monthly', priority: '0.6', lastmod: currentDate },
-      { url: '/blog/nail-artist-portfolio-examples', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-      { url: '/blog/how-to-get-more-nail-clients', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-      { url: '/blog/nail-salon-interview-questions-answers', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-    ]
-
-    let dynamicRoutes: any[] = []
-
-    try {
-      // Fetch active jobs for dynamic job detail pages
-      const { data: jobs, error: jobsError } = await supabaseClient
-        .from('jobs')
-        .select('id, updated_at, status')
-        .eq('status', 'active')
-        .order('updated_at', { ascending: false })
-        .limit(1000) // Limit to prevent sitemap bloat
-
-      if (!jobsError && jobs) {
-        const jobRoutes = jobs.map(job => ({
-          url: `/jobs/${job.id}`,
-          changefreq: 'weekly',
-          priority: '0.6',
-          lastmod: job.updated_at || currentDate
-        }))
-        dynamicRoutes = [...dynamicRoutes, ...jobRoutes]
-      }
-
-      // Fetch artists for dynamic artist detail pages
-      const { data: artists, error: artistsError } = await supabaseClient
-        .from('profiles')
-        .select('id, updated_at')
-        .not('full_name', 'is', null)
-        .order('updated_at', { ascending: false })
-        .limit(500) // Limit to prevent sitemap bloat
-
-      if (!artistsError && artists) {
-        const artistRoutes = artists.map(artist => ({
-          url: `/artists/${artist.id}`,
-          changefreq: 'weekly',
-          priority: '0.5',
-          lastmod: artist.updated_at || currentDate
-        }))
-        dynamicRoutes = [...dynamicRoutes, ...artistRoutes]
-      }
-
-    } catch (error) {
-      console.warn('Error fetching dynamic routes:', error)
-      // Continue with static routes only
+    // HEAD support
+    if (req.method === 'HEAD') {
+      return new Response(null, { headers: commonHeaders });
     }
 
-    // Combine all routes
-    const allRoutes = [...staticRoutes, ...dynamicRoutes]
+    // Handle different sitemap requests
+    if (pathname.endsWith('/sitemap') || pathname.endsWith('/sitemap.xml')) {
+      const xml = await generateSitemapIndex();
+      return new Response(xml, { headers: commonHeaders });
+    }
+    
+    if (pathname.endsWith('/sitemap-static.xml')) {
+      const xml = await generateStaticSitemap();
+      return new Response(xml, { headers: commonHeaders });
+    }
 
-    // Generate XML sitemap
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allRoutes.map(route => `  <url>
-    <loc>${baseUrl}${route.url}</loc>
-    <lastmod>${route.lastmod}</lastmod>
-    <changefreq>${route.changefreq}</changefreq>
-    <priority>${route.priority}</priority>
-  </url>`).join('\n')}
-</urlset>`
+    // Ping search engines if requested
+    if (url.searchParams.get('ping') === '1') {
+      const sitemapUrl = `${BASE_URL}/sitemap.xml`;
+      const encoded = encodeURIComponent(sitemapUrl);
+      
+      try {
+        await Promise.all([
+          fetch(`https://www.google.com/ping?sitemap=${encoded}`),
+          fetch(`https://www.bing.com/ping?sitemap=${encoded}`)
+        ]);
+      } catch (error) {
+        console.error('Error pinging search engines:', error);
+      }
+    }
 
-    console.log(`📍 Generated sitemap with ${allRoutes.length} URLs (${staticRoutes.length} static, ${dynamicRoutes.length} dynamic)`)
-
-    return new Response(sitemap, {
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-      },
-    })
+    const xml = await generateSitemapIndex();
+    return new Response(xml, { headers: commonHeaders });
 
   } catch (error) {
-    console.error('Sitemap generation error:', error)
-    
-    return new Response(JSON.stringify({ 
-      error: 'Failed to generate sitemap',
-      details: error.message 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    console.error('Sitemap generation error:', error);
+    return new Response('Internal Server Error', { 
+      status: 500, 
+      headers: corsHeaders 
+    });
   }
-})
+});

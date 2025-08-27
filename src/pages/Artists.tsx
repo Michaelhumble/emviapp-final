@@ -1,5 +1,4 @@
 import Layout from "@/components/layout/Layout";
-import { Helmet } from "react-helmet-async";
 import { Container } from "@/components/ui/container";
 import { useAuth } from "@/context/auth";
 import { ArtistForHireCard } from "@/components/artists/ArtistForHireCard";
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import ArtistsFilters from "@/components/artists/ArtistsFilters";
 import { useArtistsSearch } from "@/hooks/useArtistsSearch";
 import { useMemo } from "react";
-import BaseSEO from "@/components/seo/BaseSEO";
+import ComprehensiveSEO from "@/components/seo/ComprehensiveSEO";
 import { buildBreadcrumbJsonLd } from "@/components/seo/jsonld";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
@@ -77,15 +76,11 @@ const Artists = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Hire Top Beauty Artists - Nail Tech, Hair Stylists & More | EmviApp</title>
-        <meta name="description" content="Connect with verified beauty artists offering premium services. Browse nail technicians, hair stylists, barbers with proven khách sang experience and tip cao results." />
-      </Helmet>
-      <BaseSEO 
+      <ComprehensiveSEO 
         title="Hire Top Beauty Artists - Nail Tech, Hair Stylists & More | EmviApp"
         description="Connect with verified beauty artists offering premium services. Browse nail technicians, hair stylists, barbers with proven khách sang experience and tip cao results."
-        canonical="/artists"
-        jsonLd={[buildBreadcrumbJsonLd([
+        canonicalUrl="https://www.emvi.app/artists"
+        structuredData={[buildBreadcrumbJsonLd([
           { name: 'Home', url: 'https://www.emvi.app' },
           { name: 'Artists', url: 'https://www.emvi.app/artists' }
         ]), jsonLd, faqJsonLd, {

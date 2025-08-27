@@ -29,4 +29,7 @@ Allow: /assets/
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap
+Sitemap: https://www.emvi.app/sitemap.xml
+Sitemap: https://www.emvi.app/jobs-sitemap.xml
+Sitemap: https://www.emvi.app/salons-sitemap.xml
+Sitemap: https://www.emvi.app/blog-sitemap.xml

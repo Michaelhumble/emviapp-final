@@ -26,7 +26,7 @@ import {
   Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Helmet } from 'react-helmet';
+import ComprehensiveSEO from '@/components/seo/ComprehensiveSEO';
 import { useBookingServices, BookingService } from '@/hooks/useBookingServices';
 import { useBookingSubmission, BookingFormData } from '@/hooks/useBookingSubmission';
 import { toast } from 'sonner';
@@ -135,13 +135,12 @@ const BookingServices = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Premium Beauty Booking - Elite Services | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Book premium beauty services from top professionals. Find nail technicians, hair stylists, barbers, makeup artists, and more."
-        />
-      </Helmet>
+      <ComprehensiveSEO
+        title="Premium Beauty Booking - Elite Services | EmviApp"
+        description="Book premium beauty services from top professionals. Find nail technicians, hair stylists, barbers, makeup artists, and more."
+        canonicalUrl="https://www.emvi.app/booking-services"
+        tags={["beauty booking", "nail services", "hair salon", "beauty appointments", "professional beauty services"]}
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 pt-20">
         {/* Enhanced Hero Section */}

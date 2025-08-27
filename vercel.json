@@ -33,7 +33,33 @@
     { "source": "/artits/:rest*", "destination": "/artists/:rest*", "permanent": true },
     { "source": "/salon", "destination": "/salons", "permanent": true },
     { "source": "/Jobs", "destination": "/jobs", "permanent": true },
-    { "source": "/Jobs/:rest*", "destination": "/jobs/:rest*", "permanent": true }
+    { "source": "/Jobs/:rest*", "destination": "/jobs/:rest*", "permanent": true },
+    { "source": "/signup/artist", "destination": "/signup", "permanent": true },
+    { "source": "/signup/customer", "destination": "/signup", "permanent": true },
+    { "source": "/signup/salon", "destination": "/signup", "permanent": true },
+    { "source": "/join", "destination": "/signup", "permanent": true },
+    { "source": "/register", "destination": "/signup", "permanent": true },
+    { "source": "/careers", "destination": "/jobs", "permanent": true },
+    { "source": "/opportunities", "destination": "/jobs", "permanent": true },
+    { "source": "/job-listings", "destination": "/jobs", "permanent": true },
+    { "source": "/find-jobs", "destination": "/jobs", "permanent": true },
+    { "source": "/salon-jobs", "destination": "/salons", "permanent": true },
+    { "source": "/beauty-salons", "destination": "/salons", "permanent": true },
+    { "source": "/find-artists", "destination": "/artists", "permanent": true },
+    { "source": "/beauty-artists", "destination": "/artists", "permanent": true },
+    { "source": "/freelancers", "destination": "/artists", "permanent": true },
+    { "source": "/nail-artists", "destination": "/nails", "permanent": true },
+    { "source": "/hair-stylists", "destination": "/hair", "permanent": true },
+    { "source": "/barbers", "destination": "/barber", "permanent": true },
+    { "source": "/makeup-artists", "destination": "/makeup", "permanent": true },
+    { "source": "/estheticians", "destination": "/skincare", "permanent": true },
+    { "source": "/massage-therapists", "destination": "/massage", "permanent": true },
+    { "source": "/lash-artists", "destination": "/brows-lashes", "permanent": true },
+    { "source": "/tattoo-artists", "destination": "/tattoo", "permanent": true },
+    { "source": "/help", "destination": "/contact", "permanent": true },
+    { "source": "/support", "destination": "/contact", "permanent": true },
+    { "source": "/contact-us", "destination": "/contact", "permanent": true },
+    { "source": "/get-in-touch", "destination": "/contact", "permanent": true }
   ],
   "rewrites": [
     {
@@ -43,6 +69,14 @@
     {
       "source": "/api/partner-contact",
       "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/partner-contact"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/sitemap"
+    },
+    {
+      "source": "/sitemap-static.xml",
+      "destination": "https://wwhqbjrhbajpabfdwnip.functions.supabase.co/sitemap/sitemap-static.xml"
     },
     {
       "source": "/jobs-sitemap.xml",
