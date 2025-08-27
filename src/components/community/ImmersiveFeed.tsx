@@ -107,17 +107,7 @@ const ImmersiveFeed: React.FC<ImmersiveFeedProps> = ({
 
   const postVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: { 
-        type: "spring", 
-        stiffness: 400, 
-        damping: 25,
-        staggerChildren: 0.1
-      }
-    },
+    visible: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: -50, scale: 0.95 }
   };
 

@@ -39,16 +39,7 @@ const ArtistReferralRewards = () => {
   
   const confettiVariants = {
     hidden: { scale: 0, rotate: 0 },
-    visible: { 
-      scale: 1, 
-      rotate: 360,
-      transition: {
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-        delay: 0.3
-      }
-    }
+    visible: { scale: 1, rotate: 360 }
   };
   
   return (

@@ -75,48 +75,22 @@ Chúng ta cùng nhau thay đổi ngành làm đẹp, bắt đầu từ sự yêu
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { 
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
+    visible: { opacity: 1, y: 0 }
   };
 
   const quoteVariants = {
     hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { 
-        duration: 1.2,
-        ease: "easeOut"
-      }
-    }
+    visible: { opacity: 1, scale: 1 }
   };
 
   const heartbeat = {
-    animate: {
-      scale: [1, 1.1, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
+    animate: { scale: [1, 1.1, 1] }
   };
 
   const floatingAnimation = {
     animate: {
       y: [-10, 10, -10],
-      rotate: [0, 5, -5, 0],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
+      rotate: [0, 5, -5, 0]
     }
   };
 

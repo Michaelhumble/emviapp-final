@@ -14,8 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const MODAL_ANIMATION = {
   initial: { opacity: 0, y: 24, scale: 0.97 },
-  animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.36, ease: "easeOut" } },
-  exit: { opacity: 0, y: 12, scale: 0.96, transition: { duration: 0.2, ease: "easeIn" } }
+  animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.36 } },
+  exit: { opacity: 0, y: 12, scale: 0.96, transition: { duration: 0.2 } }
 };
 
 interface ArtistPortfolioUploaderProps {

@@ -12,12 +12,7 @@ const BeautyExchangeSection = () => {
     animate: {
       scale: [1, 1.3, 1],
       opacity: [0.6, 1, 0.6],
-      rotate: [0, 180, 360],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
+      rotate: [0, 180, 360]
     }
   };
 

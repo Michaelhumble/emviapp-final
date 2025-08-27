@@ -50,11 +50,7 @@ const PortfolioShowcase = ({
   
   const itemVariants = {
     hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { type: "spring", stiffness: 300, damping: 24 } 
-    }
+    visible: { opacity: 1, scale: 1 }
   };
   
   // Handle edit portfolio click

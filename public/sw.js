@@ -1,10 +1,10 @@
 // ============= EMVIAPP SERVICE WORKER - PERFORMANCE OPTIMIZATION =============
 // Aggressive caching strategy for maximum performance
 
-const CACHE_NAME = 'emviapp-v2.1.0-emvi1';
-const STATIC_CACHE = 'emviapp-static-v2.1.0-emvi1';
-const IMAGE_CACHE = 'emviapp-images-v2.1.0-emvi1';
-const API_CACHE = 'emviapp-api-v2.1.0-emvi1';
+const CACHE_NAME = 'emviapp-v2.2.0-emvi2';
+const STATIC_CACHE = 'emviapp-static-v2.2.0-emvi2';
+const IMAGE_CACHE = 'emviapp-images-v2.2.0-emvi2';
+const API_CACHE = 'emviapp-api-v2.2.0-emvi2';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
