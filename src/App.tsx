@@ -108,6 +108,11 @@ const EmviAppPressPage = lazy(() => import("@/pages/press/EmviAppPressPage"));
 const PressPage = lazy(() => import("@/pages/PressPage"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
 const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
+// Content Hub Pages
+const BeautyJobs = lazy(() => import("@/pages/BeautyJobs"));
+const HireBeautyProfessionals = lazy(() => import("@/pages/HireBeautyProfessionals"));
+const ForSalons = lazy(() => import("@/pages/ForSalons"));
+const ForArtists = lazy(() => import("@/pages/ForArtists"));
 const PerformanceAudit = lazy(() => import("@/pages/PerformanceAudit"));
 
 function App() {
@@ -197,6 +202,12 @@ function App() {
                      <Route path="/artists/:role/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><RoleCityPage /></Suspense>} />
                      <Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
+                     
+                     {/* Content Hub Pages */}
+                     <Route path="/beauty-jobs" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><BeautyJobs /></Suspense></Layout>} />
+                     <Route path="/hire-beauty-professionals" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HireBeautyProfessionals /></Suspense></Layout>} />
+                     <Route path="/for-salons" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ForSalons /></Suspense></Layout>} />
+                     <Route path="/for-artists" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ForArtists /></Suspense></Layout>} />
                     
                     {/* Industry Pages */}
                     <Route path="/nails" element={<Layout><NailsPage /></Layout>} />

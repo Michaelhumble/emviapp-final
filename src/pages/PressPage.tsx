@@ -67,29 +67,23 @@ const PressPage: React.FC = () => {
   const structuredData = [
     {
       "@context": "https://schema.org",
-      "@type": "NewsArticle",
-      "headline": "EmviApp launches the first AI-powered growth engine for the global beauty industry",
-      "datePublished": "2025-08-26",
-      "dateModified": "2025-08-26",
-      "author": {
-        "@type": "Organization",
-        "name": "EmviApp"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "EmviApp",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://emvi.app/logo.png"
-        }
-      },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://www.einpresswire.com/article/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
-      },
-      "image": ["https://emvi.app/og/press-emviapp.jpg"],
-      "description": "EmviApp introduces an AI growth engine that helps salons and beauty pros get discovered, book clients, and grow revenue.",
-      "isBasedOn": "https://www.einpresswire.com/article/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+      "@type": "ItemList",
+      "name": "EmviApp Press Coverage",
+      "description": "Media coverage of EmviApp's AI-powered beauty platform launch",
+      "itemListElement": filteredOutlets.map((outlet, index) => ({
+        "@type": "NewsArticle",
+        "position": index + 1,
+        "headline": outlet.headline,
+        "datePublished": outlet.dateISO,
+        "url": outlet.url,
+        "image": outlet.logo || `https://logo.clearbit.com/${outlet.domain}?size=256`,
+        "publisher": {
+          "@type": "Organization",
+          "name": outlet.name,
+          "logo": outlet.logo || `https://logo.clearbit.com/${outlet.domain}?size=256`
+        },
+        "mainEntityOfPage": outlet.url
+      }))
     },
     {
       "@context": "https://schema.org",
@@ -101,18 +95,7 @@ const PressPage: React.FC = () => {
         "@type": "WebSite",
         "name": "EmviApp",
         "url": "https://emvi.app"
-      },
-      "hasPart": [
-        {
-          "@type": "CreativeWork",
-          "name": "EmviApp AI Platform Launch",
-          "url": "https://www.einpresswire.com/article/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
-          "publisher": {
-            "@type": "Organization",
-            "name": "EIN Presswire"
-          }
-        }
-      ]
+      }
     },
     {
       "@context": "https://schema.org",
