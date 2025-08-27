@@ -1,10 +1,11 @@
 // ============= EMVIAPP SERVICE WORKER - PERFORMANCE OPTIMIZATION =============
 // Aggressive caching strategy for maximum performance
 
-const CACHE_NAME = 'emviapp-v2.2.0-emvi2';
-const STATIC_CACHE = 'emviapp-static-v2.2.0-emvi2';
-const IMAGE_CACHE = 'emviapp-images-v2.2.0-emvi2';
-const API_CACHE = 'emviapp-api-v2.2.0-emvi2';
+const CACHE_NAME = 'emviapp-v2.3.0-emvi3';
+const STATIC_CACHE = 'emviapp-static-v2.3.0-emvi3';
+const IMAGE_CACHE = 'emviapp-images-v2.3.0-emvi3';
+const API_CACHE = 'emviapp-api-v2.3.0-emvi3';
+const PRESS_CACHE = 'press-logos-v3';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -24,7 +25,8 @@ const STATIC_ASSETS = [
 const IMAGE_DOMAINS = [
   'images.unsplash.com',
   'wwhqbjrhbajpabfdwnip.supabase.co',
-  'emvi.app'
+  'emvi.app',
+  'logo.clearbit.com'
 ];
 
 // API endpoints to cache
@@ -62,7 +64,8 @@ self.addEventListener('activate', (event) => {
             if (cacheName !== CACHE_NAME && 
                 cacheName !== STATIC_CACHE && 
                 cacheName !== IMAGE_CACHE && 
-                cacheName !== API_CACHE) {
+                cacheName !== API_CACHE &&
+                cacheName !== PRESS_CACHE) {
               console.log('SW: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -86,7 +89,9 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Handle different types of requests
-  if (isImageRequest(url)) {
+  if (isPressLogoRequest(url)) {
+    event.respondWith(handlePressLogoRequest(request));
+  } else if (isImageRequest(url)) {
     event.respondWith(handleImageRequest(request));
   } else if (isAPIRequest(url)) {
     event.respondWith(handleAPIRequest(request));
@@ -182,7 +187,43 @@ async function handleNavigationRequest(request) {
   }
 }
 
+// Press logo request handler - Stale While Revalidate for logos
+async function handlePressLogoRequest(request) {
+  const cache = await caches.open(PRESS_CACHE);
+  
+  try {
+    // Try cache first (stale-while-revalidate)
+    const cachedResponse = await cache.match(request);
+    
+    // Fetch in background to update cache
+    const fetchPromise = fetch(request).then(response => {
+      if (response.ok) {
+        cache.put(request, response.clone());
+      }
+      return response;
+    }).catch(() => null);
+    
+    // Return cached version immediately if available
+    if (cachedResponse) {
+      fetchPromise; // Update in background
+      return cachedResponse;
+    }
+    
+    // If no cache, wait for fetch
+    const response = await fetchPromise;
+    return response || new Response('', { status: 404 });
+  } catch (error) {
+    console.log('SW: Press logo fetch failed:', error);
+    return new Response('', { status: 404 });
+  }
+}
+
 // Utility functions
+function isPressLogoRequest(url) {
+  return url.origin === 'https://logo.clearbit.com' || 
+         url.pathname.startsWith('/press/');
+}
+
 function isImageRequest(url) {
   const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif', '.svg'];
   return imageExtensions.some(ext => url.pathname.includes(ext)) ||

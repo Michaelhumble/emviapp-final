@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getWeightedOutlets, getOutletByKey, getLogoUrl, type Outlet } from '@/lib/press';
 import PressModal from './PressModal';
@@ -9,11 +9,26 @@ const PressMarquee: React.FC = () => {
   const [selectedOutlet, setSelectedOutlet] = useState<string | null>(null);
   const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Get weighted outlets for display (10 total)
-  const displayOutlets = getWeightedOutlets(10);
+  // Build sources synchronously - no runtime fetch
+  const sources = getWeightedOutlets(20).map(outlet => ({
+    key: outlet.key,
+    name: outlet.name,
+    href: outlet.url,
+    src: getLogoUrl(outlet)
+  }));
   
-  // Duplicate for seamless infinite scroll
-  const list = [...displayOutlets, ...displayOutlets];
+  // Duplicate the array once for seamless scroll before render
+  const track = [...sources, ...sources];
+
+  // Preload logos to avoid late fills - eagerly warm cache for first 24 logos
+  useEffect(() => {
+    const preload = track.slice(0, 24);
+    preload.forEach(item => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = item.src;
+    });
+  }, []);
 
   const handleLogoClick = (outlet: Outlet) => {
     // Analytics tracking
@@ -56,19 +71,27 @@ const PressMarquee: React.FC = () => {
 
           <div className="overflow-hidden">
             <div className="flex pressMarquee will-change-transform">
-              {list.map((outlet, index) => (
+              {track.map((item, index) => (
                 <button
-                  key={`${outlet.key}-${index}`}
-                  ref={(el) => setTriggerRef(`${outlet.key}-${index}`, el)}
-                  onClick={() => handleLogoClick(outlet)}
-                  aria-label={`Open ${outlet.name} coverage`}
+                  key={`${item.key}-${index}`}
+                  ref={(el) => setTriggerRef(`${item.key}-${index}`, el)}
+                  onClick={() => {
+                    const outlet = getOutletByKey(item.key);
+                    if (outlet) handleLogoClick(outlet);
+                  }}
+                  aria-label={`Open ${item.name} coverage`}
                   className="pressLogoWrap cursor-pointer"
                 >
                   <img
-                    src={getLogoUrl(outlet)}
-                    alt={`${outlet.name} logo`}
-                    loading="lazy"
+                    src={item.src}
+                    alt={`${item.name} logo`}
+                    width={72}
+                    height={72}
+                    loading="eager"
+                    fetchPriority="high"
                     decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="h-12 w-12 md:h-16 md:w-16 object-contain"
                     onError={(e) => {
                       // Try fallback to default logo
                       e.currentTarget.src = '/press/default.svg';
