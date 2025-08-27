@@ -16,6 +16,7 @@ import { SalonSale } from '@/types/salonSale';
 import PremiumSalonHero from '@/components/salons/PremiumSalonHero';
 import SuccessStoriesSection from '@/components/salons/hero/SuccessStoriesSection';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import SalonsPageSEO from '@/components/seo/SalonsPageSEO';
 
 const SalonsPageRedesigned = () => {
   const { isSignedIn } = useAuth();
@@ -170,7 +171,9 @@ const SalonsPageRedesigned = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
+    <>
+      <SalonsPageSEO salons={salonSales} />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
       {/* New Premium Hero Section */}
       <PremiumSalonHero />
       
@@ -429,6 +432,7 @@ const SalonsPageRedesigned = () => {
           </Button>
         </section>
       </div>
+      
       {/* Detail Modal */}
       {selectedSalon && (
         <SalonDetailModal
@@ -437,7 +441,8 @@ const SalonsPageRedesigned = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

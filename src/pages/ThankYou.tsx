@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import ComprehensiveSEO from '@/components/seo/ComprehensiveSEO';
 
 const ThankYou = () => {
   const [searchParams] = useSearchParams();
@@ -10,11 +11,13 @@ const ThankYou = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Thank you — we'll get back to you within 1 business day.</title>
-        <meta name="description" content="Thank you for contacting EmviApp. We've received your message and will respond within 1 business day." />
-        <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
+      <ComprehensiveSEO
+        title="Thank You - EmviApp"
+        description="Thank you for contacting EmviApp. We'll get back to you soon!"
+        canonicalUrl="https://www.emvi.app/thank-you"
+        noIndex={true}
+        tags={["thank you", "confirmation", "contact"]}
+      />
       
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center">

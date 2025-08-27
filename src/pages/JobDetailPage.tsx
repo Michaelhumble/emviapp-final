@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +12,7 @@ import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import { normalizeJobPhotos } from '@/lib/images';
 import JobPhotoGallery from '@/components/jobs/JobPhotoGallery';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import JobSEO from '@/components/seo/JobSEO';
+import JobDetailSEO from '@/components/seo/JobDetailSEO';
 import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
 
 const JobDetailPage = () => {
@@ -123,23 +122,33 @@ const JobDetailPage = () => {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
-            <p className="text-gray-600 mb-8">This job listing may have expired or been removed.</p>
-            <div className="space-x-4">
-              <Button onClick={handleBack} variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Go Back
-              </Button>
-              <Button onClick={() => navigate('/jobs')}>
-                View All Jobs
-              </Button>
+      <>
+        <JobDetailSEO job={{
+          id: jobId || 'not-found',
+          title: 'Job Not Found',
+          location: 'Various Locations',
+          description: 'This job listing may have expired or been removed.',
+          category: 'beauty',
+          created_at: new Date().toISOString()
+        } as Job} />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+          <div className="container mx-auto px-4 py-16">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
+              <p className="text-gray-600 mb-8">This job listing may have expired or been removed.</p>
+              <div className="space-x-4">
+                <Button onClick={handleBack} variant="outline">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Go Back
+                </Button>
+                <Button onClick={() => navigate('/jobs')}>
+                  View All Jobs
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -163,10 +172,8 @@ const JobDetailPage = () => {
   // JSON-LD is now handled by JobSEO component with comprehensive schema
 
   return (
-    <>
-      <JobSEO job={job} />
-
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+      <JobDetailSEO job={job} />
         {/* Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 py-6">
@@ -393,7 +400,7 @@ const JobDetailPage = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

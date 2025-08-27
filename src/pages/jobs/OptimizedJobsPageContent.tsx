@@ -9,7 +9,8 @@ import { Job } from '@/types/job';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import BaseSEO from '@/components/seo/BaseSEO';
+import ComprehensiveSEO from '@/components/seo/ComprehensiveSEO';
+import JobsPageSEO from '@/components/seo/JobsPageSEO';
 import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 
 import { JobCard } from '@/components/jobs/JobCard';
@@ -205,6 +206,7 @@ const OptimizedJobsPageContent = () => {
 
   return (
     <>
+      <JobsPageSEO jobs={jobs} />
       <BaseSEO
         title="Beauty Jobs Near You - Nail Tech, Hair Stylist & More | EmviApp"
         description="Find premium beauty jobs with tip cao opportunities. Join 10k+ professionals finding nail tech, hair stylist, barber & massage roles at top khách sang salons."

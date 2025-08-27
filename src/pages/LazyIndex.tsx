@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
-import ComprehensiveSEO from "@/components/seo/ComprehensiveSEO";
+import SEODevLogger from "@/components/seo/SEODevLogger";
 
 // Critical above-the-fold components (loaded immediately)
 import JobsCallToAction from "@/components/home/JobsCallToAction";
@@ -77,6 +77,7 @@ const LazyIndex = () => {
           "premium beauty platform"
         ]}
       />
+      <SEODevLogger />
       {/* CRITICAL: Above-the-fold content loads immediately */}
       <Hero />
       

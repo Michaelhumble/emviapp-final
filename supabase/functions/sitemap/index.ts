@@ -23,7 +23,63 @@ function formatDate(d: string | Date) {
   return date.toISOString().split('T')[0];
 }
 
-async function generateStaticSitemap() {
+// Update dynamic sitemap generation to include jobs and salons
+async function generateDynamicSitemaps() {
+  const today = formatDate(new Date());
+  
+  try {
+    // Fetch active jobs
+    const { data: jobs } = await supabase
+      .from('jobs')
+      .select('id, title, location, category, updated_at')
+      .eq('status', 'active')
+      .limit(1000);
+
+    // Fetch salon sales  
+    const { data: salons } = await supabase
+      .from('salon_sales')
+      .select('id, salon_name, city, state, updated_at')
+      .eq('status', 'active')
+      .limit(1000);
+
+    const allUrls: Array<{ url: string; lastmod: string; priority: number; changefreq: string }> = [];
+
+    // Add job URLs
+    if (jobs) {
+      jobs.forEach((job: any) => {
+        if (job.id && job.title && job.location) {
+          allUrls.push({
+            url: `${BASE_URL}/jobs/${job.id}`,
+            lastmod: formatDate(job.updated_at || new Date()),
+            priority: 0.7,
+            changefreq: 'weekly'
+          });
+        }
+      });
+    }
+
+    // Add salon URLs
+    if (salons) {
+      salons.forEach((salon: any) => {
+        if (salon.id && salon.salon_name) {
+          allUrls.push({
+            url: `${BASE_URL}/salons/${salon.id}`,
+            lastmod: formatDate(salon.updated_at || new Date()),
+            priority: 0.7,
+            changefreq: 'weekly'
+          });
+        }
+      });
+    }
+
+    return allUrls;
+  } catch (error) {
+    console.error('Error fetching dynamic URLs:', error);
+    return [];
+  }
+}
+
+async function generateCompleteSitemap() {
   const staticPages = [
     { url: '', priority: 1.0, changeFreq: 'daily' },
     { url: '/jobs', priority: 0.9, changeFreq: 'hourly' },
@@ -52,19 +108,36 @@ async function generateStaticSitemap() {
     { url: '/cookies', priority: 0.3, changeFreq: 'yearly' }
   ];
 
-  const urls = staticPages.map(page => {
-    return `  <url>
-    <loc>${BASE_URL}${page.url}</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>${page.changeFreq}</changefreq>
-    <priority>${page.priority}</priority>
-  </url>`;
-  });
+  // Get dynamic URLs
+  const dynamicUrls = await generateDynamicSitemaps();
+
+  // Combine static and dynamic URLs
+  const allUrls = [
+    ...staticPages.map(page => ({
+      url: `${BASE_URL}${page.url}`,
+      lastmod: formatDate(new Date()),
+      changefreq: page.changeFreq,
+      priority: page.priority
+    })),
+    ...dynamicUrls.map(url => ({
+      url: url.url,
+      lastmod: url.lastmod,
+      changefreq: url.changefreq,
+      priority: url.priority
+    }))
+  ];
 
   const xml = [
     xmlHeader(),
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...urls,
+    ...allUrls.map(url => 
+      `  <url>
+    <loc>${url.url}</loc>
+    <lastmod>${url.lastmod}</lastmod>
+    <changefreq>${url.changefreq}</changefreq>
+    <priority>${url.priority}</priority>
+  </url>`
+    ),
     '</urlset>'
   ].join('\n');
 
@@ -141,7 +214,7 @@ Deno.serve(async (req) => {
     }
     
     if (pathname.endsWith('/sitemap-static.xml')) {
-      const xml = await generateStaticSitemap();
+      const xml = await generateCompleteSitemap();
       return new Response(xml, { headers: commonHeaders });
     }
 
