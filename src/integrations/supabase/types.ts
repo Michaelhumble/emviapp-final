@@ -420,30 +420,42 @@ export type Database = {
       artist_availability: {
         Row: {
           artist_id: string
+          buffer_minutes: number | null
           created_at: string
           day_of_week: string
           end_time: string
           id: string
           is_available: boolean
+          max_advance_days: number | null
+          slot_duration_minutes: number | null
           start_time: string
+          timezone: string | null
         }
         Insert: {
           artist_id: string
+          buffer_minutes?: number | null
           created_at?: string
           day_of_week: string
           end_time: string
           id?: string
           is_available?: boolean
+          max_advance_days?: number | null
+          slot_duration_minutes?: number | null
           start_time: string
+          timezone?: string | null
         }
         Update: {
           artist_id?: string
+          buffer_minutes?: number | null
           created_at?: string
           day_of_week?: string
           end_time?: string
           id?: string
           is_available?: boolean
+          max_advance_days?: number | null
+          slot_duration_minutes?: number | null
           start_time?: string
+          timezone?: string | null
         }
         Relationships: [
           {
@@ -837,9 +849,14 @@ export type Database = {
       bookings: {
         Row: {
           appointment_time: string | null
+          calendar_event_id: string | null
+          client_email: string | null
           client_name: string | null
+          client_phone: string | null
+          confirmation_sent_at: string | null
           created_at: string | null
           date_requested: string | null
+          ends_at: string | null
           id: string
           metadata: Json | null
           note: string | null
@@ -849,14 +866,21 @@ export type Database = {
           sender_id: string
           service_id: string | null
           service_type: string | null
+          source: string | null
+          starts_at: string | null
           status: string | null
           time_requested: string | null
         }
         Insert: {
           appointment_time?: string | null
+          calendar_event_id?: string | null
+          client_email?: string | null
           client_name?: string | null
+          client_phone?: string | null
+          confirmation_sent_at?: string | null
           created_at?: string | null
           date_requested?: string | null
+          ends_at?: string | null
           id?: string
           metadata?: Json | null
           note?: string | null
@@ -866,14 +890,21 @@ export type Database = {
           sender_id: string
           service_id?: string | null
           service_type?: string | null
+          source?: string | null
+          starts_at?: string | null
           status?: string | null
           time_requested?: string | null
         }
         Update: {
           appointment_time?: string | null
+          calendar_event_id?: string | null
+          client_email?: string | null
           client_name?: string | null
+          client_phone?: string | null
+          confirmation_sent_at?: string | null
           created_at?: string | null
           date_requested?: string | null
+          ends_at?: string | null
           id?: string
           metadata?: Json | null
           note?: string | null
@@ -883,6 +914,8 @@ export type Database = {
           sender_id?: string
           service_id?: string | null
           service_type?: string | null
+          source?: string | null
+          starts_at?: string | null
           status?: string | null
           time_requested?: string | null
         }
@@ -5114,6 +5147,15 @@ export type Database = {
           p_identifier: string
           p_max_requests?: number
           p_window_minutes?: number
+        }
+        Returns: boolean
+      }
+      check_booking_conflicts: {
+        Args: {
+          p_artist_id: string
+          p_ends_at: string
+          p_exclude_booking_id?: string
+          p_starts_at: string
         }
         Returns: boolean
       }
