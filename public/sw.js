@@ -1,16 +1,21 @@
 // ============= EMVIAPP SERVICE WORKER - PERFORMANCE OPTIMIZATION =============
 // Aggressive caching strategy for maximum performance
 
-const CACHE_NAME = 'emviapp-v1.2.0';
-const STATIC_CACHE = 'emviapp-static-v1.2.0';
-const IMAGE_CACHE = 'emviapp-images-v1.2.0';
-const API_CACHE = 'emviapp-api-v1.2.0';
+const CACHE_NAME = 'emviapp-v2.0.0';
+const STATIC_CACHE = 'emviapp-static-v2.0.0';
+const IMAGE_CACHE = 'emviapp-images-v2.0.0';
+const API_CACHE = 'emviapp-api-v2.0.0';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
   '/',
-  '/manifest.json',
+  '/manifest.webmanifest',
   '/favicon.ico',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/apple-touch-icon-180.png',
+  '/icons/apple-touch-icon-167.png',
+  '/icons/apple-touch-icon-152.png',
   // Critical CSS and JS will be added by build process
 ];
 
