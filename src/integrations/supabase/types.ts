@@ -499,6 +499,7 @@ export type Database = {
           headline: string | null
           hourly_rate: string | null
           id: string
+          is_featured: boolean
           location: string | null
           seed_tag: string | null
           shifts_available: string | null
@@ -515,6 +516,7 @@ export type Database = {
           headline?: string | null
           hourly_rate?: string | null
           id?: string
+          is_featured?: boolean
           location?: string | null
           seed_tag?: string | null
           shifts_available?: string | null
@@ -531,6 +533,7 @@ export type Database = {
           headline?: string | null
           hourly_rate?: string | null
           id?: string
+          is_featured?: boolean
           location?: string | null
           seed_tag?: string | null
           shifts_available?: string | null

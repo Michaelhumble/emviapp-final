@@ -220,7 +220,7 @@ export const bookingSystemPreBuildReport = {
     userManagementConnections: [
       {
         connection: 'User profiles',
-        sharedTables: ['profiles', 'users'],
+        sharedTables: ['profiles'],
         functionality: 'Artist and client profile data',
         riskLevel: 'HIGH - Core user data',
         breakageRisk: 'Profile changes could break booking display'

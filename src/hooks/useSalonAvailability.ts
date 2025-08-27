@@ -71,7 +71,7 @@ export const useSalonAvailability = (salonId?: string) => {
       // Modified to use id instead of user_id, which doesn't exist on salon_staff
       for (const staff of (staffData as any) || []) {
         if ((staff as any)?.id) {
-          // Query users table to get user_id by email
+          // Query profiles table to get user_id by email
           const { data: userData, error: userError } = await supabaseBypass
             .from('profiles')
             .select('id')
