@@ -14,6 +14,7 @@ import { normalizeJobPhotos } from '@/lib/images';
 import JobPhotoGallery from '@/components/jobs/JobPhotoGallery';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import JobSEO from '@/components/seo/JobSEO';
+import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -159,29 +160,7 @@ const JobDetailPage = () => {
     { name: job.title, href: `/jobs/${job.id}`, current: true }
   ];
 
-  // Enhanced JSON-LD for JobPosting
-  const jsonLd = (() => {
-    const base: any = {
-      '@context': 'https://schema.org',
-      '@type': 'JobPosting',
-      title: job.title,
-      description: (job.description || ''),
-      datePosted: job.created_at,
-      jobLocation: job.location ? { '@type': 'Place', address: job.location } : undefined,
-      identifier: { '@type': 'PropertyValue', name: 'EmviApp', value: job.id },
-      url: `https://www.emvi.app/jobs/${job.id}`,
-    } as any;
-    if (isExpired) {
-      const validThrough = job.expires_at || new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      base.validThrough = validThrough;
-    } else {
-      base.hiringOrganization = job.company ? { '@type': 'Organization', name: job.company } : undefined;
-    }
-    if ((job as any).contact_info?.website) {
-      base.sameAs = [(job as any).contact_info.website];
-    }
-    return JSON.stringify(base);
-  })();
+  // JSON-LD is now handled by JobSEO component with comprehensive schema
 
   return (
     <>
@@ -406,6 +385,9 @@ const JobDetailPage = () => {
                   <PlusCircle className="w-4 h-4 mr-2" />
                   Post a Job
                 </Button>
+                
+                {/* Rich Results Test Link for Development/Testing */}
+                <RichResultsTestLink jobUrl={`https://www.emvi.app/jobs/${job.id}`} />
               </div>
             </div>
           </div>

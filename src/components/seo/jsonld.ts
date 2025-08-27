@@ -55,53 +55,176 @@ export const buildJobPostingJsonLd = (job: {
   expires_at?: string;
   employmentType?: string;
   workFromHome?: boolean;
-}) => ({
-  "@context": "https://schema.org",
-  "@type": "JobPosting",
-  "title": job.title,
-  "description": job.description.replace(/<[^>]*>/g, ''), // Strip HTML
-  "datePosted": job.created_at,
-  "validThrough": job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-  "employmentType": job.employmentType || "CONTRACTOR",
-  "url": `https://www.emvi.app/jobs/${job.id}`,
-  "applicantLocationRequirements": {
-    "@type": "Country",
-    "name": "US"
-  },
-  "jobLocationType": job.workFromHome ? "TELECOMMUTE" : undefined,
-  "identifier": {
-    "@type": "PropertyValue",
-    "name": "EmviApp",
-    "value": job.id
-  },
-  "hiringOrganization": {
+  contactEmail?: string;
+  contactPhone?: string;
+  requirements?: string;
+  category?: string;
+}) => {
+  // Clean description and requirements
+  const cleanDescription = job.description.replace(/<[^>]*>/g, '').trim();
+  const jobDescription = job.requirements 
+    ? `${cleanDescription}\n\nRequirements: ${job.requirements.replace(/<[^>]*>/g, '').trim()}`
+    : cleanDescription;
+
+  // Determine employment type based on category and description
+  const getEmploymentType = () => {
+    const desc = jobDescription.toLowerCase();
+    if (desc.includes('full-time') || desc.includes('full time')) return "FULL_TIME";
+    if (desc.includes('part-time') || desc.includes('part time')) return "PART_TIME";
+    if (desc.includes('contract') || desc.includes('contractor')) return "CONTRACTOR";
+    if (desc.includes('temporary') || desc.includes('temp')) return "TEMPORARY";
+    if (desc.includes('internship') || desc.includes('intern')) return "INTERN";
+    // Default for beauty industry
+    return job.employmentType || "CONTRACTOR";
+  };
+
+  // Enhanced organization with proper contact info
+  const hiringOrganization: any = {
     "@type": "Organization",
-    "name": job.company || "EmviApp Partner",
+    "name": job.company || "EmviApp Beauty Partner",
     "url": "https://www.emvi.app",
-    "logo": "https://www.emvi.app/logo.png"
-  },
-  "jobLocation": {
-    "@type": "Place",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": job.location || "Remote",
-      "addressCountry": "US"
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.emvi.app/logo.png",
+      "width": 600,
+      "height": 60
     }
-  },
-  "industry": "Beauty and Personal Care",
-  "occupationalCategory": "Beauty and Personal Care",
-  ...(job.salary && {
-    "baseSalary": {
+  };
+
+  // Add contact point if available
+  if (job.contactEmail || job.contactPhone) {
+    hiringOrganization.contactPoint = {
+      "@type": "ContactPoint",
+      "contactType": "recruitment",
+      ...(job.contactEmail && { "email": job.contactEmail }),
+      ...(job.contactPhone && { "telephone": job.contactPhone })
+    };
+  }
+
+  // Build comprehensive job location
+  const jobLocation: any = {
+    "@type": "Place"
+  };
+
+  if (job.location) {
+    // Parse location for better structure
+    const locationParts = job.location.split(',').map(p => p.trim());
+    if (locationParts.length >= 2) {
+      // Assume format like "City, State" or "City, State ZIP"
+      jobLocation.address = {
+        "@type": "PostalAddress",
+        "addressLocality": locationParts[0],
+        "addressRegion": locationParts[1].split(' ')[0], // Get state code
+        "addressCountry": "US"
+      };
+    } else {
+      jobLocation.address = {
+        "@type": "PostalAddress",
+        "addressLocality": job.location,
+        "addressCountry": "US"
+      };
+    }
+  } else {
+    jobLocation.address = {
+      "@type": "PostalAddress",
+      "addressCountry": "US"
+    };
+  }
+
+  // Build base salary if available
+  const buildBaseSalary = () => {
+    if (!job.salary) return undefined;
+    
+    const salaryStr = job.salary.toLowerCase();
+    
+    // Parse different salary formats
+    if (salaryStr.includes('hour') || salaryStr.includes('/hr')) {
+      const match = job.salary.match(/\$?(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+      if (match) {
+        return {
+          "@type": "MonetaryAmount",
+          "currency": "USD",
+          "value": {
+            "@type": "QuantitativeValue",
+            "value": parseFloat(match[1].replace(',', '')),
+            "unitText": "HOUR"
+          }
+        };
+      }
+    } else if (salaryStr.includes('week') || salaryStr.includes('/wk')) {
+      const match = job.salary.match(/\$?(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+      if (match) {
+        return {
+          "@type": "MonetaryAmount",
+          "currency": "USD",
+          "value": {
+            "@type": "QuantitativeValue",
+            "value": parseFloat(match[1].replace(',', '')),
+            "unitText": "WEEK"
+          }
+        };
+      }
+    } else if (salaryStr.includes('year') || salaryStr.includes('/yr') || salaryStr.includes('annual')) {
+      const match = job.salary.match(/\$?(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+      if (match) {
+        return {
+          "@type": "MonetaryAmount",
+          "currency": "USD",
+          "value": {
+            "@type": "QuantitativeValue",
+            "value": parseFloat(match[1].replace(',', '')),
+            "unitText": "YEAR"
+          }
+        };
+      }
+    }
+    
+    // Default to showing as text if can't parse
+    return {
       "@type": "MonetaryAmount",
       "currency": "USD",
       "value": {
         "@type": "QuantitativeValue",
         "value": job.salary,
-        "unitText": "HOUR"
+        "unitText": "OTHER"
       }
-    }
-  })
-});
+    };
+  };
+
+  // Calculate validThrough (30 days from creation or explicit expiry)
+  const validThrough = job.expires_at || 
+    new Date(new Date(job.created_at).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": job.title,
+    "description": jobDescription,
+    "datePosted": job.created_at,
+    "validThrough": validThrough,
+    "employmentType": getEmploymentType(),
+    "url": `https://www.emvi.app/jobs/${job.id}`,
+    "identifier": {
+      "@type": "PropertyValue",
+      "name": "EmviApp Job ID",
+      "value": job.id
+    },
+    "hiringOrganization": hiringOrganization,
+    "jobLocation": jobLocation,
+    "industry": "Beauty and Personal Care Services",
+    "occupationalCategory": job.category || "Beauty and Personal Care",
+    "jobLocationType": job.workFromHome ? "TELECOMMUTE" : undefined,
+    "applicantLocationRequirements": {
+      "@type": "Country",
+      "name": "US"
+    },
+    ...(job.salary && { "baseSalary": buildBaseSalary() }),
+    "directApply": true,
+    "jobBenefits": "Professional development opportunities, Flexible scheduling, Industry networking",
+    "workHours": "Flexible scheduling available",
+    "qualifications": job.requirements || "Experience in beauty and personal care preferred"
+  };
+};
 
 export const buildPersonJsonLd = (person: {
   name: string;

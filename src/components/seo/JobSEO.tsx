@@ -25,16 +25,22 @@ const JobSEO: React.FC<JobSEOProps> = ({ job, baseUrl = 'https://www.emvi.app' }
   // Determine og:image with fallback
   const ogImage = (job as any).image || '/og-job.jpg';
   
-  // JobPosting JSON-LD
+  // Enhanced JobPosting JSON-LD with all required fields
   const jobJsonLd = buildJobPostingJsonLd({
     id: job.id,
     title: job.title,
-    description: job.description || `${job.title} position available.`,
+    description: job.description || `${job.title} position available at ${job.company || 'EmviApp partner'}.`,
     location: job.location,
     salary: job.compensation_details || job.salary_range,
-    company: job.company || job.contact_info?.owner_name,
+    company: job.company || job.contact_info?.owner_name || 'EmviApp Partner',
     created_at: job.created_at || new Date().toISOString(),
-    expires_at: job.expires_at
+    expires_at: job.expires_at,
+    employmentType: job.employment_type,
+    contactEmail: job.contact_info?.email,
+    contactPhone: job.contact_info?.phone,
+    requirements: job.requirements,
+    category: job.category,
+    workFromHome: job.is_remote
   });
 
   return (
