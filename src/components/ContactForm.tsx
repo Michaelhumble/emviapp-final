@@ -183,7 +183,7 @@ const ContactForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <form name="Contact EmviApp" onSubmit={handleSubmit} className="space-y-8">
+      <form name="Contact EmviApp" onSubmit={handleSubmit} className="lead-form space-y-8">
         {/* Contact Information Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -194,6 +194,7 @@ const ContactForm = () => {
             <Input
               id="firstname"
               name="firstname"
+              data-hs="true"
               type="text"
               placeholder="First name"
               value={formData.firstname}
@@ -210,6 +211,7 @@ const ContactForm = () => {
             <Input
               id="lastname"
               name="lastname"
+              data-hs="true"
               type="text"
               placeholder="Last name"
               value={formData.lastname}
@@ -225,6 +227,7 @@ const ContactForm = () => {
             <Input
               id="email"
               name="email"
+              data-hs="true"
               type="email"
               placeholder="your.email@example.com"
               value={formData.email}
@@ -240,6 +243,7 @@ const ContactForm = () => {
             <Input
               id="phone"
               name="phone"
+              data-hs="true"
               type="tel"
               placeholder="(555) 123-4567"
               value={formData.phone}
@@ -254,6 +258,7 @@ const ContactForm = () => {
             <Input
               id="company"
               name="company"
+              data-hs="true"
               type="text"
               placeholder="Your company"
               value={formData.company}
@@ -319,6 +324,7 @@ const ContactForm = () => {
           <Textarea
             id="message"
             name="message"
+            data-hs="true"
             placeholder="Share your thoughts, ideas, or feedback with us..."
             value={formData.message}
             onChange={handleChange}

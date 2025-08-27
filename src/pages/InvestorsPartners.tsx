@@ -12,6 +12,7 @@ const InvestorsPartnersPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     company: '',
     website: '',
     linkedin: '',
@@ -387,11 +388,14 @@ const InvestorsPartnersPage = () => {
 
               <Card className="bg-white border-0 shadow-2xl">
                 <CardContent className="p-12">
-                  <form onSubmit={handleSubmit} className="space-y-8">
+                  <form name="partner_emviapp" onSubmit={handleSubmit} className="lead-form space-y-8">
                     <div className="grid md:grid-cols-2 gap-8">
                       <div>
                         <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Name</label>
                         <Input
+                          name="name"
+                          id="name"
+                          data-hs="true"
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
                           className="bg-gray-50 border-gray-200 text-gray-900 h-14 text-lg focus:ring-purple-500 focus:border-purple-500"
@@ -402,6 +406,9 @@ const InvestorsPartnersPage = () => {
                       <div>
                         <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Email</label>
                         <Input
+                          name="email"
+                          id="email"
+                          data-hs="true"
                           type="email"
                           value={formData.email}
                           onChange={(e) => handleInputChange('email', e.target.value)}
@@ -414,8 +421,24 @@ const InvestorsPartnersPage = () => {
 
                     <div className="grid md:grid-cols-2 gap-8">
                       <div>
+                        <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Phone</label>
+                        <Input
+                          name="phone"
+                          id="phone"
+                          data-hs="true"
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          className="bg-gray-50 border-gray-200 text-gray-900 h-14 text-lg focus:ring-purple-500 focus:border-purple-500"
+                          placeholder="Your phone number"
+                        />
+                      </div>
+                      <div>
                         <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Company</label>
                         <Input
+                          name="company"
+                          id="company"
+                          data-hs="true"
                           value={formData.company}
                           onChange={(e) => handleInputChange('company', e.target.value)}
                           className="bg-gray-50 border-gray-200 text-gray-900 h-14 text-lg focus:ring-purple-500 focus:border-purple-500"
@@ -423,9 +446,15 @@ const InvestorsPartnersPage = () => {
                           required
                         />
                       </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
                       <div>
                         <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Website</label>
                         <Input
+                          name="website"
+                          id="website"
+                          data-hs="true"
                           type="url"
                           value={formData.website}
                           onChange={(e) => handleInputChange('website', e.target.value)}
@@ -433,21 +462,26 @@ const InvestorsPartnersPage = () => {
                           placeholder="https://yourcompany.com"
                         />
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">LinkedIn</label>
-                      <Input
-                        value={formData.linkedin}
-                        onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                        className="bg-gray-50 border-gray-200 text-gray-900 h-14 text-lg focus:ring-purple-500 focus:border-purple-500"
-                        placeholder="LinkedIn profile URL"
-                      />
+                      <div>
+                        <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">LinkedIn</label>
+                        <Input
+                          name="linkedin"
+                          id="linkedin"
+                          data-hs="true"
+                          value={formData.linkedin}
+                          onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                          className="bg-gray-50 border-gray-200 text-gray-900 h-14 text-lg focus:ring-purple-500 focus:border-purple-500"
+                          placeholder="LinkedIn profile URL"
+                        />
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Your Track Record</label>
                       <Textarea
+                        name="message"
+                        id="message"
+                        data-hs="true"
                         value={formData.message}
                         onChange={(e) => handleInputChange('message', e.target.value)}
                         className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px] text-lg focus:ring-purple-500 focus:border-purple-500"
@@ -459,6 +493,9 @@ const InvestorsPartnersPage = () => {
                     <div>
                       <label className="block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Why Should We Choose You? *</label>
                       <Textarea
+                        name="whyChooseYou"
+                        id="whyChooseYou"
+                        data-hs="true"
                         value={formData.whyChooseYou}
                         onChange={(e) => handleInputChange('whyChooseYou', e.target.value)}
                         className="bg-gray-50 border-gray-200 text-gray-900 min-h-[150px] text-lg focus:ring-purple-500 focus:border-purple-500"
