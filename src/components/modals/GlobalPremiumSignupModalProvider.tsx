@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useLocation } from 'react-router-dom';
 import PremiumSignupModal from './PremiumSignupModal';
-import { ENABLE_SIGNUP_MODAL } from '@/lib/env';
+import { FLAGS } from '@/config/flags';
 
 /**
  * Global Modal Provider that shows premium signup modal to unauthenticated users
@@ -30,7 +30,7 @@ const GlobalPremiumSignupModalProvider: React.FC<{ children: React.ReactNode }> 
 
   useEffect(() => {
     // Feature flag check - don't show if disabled
-    if (!ENABLE_SIGNUP_MODAL) {
+    if (!FLAGS.signupModalEnabled) {
       setShowModal(false);
       return;
     }
@@ -69,7 +69,7 @@ const GlobalPremiumSignupModalProvider: React.FC<{ children: React.ReactNode }> 
     }
 
     // If all conditions pass and feature flag is enabled, show modal with delay
-    if (!isSignedIn && ENABLE_SIGNUP_MODAL) {
+    if (!isSignedIn && FLAGS.signupModalEnabled) {
       const timer = setTimeout(() => {
         setShowModal(true);
       }, 500);

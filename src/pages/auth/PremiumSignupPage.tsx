@@ -49,7 +49,7 @@ const PremiumSignupPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const [showSignupModal, setShowSignupModal] = useState(true);
+  const [showSignupModal, setShowSignupModal] = useState(false); // Disabled by default
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [exitIntentTriggered, setExitIntentTriggered] = useState(false);
   const [liveCounter, setLiveCounter] = useState(1247);
