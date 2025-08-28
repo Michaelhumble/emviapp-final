@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { BookingRequest, BookingAnalyticsEvent, BookingCRMLead } from '@/types/booking-enhanced';
+import { BookingRequest, BookingAnalyticsEvent, BookingCRMLead } from '@/lib/booking/types';
 
 interface BookingSubmissionResult {
   success: boolean;

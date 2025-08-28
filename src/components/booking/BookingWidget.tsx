@@ -149,7 +149,7 @@ export const BookingWidget: React.FC<BookingWidgetProps> = ({
             isSubmitting={isSubmitting}
             setIsSubmitting={setIsSubmitting}
             setBookingId={setBookingId}
-            setCurrentStep={setCurrentStep}
+            setCurrentStep={(step: BookingStep) => setCurrentStep(step)}
             artistId={artistId}
           />
         );

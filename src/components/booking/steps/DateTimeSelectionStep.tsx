@@ -52,7 +52,7 @@ export const DateTimeSelectionStep: React.FC<DateTimeSelectionStepProps> = ({
     const slot = getSlotByTime(time);
     if (!slot) return;
 
-    onTimeSelect(time, slot.start, slot.end);
+    onTimeSelect(time, slot.starts_at, slot.ends_at);
   };
 
   const isDateDisabled = (date: Date) => {
@@ -76,7 +76,7 @@ export const DateTimeSelectionStep: React.FC<DateTimeSelectionStepProps> = ({
           <CardContent className="p-4">
             <div className="flex justify-between items-center">
               <div>
-                <h4 className="font-medium">{service.name}</h4>
+                <h4 className="font-medium">{service.title}</h4>
                 <p className="text-sm text-muted-foreground">
                   {service.duration_minutes} minutes
                 </p>

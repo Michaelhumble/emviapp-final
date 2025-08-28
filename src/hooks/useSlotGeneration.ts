@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays, parseISO, startOfDay, endOfDay, isBefore, isAfter, addMinutes, isSameDay } from 'date-fns';
 import { formatInTimeZone, toZonedTime, fromZonedTime } from 'date-fns-tz';
-import { ArtistAvailability, EnhancedBooking, BookableSlot, Service } from '@/types/booking-enhanced';
+import { ArtistAvailability, Booking, BookableSlot, Service } from '@/lib/booking/types';
+import { rowToService, rowToAvailability, rowToBooking } from '@/lib/booking/mappers';
 
 interface UseSlotGenerationProps {
   artistId: string;
@@ -13,7 +14,7 @@ interface UseSlotGenerationProps {
 
 export const useSlotGeneration = ({ artistId, serviceId, selectedDate, timezone = 'America/New_York' }: UseSlotGenerationProps) => {
   const [availability, setAvailability] = useState<ArtistAvailability[]>([]);
-  const [existingBookings, setExistingBookings] = useState<EnhancedBooking[]>([]);
+  const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
   const [service, setService] = useState<Service | null>(null);
   const [timeOff, setTimeOff] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export const useSlotGeneration = ({ artistId, serviceId, selectedDate, timezone 
           .eq('artist_id', artistId);
 
         if (availabilityError) throw availabilityError;
-        setAvailability(availabilityData || []);
+        setAvailability((availabilityData || []).map(rowToAvailability));
 
         // Fetch service if provided
         if (serviceId) {
@@ -46,7 +47,7 @@ export const useSlotGeneration = ({ artistId, serviceId, selectedDate, timezone 
             .single();
 
           if (serviceError) throw serviceError;
-          setService(serviceData);
+          setService(rowToService(serviceData));
         }
 
         // Fetch time off
@@ -87,7 +88,7 @@ export const useSlotGeneration = ({ artistId, serviceId, selectedDate, timezone 
           .not('status', 'in', '(cancelled,declined)');
 
         if (bookingsError) throw bookingsError;
-        setExistingBookings(bookingsData || []);
+        setExistingBookings((bookingsData || []).map(rowToBooking));
 
       } catch (err) {
         console.error('Error fetching bookings:', err);
@@ -156,23 +157,24 @@ export const useSlotGeneration = ({ artistId, serviceId, selectedDate, timezone 
       const isPast = isBefore(currentSlot, now);
 
       slots.push({
-        start: currentSlot.toISOString(),
-        end: slotEnd.toISOString(),
-        available: !hasConflict && !isPast,
-        service_id: serviceId
+        artist_id: artistId,
+        service_id: serviceId || '',
+        starts_at: currentSlot.toISOString(),
+        ends_at: slotEnd.toISOString(),
+        available: !hasConflict && !isPast
       });
 
       currentSlot = addMinutes(currentSlot, slotDuration);
     }
 
     return slots;
-  }, [selectedDate, availability, existingBookings, service, timeOff, serviceId, timezone]);
+  }, [selectedDate, availability, existingBookings, service, timeOff, serviceId, timezone, artistId]);
 
   // Get available time slots as strings for display
   const availableTimeSlots = useMemo(() => {
     return bookableSlots
       .filter(slot => slot.available)
-      .map(slot => formatInTimeZone(parseISO(slot.start), timezone, 'HH:mm'));
+      .map(slot => formatInTimeZone(parseISO(slot.starts_at), timezone, 'HH:mm'));
   }, [bookableSlots, timezone]);
 
   const isDateAvailable = (date: Date) => {
@@ -199,7 +201,7 @@ export const useSlotGeneration = ({ artistId, serviceId, selectedDate, timezone 
     );
 
     return bookableSlots.find(slot => 
-      parseISO(slot.start).getTime() === slotDateTime.getTime()
+      parseISO(slot.starts_at).getTime() === slotDateTime.getTime()
     ) || null;
   };
 

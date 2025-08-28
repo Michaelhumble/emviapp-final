@@ -2,14 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar, Clock, User, Phone, Mail, MapPin, Plus, Download, Settings, RefreshCw } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, parseISO, addDays, startOfDay, endOfDay } from 'date-fns';
-import { useArtistBookings } from '@/hooks/useArtistBookings';
+import { useArtistBookings } from '@/hooks/artist/useArtistBookings';
 import { useAuth } from '@/context/auth';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import type { Booking } from '@/lib/booking/types';
+import { bookingToCalendarEvent, eventToICS } from '@/lib/booking/mappers';
 
 interface ArtistCalendarProps {
   className?: string;
@@ -17,37 +18,58 @@ interface ArtistCalendarProps {
 
 export const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ className }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
   const { user } = useAuth();
   
   const { 
     bookings, 
-    isLoading, 
+    loading, 
     error, 
-    updateBookingStatus, 
-    refreshBookings 
-  } = useArtistBookings(user?.id);
+    handleAccept,
+    handleDecline,
+    refresh 
+  } = useArtistBookings();
 
   // Get current week dates
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  // Filter bookings for current week
+  // Convert legacy bookings to unified format and filter for current week
   const weekBookings = useMemo(() => {
     if (!bookings) return [];
     
-    return bookings.filter(booking => {
-      if (!booking.starts_at) return false;
-      const bookingDate = parseISO(booking.starts_at);
-      return bookingDate >= weekStart && bookingDate <= weekEnd;
-    });
-  }, [bookings, weekStart, weekEnd]);
+    return bookings
+      .map(booking => ({
+        id: booking.id,
+        sender_id: '',
+        recipient_id: user?.id || '',
+        client_name: booking.client_name,
+        client_email: undefined,
+        client_phone: undefined,
+        service_type: booking.service_type,
+        date_requested: booking.appointment_date,
+        time_requested: booking.appointment_time,
+        starts_at: booking.appointment_date && booking.appointment_time ? 
+          `${booking.appointment_date}T${booking.appointment_time}:00.000Z` : undefined,
+        ends_at: booking.appointment_date && booking.appointment_time ? 
+          new Date(new Date(`${booking.appointment_date}T${booking.appointment_time}:00.000Z`).getTime() + 60 * 60 * 1000).toISOString() : undefined,
+        status: booking.status as Booking['status'],
+        source: 'web' as const,
+        note: undefined,
+        created_at: new Date().toISOString(),
+      } as Booking))
+      .filter(booking => {
+        if (!booking.starts_at) return false;
+        const bookingDate = parseISO(booking.starts_at);
+        return bookingDate >= weekStart && bookingDate <= weekEnd;
+      });
+  }, [bookings, weekStart, weekEnd, user?.id]);
 
   // Group bookings by day
   const bookingsByDay = useMemo(() => {
-    const grouped: Record<string, any[]> = {};
+    const grouped: Record<string, Booking[]> = {};
     
     weekDays.forEach(day => {
       const dateKey = format(day, 'yyyy-MM-dd');
@@ -55,6 +77,7 @@ export const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ className }) => 
         if (!booking.starts_at) return false;
         return isSameDay(parseISO(booking.starts_at), day);
       }).sort((a, b) => {
+        if (!a.starts_at || !b.starts_at) return 0;
         return new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
       });
     });
@@ -62,9 +85,13 @@ export const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ className }) => 
     return grouped;
   }, [weekBookings, weekDays]);
 
-  const handleStatusUpdate = async (bookingId: string, newStatus: string) => {
+  const handleStatusUpdate = async (bookingId: string, newStatus: 'accepted' | 'declined') => {
     try {
-      await updateBookingStatus(bookingId, newStatus);
+      if (newStatus === 'accepted') {
+        await handleAccept(bookingId);
+      } else {
+        await handleDecline(bookingId);
+      }
       toast.success(`Booking ${newStatus} successfully`);
       setShowBookingDetails(false);
     } catch (error) {
@@ -74,9 +101,11 @@ export const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ className }) => 
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
+      case 'accepted': 
       case 'confirmed': return 'default';
       case 'pending': return 'secondary';
-      case 'cancelled': return 'destructive';
+      case 'cancelled': 
+      case 'declined': return 'destructive';
       case 'completed': return 'outline';
       default: return 'secondary';
     }
@@ -84,15 +113,21 @@ export const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ className }) => 
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'accepted':
       case 'confirmed': return 'bg-green-500';
       case 'pending': return 'bg-yellow-500';
-      case 'cancelled': return 'bg-red-500';
+      case 'cancelled':
+      case 'declined': return 'bg-red-500';
       case 'completed': return 'bg-blue-500';
       default: return 'bg-gray-500';
     }
   };
 
   const generateICS = () => {
+    const events = weekBookings
+      .filter(booking => booking.starts_at && booking.status !== 'cancelled')
+      .map(booking => bookingToCalendarEvent(booking));
+
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//EmviApp//Artist Calendar//EN
@@ -100,21 +135,7 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:${user?.email || 'Artist'} Bookings
 X-WR-TIMEZONE:America/New_York
-${bookings
-  ?.filter(booking => booking.starts_at && booking.ends_at && booking.status !== 'cancelled')
-  .map(booking => {
-    const start = new Date(booking.starts_at!);
-    const end = new Date(booking.ends_at!);
-    
-    return `BEGIN:VEVENT
-UID:${booking.id}@emviapp.com
-DTSTART:${start.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTEND:${end.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-SUMMARY:${booking.client_name || 'Appointment'}
-DESCRIPTION:Status: ${booking.status}${booking.note ? `\\nNotes: ${booking.note}` : ''}
-STATUS:${booking.status === 'confirmed' ? 'CONFIRMED' : 'TENTATIVE'}
-END:VEVENT`;
-  }).join('\n')}
+${events.map(eventToICS).join('\n')}
 END:VCALENDAR`;
 
     const blob = new Blob([icsContent], { type: 'text/calendar' });
@@ -144,6 +165,22 @@ END:VCALENDAR`;
     );
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("space-y-6", className)}>
       {/* Header */}
@@ -164,10 +201,10 @@ END:VCALENDAR`;
               <Button
                 variant="outline"
                 size="sm"
-                onClick={refreshBookings}
-                disabled={isLoading}
+                onClick={refresh}
+                disabled={loading}
               >
-                <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+                <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
               </Button>
               
               <Button
@@ -265,7 +302,7 @@ END:VCALENDAR`;
                         }}
                       >
                         <div className="flex items-center gap-1">
-                          <div className={cn("w-2 h-2 rounded-full", getStatusColor(booking.status))} />
+                          <div className={cn("w-2 h-2 rounded-full", getStatusColor(booking.status || 'pending'))} />
                           <span className="truncate font-medium">
                             {booking.client_name || 'Anonymous'}
                           </span>
@@ -300,7 +337,7 @@ END:VCALENDAR`;
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">{selectedBooking.client_name || 'Anonymous'}</h4>
-                <Badge variant={getStatusBadgeVariant(selectedBooking.status)}>
+                <Badge variant={getStatusBadgeVariant(selectedBooking.status || 'pending')}>
                   {selectedBooking.status}
                 </Badge>
               </div>
@@ -343,37 +380,17 @@ END:VCALENDAR`;
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleStatusUpdate(selectedBooking.id, 'cancelled')}
+                    onClick={() => handleStatusUpdate(selectedBooking.id, 'declined')}
                     className="flex-1"
                   >
                     Decline
                   </Button>
                   <Button
                     size="sm"
-                    onClick={() => handleStatusUpdate(selectedBooking.id, 'confirmed')}
+                    onClick={() => handleStatusUpdate(selectedBooking.id, 'accepted')}
                     className="flex-1"
                   >
                     Accept
-                  </Button>
-                </div>
-              )}
-              
-              {selectedBooking.status === 'confirmed' && (
-                <div className="flex gap-2 pt-4 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleStatusUpdate(selectedBooking.id, 'cancelled')}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleStatusUpdate(selectedBooking.id, 'completed')}
-                    className="flex-1"
-                  >
-                    Mark Complete
                   </Button>
                 </div>
               )}

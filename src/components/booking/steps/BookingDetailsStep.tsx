@@ -63,7 +63,7 @@ export const BookingDetailsStep: React.FC<BookingDetailsStepProps> = ({
       starts_at: bookingData.starts_at,
       ends_at: bookingData.ends_at,
       notes: bookingData.notes,
-      source: 'web'
+      source: 'web' as const
     };
 
     try {
