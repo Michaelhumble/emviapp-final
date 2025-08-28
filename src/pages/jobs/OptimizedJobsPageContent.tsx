@@ -14,7 +14,6 @@ import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
 import SEODevLogger from '@/components/seo/SEODevLogger';
 
 import { JobCard } from '@/components/jobs/JobCard';
-import OptimizedStickyMobileCTA from '@/components/mobile/OptimizedStickyMobileCTA';
 import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
 
 // Lazy load non-critical components for better performance
