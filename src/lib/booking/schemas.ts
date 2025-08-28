@@ -63,3 +63,33 @@ export const SlotRequestSchema = z.object({
 });
 
 export type SlotRequestInput = z.infer<typeof SlotRequestSchema>;
+
+// Reschedule booking validation
+export const RescheduleBookingInput = z.object({
+  bookingId: z.string().uuid(),
+  newStartsAt: z.string().datetime('Invalid start time'),
+  newEndsAt: z.string().datetime('Invalid end time'),
+  token: z.string().optional(), // For customer self-service
+  managedBy: z.enum(['customer', 'artist', 'admin']).default('customer'),
+});
+
+export type RescheduleBookingInput = z.infer<typeof RescheduleBookingInput>;
+
+// Cancel booking validation
+export const CancelBookingInput = z.object({
+  bookingId: z.string().uuid(),
+  reason: z.enum(['schedule_conflict', 'no_longer_needed', 'found_alternative', 'personal_emergency', 'other']),
+  reasonText: z.string().optional(),
+  token: z.string().optional(), // For customer self-service
+  managedBy: z.enum(['customer', 'artist', 'admin']).default('customer'),
+});
+
+export type CancelBookingInput = z.infer<typeof CancelBookingInput>;
+
+// Manage token verification
+export const VerifyManageTokenInput = z.object({
+  token: z.string(),
+  bookingId: z.string().uuid(),
+});
+
+export type VerifyManageTokenInput = z.infer<typeof VerifyManageTokenInput>;

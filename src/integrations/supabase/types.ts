@@ -850,6 +850,7 @@ export type Database = {
         Row: {
           appointment_time: string | null
           calendar_event_id: string | null
+          cancellation_reason: string | null
           client_email: string | null
           client_name: string | null
           client_phone: string | null
@@ -857,12 +858,17 @@ export type Database = {
           created_at: string | null
           date_requested: string | null
           ends_at: string | null
+          ics_sequence: number | null
           id: string
+          manage_token_expires_at: string | null
+          manage_token_hash: string | null
+          managed_by: string | null
           metadata: Json | null
           note: string | null
           recipient_id: string
           reminder_sent: boolean | null
           reminder_sent_at: string | null
+          rescheduled_from_id: string | null
           sender_id: string
           service_id: string | null
           service_type: string | null
@@ -874,6 +880,7 @@ export type Database = {
         Insert: {
           appointment_time?: string | null
           calendar_event_id?: string | null
+          cancellation_reason?: string | null
           client_email?: string | null
           client_name?: string | null
           client_phone?: string | null
@@ -881,12 +888,17 @@ export type Database = {
           created_at?: string | null
           date_requested?: string | null
           ends_at?: string | null
+          ics_sequence?: number | null
           id?: string
+          manage_token_expires_at?: string | null
+          manage_token_hash?: string | null
+          managed_by?: string | null
           metadata?: Json | null
           note?: string | null
           recipient_id: string
           reminder_sent?: boolean | null
           reminder_sent_at?: string | null
+          rescheduled_from_id?: string | null
           sender_id: string
           service_id?: string | null
           service_type?: string | null
@@ -898,6 +910,7 @@ export type Database = {
         Update: {
           appointment_time?: string | null
           calendar_event_id?: string | null
+          cancellation_reason?: string | null
           client_email?: string | null
           client_name?: string | null
           client_phone?: string | null
@@ -905,12 +918,17 @@ export type Database = {
           created_at?: string | null
           date_requested?: string | null
           ends_at?: string | null
+          ics_sequence?: number | null
           id?: string
+          manage_token_expires_at?: string | null
+          manage_token_hash?: string | null
+          managed_by?: string | null
           metadata?: Json | null
           note?: string | null
           recipient_id?: string
           reminder_sent?: boolean | null
           reminder_sent_at?: string | null
+          rescheduled_from_id?: string | null
           sender_id?: string
           service_id?: string | null
           service_type?: string | null
@@ -925,6 +943,13 @@ export type Database = {
             columns: ["recipient_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_rescheduled_from_id_fkey"
+            columns: ["rescheduled_from_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
           {
@@ -5219,6 +5244,10 @@ export type Database = {
         Args: { p_prompt: string; p_prompt_hash: string; p_user_id: string }
         Returns: string
       }
+      generate_manage_token: {
+        Args: { p_booking_id: string; p_email: string }
+        Returns: string
+      }
       generate_team_invite_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -5512,6 +5541,10 @@ export type Database = {
       validate_team_invite: {
         Args: { p_invite_code: string; p_phone_number: string }
         Returns: Json
+      }
+      verify_manage_token: {
+        Args: { p_booking_id: string; p_token: string }
+        Returns: boolean
       }
     }
     Enums: {

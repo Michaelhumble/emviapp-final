@@ -4,6 +4,8 @@ export * from './schemas';
 export * from './mappers';
 export * from './guards';
 export * from './compat';
+export * from './tokens';
+export * from './ics';
 
 // Re-export commonly used types for convenience
 export type {
@@ -15,7 +17,9 @@ export type {
   CalendarEvent,
   BookingStatus,
   BookingSource,
-  LocationType
+  LocationType,
+  CancellationReason,
+  ManageBookingToken
 } from './types';
 
 // Re-export validation schemas
@@ -23,7 +27,10 @@ export {
   CreateBookingInput,
   ServiceSchema,
   AvailabilitySchema,
-  SlotRequestSchema
+  SlotRequestSchema,
+  RescheduleBookingInput,
+  CancelBookingInput,
+  VerifyManageTokenInput
 } from './schemas';
 
 // Re-export core mappers
@@ -54,3 +61,19 @@ export {
   toLegacyViewModel,
   serviceToLegacyFormat
 } from './compat';
+
+// Re-export token utilities
+export {
+  generateManageToken,
+  verifyManageToken,
+  generateManageUrl,
+  canRescheduleBooking,
+  canCancelBooking
+} from './tokens';
+
+// Re-export ICS utilities
+export {
+  generateBookingICS,
+  generateICSFilename,
+  createICSDownload
+} from './ics';

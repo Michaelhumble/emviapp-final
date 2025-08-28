@@ -7,21 +7,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CancelRequest {
+interface RescheduleRequest {
   bookingId: string;
-  reason: 'schedule_conflict' | 'no_longer_needed' | 'found_alternative' | 'personal_emergency' | 'other';
-  reasonText?: string;
+  newStartsAt: string;
+  newEndsAt: string;
   token?: string;
   managedBy: 'customer' | 'artist' | 'admin';
 }
-
-const reasonLabels = {
-  schedule_conflict: 'Schedule conflict',
-  no_longer_needed: 'No longer needed',
-  found_alternative: 'Found alternative provider',
-  personal_emergency: 'Personal emergency',
-  other: 'Other reason'
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -41,7 +33,7 @@ serve(async (req) => {
       global: { headers: { Authorization: req.headers.get("Authorization")! } },
     });
 
-    const { bookingId, reason, reasonText, token, managedBy }: CancelRequest = await req.json();
+    const { bookingId, newStartsAt, newEndsAt, token, managedBy }: RescheduleRequest = await req.json();
 
     // Verify token if provided (for customer self-service)
     if (token && managedBy === 'customer') {
@@ -72,62 +64,90 @@ serve(async (req) => {
       );
     }
 
-    // Update booking status and add cancellation info
-    const cancellationReason = reasonText && reason === 'other' 
-      ? reasonText 
-      : reasonLabels[reason];
+    // Check for scheduling conflicts
+    const { data: conflicts, error: conflictError } = await supabase
+      .from("bookings")
+      .select("id")
+      .eq("recipient_id", currentBooking.recipient_id)
+      .eq("status", "confirmed")
+      .neq("id", bookingId)
+      .gte("starts_at", newStartsAt)
+      .lt("starts_at", newEndsAt);
 
+    if (conflictError) {
+      throw new Error("Error checking conflicts: " + conflictError.message);
+    }
+
+    if (conflicts && conflicts.length > 0) {
+      return new Response(
+        JSON.stringify({ error: "Time slot is not available" }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Update booking with new time and increment ICS sequence
     const { error: updateError } = await supabase
       .from("bookings")
       .update({
-        status: 'cancelled',
-        cancellation_reason: cancellationReason,
+        starts_at: newStartsAt,
+        ends_at: newEndsAt,
+        status: 'rescheduled',
         managed_by: managedBy,
-        ics_sequence: (currentBooking.ics_sequence || 0) + 1
+        ics_sequence: (currentBooking.ics_sequence || 0) + 1,
+        date_requested: new Date(newStartsAt).toISOString().split('T')[0],
+        time_requested: new Date(newStartsAt).toLocaleTimeString('en-US', { 
+          hour12: false, 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        })
       })
       .eq("id", bookingId);
 
     if (updateError) {
-      throw new Error("Failed to cancel booking: " + updateError.message);
+      throw new Error("Failed to update booking: " + updateError.message);
     }
 
-    // Send cancellation emails if Resend is configured
+    // Send confirmation emails if Resend is configured
     if (resendKey) {
       try {
         const resend = new Resend(resendKey);
-        const bookingDate = currentBooking.date_requested 
-          ? new Date(currentBooking.date_requested).toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })
-          : 'TBD';
+        const newDate = new Date(newStartsAt);
+        const formattedDate = newDate.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const formattedTime = newDate.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
 
         // Email to customer
         await resend.emails.send({
           from: "EmviApp <bookings@emviapp.com>",
           to: [currentBooking.client_email],
-          subject: "Booking Cancelled - Confirmation",
+          subject: "Booking Rescheduled - Confirmation",
           html: `
             <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-              <h1 style="color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">
-                Booking Cancelled
+              <h1 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                Booking Rescheduled
               </h1>
               
               <p>Hi ${currentBooking.client_name || 'there'}!</p>
               
-              <p>Your booking has been successfully cancelled:</p>
+              <p>Your booking has been successfully rescheduled:</p>
               
               <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #333;">Cancelled Appointment</h3>
+                <h3 style="margin-top: 0; color: #333;">New Appointment Details</h3>
                 <p><strong>Service:</strong> ${currentBooking.service_type || 'Beauty Service'}</p>
-                <p><strong>Date:</strong> ${bookingDate}</p>
-                <p><strong>Time:</strong> ${currentBooking.time_requested || 'TBD'}</p>
-                <p><strong>Reason:</strong> ${cancellationReason}</p>
+                <p><strong>Date:</strong> ${formattedDate}</p>
+                <p><strong>Time:</strong> ${formattedTime}</p>
+                ${currentBooking.note ? `<p><strong>Notes:</strong> ${currentBooking.note}</p>` : ''}
               </div>
               
-              <p>We're sorry to see you cancel. If you'd like to book again in the future, we'd be happy to help!</p>
+              <p>We look forward to seeing you at your new appointment time!</p>
               
               <p style="margin-top: 30px; color: #666; font-size: 14px;">
                 This is an automated message from EmviApp. If you need assistance, please contact us.
@@ -147,27 +167,26 @@ serve(async (req) => {
           await resend.emails.send({
             from: "EmviApp <bookings@emviapp.com>",
             to: [artistProfile.email],
-            subject: "Booking Cancelled - Artist Notification",
+            subject: "Booking Rescheduled - Artist Notification",
             html: `
               <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-                <h1 style="color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">
-                  Booking Cancelled
+                <h1 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                  Booking Rescheduled
                 </h1>
                 
                 <p>Hi ${artistProfile.full_name || 'there'}!</p>
                 
-                <p>A booking has been cancelled:</p>
+                <p>A booking has been rescheduled:</p>
                 
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                  <h3 style="margin-top: 0; color: #333;">Cancelled Appointment</h3>
+                  <h3 style="margin-top: 0; color: #333;">Updated Appointment</h3>
                   <p><strong>Client:</strong> ${currentBooking.client_name}</p>
                   <p><strong>Service:</strong> ${currentBooking.service_type || 'Beauty Service'}</p>
-                  <p><strong>Date:</strong> ${bookingDate}</p>
-                  <p><strong>Time:</strong> ${currentBooking.time_requested || 'TBD'}</p>
-                  <p><strong>Reason:</strong> ${cancellationReason}</p>
+                  <p><strong>New Date:</strong> ${formattedDate}</p>
+                  <p><strong>New Time:</strong> ${formattedTime}</p>
                 </div>
                 
-                <p>This time slot is now available for other bookings.</p>
+                <p>Please update your calendar accordingly.</p>
                 
                 <p style="margin-top: 30px; color: #666; font-size: 14px;">
                   This is an automated message from EmviApp.
@@ -177,7 +196,7 @@ serve(async (req) => {
           });
         }
 
-        console.log("Cancellation emails sent successfully");
+        console.log("Reschedule confirmation emails sent successfully");
       } catch (emailError) {
         console.error("Failed to send emails:", emailError);
         // Don't fail the request if email fails
@@ -187,8 +206,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Booking cancelled successfully",
-        reason: cancellationReason
+        message: "Booking rescheduled successfully",
+        newStartsAt,
+        newEndsAt
       }),
       { 
         status: 200, 
@@ -197,7 +217,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Error in cancel function:", error);
+    console.error("Error in reschedule function:", error);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
       { 

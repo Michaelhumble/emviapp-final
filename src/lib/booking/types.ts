@@ -73,6 +73,28 @@ export interface Booking {
   reminder_sent_at?: string;
   calendar_event_id?: string;
   created_at?: string;
+  // Management fields
+  cancellation_reason?: string;
+  rescheduled_from_id?: string;
+  managed_by?: 'customer' | 'artist' | 'admin';
+  ics_sequence?: number;
+  manage_token_hash?: string;
+  manage_token_expires_at?: string;
+}
+
+// Cancellation reasons enum
+export type CancellationReason = 
+  | 'schedule_conflict' 
+  | 'no_longer_needed' 
+  | 'found_alternative' 
+  | 'personal_emergency' 
+  | 'other';
+
+// Manage booking token payload
+export interface ManageBookingToken {
+  bookingId: string;
+  email: string;
+  expiresAt: string;
 }
 
 // For slot generation
