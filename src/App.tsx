@@ -87,11 +87,15 @@ const TopSalonStaffingMistakesToAvoid = lazy(() => import("@/pages/blog/top-salo
 const HowToGetMoreClientsAsNailTech = lazy(() => import("@/pages/blog/how-to-get-more-clients-as-a-nail-tech"));
 const FutureOfBeautyIndustryIn2025 = lazy(() => import("@/pages/blog/the-future-of-beauty-industry-in-2025"));
 
-const NailSalonInterviewQA = lazy(() => import("@/pages/blog/nail-salon-interview-questions-answers"));
-const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
-const NailTechSalaryGuide = lazy(() => import("@/pages/blog/nail-tech-salary-by-city-2025"));
+// Migrated Blog Posts
+const AISalonTools2025 = lazy(() => import("@/pages/blog/AISalonTools2025"));
+const SalonStaffingCrisis2025 = lazy(() => import("@/pages/blog/SalonStaffingCrisis2025"));
+const NailTechSalaryByCity2025 = lazy(() => import("@/pages/blog/nail-tech-salary-by-city-2025"));
 const NailArtistPortfolioExamples = lazy(() => import("@/pages/blog/nail-artist-portfolio-examples"));
 const HowToGetMoreNailClients = lazy(() => import("@/pages/blog/how-to-get-more-nail-clients"));
+const NailSalonInterviewQuestionsAnswers = lazy(() => import("@/pages/blog/nail-salon-interview-questions-answers"));
+
+const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
 
 // Blog Category Pages
 const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
@@ -278,7 +282,7 @@ function App() {
                     } />
                     
                      {/* Blog Routes */}
-                     <Route path="/blog" element={<Layout><BlogIndex /></Layout>} />
+                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
                      <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                      
                      {/* New Blog Content Hub Routes */}
@@ -288,14 +292,18 @@ function App() {
                      <Route path="/blog/how-to-get-more-clients-as-a-nail-tech" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HowToGetMoreClientsAsNailTech /></Suspense></Layout>} />
                      <Route path="/blog/the-future-of-beauty-industry-in-2025" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><FutureOfBeautyIndustryIn2025 /></Suspense></Layout>} />
                     <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
+                    
+                    {/* Migrated Blog Posts */}
+                    <Route path="/blog/ai-salon-tools-2025" element={<Layout><AISalonTools2025 /></Layout>} />
+                    <Route path="/blog/salon-staffing-crisis-2025" element={<Layout><SalonStaffingCrisis2025 /></Layout>} />
+                    <Route path="/blog/nail-tech-salary-by-city-2025" element={<Layout><NailTechSalaryByCity2025 /></Layout>} />
+                    <Route path="/blog/nail-artist-portfolio-examples" element={<Layout><NailArtistPortfolioExamples /></Layout>} />
+                    <Route path="/blog/how-to-get-more-nail-clients" element={<Layout><HowToGetMoreNailClients /></Layout>} />
+                    <Route path="/blog/nail-salon-interview-questions-answers" element={<Layout><NailSalonInterviewQuestionsAnswers /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
                     
                     {/* Content Hub Routes */}
                     <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />
-                    <Route path="/blog/nail-tech-salary-by-city-2025" element={<Layout><NailTechSalaryGuide /></Layout>} />
-                    <Route path="/blog/nail-artist-portfolio-examples" element={<Layout><NailArtistPortfolioExamples /></Layout>} />
-                    <Route path="/blog/how-to-get-more-nail-clients" element={<Layout><HowToGetMoreNailClients /></Layout>} />
-                    <Route path="/blog/nail-salon-interview-questions-answers" element={<Layout><NailSalonInterviewQA /></Layout>} />
                     
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />

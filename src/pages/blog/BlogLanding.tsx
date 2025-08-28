@@ -39,7 +39,7 @@ const BlogLanding = () => {
 
   const featuredArticles = getFeaturedArticles();
   const trendingArticles = getTrendingArticles();
-  const recentArticles = getRecentArticles(9);
+  const recentArticles = getRecentArticles(); // Show ALL articles, not just 9
   const dynamicCategories = getAllCategories();
   const allTags = getAllTags();
   
@@ -262,6 +262,14 @@ const BlogLanding = () => {
           <LazyBlogSection 
             type="featured" 
             data={featuredArticles}
+          />
+        )}
+
+        {/* All Recent Articles - Complete Collection */}
+        {recentArticles.length > 0 && (
+          <LazyBlogSection 
+            type="recent" 
+            data={recentArticles}
           />
         )}
 
