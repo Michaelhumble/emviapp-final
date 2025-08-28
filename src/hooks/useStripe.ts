@@ -12,11 +12,17 @@ export function useStripe() {
     setIsLoading(true);
     
     try {
-      console.log('🔥 [SALON-PAYMENT] === PAYMENT INITIATION STARTED ===');
-      console.log('🔥 [SALON-PAYMENT] Pricing options:', pricingOptions);
-      console.log('🔥 [SALON-PAYMENT] Form data keys:', Object.keys(formData || {}));
-      console.log('🔥 [SALON-PAYMENT] Photo uploads:', photoUploads?.length || 0, 'files');
-      console.log('🔥 [SALON-PAYMENT] Timestamp:', new Date().toISOString());
+      // Debug mode check
+      const isDebugMode = new URLSearchParams(window.location.search).has('debug_payment');
+      const debugPrefix = isDebugMode ? '🔍 [DEBUG-PAYMENT]' : '🔥 [SALON-PAYMENT]';
+      
+      if (isDebugMode) {
+        console.log(`${debugPrefix} === PAYMENT INITIATION STARTED ===`);
+        console.log(`${debugPrefix} Pricing options:`, pricingOptions);
+        console.log(`${debugPrefix} Form data keys:`, Object.keys(formData || {}));
+        console.log(`${debugPrefix} Photo uploads:`, photoUploads?.length || 0, 'files');
+        console.log(`${debugPrefix} Timestamp:`, new Date().toISOString());
+      }
       
       // Upload photos first if they exist
       let uploadedPhotoUrls: string[] = [];
@@ -28,7 +34,9 @@ export function useStripe() {
             const fileExt = file.name.split('.').pop();
             const fileName = `salon-${Date.now()}-${index}.${fileExt}`;
             
-            console.log('📸 [SALON-PHOTO-UPLOAD] Uploading:', fileName);
+            if (isDebugMode) {
+              console.log('📸 [DEBUG-PHOTO-UPLOAD] Uploading:', fileName);
+            }
             
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('salon_sale_photos')
@@ -43,12 +51,16 @@ export function useStripe() {
               .from('salon_sale_photos')
               .getPublicUrl(fileName);
 
-            console.log('✅ [SALON-PHOTO-UPLOAD] Success:', publicUrl);
+            if (isDebugMode) {
+              console.log('✅ [DEBUG-PHOTO-UPLOAD] Success:', publicUrl);
+            }
             return publicUrl;
           });
 
           uploadedPhotoUrls = await Promise.all(uploadPromises);
-          console.log('🔍 [SALON-PHOTO-UPLOAD] All photos uploaded:', uploadedPhotoUrls);
+          if (isDebugMode) {
+            console.log('🔍 [DEBUG-PHOTO-UPLOAD] All photos uploaded:', uploadedPhotoUrls);
+          }
           toast.success(`All ${uploadedPhotoUrls.length} photos uploaded successfully!`);
         } catch (uploadError) {
           console.error('❌ [SALON-PHOTO-UPLOAD] Failed to upload photos:', uploadError);
@@ -64,12 +76,16 @@ export function useStripe() {
         photos: uploadedPhotoUrls
       };
       
-      console.log('🚀 [SALON-PAYMENT] Calling create-salon-checkout edge function...');
-      console.log('🚀 [SALON-PAYMENT] Payload:', {
-        pricingOptions,
-        formDataKeys: Object.keys(formDataWithPhotos || {}),
-        photoCount: uploadedPhotoUrls.length
-      });
+      if (isDebugMode) {
+        console.log(`${debugPrefix} Calling create-salon-checkout edge function...`);
+        console.log(`${debugPrefix} Payload:`, {
+          pricingOptions,
+          formDataKeys: Object.keys(formDataWithPhotos || {}),
+          photoCount: uploadedPhotoUrls.length,
+          salonName: formDataWithPhotos.salonName,
+          askingPrice: formDataWithPhotos.askingPrice
+        });
+      }
       
       const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
         body: { 
@@ -78,25 +94,37 @@ export function useStripe() {
         }
       });
       
-      console.log('📋 [SALON-PAYMENT] Edge function response:', { data, error });
+      if (isDebugMode) {
+        console.log(`${debugPrefix} Edge function response:`, { data, error });
+      }
       
       if (error) {
         console.error('Error creating checkout session:', error);
+        const errorMessage = isDebugMode 
+          ? `Payment Error: ${error.message || 'Unknown error'}` 
+          : "Unable to process payment. Please try again.";
+        
         toast.error("Payment Error", {
-          description: "Unable to process payment. Please try again."
+          description: errorMessage
         });
         return false;
       }
       
       if (data?.url) {
-        console.log('✅ [PAYMENT] Stripe checkout URL received:', data.url);
+        if (isDebugMode) {
+          console.log('✅ [DEBUG-PAYMENT] Stripe checkout URL received:', data.url);
+        }
         toast.info("Redirecting to Stripe checkout...");
         
         // Enhanced redirect with debugging
         try {
-          console.log('🌐 [PAYMENT] Opening Stripe checkout in new tab...');
+          if (isDebugMode) {
+            console.log('🌐 [DEBUG-PAYMENT] Opening Stripe checkout in new tab...');
+          }
           window.open(data.url, '_blank');
-          console.log('✅ [PAYMENT] Stripe checkout opened successfully');
+          if (isDebugMode) {
+            console.log('✅ [DEBUG-PAYMENT] Stripe checkout opened successfully');
+          }
           toast.success("Stripe checkout opened in new tab");
           return true;
         } catch (redirectError) {
@@ -108,15 +136,23 @@ export function useStripe() {
         }
       } else {
         console.error('No checkout URL received:', data);
+        const errorMessage = isDebugMode 
+          ? `No checkout URL received. Response: ${JSON.stringify(data)}` 
+          : "No checkout URL received. Please try again.";
+        
         toast.error("Payment Error", {
-          description: "No checkout URL received. Please try again."
+          description: errorMessage
         });
         return false;
       }
     } catch (error) {
       console.error('Error initiating payment:', error);
+      const errorMessage = new URLSearchParams(window.location.search).has('debug_payment')
+        ? `Failed to initialize payment: ${error.message || error}`
+        : "Failed to initialize payment. Please try again.";
+      
       toast.error("Payment Error", {
-        description: "Failed to initialize payment. Please try again."
+        description: errorMessage
       });
       return false;
     } finally {

@@ -71,6 +71,7 @@ const InviteAcceptance = lazy(() => import("@/pages/InviteAcceptance"));
 const FreelancerProfile = lazy(() => import("@/pages/FreelancerProfile"));
 const NailJobSuccessPage = lazy(() => import("@/pages/nails-job-success"));
 const ManageBooking = lazy(() => import("@/pages/ManageBooking"));
+const SalonSuccessPage = lazy(() => import("@/pages/salon-success"));
 
 // Blog Pages
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
