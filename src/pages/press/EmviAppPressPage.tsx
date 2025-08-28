@@ -302,6 +302,103 @@ const EmviAppPressPage = () => {
           </div>
         </section>
 
+        {/* Related Resources */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto max-w-4xl px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+            >
+              <h2 className="text-3xl font-bold mb-8 text-center">Related Resources</h2>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Industry Insights</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                      <a 
+                        href="/blog/salon-staffing-crisis-2025" 
+                        className="text-primary hover:text-primary/80 font-medium text-lg"
+                      >
+                        The Great Salon Staffing Crisis of 2025: Solutions That Work
+                      </a>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Discover proven strategies successful salon owners use to attract and retain top talent.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                      <a 
+                        href="/blog/why-weekly-pay-attracts-better-artists" 
+                        className="text-primary hover:text-primary/80 font-medium text-lg"
+                      >
+                        Why Weekly Pay Attracts Better Artists (Data-Backed)
+                      </a>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        See real data showing why weekly pay structures attract 73% more qualified professionals.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                      <a 
+                        href="/blog/how-to-find-the-best-beauty-professionals" 
+                        className="text-primary hover:text-primary/80 font-medium text-lg"
+                      >
+                        How to Find the Best Beauty Professionals Guide
+                      </a>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Complete guide to finding and hiring top beauty professionals for your salon.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Explore Local Talent</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                      <a 
+                        href="/artists/nails/los-angeles-ca" 
+                        className="text-primary hover:text-primary/80 font-medium text-lg"
+                      >
+                        Top Nail Artists in Los Angeles, CA
+                      </a>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Find skilled nail technicians and artists in the Los Angeles area.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                      <a 
+                        href="/artists/hair/houston-tx" 
+                        className="text-primary hover:text-primary/80 font-medium text-lg"
+                      >
+                        Professional Hair Stylists in Houston, TX
+                      </a>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Connect with expert hair stylists and colorists in Houston.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                      <a 
+                        href="/artists/lashes/miami-fl" 
+                        className="text-primary hover:text-primary/80 font-medium text-lg"
+                      >
+                        Certified Lash Artists in Miami, FL
+                      </a>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Discover talented lash extension specialists in Miami.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* Media Contact */}
         <section className="py-16 bg-slate-50">
           <div className="container mx-auto max-w-2xl px-4">

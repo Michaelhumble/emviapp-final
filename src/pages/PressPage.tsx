@@ -159,6 +159,30 @@ const PressPage: React.FC = () => {
           activeFilter={activeFilter}
         />
 
+        {/* Featured Resources Strip */}
+        <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 rounded-xl p-8 text-center border">
+          <h2 className="text-2xl font-bold mb-4 text-foreground">
+            Looking for more insights?
+          </h2>
+          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Dive deeper into the beauty industry with our comprehensive guides and expert insights for professionals and salon owners.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a 
+              href="/blog/how-to-find-the-best-beauty-professionals" 
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            >
+              Read Our Beauty Professionals Guide
+            </a>
+            <a 
+              href="/blog" 
+              className="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/5 transition-colors"
+            >
+              Explore All Articles
+            </a>
+          </div>
+        </div>
+
         {/* Press Coverage Grid */}
         <div>
           <h2 className="text-3xl font-bold text-center mb-8 text-foreground">
