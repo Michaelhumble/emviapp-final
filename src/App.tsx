@@ -57,7 +57,7 @@ const PostJobExperimental = lazy(() => import("@/pages/PostJobExperimental"));
 const SignIn = lazy(() => import("@/pages/auth/SignIn"));
 const SignUp = lazy(() => import("@/pages/auth/SignUp"));
 const NewSignUp = lazy(() => import("@/pages/auth/NewSignUp"));
-const SignupFastFomo = lazy(() => import("@/pages/SignupFastFomo"));
+// REMOVED: SignupFastFomo page - contained popup modals
 const AuthPage = lazy(() => import("@/pages/auth/AuthPage"));
 const PremiumSignupPage = lazy(() => import("@/pages/auth/PremiumSignupPage"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
@@ -154,7 +154,7 @@ function App() {
                      <Route path="/login" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
-                     <Route path="/signup-fast-fomo" element={<Suspense fallback={<SimpleLoadingFallback />}><SignupFastFomo /></Suspense>} />
+                     {/* REMOVED: signup-fast-fomo route - contained popup modals */}
                      <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
                      <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
                      <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />

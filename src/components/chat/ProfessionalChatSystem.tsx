@@ -41,7 +41,7 @@ const ProfessionalChatSystem: React.FC = () => {
   ): Array<{ label: string; route: string; variant?: 'primary' | 'secondary' }> => {
     const ctas: Array<{ label: string; route: string; variant?: 'primary' | 'secondary' }> = [];
 
-    const isAuthRoute = path.startsWith('/auth') || path === '/signin' || path === '/login' || path === '/signup-fast-fomo';
+    const isAuthRoute = path.startsWith('/auth') || path === '/signin' || path === '/login';
     if (isAuthRoute) {
       ctas.push(
         { label: 'Sign In', route: '/signin', variant: 'primary' },
