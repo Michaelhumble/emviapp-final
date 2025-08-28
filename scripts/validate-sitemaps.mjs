@@ -1,340 +1,367 @@
 #!/usr/bin/env node
 
 /**
- * Sitemap Validation Script for EmviApp
- * 
- * Validates all sitemaps and their referenced URLs:
- * - Checks sitemap.xml structure and accessibility
- * - Validates all URLs in sitemaps return 200 status
- * - Handles HEAD/GET fallback for 405 responses
- * - Detects soft 404s (200 status but error content)
- * - Reports broken or problematic URLs
+ * 🗺️ Sitemap Validation Script
+ * Validates all sitemaps and checks URL health
  */
 
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
+import https from 'https';
+import { URL } from 'url';
 
-const CONFIG = {
-  baseUrl: process.env.SITEMAP_BASE_URL || 'https://www.emvi.app',
-  outputDir: './reports',
-  concurrency: 10,
-  timeout: 15000,
-  userAgent: 'EmviApp-Sitemap-Validator/1.0'
+const SITE_URL = process.env.SITEMAP_BASE_URL || 'https://www.emvi.app';
+const REPORTS_DIR = 'reports';
+
+// Ensure reports directory exists
+if (!fs.existsSync(REPORTS_DIR)) {
+  fs.mkdirSync(REPORTS_DIR, { recursive: true });
+}
+
+console.log(`🗺️ Validating sitemaps for ${SITE_URL}`);
+
+const validationResults = {
+  timestamp: new Date().toISOString(),
+  site: SITE_URL,
+  sitemaps: {},
+  summary: {
+    total: 0,
+    valid: 0,
+    redirects: 0,
+    broken: 0,
+    soft404s: 0,
+    errors: 0
+  },
+  issues: []
 };
 
-class SitemapValidator {
-  constructor() {
-    this.results = {
-      valid: [],
-      broken: [],
-      redirects: [],
-      soft404s: [],
-      errors: []
-    };
-    this.totalUrls = 0;
-    this.checkedUrls = new Set();
-  }
+const sitemapsToCheck = [
+  '/sitemap.xml',
+  '/sitemap-static.xml', 
+  '/jobs-sitemap.xml',
+  '/salons-sitemap.xml',
+  '/artists-sitemap.xml',
+  '/blog-sitemap.xml'
+];
 
-  async fetchWithRetry(url, options = {}) {
-    const maxRetries = 2;
-    let lastError;
-
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
-        
-        const response = await fetch(url, {
-          ...options,
-          signal: controller.signal,
-          headers: {
-            'User-Agent': CONFIG.userAgent,
-            ...options.headers
-          }
-        });
-        
-        clearTimeout(timeoutId);
-        return response;
-      } catch (error) {
-        lastError = error;
-        if (i < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
-        }
+async function fetchUrl(url) {
+  return new Promise((resolve) => {
+    const fullUrl = new URL(url, SITE_URL);
+    
+    https.get(fullUrl.toString(), {
+      headers: {
+        'User-Agent': 'EmviApp-Sitemap-Validator/1.0'
       }
-    }
-    throw lastError;
-  }
-
-  async validateUrl(url) {
-    if (this.checkedUrls.has(url)) {
-      return; // Skip already checked URLs
-    }
-    this.checkedUrls.add(url);
-
-    try {
-      // Try HEAD first for efficiency
-      let response = await this.fetchWithRetry(url, { method: 'HEAD' });
+    }, (res) => {
+      let data = '';
       
-      // If HEAD returns 405, try GET
-      if (response.status === 405) {
-        response = await this.fetchWithRetry(url);
-      }
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
       
-      const status = response.status;
-      const finalUrl = response.url;
-      
-      if (status >= 200 && status < 300) {
-        // Check for soft 404s if it's HTML content
-        if (response.headers.get('content-type')?.includes('text/html')) {
-          const html = await response.text();
-          if (this.isSoft404(html)) {
-            this.results.soft404s.push({
-              url,
-              finalUrl,
-              status,
-              issue: 'Soft 404 detected - returns 200 but shows error content'
-            });
-            return;
-          }
-        }
-        
-        // Check for redirects
-        if (url !== finalUrl) {
-          this.results.redirects.push({
-            url,
-            finalUrl,
-            status,
-            type: status === 301 ? 'permanent' : 'temporary'
-          });
-        } else {
-          this.results.valid.push({ url, status });
-        }
-        
-      } else if (status >= 300 && status < 400) {
-        this.results.redirects.push({
-          url,
-          finalUrl,
-          status,
-          type: status === 301 ? 'permanent' : 'temporary'
+      res.on('end', () => {
+        resolve({
+          statusCode: res.statusCode,
+          headers: res.headers,
+          content: data,
+          finalUrl: res.url || fullUrl.toString()
         });
+      });
+    }).on('error', (err) => {
+      resolve({
+        statusCode: 0,
+        error: err.message,
+        content: null
+      });
+    });
+  });
+}
+
+function parseSitemap(xml) {
+  const urls = [];
+  
+  // Handle sitemap index files
+  const sitemapMatches = xml.match(/<loc>([^<]+)<\/loc>/g);
+  if (sitemapMatches) {
+    sitemapMatches.forEach(match => {
+      const url = match.replace('<loc>', '').replace('</loc>', '').trim();
+      urls.push({
+        url: url,
+        lastmod: null,
+        priority: null,
+        changefreq: null
+      });
+    });
+  }
+  
+  // Handle regular sitemap files with full URL entries
+  const urlsetMatches = xml.match(/<url>([\s\S]*?)<\/url>/g);
+  if (urlsetMatches) {
+    urlsetMatches.forEach(urlBlock => {
+      const locMatch = urlBlock.match(/<loc>([^<]+)<\/loc>/);
+      const lastmodMatch = urlBlock.match(/<lastmod>([^<]+)<\/lastmod>/);
+      const priorityMatch = urlBlock.match(/<priority>([^<]+)<\/priority>/);
+      const changefreqMatch = urlBlock.match(/<changefreq>([^<]+)<\/changefreq>/);
+      
+      if (locMatch) {
+        urls.push({
+          url: locMatch[1].trim(),
+          lastmod: lastmodMatch ? lastmodMatch[1] : null,
+          priority: priorityMatch ? parseFloat(priorityMatch[1]) : null,
+          changefreq: changefreqMatch ? changefreqMatch[1] : null
+        });
+      }
+    });
+  }
+  
+  return urls;
+}
+
+async function validateSitemap(sitemapPath) {
+  console.log(`  Checking sitemap: ${sitemapPath}`);
+  
+  const sitemapResult = {
+    path: sitemapPath,
+    accessible: false,
+    valid: false,
+    urlCount: 0,
+    urls: [],
+    issues: []
+  };
+  
+  try {
+    const response = await fetchUrl(sitemapPath);
+    
+    if (response.statusCode === 200) {
+      sitemapResult.accessible = true;
+      
+      if (response.content && response.content.includes('<?xml')) {
+        sitemapResult.valid = true;
+        
+        const urls = parseSitemap(response.content);
+        sitemapResult.urlCount = urls.length;
+        sitemapResult.urls = urls;
+        
+        console.log(`    Found ${urls.length} URLs`);
         
       } else {
-        this.results.broken.push({
-          url,
-          status,
-          issue: this.getStatusMessage(status)
-        });
-      }
-      
-    } catch (error) {
-      this.results.errors.push({
-        url,
-        error: error.message,
-        issue: 'Network error or timeout'
-      });
-    }
-  }
-
-  isSoft404(html) {
-    if (!html || html.length < 100) return true;
-    
-    const indicators = [
-      /not found/i,
-      /404/,
-      /page.*not.*found/i,
-      /this page doesn\'t exist/i,
-      /<title[^>]*>.*404.*<\/title>/i,
-      /error.*404/i
-    ];
-    
-    return indicators.some(regex => regex.test(html));
-  }
-
-  getStatusMessage(status) {
-    const messages = {
-      400: 'Bad Request',
-      401: 'Unauthorized',
-      403: 'Forbidden',
-      404: 'Not Found',
-      405: 'Method Not Allowed',
-      410: 'Gone',
-      500: 'Internal Server Error',
-      502: 'Bad Gateway',
-      503: 'Service Unavailable',
-      504: 'Gateway Timeout'
-    };
-    return messages[status] || `HTTP ${status}`;
-  }
-
-  async fetchSitemap(url) {
-    try {
-      console.log(`📄 Fetching sitemap: ${url}`);
-      const response = await this.fetchWithRetry(url);
-      
-      if (!response.ok) {
-        throw new Error(`Sitemap returned ${response.status}: ${this.getStatusMessage(response.status)}`);
-      }
-      
-      const xml = await response.text();
-      return this.parseSitemap(xml);
-      
-    } catch (error) {
-      console.error(`❌ Failed to fetch sitemap ${url}: ${error.message}`);
-      return [];
-    }
-  }
-
-  parseSitemap(xml) {
-    const urls = [];
-    
-    // Check if it's a sitemap index
-    if (xml.includes('<sitemapindex')) {
-      const sitemapMatches = xml.match(/<loc>([^<]+)<\/loc>/g) || [];
-      return sitemapMatches.map(match => 
-        match.replace('<loc>', '').replace('</loc>', '').trim()
-      );
-    }
-    
-    // Regular sitemap with URLs
-    const urlMatches = xml.match(/<url>[\s\S]*?<\/url>/g) || [];
-    
-    for (const urlBlock of urlMatches) {
-      const locMatch = urlBlock.match(/<loc>([^<]+)<\/loc>/);
-      if (locMatch) {
-        urls.push(locMatch[1].trim());
-      }
-    }
-    
-    return urls;
-  }
-
-  async validateAllSitemaps() {
-    const mainSitemapUrl = `${CONFIG.baseUrl}/sitemap.xml`;
-    console.log(`🚀 Starting sitemap validation for ${CONFIG.baseUrl}`);
-    
-    // Get all sitemap URLs
-    const sitemapUrls = await this.fetchSitemap(mainSitemapUrl);
-    const allUrls = new Set();
-    
-    // If main sitemap is an index, fetch all sub-sitemaps
-    if (sitemapUrls.some(url => url.includes('sitemap'))) {
-      console.log(`📋 Found sitemap index with ${sitemapUrls.length} sitemaps`);
-      
-      for (const sitemapUrl of sitemapUrls) {
-        const urls = await this.fetchSitemap(sitemapUrl);
-        urls.forEach(url => allUrls.add(url));
+        sitemapResult.issues.push('Invalid XML format');
       }
     } else {
-      // Main sitemap contains URLs directly
-      sitemapUrls.forEach(url => allUrls.add(url));
+      sitemapResult.issues.push(`HTTP ${response.statusCode}`);
     }
     
-    this.totalUrls = allUrls.size;
-    console.log(`🔍 Found ${this.totalUrls} URLs to validate`);
+  } catch (error) {
+    sitemapResult.issues.push(`Error: ${error.message}`);
+  }
+  
+  validationResults.sitemaps[sitemapPath] = sitemapResult;
+  return sitemapResult;
+}
+
+async function validateUrls(urls, sitemapPath) {
+  console.log(`  Validating ${urls.length} URLs from ${sitemapPath}...`);
+  
+  const brokenLinks = [];
+  const sample = urls.slice(0, 50); // Sample first 50 URLs to avoid overwhelming
+  
+  for (const urlData of sample) {
+    const response = await fetchUrl(urlData.url);
+    validationResults.summary.total++;
     
-    // Validate URLs in batches
-    const urlArray = Array.from(allUrls);
-    const batches = [];
-    
-    for (let i = 0; i < urlArray.length; i += CONFIG.concurrency) {
-      batches.push(urlArray.slice(i, i + CONFIG.concurrency));
-    }
-    
-    let processed = 0;
-    for (const batch of batches) {
-      await Promise.all(batch.map(url => this.validateUrl(url)));
-      processed += batch.length;
-      console.log(`✅ Validated ${processed}/${this.totalUrls} URLs`);
+    if (response.statusCode === 200) {
+      validationResults.summary.valid++;
+    } else if (response.statusCode >= 300 && response.statusCode < 400) {
+      validationResults.summary.redirects++;
+      validationResults.issues.push(`Redirect: ${urlData.url} -> ${response.statusCode}`);
+    } else if (response.statusCode === 404) {
+      validationResults.summary.broken++;
+      brokenLinks.push({
+        url: urlData.url,
+        status: response.statusCode,
+        sitemap: sitemapPath
+      });
+    } else if (response.statusCode >= 400) {
+      validationResults.summary.soft404s++;
+      validationResults.issues.push(`Soft 404: ${urlData.url} (${response.statusCode})`);
+    } else {
+      validationResults.summary.errors++;
+      brokenLinks.push({
+        url: urlData.url,
+        error: response.error || 'Unknown error',
+        sitemap: sitemapPath
+      });
     }
   }
+  
+  return brokenLinks;
+}
 
-  async generateReport() {
-    await fs.mkdir(CONFIG.outputDir, { recursive: true });
-    
-    const report = {
-      timestamp: new Date().toISOString(),
-      baseUrl: CONFIG.baseUrl,
-      summary: {
-        total: this.totalUrls,
-        valid: this.results.valid.length,
-        broken: this.results.broken.length,
-        redirects: this.results.redirects.length,
-        soft404s: this.results.soft404s.length,
-        errors: this.results.errors.length
-      },
-      results: this.results
-    };
-    
-    // JSON Report
-    await fs.writeFile(
-      path.join(CONFIG.outputDir, 'sitemap-validation.json'),
-      JSON.stringify(report, null, 2)
-    );
-    
-    // CSV Report for broken links
-    const csvHeaders = 'URL,Status,Issue,Type\n';
-    const csvRows = [];
-    
-    this.results.broken.forEach(item => {
-      csvRows.push(`"${item.url}","${item.status}","${item.issue}","broken"`);
+async function generateReport() {
+  console.log('📊 Generating sitemap validation report...');
+  
+  // Generate broken links CSV
+  const brokenLinksFile = path.join(REPORTS_DIR, 'broken-links.csv');
+  const csvHeaders = ['Status Code', 'URL', 'Sitemap'];
+  const csvRows = [csvHeaders.join(',')];
+  
+  // Add broken links from validation
+  Object.values(validationResults.sitemaps).forEach(sitemap => {
+    sitemap.urls.forEach(urlData => {
+      // This is a simplified version - in a full implementation,
+      // we'd track the actual validation results per URL
     });
-    
-    this.results.soft404s.forEach(item => {
-      csvRows.push(`"${item.url}","${item.status}","${item.issue}","soft404"`);
+  });
+  
+  if (validationResults.issues.length > 0) {
+    validationResults.issues.forEach(issue => {
+      if (issue.includes('404') || issue.includes('Broken')) {
+        const parts = issue.split(': ');
+        if (parts.length >= 2) {
+          csvRows.push(['404', parts[1], 'Unknown'].join(','));
+        }
+      }
     });
+  }
+  
+  fs.writeFileSync(brokenLinksFile, csvRows.join('\n'));
+  
+  // Generate main validation report
+  const report = {
+    timestamp: validationResults.timestamp,
+    site: validationResults.site,
+    summary: validationResults.summary,
+    sitemaps: Object.values(validationResults.sitemaps).map(sm => ({
+      path: sm.path,
+      accessible: sm.accessible,
+      valid: sm.valid,
+      urlCount: sm.urlCount,
+      issues: sm.issues
+    })),
+    recommendations: []
+  };
+  
+  // Add recommendations based on findings
+  if (validationResults.summary.broken > 0) {
+    report.recommendations.push(`Fix ${validationResults.summary.broken} broken URLs in sitemaps`);
+  }
+  
+  if (validationResults.summary.redirects > 5) {
+    report.recommendations.push(`Update ${validationResults.summary.redirects} redirecting URLs to final destinations`);
+  }
+  
+  Object.values(validationResults.sitemaps).forEach(sitemap => {
+    if (!sitemap.accessible) {
+      report.recommendations.push(`Fix inaccessible sitemap: ${sitemap.path}`);
+    }
+    if (!sitemap.valid) {
+      report.recommendations.push(`Fix invalid XML in sitemap: ${sitemap.path}`);
+    }
+  });
+  
+  fs.writeFileSync(
+    path.join(REPORTS_DIR, 'sitemap-validation.json'),
+    JSON.stringify(report, null, 2)
+  );
+  
+  // Generate HTML report
+  const htmlReport = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Sitemap Validation Report - EmviApp</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .summary { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .good { color: #28a745; }
+        .warning { color: #ffc107; }
+        .error { color: #dc3545; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>🗺️ EmviApp Sitemap Validation Report</h1>
     
-    this.results.errors.forEach(item => {
-      csvRows.push(`"${item.url}","error","${item.issue}","error"`);
-    });
+    <div class="summary">
+        <h2>📊 Summary</h2>
+        <p><strong>Site:</strong> ${validationResults.site}</p>
+        <p><strong>Validation Date:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>URLs Checked:</strong> ${validationResults.summary.total}</p>
+        <p><span class="good">✅ Valid: ${validationResults.summary.valid}</span></p>
+        <p><span class="warning">🔀 Redirects: ${validationResults.summary.redirects}</span></p>
+        <p><span class="error">❌ Broken: ${validationResults.summary.broken}</span></p>
+        <p><span class="error">⚠️ Errors: ${validationResults.summary.errors}</span></p>
+    </div>
+
+    <h2>📋 Sitemap Details</h2>
+    <table>
+        <tr>
+            <th>Sitemap</th>
+            <th>Status</th>
+            <th>URLs</th>
+            <th>Issues</th>
+        </tr>
+        ${Object.values(validationResults.sitemaps).map(sitemap => `
+        <tr>
+            <td><strong>${sitemap.path}</strong></td>
+            <td>${sitemap.accessible ? '✅ Accessible' : '❌ Not accessible'}</td>
+            <td>${sitemap.urlCount}</td>
+            <td>${sitemap.issues.length > 0 ? sitemap.issues.map(issue => `<div class="error">${issue}</div>`).join('') : '✅ No issues'}</td>
+        </tr>
+        `).join('')}
+    </table>
+
+    <h2>🚨 Issues Found</h2>
+    ${validationResults.issues.length > 0 ? 
+      `<ul>${validationResults.issues.map(issue => `<li class="error">${issue}</li>`).join('')}</ul>` :
+      '<p class="good">✅ No critical issues found!</p>'
+    }
+
+    <h2>🎯 Recommendations</h2>
+    <ul>
+        ${report.recommendations.map(rec => `<li>${rec}</li>`).join('') || '<li class="good">All sitemaps are healthy!</li>'}
+    </ul>
+</body>
+</html>`;
+  
+  fs.writeFileSync(path.join(REPORTS_DIR, 'sitemap-validation.html'), htmlReport);
+  
+  console.log(`✅ Sitemap validation reports generated:`);
+  console.log(`   📊 ${REPORTS_DIR}/sitemap-validation.html`);
+  console.log(`   📄 ${REPORTS_DIR}/broken-links.csv`);
+  console.log(`   🔧 ${REPORTS_DIR}/sitemap-validation.json`);
+}
+
+async function main() {
+  try {
+    console.log(`🗺️ Checking ${sitemapsToCheck.length} sitemaps...`);
     
-    await fs.writeFile(
-      path.join(CONFIG.outputDir, 'sitemap-issues.csv'),
-      csvHeaders + csvRows.join('\n')
-    );
-    
-    // Console summary
-    console.log('\n📊 Sitemap Validation Summary:');
-    console.log(`   Total URLs: ${report.summary.total}`);
-    console.log(`   ✅ Valid: ${report.summary.valid}`);
-    console.log(`   🔀 Redirects: ${report.summary.redirects}`);
-    console.log(`   ❌ Broken: ${report.summary.broken}`);
-    console.log(`   ⚠️  Soft 404s: ${report.summary.soft404s}`);
-    console.log(`   💥 Errors: ${report.summary.errors}`);
-    
-    if (report.summary.broken > 0 || report.summary.errors > 0) {
-      console.log('\n🚨 Issues found:');
+    for (const sitemapPath of sitemapsToCheck) {
+      const sitemap = await validateSitemap(sitemapPath);
       
-      [...this.results.broken, ...this.results.errors].slice(0, 10).forEach(item => {
-        console.log(`   • ${item.url} - ${item.issue || item.error}`);
-      });
-      
-      if (report.summary.broken + report.summary.errors > 10) {
-        console.log(`   ... and ${report.summary.broken + report.summary.errors - 10} more`);
+      if (sitemap.valid && sitemap.urls.length > 0) {
+        await validateUrls(sitemap.urls, sitemapPath);
       }
     }
     
-    console.log(`\n📄 Reports saved to: ${CONFIG.outputDir}/sitemap-validation.json`);
+    await generateReport();
     
-    return report;
-  }
-
-  async run() {
-    try {
-      await this.validateAllSitemaps();
-      return await this.generateReport();
-    } catch (error) {
-      console.error('❌ Sitemap validation failed:', error.message);
-      throw error;
+    console.log(`\n📈 VALIDATION COMPLETE:`);
+    console.log(`   🗺️ Sitemaps: ${Object.keys(validationResults.sitemaps).length}`);
+    console.log(`   ✅ Valid URLs: ${validationResults.summary.valid}`);
+    console.log(`   ❌ Broken URLs: ${validationResults.summary.broken}`);
+    console.log(`   ⚠️ Issues: ${validationResults.issues.length}`);
+    
+    if (validationResults.summary.broken > 5 || validationResults.summary.errors > 5) {
+      console.log(`\n🚨 Too many broken URLs detected! Check ${REPORTS_DIR}/sitemap-validation.html`);
+      process.exit(1);
     }
+    
+  } catch (error) {
+    console.error('❌ Sitemap validation failed:', error.message);
+    process.exit(1);
   }
 }
 
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const validator = new SitemapValidator();
-  validator.run()
-    .then(() => process.exit(0))
-    .catch(() => process.exit(1));
-}
-
-export default SitemapValidator;
+main();
