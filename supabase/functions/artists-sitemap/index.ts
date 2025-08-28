@@ -89,17 +89,17 @@ async function handleDaily(dateStr: string) {
   const urls: string[] = [];
   const lastmod = formatDate(new Date());
   
-  // Only include specialty/location combinations that have actual data
-  const validCombinations = await fetchValidArtistCombinations();
-  
-  for (const combo of validCombinations) {
-    const loc = `${BASE_URL}/artists/${combo.specialty}/${combo.location_slug}`;
-    urls.push(`  <url>
+  // Generate all programmatic specialty/location combinations
+  for (const role of SEO_ROLES) {
+    for (const location of SEO_LOCATIONS) {
+      const loc = `${BASE_URL}/artists/${role.id}/${location.id}`;
+      urls.push(`  <url>
     <loc>${loc}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`);
+    }
   }
 
   const xml = [

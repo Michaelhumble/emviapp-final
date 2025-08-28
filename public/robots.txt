@@ -31,5 +31,6 @@ Crawl-delay: 1
 # Sitemap location
 Sitemap: https://www.emvi.app/sitemap.xml
 Sitemap: https://www.emvi.app/jobs-sitemap.xml
+Sitemap: https://www.emvi.app/artists-sitemap.xml
 Sitemap: https://www.emvi.app/salons-sitemap.xml
 Sitemap: https://www.emvi.app/blog-sitemap.xml
