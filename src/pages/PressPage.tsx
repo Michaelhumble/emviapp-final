@@ -6,6 +6,8 @@ import PressPageHero from '@/components/press/PressPageHero';
 import PressFilters from '@/components/press/PressFilters';
 import PressCard from '@/components/press/PressCard';
 import MediaKit from '@/components/press/MediaKit';
+import { BookOpen, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const PressPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -148,40 +150,34 @@ const PressPage: React.FC = () => {
         ))}
       </Helmet>
 
-      {/* Hero Section */}
       <PressPageHero />
 
       <div className="container mx-auto px-4 py-12 max-w-6xl space-y-16">
+        {/* Featured Strip */}
+        <div className="mb-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20">
+          <div className="text-center">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              Looking for more insights?
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Discover actionable strategies and industry expertise in our comprehensive guides
+            </p>
+            <Link 
+              to="/blog/how-to-find-the-best-beauty-professionals"
+              className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-dark transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              Read our How to Find the Best Beauty Professionals Guide
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
         {/* Filters and Search */}
         <PressFilters
           onFilterChange={setActiveFilter}
           onSearchChange={setSearchTerm}
           activeFilter={activeFilter}
         />
-
-        {/* Featured Resources Strip */}
-        <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 rounded-xl p-8 text-center border">
-          <h2 className="text-2xl font-bold mb-4 text-foreground">
-            Looking for more insights?
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Dive deeper into the beauty industry with our comprehensive guides and expert insights for professionals and salon owners.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="/blog/how-to-find-the-best-beauty-professionals" 
-              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Read Our Beauty Professionals Guide
-            </a>
-            <a 
-              href="/blog" 
-              className="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/5 transition-colors"
-            >
-              Explore All Articles
-            </a>
-          </div>
-        </div>
 
         {/* Press Coverage Grid */}
         <div>

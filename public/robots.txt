@@ -28,9 +28,13 @@ Allow: /assets/
 # Crawl delay for respectful crawling
 Crawl-delay: 1
 
+# Allow press pages for SEO
+Allow: /press/
+
 # Sitemap location
 Sitemap: https://www.emvi.app/sitemap.xml
 Sitemap: https://www.emvi.app/jobs-sitemap.xml
 Sitemap: https://www.emvi.app/artists-sitemap.xml
 Sitemap: https://www.emvi.app/salons-sitemap.xml
 Sitemap: https://www.emvi.app/blog-sitemap.xml
+Sitemap: https://www.emvi.app/news-sitemap.xml

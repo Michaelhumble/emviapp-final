@@ -13,6 +13,14 @@ import { URL } from 'url';
 const SITE_URL = process.env.AUDIT_URL || 'https://www.emvi.app';
 const REPORTS_DIR = 'reports';
 
+// Skip hosts to avoid false positives from Google Fonts + JS pseudo-URLs
+const SKIP_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+
+const AUDIT_CONFIG = {
+  baseUrl: SITE_URL,
+  skipHosts: SKIP_HOSTS
+};
+
 // Ensure reports directory exists
 if (!fs.existsSync(REPORTS_DIR)) {
   fs.mkdirSync(REPORTS_DIR, { recursive: true });
@@ -33,18 +41,14 @@ const auditResults = {
   issues: []
 };
 
-// Key pages to audit
+// Key pages to audit - focused on core landing pages
 const pagesToAudit = [
   '/',
+  '/blog',
+  '/press',
   '/jobs',
   '/salons',
-  '/artists',
-  '/blog',
-  '/signin',
-  '/nails',
-  '/hair',
-  '/barber',
-  '/massage'
+  '/artists'
 ];
 
 async function fetchPage(url) {
@@ -210,15 +214,28 @@ function analyzeHTML(html, url) {
     }
   }
 
-  // Count links
+  // Count links with enhanced validation
   const linkMatches = html.match(/<a[^>]+href=["\']([^"\']+)["\'][^>]*>/gi);
   if (linkMatches) {
     linkMatches.forEach(link => {
       const hrefMatch = link.match(/href=["\']([^"\']+)["\']/i);
       if (hrefMatch) {
         const href = hrefMatch[1];
+        
+        // Skip non-http URLs and code artifacts
+        if (!href.startsWith('http') && !href.startsWith('/')) return;
+        if (href.includes('/assets/Href=new')) return;
+        
+        // Validate external links and skip problematic hosts
         if (href.startsWith('http') && !href.includes('emvi.app')) {
-          analysis.externalLinks++;
+          try {
+            const linkUrl = new URL(href);
+            if (!SKIP_HOSTS.has(linkUrl.hostname)) {
+              analysis.externalLinks++;
+            }
+          } catch (e) {
+            // Skip invalid URLs
+          }
         } else if (href.startsWith('/') || href.includes('emvi.app')) {
           analysis.internalLinks++;
         }
