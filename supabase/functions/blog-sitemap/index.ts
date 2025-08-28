@@ -2,6 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 // Blog articles data - Single source of truth
 const BLOG_ARTICLES = [
+  // Featured pillar and support posts
   {
     slug: 'how-to-find-the-best-beauty-professionals',
     publishedAt: '2025-01-01',
@@ -42,14 +43,7 @@ const BLOG_ARTICLES = [
     changefreq: 'weekly' as const,
     featured: true
   },
-  {
-    slug: 'the-beauty-revolution',
-    publishedAt: '2025-01-01',
-    updatedAt: '2025-01-28',
-    priority: 0.8,
-    changefreq: 'monthly' as const,
-    featured: false
-  },
+  // Migrated older posts
   {
     slug: 'ai-salon-tools-2025',
     publishedAt: '2025-01-01',
@@ -67,10 +61,18 @@ const BLOG_ARTICLES = [
     featured: false
   },
   {
-    slug: 'nail-tech-salary-by-city-2025',
+    slug: 'the-beauty-revolution',
     publishedAt: '2025-01-01',
     updatedAt: '2025-01-28',
     priority: 0.8,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'nail-tech-salary-by-city-2025',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.7,
     changefreq: 'monthly' as const,
     featured: false
   },
@@ -95,6 +97,39 @@ const BLOG_ARTICLES = [
     publishedAt: '2025-01-01',
     updatedAt: '2025-01-28',
     priority: 0.7,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  // Original articles (keeping these for continuity)
+  {
+    slug: 'career-growth/top-nail-salon-jobs-us-2025',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.6,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'career-growth/weekly-pay-nail-artists',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.6,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'salon-management/sell-nail-salon-smart',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.6,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'industry-insights/nail-industry-trends-2025',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.6,
     changefreq: 'monthly' as const,
     featured: false
   }
