@@ -17,6 +17,12 @@ interface RescheduleDialogProps {
   onSuccess: () => void;
 }
 
+interface GenerateSlotsInput {
+  artistId: string;
+  serviceId: string;
+  date: string;
+}
+
 export function RescheduleDialog({ 
   open, 
   onOpenChange, 
@@ -31,20 +37,17 @@ export function RescheduleDialog({
   const { 
     bookableSlots: slots, 
     loading: slotsLoading,
-    generateBookableSlots: generateSlots 
-  } = useSlotGeneration();
+    error: slotsError
+  } = useSlotGeneration({
+    artistId: booking.recipient_id || '',
+    serviceId: service?.id,
+    selectedDate,
+    timezone: 'America/New_York'
+  });
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     setSelectedSlot(null);
-    
-    if (date && booking.recipient_id && service?.id) {
-      generateSlots({
-        artistId: booking.recipient_id,
-        serviceId: service.id,
-        date: format(date, 'yyyy-MM-dd')
-      });
-    }
   };
 
   const handleSlotSelect = (slot: BookableSlot) => {
@@ -131,6 +134,10 @@ export function RescheduleDialog({
               {slotsLoading ? (
                 <div className="text-center py-8">
                   <div className="animate-pulse">Loading available times...</div>
+                </div>
+              ) : slotsError ? (
+                <div className="text-center py-8 text-destructive">
+                  Error loading time slots: {slotsError.message || 'Unknown error'}
                 </div>
               ) : slots.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">

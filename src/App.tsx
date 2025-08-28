@@ -70,6 +70,7 @@ const JobPostingSuccessPage = lazy(() => import("@/pages/JobPostingSuccessPage")
 const InviteAcceptance = lazy(() => import("@/pages/InviteAcceptance"));
 const FreelancerProfile = lazy(() => import("@/pages/FreelancerProfile"));
 const NailJobSuccessPage = lazy(() => import("@/pages/nails-job-success"));
+const ManageBooking = lazy(() => import("@/pages/ManageBooking"));
 
 // Blog Pages
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
@@ -162,9 +163,12 @@ function App() {
                          <Suspense fallback={<SimpleLoadingFallback />}><Onboarding /></Suspense>
                        </ProtectedRoute>
                      } />
-                     
-                     {/* Customer Profile route */}
-                     <Route path="/profile" element={<Suspense fallback={<SimpleLoadingFallback />}><CustomerProfilePage /></Suspense>} />
+                      
+                      {/* Customer Profile route */}
+                      <Route path="/profile" element={<Suspense fallback={<SimpleLoadingFallback />}><CustomerProfilePage /></Suspense>} />
+                      
+                      {/* Booking Management route */}
+                      <Route path="/bookings/manage" element={<Suspense fallback={<SimpleLoadingFallback />}><ManageBooking /></Suspense>} />
                     
                      {/* Job posting routes - Lazy loaded */}
                      <Route path="/post-job" element={<Suspense fallback={<SimpleLoadingFallback />}><EnhancedPostJob /></Suspense>} />
