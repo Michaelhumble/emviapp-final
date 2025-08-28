@@ -28,7 +28,7 @@ import RouteLogger from '@/components/common/RouteLogger';
 import Layout from "@/components/layout/Layout";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import FirstTimeVisitorRedirect from "@/components/routing/FirstTimeVisitorRedirect";
-import GlobalPremiumSignupModalProvider from "@/components/modals/GlobalPremiumSignupModalProvider";
+
 
 // Lazy load heavy pages
 const BookingCalendarNew = lazy(() => import("@/pages/dashboard/artist/BookingCalendarNew"));
@@ -147,11 +147,10 @@ function App() {
                        <OnboardingProvider>
                         <RouteLogger />
                         <FirstTimeVisitorRedirect>
-                          <GlobalPremiumSignupModalProvider>
-                            <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
-                           <Routes>
-                    
-                     {/* Auth routes */}
+                             <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                            <Routes>
+                     
+                      {/* Auth routes */}
                      <Route path="/login" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
                      <Route path="/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
@@ -304,7 +303,7 @@ function App() {
                     <Route path="/freelancer/:profileId" element={<FreelancerProfile />} />
                         </Routes>
                        </Suspense>
-                       </GlobalPremiumSignupModalProvider>
+                       
                        </FirstTimeVisitorRedirect>
                          <Toaster />
                          <ConsentBanner />
