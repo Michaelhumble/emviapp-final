@@ -19,24 +19,13 @@ const SignupFastFomo = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const [showExitIntent, setShowExitIntent] = useState(false);
-  const [exitIntentTriggered, setExitIntentTriggered] = useState(false);
+  // REMOVED: Exit intent modal functionality 
+  // Modal overlays have been permanently disabled
 
   const { signUp } = useAuthState();
   const { toast } = useToast();
 
-  // Exit intent detection
-  useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !exitIntentTriggered && !isSubmitted) {
-        setShowExitIntent(true);
-        setExitIntentTriggered(true);
-      }
-    };
-
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [exitIntentTriggered, isSubmitted]);
+  // REMOVED: Exit intent detection - no more popup modals
 
   // Analytics tracking
   useEffect(() => {
@@ -90,7 +79,6 @@ const SignupFastFomo = () => {
       });
       
       setIsSubmitted(true);
-      setShowExitIntent(false);
       
       // Track successful signup
       if (typeof (window as any).gtag !== 'undefined') {
@@ -136,66 +124,7 @@ const SignupFastFomo = () => {
         <link rel="canonical" href="https://emvi.app/signup-fast-fomo" />
       </Helmet>
 
-      {/* Exit Intent Popup */}
-      <AnimatePresence>
-        {showExitIntent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4"
-            onClick={() => setShowExitIntent(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full relative shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowExitIntent(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              
-              <div className="text-center">
-                <h3 className="text-3xl font-bold text-gray-900 mb-4 font-serif">
-                  Wait! Don't Miss Out!
-                </h3>
-                <p className="text-gray-600 mb-6 text-lg">
-                  Join 1,200+ professionals getting 3x more bookings.
-                  <br />
-                  <span className="font-semibold text-purple-600">100% FREE</span> — no hidden fees!
-                </p>
-                
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <Input
-                    type="email"
-                    placeholder="Enter your email for instant access"
-                    value={email}
-                    onChange={handleEmailChange}
-                    className="h-14 text-lg border-2 border-purple-200 focus:border-purple-500 rounded-xl"
-                    required
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all"
-                  >
-                    {isSubmitting ? 'Securing...' : '♡ Get My Spot FREE →'}
-                  </Button>
-                </form>
-                
-                <p className="text-sm text-gray-500 mt-4">
-                  No spam. Unsubscribe anytime. Data protected.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* REMOVED: Exit intent popup modal - no more blocking overlays */}
 
       {/* Main Layout */}
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">

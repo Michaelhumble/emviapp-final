@@ -32,7 +32,7 @@ class ScrollTracker {
     
     this.setupScrollTracking();
     this.setupFunnelTracking();
-    this.setupExitIntentTracking();
+    // REMOVED: Exit intent tracking - no more popup modals
     this.isInitialized = true;
     
     console.log('📊 Scroll and Funnel Analytics initialized');
@@ -135,25 +135,6 @@ class ScrollTracker {
           time_to_submit: Date.now() - this.startTime
         });
       }
-    });
-  }
-
-  private setupExitIntentTracking() {
-    document.addEventListener('mouseleave', (e) => {
-      if (e.clientY <= 0) {
-        this.trackFunnelStep('exit_intent', 'mouse_leave_top', {
-          scroll_depth: this.maxScroll,
-          time_on_page: Date.now() - this.startTime
-        });
-      }
-    });
-    
-    window.addEventListener('beforeunload', () => {
-      this.trackFunnelStep('page_exit', 'beforeunload', {
-        max_scroll_reached: this.maxScroll,
-        total_time_on_page: Date.now() - this.startTime,
-        funnel_steps_completed: this.funnelSteps.length
-      });
     });
   }
 

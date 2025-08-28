@@ -49,9 +49,7 @@ const PremiumSignupPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const [showSignupModal, setShowSignupModal] = useState(false); // Disabled by default
-  const [showExitIntent, setShowExitIntent] = useState(false);
-  const [exitIntentTriggered, setExitIntentTriggered] = useState(false);
+  // REMOVED: Modal state - no more popup overlays
   const [liveCounter, setLiveCounter] = useState(1247);
   const [recentSignups, setRecentSignups] = useState([
     { name: 'Jessica M.', city: 'Miami', time: 'just now' },
@@ -98,18 +96,7 @@ const PremiumSignupPage = () => {
     };
   }, []);
 
-  // Exit intent detection
-  useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !exitIntentTriggered && !isSubmitted && !showSignupModal) {
-        setShowExitIntent(true);
-        setExitIntentTriggered(true);
-      }
-    };
-
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [exitIntentTriggered, isSubmitted, showSignupModal]);
+  // REMOVED: Exit intent detection - no more blocking modals
 
   // Analytics tracking
   useEffect(() => {
@@ -174,8 +161,6 @@ const PremiumSignupPage = () => {
       
       if (result.success) {
         setIsSubmitted(true);
-        setShowSignupModal(false);
-        setShowExitIntent(false);
         
         toast.success('Welcome to EmviApp! 🎉 Check your email for verification.');
         
@@ -229,325 +214,7 @@ const PremiumSignupPage = () => {
         <link rel="canonical" href="https://emvi.app/auth/premium-signup" />
       </Helmet>
 
-      {/* Instant Signup Modal */}
-      <AnimatePresence>
-        {showSignupModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              className="bg-white rounded-3xl max-w-lg w-full relative shadow-2xl max-h-[85vh] overflow-hidden flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Fixed Header with Close Button */}
-              <div className="relative flex-shrink-0 p-6 pb-4">
-                <button
-                  onClick={() => setShowSignupModal(false)}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-                
-                <div className="text-center pr-8">
-                  <motion.h1 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 font-serif"
-                  >
-                    Get Booked 3x Faster
-                  </motion.h1>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="mb-3"
-                  >
-                    <span className="text-xl font-semibold text-purple-600">Join 1,200+ Pros - </span>
-                    <span className="text-3xl font-bold text-green-600">100% FREE</span>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="inline-block bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl mb-4"
-                  >
-                    <span className="text-lg font-bold text-orange-600">"Post your first job FREE — limited spots available!"</span>
-                  </motion.div>
-
-                  {/* Free Features Checkmarks */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="space-y-2 mb-4"
-                  >
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                      <span className="text-green-800 font-medium">No Hidden Fees</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                      <span className="text-green-800 font-medium">No Credit Card Needed</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                      <span className="text-green-800 font-medium">Cancel Anytime</span>
-                    </div>
-                  </motion.div>
-                  
-                  <motion.p 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-base text-gray-600 leading-relaxed"
-                  >
-                    The exclusive platform where beauty professionals get discovered, 
-                    build their client base, and earn more. Limited spots available.
-                  </motion.p>
-                </div>
-              </div>
-
-              {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto px-6 pb-6">
-                {/* Signup Form */}
-                {!isSubmitted ? (
-                  <motion.form 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    onSubmit={handleSubmit} 
-                    className="space-y-6"
-                  >
-                    {/* Form Section 1: Contact Details */}
-                    <div className="space-y-5">
-                      <div>
-                        <Label htmlFor="email" className="text-sm font-semibold text-gray-800 mb-2 block">
-                          Email Address *
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="Enter your best email address"
-                          value={email}
-                          onChange={handleEmailChange}
-                          className={`h-12 text-base border-2 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md ${
-                            emailError 
-                              ? 'border-red-300 focus:border-red-500' 
-                              : 'border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100'
-                          }`}
-                          required
-                        />
-                        {emailError && (
-                          <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                            <span className="w-4 h-4 rounded-full bg-red-100 text-red-600 text-xs flex items-center justify-center">!</span>
-                            {emailError}
-                          </p>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="password" className="text-sm font-semibold text-gray-800 mb-2 block">
-                          Create Password *
-                        </Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="Create a secure password (minimum 6 characters)"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="h-12 text-base border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Form Section 2: Personal Details */}
-                    <div className="space-y-5 pt-2">
-                      <div>
-                        <Label htmlFor="fullName" className="text-sm font-semibold text-gray-800 mb-2 block">
-                          Full Name *
-                        </Label>
-                        <Input
-                          id="fullName"
-                          type="text"
-                          placeholder="Enter your full name"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          className="h-12 text-base border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="role" className="text-sm font-semibold text-gray-800 mb-2 block">
-                          I am a *
-                        </Label>
-                        <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                          <SelectTrigger className="h-12 text-base border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 rounded-2xl transition-all duration-300 bg-gray-50/50 hover:bg-white shadow-sm hover:shadow-md">
-                            <SelectValue placeholder="Choose your professional role" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white border border-gray-200 rounded-2xl shadow-xl z-[150]">
-                            <SelectItem value="customer" className="rounded-xl">Customer Looking for Services</SelectItem>
-                            <SelectItem value="artist" className="rounded-xl">Beauty Artist</SelectItem>
-                            <SelectItem value="salon" className="rounded-xl">Salon Owner</SelectItem>
-                            <SelectItem value="freelancer" className="rounded-xl">Freelance Professional</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {/* CTA Button */}
-                    <div className="pt-4">
-                      <Button
-                        type="submit"
-                        disabled={isSubmitting || !!emailError}
-                        className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none"
-                      >
-                        {isSubmitting ? (
-                          <div className="flex items-center gap-3">
-                            <Loader2 className="w-6 h-6 animate-spin" />
-                            <span>Creating your free account...</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center gap-3">
-                            <Heart className="h-6 w-6 text-pink-200" />
-                            <span>♡ ♡ Get My Spot FREE →</span>
-                          </div>
-                        )}
-                      </Button>
-                    </div>
-                  </motion.form>
-                ) : (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", duration: 0.6 }}
-                    className="text-center py-6"
-                  >
-                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3 font-serif">You're In! 🎉</h3>
-                    <p className="text-lg text-gray-600 mb-3">
-                      Welcome to EmviApp! Check your email for verification.
-                    </p>
-                    <p className="text-base text-purple-600 font-semibold">
-                      Redirecting to your dashboard...
-                    </p>
-                  </motion.div>
-                )}
-
-                {/* Live Counter in Modal */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4 text-center"
-                >
-                  <div className="text-green-800 font-semibold text-sm mb-2">
-                    ✨ Recent Sign-Ups • {liveCounter.toLocaleString()} professionals joined • Live counter
-                  </div>
-                  <div className="text-green-700 text-sm animate-pulse">
-                    {recentSignups[0]?.name} from {recentSignups[0]?.city} just joined
-                  </div>
-                </motion.div>
-
-                {/* Trust Signals */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  className="mt-4 space-y-2"
-                >
-                  <div className="flex items-center justify-center gap-3 text-gray-600">
-                    <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    <span className="font-medium text-sm">No spam. Unsubscribe anytime.</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 text-gray-600">
-                    <Shield className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    <span className="font-medium text-sm">Your data is secure & encrypted.</span>
-                  </div>
-                  <div className="text-center pt-2">
-                    <a 
-                      href="/privacy-policy" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-purple-600 hover:text-purple-700 underline font-medium text-sm"
-                    >
-                      Privacy Policy
-                    </a>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Exit Intent Popup */}
-      <AnimatePresence>
-        {showExitIntent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4"
-            onClick={() => setShowExitIntent(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full relative shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowExitIntent(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              
-              <div className="text-center">
-                <h3 className="text-3xl font-bold text-gray-900 mb-4 font-serif">
-                  Wait! Don't Miss Out!
-                </h3>
-                <p className="text-gray-600 mb-6 text-lg">
-                  Join 1,200+ professionals getting 3x more bookings.
-                  <br />
-                  <span className="font-semibold text-green-600 text-xl">100% FREE</span> — no hidden fees!
-                </p>
-                
-                <Button
-                  onClick={() => {
-                    setShowExitIntent(false);
-                    setShowSignupModal(true);
-                  }}
-                  className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all"
-                >
-                  ♡ Get My Spot FREE →
-                </Button>
-                
-                <p className="text-sm text-gray-500 mt-4">
-                  No spam. Unsubscribe anytime. Data protected.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* REMOVED: All popup modals - no more blocking overlays */}
 
       {/* Main Layout */}
       <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-white to-indigo-50/30">
@@ -596,12 +263,12 @@ const PremiumSignupPage = () => {
                 >
                   Sign In
                 </Link>
-                <Button
-                  onClick={() => setShowSignupModal(true)}
+                <Link 
+                  to="/auth/premium-signup"
                   className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
                 >
                   Sign Up FREE
-                </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -652,19 +319,7 @@ const PremiumSignupPage = () => {
               </div>
             </motion.div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Button
-                onClick={() => setShowSignupModal(true)}
-                className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-12 py-6 text-2xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105"
-              >
-                <Heart className="h-8 w-8 mr-3" />
-                ♡ Get My Spot FREE →
-              </Button>
-            </motion.div>
+            {/* REMOVED: Popup modal CTA - now shows inline signup form below */}
           </div>
 
           {/* Live Counter and Recent Signups */}
