@@ -269,9 +269,16 @@ function App() {
                       </ProtectedRoute>
                     } />
                     
-                    {/* Blog Routes */}
-                    <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
-                    <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
+                     {/* Blog Routes */}
+                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                     <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
+                     
+                     {/* New Blog Content Hub Routes */}
+                     <Route path="/blog/how-to-find-the-best-beauty-professionals" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HowToFindBestBeautyProfessionals /></Suspense></Layout>} />
+                     <Route path="/blog/why-weekly-pay-attracts-better-artists" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><WhyWeeklyPayAttractsBetterArtists /></Suspense></Layout>} />
+                     <Route path="/blog/top-salon-staffing-mistakes-to-avoid" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><TopSalonStaffingMistakesToAvoid /></Suspense></Layout>} />
+                     <Route path="/blog/how-to-get-more-clients-as-a-nail-tech" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HowToGetMoreClientsAsNailTech /></Suspense></Layout>} />
+                     <Route path="/blog/the-future-of-beauty-industry-in-2025" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><FutureOfBeautyIndustryIn2025 /></Suspense></Layout>} />
                     <Route path="/blog/the-beauty-revolution" element={<Layout><TheBeautyRevolution /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
                     
