@@ -13,11 +13,13 @@ import {
   Flag,
   Eye,
   MessageSquare,
-  Bot
+  Bot,
+  Award
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+import PressAnalyticsDashboard from '@/components/admin/PressAnalyticsDashboard';
 
 interface AIUsageLog {
   id: string;
@@ -266,7 +268,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="flagged-ai" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="flagged-ai" className="flex items-center gap-2">
             <Bot className="h-4 w-4" />
             Flagged AI Usage ({stats.flaggedAI})
@@ -274,6 +276,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="content-reports" className="flex items-center gap-2">
             <Flag className="h-4 w-4" />
             Content Reports ({stats.pendingReports})
+          </TabsTrigger>
+          <TabsTrigger value="press-analytics" className="flex items-center gap-2">
+            <Award className="h-4 w-4" />
+            Press Analytics
           </TabsTrigger>
         </TabsList>
 
@@ -430,6 +436,10 @@ const AdminDashboard = () => {
               </Card>
             ))
           )}
+        </TabsContent>
+
+        <TabsContent value="press-analytics" className="space-y-4">
+          <PressAnalyticsDashboard />
         </TabsContent>
       </Tabs>
     </div>

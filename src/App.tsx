@@ -120,6 +120,7 @@ const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
 const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 const EmviAppPressPage = lazy(() => import("@/pages/press/EmviAppPressPage"));
+const EmviAppPressDetailPage = lazy(() => import("@/pages/press/EmviAppPressDetailPage"));
 const PressPage = lazy(() => import("@/pages/PressPage"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
 const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
@@ -129,6 +130,8 @@ const HireBeautyProfessionals = lazy(() => import("@/pages/HireBeautyProfessiona
 const ForSalons = lazy(() => import("@/pages/ForSalons"));
 const ForArtists = lazy(() => import("@/pages/ForArtists"));
 const PerformanceAudit = lazy(() => import("@/pages/PerformanceAudit"));
+// City Landing Pages
+const CityLandingPage = lazy(() => import("@/pages/cities/CityLandingPage"));
 
 function App() {
   const location = useLocation();
@@ -238,13 +241,17 @@ function App() {
                     <Route path="/brows-lashes" element={<Layout><BrowsLashesPage /></Layout>} />
                     <Route path="/tattoo" element={<Layout><TattooPage /></Layout>} />
                     
-                     <Route path="/about" element={<Layout><About /></Layout>} />
+                      {/* City Landing Pages - Programmatic SEO */}
+                      <Route path="/cities/:citySlug/:categorySlug" element={<Layout><CityLandingPage /></Layout>} />
+                      
+                      <Route path="/about" element={<Layout><About /></Layout>} />
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
                      <Route path="/thank-you" element={<Suspense fallback={<SimpleLoadingFallback />}><ThankYou /></Suspense>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
                      <Route path="/performance" element={<Layout><PerformanceAudit /></Layout>} />
-                      <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><EmviAppPressPage /></Layout>} />
                       <Route path="/press" element={<Layout><PressPage /></Layout>} />
+                      <Route path="/press/:slug" element={<Layout><EmviAppPressDetailPage /></Layout>} />
+                      <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><EmviAppPressPage /></Layout>} />
                      <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
                      <Route path="/partners" element={<Layout><InvestorsPartners /></Layout>} />
                      <Route path="/investors-partners" element={<Navigate to="/partners" replace />} />

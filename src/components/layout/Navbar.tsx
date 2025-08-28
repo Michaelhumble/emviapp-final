@@ -50,6 +50,12 @@ const Navbar = () => {
                 {item.label}
               </Link>
             ))}
+            <Link 
+              to="/press"
+              className="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors"
+            >
+              Press
+            </Link>
           </div>
 
           {/* Right side items */}
