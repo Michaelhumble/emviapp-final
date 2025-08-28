@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, Phone, Mail, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useArtistBookings } from '@/hooks/artist/useArtistBookings';
-import { Booking } from '@/types/booking';
+import { Booking } from '@/lib/booking/types';
 
 const PremiumBookingsManager = () => {
   const { bookings, loading, handleAccept, handleDecline } = useArtistBookings();

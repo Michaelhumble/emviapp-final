@@ -9,11 +9,15 @@ export type LocationType = 'in_person' | 'remote' | 'both';
 export interface Service {
   id: string;
   title: string; // Maps to database 'title' field
+  name: string; // Alias for title for component compatibility
   description?: string;
   duration_minutes: number; // Database field name
   price: number; // Database field (numeric)
   user_id: string; // Artist ID in database
+  artist_id: string; // Alias for user_id for component compatibility
   is_visible?: boolean;
+  is_active: boolean; // Alias for is_visible for component compatibility
+  location_type: LocationType; // Add location_type for component compatibility
   image_url?: string;
   created_at?: string;
   updated_at?: string;
@@ -62,6 +66,7 @@ export interface Booking {
   source?: BookingSource;
   note?: string;
   service_type?: string; // Legacy compatibility
+  service_name?: string; // Alias for service_type
   metadata?: Record<string, any>;
   confirmation_sent_at?: string;
   reminder_sent?: boolean;

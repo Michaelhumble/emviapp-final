@@ -6,7 +6,7 @@ import { Calendar, ChevronLeft, ChevronRight, Clock, User } from 'lucide-react';
 import { format, startOfWeek, addDays, isSameDay, addWeeks, subWeeks } from 'date-fns';
 import { motion } from 'framer-motion';
 import { useArtistBookings } from '@/hooks/artist/useArtistBookings';
-import { Booking } from '@/types/booking';
+import { Booking } from '@/lib/booking/types';
 
 const PremiumBookingCalendar = () => {
   const { bookings, loading } = useArtistBookings();

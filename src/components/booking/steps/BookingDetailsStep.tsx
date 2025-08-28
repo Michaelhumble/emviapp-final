@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Loader2, User, Mail, Phone, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 import { useBookingSubmission } from '@/hooks/useEnhancedBookingSubmission';
-import { BookingRequest } from '@/types/booking-enhanced';
+import { BookingRequest } from '@/lib/booking/types';
 
 interface BookingData {
   service?: any;

@@ -1,6 +1,16 @@
 // Legacy compatibility layer for existing code
 import type { Booking, Service } from './types';
 
+// Add missing BookingCounts interface for compatibility
+export interface BookingCounts {
+  pending: number;
+  accepted: number;
+  completed: number;
+  total: number;
+  declined?: number;
+  cancelled?: number;
+}
+
 // Legacy ArtistBooking interface for compatibility
 export interface ArtistBooking {
   id: string;
@@ -125,11 +135,15 @@ export const serviceToLegacyFormat = (service: Service) => ({
 export const serviceFromLegacyFormat = (legacyService: any): Service => ({
   id: legacyService.id,
   title: legacyService.name || legacyService.title,
+  name: legacyService.name || legacyService.title,
   description: legacyService.description,
   duration_minutes: legacyService.duration || legacyService.durationMins || legacyService.duration_minutes,
   price: legacyService.price || (legacyService.priceCents ? legacyService.priceCents / 100 : 0),
   user_id: legacyService.artist_id || legacyService.artistId || legacyService.user_id,
+  artist_id: legacyService.artist_id || legacyService.artistId || legacyService.user_id,
   is_visible: legacyService.is_active !== false && legacyService.isActive !== false,
+  is_active: legacyService.is_active !== false && legacyService.isActive !== false,
+  location_type: legacyService.location_type || legacyService.locationType || 'in_person',
   image_url: legacyService.image_url,
   created_at: legacyService.created_at,
   updated_at: legacyService.updated_at,

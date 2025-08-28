@@ -23,6 +23,7 @@ export const rowToBooking = (row: BookingRow): Booking => ({
   source: (row.source as Booking['source']) || 'web',
   note: row.note || undefined,
   service_type: row.service_type || undefined,
+  service_name: row.service_type || undefined, // Alias for compatibility
   metadata: (row.metadata as Record<string, any>) || undefined,
   confirmation_sent_at: row.confirmation_sent_at || undefined,
   reminder_sent: row.reminder_sent || undefined,
@@ -35,11 +36,15 @@ export const rowToBooking = (row: BookingRow): Booking => ({
 export const rowToService = (row: ServiceRow): Service => ({
   id: row.id,
   title: row.title,
+  name: row.title, // Alias for component compatibility
   description: row.description || undefined,
   duration_minutes: row.duration_minutes,
   price: row.price,
   user_id: row.user_id,
+  artist_id: row.user_id, // Alias for component compatibility
   is_visible: row.is_visible || undefined,
+  is_active: row.is_visible !== false, // Alias for component compatibility
+  location_type: 'in_person', // Default value, could be enhanced later
   image_url: row.image_url || undefined,
   created_at: row.created_at || undefined,
   updated_at: row.updated_at || undefined,

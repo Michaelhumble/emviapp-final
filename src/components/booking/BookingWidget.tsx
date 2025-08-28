@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User, CheckCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Service } from '@/types/booking-enhanced';
+import { Service } from '@/lib/booking/types';
 import { ServiceSelectionStep } from './steps/ServiceSelectionStep';
 import { DateTimeSelectionStep } from './steps/DateTimeSelectionStep';
 import { BookingDetailsStep } from './steps/BookingDetailsStep';

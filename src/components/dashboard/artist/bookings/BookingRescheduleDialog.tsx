@@ -5,7 +5,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { Booking } from '@/types/booking';
+import { Booking } from '@/lib/booking/types';
 import { supabase } from '@/integrations/supabase/client';
 
 interface BookingRescheduleDialogProps {
