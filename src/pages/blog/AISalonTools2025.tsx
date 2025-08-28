@@ -1,18 +1,23 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import BlogSEO from '@/components/blog/BlogSEO';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, TrendingUp, Users, Calendar, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import aiSalonImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
 
 const AISalonTools2025 = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <Helmet>
-        <title>17 AI Tools Every Salon Owner Needs in 2025 | EmviApp</title>
-        <meta name="description" content="Discover the top AI tools transforming salon operations in 2025. From smart booking to predictive analytics, learn how salon owners are using AI to boost revenue by 35%." />
-        <meta name="keywords" content="AI tools salon owners 2025, salon management software, AI booking system, beauty industry AI, salon automation tools" />
-        <link rel="canonical" href="https://emviapp.com/blog/ai-salon-tools-2025" />
-      </Helmet>
+      <BlogSEO
+        title="17 AI Tools Every Salon Owner Needs in 2025 | EmviApp"
+        description="Discover the top AI tools transforming salon operations in 2025. From smart booking to predictive analytics, learn how salon owners are using AI to boost revenue by 35%."
+        canonical="/blog/ai-salon-tools-2025"
+        publishedAt="2025-01-01"
+        modifiedAt="2025-01-01"
+        author="EmviApp Team"
+        featuredImage={aiSalonImage}
+        tags={['AI tools', 'salon management', 'automation', 'beauty technology', '2025 trends']}
+      />
 
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-12">
@@ -48,7 +53,7 @@ const AISalonTools2025 = () => {
             </h2>
 
             <p className="text-gray-700 text-lg leading-relaxed mb-6">
-              The beauty industry is experiencing its biggest transformation since the invention of the hair dryer. According to McKinsey's latest research, generative AI could add <strong>$9-10 billion</strong> to the global economy through its impact on the beauty industry alone. With AI market growth in beauty projected at <strong>20% annually through 2031</strong>, salon owners who adopt these tools now will dominate their local markets.
+              The beauty industry is experiencing its biggest transformation since the invention of the hair dryer. According to McKinsey's latest research, generative AI could add <strong>$9-10 billion</strong> to the global economy through its impact on the beauty industry alone. With AI market growth in beauty projected at <strong>20% annually through 2031</strong>, salon owners who adopt these tools now will dominate their local markets. Learn more about <Link to="/blog/how-to-find-the-best-beauty-professionals" className="text-purple-600 hover:underline">finding the best beauty professionals</Link> in this AI-driven era.
             </p>
 
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 p-6 rounded-lg mb-8">
@@ -229,20 +234,22 @@ const AISalonTools2025 = () => {
                 Join 12,000+ salon owners already using EmviApp's AI tools to grow their business
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-3 text-lg font-semibold"
-                  onClick={() => window.open('/pricing', '_blank')}
-                >
-                  Start Free Trial
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-purple-600 px-8 py-3 text-lg font-semibold"
-                  onClick={() => window.open('/auth', '_blank')}
-                >
-                  Download App
-                </Button>
+                <Link to="/salons">
+                  <Button 
+                    className="bg-white text-purple-600 hover:bg-purple-50 px-8 py-3 text-lg font-semibold"
+                  >
+                    Find AI-Ready Salons
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+                <Link to="/artists/nails/los-angeles-ca">
+                  <Button 
+                    variant="outline" 
+                    className="border-white text-white hover:bg-white hover:text-purple-600 px-8 py-3 text-lg font-semibold"
+                  >
+                    Browse Tech-Savvy Artists
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -283,19 +290,21 @@ const AISalonTools2025 = () => {
                 The beauty industry moves fast, and early AI adopters are already gaining significant competitive advantages. Don't wait until your competitors dominate the local market.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
-                  onClick={() => window.open('/auth', '_blank')}
-                >
-                  Explore AI Dashboard
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="border-purple-600 text-purple-600 hover:bg-purple-50 px-6 py-2"
-                  onClick={() => window.open('/artists', '_blank')}
-                >
-                  Browse AI-Powered Artists
-                </Button>
+                <Link to="/jobs">
+                  <Button 
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
+                  >
+                    Find AI-Ready Jobs
+                  </Button>
+                </Link>
+                <Link to="/blog/top-salon-staffing-mistakes-to-avoid">
+                  <Button 
+                    variant="outline"
+                    className="border-purple-600 text-purple-600 hover:bg-purple-50 px-6 py-2"
+                  >
+                    Learn About Staffing
+                  </Button>
+                </Link>
               </div>
             </div>
 

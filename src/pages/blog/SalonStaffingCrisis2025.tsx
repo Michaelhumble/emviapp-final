@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import BlogSEO from '@/components/blog/BlogSEO';
 import { motion } from 'framer-motion';
 import { Users, Search, TrendingUp, Clock, CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,20 +9,16 @@ import blogImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
 const SalonStaffingCrisis2025 = () => {
   return (
     <>
-      <Helmet>
-        <title>The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can't Find Qualified Staff</title>
-        <meta name="description" content="Discover why salon owners are struggling to find qualified beauty professionals in 2025 and learn proven strategies to overcome the beauty industry staffing shortage." />
-        <meta name="keywords" content="salon staffing crisis, beauty industry hiring, salon recruitment, hire beauty staff, salon staff shortage 2025, beauty professional jobs" />
-        <meta property="og:title" content="The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can't Find Qualified Staff" />
-        <meta property="og:description" content="73% of salon owners report difficulty finding qualified staff. Learn why the beauty industry faces a talent shortage and discover solutions that work." />
-        <meta property="og:image" content={blogImage} />
-        <meta property="og:url" content="https://emvi.app/blog/salon-staffing-crisis-2025" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can't Find Qualified Staff" />
-        <meta name="twitter:description" content="73% of salon owners report difficulty finding qualified staff. Learn why the beauty industry faces a talent shortage and discover solutions that work." />
-        <meta name="twitter:image" content={blogImage} />
-        <link rel="canonical" href="https://emvi.app/blog/salon-staffing-crisis-2025" />
-      </Helmet>
+      <BlogSEO
+        title="The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can't Find Qualified Staff | EmviApp"
+        description="Discover why salon owners are struggling to find qualified beauty professionals in 2025 and learn proven strategies to overcome the beauty industry staffing shortage."
+        canonical="/blog/salon-staffing-crisis-2025"
+        publishedAt="2025-01-01"
+        modifiedAt="2025-01-01"
+        author="EmviApp Team"
+        featuredImage={blogImage}
+        tags={['salon staffing', 'beauty industry', 'hiring', 'recruitment', 'staffing crisis', '2025']}
+      />
 
       <article className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
         {/* Hero Section */}
@@ -104,7 +100,7 @@ const SalonStaffingCrisis2025 = () => {
             </h2>
             
             <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-              The beauty industry's growth trajectory tells a compelling story. According to the U.S. Bureau of Labor Statistics, beauty and grooming services are projected to grow by <strong>7-8% through 2033</strong> — nearly double the national average. Yet, this growth comes with a critical challenge: there simply aren't enough qualified professionals to meet demand.
+              The beauty industry's growth trajectory tells a compelling story. According to the U.S. Bureau of Labor Statistics, beauty and grooming services are projected to grow by <strong>7-8% through 2033</strong> — nearly double the national average. Yet, this growth comes with a critical challenge: there simply aren't enough qualified professionals to meet demand. Discover <Link to="/blog/how-to-find-the-best-beauty-professionals" className="text-purple-600 hover:underline">how to find the best beauty professionals</Link> despite this shortage.
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 my-8">
@@ -230,7 +226,7 @@ const SalonStaffingCrisis2025 = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">The Solution Smart Salon Owners Are Using</h2>
 
             <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-              While most salon owners struggle with traditional hiring methods, forward-thinking business owners are embracing specialized platforms designed specifically for the beauty industry. These modern solutions address the unique challenges of beauty recruitment:
+              While most salon owners struggle with traditional hiring methods, forward-thinking business owners are embracing specialized platforms designed specifically for the beauty industry. These modern solutions address the unique challenges of beauty recruitment. Check out successful examples at <Link to="/artists/hair/houston-tx" className="text-purple-600 hover:underline">top hair salons in Houston</Link> and <Link to="/artists/nails/los-angeles-ca" className="text-purple-600 hover:underline">premier nail artists in Los Angeles</Link>.
             </p>
 
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-8 mb-8">

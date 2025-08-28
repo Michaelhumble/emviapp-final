@@ -1,81 +1,22 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BaseSEO from '@/components/seo/BaseSEO';
-import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
+import BlogSEO from '@/components/blog/BlogSEO';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const NailTechSalaryGuide: React.FC = () => {
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: 'Home', url: 'https://www.emvi.app' },
-    { name: 'Blog', url: 'https://www.emvi.app/blog' },
-    { name: 'Nail Tech Salary by City 2025', url: 'https://www.emvi.app/blog/nail-tech-salary-by-city-2025' }
-  ]);
-
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Nail Tech Salary by City 2025: Complete Breakdown",
-    "description": "Comprehensive salary data for nail technicians across major US cities in 2025. Compare earnings, hourly rates, and tips by location.",
-    "author": {
-      "@type": "Organization",
-      "name": "EmviApp"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.emvi.app/logo.png"
-      }
-    },
-    "datePublished": "2025-01-01",
-    "dateModified": "2025-01-01",
-    "image": "https://www.emvi.app/og-nail-tech-salary.jpg",
-    "url": "https://www.emvi.app/blog/nail-tech-salary-by-city-2025"
-  };
-
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Which city pays nail technicians the highest salary?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "New York City typically offers the highest salaries for nail technicians, with annual earnings ranging from $45,000 to $65,000, plus substantial tips that can add $10,000-$20,000 annually."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How much do nail techs make per hour?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Nail technicians typically earn $12-25 per hour base pay, with the potential to earn $20-40 per hour including tips. High-end salons in major cities often pay higher base rates."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Do nail technicians get benefits?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Benefits vary by employer. Chain salons often offer health insurance, paid time off, and employee discounts. Independent contractors typically don't receive traditional benefits but have more earning flexibility."
-        }
-      }
-    ]
-  };
-
   return (
     <Layout>
-      <BaseSEO
+      <BlogSEO
         title="Nail Tech Salary by City 2025: Complete Breakdown | EmviApp"
         description="Comprehensive salary data for nail technicians across major US cities in 2025. Compare earnings, hourly rates, and tips by location."
-        canonical="https://www.emvi.app/blog/nail-tech-salary-by-city-2025"
-        ogImage="https://www.emvi.app/og-nail-tech-salary.jpg"
-        jsonLd={[breadcrumbJsonLd, articleJsonLd, faqJsonLd]}
-        type="article"
+        canonical="/blog/nail-tech-salary-by-city-2025"
+        publishedAt="2025-01-01"
+        modifiedAt="2025-01-01"
+        author="EmviApp Team"
+        featuredImage="https://www.emvi.app/og-nail-tech-salary.jpg"
+        tags={['nail tech salary', 'nail technician pay', 'beauty jobs', 'career guide', '2025 salaries']}
       />
 
       <main className="w-full">
@@ -84,22 +25,22 @@ const NailTechSalaryGuide: React.FC = () => {
           <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5">
             <Container>
               <div className="max-w-4xl mx-auto">
-                <Link to="/guides/nail-jobs-in-the-us" className="text-primary hover:underline text-sm mb-4 block">
-                  ← Back to Complete Guide
-                </Link>
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                  Nail Tech Salary by City 2025: Complete Breakdown
-                </h1>
-                <p className="text-lg text-muted-foreground mb-6">
-                  Comprehensive salary data for nail technicians across major US cities. 
-                  Find out what you can earn in your location.
-                </p>
+                  <Link to="/guides/nail-jobs-in-the-us" className="text-primary hover:underline text-sm mb-4 block">
+                    ← Back to Complete Guide
+                  </Link>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                    Nail Tech Salary by City 2025: Complete Breakdown
+                  </h1>
+                  <p className="text-lg text-muted-foreground mb-6">
+                    Comprehensive salary data for nail technicians across major US cities. 
+                    Find out what you can earn in your location and discover <Link to="/blog/how-to-find-the-best-beauty-professionals" className="text-primary hover:underline">how to find the best beauty professionals</Link> in your market.
+                  </p>
                 <div className="flex gap-4">
                   <Link to="/jobs?category=nails">
                     <Button>Find Nail Tech Jobs</Button>
                   </Link>
-                  <Link to="/guides/nail-jobs-in-the-us">
-                    <Button variant="outline">Complete Career Guide</Button>
+                  <Link to="/artists/nails/los-angeles-ca">
+                    <Button variant="outline">Browse LA Nail Artists</Button>
                   </Link>
                 </div>
               </div>

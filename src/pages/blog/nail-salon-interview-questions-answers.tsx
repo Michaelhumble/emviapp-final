@@ -1,54 +1,22 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BaseSEO from '@/components/seo/BaseSEO';
-import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
+import BlogSEO from '@/components/blog/BlogSEO';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const NailSalonInterviewQA: React.FC = () => {
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: 'Home', url: 'https://www.emvi.app' },
-    { name: 'Blog', url: 'https://www.emvi.app/blog' },
-    { name: 'Nail Salon Interview Questions', url: 'https://www.emvi.app/blog/nail-salon-interview-questions-answers' }
-  ]);
-
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "50+ Nail Salon Interview Questions & Answers (2025 Guide)",
-    "description": "Ace your nail technician job interview with these common questions and expert answers. Preparation tips for salon interviews.",
-    "author": { "@type": "Organization", "name": "EmviApp" },
-    "publisher": { "@type": "Organization", "name": "EmviApp", "logo": { "@type": "ImageObject", "url": "https://www.emvi.app/logo.png" } },
-    "datePublished": "2025-01-01",
-    "image": "https://www.emvi.app/og-nail-interview.jpg",
-    "url": "https://www.emvi.app/blog/nail-salon-interview-questions-answers"
-  };
-
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "What should I bring to a nail technician interview?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Bring your portfolio, nail license, references, resume, and basic nail tools. Dress professionally and arrive 10 minutes early."
-        }
-      }
-    ]
-  };
-
   return (
     <Layout>
-      <BaseSEO
+      <BlogSEO
         title="50+ Nail Salon Interview Questions & Answers (2025 Guide) | EmviApp"
         description="Ace your nail technician job interview with these common questions and expert answers. Preparation tips for salon interviews."
-        canonical="https://www.emvi.app/blog/nail-salon-interview-questions-answers"
-        ogImage="https://www.emvi.app/og-nail-interview.jpg"
-        jsonLd={[breadcrumbJsonLd, articleJsonLd, faqJsonLd]}
-        type="article"
+        canonical="/blog/nail-salon-interview-questions-answers"
+        publishedAt="2025-01-01"
+        modifiedAt="2025-01-01"
+        author="EmviApp Team"
+        featuredImage="https://www.emvi.app/og-nail-interview.jpg"
+        tags={['nail salon interview', 'interview questions', 'nail technician jobs', 'career preparation', 'job interviews']}
       />
 
       <main className="w-full">
@@ -63,14 +31,14 @@ const NailSalonInterviewQA: React.FC = () => {
                   50+ Nail Salon Interview Questions & Answers (2025 Guide)
                 </h1>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Prepare for your nail technician interview with these common questions and expert answers.
+                  Prepare for your nail technician interview with these common questions and expert answers. Ready to interview? Check out <Link to="/blog/how-to-find-the-best-beauty-professionals" className="text-primary hover:underline">how to find the best beauty professionals</Link> and salon opportunities.
                 </p>
                 <div className="flex gap-4">
                   <Link to="/jobs?category=nails">
                     <Button>Find Nail Tech Jobs</Button>
                   </Link>
-                  <Link to="/guides/nail-jobs-in-the-us">
-                    <Button variant="outline">Complete Career Guide</Button>
+                  <Link to="/salons">
+                    <Button variant="outline">Browse Salons</Button>
                   </Link>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import BlogSEO from '@/components/blog/BlogSEO';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Users, Sparkles, Globe, Trophy, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -8,19 +8,16 @@ import heroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 const TheBeautyRevolution = () => {
   return (
     <>
-      <Helmet>
-        <title>The Beauty Revolution: Empowering Every Artist, Transforming Every Life | EmviApp</title>
-        <meta name="description" content="Join the movement that's transforming the beauty industry. Discover how EmviApp empowers artists, connects communities, and creates opportunities for millions of beauty professionals worldwide." />
-        <meta name="keywords" content="beauty revolution, nail artists, salon owners, beauty professionals, EmviApp, community, empowerment, vietnamese beauty, nail technicians" />
-        <meta property="og:title" content="The Beauty Revolution: Empowering Every Artist, Transforming Every Life" />
-        <meta property="og:description" content="The manifesto that's changing how the world sees beauty professionals. Join millions discovering their potential on EmviApp." />
-        <meta property="og:image" content={heroImage} />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="The Beauty Revolution: Empowering Every Artist, Transforming Every Life" />
-        <meta name="twitter:description" content="The manifesto that's changing how the world sees beauty professionals. Join millions discovering their potential on EmviApp." />
-        <meta name="twitter:image" content={heroImage} />
-      </Helmet>
+      <BlogSEO
+        title="The Beauty Revolution: Empowering Every Artist, Transforming Every Life | EmviApp"
+        description="Join the movement that's transforming the beauty industry. Discover how EmviApp empowers artists, connects communities, and creates opportunities for millions of beauty professionals worldwide."
+        canonical="/blog/the-beauty-revolution"
+        publishedAt="2025-01-01"
+        modifiedAt="2025-01-01"
+        author="EmviApp Team"
+        featuredImage={heroImage}
+        tags={['beauty revolution', 'nail artists', 'salon owners', 'beauty professionals', 'community', 'empowerment']}
+      />
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Hero Section */}
@@ -50,7 +47,7 @@ const TheBeautyRevolution = () => {
         <div className="prose prose-lg max-w-none mb-16">
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-8 rounded-2xl mb-12 border-l-4 border-purple-500">
             <p className="text-lg leading-relaxed text-gray-800 mb-6">
-              <strong>Her name is Linh.</strong> Every morning at 7 AM, she unlocks the door to her small nail salon in Garden Grove, California. Her hands—steady, precise, artistic—have painted over 50,000 sets of nails in the past decade. She's made brides feel radiant on their wedding day, helped cancer survivors feel beautiful again, and given countless women the confidence to walk into job interviews with pride.
+              <strong>Her name is Linh.</strong> Every morning at 7 AM, she unlocks the door to her small nail salon in Garden Grove, California. Her hands—steady, precise, artistic—have painted over 50,000 sets of nails in the past decade. She's made brides feel radiant on their wedding day, helped cancer survivors feel beautiful again, and given countless women the confidence to walk into job interviews with pride. Like thousands of <Link to="/artists/nails/los-angeles-ca" className="text-purple-600 hover:underline">skilled nail artists in Los Angeles</Link>, she represents the heart of the beauty industry.
             </p>
             <p className="text-lg leading-relaxed text-gray-800 mb-6">
               Yet when people ask what she does for work, Linh hesitates. <em>"Just a nail tech,"</em> she says quietly, as if her gift of making people feel beautiful is somehow small. As if the tears of joy from the grandmother who got her first professional manicure don't matter. As if the teenage girl who left her chair feeling worthy for the first time isn't a miracle.
@@ -87,8 +84,8 @@ const TheBeautyRevolution = () => {
               <h3 className="text-2xl font-bold text-purple-600 mb-4">🚀 The Vision Reality</h3>
               <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white p-8 rounded-2xl">
                 <p className="text-lg mb-4 font-semibold">This isn't a fantasy.</p>
-                <p className="mb-4">This is the world EmviApp is building, right now, with over <strong>100,000+ beauty professionals</strong> and counting.</p>
-                <p className="text-purple-100">A world where technology serves humanity, where algorithms amplify artistry, and where community conquers competition.</p>
+                <p className="mb-4">This is the world EmviApp is building, right now, with over <strong>100,000+ beauty professionals</strong> and counting. From <Link to="/artists/hair/houston-tx" className="text-purple-100 hover:text-white underline">hair stylists in Houston</Link> to <Link to="/artists/lashes/orlando-fl" className="text-purple-100 hover:text-white underline">lash artists in Orlando</Link>, we're connecting talent with opportunity everywhere.</p>
+                <p className="text-purple-100">A world where technology serves humanity, where algorithms amplify artistry, and where community conquers competition. Learn more about <Link to="/blog/how-to-find-the-best-beauty-professionals" className="text-purple-100 hover:text-white underline">finding the best beauty professionals</Link> in this new era.</p>
               </div>
             </div>
           </div>

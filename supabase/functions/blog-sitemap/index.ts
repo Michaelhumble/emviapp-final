@@ -3,36 +3,100 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 // Blog articles data - Single source of truth
 const BLOG_ARTICLES = [
   {
-    slug: 'top-nail-salon-jobs-us-2025',
+    slug: 'how-to-find-the-best-beauty-professionals',
     publishedAt: '2025-01-01',
-    updatedAt: '2025-01-26',
+    updatedAt: '2025-01-28',
+    priority: 1.0,
+    changefreq: 'weekly' as const,
+    featured: true
+  },
+  {
+    slug: 'why-weekly-pay-attracts-better-artists',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
     priority: 0.9,
     changefreq: 'weekly' as const,
     featured: true
   },
   {
-    slug: 'weekly-pay-nail-artists',
+    slug: 'top-salon-staffing-mistakes-to-avoid',
     publishedAt: '2025-01-01',
-    updatedAt: '2025-01-26',
+    updatedAt: '2025-01-28',
     priority: 0.9,
     changefreq: 'weekly' as const,
     featured: true
   },
   {
-    slug: 'sell-nail-salon-smart',
+    slug: 'how-to-get-more-clients-as-a-nail-tech',
     publishedAt: '2025-01-01',
-    updatedAt: '2025-01-26',
+    updatedAt: '2025-01-28',
     priority: 0.9,
     changefreq: 'weekly' as const,
     featured: true
   },
   {
-    slug: 'nail-industry-trends-2025',
+    slug: 'the-future-of-beauty-industry-in-2025',
     publishedAt: '2025-01-01',
-    updatedAt: '2025-01-26',
+    updatedAt: '2025-01-28',
     priority: 0.9,
     changefreq: 'weekly' as const,
     featured: true
+  },
+  {
+    slug: 'the-beauty-revolution',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.8,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'ai-salon-tools-2025',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.8,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'salon-staffing-crisis-2025',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.8,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'nail-tech-salary-by-city-2025',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.8,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'nail-salon-interview-questions-answers',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.7,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'nail-artist-portfolio-examples',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.7,
+    changefreq: 'monthly' as const,
+    featured: false
+  },
+  {
+    slug: 'how-to-get-more-nail-clients',
+    publishedAt: '2025-01-01',
+    updatedAt: '2025-01-28',
+    priority: 0.7,
+    changefreq: 'monthly' as const,
+    featured: false
   }
 ];
 
