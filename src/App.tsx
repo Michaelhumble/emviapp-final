@@ -74,10 +74,18 @@ const ManageBooking = lazy(() => import("@/pages/ManageBooking"));
 const SalonSuccessPage = lazy(() => import("@/pages/salon-success"));
 
 // Blog Pages
+const BlogIndex = lazy(() => import("@/pages/blog/BlogIndex"));
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
 const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 const ViralArticle = lazy(() => import("@/pages/ViralArticle"));
+
+// New Blog Content Hub Pages
+const HowToFindBestBeautyProfessionals = lazy(() => import("@/pages/blog/how-to-find-the-best-beauty-professionals"));
+const WhyWeeklyPayAttractsBetterArtists = lazy(() => import("@/pages/blog/why-weekly-pay-attracts-better-artists"));
+const TopSalonStaffingMistakesToAvoid = lazy(() => import("@/pages/blog/top-salon-staffing-mistakes-to-avoid"));
+const HowToGetMoreClientsAsNailTech = lazy(() => import("@/pages/blog/how-to-get-more-clients-as-a-nail-tech"));
+const FutureOfBeautyIndustryIn2025 = lazy(() => import("@/pages/blog/the-future-of-beauty-industry-in-2025"));
 
 const NailSalonInterviewQA = lazy(() => import("@/pages/blog/nail-salon-interview-questions-answers"));
 const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
@@ -270,7 +278,7 @@ function App() {
                     } />
                     
                      {/* Blog Routes */}
-                     <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                     <Route path="/blog" element={<Layout><BlogIndex /></Layout>} />
                      <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                      
                      {/* New Blog Content Hub Routes */}
