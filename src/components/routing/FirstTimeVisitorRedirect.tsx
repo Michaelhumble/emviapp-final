@@ -31,9 +31,11 @@ const FirstTimeVisitorRedirect: React.FC<{ children: React.ReactNode }> = ({ chi
     // Check if visitor has seen the premium signup page before
     const hasSeenPremiumSignup = localStorage.getItem(VISITOR_KEY) === 'true';
 
-    // If first-time visitor (unauthenticated and hasn't seen signup), redirect to premium signup
+    // DISABLED: No longer redirecting first-time visitors to avoid blocking site access
+    // Allow users to browse the site freely without forced redirects
+    // Mark as visited so they can access the site
     if (!hasSeenPremiumSignup && !isSignedIn) {
-      navigate('/auth/premium-signup');
+      localStorage.setItem(VISITOR_KEY, 'true');
     }
   }, [isSignedIn, loading, location.pathname, navigate]);
 
