@@ -29,8 +29,12 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
     featuredAddon: form.watch("featuredAddon")
   };
 
+  const isValidSelection = Boolean(selectedOptions.selectedPricingTier);
+
   const handlePlanSelect = (tier: SalonPricingTier) => {
+    console.log('🎯 [PLAN-SELECT] Plan selected:', tier);
     form.setValue("selectedPricingTier", tier);
+    console.log('✅ [PLAN-SELECT] Form updated, current value:', form.getValues("selectedPricingTier"));
   };
 
   const handleFeaturedAddonChange = (featured: boolean) => {
@@ -135,7 +139,14 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
   };
 
   const handleContinueToPayment = async () => {
+    // Debug: log current state
+    console.log('🔍 [PAYMENT-BUTTON] Button clicked!');
+    console.log('🔍 [PAYMENT-BUTTON] Selected options:', selectedOptions);
+    console.log('🔍 [PAYMENT-BUTTON] Is valid selection:', isValidSelection);
+    console.log('🔍 [PAYMENT-BUTTON] Is loading:', isLoading);
+    
     if (!selectedOptions.selectedPricingTier) {
+      console.log('❌ [PAYMENT-BUTTON] No pricing tier selected');
       toast.error("Please select a pricing plan first");
       return;
     }
@@ -147,12 +158,13 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
     const missingFields = requiredFields.filter(field => !formData[field]);
     
     if (missingFields.length > 0) {
+      console.log('❌ [PAYMENT-BUTTON] Missing fields:', missingFields);
       toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
       return;
     }
     
     try {
-      console.log('🔥 Starting payment with data:', { 
+      console.log('🔥 [PAYMENT-BUTTON] Starting payment with data:', { 
         selectedOptions, 
         formDataKeys: Object.keys(formData), 
         photoCount: photoUploads.length,
@@ -167,12 +179,19 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
         onPaymentComplete();
       }
     } catch (error) {
-      console.error('❌ Payment initiation failed:', error);
+      console.error('❌ [PAYMENT-BUTTON] Payment initiation failed:', error);
       toast.error("Failed to initiate payment. Please try again.");
     }
   };
 
-  const isValidSelection = Boolean(selectedOptions.selectedPricingTier);
+  // Debug logging for button state
+  console.log('🔍 [PAYMENT-STATE] Current state:', {
+    selectedTier: selectedOptions.selectedPricingTier,
+    isValidSelection,
+    isLoading,
+    isEditMode,
+    buttonDisabled: !isValidSelection || isLoading
+  });
 
   return (
     <div className="space-y-8">
@@ -187,7 +206,7 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
           onClick={isEditMode ? handleUpdateListing : handleContinueToPayment}
           disabled={!isValidSelection || isLoading}
           size="lg"
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <>
@@ -204,8 +223,8 @@ export const SalonPaymentStep = ({ form, photoUploads = [], photoUrls = [], onPa
       </div>
       
       {!isValidSelection && (
-        <p className="text-center text-gray-500 text-sm">
-          Please select a pricing plan to continue
+        <p className="text-center text-red-500 text-sm font-medium">
+          ⚠️ Please select a pricing plan above to continue
         </p>
       )}
     </div>
