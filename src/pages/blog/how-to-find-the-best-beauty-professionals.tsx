@@ -170,9 +170,9 @@ const HowToFindBestBeautyProfessionals = () => {
                     <li>Understanding of color theory and trend forecasting</li>
                   </ul>
 
-                  <p className="text-lg leading-relaxed mb-6">
-                    When searching for <a href="/artists/nails/chicago-il" className="text-primary hover:underline">nail artists in Chicago</a> or <a href="/artists/nails/houston-tx" className="text-primary hover:underline">nail technicians in Houston</a>, pay special attention to their portfolio diversity. The best nail artists can execute both subtle, professional looks and elaborate artistic designs.
-                  </p>
+                   <p className="text-lg leading-relaxed mb-6">
+                     When searching for <a href="/artists/nails/chicago-il" className="text-primary hover:underline">nail artists in Chicago</a> or <a href="/artists/nails/houston-tx" className="text-primary hover:underline">nail technicians in Houston</a>, pay special attention to their portfolio diversity. The best nail artists can execute both subtle, professional looks and elaborate artistic designs. Check out our <a href="/jobs" className="text-primary hover:underline">jobs marketplace</a> to find verified salon opportunities.
+                   </p>
 
                   <h3 className="text-2xl font-semibold mb-4">Red Flags in Nail Professional Portfolios</h3>
                   <p className="text-lg leading-relaxed">

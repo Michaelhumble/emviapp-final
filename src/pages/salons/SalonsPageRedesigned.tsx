@@ -303,6 +303,25 @@ const SalonsPageRedesigned = () => {
           </section>
         )}
 
+        {/* Guides & Resources Section */}
+        <section className="mb-12 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-8">
+          <h2 className="text-3xl font-bold text-center mb-8">Guides & Resources for Salon Owners</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <a href="/blog/how-to-find-the-best-beauty-professionals" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-semibold mb-3 text-primary">Complete Beauty Professional Guide</h3>
+              <p className="text-gray-700 text-sm">Learn how to identify and hire top-tier beauty professionals for your salon business.</p>
+            </a>
+            <a href="/blog/top-salon-staffing-mistakes-to-avoid" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-semibold mb-3 text-primary">Avoid Staffing Mistakes</h3>
+              <p className="text-gray-700 text-sm">Discover the most common hiring mistakes that cost salon owners time, money, and reputation.</p>
+            </a>
+            <a href="/blog/why-weekly-pay-attracts-better-artists" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-lg font-semibold mb-3 text-primary">Weekly Pay Benefits</h3>
+              <p className="text-gray-700 text-sm">Learn why implementing weekly pay schedules can attract higher-quality beauty professionals.</p>
+            </a>
+          </div>
+        </section>
+
         {/* Loading State with proper skeleton */}
         {loading && (
           <section className="mb-12">

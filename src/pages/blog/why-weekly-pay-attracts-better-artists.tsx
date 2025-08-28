@@ -189,7 +189,7 @@ const WhyWeeklyPayAttractsBetterArtists = () => {
 
             <h3 className="text-2xl font-semibold mb-4">Marketing Your Payment Schedule</h3>
             <p className="text-lg leading-relaxed mb-8">
-              Make weekly pay a prominent feature in job postings when seeking <a href="/artists/hair/miami-fl" className="text-primary hover:underline">hair stylists in Miami</a> or <a href="/artists/lashes/phoenix-az" className="text-primary hover:underline">lash artists in Phoenix</a>. This benefit should be highlighted alongside competitive commission rates and other perks.
+              Make weekly pay a prominent feature in job postings when seeking <a href="/artists/hair/miami-fl" className="text-primary hover:underline">hair stylists in Miami</a> or <a href="/artists/lashes/phoenix-az" className="text-primary hover:underline">lash artists in Phoenix</a>. This benefit should be highlighted alongside competitive commission rates and other perks. Post your openings on our <a href="/jobs" className="text-primary hover:underline">premium job board</a> to reach qualified candidates.
             </p>
 
             <h2 className="text-3xl font-bold mb-6">Beyond Payment Frequency: Creating a Complete Package</h2>

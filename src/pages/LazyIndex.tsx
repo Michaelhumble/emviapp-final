@@ -108,10 +108,38 @@ const LazyIndex = () => {
         </FallbackBoundary>
       )}
 
-      {/* Social Media Proof - Simple, no lazy loading needed */}
+      {/* Popular in your area section */}
       <section className="py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">
+              Popular in Your Area
+            </h3>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover top beauty professionals and opportunities in major cities
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="/artists/nails/los-angeles-ca" className="inline-flex items-center px-4 py-2 rounded-full bg-white shadow-sm hover:shadow-md border text-sm font-medium text-gray-700 hover:text-primary transition-all">
+              Nail Artists in Los Angeles, CA
+            </a>
+            <a href="/artists/hair/houston-tx" className="inline-flex items-center px-4 py-2 rounded-full bg-white shadow-sm hover:shadow-md border text-sm font-medium text-gray-700 hover:text-primary transition-all">
+              Hair Stylists in Houston, TX
+            </a>
+            <a href="/artists/lashes/orlando-fl" className="inline-flex items-center px-4 py-2 rounded-full bg-white shadow-sm hover:shadow-md border text-sm font-medium text-gray-700 hover:text-primary transition-all">
+              Lash Artists in Orlando, FL
+            </a>
+            <a href="/blog/how-to-find-the-best-beauty-professionals" className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 shadow-sm hover:shadow-md border border-primary/20 text-sm font-medium text-primary hover:bg-primary/20 transition-all">
+              Complete Beauty Professional Guide
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Media Proof - Simple, no lazy loading needed */}
+      <section className="py-8 bg-gradient-to-br from-gray-50/50 to-white">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
+          <h3 className="text-lg md:text-xl font-medium text-gray-700 mb-4">
             Thousands of beauty professionals are growing with EmviApp every day.
           </h3>
         </div>

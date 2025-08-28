@@ -236,6 +236,27 @@ const OptimizedJobsPageContent = () => {
           </div>
         </section>
 
+        {/* Guides & Resources Section */}
+        <section className="py-12 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center mb-8">Guides & Resources</h2>
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <a href="/blog/how-to-find-the-best-beauty-professionals" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold mb-3 text-primary">Complete Beauty Professional Guide</h3>
+                <p className="text-gray-700 text-sm">Comprehensive guide to finding top nail artists, hair stylists, lash techs, and beauty professionals in major US cities.</p>
+              </a>
+              <a href="/blog/top-salon-staffing-mistakes-to-avoid" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold mb-3 text-primary">Avoid Staffing Mistakes</h3>
+                <p className="text-gray-700 text-sm">Learn the top mistakes salon owners make when hiring and how to build a winning team of beauty professionals.</p>
+              </a>
+              <a href="/blog/why-weekly-pay-attracts-better-artists" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-lg font-semibold mb-3 text-primary">Weekly Pay Benefits</h3>
+                <p className="text-gray-700 text-sm">Discover why weekly pay schedules attract higher-quality artists and improve salon retention rates.</p>
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ Section */}
         <section className="py-12 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
