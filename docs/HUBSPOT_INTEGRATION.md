@@ -38,8 +38,9 @@ HUBSPOT_PORTAL_ID=your_portal_id_here
 
 ### User Identification  
 - **When**: User logs in with email address
-- **Data**: Email, first name, last name, user ID
+- **Data**: Email, name, user ID, role, plan, location, specialty, UTM attribution
 - **Frequency**: Once per user per session (prevents duplicates)
+- **Enhanced**: Pulls from both auth metadata and profile table for rich data
 
 ### Attribution Data
 - **UTM Parameters**: Source, medium, campaign, content, term
@@ -90,23 +91,43 @@ connect-src: https://js.hs-analytics.net https://track.hubspot.com
 // Load HubSpot (automatic in provider)
 await loadHubSpot(portalId);
 
-// Identify user (automatic on login)
+// Enhanced user identification (automatic on login)
 hubspotIdentify({
   email: user.email,
   firstName: user.firstName,
   lastName: user.lastName, 
-  userId: user.id
+  userId: user.id,
+  role: 'artist', // customer, artist, salon_owner
+  plan: 'premium', // free, premium
+  city: 'San Francisco, CA',
+  specialty: 'Nail Art',
+  first_touch_utm_source: 'google'
 });
 
 // Track page view (automatic on navigation)
 hubspotTrackPageView({
   path: '/page',
-  referrer: document.referrer
+  referrer: document.referrer,
+  page_title: document.title
 });
 
-// Custom event tracking
-hubspotTrackEvent('custom_event', { 
-  property: 'value' 
+// Custom event tracking (client-side)
+hubspotTrackEvent('job_viewed', { 
+  job_id: 'abc123',
+  job_title: 'Nail Technician'
+});
+
+// Custom event tracking (with server fallback)
+import { trackHubSpotEvent, HubSpotEvents } from '@/lib/analytics/hubspotEvents';
+
+// Pre-defined events
+await HubSpotEvents.jobViewed('job-123', 'Nail Technician', 'NYC');
+await HubSpotEvents.profileViewed('artist-456', 'artist');
+
+// Custom events with server fallback
+await trackHubSpotEvent('custom_action', { 
+  property: 'value',
+  user_type: 'premium'
 });
 ```
 
@@ -115,15 +136,35 @@ hubspotTrackEvent('custom_event', {
 ### In HubSpot Dashboard
 1. **Navigate to**: Reports → Analytics Tools → Tracking Code
 2. **Verify**: Your portal ID matches the environment variable
-3. **Contact Lists**: Identify calls will automatically create/update contacts
-4. **Email Workflows**: Configure in HubSpot UI (not in code)
-5. **Lead Scoring**: Set up rules based on page views and events
+3. **Contact Properties**: Create custom properties for enhanced tracking:
+   - `user_role` (text) - artist, customer, salon_owner
+   - `subscription_plan` (text) - free, premium
+   - `specialty` (text) - Nails, Hair, etc.
+   - `years_experience` (number)
+   - `first_touch_utm_source` (text)
+   - `salon_name` (text)
+4. **Contact Lists**: Create smart lists based on properties and behaviors
+5. **Email Workflows**: Set up nurture campaigns by user role/plan
+6. **Lead Scoring**: Rules based on page views, events, and user properties
 
-### Recommended HubSpot Setup
-- **Contact Properties**: Ensure custom_user_id property exists
-- **Lists**: Create smart lists based on page views and UTM data
-- **Workflows**: Set up nurture campaigns for identified users  
-- **Reports**: Use HubSpot's analytics dashboard for insights
+### Server-Side Event Tracking
+A server helper is available at `/functions/v1/hubspot-event` for backend event tracking:
+
+```typescript
+// From your edge functions or server code
+const response = await supabase.functions.invoke('hubspot-event', {
+  body: {
+    eventName: 'job_posted',
+    email: user.email,
+    userId: user.id,
+    properties: {
+      job_title: 'Nail Technician',
+      location: 'NYC',
+      salary_range: '$50k-$60k'
+    }
+  }
+});
+```
 
 ## Testing & Verification
 
@@ -184,6 +225,7 @@ To disable HubSpot tracking:
 - Verify user has email address in auth profile
 - Check that user logged in after HubSpot loaded
 - Look for duplicate identification prevention logs
+- Ensure profile data loads correctly (check network tab for profiles API calls)
 
 **Missing UTM data**:
 - UTM parameters must be present on initial page load

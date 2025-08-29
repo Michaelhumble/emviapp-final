@@ -14,6 +14,17 @@ interface HubSpotIdentifyData {
   firstName?: string;
   lastName?: string;
   userId?: string;
+  role?: string;
+  city?: string;
+  plan?: string;
+  salon_name?: string;
+  specialty?: string;
+  years_experience?: number | null;
+  first_touch_utm_source?: string;
+  first_touch_utm_medium?: string;
+  first_touch_utm_campaign?: string;
+  landing_page?: string;
+  [key: string]: any;
 }
 
 interface HubSpotPageViewData {
@@ -225,6 +236,16 @@ export class HubSpotAnalytics {
       if (data.firstName) identifyPayload.firstname = data.firstName;
       if (data.lastName) identifyPayload.lastname = data.lastName;
       if (data.userId) identifyPayload.custom_user_id = data.userId;
+      if (data.role) identifyPayload.user_role = data.role;
+      if (data.city) identifyPayload.city = data.city;
+      if (data.plan) identifyPayload.subscription_plan = data.plan;
+      if (data.salon_name) identifyPayload.salon_name = data.salon_name;
+      if (data.specialty) identifyPayload.specialty = data.specialty;
+      if (data.years_experience) identifyPayload.years_experience = data.years_experience;
+      if (data.first_touch_utm_source) identifyPayload.first_touch_utm_source = data.first_touch_utm_source;
+      if (data.first_touch_utm_medium) identifyPayload.first_touch_utm_medium = data.first_touch_utm_medium;
+      if (data.first_touch_utm_campaign) identifyPayload.first_touch_utm_campaign = data.first_touch_utm_campaign;
+      if (data.landing_page) identifyPayload.first_landing_page = data.landing_page;
 
       window._hsq.push(['identify', identifyPayload]);
       

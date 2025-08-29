@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { loadHubSpot, hubspotIdentify } from '@/lib/analytics/hubspot';
+import { useLocation } from 'react-router-dom';
+import { loadHubSpot, hubspotIdentify, hubspotTrackPageView } from '@/lib/analytics/hubspot';
 import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * HubSpot Analytics Provider - App-wide Integration
@@ -12,8 +14,10 @@ import { useAuth } from '@/context/auth';
  */
 export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isSignedIn, loading } = useAuth();
+  const location = useLocation();
   const [hubspotLoaded, setHubspotLoaded] = useState(false);
   const [identifiedUser, setIdentifiedUser] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   // Load HubSpot on component mount
   useEffect(() => {
@@ -61,7 +65,45 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => window.removeEventListener('analytics-consent', handleConsentChange as EventListener);
   }, [hubspotLoaded]);
 
-  // Identify user when they log in (only after auth is ready and user is signed in)
+  // Fetch user profile data for enhanced identification
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!isSignedIn || !user?.id) return;
+
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          setUserProfile(profile);
+        }
+      } catch (error) {
+        console.warn('HubSpot: Could not fetch user profile for enhanced tracking', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [isSignedIn, user?.id]);
+
+  // Track page views on route changes
+  useEffect(() => {
+    if (!hubspotLoaded) return;
+
+    // Track page view with UTM parameters
+    hubspotTrackPageView({
+      path: location.pathname + location.search,
+      referrer: document.referrer || undefined,
+      page_title: document.title,
+      url: window.location.href
+    });
+
+    console.log('HubSpot: Page view tracked', location.pathname);
+  }, [location, hubspotLoaded]);
+
+  // Identify user when they log in (enhanced with profile data)
   useEffect(() => {
     if (!hubspotLoaded || loading || !isSignedIn || !user?.email) return;
 
@@ -69,31 +111,77 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const userKey = user.id || user.email;
     if (identifiedUser === userKey) return;
 
-    // Extract name parts from user data
-    const getUserNames = () => {
-      // Try user_metadata first, then top-level properties
+    // Extract enhanced user data
+    const getUserData = () => {
+      // Try user_metadata first, then profile data, then fallbacks
       const metadata = user.user_metadata || {};
-      const firstName = metadata.firstName || metadata.first_name || '';
-      const lastName = metadata.lastName || metadata.last_name || '';
+      const profile = userProfile || {};
       
-      return { firstName, lastName };
+      const firstName = metadata.firstName || metadata.first_name || 
+                       profile.full_name?.split(' ')[0] || '';
+      const lastName = metadata.lastName || metadata.last_name || 
+                      profile.full_name?.split(' ').slice(1).join(' ') || '';
+      
+      return {
+        firstName,
+        lastName,
+        role: profile.role || metadata.role || 'customer',
+        city: profile.location || '',
+        plan: profile.boosted_until ? 'premium' : 'free',
+        salon_name: profile.salon_name || '',
+        specialty: profile.specialty || '',
+        years_experience: profile.years_experience || null
+      };
     };
 
-    const { firstName, lastName } = getUserNames();
+    const userData = getUserData();
 
-    // Identify user in HubSpot
+    // Get UTM data for attribution
+    const getUTMData = () => {
+      try {
+        const utmString = sessionStorage.getItem('emvi_utm');
+        if (utmString) {
+          const utmData = JSON.parse(utmString);
+          return {
+            first_touch_utm_source: utmData.utmSource,
+            first_touch_utm_medium: utmData.utmMedium,
+            first_touch_utm_campaign: utmData.utmCampaign,
+            landing_page: utmData.landingPage
+          };
+        }
+      } catch (error) {
+        console.warn('HubSpot: Could not parse UTM data for identification');
+      }
+      return {};
+    };
+
+    const utmData = getUTMData();
+
+    // Identify user in HubSpot with enhanced data
     const success = hubspotIdentify({
       email: user.email,
-      firstName,
-      lastName,
-      userId: user.id
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      userId: user.id,
+      // Enhanced properties
+      role: userData.role,
+      city: userData.city,
+      plan: userData.plan,
+      salon_name: userData.salon_name,
+      specialty: userData.specialty,
+      years_experience: userData.years_experience,
+      ...utmData
     });
 
     if (success) {
       setIdentifiedUser(userKey);
-      console.log('HubSpot: User identified on login');
+      console.log('HubSpot: User identified with enhanced data', { 
+        email: user.email, 
+        role: userData.role,
+        plan: userData.plan 
+      });
     }
-  }, [hubspotLoaded, loading, isSignedIn, user, identifiedUser]);
+  }, [hubspotLoaded, loading, isSignedIn, user, userProfile, identifiedUser]);
 
   return <>{children}</>;
 };
