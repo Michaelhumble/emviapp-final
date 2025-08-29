@@ -4305,6 +4305,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          created_at: string | null
+          id: number
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          operation: string
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation: string
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation?: string
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string | null
