@@ -166,6 +166,43 @@ const response = await supabase.functions.invoke('hubspot-event', {
 });
 ```
 
+### Forms Integration
+
+The integration includes a dedicated forms endpoint that properly maps form data to HubSpot:
+
+```typescript
+// Forms are submitted via: /functions/v1/hubspot-forms
+// Supported form types: contact_general, press_inquiry, partner_affiliate
+
+// Form fields automatically mapped:
+// - name → firstname/lastname
+// - email, phone, role, city, website, message
+// - UTM parameters (source, medium, campaign, content, term)
+// - User context (userId when logged in)
+
+// Example usage:
+const response = await supabase.functions.invoke('hubspot-forms', {
+  body: {
+    formType: 'contact_general',
+    name: 'John Doe',
+    email: 'john@example.com',
+    phone: '555-1234',
+    role: 'artist',
+    city: 'San Francisco',
+    message: 'Interested in partnership',
+    utm_source: 'google',
+    utm_campaign: 'partnership_drive',
+    userId: 'user-123'
+  }
+});
+```
+
+**Required HubSpot Configuration:**
+1. Create forms in HubSpot portal for each form type
+2. Update form IDs in `src/lib/analytics/hubspot.ts`
+3. Add `HS_PRIVATE_APP_TOKEN` to Supabase secrets for enhanced API access
+4. Map custom properties (user_role, utm_source, etc.) in HubSpot
+
 ## Testing & Verification
 
 ### Development Testing
