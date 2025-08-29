@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { enforceHTTPS, validateSession } from '@/utils/security';
 import { supabaseBypass } from '@/types/supabase-bypass';
+import { PRODUCTION_SECURITY_HEADERS } from '@/config/production';
 
 interface SecurityContextType {
   isSessionValid: boolean;
@@ -29,6 +30,62 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     // Enforce HTTPS in production
     enforceHTTPS();
 
+    // Set up comprehensive security headers
+    const setupSecurityHeaders = () => {
+      // Set CSP meta tag for additional client-side security
+      const existingCsp = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      if (!existingCsp) {
+        const cspMeta = document.createElement('meta');
+        cspMeta.setAttribute('http-equiv', 'Content-Security-Policy');
+        cspMeta.setAttribute('content', PRODUCTION_SECURITY_HEADERS['Content-Security-Policy']);
+        document.head.appendChild(cspMeta);
+        console.log('🔐 [SECURITY] CSP header applied');
+      }
+
+      // Set referrer policy meta tag
+      const existingReferrer = document.querySelector('meta[name="referrer"]');
+      if (!existingReferrer) {
+        const referrerMeta = document.createElement('meta');
+        referrerMeta.setAttribute('name', 'referrer');
+        referrerMeta.setAttribute('content', PRODUCTION_SECURITY_HEADERS['Referrer-Policy']);
+        document.head.appendChild(referrerMeta);
+        console.log('🔐 [SECURITY] Referrer policy applied');
+      }
+    };
+
+    // Setup CSP violation reporting
+    const handleSecurityPolicyViolation = (event: SecurityPolicyViolationEvent) => {
+      const report = {
+        'csp-report': {
+          'document-uri': event.documentURI,
+          'referrer': event.referrer,
+          'violated-directive': event.violatedDirective,
+          'effective-directive': event.effectiveDirective,
+          'original-policy': event.originalPolicy,
+          'blocked-uri': event.blockedURI,
+          'line-number': event.lineNumber,
+          'column-number': event.columnNumber,
+          'source-file': event.sourceFile,
+          'status-code': event.statusCode,
+          'script-sample': event.sample
+        }
+      };
+
+      // Send violation report to our CSP reporting endpoint
+      fetch('https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/csp-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(report),
+      }).catch(error => {
+        console.warn('Failed to send CSP violation report:', error);
+      });
+    };
+
+    setupSecurityHeaders();
+    document.addEventListener('securitypolicyviolation', handleSecurityPolicyViolation);
+
     // REMOVED: Aggressive session validation that was destroying sessions
     // Instead, trust Supabase's built-in session management
     setIsSessionValid(true); // Default to valid
@@ -48,6 +105,7 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
 
     return () => {
       subscription.unsubscribe();
+      document.removeEventListener('securitypolicyviolation', handleSecurityPolicyViolation);
     };
   }, []);
 

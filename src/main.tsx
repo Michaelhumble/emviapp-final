@@ -29,6 +29,38 @@ if (link) {
   link.href = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo//emvi-logo-transparent.png";
 }
 
+// Security Headers - Apply early for maximum protection
+const securityHeaders = {
+  'Content-Security-Policy': [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: blob: https://*.supabase.co https:",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://wwhqbjrhbajpabfdwnip.supabase.co",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "report-uri https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/csp-report"
+  ].join('; '),
+  'Referrer-Policy': 'strict-origin-when-cross-origin'
+};
+
+// Apply CSP and referrer policy early
+if (!document.querySelector('meta[http-equiv="Content-Security-Policy"]')) {
+  const cspMeta = document.createElement('meta');
+  cspMeta.setAttribute('http-equiv', 'Content-Security-Policy');
+  cspMeta.setAttribute('content', securityHeaders['Content-Security-Policy']);
+  document.head.appendChild(cspMeta);
+}
+
+if (!document.querySelector('meta[name="referrer"]')) {
+  const referrerMeta = document.createElement('meta');
+  referrerMeta.setAttribute('name', 'referrer');
+  referrerMeta.setAttribute('content', securityHeaders['Referrer-Policy']);
+  document.head.appendChild(referrerMeta);
+}
+
 // Improved viewport meta tag with better mobile optimizations
 const existingViewport = document.querySelector('meta[name="viewport"]');
 if (existingViewport) {
