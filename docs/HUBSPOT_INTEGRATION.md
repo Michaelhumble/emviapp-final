@@ -1,307 +1,246 @@
-# HubSpot Integration Documentation
+# HubSpot CRM Integration for EmviApp
+
+This document outlines the comprehensive HubSpot CRM integration for EmviApp, including contact management, deal tracking, forms integration, and attribution capture.
 
 ## Overview
 
-EmviApp integrates with HubSpot's free analytics platform to track user behavior, identify authenticated users, and capture marketing attribution data. The integration is designed with privacy-first principles and production-only loading.
+EmviApp integrates with HubSpot Free Plan to provide:
+- **Contact Management**: Automatic contact upsert on signup/login with attribution data
+- **Deal Tracking**: MQL milestone tracking and revenue event deal updates
+- **Attribution Capture**: UTM parameters, affiliate IDs, and page-specific slug tracking
+- **Forms Integration**: Contact forms that create/update contacts with full attribution
+- **Admin Monitoring**: Dashboard to monitor sync attempts and integration health
 
-## Setup Instructions
+## Required HubSpot Properties
 
-### 1. Load Order Fix (Critical)
-The `HubSpotProvider` is properly wrapped **inside** `AuthProvider` context to prevent "useAuth must be used within an AuthProvider" runtime errors. This ensures auth state is ready before HubSpot initialization and guards against user identification when not logged in.
+The integration requires these custom properties to be created in your HubSpot portal:
 
-### 2. Environment Configuration
+### Contact Properties
+- `affiliate_id` (Single-line text) - Affiliate/referrer ID
+- `landing_url` (Single-line text) - First landing page URL
+- `utm_source` (Single-line text) - UTM source parameter
+- `utm_medium` (Single-line text) - UTM medium parameter
+- `utm_campaign` (Single-line text) - UTM campaign parameter
+- `utm_content` (Single-line text) - UTM content parameter
+- `utm_term` (Single-line text) - UTM term parameter
+- `first_seen_at` (Date picker) - First visit timestamp
+- `press_slug` (Single-line text) - Press article slug from /press/[slug] visits
+- `city_slug` (Single-line text) - City page slug from programmatic pages
+- `category_slug` (Single-line text) - Category slug from programmatic pages
+- `signup_stage` (Dropdown) - Values: visitor, lead, mql, sql, customer
+- `mql_score` (Number) - Marketing qualified lead score
 
-Add your HubSpot Portal ID to your environment variables:
+### Deal Properties
+Same properties as Contact properties above for attribution tracking on deals.
 
-```env
-# HubSpot Configuration (Optional - only loads in production when set)
-HUBSPOT_PORTAL_ID=your_portal_id_here
-```
-
-**Note**: The integration supports multiple environment variable formats:
-- `VITE_HUBSPOT_PORTAL_ID` (Vite standard)  
-- `HUBSPOT_PORTAL_ID` (generic)
-
-### 3. Finding Your Portal ID
-
-1. Log into your HubSpot account
-2. Navigate to Settings → Account Setup → Account Defaults
-3. Your Hub ID (Portal ID) is displayed at the top of the page
-4. Copy this number (without any prefixes) to your environment variable
-
-## What Data We Track
-
-### Automatic Page Views
-- **When**: Every page navigation in production
-- **Data**: URL, referrer, UTM parameters, page type, user role
-- **Privacy**: Only after user consent
-
-### User Identification  
-- **When**: User logs in with email address
-- **Data**: Email, name, user ID, role, plan, location, specialty, UTM attribution
-- **Frequency**: Once per user per session (prevents duplicates)
-- **Enhanced**: Pulls from both auth metadata and profile table for rich data
-
-### Attribution Data
-- **UTM Parameters**: Source, medium, campaign, content, term
-- **Referrer**: Initial and page-level referrer tracking
-- **Landing Page**: First page visited with UTM data
-- **Storage**: 90-day TTL in sessionStorage
-
-## Privacy & Security
-
-### Consent Requirements
-- **Cookie Consent**: Only loads after user accepts marketing cookies
-- **Do Not Track**: Respects browser DNT=1 setting
-- **Production Only**: Never loads in development environment
-
-### Content Security Policy
-The integration is whitelisted in our CSP headers:
-```
-script-src: https://js.hs-analytics.net
-connect-src: https://js.hs-analytics.net https://track.hubspot.com
-```
-
-### Error Handling
-- Graceful failures if HubSpot script is blocked
-- No-op functions when script unavailable
-- Console warnings for debugging (not user-facing errors)
-
-## Implementation Details
+## Architecture
 
 ### Core Components
 
-1. **HubSpotAnalytics Class** (`src/lib/analytics/hubspot.ts`)
-   - Singleton pattern for consistent state
-   - Async script loading with timeout protection
-   - Session-based duplicate prevention
+1. **HubSpotCRM Class** (`src/lib/analytics/hubspot.ts`)
+   - Full CRM integration with contacts, deals, and forms
+   - Attribution capture and persistence in localStorage
+   - Consent-based loading with graceful degradation
 
-2. **HubSpotProvider** (`src/components/analytics/HubSpotProvider.tsx`)
-   - React provider for app-wide integration
-   - Auth state monitoring for user identification
-   - Consent change listener
+2. **Edge Functions**
+   - `hubspot-crm-contact`: Contact upsert with all attribution properties
+   - `hubspot-crm-deal`: Deal creation/update with attribution tracking
+   - `hubspot-forms`: Enhanced form submission with hidden fields
 
-3. **App Integration** (`src/App.tsx`)
-   - Wrapped in provider hierarchy
-   - Automatic initialization on app load
+3. **Admin Dashboard** (`src/pages/admin/HubSpotSync.tsx`)
+   - Monitor last 20 sync attempts
+   - View attribution data and integration status
+   - Debug information and troubleshooting
 
-### Key Methods
+## Setup Instructions
+
+### 1. Environment Configuration
+
+Set your HubSpot Portal ID:
+```env
+# HubSpot Portal ID (required)
+VITE_HUBSPOT_PORTAL_ID=your_portal_id_here
+```
+
+### 2. Private App Token (Server-Side)
+
+Add your HubSpot Private App token to Supabase secrets:
+```env
+# HubSpot Private App Token (required for CRM operations)
+HS_PRIVATE_APP_TOKEN=your_private_app_token_here
+```
+
+**Required Scopes for Private App:**
+- `crm.objects.contacts.read`
+- `crm.objects.contacts.write`
+- `crm.objects.deals.read`
+- `crm.objects.deals.write`
+- `forms`
+- `forms-uploaded-files`
+- `external_integrations.forms.access`
+
+### 3. HubSpot Portal Configuration
+
+1. **Create Custom Properties**: Add all required properties listed above to both Contact and Deal objects
+2. **Create Forms**: Create forms for contact_general, press_inquiry, partner_affiliate (update form IDs in code)
+3. **Set Up Workflows**: Optional automation based on signup_stage changes
+
+## Usage
+
+### Attribution Capture
+
+Attribution is automatically captured on first page load and stored persistently:
 
 ```typescript
-// Load HubSpot (automatic in provider)
-await loadHubSpot(portalId);
+import { captureAttribution, getAttribution } from '@/lib/analytics/hubspot';
 
-// Enhanced user identification (automatic on login)
-hubspotIdentify({
-  email: user.email,
-  firstName: user.firstName,
-  lastName: user.lastName, 
-  userId: user.id,
-  role: 'artist', // customer, artist, salon_owner
-  plan: 'premium', // free, premium
-  city: 'San Francisco, CA',
-  specialty: 'Nail Art',
-  first_touch_utm_source: 'google'
+// Capture attribution (automatic on page load)
+const attribution = captureAttribution();
+
+// Get stored attribution
+const stored = getAttribution();
+```
+
+### Contact Management
+
+```typescript
+import { upsertContact } from '@/lib/analytics/hubspot';
+
+// Create or update contact with attribution
+const result = await upsertContact('user@example.com', {
+  firstName: 'John',
+  lastName: 'Doe',
+  role: 'artist',
+  city: 'San Francisco',
+  signup_stage: 'mql',
+  mql_score: 75
 });
 
-// Track page view (automatic on navigation)
-hubspotTrackPageView({
-  path: '/page',
-  referrer: document.referrer,
-  page_title: document.title
-});
+if (result.success) {
+  console.log('Contact ID:', result.contactId);
+}
+```
 
-// Custom event tracking (client-side)
-hubspotTrackEvent('job_viewed', { 
-  job_id: 'abc123',
-  job_title: 'Nail Technician'
-});
+### Deal Management
 
-// Custom event tracking (with server fallback)
-import { trackHubSpotEvent, HubSpotEvents } from '@/lib/analytics/hubspotEvents';
+```typescript
+import { createOrUpdateDeal } from '@/lib/analytics/hubspot';
 
-// Pre-defined events
-await HubSpotEvents.jobViewed('job-123', 'Nail Technician', 'NYC');
-await HubSpotEvents.profileViewed('artist-456', 'artist');
-
-// Custom events with server fallback
-await trackHubSpotEvent('custom_action', { 
-  property: 'value',
-  user_type: 'premium'
+// Create deal when user hits MQL milestone
+const result = await createOrUpdateDeal('contact-id-123', {
+  dealName: 'Emvi App MQL - John Doe',
+  amount: 500,
+  dealStage: 'appointmentscheduled'
 });
 ```
 
-## HubSpot Configuration
-
-### In HubSpot Dashboard
-1. **Navigate to**: Reports → Analytics Tools → Tracking Code
-2. **Verify**: Your portal ID matches the environment variable
-3. **Contact Properties**: Create custom properties for enhanced tracking:
-   - `user_role` (text) - artist, customer, salon_owner
-   - `subscription_plan` (text) - free, premium
-   - `specialty` (text) - Nails, Hair, etc.
-   - `years_experience` (number)
-   - `first_touch_utm_source` (text)
-   - `salon_name` (text)
-4. **Contact Lists**: Create smart lists based on properties and behaviors
-5. **Email Workflows**: Set up nurture campaigns by user role/plan
-6. **Lead Scoring**: Rules based on page views, events, and user properties
-
-### Server-Side Event Tracking
-A server helper is available at `/functions/v1/hubspot-event` for backend event tracking:
+### Form Submission
 
 ```typescript
-// From your edge functions or server code
-const response = await supabase.functions.invoke('hubspot-event', {
-  body: {
-    eventName: 'job_posted',
-    email: user.email,
-    userId: user.id,
-    properties: {
-      job_title: 'Nail Technician',
-      location: 'NYC',
-      salary_range: '$50k-$60k'
-    }
-  }
+import { submitHubSpotForm } from '@/lib/analytics/hubspot';
+
+// Submit form with attribution
+const result = await submitHubSpotForm('contact_general', {
+  name: 'John Doe',
+  email: 'john@example.com',
+  message: 'Interested in partnership'
 });
 ```
 
-### Forms Integration
+## UTM and Attribution Flow
 
-The integration includes a dedicated forms endpoint that properly maps form data to HubSpot:
+1. **First Visit**: UTM parameters and referrer captured in localStorage (`emvi.attribution.v1`)
+2. **Page Navigation**: Press slugs, city slugs, and category slugs updated
+3. **Contact Creation**: All attribution data sent to HubSpot on signup/login
+4. **Deal Creation**: Attribution copied from contact to deal
+5. **Form Submission**: Attribution automatically included in form data
 
-```typescript
-// Forms are submitted via: /functions/v1/hubspot-forms
-// Supported form types: contact_general, press_inquiry, partner_affiliate
+## Admin Monitoring
 
-// Form fields automatically mapped:
-// - name → firstname/lastname
-// - email, phone, role, city, website, message
-// - UTM parameters (source, medium, campaign, content, term)
-// - User context (userId when logged in)
+Visit `/admin/hubspot-sync` to monitor:
+- Integration status and portal ID
+- Last 20 sync attempts with success/error details
+- Current attribution data in session
+- Debug information for troubleshooting
 
-// Example usage:
-const response = await supabase.functions.invoke('hubspot-forms', {
-  body: {
-    formType: 'contact_general',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '555-1234',
-    role: 'artist',
-    city: 'San Francisco',
-    message: 'Interested in partnership',
-    utm_source: 'google',
-    utm_campaign: 'partnership_drive',
-    userId: 'user-123'
-  }
-});
-```
+## Testing
 
-**Required HubSpot Configuration:**
-1. Create forms in HubSpot portal for each form type
-2. Update form IDs in `src/lib/analytics/hubspot.ts`
-3. Add `HS_PRIVATE_APP_TOKEN` to Supabase secrets for enhanced API access
-4. Map custom properties (user_role, utm_source, etc.) in HubSpot
+### Dry Run Script
 
-## Testing & Verification
+Test your integration with the dry run script:
 
-### Development Testing
 ```bash
-# Set environment variable
+# Set environment variables
+export HS_PRIVATE_APP_TOKEN=your_token_here
 export VITE_HUBSPOT_PORTAL_ID=your_portal_id
 
-# Build production version locally  
-npm run build
-npm run preview
-
-# Open browser network tab
-# Look for requests to js.hs-analytics.net
+# Run the test
+npx tsx scripts/hubspotTest.ts
 ```
 
-### Production Verification
-1. **Script Loading**: Check for `_hsq` array in browser console
-2. **Page Views**: Network tab shows tracking calls on navigation
-3. **User Identification**: Identify call appears after login
-4. **HubSpot Dashboard**: Verify data appears in Analytics Tools
+The script will:
+- Create/update a test contact with attribution data
+- Create/update a test deal linked to the contact
+- Verify all properties are populated correctly
 
-### Console Debugging
-```javascript
-// Check if HubSpot is loaded
-window._hsq
+### Manual Testing
 
-// Check current portal ID
-console.log(hubspotAnalytics.getPortalIdInUse())
+1. **Attribution Capture**: Visit with UTM parameters and check localStorage
+2. **Contact Creation**: Sign up and verify contact appears in HubSpot with UTMs
+3. **Deal Creation**: Trigger MQL milestone and verify deal creation
+4. **Form Submission**: Submit forms and verify attribution data flows through
 
-// Check if ready
-console.log(hubspotAnalytics.isReady())
-```
+## Privacy and Consent
 
-## Disabling HubSpot
+- **Production Only**: Never loads in development environment
+- **Consent Required**: Respects cookie consent and Do Not Track settings
+- **Graceful Degradation**: Works without HubSpot if user blocks tracking
+- **Data Minimization**: Only collects necessary attribution and profile data
 
-To disable HubSpot tracking:
-1. Remove or comment out the `HUBSPOT_PORTAL_ID` environment variable
-2. Restart your application  
-3. No HubSpot scripts will load
+## Error Handling
 
-**Note**: Users can also disable tracking by:
-- Declining cookie consent
-- Enabling Do Not Track in their browser
-- Using ad blockers (integration handles gracefully)
+All operations include comprehensive error handling:
+- Network failures are logged but don't break user experience
+- Sync attempts are logged for admin monitoring
+- Missing properties are handled gracefully
+- Server-side validation prevents malformed requests
 
 ## Troubleshooting
 
 ### Common Issues
 
-**HubSpot not loading**:
-- Check `HUBSPOT_PORTAL_ID` is set correctly
-- Verify you're in production mode (`NODE_ENV=production`)  
-- Check browser console for CSP violations
-- Ensure user has accepted marketing cookies
+**Integration not working:**
+- Verify `HS_PRIVATE_APP_TOKEN` is set in Supabase secrets
+- Check that `VITE_HUBSPOT_PORTAL_ID` matches your portal
+- Ensure private app has all required scopes
 
-**User identification not working**:
-- Verify user has email address in auth profile
-- Check that user logged in after HubSpot loaded
-- Look for duplicate identification prevention logs
-- Ensure profile data loads correctly (check network tab for profiles API calls)
+**Missing attribution data:**
+- Check localStorage for `emvi.attribution.v1` key
+- Verify UTM parameters were present on initial page load
+- Confirm user consent is granted
 
-**Missing UTM data**:
-- UTM parameters must be present on initial page load
-- Check sessionStorage for `emvi_utm` key
-- Verify 90-day TTL hasn't expired
+**Sync failures:**
+- Check `/admin/hubspot-sync` for error details  
+- Verify custom properties exist in HubSpot portal
+- Review edge function logs in Supabase dashboard
 
-### Debug Logs
-Enable debug logging by opening browser console:
+### Debug Commands
+
 ```javascript
-// All HubSpot logs are prefixed with "HubSpot:"
-// Filter console to see only HubSpot-related messages
+// Check attribution data
+console.log(JSON.parse(localStorage.getItem('emvi.attribution.v1')));
+
+// Check sync attempts
+console.log(JSON.parse(localStorage.getItem('hubspot_sync_attempts')));
+
+// Test dry run
+npx tsx scripts/hubspotTest.ts
 ```
-
-## Data Flow Diagram
-
-```
-User Visit → Consent Check → HubSpot Load → Page View Track
-    ↓
-User Login → Email Check → Identify Call → Contact Creation
-    ↓  
-Page Navigation → UTM Collection → Page View Track → Analytics Dashboard
-```
-
-## Compliance Notes
-
-- **GDPR**: Respects consent through our existing cookie banner
-- **CCPA**: Honors Do Not Track browser setting
-- **Data Retention**: Controlled by HubSpot's retention policies
-- **User Rights**: Users can withdraw consent via cookie preferences
 
 ## Support
 
-For technical issues:
-- Check browser console for error messages
-- Verify environment configuration  
-- Test in production environment
-- Review HubSpot's tracking code status in their dashboard
-
-For HubSpot-specific questions:
-- Refer to HubSpot's documentation at developers.hubspot.com
-- Check HubSpot Academy for training resources
-- Contact HubSpot support for platform-specific issues
+For integration issues:
+- Check Supabase edge function logs
+- Review HubSpot portal activity logs  
+- Use the admin dashboard for sync status
+- Run the dry-run script to validate setup

@@ -93,12 +93,7 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!hubspotLoaded) return;
 
     // Track page view with UTM parameters
-    hubspotTrackPageView({
-      path: location.pathname + location.search,
-      referrer: document.referrer || undefined,
-      page_title: document.title,
-      url: window.location.href
-    });
+    hubspotTrackPageView(location.pathname + location.search);
 
     console.log('HubSpot: Page view tracked', location.pathname);
   }, [location, hubspotLoaded]);
@@ -158,8 +153,7 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const utmData = getUTMData();
 
     // Identify user in HubSpot with enhanced data
-    const success = hubspotIdentify({
-      email: user.email,
+    hubspotIdentify(user.email, {
       firstName: userData.firstName,
       lastName: userData.lastName,
       userId: user.id,
@@ -173,14 +167,12 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ...utmData
     });
 
-    if (success) {
-      setIdentifiedUser(userKey);
-      console.log('HubSpot: User identified with enhanced data', { 
-        email: user.email, 
-        role: userData.role,
-        plan: userData.plan 
-      });
-    }
+    setIdentifiedUser(userKey);
+    console.log('HubSpot: User identified with enhanced data', { 
+      email: user.email, 
+      role: userData.role,
+      plan: userData.plan 
+    });
   }, [hubspotLoaded, loading, isSignedIn, user, userProfile, identifiedUser]);
 
   return <>{children}</>;

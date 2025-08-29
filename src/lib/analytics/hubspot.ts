@@ -351,15 +351,15 @@ export class HubSpotCRM {
       const result = await response.json();
       
       if (result.success) {
-        this.logSyncAttempt('deal', result.dealId, 'success');
+        this.logSyncAttempt('deal', 'success', result.dealId);
         console.log('HubSpot: Deal created/updated successfully', result.dealId);
         return { success: true, dealId: result.dealId };
       } else {
-        this.logSyncAttempt('deal', undefined, 'error', result.error);
+        this.logSyncAttempt('deal', 'error', undefined, result.error);
         return { success: false, error: result.error };
       }
     } catch (error) {
-      this.logSyncAttempt('deal', undefined, 'error', error.message);
+      this.logSyncAttempt('deal', 'error', undefined, error.message);
       console.error('HubSpot: Deal operation failed', error);
       return { success: false, error: error.message };
     }
@@ -398,15 +398,15 @@ export class HubSpotCRM {
       const result = await response.json();
       
       if (result.success) {
-        this.logSyncAttempt('form', formId, 'success');
+        this.logSyncAttempt('form', 'success', formId);
         console.log('HubSpot: Form submitted successfully', formId);
         return { success: true };
       } else {
-        this.logSyncAttempt('form', formId, 'error', result.error);
+        this.logSyncAttempt('form', 'error', formId, result.error);
         return { success: false, error: result.error };
       }
     } catch (error) {
-      this.logSyncAttempt('form', formId, 'error', error.message);
+      this.logSyncAttempt('form', 'error', formId, error.message);
       console.error('HubSpot: Form submission failed', error);
       return { success: false, error: error.message };
     }
@@ -517,12 +517,24 @@ export class HubSpotCRM {
 // Export singleton instance  
 export const hubspotCRM = HubSpotCRM.getInstance();
 
+// Legacy analytics exports for backward compatibility
+export const hubspotAnalytics = hubspotCRM;
+
 // Convenience functions for easy integration
 export const loadHubSpot = (portalId?: string) => hubspotCRM.loadHubSpot(portalId);
 export const captureAttribution = () => hubspotCRM.captureAttribution();
 export const getAttribution = () => hubspotCRM.getAttribution();
 export const upsertContact = (email: string, contactData?: Partial<ContactData>) => hubspotCRM.upsertContact(email, contactData);
 export const createOrUpdateDeal = (contactId: string, dealData: DealData) => hubspotCRM.createOrUpdateDeal(contactId, dealData);
+
+// Legacy analytics functions for backward compatibility
+export const hubspotIdentify = (email: string, userData: Partial<ContactData> = {}) => hubspotCRM.identify(email, userData);
+export const hubspotTrackPageView = (path?: string) => hubspotCRM.trackPageView(path);
+export const hubspotTrackEvent = (eventName: string, properties: Record<string, any> = {}) => {
+  // For now, just log - can be extended to use HubSpot events API if needed
+  console.log('HubSpot Event:', eventName, properties);
+  return true;
+};
 
 // HubSpot Form IDs (configure these in your HubSpot portal)
 export const HUBSPOT_FORM_IDS = {
