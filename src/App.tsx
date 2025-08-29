@@ -10,6 +10,7 @@ import { NotificationProvider } from '@/context/notification';
 import { RecommendationProvider } from '@/context/RecommendationContext';
 import { OnboardingProvider } from '@/context/OnboardingContext';
 import { SecurityProvider } from '@/components/security/SecurityProvider';
+import HubSpotProvider from '@/components/analytics/HubSpotProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import LazyIndex from "./pages/LazyIndex";
@@ -149,7 +150,8 @@ function App() {
       <GlobalSEOInjection />
       <GeneralErrorBoundary>
         <SecurityProvider>
-          <AuthProvider>
+          <HubSpotProvider>
+            <AuthProvider>
             <BookingNotificationProvider>
             <SalonProvider>
               <SubscriptionProvider>
@@ -335,8 +337,9 @@ function App() {
             </SubscriptionProvider>
           </SalonProvider>
             </BookingNotificationProvider>
-        </AuthProvider>
-      </SecurityProvider>
+         </AuthProvider>
+         </HubSpotProvider>
+       </SecurityProvider>
       </GeneralErrorBoundary>
     </HelmetProvider>
   );
