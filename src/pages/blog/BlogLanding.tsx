@@ -39,7 +39,9 @@ const BlogLanding = () => {
 
   const featuredArticles = getFeaturedArticles();
   const trendingArticles = getTrendingArticles();
-  const recentArticles = getRecentArticles(); // Show ALL articles, not just 9
+  const recentArticles = getRecentArticles().sort((a, b) => 
+    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  ); // Sort by newest first
   const dynamicCategories = getAllCategories();
   const allTags = getAllTags();
   
