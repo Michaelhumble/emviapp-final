@@ -316,3 +316,37 @@ export const hubspotIdentify = (data: HubSpotIdentifyData) => hubspotAnalytics.h
 export const hubspotTrackPageView = (data?: HubSpotPageViewData) => hubspotAnalytics.trackPageView(data);
 export const hubspotTrackEvent = (eventName: string, properties?: Record<string, any>) => 
   hubspotAnalytics.trackEvent(eventName, properties);
+
+// HubSpot Form IDs (configure these in your HubSpot portal)
+export const HUBSPOT_FORM_IDS = {
+  contact_general: 'f5a8b2c4-d6e8-4a9b-8c7d-1234567890ab',
+  press_inquiry: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 
+  partner_affiliate: '9876543210-abcd-ef12-3456-789012345678'
+} as const;
+
+export type HubSpotFormType = keyof typeof HUBSPOT_FORM_IDS;
+
+// Form submission helper
+export const submitHubSpotForm = async (
+  formType: HubSpotFormType,
+  data: Record<string, any>
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const response = await fetch('/functions/v1/hubspot-forms', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        formType,
+        ...data
+      })
+    });
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Form submission error:', error);
+    return { success: false, error: 'Network error' };
+  }
+};

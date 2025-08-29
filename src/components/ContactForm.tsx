@@ -151,16 +151,15 @@ const ContactForm = () => {
       // Prepare the message with reason context
       const fullMessage = formData.reason ? `Contact Reason: ${reasonText}\n\n${formData.message}` : formData.message;
 
-      // Try HubSpot integration first via edge function
-      const hubspotResult = await supabase.functions.invoke('hubspot-contact', {
+      // Try HubSpot Forms API via new endpoint
+      const hubspotResult = await supabase.functions.invoke('hubspot-forms', {
         body: {
-          firstname: formData.firstname,
-          lastname: formData.lastname,
+          formType: 'contact_general',
+          name: `${formData.firstname} ${formData.lastname}`.trim(),
           email: formData.email,
           phone: formData.phone,
-          company: formData.company,
+          role: 'contact_inquiry',
           message: fullMessage,
-          reason: reasonText,
           // Include UTM data from localStorage if available
           ...getUTMData()
         }
@@ -246,6 +245,15 @@ const ContactForm = () => {
       
       // Track conversion with GA4
       analytics.trackContactSubmission(reasonText, 'contact_page');
+      
+      // Track HubSpot form submission event
+      if (window._hsq) {
+        window._hsq.push(['trackEvent', {
+          id: 'form_submit',
+          form_type: 'contact_general',
+          contact_reason: reasonText
+        }]);
+      }
       
       // Redirect to thank you page
       window.location.href = '/thank-you?source=contact';
