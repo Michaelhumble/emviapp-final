@@ -395,22 +395,28 @@ const TheBeautyRevolution = () => {
             <p className="text-center text-gray-600 mb-6">
               <strong>Help us spread the word!</strong> Share this vision with artists and salon owners who deserve recognition.
             </p>
-            <div className="flex justify-center gap-4">
-              <Button 
-                variant="outline" 
-                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                onClick={() => window.open(`https://twitter.com/intent/tweet?text=The Beauty Revolution is here! 🌟 Join millions discovering their potential on @EmviApp&url=${window.location.href}`, '_blank')}
-              >
-                Share on Twitter
-              </Button>
-              <Button 
-                variant="outline" 
-                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`, '_blank')}
-              >
-                Share on Facebook
-              </Button>
-            </div>
+              <div className="flex justify-center gap-4">
+                <Button 
+                  variant="outline" 
+                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  onClick={() => {
+                    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent('The Beauty Revolution is here! 🌟 Join millions discovering their potential on @EmviApp')}&url=${encodeURIComponent(window.location.href)}&utm_source=share&utm_medium=social&utm_campaign=twitter`;
+                    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  Share on Twitter
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  onClick={() => {
+                    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent('The Beauty Revolution is here! Join millions discovering their potential on EmviApp')}&utm_source=share&utm_medium=social&utm_campaign=facebook`;
+                    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  Share on Facebook
+                </Button>
+              </div>
           </div>
         </div>
       </article>

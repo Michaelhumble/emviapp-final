@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { MapPin, Users, Star, Briefcase, Building2 } from 'lucide-react';
 import { PRIORITY_CITIES, BEAUTY_CATEGORIES, generatePageMeta, generateBreadcrumbs, meetsContentThreshold } from '@/lib/programmatic';
@@ -181,32 +181,32 @@ const CityLandingPage = () => {
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Find Jobs</h3>
               <p className="text-gray-600 mb-4">Discover {category.name.toLowerCase()} positions in {city.name}</p>
-              <a 
-                href={`/jobs/${categorySlug}/${citySlug}`}
-                className="text-purple-600 hover:text-purple-700 font-medium"
+              <Link 
+                to={`/jobs?category=${categorySlug}&location=${citySlug}`}
+                className="inline-block bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium"
               >
-                Browse {Math.floor(data.jobCount)} jobs →
-              </a>
+                Browse {Math.floor(data.jobCount)} Jobs
+              </Link>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Salons</h3>
               <p className="text-gray-600 mb-4">Connect with leading beauty establishments</p>
-              <a 
-                href={`/salons?city=${citySlug}`}
-                className="text-purple-600 hover:text-purple-700 font-medium"
+              <Link 
+                to={`/salons?city=${citySlug}&category=${categorySlug}`}
+                className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
-                View {Math.floor(data.salonCount)} salons →
-              </a>
+                View {Math.floor(data.salonCount)} Salons
+              </Link>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Local Artists</h3>
               <p className="text-gray-600 mb-4">Meet {city.name}'s talented professionals</p>
-              <a 
-                href={`/artists/${categorySlug}/${citySlug}`}
-                className="text-purple-600 hover:text-purple-700 font-medium"
+              <Link 
+                to={`/artists?specialty=${categorySlug}&location=${citySlug}`}
+                className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
-                See {Math.floor(data.artistCount)} artists →
-              </a>
+                See {Math.floor(data.artistCount)} Artists
+              </Link>
             </div>
           </section>
 

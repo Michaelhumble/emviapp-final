@@ -313,9 +313,35 @@ const AISalonTools2025 = () => {
                 Want to stay ahead of beauty industry trends? Follow EmviApp for the latest AI innovations and salon success strategies.
               </p>
               <div className="flex justify-center space-x-4">
-                <Button variant="outline" size="sm">Share on LinkedIn</Button>
-                <Button variant="outline" size="sm">Tweet This Article</Button>
-                <Button variant="outline" size="sm">Save for Later</Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent('17 AI Tools Every Salon Owner Needs in 2025')}&utm_source=share&utm_medium=social&utm_campaign=linkedin`, '_blank', 'noopener,noreferrer')}
+                >
+                  Share on LinkedIn
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('17 AI Tools Every Salon Owner Needs in 2025 - Must-read guide for beauty professionals')}&hashtags=EmviApp,BeautyTech,SalonAI&utm_source=share&utm_medium=social&utm_campaign=twitter`, '_blank', 'noopener,noreferrer')}
+                >
+                  Share on Twitter
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(window.location.href);
+                      // You could add a toast notification here
+                      alert('Article link copied to clipboard!');
+                    } catch (err) {
+                      alert('Failed to copy link. Please copy manually from the address bar.');
+                    }
+                  }}
+                >
+                  Copy Link
+                </Button>
               </div>
             </div>
 

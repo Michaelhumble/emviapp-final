@@ -1,13 +1,15 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Calendar, Building2 } from 'lucide-react';
 import { OUTLETS, getOutletByKey, formatDate, getLogoUrl } from '@/lib/press';
 import PressDetailSEO from '@/components/press/PressDetailSEO';
 import RelatedResources from '@/components/press/RelatedResources';
+import PressShareButtons from '@/components/press/PressShareButtons';
 import { Button } from '@/components/ui/button';
 
 const EmviAppPressDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
   
   // Find outlet by key/slug
   const outlet = getOutletByKey(slug || '');
@@ -204,6 +206,14 @@ const EmviAppPressDetailPage: React.FC = () => {
                 This coverage in {outlet.name} reflects our commitment to transparency and thought leadership in the beauty technology space. We're not just building a platform—we're fostering an entire ecosystem where beauty professionals can thrive, businesses can grow, and clients can access the best possible services.
               </p>
             </div>
+
+            {/* Press Share Buttons */}
+            <PressShareButtons 
+              title={outlet.headline}
+              url={location.pathname}
+              outlet={outlet.name}
+              className="mt-8 p-6 bg-muted/30 rounded-lg"
+            />
 
             {/* Related Resources */}
             <RelatedResources 

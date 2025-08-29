@@ -555,13 +555,38 @@ const ViralArticle = () => {
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Share This Story</h3>
               <p className="text-gray-600 mb-6">Help us spread the word about the power of community, technology, and human connection.</p>
               <div className="flex justify-center space-x-4">
-                <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                <Button 
+                  variant="outline" 
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                  onClick={() => {
+                    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent('From Invisible to Unstoppable: How EmviApp Is Changing the Future of Beauty—for Everyone')}&utm_source=share&utm_medium=social&utm_campaign=linkedin`;
+                    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
                   Share on LinkedIn
                 </Button>
-                <Button variant="outline" className="text-purple-600 border-purple-600 hover:bg-purple-50">
+                <Button 
+                  variant="outline" 
+                  className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                  onClick={() => {
+                    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent('From Invisible to Unstoppable: How EmviApp Is Changing the Future of Beauty—for Everyone')}&utm_source=share&utm_medium=social&utm_campaign=facebook`;
+                    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
                   Share on Facebook
                 </Button>
-                <Button variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
+                <Button 
+                  variant="outline" 
+                  className="text-gray-600 border-gray-600 hover:bg-gray-50"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(window.location.href);
+                      alert('Story link copied to clipboard! Share it with someone who needs to read this.');
+                    } catch (err) {
+                      alert('Failed to copy link. Please copy manually from the address bar.');
+                    }
+                  }}
+                >
                   Copy Link
                 </Button>
               </div>

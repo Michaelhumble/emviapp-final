@@ -38,13 +38,13 @@ const SocialShare: React.FC<SocialShareProps> = ({
   const hashtagText = hashtags.length > 0 ? hashtags.join(',') : '';
 
   const shareLinks = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
-    messenger: `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=140586622674265&redirect_uri=${encodedUrl}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=${hashtagText}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedDescription}`,
-    pinterest: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${encodedImage}&description=${encodedTitle}`,
-    whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-    email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0D%0A%0D%0A${encodedUrl}`
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}&utm_source=share&utm_medium=social&utm_campaign=facebook`,
+    messenger: `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=140586622674265&redirect_uri=${encodedUrl}&utm_source=share&utm_medium=social&utm_campaign=messenger`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=${hashtagText}&utm_source=share&utm_medium=social&utm_campaign=twitter`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedDescription}&utm_source=share&utm_medium=social&utm_campaign=linkedin`,
+    pinterest: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${encodedImage}&description=${encodedTitle}&utm_source=share&utm_medium=social&utm_campaign=pinterest`,
+    whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}%3Futm_source=share%26utm_medium=social%26utm_campaign=whatsapp`,
+    email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0D%0A%0D%0A${encodedUrl}%3Futm_source=share%26utm_medium=email%26utm_campaign=share`
   };
 
   const handleNativeShare = async () => {
@@ -80,11 +80,16 @@ const SocialShare: React.FC<SocialShareProps> = ({
   };
 
   const openShareWindow = (shareUrl: string) => {
-    window.open(
+    const newWindow = window.open(
       shareUrl,
       'share-window',
-      'width=600,height=500,location=no,menubar=no,toolbar=no,status=no,scrollbars=yes'
+      'width=600,height=500,location=no,menubar=no,toolbar=no,status=no,scrollbars=yes,rel=noopener,noreferrer'
     );
+    
+    // Add rel attributes for security
+    if (newWindow) {
+      newWindow.opener = null;
+    }
   };
 
   const sizeClasses = {
