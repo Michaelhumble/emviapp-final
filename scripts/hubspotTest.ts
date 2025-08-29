@@ -1,16 +1,38 @@
 #!/usr/bin/env npx tsx
 
 /**
- * HubSpot CRM Dry Run Test Script
+ * HubSpot CRM Dry Run Test Script - Week-1 Hardened
  * 
  * Tests the HubSpot Free Plan integration by creating/updating test contacts and deals.
  * Uses only free plan scopes: contacts.read, contacts.write, deals.read, deals.write.
  * 
- * Usage: npx tsx scripts/hubspotTest.ts
+ * Usage: 
+ * npx tsx scripts/hubspotTest.ts [flags]
+ * 
+ * Flags:
+ * --createContact    Create/update test contact with attribution
+ * --createDeal       Create/update test deal linked to contact  
+ * --withUTM          Include UTM attribution in test data
+ * --mqlScore=NN      Set MQL score (0-100)
+ * --failOnWarning    Exit with non-zero code on warnings
  */
+
+import { parseArgs } from 'node:util';
 
 const HUBSPOT_BASE_URL = 'https://api.hubapi.com';
 const TEST_EMAIL = 'test-emviapp@example.com';
+
+// Parse CLI flags
+const { values: flags } = parseArgs({
+  options: {
+    createContact: { type: 'boolean', default: false },
+    createDeal: { type: 'boolean', default: false },
+    withUTM: { type: 'boolean', default: false },
+    mqlScore: { type: 'string', default: '60' },
+    failOnWarning: { type: 'boolean', default: false }
+  },
+  allowPositionals: true
+});
 
 // Get private token from environment
 const PRIVATE_TOKEN = process.env.HS_PRIVATE_APP_TOKEN;
@@ -26,9 +48,10 @@ if (!PORTAL_ID) {
   process.exit(1);
 }
 
-console.log('🚀 Starting HubSpot CRM Dry Run Test');
+console.log('🚀 Starting HubSpot CRM Dry Run Test - Week-1 Hardened');
 console.log(`📍 Portal ID: ${PORTAL_ID}`);
 console.log(`✉️  Test Email: ${TEST_EMAIL}`);
+console.log(`🎯 Flags: ${JSON.stringify(flags)}`);
 console.log('');
 
 /**
@@ -61,24 +84,29 @@ async function hubspotRequest(endpoint: string, options: any = {}) {
 }
 
 /**
- * Test contact creation/update with attribution data
+ * Test contact creation/update with attribution data - Week-1 Hardened
  */
 async function testContactUpsert() {
   console.log('👤 Testing Contact Upsert...');
   
-  const contactProperties = {
+  const baseProperties = {
     email: TEST_EMAIL,
     firstname: 'Emvi',
     lastname: 'Test User',
     signup_stage: 'mql',
+    mql_score: flags.mqlScore
+  };
+
+  const utmProperties = flags.withUTM ? {
     affiliate_id: 'partner123',
     utm_source: 'google',
     utm_medium: 'cpc', 
     utm_campaign: 'artist_acquisition',
     utm_term: 'nail artist jobs',
-    utm_content: 'test_ad',
-    mql_score: '75'
-  };
+    utm_content: 'test_ad'
+  } : {};
+
+  const contactProperties = { ...baseProperties, ...utmProperties };
 
   try {
     // Try to find existing contact first
@@ -210,27 +238,63 @@ async function testDealCreation(contactId: string) {
 }
 
 /**
- * Run all tests
+ * Run all tests - Week-1 Hardened with CLI flags
  */
 async function runDryRun() {
   try {
     console.log('Starting comprehensive HubSpot CRM test...\n');
+    
+    let contactId: string | null = null;
+    let dealId: string | null = null;
+    let warnings: string[] = [];
+
+    // Default to both tests if no specific flags
+    const shouldCreateContact = flags.createContact || (!flags.createContact && !flags.createDeal);
+    const shouldCreateDeal = flags.createDeal || (!flags.createContact && !flags.createDeal);
 
     // Test 1: Contact upsert
-    const contactId = await testContactUpsert();
-    console.log('');
+    if (shouldCreateContact) {
+      contactId = await testContactUpsert();
+      console.log('');
+    }
 
-    // Test 2: Deal creation
-    const dealId = await testDealCreation(contactId);
-    console.log('');
+    // Test 2: Deal creation (needs contact ID)
+    if (shouldCreateDeal) {
+      if (!contactId && shouldCreateContact) {
+        warnings.push('Deal test skipped: contact creation failed');
+      } else if (!contactId && !shouldCreateContact) {
+        console.log('⚠️  Creating temporary contact for deal test...');
+        contactId = await testContactUpsert();
+        console.log('');
+      }
+      
+      if (contactId) {
+        dealId = await testDealCreation(contactId);
+        console.log('');
+      }
+    }
+
+    // Handle warnings
+    if (warnings.length > 0) {
+      console.log('⚠️  Warnings:');
+      warnings.forEach(w => console.log(`  - ${w}`));
+      console.log('');
+      
+      if (flags.failOnWarning) {
+        console.error('❌ Exiting with error due to --failOnWarning flag');
+        process.exit(1);
+      }
+    }
 
     // Summary
     console.log('🎉 Dry Run Completed Successfully!');
     console.log('');
     console.log('📊 Results Summary:');
-    console.log(`  Contact ID: ${contactId}`);
-    console.log(`  Deal ID: ${dealId}`);
-    console.log(`  Test Email: ${TEST_EMAIL}`);
+    if (contactId) console.log(`  ✅ Contact ID: ${contactId}`);
+    if (dealId) console.log(`  ✅ Deal ID: ${dealId}`);
+    console.log(`  📧 Test Email: ${TEST_EMAIL}`);
+    console.log(`  🎯 MQL Score: ${flags.mqlScore}`);
+    console.log(`  🏷️  UTM Data: ${flags.withUTM ? 'Included' : 'Skipped'}`);
     console.log('');
     console.log('✅ Your HubSpot integration is working correctly!');
     console.log('');
@@ -252,6 +316,13 @@ async function runDryRun() {
     console.log('     - crm.objects.deals.read');
     console.log('     - crm.objects.deals.write');
     console.log('     - forms');
+    console.log('');
+    console.log('🎯 Available flags:');
+    console.log('  --createContact    Create/update test contact');
+    console.log('  --createDeal       Create/update test deal');
+    console.log('  --withUTM          Include UTM attribution');
+    console.log('  --mqlScore=NN      Set MQL score (0-100)');
+    console.log('  --failOnWarning    Exit non-zero on warnings');
     process.exit(1);
   }
 }

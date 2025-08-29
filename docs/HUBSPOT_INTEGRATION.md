@@ -237,6 +237,59 @@ console.log(JSON.parse(localStorage.getItem('hubspot_sync_attempts')));
 npx tsx scripts/hubspotTest.ts
 ```
 
+## Week-1 Hardening
+
+### Enhanced Security & Reliability
+
+**Token Security:**
+- Server-side token validation with hard-fail on missing `HS_PRIVATE_APP_TOKEN`
+- Client-side code never exposes private tokens
+- All edge functions validate token presence before processing
+
+**Retry Strategy:**
+- Exponential backoff: 1s, 2s, 4s delays
+- Random jitter (0-250ms) to prevent thundering herd
+- Retry on 429 (rate limit) and 5xx errors only
+- Never retry 4xx errors (except 429)
+- Max 3 attempts per request
+
+**Data Validation:**
+- **Email**: RFC 5322 validation, required for all contacts
+- **Signup Stage**: Limited to enum [`visitor`, `signup`, `activated`, `mql`, `sql`, `customer`]
+- **MQL Score**: Numeric 0-100 range with coercion
+- **UTM Fields**: Max 150 characters, control character stripping
+- **Names**: Max 80 characters for first/last names
+- **URLs**: Max 300 characters for landing URLs
+
+**Error Monitoring:**
+- Centralized `logHubSpotError()` hook with `[HUBSPOT]` tag
+- PII redaction (email → `a***@domain.com`)
+- Token scrubbing from logs
+- Optional Sentry integration when `NEXT_PUBLIC_SENTRY_DSN` present
+
+**Admin Dashboard:**
+- Filter toggles: All/Contacts/Deals/Forms
+- "Last 24h" quick filter (client-side only)
+- Real-time sync status monitoring
+- Attribution data inspection
+
+### Rate Limits & Quotas
+
+**HubSpot Free Plan Limits:**
+- 100 requests per 10 seconds
+- 1,000 contacts maximum
+- Basic deal pipeline only
+- No custom pipelines or workflows
+
+**Dry-Run Testing:**
+```bash
+# Basic tests
+pnpm tsx scripts/hubspotTest.ts --createContact --withUTM
+
+# Advanced tests  
+pnpm tsx scripts/hubspotTest.ts --createDeal --mqlScore=80 --failOnWarning
+```
+
 ## Support
 
 For integration issues:

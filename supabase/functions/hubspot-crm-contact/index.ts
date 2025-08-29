@@ -42,12 +42,13 @@ serve(async (req) => {
   try {
     const { email, contactData }: ContactUpsertRequest = await req.json()
 
-    // Get credentials
+    // Week-1 Hardening: Token hard-fail (server contexts only)
     const privateToken = Deno.env.get('HS_PRIVATE_APP_TOKEN')
     if (!privateToken) {
-      console.warn('⚠️ HubSpot Private App Token not configured')
+      const errorMsg = 'HS_PRIVATE_APP_TOKEN is missing. Add it to Supabase secrets and re-deploy.'
+      console.error('❌ [HUBSPOT] Token validation failed:', errorMsg)
       return new Response(JSON.stringify({ 
-        error: 'HubSpot CRM integration not configured',
+        error: errorMsg,
         success: false 
       }), {
         status: 400,

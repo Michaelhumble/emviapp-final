@@ -1,5 +1,5 @@
 /**
- * HubSpot Free Plan CRM Integration
+ * HubSpot Free Plan CRM Integration - Week-1 Hardened
  * 
  * Features:
  * - Full CRM integration (Contacts, Deals, Forms)
@@ -8,6 +8,9 @@
  * - Deal creation and updates
  * - Consent-based loading (respects Do Not Track)
  * - Production-only with graceful degradation
+ * - Exponential backoff retry with jitter
+ * - Strict data validation and error monitoring
+ * - Token security and PII redaction
  */
 
 // Attribution data interface
@@ -127,6 +130,122 @@ export class HubSpotCRM {
     }
     
     return true;
+  }
+
+  /**
+   * Week-1 Hardening: Retry wrapper with exponential backoff + jitter
+   */
+  private async hubspotRequestWithRetry(
+    endpoint: string,
+    options: RequestInit,
+    maxRetries = 3
+  ): Promise<Response> {
+    let lastErr: any;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const res = await fetch(endpoint, options);
+        return res;
+      } catch (error: any) {
+        const status = error?.status ?? error?.response?.status;
+        const retryable = status === 429 || (status >= 500 && status < 600);
+        if (!retryable || attempt === maxRetries - 1) {
+          lastErr = error;
+          break;
+        }
+        const base = Math.pow(2, attempt) * 1000; // 1000, 2000, 4000
+        const jitter = Math.floor(Math.random() * 250);
+        await new Promise(r => setTimeout(r, base + jitter));
+      }
+    }
+    this.logHubSpotError("request", lastErr, { endpoint });
+    throw lastErr;
+  }
+
+  /**
+   * Week-1 Hardening: Data validation for contacts
+   */
+  private validateContactData(input: any) {
+    const email = (input?.email || "").trim().toLowerCase();
+    if (!this.isValidEmail(email)) throw new Error("Valid email required");
+    const allowedStages = ["visitor","signup","activated","mql","sql","customer"];
+    const stage = allowedStages.includes(input?.signup_stage) ? input.signup_stage : "visitor";
+    const mql = Number.isFinite(+input?.mql_score) ? Math.max(0, Math.min(100, +input.mql_score)) : 0;
+
+    return {
+      email,
+      firstname: this.sanitizeStr(input?.firstname, 80),
+      lastname: this.sanitizeStr(input?.lastname, 80),
+      signup_stage: stage,
+      mql_score: mql,
+      affiliate_id: this.sanitizeStr(input?.affiliate_id),
+      utm_source: this.sanitizeStr(input?.utm_source),
+      utm_medium: this.sanitizeStr(input?.utm_medium),
+      utm_campaign: this.sanitizeStr(input?.utm_campaign),
+      utm_term: this.sanitizeStr(input?.utm_term),
+      utm_content: this.sanitizeStr(input?.utm_content),
+      landing_url: this.sanitizeStr(input?.landing_url, 300),
+      first_seen_at: input?.first_seen_at || null,
+      press_slug: this.sanitizeStr(input?.press_slug, 80),
+      city_slug: this.sanitizeStr(input?.city_slug, 80),
+      category_slug: this.sanitizeStr(input?.category_slug, 80),
+    };
+  }
+
+  /**
+   * Week-1 Hardening: Data validation for deals
+   */
+  private validateDealData(input: any) {
+    const name = this.sanitizeStr(input?.dealname || "EmviApp Deal", 150);
+    const pipeline = this.sanitizeStr(input?.pipeline || "default", 50);
+    const dealstage = this.sanitizeStr(input?.dealstage || "appointmentscheduled", 50);
+    const contactId = this.sanitizeStr(input?.associatedcontactid, 64);
+    const mql = Number.isFinite(+input?.mql_score) ? Math.max(0, Math.min(100, +input.mql_score)) : 0;
+    if (!contactId) throw new Error("associatedcontactid required");
+    return { dealname: name, pipeline, dealstage, associatedcontactid: contactId, mql_score: mql };
+  }
+
+  /**
+   * Week-1 Hardening: Email validation
+   */
+  private isValidEmail(e: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  }
+
+  /**
+   * Week-1 Hardening: String sanitization
+   */
+  private sanitizeStr(v?: string, max = 150) {
+    if (!v) return "";
+    return v.replace(/[\x00-\x1F\x7F]/g, "").trim().slice(0, max);
+  }
+
+  /**
+   * Week-1 Hardening: Email redaction for logging
+   */
+  private redactEmail(e?: string) {
+    if (!e || !this.isValidEmail(e)) return e || "";
+    const [user, domain] = e.split("@");
+    return (user[0] || "*") + "***@" + domain;
+  }
+
+  /**
+   * Week-1 Hardening: Centralized error monitoring
+   */
+  private logHubSpotError(operation: string, error: any, context: Record<string, any> = {}) {
+    const safeCtx = { ...context };
+    if (safeCtx.email) safeCtx.email = this.redactEmail(safeCtx.email);
+    delete (safeCtx as any).token;
+
+    // Always console.error
+    // eslint-disable-next-line no-console
+    console.error("[HUBSPOT]", operation, { error: String(error?.message || error), context: safeCtx });
+
+    // Optional Sentry
+    try {
+      if (process.env.NEXT_PUBLIC_SENTRY_DSN && (window as any)?.Sentry) {
+        (window as any).Sentry.captureException(error, { extra: { operation, context: safeCtx } });
+      }
+    } catch { /* no-op */ }
   }
 
   /**

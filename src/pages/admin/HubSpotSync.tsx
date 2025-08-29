@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { RefreshCw, CheckCircle, XCircle, Clock, Database, FileText, Users } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RefreshCw, CheckCircle, XCircle, Clock, Database, FileText, Users, Filter } from 'lucide-react';
 import { hubspotCRM } from '@/lib/analytics/hubspot';
 
 interface SyncAttempt {
@@ -18,6 +19,8 @@ interface SyncAttempt {
 export const HubSpotSync = () => {
   const [syncAttempts, setSyncAttempts] = useState<SyncAttempt[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<'all' | 'contact' | 'deal' | 'form'>('all');
+  const [showLast24h, setShowLast24h] = useState(false);
   const [hubspotStatus, setHubspotStatus] = useState({
     isEnabled: false,
     portalId: null as string | null,
@@ -84,10 +87,30 @@ export const HubSpotSync = () => {
     return new Date(timestamp).toLocaleString();
   };
 
+  // Week-1 Hardening: Client-side filtering
+  const getFilteredAttempts = () => {
+    let filtered = syncAttempts;
+    
+    // Filter by type
+    if (activeFilter !== 'all') {
+      filtered = filtered.filter(a => a.objectType === activeFilter);
+    }
+    
+    // Filter by last 24h
+    if (showLast24h) {
+      const yesterday = new Date();
+      yesterday.setHours(yesterday.getHours() - 24);
+      filtered = filtered.filter(a => new Date(a.timestamp) > yesterday);
+    }
+    
+    return filtered;
+  };
+
   const getStatusStats = () => {
-    const total = syncAttempts.length;
-    const successful = syncAttempts.filter(a => a.status === 'success').length;
-    const failed = syncAttempts.filter(a => a.status === 'error').length;
+    const filtered = getFilteredAttempts();
+    const total = filtered.length;
+    const successful = filtered.filter(a => a.status === 'success').length;
+    const failed = filtered.filter(a => a.status === 'error').length;
     
     return { total, successful, failed };
   };
@@ -180,52 +203,77 @@ export const HubSpotSync = () => {
         </CardContent>
       </Card>
 
-      {/* Recent Sync Attempts */}
+      {/* Recent Sync Attempts - Week-1 Hardening: Added filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Sync Attempts</CardTitle>
-          <CardDescription>Last 20 synchronization attempts with HubSpot CRM</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Recent Sync Attempts</CardTitle>
+              <CardDescription>Last 20 synchronization attempts with HubSpot CRM</CardDescription>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Button
+                size="sm"
+                variant={showLast24h ? "default" : "outline"}
+                onClick={() => setShowLast24h(!showLast24h)}
+              >
+                Last 24h
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          {syncAttempts.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No sync attempts recorded yet.</p>
-              <p className="text-sm">Sync attempts will appear here when users interact with the app.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {syncAttempts.map((attempt) => (
-                <div key={attempt.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(attempt.status)}
-                    {getObjectTypeIcon(attempt.objectType)}
-                    <div>
-                      <div className="font-medium text-sm">
-                        {attempt.objectType.charAt(0).toUpperCase() + attempt.objectType.slice(1)} Sync
+          <Tabs value={activeFilter} onValueChange={(value) => setActiveFilter(value as any)}>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="all">All ({syncAttempts.length})</TabsTrigger>
+              <TabsTrigger value="contact">Contacts ({syncAttempts.filter(a => a.objectType === 'contact').length})</TabsTrigger>
+              <TabsTrigger value="deal">Deals ({syncAttempts.filter(a => a.objectType === 'deal').length})</TabsTrigger>
+              <TabsTrigger value="form">Forms ({syncAttempts.filter(a => a.objectType === 'form').length})</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value={activeFilter} className="mt-6">
+              {getFilteredAttempts().length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No {activeFilter === 'all' ? '' : activeFilter + ' '}sync attempts {showLast24h ? 'in the last 24 hours' : 'recorded yet'}.</p>
+                  <p className="text-sm">Sync attempts will appear here when users interact with the app.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getFilteredAttempts().map((attempt) => (
+                    <div key={attempt.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        {getStatusIcon(attempt.status)}
+                        {getObjectTypeIcon(attempt.objectType)}
+                        <div>
+                          <div className="font-medium text-sm">
+                            {attempt.objectType.charAt(0).toUpperCase() + attempt.objectType.slice(1)} Sync
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {formatTimestamp(attempt.timestamp)}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatTimestamp(attempt.timestamp)}
+                      
+                      <div className="text-right">
+                        {attempt.objectId && (
+                          <div className="text-xs text-muted-foreground font-mono">
+                            ID: {attempt.objectId}
+                          </div>
+                        )}
+                        {attempt.errorMessage && (
+                          <div className="text-xs text-red-600 max-w-xs truncate">
+                            {attempt.errorMessage}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    {attempt.objectId && (
-                      <div className="text-xs text-muted-foreground font-mono">
-                        ID: {attempt.objectId}
-                      </div>
-                    )}
-                    {attempt.errorMessage && (
-                      <div className="text-xs text-red-600 max-w-xs truncate">
-                        {attempt.errorMessage}
-                      </div>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
