@@ -49,8 +49,9 @@ const BlogLanding = () => {
   // Get trending topics from most popular tags
   const trendingTopics = allTags.slice(0, 8).map(tag => tag.name);
 
-  // Map dynamic categories to display format with icons and colors
-  const categories = dynamicCategories.length > 0 ? dynamicCategories.map((cat, index) => {
+  // Filter categories to only show those with articles, map to display format with icons and colors
+  const validCategories = dynamicCategories.filter(cat => cat.count > 0);
+  const categories = validCategories.length > 0 ? validCategories.map((cat, index) => {
     const icons = [Sparkles, BarChart3, Award, Building2, Palette, Trophy];
     const colors = [
       "bg-gradient-to-br from-pink-500/10 to-purple-500/10",

@@ -94,16 +94,12 @@ const NailTechSalaryByCity2025 = lazy(() => import("@/pages/blog/nail-tech-salar
 const NailArtistPortfolioExamples = lazy(() => import("@/pages/blog/nail-artist-portfolio-examples"));
 const HowToGetMoreNailClients = lazy(() => import("@/pages/blog/how-to-get-more-nail-clients"));
 const NailSalonInterviewQuestionsAnswers = lazy(() => import("@/pages/blog/nail-salon-interview-questions-answers"));
+const HireNailTechniciansInterviewQuestions = lazy(() => import("@/pages/blog/HireNailTechniciansInterviewQuestions"));
 
 const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
 
-// Blog Category Pages
-const TrendsCategory = lazy(() => import("@/pages/blog/categories/TrendsCategory"));
-const BeautyTipsCategory = lazy(() => import("@/pages/blog/categories/BeautyTipsCategory"));
-const IndustryCategory = lazy(() => import("@/pages/blog/categories/IndustryCategory"));
-const ArtistSpotlightsCategory = lazy(() => import("@/pages/blog/categories/ArtistSpotlightsCategory"));
-const SuccessStoriesCategory = lazy(() => import("@/pages/blog/categories/SuccessStoriesCategory"));
-const SalonManagementCategory = lazy(() => import("@/pages/blog/categories/SalonManagementCategory"));
+// Blog Category Pages - Dynamic
+const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
 
 // Industry Pages
 const NailsPage = lazy(() => import("@/pages/nails"));
@@ -306,7 +302,8 @@ function App() {
                     <Route path="/blog/nail-tech-salary-by-city-2025" element={<Layout><NailTechSalaryByCity2025 /></Layout>} />
                     <Route path="/blog/nail-artist-portfolio-examples" element={<Layout><NailArtistPortfolioExamples /></Layout>} />
                     <Route path="/blog/how-to-get-more-nail-clients" element={<Layout><HowToGetMoreNailClients /></Layout>} />
-                    <Route path="/blog/nail-salon-interview-questions-answers" element={<Layout><NailSalonInterviewQuestionsAnswers /></Layout>} />
+                     <Route path="/blog/nail-salon-interview-questions-answers" element={<Layout><NailSalonInterviewQuestionsAnswers /></Layout>} />
+                     <Route path="/blog/hire-nail-technicians-interview-questions" element={<Layout><HireNailTechniciansInterviewQuestions /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
                     
                     {/* Content Hub Routes */}
@@ -315,13 +312,8 @@ function App() {
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />
 
-                    {/* Blog Category Routes */}
-                    <Route path="/blog/categories/trends" element={<Layout><TrendsCategory /></Layout>} />
-                    <Route path="/blog/categories/beauty-tips" element={<Layout><BeautyTipsCategory /></Layout>} />
-                    <Route path="/blog/categories/industry" element={<Layout><IndustryCategory /></Layout>} />
-                    <Route path="/blog/categories/artist-spotlights" element={<Layout><ArtistSpotlightsCategory /></Layout>} />
-                    <Route path="/blog/categories/success-stories" element={<Layout><SuccessStoriesCategory /></Layout>} />
-                    <Route path="/blog/categories/salon-management" element={<Layout><SalonManagementCategory /></Layout>} />
+                     {/* Blog Category Routes - Dynamic */}
+                     <Route path="/blog/categories/:categorySlug" element={<Layout><DynamicBlogCategory /></Layout>} />
                     
                     {/* REMOVED: Hardcoded blog routes that conflict with dynamic routing */}
                     {/* All blog articles now use dynamic /blog/:category/:slug pattern */}

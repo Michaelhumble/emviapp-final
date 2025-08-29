@@ -1,55 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.emvi.app/blog/example-article-slug</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <!-- Valid Blog Categories -->
+  <url>
+    <loc>https://www.emvi.app/blog/categories/hiring-recruitment</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/nail-salon-marketing-ideas-2025</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/categories/salon-management</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/vi-lam-the-nao-de-tim-tho-cat-toc-gioi-tai-houston</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/categories/career-growth</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/barber-fade-trends-2025</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/categories/industry-insights</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/makeup-for-summer-events-san-diego</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/categories/technology</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/massage-recovery-tips-athletes-phoenix</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/categories/marketing</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <!-- Blog Articles -->
+  <url>
+    <loc>https://www.emvi.app/blog/how-to-find-the-best-beauty-professionals</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/vi-bi-quyet-noi-mi-dep-ben-tai-seattle</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/why-weekly-pay-attracts-better-artists</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/tattoo-aftercare-guide-denver</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/top-salon-staffing-mistakes-to-avoid</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/salon-team-onboarding-checklist</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/how-to-get-more-clients-as-a-nail-tech</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/pricing-your-services-with-confidence</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/the-future-of-beauty-industry-in-2025</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/vi-toi-uu-lich-hen-trong-salon</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/ai-salon-tools-2025</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/content-ideas-for-beauty-creators</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/salon-staffing-crisis-2025</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.emvi.app/blog/client-retention-blueprint</loc>
-    <lastmod>2025-08-11</lastmod>
+    <loc>https://www.emvi.app/blog/the-beauty-revolution</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.emvi.app/blog/nail-tech-salary-by-city-2025</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.emvi.app/blog/nail-salon-interview-questions-answers</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.emvi.app/blog/nail-artist-portfolio-examples</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.emvi.app/blog/how-to-get-more-nail-clients</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.emvi.app/blog/hire-nail-technicians-interview-questions</loc>
+    <lastmod>2025-08-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

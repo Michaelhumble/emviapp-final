@@ -269,6 +269,23 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     component: HowToGetMoreNailClients,
     url: '/blog/how-to-get-more-nail-clients'
   },
+  {
+    id: 'hire-nail-technicians-interview-questions',
+    slug: 'hire-nail-technicians-interview-questions',
+    title: '15 Interview Questions to Hire Great Nail Technicians (2025 Guide)',
+    description: 'Master nail tech hiring with expert interview questions and insights. Get proven questions, red flags to watch for, and what top answers reveal about candidates.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-08-28',
+    readTime: '8 min read',
+    category: 'Hiring & Recruitment',
+    categorySlug: 'hiring-recruitment',
+    tags: ['nail technician hiring', 'interview questions', 'recruitment', 'salon management', 'hiring process'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: lazy(() => import('@/pages/blog/HireNailTechniciansInterviewQuestions')),
+    url: '/blog/hire-nail-technicians-interview-questions'
+  },
   // Original articles
   {
     id: 'top-nail-salon-jobs-us-2025',
