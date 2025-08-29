@@ -150,8 +150,8 @@ function App() {
       <GlobalSEOInjection />
       <GeneralErrorBoundary>
         <SecurityProvider>
-          <HubSpotProvider>
-            <AuthProvider>
+          <AuthProvider>
+            <HubSpotProvider>
             <BookingNotificationProvider>
             <SalonProvider>
               <SubscriptionProvider>
@@ -337,9 +337,9 @@ function App() {
             </SubscriptionProvider>
           </SalonProvider>
             </BookingNotificationProvider>
-         </AuthProvider>
          </HubSpotProvider>
-       </SecurityProvider>
+         </AuthProvider>
+        </SecurityProvider>
       </GeneralErrorBoundary>
     </HelmetProvider>
   );

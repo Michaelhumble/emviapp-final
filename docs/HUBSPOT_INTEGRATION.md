@@ -6,7 +6,10 @@ EmviApp integrates with HubSpot's free analytics platform to track user behavior
 
 ## Setup Instructions
 
-### 1. Environment Configuration
+### 1. Load Order Fix (Critical)
+The `HubSpotProvider` is properly wrapped **inside** `AuthProvider` context to prevent "useAuth must be used within an AuthProvider" runtime errors. This ensures auth state is ready before HubSpot initialization and guards against user identification when not logged in.
+
+### 2. Environment Configuration
 
 Add your HubSpot Portal ID to your environment variables:
 
@@ -19,7 +22,7 @@ HUBSPOT_PORTAL_ID=your_portal_id_here
 - `VITE_HUBSPOT_PORTAL_ID` (Vite standard)  
 - `HUBSPOT_PORTAL_ID` (generic)
 
-### 2. Finding Your Portal ID
+### 3. Finding Your Portal ID
 
 1. Log into your HubSpot account
 2. Navigate to Settings → Account Setup → Account Defaults

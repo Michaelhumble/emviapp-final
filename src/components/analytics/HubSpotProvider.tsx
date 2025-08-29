@@ -11,7 +11,7 @@ import { useAuth } from '@/context/auth';
  * - Automatically handles UTM/referrer pass-through
  */
 export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, isSignedIn, loading } = useAuth();
   const [hubspotLoaded, setHubspotLoaded] = useState(false);
   const [identifiedUser, setIdentifiedUser] = useState<string | null>(null);
 
@@ -61,9 +61,9 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => window.removeEventListener('analytics-consent', handleConsentChange as EventListener);
   }, [hubspotLoaded]);
 
-  // Identify user when they log in
+  // Identify user when they log in (only after auth is ready and user is signed in)
   useEffect(() => {
-    if (!hubspotLoaded || !user?.email) return;
+    if (!hubspotLoaded || loading || !isSignedIn || !user?.email) return;
 
     // Prevent duplicate identification for same user
     const userKey = user.id || user.email;
@@ -93,7 +93,7 @@ export const HubSpotProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setIdentifiedUser(userKey);
       console.log('HubSpot: User identified on login');
     }
-  }, [hubspotLoaded, user, identifiedUser]);
+  }, [hubspotLoaded, loading, isSignedIn, user, identifiedUser]);
 
   return <>{children}</>;
 };
