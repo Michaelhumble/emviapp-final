@@ -1,11 +1,8 @@
 // Google Analytics Scroll Tracking and Sign-up Funnel Analytics
 
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-  }
-}
+import { 
+  trackCustomEvent as analyticsTrackCustomEvent
+} from '@/lib/analytics';
 
 interface ScrollDepthEvent {
   depth: number;
@@ -175,12 +172,7 @@ class ScrollTracker {
 
   // Public methods for manual tracking
   trackCustomEvent(eventName: string, properties?: Record<string, any>) {
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', eventName, {
-        event_category: 'custom',
-        ...properties
-      });
-    }
+    analyticsTrackCustomEvent(eventName, properties);
   }
 
   trackSignUpStart() {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { trackConsent } from '@/lib/analytics';
 
 // Mobile-optimized cookie consent banner
 // - Safe area support for iOS/Android
@@ -7,16 +8,7 @@ import { Button } from '@/components/ui/button';
 // - GA4 + HubSpot tracking
 // - Proper storage format and cookie setting
 
-// Global type declarations
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    _hsq?: any[];
-  }
-}
-
 const STORAGE_KEY = 'EMVI_CONSENT_V1';
-const COOKIE_NAME = 'emvi_consent';
 
 interface ConsentData {
   necessary: boolean;
@@ -28,35 +20,25 @@ interface ConsentData {
 
 type ConsentState = ConsentData | null;
 
-// Utility functions
-const trackConsentEvent = (action: string, analytics: boolean, marketing: boolean) => {
-  const eventData = {
-    source: 'banner',
-    path: location.pathname,
-    analytics_consent: analytics,
-    marketing_consent: marketing
-  };
-
-  // GA4 tracking
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', `consent_${action}`, eventData);
-  }
-
-  // HubSpot tracking (if available)
-  if (typeof window !== 'undefined' && window._hsq) {
-    window._hsq.push(['trackEvent', {
-      id: `consent_${action}`,
-      value: eventData
-    }]);
-  }
-
-  console.log(`[CONSENT] ${action}:`, eventData);
-};
-
 const setCookie = (consent: ConsentData) => {
   const domain = window.location.hostname.includes('emvi.app') ? '.emvi.app' : '';
   const cookieValue = `emvi_consent=v1; Path=/; SameSite=Lax; Max-Age=15552000${domain ? `; Domain=${domain}` : ''}`;
   document.cookie = cookieValue;
+};
+
+const trackConsentToHubSpot = (action: string, analytics: boolean, marketing: boolean) => {
+  // HubSpot tracking (if available)
+  if (typeof window !== 'undefined' && window._hsq) {
+    window._hsq.push(['trackEvent', {
+      id: `consent_${action}`,
+      value: {
+        source: 'banner',
+        path: location.pathname,
+        analytics_consent: analytics,
+        marketing_consent: marketing
+      }
+    }]);
+  }
 };
 
 const ConsentBanner: React.FC = () => {
@@ -99,9 +81,12 @@ const ConsentBanner: React.FC = () => {
       // Set cookie
       setCookie(consentData);
       
-      // Track the event
+      // Track GA4 event
       const action = analytics ? 'accept_all' : 'reject';
-      trackConsentEvent(action, analytics, marketing);
+      trackConsent(action);
+      
+      // Track HubSpot event
+      trackConsentToHubSpot(action, analytics, marketing);
       
       // Dispatch legacy event for backward compatibility
       window.dispatchEvent(new CustomEvent('analytics-consent', { 
