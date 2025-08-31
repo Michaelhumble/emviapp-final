@@ -1,10 +1,6 @@
 // GA4 Enhanced eCommerce implementation for EmviApp
 
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-  }
-}
+// gtag interface is now declared in src/types/global.d.ts
 
 export interface GA4Item {
   item_id: string;

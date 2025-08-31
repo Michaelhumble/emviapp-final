@@ -5,9 +5,10 @@
  * Optimized for EmviApp's 6-month growth strategy
  */
 
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import pLimit from 'p-limit';
 
 const SITE_URL = process.env.AUDIT_URL || 'https://www.emvi.app';
 const REPORTS_DIR = 'reports';
@@ -49,23 +50,31 @@ async function runLighthouseAudit(pageUrl, pageName) {
     console.log(`🔍 Auditing: ${fullUrl}`);
     
     // Optimized Lighthouse command for performance + SEO only
-    const command = `npx lighthouse "${fullUrl}" \\
-      --output json \\
-      --output-path "${outputFile}" \\
-      --quiet \\
-      --only-categories=performance,seo \\
-      --throttling-method=simulate \\
-      --chrome-flags="--headless --no-sandbox --disable-gpu" \\
-      --max-wait-for-fcp=15000 \\
-      --max-wait-for-load=35000`;
+    // Use streaming spawn instead of exec to avoid ENOBUFS
+    const args = [
+      fullUrl,
+      '--output=json',
+      `--output-path=${outputFile}`,
+      '--quiet',
+      '--only-categories=performance,seo',
+      '--chromium-flags=--headless=new',
+      '--throttling-method=provided',
+      '--disable-full-page-screenshot'
+    ];
 
-    exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`❌ Lighthouse failed for ${pageName}:`, error.message);
+    const ps = spawn('lighthouse', args, { 
+      stdio: ['ignore', 'pipe', 'pipe'] 
+    });
+
+    ps.stderr.on('data', d => process.stderr.write(d));
+    
+    ps.on('close', (code) => {
+      if (code !== 0) {
+        console.error(`❌ Lighthouse failed for ${pageName}: exit code ${code}`);
         resolve({
           url: pageUrl,
           name: pageName,
-          error: error.message,
+          error: `lighthouse exited ${code}`,
           scores: null
         });
         return;
@@ -260,11 +269,16 @@ async function main() {
   try {
     console.log(`🚀 Starting Lighthouse audit for ${CORE_PAGES.length} core pages...`);
     
-    // Run audits sequentially to avoid overwhelming the server
-    for (const page of CORE_PAGES) {
-      const result = await runLighthouseAudit(page.url, page.name);
-      auditResults.pages[page.name] = result;
-    }
+    // Run audits with limited concurrency to avoid ENOBUFS
+    const limit = pLimit(2);
+    const auditTasks = CORE_PAGES.map(page => 
+      limit(() => runLighthouseAudit(page.url, page.name))
+    );
+    
+    const results = await Promise.all(auditTasks);
+    results.forEach((result, i) => {
+      auditResults.pages[CORE_PAGES[i].name] = result;
+    });
     
     await generateSummaryReport();
     
