@@ -1,46 +1,175 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-// Simple, elegant cookie consent banner
-// - Stores consent in localStorage (key: emvi_cookie_consent)
-// - Dispatches window event 'analytics-consent' with detail { granted: boolean }
-// - Keeps design minimal and on-brand
+// Mobile-optimized cookie consent banner
+// - Safe area support for iOS/Android
+// - Accessibility compliant (WCAG AA)
+// - GA4 + HubSpot tracking
+// - Proper storage format and cookie setting
 
-const STORAGE_KEY = 'emvi_cookie_consent';
+// Global type declarations
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+    _hsq?: any[];
+  }
+}
 
-type ConsentState = 'accepted' | 'rejected' | null;
+const STORAGE_KEY = 'EMVI_CONSENT_V1';
+const COOKIE_NAME = 'emvi_consent';
+
+interface ConsentData {
+  necessary: boolean;
+  analytics: boolean;
+  marketing: boolean;
+  ts: number;
+  region?: string;
+}
+
+type ConsentState = ConsentData | null;
+
+// Utility functions
+const trackConsentEvent = (action: string, analytics: boolean, marketing: boolean) => {
+  const eventData = {
+    source: 'banner',
+    path: location.pathname,
+    analytics_consent: analytics,
+    marketing_consent: marketing
+  };
+
+  // GA4 tracking
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', `consent_${action}`, eventData);
+  }
+
+  // HubSpot tracking (if available)
+  if (typeof window !== 'undefined' && window._hsq) {
+    window._hsq.push(['trackEvent', {
+      id: `consent_${action}`,
+      value: eventData
+    }]);
+  }
+
+  console.log(`[CONSENT] ${action}:`, eventData);
+};
+
+const setCookie = (consent: ConsentData) => {
+  const domain = window.location.hostname.includes('emvi.app') ? '.emvi.app' : '';
+  const cookieValue = `emvi_consent=v1; Path=/; SameSite=Lax; Max-Age=15552000${domain ? `; Domain=${domain}` : ''}`;
+  document.cookie = cookieValue;
+};
 
 const ConsentBanner: React.FC = () => {
   const [consent, setConsent] = useState<ConsentState>(null);
   const [visible, setVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    const saved = (localStorage.getItem(STORAGE_KEY) as ConsentState) || null;
-    setConsent(saved);
-    setVisible(!saved);
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        const parsed = JSON.parse(savedData) as ConsentData;
+        setConsent(parsed);
+        setVisible(false);
+      } else {
+        setVisible(true);
+        // Add a small delay for the slide-up animation
+        setTimeout(() => setIsAnimating(true), 100);
+      }
+    } catch (error) {
+      console.error('[CONSENT] Error loading saved consent:', error);
+      setVisible(true);
+      setTimeout(() => setIsAnimating(true), 100);
+    }
   }, []);
 
-  const handle = (granted: boolean) => {
-    const value: ConsentState = granted ? 'accepted' : 'rejected';
-    localStorage.setItem(STORAGE_KEY, value);
-    setConsent(value);
-    setVisible(false);
-    window.dispatchEvent(new CustomEvent('analytics-consent', { detail: { granted } }));
+  const handleConsent = (analytics: boolean, marketing: boolean = false) => {
+    const consentData: ConsentData = {
+      necessary: true,
+      analytics,
+      marketing,
+      ts: Date.now(),
+      region: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+
+    try {
+      // Save to localStorage
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(consentData));
+      
+      // Set cookie
+      setCookie(consentData);
+      
+      // Track the event
+      const action = analytics ? 'accept_all' : 'reject';
+      trackConsentEvent(action, analytics, marketing);
+      
+      // Dispatch legacy event for backward compatibility
+      window.dispatchEvent(new CustomEvent('analytics-consent', { 
+        detail: { granted: analytics } 
+      }));
+      
+      // Update state and hide banner
+      setConsent(consentData);
+      setIsAnimating(false);
+      setTimeout(() => setVisible(false), 300);
+      
+    } catch (error) {
+      console.error('[CONSENT] Error saving consent:', error);
+    }
   };
 
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 px-4 pb-4 pointer-events-none">
-      <div className="mx-auto max-w-4xl rounded-2xl border bg-background/95 backdrop-blur shadow-lg pointer-events-auto">
+    <div 
+      className={`emvi-consent pointer-events-none ${isAnimating ? 'visible' : ''}`}
+      role="dialog" 
+      aria-labelledby="consent-title"
+      aria-describedby="consent-description"
+      aria-modal="false"
+    >
+      <div className="mx-auto max-w-4xl bg-background/95 border border-border/20 pointer-events-auto">
         <div className="p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
-          <p className="text-sm md:text-base text-foreground/85">
-            We use cookies to improve your experience and analyze traffic. We only load analytics after you consent.
-            Read our <a href="/privacy" className="underline underline-offset-2 hover-scale">Privacy Policy</a>.
-          </p>
+          <div className="flex-1">
+            <p 
+              id="consent-title" 
+              className="text-sm md:text-base font-medium text-foreground mb-1"
+            >
+              Cookie Preferences
+            </p>
+            <p 
+              id="consent-description" 
+              className="text-sm text-foreground/75"
+            >
+              We use cookies to improve your experience and analyze traffic. We only load analytics after you consent.
+              {' '}
+              <a 
+                href="/privacy" 
+                className="underline underline-offset-2 hover:text-foreground transition-colors"
+                tabIndex={0}
+              >
+                Privacy Policy
+              </a>
+            </p>
+          </div>
           <div className="flex gap-2 md:ml-auto">
-            <Button variant="outline" size="sm" onClick={() => handle(false)}>Decline</Button>
-            <Button size="sm" onClick={() => handle(true)}>Accept</Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleConsent(false)}
+              className="min-h-[44px] px-4"
+              aria-label="Decline analytics cookies"
+            >
+              Decline
+            </Button>
+            <Button 
+              size="sm" 
+              onClick={() => handleConsent(true)}
+              className="min-h-[44px] px-4"
+              aria-label="Accept all cookies"
+            >
+              Accept All
+            </Button>
           </div>
         </div>
       </div>
