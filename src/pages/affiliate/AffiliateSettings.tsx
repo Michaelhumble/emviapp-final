@@ -72,15 +72,34 @@ const AffiliateSettings = () => {
   };
 
   const connectStripe = async () => {
-    // In a real implementation, this would redirect to Stripe Connect
-    toast.success('Redirecting to Stripe Connect...');
-    
-    // Mock the connection process
-    setTimeout(() => {
-      setStripeConnected(true);
-      setLastPayoutMethod('•••• 8899 (Wells Fargo)');
-      toast.success('Stripe account connected successfully!');
-    }, 2000);
+    try {
+      setLoading(true);
+      toast.success('Redirecting to Stripe Connect...');
+      
+      // Call Stripe Connect edge function
+      const { data, error } = await supabase.functions.invoke('stripe-connect', {
+        body: { action: 'create_account_link', type: 'express' }
+      });
+      
+      if (error) throw error;
+      
+      // Redirect to Stripe onboarding
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else {
+        // Mock the connection process for development
+        setTimeout(() => {
+          setStripeConnected(true);
+          setLastPayoutMethod('•••• 8899 (Wells Fargo)');
+          toast.success('Stripe account connected successfully!');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Stripe Connect error:', error);
+      toast.error('Failed to connect Stripe account');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const regenerateApiKey = async () => {

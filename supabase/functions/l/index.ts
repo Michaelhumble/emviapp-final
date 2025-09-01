@@ -209,6 +209,15 @@ serve(async (req) => {
       destinationUrl.searchParams.set('utm_content', (linkData as any).title);
     }
 
+    // Fire GA4 tracking event
+    if (typeof globalThis.gtag === 'function' && !shouldSuppressLogging) {
+      globalThis.gtag('event', 'affiliate_click', {
+        affiliate_id: (linkData as any).affiliate_id,
+        link_slug: slug,
+        destination: destinationUrl.toString()
+      });
+    }
+
     console.log(`[LINK SHORTENER] Redirecting to: ${destinationUrl.toString()}`);
 
     // Set attribution cookie and redirect (90-day cookie)

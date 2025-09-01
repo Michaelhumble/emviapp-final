@@ -46,7 +46,7 @@ const AffiliatesLanding = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button size="lg" asChild>
-                <Link to="/affiliate">Become an Affiliate</Link>
+                <Link to="/affiliate">Open Creator Portal</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="#calculator">Calculate Earnings</Link>
