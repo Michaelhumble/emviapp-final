@@ -53,14 +53,35 @@ export const analytics = {
   group: (groupId: string, traits?: GtagParams) => trackEvent('join_group', { group_id: groupId, ...traits }),
   
   // Backward compatibility methods - flexible signatures
-  trackEvent: (eventName: string, properties?: GtagParams) => trackEvent(eventName, properties || {}),
-  trackContactSubmission: (form?: string, data?: GtagParams) => trackEvent('contact_submission', { form, ...data }),
+  trackEvent: (eventName: string | Record<string, any>, properties?: GtagParams) => {
+    if (typeof eventName === 'string') {
+      trackEvent(eventName, properties || {});
+    } else {
+      // Handle object-style calls for backward compatibility
+      const { action, category, label, value, custom_parameters, ...rest } = eventName;
+      const eventProps: GtagParams = {
+        event_category: category,
+        event_label: label,
+        value,
+        ...custom_parameters,
+        ...rest
+      };
+      trackEvent(action || 'custom_event', eventProps);
+    }
+  },
+  trackContactSubmission: (form?: string, source?: string, data?: GtagParams) => {
+    const eventData = typeof source === 'object' ? source : { source, ...data };
+    trackEvent('contact_submission', { form, ...eventData });
+  },
   trackError: (error: string, category?: string, context?: GtagParams) => trackEvent('error', { error, category, ...context }),
   trackPageView: (page: string, source?: string, properties?: GtagParams) => trackEvent('page_view', { page_name: page, source, ...properties }),
   trackJobApplication: (data: GtagParams) => trackEvent('job_application', data),
   trackContentView: (contentId: string, properties?: GtagParams) => trackEvent('content_view', { content_id: contentId, ...properties }),
-  trackSearch: (query: string, source?: string, properties?: GtagParams) => trackEvent('search', { query, source, ...properties }),
-  trackSignup: (method: string) => trackEvent('signup', { method }),
+  trackSearch: (query: string, source?: string, results?: number | GtagParams) => {
+    const eventData = typeof results === 'number' ? { results_count: results } : results || {};
+    trackEvent('search', { query, source, ...eventData });
+  },
+  trackSignup: (method: string, userRole?: string) => trackEvent('signup', { method, user_role: userRole }),
   trackBookingCreated: (data: GtagParams) => trackEvent('booking_created', data),
   trackPaymentCompleted: (data: GtagParams) => trackEvent('payment_completed', data),
   trackBeginCheckout: (source?: string, properties?: GtagParams) => trackEvent('begin_checkout', { source, ...properties }),

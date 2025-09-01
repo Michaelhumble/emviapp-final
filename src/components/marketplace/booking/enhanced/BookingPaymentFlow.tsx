@@ -54,16 +54,16 @@ const BookingPaymentFlow: React.FC<BookingPaymentFlowProps> = ({
     
     try {
       // Track payment initiation
-      analytics.trackBeginCheckout(
-        [{
+      analytics.trackBeginCheckout('booking_flow', {
+        items: [{
           item_id: bookingData.serviceId,
           item_name: bookingData.serviceName,
           category: 'booking',
           price: bookingData.servicePrice,
           quantity: 1
         }],
-        bookingData.servicePrice
-      );
+        total_amount: bookingData.servicePrice
+      });
 
       const paymentData = {
         amount: bookingData.servicePrice * 100, // Convert to cents
