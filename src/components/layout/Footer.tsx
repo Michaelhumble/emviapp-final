@@ -220,7 +220,8 @@ const Footer: React.FC = () => {
                    { to: "/blog", label: "Blog" },
                    { to: "/jobs", label: "Jobs" },
                    { to: "/salons", label: "Salons for Sale" },
-                   { to: "/press", label: "Press & Media" }
+                   { to: "/press", label: "Press & Media" },
+                   { to: "/affiliates", label: "Affiliates" }
                  ].map((link, index) => (
                   <motion.li key={index} whileHover={{ x: 5 }}>
                     <Link 
