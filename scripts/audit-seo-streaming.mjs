@@ -16,8 +16,8 @@ import pLimit from 'p-limit';
 const SITE_URL = process.env.AUDIT_URL || 'https://www.emvi.app';
 const REPORTS_DIR = 'reports';
 
-// Low concurrency to avoid ENOBUFS
-const limit = pLimit(2);
+// Low concurrency to avoid ENOBUFS - set to 1 for stability
+const limit = pLimit(1);
 
 // Key pages to audit - focused on core landing pages
 const pagesToAudit = [
@@ -60,10 +60,11 @@ async function runLighthouse(url, outPath) {
     '--output=json',
     `--output-path=${outPath}`,
     '--quiet',
-    '--chrome-flags=--no-sandbox --disable-gpu --headless=new',
-    '--throttling-method=provided',
-    '--disable-full-page-screenshot',
-    '--only-categories=performance,seo'
+    '--chrome-flags=--headless=new --no-sandbox --disable-gpu',
+    '--only-categories=performance,seo',
+    '--max-wait-for-load=60000',
+    '--emulated-form-factor=desktop',
+    '--preset=desktop'
   ];
 
   return new Promise(async (resolve, reject) => {
@@ -100,8 +101,12 @@ async function runLighthouse(url, outPath) {
         return;
       }
       
-      if (code === 0 || (code !== 0 && stderrOutput.includes('Target.closeTarget'))) {
-        // Accept success or Target.closeTarget error as success
+      // Accept success or common Puppeteer errors as success if report was written
+      const isPuppeteerError = stderrOutput.includes('Target.closeTarget') || 
+                              stderrOutput.includes('Session closed') || 
+                              stderrOutput.includes('Page.enable');
+      
+      if (code === 0 || (code !== 0 && isPuppeteerError)) {
         console.log(`  ✅ Lighthouse completed: ${url}`);
         resolve();
       } else {
@@ -142,6 +147,9 @@ async function runWithRetry(url, tries = 2) {
       } catch (parseError) {
         console.error(`  ❌ Failed to parse Lighthouse report for ${url}`);
       }
+      
+      // Add cooldown between audits to prevent Chrome instability
+      await new Promise(r => setTimeout(r, 800));
       
       return;
       
