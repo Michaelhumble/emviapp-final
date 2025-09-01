@@ -203,6 +203,253 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_clicks: {
+        Row: {
+          affiliate_id: string | null
+          country_code: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          link_id: string | null
+          referrer: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          link_id?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          link_id?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_clicks_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_conversions: {
+        Row: {
+          affiliate_id: string | null
+          attributed_click_id: string | null
+          commission_amount: number | null
+          created_at: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          revenue_amount: number | null
+          stripe_customer_id: string | null
+          stripe_session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          attributed_click_id?: string | null
+          commission_amount?: number | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          revenue_amount?: number | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          attributed_click_id?: string | null
+          commission_amount?: number | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          revenue_amount?: number | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_conversions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_conversions_attributed_click_id_fkey"
+            columns: ["attributed_click_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_clicks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_links: {
+        Row: {
+          affiliate_id: string | null
+          clicks_count: number | null
+          conversions_count: number | null
+          created_at: string | null
+          destination_url: string
+          hmac_signature: string
+          id: string
+          slug: string
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          clicks_count?: number | null
+          conversions_count?: number | null
+          created_at?: string | null
+          destination_url: string
+          hmac_signature: string
+          id?: string
+          slug: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          clicks_count?: number | null
+          conversions_count?: number | null
+          created_at?: string | null
+          destination_url?: string
+          hmac_signature?: string
+          id?: string
+          slug?: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_links_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_partners: {
+        Row: {
+          approved_at: string | null
+          commission_rate: number | null
+          created_at: string | null
+          id: string
+          slug: string
+          status: string | null
+          stripe_connect_account_id: string | null
+          total_clicks: number | null
+          total_commissions: number | null
+          total_conversions: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          commission_rate?: number | null
+          created_at?: string | null
+          id?: string
+          slug: string
+          status?: string | null
+          stripe_connect_account_id?: string | null
+          total_clicks?: number | null
+          total_commissions?: number | null
+          total_conversions?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          commission_rate?: number | null
+          created_at?: string | null
+          id?: string
+          slug?: string
+          status?: string | null
+          stripe_connect_account_id?: string | null
+          total_clicks?: number | null
+          total_commissions?: number | null
+          total_conversions?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      affiliate_payouts: {
+        Row: {
+          affiliate_id: string | null
+          commission_amount: number
+          created_at: string | null
+          failure_reason: string | null
+          id: string
+          paid_at: string | null
+          period_end: string
+          period_start: string
+          status: string | null
+          stripe_payout_id: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          commission_amount: number
+          created_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          paid_at?: string | null
+          period_end: string
+          period_start: string
+          status?: string | null
+          stripe_payout_id?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          commission_amount?: number
+          created_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          paid_at?: string | null
+          period_end?: string
+          period_start?: string
+          status?: string | null
+          stripe_payout_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_payouts_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_recommendations: {
         Row: {
           clicked: boolean | null
@@ -5275,6 +5522,10 @@ export type Database = {
       }
       detect_prompt_abuse: {
         Args: { p_prompt: string; p_prompt_hash: string; p_user_id: string }
+        Returns: string
+      }
+      generate_affiliate_slug: {
+        Args: { base_name: string }
         Returns: string
       }
       generate_manage_token: {
