@@ -286,11 +286,14 @@ const AffiliateDashboard = () => {
                           />
                         </LineChart>
                       </ResponsiveContainer>
-                    ) : (
-                      <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-                        No earnings data yet. Start promoting to see your progress!
-                      </div>
-                    )}
+                     ) : (
+                       <div className="flex flex-col items-center justify-center h-[300px] text-center">
+                         <div className="text-muted-foreground mb-4">No earnings data yet. Start promoting to see your progress!</div>
+                         <Button asChild>
+                           <Link to="/affiliate/links">Create Your First Link</Link>
+                         </Button>
+                       </div>
+                     )}
                   </CardContent>
                 </Card>
 

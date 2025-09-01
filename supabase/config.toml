@@ -20,6 +20,9 @@ verify_jwt = false
 [functions.affiliate-payouts]
 verify_jwt = false
 
+[functions.affiliate-payouts-cron]
+verify_jwt = false
+
 [api]
 enabled = true
 port = 54321

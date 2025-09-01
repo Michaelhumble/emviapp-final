@@ -113,7 +113,7 @@ serve(async (req) => {
       return new Response('Invalid link', { status: 400, headers: corsHeaders });
     }
 
-    // Get request details for tracking
+// Get request details for tracking
     const clientIP = getClientIP(req);
     const userAgent = req.headers.get('user-agent') || 'unknown';
     const referrer = req.headers.get('referer') || null;
@@ -126,31 +126,67 @@ serve(async (req) => {
       .eq('ip_address', clientIP)
       .gte('created_at', oneHourAgo);
 
-    if (recentClicks && recentClicks > 100) {
-      console.warn(`[LINK SHORTENER] Rate limit exceeded for IP: ${clientIP}`);
-      return new Response('Rate limit exceeded', { status: 429, headers: corsHeaders });
+    // Check for duplicate clicks (same IP+UA+slug within 5 minutes)
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { count: duplicateClicks } = await supabase
+      .from('affiliate_clicks')
+      .select('*', { count: 'exact', head: true })
+      .eq('ip_address', clientIP)
+      .eq('user_agent', userAgent)
+      .eq('link_id', linkData.id)
+      .gte('created_at', fiveMinutesAgo);
+
+    // Check for self-referral (if user is authenticated)
+    const authHeader = req.headers.get('Authorization');
+    let isBlocked = false;
+    if (authHeader) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+        if (user && user.id === (linkData as any).affiliate_partners.user_id) {
+          console.warn(`[LINK SHORTENER] Self-referral blocked for user: ${user.id}`);
+          isBlocked = true;
+        }
+      } catch (error) {
+        // Ignore auth errors, continue with tracking
+      }
     }
 
-    // Log the click event (async, don't block redirect)
-    const clickPromise = supabase.from('affiliate_clicks').insert({
-      affiliate_id: (linkData as any).affiliate_id,
-      link_id: (linkData as any).id,
-      ip_address: clientIP,
-      user_agent: userAgent,
-      referrer: referrer,
-      country_code: req.headers.get('cf-ipcountry') || null
-    }).then(({ error }) => {
-      if (error) console.error('[LINK SHORTENER] Click logging error:', error);
-    });
+    const shouldSuppressLogging = (recentClicks && recentClicks > 100) || 
+                                  (duplicateClicks && duplicateClicks > 0) || 
+                                  isBlocked;
 
-    // Update click count (async)
-    const updatePromise = supabase
-      .from('affiliate_links')
-      .update({ clicks_count: (linkData as any).clicks_count + 1 })
-      .eq('id', (linkData as any).id)
-      .then(({ error }) => {
-        if (error) console.error('[LINK SHORTENER] Click count update error:', error);
+    if (shouldSuppressLogging) {
+      console.warn(`[LINK SHORTENER] Click suppressed - IP: ${clientIP}, Reason: ${
+        recentClicks && recentClicks > 100 ? 'rate_limit' : 
+        duplicateClicks && duplicateClicks > 0 ? 'duplicate' : 'self_referral'
+      }`);
+    }
+
+    // Log the click event (async, don't block redirect) - only if not suppressed
+    let clickPromise = Promise.resolve();
+    let updatePromise = Promise.resolve();
+    
+    if (!shouldSuppressLogging) {
+      clickPromise = supabase.from('affiliate_clicks').insert({
+        affiliate_id: (linkData as any).affiliate_id,
+        link_id: (linkData as any).id,
+        ip_address: clientIP,
+        user_agent: userAgent,
+        referrer: referrer,
+        country_code: req.headers.get('cf-ipcountry') || null
+      }).then(({ error }) => {
+        if (error) console.error('[LINK SHORTENER] Click logging error:', error);
       });
+
+      // Update click count (async)
+      updatePromise = supabase
+        .from('affiliate_links')
+        .update({ clicks_count: (linkData as any).clicks_count + 1 })
+        .eq('id', (linkData as any).id)
+        .then(({ error }) => {
+          if (error) console.error('[LINK SHORTENER] Click count update error:', error);
+        });
+    }
 
     // Create attribution cookie
     const attributionCookie = await createAttributionCookie((linkData as any).affiliate_id);
@@ -158,15 +194,30 @@ serve(async (req) => {
     // Perform async operations without blocking
     Promise.all([clickPromise, updatePromise]);
 
-    console.log(`[LINK SHORTENER] Redirecting to: ${(linkData as any).destination_url}`);
+    // Add UTM parameters to destination URL if not present
+    const destinationUrl = new URL((linkData as any).destination_url);
+    if (!destinationUrl.searchParams.has('utm_source')) {
+      destinationUrl.searchParams.set('utm_source', 'affiliate');
+    }
+    if (!destinationUrl.searchParams.has('utm_medium')) {
+      destinationUrl.searchParams.set('utm_medium', 'referral');
+    }
+    if (!destinationUrl.searchParams.has('utm_campaign')) {
+      destinationUrl.searchParams.set('utm_campaign', (linkData as any).affiliate_partners.slug);
+    }
+    if (!destinationUrl.searchParams.has('utm_content') && (linkData as any).title) {
+      destinationUrl.searchParams.set('utm_content', (linkData as any).title);
+    }
 
-    // Set attribution cookie and redirect
+    console.log(`[LINK SHORTENER] Redirecting to: ${destinationUrl.toString()}`);
+
+    // Set attribution cookie and redirect (90-day cookie)
     const response = new Response(null, {
       status: 302,
       headers: {
         ...corsHeaders,
-        'Location': (linkData as any).destination_url,
-        'Set-Cookie': `af_attr=${attributionCookie}; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000; Domain=.emvi.app; Path=/`,
+        'Location': destinationUrl.toString(),
+        'Set-Cookie': `af_attr=${attributionCookie}; HttpOnly; Secure; SameSite=Lax; Max-Age=7776000; Domain=.emvi.app; Path=/`,
         'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });

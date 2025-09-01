@@ -87,5 +87,13 @@ export const analytics = {
   trackBeginCheckout: (source?: string, properties?: GtagParams) => trackEvent('begin_checkout', { source, ...properties }),
   trackPurchase: (properties?: GtagParams) => trackEvent('purchase', properties),
   trackAddToCart: (properties?: GtagParams) => trackEvent('add_to_cart', properties),
-  trackRemoveFromCart: (properties?: GtagParams) => trackEvent('remove_from_cart', properties)
+  trackRemoveFromCart: (properties?: GtagParams) => trackEvent('remove_from_cart', properties),
+  
+  // Affiliate-specific tracking
+  trackAffiliateClick: (affiliateId: string, linkSlug: string, destination: string) => 
+    trackEvent('affiliate_click', { affiliate_id: affiliateId, link_slug: linkSlug, destination }),
+  trackAffiliateSignup: (affiliateId: string) => 
+    trackEvent('affiliate_signup', { affiliate_id: affiliateId }),
+  trackAffiliateConversion: (affiliateId: string, conversionValue: number, commissionAmount: number) => 
+    trackEvent('affiliate_conversion', { affiliate_id: affiliateId, conversion_value: conversionValue, commission_amount: commissionAmount })
 };
