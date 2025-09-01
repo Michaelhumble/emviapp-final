@@ -63,9 +63,10 @@ const LazyIndex = () => {
   return (
     <Layout>
       <ComprehensiveSEO
-        title="Find Nail Artists & Beauty Jobs with AI | EmviApp"
-        description="EmviApp is the premier AI-powered platform connecting beauty professionals with jobs, salons, and artists. Discover nail technician careers, salon opportunities, and top beauty talent in your city."
+        title="EmviApp – The Beauty Industry's Missing Piece"
+        description="A community where talent, dreams, and opportunity meet — for every beauty professional, everywhere. Join EmviApp today."
         canonicalUrl="https://www.emvi.app/"
+        image="https://www.emvi.app/og-image.jpg"
         tags={[
           "beauty jobs",
           "nail technician",
