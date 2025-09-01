@@ -60,7 +60,7 @@ async function runLighthouse(url, outPath) {
     '--output=json',
     `--output-path=${outPath}`,
     '--quiet',
-    '--chromium-flags=--headless=new',
+    '--chrome-flags=--headless=new --no-sandbox --disable-gpu',
     '--throttling-method=provided',
     '--disable-full-page-screenshot',
     '--only-categories=performance,seo'
