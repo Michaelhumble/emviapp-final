@@ -7,7 +7,7 @@
 
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, statSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import https from 'https';
 import { URL } from 'url';
@@ -23,6 +23,18 @@ const toAbsolute = (u) => {
     if (/^https?:\/\//i.test(u)) return new URL(u).toString();
     return new URL(u, 'https://www.emvi.app/').toString();
   } catch { return u; }
+};
+
+const waitForStable = async (p) => {
+  let size=-1, same=0;
+  for (let i=0;i<10;i++){
+    try {
+      const s = statSync(p).size;
+      if (s===size) { same++; if (same>=2) break; }
+      else { same=0; size=s; }
+    } catch {}
+    await new Promise(r=>setTimeout(r,150));
+  }
 };
 
 // Low concurrency to avoid ENOBUFS - set to 1 for stability
@@ -108,21 +120,6 @@ async function runLighthouse(url, outPath) {
     });
     
     ps.on('close', async (code) => {
-      // Wait for Chrome to settle and report file to be fully written
-      await new Promise(r => setTimeout(r, 1000));
-      
-      // Check if report file exists and has content
-      try {
-        const stat = await fs.stat(outPath);
-        if (stat.size === 0) {
-          throw new Error('Report file is empty');
-        }
-      } catch (fileError) {
-        console.log(`  ❌ Lighthouse report file issue for ${url}: ${fileError.message}`);
-        reject(new Error(`Report file error: ${fileError.message}`));
-        return;
-      }
-      
       // Accept success or common Puppeteer errors as success if report was written
       const isPuppeteerError = stderrOutput.includes('Target.closeTarget') || 
                               stderrOutput.includes('Session closed') || 
@@ -130,8 +127,18 @@ async function runLighthouse(url, outPath) {
                               stderrOutput.includes('Protocol error');
       
       if (code === 0 || (code !== 0 && isPuppeteerError)) {
-        console.log(`  ✅ Lighthouse completed: ${url}`);
-        resolve();
+        // Wait for file to be stable
+        await waitForStable(outPath);
+        
+        // Validate JSON
+        try {
+          const json = JSON.parse(readFileSync(outPath, 'utf8'));
+          console.log(`  ✅ Lighthouse completed: ${url}`);
+          resolve();
+        } catch (parseError) {
+          console.log(`  ❌ Lighthouse JSON parse error for ${url}: ${parseError.message}`);
+          reject(new Error(`JSON parse error: ${parseError.message}`));
+        }
       } else {
         console.log(`  ❌ Lighthouse failed (${code}): ${url}`);
         reject(new Error(`lighthouse exited ${code}`));
