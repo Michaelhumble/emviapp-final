@@ -67,7 +67,8 @@ async function runLighthouse(url, outPath) {
   ];
 
   return new Promise((resolve, reject) => {
-    const ps = spawn('lighthouse', args, { 
+    const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    const ps = spawn(npx, ['lighthouse', ...args], { 
       stdio: ['ignore', 'pipe', 'pipe'] 
     });
 
