@@ -106,7 +106,10 @@ const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBl
 const AffiliatesLanding = lazy(() => import("@/pages/affiliate/AffiliatesLanding"));
 const AffiliatePortal = lazy(() => import("@/pages/affiliate/AffiliatePortal"));
 const AffiliateDashboard = lazy(() => import("@/pages/affiliate/AffiliateDashboard"));
-const AffiliateLinks = lazy(() => import("@/pages/affiliate/AffiliateLinks"));
+import AffiliateLinks from '@/pages/affiliate/AffiliateLinks';
+import AffiliatePayouts from '@/pages/affiliate/AffiliatePayouts';
+import AffiliateAssets from '@/pages/affiliate/AffiliateAssets';
+import AffiliateSettings from '@/pages/affiliate/AffiliateSettings';
 
 // Industry Pages
 const NailsPage = lazy(() => import("@/pages/nails"));
@@ -273,16 +276,31 @@ function App() {
                           <Suspense fallback={<SimpleLoadingFallback />}><AffiliatePortal /></Suspense>
                         </ProtectedRoute>
                       } />
-                      <Route path="/affiliate/dashboard" element={
-                        <ProtectedRoute>
-                          <Suspense fallback={<SimpleLoadingFallback />}><AffiliateDashboard /></Suspense>
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/affiliate/links" element={
-                        <ProtectedRoute>
-                          <Suspense fallback={<SimpleLoadingFallback />}><AffiliateLinks /></Suspense>
-                        </ProtectedRoute>
-                      } />
+                       <Route path="/affiliate/dashboard" element={
+                         <ProtectedRoute>
+                           <AffiliateDashboard />
+                         </ProtectedRoute>
+                       } />
+                       <Route path="/affiliate/links" element={
+                         <ProtectedRoute>
+                           <AffiliateLinks />
+                         </ProtectedRoute>
+                       } />
+                       <Route path="/affiliate/payouts" element={
+                         <ProtectedRoute>
+                           <AffiliatePayouts />
+                         </ProtectedRoute>
+                       } />
+                       <Route path="/affiliate/assets" element={
+                         <ProtectedRoute>
+                           <AffiliateAssets />
+                         </ProtectedRoute>
+                       } />
+                       <Route path="/affiliate/settings" element={
+                         <ProtectedRoute>
+                           <AffiliateSettings />
+                         </ProtectedRoute>
+                       } />
 
                       <Route path="/" element={<LazyIndex />} />
                       

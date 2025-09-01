@@ -51,6 +51,12 @@ export const mainNavigationItems: NavigationItem[] = [
     path: "/contact",
     icon: Phone,
     vietnameseTitle: "Liên hệ"
+  },
+  {
+    title: "Affiliates",
+    path: "/affiliates",
+    icon: Users,
+    vietnameseTitle: "Đối tác"
   }
 ];
 

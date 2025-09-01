@@ -199,14 +199,6 @@ const AffiliateLinks = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const getConversionRate = (clicks: number, conversions: number) => {
-    if (clicks === 0) return '0%';
-    return `${((conversions / clicks) * 100).toFixed(1)}%`;
-  };
 
   return (
     <>
