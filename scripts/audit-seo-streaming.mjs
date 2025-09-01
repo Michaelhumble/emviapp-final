@@ -60,22 +60,48 @@ async function runLighthouse(url, outPath) {
     '--output=json',
     `--output-path=${outPath}`,
     '--quiet',
-    '--chrome-flags=--headless=new --no-sandbox --disable-gpu',
+    '--chrome-flags=--no-sandbox --disable-gpu --headless=new',
     '--throttling-method=provided',
     '--disable-full-page-screenshot',
     '--only-categories=performance,seo'
   ];
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
     const ps = spawn(npx, ['lighthouse', ...args], { 
       stdio: ['ignore', 'pipe', 'pipe'] 
     });
 
-    ps.stderr.on('data', d => process.stderr.write(d));
+    let stderrOutput = '';
     
-    ps.on('close', code => {
-      if (code === 0) {
+    ps.stderr.on('data', (data) => {
+      const output = data.toString();
+      stderrOutput += output;
+      
+      // Filter out Target.closeTarget errors but show other errors
+      if (!output.includes('Target.closeTarget') && !output.includes('closeTarget')) {
+        process.stderr.write(data);
+      }
+    });
+    
+    ps.on('close', async (code) => {
+      // Wait for Chrome to settle and report file to be fully written
+      await new Promise(r => setTimeout(r, 1000));
+      
+      // Check if report file exists and has content
+      try {
+        const stat = await fs.stat(outPath);
+        if (stat.size === 0) {
+          throw new Error('Report file is empty');
+        }
+      } catch (fileError) {
+        console.log(`  ❌ Lighthouse report file issue for ${url}: ${fileError.message}`);
+        reject(new Error(`Report file error: ${fileError.message}`));
+        return;
+      }
+      
+      if (code === 0 || (code !== 0 && stderrOutput.includes('Target.closeTarget'))) {
+        // Accept success or Target.closeTarget error as success
         console.log(`  ✅ Lighthouse completed: ${url}`);
         resolve();
       } else {
