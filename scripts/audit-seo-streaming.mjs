@@ -16,11 +16,17 @@ import pLimit from 'p-limit';
 const SITE_URL = process.env.AUDIT_URL || 'https://www.emvi.app';
 const REPORTS_DIR = 'reports';
 
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
 // Low concurrency to avoid ENOBUFS - set to 1 for stability
 const limit = pLimit(1);
 
+// Check for single URL mode
+const singleUrlIndex = process.argv.indexOf('--url');
+const singleUrl = singleUrlIndex !== -1 ? process.argv[singleUrlIndex + 1] : null;
+
 // Key pages to audit - focused on core landing pages
-const pagesToAudit = [
+let pagesToAudit = [
   '/',
   '/blog', 
   '/press',
@@ -28,6 +34,12 @@ const pagesToAudit = [
   '/salons',
   '/artists'
 ];
+
+// Override with single URL if provided
+if (singleUrl) {
+  pagesToAudit = [singleUrl];
+  console.log(`🎯 Single URL mode: auditing ${singleUrl}`);
+}
 
 const auditResults = {
   timestamp: new Date().toISOString(),
@@ -60,11 +72,11 @@ async function runLighthouse(url, outPath) {
     '--output=json',
     `--output-path=${outPath}`,
     '--quiet',
-    '--chrome-flags=--headless=new --no-sandbox --disable-gpu',
     '--only-categories=performance,seo',
-    '--max-wait-for-load=60000',
+    '--preset=desktop',
     '--emulated-form-factor=desktop',
-    '--preset=desktop'
+    '--max-wait-for-load=60000',
+    '--chrome-flags=--headless=new --no-sandbox --disable-gpu'
   ];
 
   return new Promise(async (resolve, reject) => {
@@ -79,8 +91,11 @@ async function runLighthouse(url, outPath) {
       const output = data.toString();
       stderrOutput += output;
       
-      // Filter out Target.closeTarget errors but show other errors
-      if (!output.includes('Target.closeTarget') && !output.includes('closeTarget')) {
+      // Filter out common Puppeteer/Target errors but show other errors
+      if (!output.includes('Target.closeTarget') && 
+          !output.includes('Session closed') && 
+          !output.includes('Page.enable') && 
+          !output.includes('Protocol error')) {
         process.stderr.write(data);
       }
     });
@@ -104,7 +119,8 @@ async function runLighthouse(url, outPath) {
       // Accept success or common Puppeteer errors as success if report was written
       const isPuppeteerError = stderrOutput.includes('Target.closeTarget') || 
                               stderrOutput.includes('Session closed') || 
-                              stderrOutput.includes('Page.enable');
+                              stderrOutput.includes('Page.enable') ||
+                              stderrOutput.includes('Protocol error');
       
       if (code === 0 || (code !== 0 && isPuppeteerError)) {
         console.log(`  ✅ Lighthouse completed: ${url}`);
@@ -148,14 +164,26 @@ async function runWithRetry(url, tries = 2) {
         console.error(`  ❌ Failed to parse Lighthouse report for ${url}`);
       }
       
-      // Add cooldown between audits to prevent Chrome instability
-      await new Promise(r => setTimeout(r, 800));
-      
       return;
       
     } catch (e) { 
+      // Handle transient Puppeteer errors gracefully
+      const isPuppeteerError = e.message && (
+        e.message.includes('Target.closeTarget') ||
+        e.message.includes('Session closed') ||
+        e.message.includes('Page.enable') ||
+        e.message.includes('Protocol error')
+      );
+      
+      if (isPuppeteerError && i === tries - 1) {
+        console.log(`  ⚠️ Puppeteer error for ${url}, continuing audit: ${e.message}`);
+        return; // Don't abort whole audit for transient errors
+      }
+      
       if (i === tries - 1) throw e;
       console.log(`  ⚠️ Retry ${i + 1} for ${url}`);
+    } finally {
+      await sleep(1000);
     }
   }
 }
