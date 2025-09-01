@@ -76,7 +76,7 @@ async function runLighthouse(url, outPath) {
     '--preset=desktop',
     '--emulated-form-factor=desktop',
     '--max-wait-for-load=60000',
-    '--chrome-flags=--headless=new --no-sandbox --disable-gpu'
+    '--chrome-flags=--headless=new --no-sandbox --disable-gpu --disable-storage-reset --disable-storage-quota-enforcement'
   ];
 
   return new Promise(async (resolve, reject) => {
