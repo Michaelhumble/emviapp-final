@@ -18,6 +18,13 @@ const REPORTS_DIR = 'reports';
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+const toAbsolute = (u) => {
+  try {
+    if (/^https?:\/\//i.test(u)) return new URL(u).toString();
+    return new URL(u, 'https://www.emvi.app/').toString();
+  } catch { return u; }
+};
+
 // Low concurrency to avoid ENOBUFS - set to 1 for stability
 const limit = pLimit(1);
 
@@ -41,6 +48,9 @@ if (singleUrl) {
   console.log(`🎯 Single URL mode: auditing ${singleUrl}`);
 }
 
+// Normalize all URLs to absolute
+pagesToAudit = pagesToAudit.map(toAbsolute);
+
 const auditResults = {
   timestamp: new Date().toISOString(),
   site: SITE_URL,
@@ -62,13 +72,12 @@ await fs.mkdir(REPORTS_DIR, { recursive: true });
 console.log(`🔍 Starting streaming SEO Audit for ${SITE_URL}`);
 
 async function runLighthouse(url, outPath) {
-  const fullUrl = `${SITE_URL}${url}`;
-  console.log(`  🚀 Lighthouse: ${fullUrl}`);
+  console.log(`  🚀 Lighthouse: ${url}`);
   
   await fs.mkdir(path.dirname(outPath), { recursive: true });
   
   const args = [
-    fullUrl,
+    url,
     '--output=json',
     `--output-path=${outPath}`,
     '--quiet',
@@ -190,9 +199,7 @@ async function runWithRetry(url, tries = 2) {
 
 async function fetchPage(url) {
   return new Promise((resolve, reject) => {
-    const fullUrl = new URL(url, SITE_URL);
-    
-    https.get(fullUrl.toString(), {
+    https.get(url, {
       headers: {
         'User-Agent': 'EmviApp-SEO-Auditor/1.0'
       }
