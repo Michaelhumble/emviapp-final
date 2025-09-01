@@ -64,7 +64,7 @@ const LazyIndex = () => {
     <Layout>
       <ComprehensiveSEO
         title="EmviApp – The Beauty Industry's Missing Piece"
-        description="A community where talent, dreams, and opportunity meet — for every beauty professional, everywhere. Join EmviApp today."
+        description="A community where talent, dreams, and opportunity meet—for every beauty professional, everywhere."
         canonicalUrl="https://www.emvi.app/"
         image="https://www.emvi.app/og-image.jpg"
         tags={[
