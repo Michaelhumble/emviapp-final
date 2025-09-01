@@ -10,6 +10,16 @@ verify_jwt = false
 [functions.hubspot-contact]
 verify_jwt = false
 
+# Affiliate program functions
+[functions.l]
+verify_jwt = false
+
+[functions.affiliate-webhook]
+verify_jwt = false
+
+[functions.affiliate-payouts]
+verify_jwt = false
+
 [api]
 enabled = true
 port = 54321

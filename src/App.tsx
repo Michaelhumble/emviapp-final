@@ -102,6 +102,12 @@ const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
 // Blog Category Pages - Dynamic
 const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
 
+// Affiliate Program Pages
+const AffiliatesLanding = lazy(() => import("@/pages/affiliate/AffiliatesLanding"));
+const AffiliatePortal = lazy(() => import("@/pages/affiliate/AffiliatePortal"));
+const AffiliateDashboard = lazy(() => import("@/pages/affiliate/AffiliateDashboard"));
+const AffiliateLinks = lazy(() => import("@/pages/affiliate/AffiliateLinks"));
+
 // Industry Pages
 const NailsPage = lazy(() => import("@/pages/nails"));
 const HairPage = lazy(() => import("@/pages/hair"));
@@ -260,9 +266,27 @@ function App() {
                      <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
                      {/* Homepage route - critical performance optimization */}
-                     <Route path="/" element={<LazyIndex />} />
-                     
-                     {/* ... keep existing code (other routes) the same */}
+                      {/* Affiliate Program Routes */}
+                      <Route path="/affiliates" element={<Suspense fallback={<SimpleLoadingFallback />}><AffiliatesLanding /></Suspense>} />
+                      <Route path="/affiliate" element={
+                        <ProtectedRoute>
+                          <Suspense fallback={<SimpleLoadingFallback />}><AffiliatePortal /></Suspense>
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/affiliate/dashboard" element={
+                        <ProtectedRoute>
+                          <Suspense fallback={<SimpleLoadingFallback />}><AffiliateDashboard /></Suspense>
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/affiliate/links" element={
+                        <ProtectedRoute>
+                          <Suspense fallback={<SimpleLoadingFallback />}><AffiliateLinks /></Suspense>
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/" element={<LazyIndex />} />
+                      
+                      {/* ... keep existing code (other routes) the same */}
                      {routes.map((route) => (
                        (route.path !== "/" && route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                         route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
