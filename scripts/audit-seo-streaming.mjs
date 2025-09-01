@@ -33,7 +33,7 @@ const singleUrlIndex = process.argv.indexOf('--url');
 const singleUrl = singleUrlIndex !== -1 ? process.argv[singleUrlIndex + 1] : null;
 
 // Key pages to audit - focused on core landing pages
-let pagesToAudit = [
+const defaultUrls = [
   '/',
   '/blog', 
   '/press',
@@ -42,14 +42,12 @@ let pagesToAudit = [
   '/artists'
 ];
 
-// Override with single URL if provided
+// Set up URLs to audit
+const pagesToAudit = singleUrl ? [singleUrl] : defaultUrls.map(toAbsolute);
+
 if (singleUrl) {
-  pagesToAudit = [singleUrl];
   console.log(`🎯 Single URL mode: auditing ${singleUrl}`);
 }
-
-// Normalize all URLs to absolute
-pagesToAudit = pagesToAudit.map(toAbsolute);
 
 const auditResults = {
   timestamp: new Date().toISOString(),
@@ -72,7 +70,7 @@ await fs.mkdir(REPORTS_DIR, { recursive: true });
 console.log(`🔍 Starting streaming SEO Audit for ${SITE_URL}`);
 
 async function runLighthouse(url, outPath) {
-  console.log(`  🚀 Lighthouse: ${url}`);
+  console.log("🚀 Lighthouse auditing:", url);
   
   await fs.mkdir(path.dirname(outPath), { recursive: true });
   
