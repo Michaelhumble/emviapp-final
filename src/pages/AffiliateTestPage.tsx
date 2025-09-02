@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
 import AffiliateConnectTest from '@/components/testing/AffiliateConnectTest';
 import StripeWebhookTest from '@/components/testing/StripeWebhookTest';
+import ComprehensiveTestResults from '@/components/testing/ComprehensiveTestResults';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';
 
@@ -31,6 +32,8 @@ const AffiliateTestPage = () => {
             </Alert>
           </div>
 
+          <ComprehensiveTestResults />
+          
           <AffiliateConnectTest />
           
           <StripeWebhookTest />

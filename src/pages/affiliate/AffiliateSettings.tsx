@@ -110,20 +110,43 @@ const AffiliateSettings = () => {
 
   const fetchConnectStatus = async () => {
     try {
-      console.log('[AFFILIATE-SETTINGS] Fetching connect status...');
+      console.log('[AFFILIATE-SETTINGS] Fetching connect status for user:', user?.id);
+      
       const { data, error } = await supabase.functions.invoke('affiliate-connect-status');
       
-      console.log('[AFFILIATE-SETTINGS] Connect status response:', { data, error });
+      console.log('[AFFILIATE-SETTINGS] Connect status response:', { 
+        data, 
+        error,
+        connected: data?.connected,
+        connect_status: data?.connect_status,
+        charges_enabled: data?.charges_enabled,
+        payouts_enabled: data?.payouts_enabled,
+        stripe_account_id: data?.stripe_account_id,
+        country: data?.country,
+        default_currency: data?.default_currency
+      });
       
-      if (error) throw error;
+      if (error) {
+        console.error('[AFFILIATE-SETTINGS] Status API error:', error);
+        throw error;
+      }
       
       setConnectStatus(data);
       
       if (data.connected) {
-        toast.success('Stripe Connect status updated successfully!');
+        toast.success('✅ Stripe Connect status: CONNECTED - Payouts enabled!');
+        console.log('[AFFILIATE-SETTINGS] ✅ STRIPE CONNECT SUCCESSFULLY CONNECTED');
+      } else if (data.connect_status === 'pending') {
+        toast.info('⏳ Stripe Connect status: PENDING - Complete onboarding to enable payouts');
+        console.log('[AFFILIATE-SETTINGS] ⏳ STRIPE CONNECT PENDING - More info needed');
+      } else {
+        toast.info('❌ Stripe Connect: NOT CONNECTED - Click Connect Payouts to start');
+        console.log('[AFFILIATE-SETTINGS] ❌ STRIPE CONNECT NOT CONNECTED');
       }
+      
     } catch (error) {
       console.error('[AFFILIATE-SETTINGS] Error fetching connect status:', error);
+      console.error('[AFFILIATE-SETTINGS] Status error stack:', error.stack);
       toast.error(`Failed to fetch Stripe Connect status: ${error.message}`);
     }
   };
@@ -132,24 +155,45 @@ const AffiliateSettings = () => {
     try {
       setLoading(true);
       console.log('[AFFILIATE-SETTINGS] Starting Stripe Connect...');
+      console.log('[AFFILIATE-SETTINGS] User ID:', user?.id);
       toast.success('Redirecting to Stripe Connect...');
       
       // Call affiliate connect start function
+      console.log('[AFFILIATE-SETTINGS] Calling affiliate-connect-start function...');
       const { data, error } = await supabase.functions.invoke('affiliate-connect-start');
       
-      console.log('[AFFILIATE-SETTINGS] Connect start response:', { data, error });
+      console.log('[AFFILIATE-SETTINGS] Connect start response:', { 
+        data, 
+        error,
+        hasData: !!data,
+        hasUrl: !!(data?.url),
+        errorMessage: error?.message,
+        errorDetails: error?.details || error
+      });
       
-      if (error) throw error;
+      if (error) {
+        console.error('[AFFILIATE-SETTINGS] API Error Details:', error);
+        throw error;
+      }
       
       // Redirect to Stripe onboarding
       if (data?.url) {
-        console.log('[AFFILIATE-SETTINGS] Redirecting to:', data.url);
+        console.log('[AFFILIATE-SETTINGS] Redirecting to Stripe onboarding URL:', data.url);
+        toast.success('Redirecting to Stripe onboarding...');
+        
+        // Log the redirect for debugging
+        console.log('[AFFILIATE-SETTINGS] About to redirect. Current URL:', window.location.href);
+        console.log('[AFFILIATE-SETTINGS] Target URL:', data.url);
+        
+        // Redirect in the same window to complete onboarding
         window.location.href = data.url;
       } else {
-        throw new Error('No onboarding URL received');
+        console.error('[AFFILIATE-SETTINGS] No URL in response:', data);
+        throw new Error('No onboarding URL received from server');
       }
     } catch (error) {
-      console.error('[AFFILIATE-SETTINGS] Stripe Connect error:', error);
+      console.error('[AFFILIATE-SETTINGS] Full Stripe Connect error:', error);
+      console.error('[AFFILIATE-SETTINGS] Error stack:', error.stack);
       toast.error(`Failed to connect Stripe account: ${error.message}`);
       setLoading(false);
     }
