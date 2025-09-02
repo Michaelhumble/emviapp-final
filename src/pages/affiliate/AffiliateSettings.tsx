@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,8 @@ import {
   RefreshCw,
   CheckCircle,
   AlertCircle,
-  Info
+  Info,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,9 +28,18 @@ import { toast } from 'sonner';
 
 const AffiliateSettings = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [stripeConnected, setStripeConnected] = useState(false);
-  const [lastPayoutMethod, setLastPayoutMethod] = useState('•••• 4242');
+  const [connectStatus, setConnectStatus] = useState({
+    connected: false,
+    connect_status: 'not_connected',
+    charges_enabled: false,
+    payouts_enabled: false,
+    details_submitted: false,
+    country: null,
+    default_currency: null,
+    stripe_account_id: null
+  });
   const [apiToken, setApiToken] = useState('emvi_••••••••••••••••••••••••abc123');
   const [utmSettings, setUtmSettings] = useState({
     utm_source: 'affiliate',
@@ -37,12 +48,23 @@ const AffiliateSettings = () => {
     utm_content: ''
   });
   const [affiliateSlug, setAffiliateSlug] = useState('');
+  const [isTestMode] = useState(true); // Always test mode for now
 
   useEffect(() => {
     if (user) {
       fetchSettings();
     }
-  }, [user]);
+    
+    // Check URL params for connect status
+    const connectParam = searchParams.get('connect');
+    if (connectParam === 'return') {
+      toast.success('Welcome back! Checking your Stripe Connect status...');
+      setTimeout(() => fetchConnectStatus(), 1000);
+    } else if (connectParam === 'refresh') {
+      toast.info('Refreshing your connection status...');
+      setTimeout(() => fetchConnectStatus(), 1000);
+    }
+  }, [user, searchParams]);
 
   const fetchSettings = async () => {
     try {
@@ -51,17 +73,29 @@ const AffiliateSettings = () => {
       // Get affiliate partner info
       const { data: affiliate } = await supabase
         .from('affiliate_partners')
-        .select('slug, stripe_connect_account_id')
+        .select('slug, stripe_account_id, connect_status, country, default_currency')
         .eq('user_id', user?.id)
         .single();
 
       if (affiliate) {
         setAffiliateSlug(affiliate.slug);
-        setStripeConnected(!!affiliate.stripe_connect_account_id);
+        setConnectStatus(prev => ({
+          ...prev,
+          connected: affiliate.connect_status === 'connected',
+          connect_status: affiliate.connect_status || 'not_connected',
+          stripe_account_id: affiliate.stripe_account_id,
+          country: affiliate.country,
+          default_currency: affiliate.default_currency
+        }));
         setUtmSettings(prev => ({
           ...prev,
           utm_campaign: affiliate.slug
         }));
+        
+        // Fetch detailed status if we have a Stripe account
+        if (affiliate.stripe_account_id) {
+          await fetchConnectStatus();
+        }
       }
 
     } catch (error) {
@@ -71,33 +105,42 @@ const AffiliateSettings = () => {
     }
   };
 
+  const fetchConnectStatus = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('affiliate-connect-status');
+      
+      if (error) throw error;
+      
+      setConnectStatus(data);
+      
+      if (data.connected) {
+        toast.success('Stripe Connect status updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error fetching connect status:', error);
+      toast.error('Failed to fetch Stripe Connect status');
+    }
+  };
+
   const connectStripe = async () => {
     try {
       setLoading(true);
       toast.success('Redirecting to Stripe Connect...');
       
-      // Call Stripe Connect edge function
-      const { data, error } = await supabase.functions.invoke('stripe-connect', {
-        body: { action: 'create_account_link', type: 'express' }
-      });
+      // Call affiliate connect start function
+      const { data, error } = await supabase.functions.invoke('affiliate-connect-start');
       
       if (error) throw error;
       
       // Redirect to Stripe onboarding
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.location.href = data.url;
       } else {
-        // Mock the connection process for development
-        setTimeout(() => {
-          setStripeConnected(true);
-          setLastPayoutMethod('•••• 8899 (Wells Fargo)');
-          toast.success('Stripe account connected successfully!');
-        }, 2000);
+        throw new Error('No onboarding URL received');
       }
     } catch (error) {
       console.error('Stripe Connect error:', error);
       toast.error('Failed to connect Stripe account');
-    } finally {
       setLoading(false);
     }
   };
@@ -152,38 +195,83 @@ const AffiliateSettings = () => {
             </p>
           </div>
 
+          {/* Test Mode Alert */}
+          {isTestMode && (
+            <Alert className="mb-6 border-amber-200 bg-amber-50">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                <strong>Test Mode:</strong> You're using Stripe test data. Use test card information during onboarding.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Stripe Connect Section */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Payout Method
+                Stripe Connect Status
+                {isTestMode && <Badge variant="outline" className="ml-2">Test Mode</Badge>}
               </CardTitle>
               <CardDescription>
                 Connect your Stripe account to receive commission payouts
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {stripeConnected ? (
+              {connectStatus.connected ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <div className="flex-1">
-                      <p className="font-medium text-green-800">Stripe Account Connected</p>
+                      <p className="font-medium text-green-800">Connected</p>
                       <p className="text-sm text-green-600">
-                        Payouts will be sent to: {lastPayoutMethod}
+                        Payouts enabled • {connectStatus.country?.toUpperCase()} • {connectStatus.default_currency?.toUpperCase()}
                       </p>
                     </div>
-                    <Badge className="bg-green-100 text-green-800">Connected</Badge>
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                   
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const dashboardUrl = isTestMode 
+                          ? `https://dashboard.stripe.com/test/connect/accounts/${connectStatus.stripe_account_id}`
+                          : `https://dashboard.stripe.com/connect/accounts/${connectStatus.stripe_account_id}`;
+                        window.open(dashboardUrl, '_blank');
+                      }}
+                    >
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      Manage Stripe Account
+                      Manage in Stripe
                     </Button>
-                    <Button variant="outline" size="sm">
-                      Update Payout Details
+                    <Button variant="outline" size="sm" onClick={fetchConnectStatus}>
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Refresh Status
+                    </Button>
+                  </div>
+                </div>
+              ) : connectStatus.connect_status === 'pending' ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <Clock className="h-5 w-5 text-yellow-600" />
+                    <div className="flex-1">
+                      <p className="font-medium text-yellow-800">Onboarding In Progress</p>
+                      <p className="text-sm text-yellow-600">
+                        Complete your Stripe onboarding to start receiving payouts
+                      </p>
+                    </div>
+                    <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button onClick={connectStripe} disabled={loading}>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Continue Onboarding
+                    </Button>
+                    <Button variant="outline" onClick={fetchConnectStatus}>
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Check Status
                     </Button>
                   </div>
                 </div>
@@ -197,9 +285,9 @@ const AffiliateSettings = () => {
                     </AlertDescription>
                   </Alert>
                   
-                  <Button onClick={connectStripe} className="w-full sm:w-auto">
+                  <Button onClick={connectStripe} disabled={loading} className="w-full sm:w-auto">
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Connect Stripe Account
+                    Connect Payouts (Stripe Express)
                   </Button>
                   
                   <div className="text-xs text-muted-foreground">
