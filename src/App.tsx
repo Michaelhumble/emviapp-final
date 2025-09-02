@@ -111,6 +111,8 @@ import AffiliatePayouts from '@/pages/affiliate/AffiliatePayouts';
 import AffiliateAssets from '@/pages/affiliate/AffiliateAssets';
 import AffiliateSettings from '@/pages/affiliate/AffiliateSettings';
 
+const AffiliateTestPage = lazy(() => import("@/pages/AffiliateTestPage"));
+
 // Industry Pages
 const NailsPage = lazy(() => import("@/pages/nails"));
 const HairPage = lazy(() => import("@/pages/hair"));
@@ -296,11 +298,16 @@ function App() {
                            <AffiliateAssets />
                          </ProtectedRoute>
                        } />
-                       <Route path="/affiliate/settings" element={
-                         <ProtectedRoute>
-                           <AffiliateSettings />
-                         </ProtectedRoute>
-                       } />
+                        <Route path="/affiliate/settings" element={
+                          <ProtectedRoute>
+                            <AffiliateSettings />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/affiliate/test" element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<SimpleLoadingFallback />}><AffiliateTestPage /></Suspense>
+                          </ProtectedRoute>
+                        } />
 
                       <Route path="/" element={<LazyIndex />} />
                       

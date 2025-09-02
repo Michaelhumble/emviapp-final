@@ -75,7 +75,7 @@ const AffiliateSettings = () => {
         .from('affiliate_partners')
         .select('slug, stripe_account_id, connect_status, country, default_currency')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
       if (affiliate) {
         setAffiliateSlug(affiliate.slug);
@@ -96,6 +96,9 @@ const AffiliateSettings = () => {
         if (affiliate.stripe_account_id) {
           await fetchConnectStatus();
         }
+      } else {
+        // User is not an affiliate partner
+        toast.error('You are not registered as an affiliate partner. Please contact support.');
       }
 
     } catch (error) {
