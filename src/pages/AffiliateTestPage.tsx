@@ -4,6 +4,7 @@ import Layout from '@/components/layout/Layout';
 import AffiliateConnectTest from '@/components/testing/AffiliateConnectTest';
 import StripeWebhookTest from '@/components/testing/StripeWebhookTest';
 import ComprehensiveTestResults from '@/components/testing/ComprehensiveTestResults';
+import FullStripeConnectTest from '@/components/testing/FullStripeConnectTest';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';
 
@@ -32,6 +33,8 @@ const AffiliateTestPage = () => {
             </Alert>
           </div>
 
+          <FullStripeConnectTest />
+          
           <ComprehensiveTestResults />
           
           <AffiliateConnectTest />
