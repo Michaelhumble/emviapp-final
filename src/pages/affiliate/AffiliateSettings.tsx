@@ -107,7 +107,10 @@ const AffiliateSettings = () => {
 
   const fetchConnectStatus = async () => {
     try {
+      console.log('[AFFILIATE-SETTINGS] Fetching connect status...');
       const { data, error } = await supabase.functions.invoke('affiliate-connect-status');
+      
+      console.log('[AFFILIATE-SETTINGS] Connect status response:', { data, error });
       
       if (error) throw error;
       
@@ -117,30 +120,34 @@ const AffiliateSettings = () => {
         toast.success('Stripe Connect status updated successfully!');
       }
     } catch (error) {
-      console.error('Error fetching connect status:', error);
-      toast.error('Failed to fetch Stripe Connect status');
+      console.error('[AFFILIATE-SETTINGS] Error fetching connect status:', error);
+      toast.error(`Failed to fetch Stripe Connect status: ${error.message}`);
     }
   };
 
   const connectStripe = async () => {
     try {
       setLoading(true);
+      console.log('[AFFILIATE-SETTINGS] Starting Stripe Connect...');
       toast.success('Redirecting to Stripe Connect...');
       
       // Call affiliate connect start function
       const { data, error } = await supabase.functions.invoke('affiliate-connect-start');
       
+      console.log('[AFFILIATE-SETTINGS] Connect start response:', { data, error });
+      
       if (error) throw error;
       
       // Redirect to Stripe onboarding
       if (data?.url) {
+        console.log('[AFFILIATE-SETTINGS] Redirecting to:', data.url);
         window.location.href = data.url;
       } else {
         throw new Error('No onboarding URL received');
       }
     } catch (error) {
-      console.error('Stripe Connect error:', error);
-      toast.error('Failed to connect Stripe account');
+      console.error('[AFFILIATE-SETTINGS] Stripe Connect error:', error);
+      toast.error(`Failed to connect Stripe account: ${error.message}`);
       setLoading(false);
     }
   };
