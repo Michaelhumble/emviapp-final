@@ -1,125 +1,84 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { DollarSign, Users, TrendingUp, Shield, Download, CheckCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import {
+  AffiliateHero,
+  ValuePropsSection,
+  EarningsCalculator,
+  HowItWorksSection,
+  SocialProofSection,
+  FAQSection,
+  FinalCTASection
+} from '@/components/affiliates';
 
 const AffiliatesLanding = () => {
+  useEffect(() => {
+    // Light GA4 event dispatch (guarded)
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'affiliate_lp_view', {
+        event_category: 'affiliate',
+        page_title: 'Affiliates Landing Page'
+      });
+    }
+  }, []);
+
   return (
     <>
       <Helmet>
-        <title>EmviApp Affiliate Program — Earn 30% Recurring Commission</title>
-        <meta name="description" content="Creators and pros earn 30% recurring commissions promoting EmviApp. 90-day cookie. $50 min payout. Join in minutes." />
+        <title>EmviApp Affiliate Program — Earn Monthly Payouts Growing Beauty Community</title>
+        <meta name="description" content="Join 500+ creators earning 30% recurring commissions promoting EmviApp. Transparent tracking, Stripe Connect payouts, 90-day attribution. Start earning today." />
         <link rel="canonical" href="https://www.emvi.app/affiliates" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         
-        <meta property="og:title" content="EmviApp Affiliate Program — Earn 30% Recurring Commission" />
-        <meta property="og:description" content="Creators and pros earn 30% recurring commissions promoting EmviApp. 90-day cookie. $50 min payout. Join in minutes." />
+        {/* OpenGraph */}
+        <meta property="og:title" content="EmviApp Affiliate Program — Earn Monthly Payouts" />
+        <meta property="og:description" content="Join 500+ creators earning 30% recurring commissions promoting EmviApp. Transparent tracking, Stripe Connect payouts, 90-day attribution." />
         <meta property="og:url" content="https://www.emvi.app/affiliates" />
-        <meta property="og:image" content="https://www.emvi.app/affiliate-og-image.jpg" />
+        <meta property="og:image" content="https://www.emvi.app/og-affiliate-program.jpg" />
         <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="EmviApp" />
         
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="EmviApp Affiliate Program — Earn 30% Recurring Commission" />
-        <meta name="twitter:description" content="Creators and pros earn 30% recurring commissions promoting EmviApp. 90-day cookie. $50 min payout. Join in minutes." />
-        <meta name="twitter:image" content="https://www.emvi.app/affiliate-og-image.jpg" />
+        <meta name="twitter:title" content="EmviApp Affiliate Program — Earn Monthly Payouts" />
+        <meta name="twitter:description" content="Join 500+ creators earning 30% recurring commissions promoting EmviApp. Transparent tracking, Stripe Connect payouts, 90-day attribution." />
+        <meta name="twitter:image" content="https://www.emvi.app/og-affiliate-program.jpg" />
+        
+        {/* Structured Data - Organization */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "EmviApp Affiliate Program",
+            "description": "Join 500+ creators earning 30% recurring commissions promoting EmviApp. Transparent tracking, Stripe Connect payouts, 90-day attribution.",
+            "url": "https://www.emvi.app/affiliates",
+            "mainEntity": {
+              "@type": "Service",
+              "name": "EmviApp Affiliate Program",
+              "provider": {
+                "@type": "Organization",
+                "name": "EmviApp",
+                "url": "https://www.emvi.app"
+              },
+              "description": "Earn 30% recurring commissions promoting the beauty industry's fastest-growing job platform",
+              "offers": {
+                "@type": "Offer",
+                "name": "Affiliate Partnership",
+                "description": "30% recurring commission, 90-day attribution, monthly Stripe Connect payouts"
+              }
+            }
+          })}
+        </script>
       </Helmet>
       
       <Layout>
-        {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/5">
-          <div className="container mx-auto px-4 text-center">
-            <Badge className="mb-6 px-4 py-2 text-sm font-medium">
-              💰 Now Accepting New Affiliates
-            </Badge>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              Earn 30% Recurring. 90-Day Cookie. Paid Monthly.
-            </h1>
-            
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Join 500+ creators earning money by promoting the beauty industry's fastest-growing job platform. 
-              Help beauty professionals find their dream jobs while building your income.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" asChild>
-                <Link to="/affiliate">Open Creator Portal</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="#calculator">Calculate Earnings</Link>
-              </Button>
-            </div>
-            
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">30%</div>
-                <div className="text-sm text-muted-foreground">Commission Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">$50</div>
-                <div className="text-sm text-muted-foreground">Minimum Payout</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">90</div>
-                <div className="text-sm text-muted-foreground">Day Cookie Window</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Earnings Calculator */}
-        <section id="calculator" className="py-20 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold mb-6">Calculate Your Potential Earnings</h2>
-              <p className="text-muted-foreground mb-12">See how much you could earn promoting EmviApp</p>
-              
-              <Card className="p-8">
-                <CardHeader>
-                  <CardTitle>Earnings Calculator</CardTitle>
-                  <CardDescription>Based on average conversion rates and revenue per customer</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Monthly Referrals</label>
-                    <input 
-                      type="range" 
-                      min="1" 
-                      max="100" 
-                      defaultValue="10"
-                      className="w-full"
-                      onChange={(e) => {
-                        const referrals = parseInt(e.target.value);
-                        const avgRevenue = 29.99; // Average subscription price
-                        const commissionRate = 0.30;
-                        const monthlyEarnings = referrals * avgRevenue * commissionRate;
-                        document.getElementById('earnings-result')!.textContent = `$${monthlyEarnings.toFixed(2)}`;
-                        document.getElementById('referrals-count')!.textContent = referrals.toString();
-                      }}
-                    />
-                    <div className="flex justify-between text-sm text-muted-foreground mt-1">
-                      <span>1</span>
-                      <span id="referrals-count">10</span>
-                      <span>100</span>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center py-8">
-                    <div className="text-4xl font-bold text-primary mb-2" id="earnings-result">$89.97</div>
-                    <div className="text-sm text-muted-foreground">Estimated Monthly Earnings</div>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      * Based on $29.99 average revenue per user and 30% commission
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
+        <AffiliateHero />
+        <ValuePropsSection />
+        <EarningsCalculator />
+        <HowItWorksSection />
+        <SocialProofSection />
+        <FAQSection />
+        <FinalCTASection />
 
         {/* How It Works */}
         <section className="py-20 bg-muted/20">
