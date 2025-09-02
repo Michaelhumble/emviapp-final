@@ -362,10 +362,15 @@ export type Database = {
         Row: {
           approved_at: string | null
           commission_rate: number | null
+          connect_status: string | null
+          country: string | null
           created_at: string | null
+          default_currency: string | null
           id: string
+          last_connect_check: string | null
           slug: string
           status: string | null
+          stripe_account_id: string | null
           stripe_connect_account_id: string | null
           total_clicks: number | null
           total_commissions: number | null
@@ -376,10 +381,15 @@ export type Database = {
         Insert: {
           approved_at?: string | null
           commission_rate?: number | null
+          connect_status?: string | null
+          country?: string | null
           created_at?: string | null
+          default_currency?: string | null
           id?: string
+          last_connect_check?: string | null
           slug: string
           status?: string | null
+          stripe_account_id?: string | null
           stripe_connect_account_id?: string | null
           total_clicks?: number | null
           total_commissions?: number | null
@@ -390,10 +400,15 @@ export type Database = {
         Update: {
           approved_at?: string | null
           commission_rate?: number | null
+          connect_status?: string | null
+          country?: string | null
           created_at?: string | null
+          default_currency?: string | null
           id?: string
+          last_connect_check?: string | null
           slug?: string
           status?: string | null
+          stripe_account_id?: string | null
           stripe_connect_account_id?: string | null
           total_clicks?: number | null
           total_commissions?: number | null
