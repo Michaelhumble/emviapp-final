@@ -1,0 +1,29 @@
+/* Marketing section styling tokens */
+:root {
+  --tile-bg: 255 255 255;
+  --tile-border: 0 0 0 / 0.05;
+  --tile-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tile-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.press-tile {
+  background-color: rgb(var(--tile-bg));
+  border: 1px solid rgb(var(--tile-border));
+  box-shadow: var(--tile-shadow);
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.press-tile:hover {
+  box-shadow: var(--tile-shadow-hover);
+}
+
+/* Ensure consistent spacing and prevent layout shift */
+.press-grid {
+  min-height: 4rem; /* Prevent CLS during logo loading */
+}
+
+@media (min-width: 768px) {
+  .press-grid {
+    min-height: 4.5rem;
+  }
+}
