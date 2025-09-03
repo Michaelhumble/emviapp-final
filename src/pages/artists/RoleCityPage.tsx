@@ -10,6 +10,8 @@ import { SEO_LOCATIONS, LocationId, getNearbyLocations } from '@/data/seo-locati
 import { ArtistForHireCard } from '@/components/artists/ArtistForHireCard';
 import { useArtistsSearch } from '@/hooks/useArtistsSearch';
 import { useAuth } from '@/context/auth';
+import CityRoleIntro from '@/components/artists/CityRoleIntro';
+import CityRoleFaqJsonLd from '@/components/seo/CityRoleFaqJsonLd';
 
 const RoleCityPage: React.FC = () => {
   const { role, cityState } = useParams<{ role: string; cityState: string }>();
@@ -55,6 +57,9 @@ const RoleCityPage: React.FC = () => {
       </Layout>
     );
   }
+
+  // Check if page should be noindexed (no data available)
+  const shouldNoIndex = items.length === 0 && !loading;
 
   const pageTitle = `Top ${roleData.pluralName} in ${locationData.fullName} – EmviApp`;
   const metaDescription = `Find the best ${roleData.pluralName.toLowerCase()} in ${locationData.fullName}. ${roleData.description} Browse verified professionals on EmviApp.`;
@@ -115,6 +120,14 @@ const RoleCityPage: React.FC = () => {
         ogImage={`https://www.emvi.app/og-artists-${role}.jpg`}
         jsonLd={[breadcrumbJsonLd, collectionJsonLd]}
         type="website"
+        noindex={shouldNoIndex}
+      />
+      
+      <CityRoleFaqJsonLd 
+        role={roleData.name}
+        rolePlural={roleData.pluralName}
+        city={locationData.city}
+        state={locationData.state}
       />
 
       <main className="w-full">
@@ -262,6 +275,64 @@ const RoleCityPage: React.FC = () => {
             </Container>
           </section>
         )}
+
+        {/* FAQ Section */}
+        <section className="py-12 bg-gray-50">
+          <Container>
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-3">
+                    How do I find {roleData.pluralName.toLowerCase()} in {locationData.city}, {locationData.state}?
+                  </h3>
+                  <p className="text-gray-700">
+                    Browse our verified {roleData.pluralName.toLowerCase()} in {locationData.city}, {locationData.state} on EmviApp. 
+                    You can view their profiles, specialties, availability, and contact them directly through our platform.
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-3">
+                    Are the {roleData.pluralName.toLowerCase()} in {locationData.city} licensed and verified?
+                  </h3>
+                  <p className="text-gray-700">
+                    Yes, all {roleData.pluralName.toLowerCase()} on EmviApp undergo verification including license validation, 
+                    portfolio review, and background checks to ensure you're working with qualified professionals.
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-3">
+                    How much do {roleData.pluralName.toLowerCase()} charge in {locationData.city}, {locationData.state}?
+                  </h3>
+                  <p className="text-gray-700">
+                    Pricing for {roleData.pluralName.toLowerCase()} in {locationData.city} varies based on experience, 
+                    services offered, and salon location. Most professionals list their service rates and availability on their profiles.
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-3">
+                    Can I hire {roleData.pluralName.toLowerCase()} for events or temporary work in {locationData.city}?
+                  </h3>
+                  <p className="text-gray-700">
+                    Many {roleData.pluralName.toLowerCase()} in {locationData.city} offer freelance services for special events, 
+                    temporary coverage, or short-term contracts. Check their availability and booking preferences on their profiles.
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-3">
+                    How quickly can I connect with {roleData.pluralName.toLowerCase()} in {locationData.city}?
+                  </h3>
+                  <p className="text-gray-700">
+                    Most {roleData.pluralName.toLowerCase()} in {locationData.city} respond within 24 hours. 
+                    Many are available for immediate booking or next-day appointments depending on their schedule and your needs.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
       </main>
     </Layout>
   );

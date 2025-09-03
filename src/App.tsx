@@ -43,6 +43,8 @@ const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
+const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
+const CityIndexPage = lazy(() => import("@/pages/artists/cities/[cityState]"));
 const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const ThankYou = lazy(() => import("@/pages/ThankYou"));
@@ -229,9 +231,11 @@ function App() {
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
-                     <Route path="/artists/:specialty/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><SpecialtyCityLanding /></Suspense>} />
-                     <Route path="/artists/:role/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><RoleCityPage /></Suspense>} />
-                     <Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
+                <Route path="/artists/:specialty/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><SpecialtyCityLanding /></Suspense>} />
+                <Route path="/artists/:role" element={<Suspense fallback={<SimpleLoadingFallback />}><RoleIndexPage /></Suspense>} />
+                <Route path="/artists/cities/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><CityIndexPage /></Suspense>} />
+                <Route path="/artists/:role/:cityState" element={<Suspense fallback={<SimpleLoadingFallback />}><RoleCityPage /></Suspense>} />
+                <Route path="/artists/:id" element={<Suspense fallback={<SimpleLoadingFallback />}><ArtistDetail /></Suspense>} />
                      <Route path="/booking-services" element={<Layout><BookingServices /></Layout>} />
                      
                      {/* Content Hub Pages */}
