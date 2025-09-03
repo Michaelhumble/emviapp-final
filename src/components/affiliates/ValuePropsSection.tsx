@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useTranslation, Translation } from '@/hooks/useTranslation';
-import { DollarSign, TrendingUp, Users, Shield } from 'lucide-react';
+import { DollarSign, TrendingUp, Users, Shield, Calculator } from 'lucide-react';
 import { flags } from '@/utils/featureFlags';
 import { 
   PayoutIllustration, 
@@ -89,19 +90,19 @@ const ValuePropsSection = () => {
   };
 
   return (
-    <section className="section-premium bg-background">
-      <div className="container mx-auto px-4">
+    <section className="section-premium bg-gradient-to-b from-background to-muted/20">
+      <div className="container mx-auto px-6 max-w-7xl">
         <motion.div 
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <h2 className="text-hero-secondary mb-4">
+          <h2 className="text-section-title mb-8 max-w-5xl mx-auto">
             {t({ english: "Why choose our affiliate program?", vietnamese: "Tại sao chọn chương trình cộng tác viên của chúng tôi?" })}
           </h2>
-          <p className="text-body-premium text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-body-large text-muted-foreground max-w-4xl mx-auto font-medium">
             {t({ 
               english: "Join thousands of creators earning real money by promoting the beauty industry's fastest-growing platform",
               vietnamese: "Tham gia cùng hàng nghìn người sáng tạo đang kiếm tiền thực sự bằng cách quảng bá nền tảng phát triển nhanh nhất trong ngành làm đẹp"
@@ -110,7 +111,7 @@ const ValuePropsSection = () => {
         </motion.div>
         
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 max-w-7xl mx-auto mb-24"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -122,8 +123,8 @@ const ValuePropsSection = () => {
             
             return (
               <motion.div key={index} variants={itemVariants}>
-                <div className="h-full value-card-premium p-6 text-center">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div className="h-full value-card-premium p-10 text-center group cursor-pointer">
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-500 shadow-lg`}>
                     {/* Use illustration if luxury features enabled, otherwise fallback to icon */}
                     {flags.AFFILIATE_LUX_ENABLE ? (
                       <IllustrationComponent 
@@ -131,19 +132,49 @@ const ValuePropsSection = () => {
                         aria-label={`${t(prop.title)} illustration`}
                       />
                     ) : (
-                      <IconComponent className="w-8 h-8 text-primary" />
+                      <IconComponent className="w-10 h-10 text-primary" />
                     )}
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 text-foreground">
+                  <h3 className="text-2xl font-bold mb-6 text-foreground group-hover:text-primary transition-colors duration-300">
                     {t(prop.title)}
                   </h3>
-                  <p className="text-body-premium text-muted-foreground">
+                  <p className="text-body-premium text-muted-foreground leading-relaxed">
                     {t(prop.description)}
                   </p>
                 </div>
               </motion.div>
             );
           })}
+        </motion.div>
+
+        {/* Premium CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="text-center glass-hero-card p-16 border-2 border-primary/20 relative overflow-hidden group max-w-5xl mx-auto"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/8 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="relative z-10 space-y-8">
+            <div className="inline-flex p-6 rounded-3xl bg-gradient-to-br from-primary/15 to-accent/10 border-2 border-primary/20 shadow-lg">
+              <Calculator className="w-16 h-16 text-primary" />
+            </div>
+            <div className="space-y-6">
+              <h3 className="text-hero-secondary text-gray-900 max-w-3xl mx-auto">
+                Calculate Your Potential Earnings
+              </h3>
+              <p className="text-body-large text-gray-600 max-w-4xl mx-auto">
+                See how much you could earn based on your audience and engagement with our sophisticated earnings calculator
+              </p>
+            </div>
+            <Button 
+              size="lg" 
+              className="btn-magnetic focus-ring-premium text-white h-16 px-12 text-xl font-bold min-w-[300px] rounded-2xl shadow-2xl"
+            >
+              Try Calculator
+            </Button>
+          </div>
         </motion.div>
       </div>
     </section>

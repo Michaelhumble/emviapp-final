@@ -81,125 +81,128 @@ const AffiliateHero = () => {
 
   return (
     <section 
-      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden section-premium"
+      className="relative min-h-[95vh] flex items-center justify-center overflow-hidden section-hero"
       style={{ background: 'var(--gradient-mesh-premium)' }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="container mx-auto px-4 text-center relative z-10">
+      <div className="container mx-auto px-6 text-center relative z-10 max-w-7xl">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="space-y-12"
         >
-          <Badge className="mb-8 px-6 py-3 text-sm font-medium rounded-2xl glass-hero-card border-0">
+          {/* Premium Trust Badge */}
+          <Badge className="mb-8 px-8 py-4 text-lg font-semibold rounded-3xl glass-hero-card border-0 shadow-lg">
             {t(heroContent.badge)}
           </Badge>
-        </motion.div>
         
-        <motion.h1 
-          className="text-hero-primary mb-6 max-w-4xl mx-auto bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-        >
-          {t(heroContent.headline)}
-        </motion.h1>
-        
-        <motion.p 
-          className="text-body-premium text-muted-foreground mb-12 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        >
-          {t(heroContent.subline)}
-        </motion.p>
-        
-        <motion.div 
-          className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-        >
-          <Button 
-            size="lg" 
-            className={`btn-magnetic focus-ring-premium rounded-2xl px-8 py-6 text-base font-semibold border-0 ${
-              flags.AFFILIATE_LUX_ENABLE ? 'relative overflow-hidden' : ''
-            }`}
-            style={{
-              transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
-              ...(flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() ? {
-                boxShadow: '0 0 20px hsl(var(--primary) / 0.3), 0 4px 16px -2px hsl(var(--primary) / 0.3)'
-              } : {})
-            }}
-            asChild
-            onClick={() => handleCTAClick('join_now')}
-          >
-            <Link ref={buttonRef} to="/affiliate" data-magnetic="true">
-              {flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() && (
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 to-primary/10 blur-xl"></div>
-              )}
-              <span className="relative z-10">{t(heroContent.primaryCta)}</span>
-            </Link>
-          </Button>
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="rounded-2xl px-8 py-6 text-base font-semibold border-2 hover:bg-accent/10 transition-all duration-300"
-            asChild
-            onClick={() => handleCTAClick('how_it_works')}
-          >
-            <Link to="#how-it-works">{t(heroContent.secondaryCta)}</Link>
-          </Button>
-        </motion.div>
-        
-        {/* Trust indicators */}
-        <motion.div 
-          className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground max-w-2xl mx-auto mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-        >
-          <div className="flex items-center gap-2 glass-hero-card px-4 py-2 rounded-full border-0">
-            <Shield className="w-4 h-4 text-primary" />
-            <span>Stripe Connect</span>
-          </div>
-          <div className="hidden sm:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
-          <div className="flex items-center gap-2 glass-hero-card px-4 py-2 rounded-full border-0">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <span>{isVietnamese ? "Phân tích minh bạch" : "Transparent analytics"}</span>
-          </div>
-          <div className="hidden sm:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
-          <div className="flex items-center gap-2 glass-hero-card px-4 py-2 rounded-full border-0">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span>{isVietnamese ? "Theo dõi 24/7" : "24/7 tracking"}</span>
-          </div>
-        </motion.div>
-
-        {/* Quick stats */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-        >
-          {[
-            { number: "30%", label: isVietnamese ? "Tỷ lệ hoa hồng" : "Commission Rate" },
-            { number: "$50", label: isVietnamese ? "Thanh toán tối thiểu" : "Minimum Payout" },
-            { number: "90", label: isVietnamese ? "Thời gian cookie (ngày)" : "Day Cookie Window" }
-          ].map((stat, index) => (
-            <motion.div 
-              key={index}
-              className="text-center p-6 glass-hero-card border-0"
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.2 }}
+          {/* Premium Main Headline */}
+          <h1 className="text-hero-primary mb-8 max-w-6xl mx-auto leading-[1.02] tracking-tight">
+            {t(heroContent.headline)}
+          </h1>
+          
+          {/* Premium Subheadline */}
+          <p className="text-body-large text-muted-foreground/90 mb-16 max-w-4xl mx-auto font-medium">
+            {t(heroContent.subline)}
+          </p>
+          
+          {/* Premium CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-8 justify-center mb-20">
+            <Button 
+              size="lg" 
+              className={`btn-magnetic focus-ring-premium rounded-3xl px-12 py-8 text-xl font-bold min-w-[280px] h-auto border-0 ${
+                flags.AFFILIATE_LUX_ENABLE ? 'relative overflow-hidden' : ''
+              }`}
+              style={{
+                transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
+                ...(flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() ? {
+                  boxShadow: '0 0 40px hsl(var(--primary) / 0.4), 0 8px 32px -8px hsl(var(--primary) / 0.3)'
+                } : {})
+              }}
+              asChild
+              onClick={() => handleCTAClick('join_now')}
             >
-              <div className="text-4xl font-bold text-primary mb-2">{stat.number}</div>
-              <div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
-            </motion.div>
-          ))}
+              <Link ref={buttonRef} to="/affiliate" data-magnetic="true">
+                {flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() && (
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary/30 to-primary/20 blur-2xl animate-pulse"></div>
+                )}
+                <span className="relative z-10">{t(heroContent.primaryCta)}</span>
+              </Link>
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="rounded-3xl px-12 py-8 text-xl font-semibold min-w-[280px] h-auto border-2 hover:bg-white/90 glass-hero-card transition-all duration-500"
+              asChild
+              onClick={() => handleCTAClick('how_it_works')}
+            >
+              <Link to="#how-it-works">{t(heroContent.secondaryCta)}</Link>
+            </Button>
+          </div>
+          
+          {/* Premium Trust Row */}
+          <motion.div 
+            className="flex flex-wrap items-center justify-center gap-12 text-lg text-muted-foreground/80 max-w-4xl mx-auto mb-24"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          >
+            <div className="flex items-center gap-4 glass-hero-card px-8 py-4 rounded-full border-0 shadow-md">
+              <Shield className="w-6 h-6 text-primary" />
+              <span className="font-semibold">Stripe Connect</span>
+            </div>
+            <div className="hidden sm:block w-2 h-2 bg-muted-foreground/30 rounded-full"></div>
+            <div className="flex items-center gap-4 glass-hero-card px-8 py-4 rounded-full border-0 shadow-md">
+              <TrendingUp className="w-6 h-6 text-primary" />
+              <span className="font-semibold">{isVietnamese ? "Phân tích minh bạch" : "Transparent analytics"}</span>
+            </div>
+            <div className="hidden sm:block w-2 h-2 bg-muted-foreground/30 rounded-full"></div>
+            <div className="flex items-center gap-4 glass-hero-card px-8 py-4 rounded-full border-0 shadow-md">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <span className="font-semibold">{isVietnamese ? "Theo dõi 24/7" : "24/7 tracking"}</span>
+            </div>
+          </motion.div>
+
+          {/* Premium Stats Grid */}
+          <motion.div 
+            className="stats-grid-premium max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+          >
+            {[
+              { number: "30%", label: isVietnamese ? "Tỷ lệ hoa hồng" : "Commission Rate", color: "from-green-500 to-emerald-600" },
+              { number: "$50", label: isVietnamese ? "Thanh toán tối thiểu" : "Minimum Payout", color: "from-blue-500 to-indigo-600" },
+              { number: "90", label: isVietnamese ? "Thời gian cookie (ngày)" : "Day Cookie Window", color: "from-purple-500 to-violet-600" }
+            ].map((stat, index) => (
+              <motion.div 
+                key={index}
+                className="stat-card-premium text-center p-10 group cursor-pointer"
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                <div className={`text-6xl font-black bg-gradient-to-br ${stat.color} bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  {stat.number}
+                </div>
+                <div className="text-lg font-semibold text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
       </div>
+
+      {/* Premium Background Elements */}
+      {flags.AFFILIATE_LUX_ENABLE && (
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-60 -right-60 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-accent/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-60 -left-60 w-[800px] h-[800px] bg-gradient-to-tr from-accent/8 to-primary/6 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '4s' }} />
+        </div>
+      )}
     </section>
   );
 };

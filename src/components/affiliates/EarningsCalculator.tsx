@@ -91,62 +91,62 @@ const EarningsCalculator = () => {
   }, [visitorsPerMonth]);
 
   return (
-    <section id="calculator" className="section-premium bg-gradient-to-b from-muted/10 to-background">
-      <div className="container mx-auto px-4">
+    <section id="calculator" className="section-premium bg-gradient-to-b from-muted/20 via-background to-muted/10">
+      <div className="container mx-auto px-6 max-w-7xl">
         <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-4">
-            <Calculator className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">
+          <div className="inline-flex items-center gap-4 bg-primary/10 rounded-full px-8 py-4 mb-8">
+            <Calculator className="w-6 h-6 text-primary" />
+            <span className="text-lg font-semibold text-primary">
               {t({ english: "Earnings Calculator", vietnamese: "Máy tính thu nhập" })}
             </span>
           </div>
-          <h2 className="text-hero-secondary mb-4">
+          <h2 className="text-section-title mb-8 max-w-4xl mx-auto">
             {t({ english: "Calculate Your Potential Earnings", vietnamese: "Tính toán thu nhập tiềm năng của bạn" })}
           </h2>
-          <p className="text-body-premium text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-body-large text-muted-foreground max-w-4xl mx-auto font-medium">
             {t({ 
-              english: "See how much you could earn based on your audience and engagement",
-              vietnamese: "Xem bạn có thể kiếm được bao nhiều dựa trên khán giả và mức độ tương tác của bạn"
+              english: "See how much you could earn based on your audience and engagement with precise calculations",
+              vietnamese: "Xem bạn có thể kiếm được bao nhiều dựa trên khán giả và mức độ tương tác của bạn với tính toán chính xác"
             })}
           </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <div className="calculator-premium max-w-4xl mx-auto">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl">
-                {t({ english: "Earnings Calculator", vietnamese: "Máy tính thu nhập" })}
+          <div className="calculator-premium max-w-6xl mx-auto p-12 space-y-16">
+            <CardHeader className="text-center pb-0">
+              <CardTitle className="text-3xl font-bold mb-4">
+                {t({ english: "Interactive Earnings Calculator", vietnamese: "Máy tính thu nhập tương tác" })}
               </CardTitle>
-              <CardDescription className="text-base">
+              <CardDescription className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 {t({ 
-                  english: "Estimates based on average conversion rates and commission structure",
-                  vietnamese: "Ước tính dựa trên tỷ lệ chuyển đổi trung bình và cơ cấu hoa hồng"
+                  english: "Estimates based on industry-standard conversion rates and our transparent commission structure",
+                  vietnamese: "Ước tính dựa trên tỷ lệ chuyển đổi tiêu chuẩn ngành và cơ cấu hoa hồng minh bạch của chúng tôi"
                 })}
               </CardDescription>
-              {/* CSS Spark Line */}
-              <div className="spark-line mt-4 mx-auto w-24"></div>
+              {/* Premium Spark Line */}
+              <div className="spark-line mt-6 mx-auto w-32"></div>
             </CardHeader>
             
-            <CardContent className="space-y-8 p-8">
-              {/* Presets */}
-              <div className="flex flex-wrap gap-2 justify-center">
+            <CardContent className="space-y-12 p-0">
+              {/* Premium Presets */}
+              <div className="flex flex-wrap gap-4 justify-center">
                 {presets.map((preset, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    size="sm"
-                    className="rounded-full"
+                    size="lg"
+                    className="rounded-2xl px-8 py-4 text-lg font-semibold border-2 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
                     onClick={() => {
                       setVisitorsPerMonth(preset.visitors);
                       setCtrPercent(preset.ctr);
@@ -159,20 +159,20 @@ const EarningsCalculator = () => {
                 ))}
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="rounded-full"
+                  size="lg"
+                  className="rounded-2xl px-8 py-4 text-lg font-semibold hover:bg-muted/80 transition-all duration-300"
                   onClick={handleReset}
                 >
-                  <RotateCcw className="w-4 h-4 mr-1" />
+                  <RotateCcw className="w-5 h-5 mr-2" />
                   {t({ english: "Reset", vietnamese: "Đặt lại" })}
                 </Button>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Input Controls */}
-                <div className="space-y-6">
+              <div className="grid lg:grid-cols-2 gap-16">
+                {/* Premium Input Controls */}
+                <div className="space-y-10">
                   <div>
-                    <label className="block text-sm font-medium mb-3">
+                    <label className="block text-xl font-bold mb-6 text-foreground">
                       {t({ english: "Monthly Visitors", vietnamese: "Khách truy cập hàng tháng" })}: {visitorsPerMonth.toLocaleString()}
                     </label>
                     <input 
@@ -185,16 +185,16 @@ const EarningsCalculator = () => {
                         setVisitorsPerMonth(parseInt(e.target.value));
                         handleCalculatorChange();
                       }}
-                      className="range-premium w-full"
+                      className="range-premium w-full h-4"
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <div className="flex justify-between text-base font-semibold text-muted-foreground mt-4">
                       <span>100</span>
                       <span>50K</span>
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-3">
+                    <label className="block text-xl font-bold mb-6 text-foreground">
                       {t({ english: "Click-through Rate", vietnamese: "Tỷ lệ nhấp chuột" })}: {ctrPercent}%
                     </label>
                     <input 
@@ -207,16 +207,16 @@ const EarningsCalculator = () => {
                         setCtrPercent(parseFloat(e.target.value));
                         handleCalculatorChange();
                       }}
-                      className="range-premium w-full"
+                      className="range-premium w-full h-4"
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <div className="flex justify-between text-base font-semibold text-muted-foreground mt-4">
                       <span>1%</span>
                       <span>15%</span>
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-3">
+                    <label className="block text-xl font-bold mb-6 text-foreground">
                       {t({ english: "Conversion Rate", vietnamese: "Tỷ lệ chuyển đổi" })}: {conversionPercent}%
                     </label>
                     <input 
@@ -229,78 +229,85 @@ const EarningsCalculator = () => {
                         setConversionPercent(parseFloat(e.target.value));
                         handleCalculatorChange();
                       }}
-                      className="range-premium w-full"
+                      className="range-premium w-full h-4"
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <div className="flex justify-between text-base font-semibold text-muted-foreground mt-4">
                       <span>1%</span>
                       <span>10%</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Results */}
-                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <TrendingUp className="w-5 h-5 text-primary" />
-                    <h3 className="font-semibold">
-                      {t({ english: "Your Potential Earnings", vietnamese: "Thu nhập tiềm năng của bạn" })}
-                    </h3>
-                  </div>
+                {/* Premium Results Display */}
+                <div className="bg-gradient-to-br from-primary/8 via-primary/5 to-accent/8 rounded-3xl p-12 border-2 border-primary/20 shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 rounded-3xl"></div>
                   
-                  <div className="space-y-4">
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-primary mb-1">
-                        ${stats.monthlyEarnings.toFixed(2)}
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-4 mb-10">
+                      <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 shadow-lg">
+                        <TrendingUp className="w-10 h-10 text-primary" />
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {t({ english: "Estimated Monthly", vietnamese: "Ước tính hàng tháng" })}
-                      </div>
+                      <h3 className="text-2xl font-bold text-foreground">
+                        {t({ english: "Your Potential Earnings", vietnamese: "Thu nhập tiềm năng của bạn" })}
+                      </h3>
                     </div>
                     
-                    {/* Lazy-loaded Mini Chart */}
-                    {flags.AFFILIATE_LUX_ENABLE && (
-                      <div ref={chartContainerRef} className="mt-4">
-                        {isChartInView && (
-                          <Suspense fallback={
-                            <div className="w-full h-16 bg-muted/20 rounded-lg animate-pulse flex items-center justify-center">
-                              <span className="text-xs text-muted-foreground">Loading chart...</span>
-                            </div>
-                          }>
-                            <MiniChart data={stats} className="w-full h-16" />
-                          </Suspense>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
+                    <div className="space-y-8">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{stats.clicks}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {t({ english: "Monthly Clicks", vietnamese: "Lượt nhấp/tháng" })}
+                        <div className="text-7xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+                          ${stats.monthlyEarnings.toFixed(2)}
+                        </div>
+                        <div className="text-xl font-semibold text-muted-foreground mb-4">
+                          {t({ english: "Estimated Monthly", vietnamese: "Ước tính hàng tháng" })}
+                        </div>
+                        <div className="spark-line mx-auto max-w-40" />
+                      </div>
+                      
+                      {/* Lazy-loaded Premium Chart */}
+                      {flags.AFFILIATE_LUX_ENABLE && (
+                        <div ref={chartContainerRef} className="mt-8">
+                          {isChartInView && (
+                            <Suspense fallback={
+                              <div className="w-full h-20 bg-white/30 rounded-2xl animate-pulse flex items-center justify-center backdrop-blur-sm">
+                                <span className="text-base font-medium text-muted-foreground">Loading premium chart...</span>
+                              </div>
+                            }>
+                              <MiniChart data={stats} className="w-full h-20" />
+                            </Suspense>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="grid grid-cols-2 gap-6 pt-8 border-t-2 border-primary/20">
+                        <div className="text-center p-6 bg-white/40 rounded-2xl backdrop-blur-sm border border-white/50">
+                          <div className="text-3xl font-bold text-foreground">{stats.clicks}</div>
+                          <div className="text-base font-medium text-muted-foreground">
+                            {t({ english: "Monthly Clicks", vietnamese: "Lượt nhấp/tháng" })}
+                          </div>
+                        </div>
+                        <div className="text-center p-6 bg-white/40 rounded-2xl backdrop-blur-sm border border-white/50">
+                          <div className="text-3xl font-bold text-foreground">{stats.conversions}</div>
+                          <div className="text-base font-medium text-muted-foreground">
+                            {t({ english: "Conversions", vietnamese: "Chuyển đổi" })}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{stats.conversions}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {t({ english: "Conversions", vietnamese: "Chuyển đổi" })}
+                      
+                      <div className="text-center pt-6">
+                        <div className="text-2xl font-bold text-muted-foreground">
+                          ${stats.yearlyEarnings.toFixed(0)} {t({ english: "yearly potential", vietnamese: "tiềm năng hàng năm" })}
                         </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center pt-2">
-                      <div className="text-lg font-semibold text-muted-foreground">
-                        ${stats.yearlyEarnings.toFixed(0)} {t({ english: "yearly potential", vietnamese: "tiềm năng hàng năm" })}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="text-center text-xs text-muted-foreground bg-muted/20 rounded-lg p-4">
-                <p>
+              <div className="text-center text-base text-muted-foreground bg-muted/30 rounded-2xl p-8 max-w-4xl mx-auto border border-muted/50">
+                <p className="font-medium">
                   {t({ 
-                    english: "* Estimates only. Actual payouts depend on verified conversions and may vary based on market conditions.",
-                    vietnamese: "* Chỉ là ước tính. Thanh toán thực tế phụ thuộc vào các chuyển đổi đã được xác minh và có thể thay đổi tùy thuộc vào điều kiện thị trường."
+                    english: "* Professional estimates only. Actual payouts depend on verified conversions and may vary based on market conditions and performance metrics.",
+                    vietnamese: "* Chỉ là ước tính chuyên nghiệp. Thanh toán thực tế phụ thuộc vào các chuyển đổi đã được xác minh và có thể thay đổi tùy thuộc vào điều kiện thị trường và chỉ số hiệu suất."
                   })}
                 </p>
               </div>
