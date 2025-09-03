@@ -81,126 +81,194 @@ const AffiliateHero = () => {
 
   return (
     <section 
-      className="relative min-h-[95vh] flex items-center justify-center overflow-hidden section-hero"
-      style={{ background: 'var(--gradient-mesh-premium)' }}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ 
+        background: `
+          radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.08) 0%, transparent 50%),
+          linear-gradient(135deg, #fafafa 0%, #f8fafc 100%)
+        `
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="container mx-auto px-6 text-center relative z-10 max-w-7xl">
+      {/* Premium Background Grid */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }} />
+      </div>
+
+      <div className="container mx-auto px-8 text-center relative z-10 max-w-8xl">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="space-y-12"
+          transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="space-y-16"
         >
-          {/* Premium Trust Badge */}
-          <Badge className="mb-8 px-8 py-4 text-lg font-semibold rounded-3xl glass-hero-card border-0 shadow-lg">
-            {t(heroContent.badge)}
-          </Badge>
-        
-          {/* Premium Main Headline */}
-          <h1 className="text-hero-primary mb-8 max-w-6xl mx-auto leading-[1.02] tracking-tight">
-            {t(heroContent.headline)}
-          </h1>
-          
-          {/* Premium Subheadline */}
-          <p className="text-body-large text-muted-foreground/90 mb-16 max-w-4xl mx-auto font-medium">
-            {t(heroContent.subline)}
-          </p>
-          
-          {/* Premium CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-8 justify-center mb-20">
+          {/* Ultra-Premium Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="inline-flex items-center gap-4 px-8 py-4 bg-gradient-to-r from-white/90 to-white/70 backdrop-blur-xl border border-white/30 rounded-full shadow-2xl"
+          >
+            <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
+            <span className="text-lg font-semibold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent">
+              {t(heroContent.badge)}
+            </span>
+          </motion.div>
+
+          {/* Ultra-Premium Headline */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="space-y-8"
+          >
+            <h1 className="text-7xl md:text-8xl lg:text-9xl font-black leading-[0.85] tracking-[-0.04em] max-w-7xl mx-auto">
+              <span className="block bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+                Earn monthly
+              </span>
+              <span className="block bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                payouts
+              </span>
+              <span className="block text-gray-900">
+                for growing the
+              </span>
+              <span className="block bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
+                beauty community
+              </span>
+            </h1>
+          </motion.div>
+
+          {/* Ultra-Premium Subheadline */}
+          <motion.p 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-2xl md:text-3xl font-medium text-gray-600 max-w-5xl mx-auto leading-relaxed tracking-[-0.01em]"
+          >
+            Join 500+ creators earning with transparent commissions, real-time tracking, and secure Stripe Connect payouts.
+          </motion.p>
+
+          {/* Ultra-Premium CTA Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex flex-col sm:flex-row gap-8 justify-center items-center pt-8"
+          >
             <Button 
               size="lg" 
-              className={`btn-magnetic focus-ring-premium rounded-3xl px-12 py-8 text-xl font-bold min-w-[280px] h-auto border-0 ${
-                flags.AFFILIATE_LUX_ENABLE ? 'relative overflow-hidden' : ''
-              }`}
+              className="group relative overflow-hidden bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white border-0 rounded-2xl px-12 py-8 text-xl font-bold min-w-[320px] h-auto shadow-[0_20px_40px_-12px_rgba(124,58,237,0.4)] hover:shadow-[0_32px_64px_-12px_rgba(124,58,237,0.5)] transition-all duration-500"
               style={{
                 transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
-                ...(flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() ? {
-                  boxShadow: '0 0 40px hsl(var(--primary) / 0.4), 0 8px 32px -8px hsl(var(--primary) / 0.3)'
-                } : {})
               }}
               asChild
               onClick={() => handleCTAClick('join_now')}
             >
               <Link ref={buttonRef} to="/affiliate" data-magnetic="true">
-                {flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() && (
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary/30 to-primary/20 blur-2xl animate-pulse"></div>
-                )}
-                <span className="relative z-10">{t(heroContent.primaryCta)}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <span className="relative z-10 flex items-center gap-3">
+                  {t(heroContent.primaryCta)}
+                  <div className="w-2 h-2 bg-white rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+                </span>
               </Link>
             </Button>
+            
             <Button 
               size="lg" 
               variant="outline" 
-              className="rounded-3xl px-12 py-8 text-xl font-semibold min-w-[280px] h-auto border-2 hover:bg-white/90 glass-hero-card transition-all duration-500"
+              className="bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-gray-300 hover:bg-white text-gray-900 rounded-2xl px-12 py-8 text-xl font-semibold min-w-[320px] h-auto shadow-lg hover:shadow-xl transition-all duration-300"
               asChild
               onClick={() => handleCTAClick('how_it_works')}
             >
               <Link to="#how-it-works">{t(heroContent.secondaryCta)}</Link>
             </Button>
-          </div>
-          
-          {/* Premium Trust Row */}
+          </motion.div>
+
+          {/* Ultra-Premium Stats */}
           <motion.div 
-            className="flex flex-wrap items-center justify-center gap-12 text-lg text-muted-foreground/80 max-w-4xl mx-auto mb-24"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            transition={{ duration: 1, delay: 1 }}
+            className="pt-24"
           >
-            <div className="flex items-center gap-4 glass-hero-card px-8 py-4 rounded-full border-0 shadow-md">
-              <Shield className="w-6 h-6 text-primary" />
-              <span className="font-semibold">Stripe Connect</span>
-            </div>
-            <div className="hidden sm:block w-2 h-2 bg-muted-foreground/30 rounded-full"></div>
-            <div className="flex items-center gap-4 glass-hero-card px-8 py-4 rounded-full border-0 shadow-md">
-              <TrendingUp className="w-6 h-6 text-primary" />
-              <span className="font-semibold">{isVietnamese ? "Phân tích minh bạch" : "Transparent analytics"}</span>
-            </div>
-            <div className="hidden sm:block w-2 h-2 bg-muted-foreground/30 rounded-full"></div>
-            <div className="flex items-center gap-4 glass-hero-card px-8 py-4 rounded-full border-0 shadow-md">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <span className="font-semibold">{isVietnamese ? "Theo dõi 24/7" : "24/7 tracking"}</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+              {[
+                { 
+                  number: "30%", 
+                  label: isVietnamese ? "Tỷ lệ hoa hồng" : "Commission Rate",
+                  gradient: "from-emerald-500 to-teal-600",
+                  icon: "💰"
+                },
+                { 
+                  number: "$50", 
+                  label: isVietnamese ? "Thanh toán tối thiểu" : "Minimum Payout",
+                  gradient: "from-blue-500 to-indigo-600",
+                  icon: "💳"
+                },
+                { 
+                  number: "90", 
+                  label: isVietnamese ? "Thời gian cookie (ngày)" : "Day Cookie Window",
+                  gradient: "from-purple-500 to-violet-600",
+                  icon: "⏰"
+                }
+              ].map((stat, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.2 + index * 0.2 }}
+                  className="group relative"
+                >
+                  <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-3xl p-12 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_48px_-8px_rgba(0,0,0,0.15)] transition-all duration-500 hover:-translate-y-2">
+                    <div className="text-6xl mb-4">{stat.icon}</div>
+                    <div className={`text-5xl font-black bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      {stat.number}
+                    </div>
+                    <div className="text-lg font-semibold text-gray-600 group-hover:text-gray-900 transition-colors duration-300">
+                      {stat.label}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
-          {/* Premium Stats Grid */}
+          {/* Ultra-Premium Trust Indicators */}
           <motion.div 
-            className="stats-grid-premium max-w-5xl mx-auto"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.8, delay: 1.8 }}
+            className="flex flex-wrap items-center justify-center gap-12 pt-16"
           >
             {[
-              { number: "30%", label: isVietnamese ? "Tỷ lệ hoa hồng" : "Commission Rate", color: "from-green-500 to-emerald-600" },
-              { number: "$50", label: isVietnamese ? "Thanh toán tối thiểu" : "Minimum Payout", color: "from-blue-500 to-indigo-600" },
-              { number: "90", label: isVietnamese ? "Thời gian cookie (ngày)" : "Day Cookie Window", color: "from-purple-500 to-violet-600" }
-            ].map((stat, index) => (
-              <motion.div 
-                key={index}
-                className="stat-card-premium text-center p-10 group cursor-pointer"
-                whileHover={{ y: -8, scale: 1.02 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              >
-                <div className={`text-6xl font-black bg-gradient-to-br ${stat.color} bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  {stat.number}
-                </div>
-                <div className="text-lg font-semibold text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-                  {stat.label}
-                </div>
-              </motion.div>
+              { icon: Shield, text: "Stripe Connect", color: "text-blue-600" },
+              { icon: TrendingUp, text: isVietnamese ? "Phân tích minh bạch" : "Transparent analytics", color: "text-green-600" },
+              { icon: Sparkles, text: isVietnamese ? "Theo dõi 24/7" : "24/7 tracking", color: "text-purple-600" }
+            ].map((item, index) => (
+              <div key={index} className="flex items-center gap-4 bg-white/60 backdrop-blur-sm px-6 py-4 rounded-full border border-white/30 shadow-lg">
+                <item.icon className={`w-6 h-6 ${item.color}`} />
+                <span className="text-lg font-medium text-gray-700">{item.text}</span>
+              </div>
             ))}
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Premium Background Elements */}
+      {/* Premium Floating Elements */}
       {flags.AFFILIATE_LUX_ENABLE && (
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute -top-60 -right-60 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-accent/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-60 -left-60 w-[800px] h-[800px] bg-gradient-to-tr from-accent/8 to-primary/6 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '4s' }} />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-violet-300/20 to-purple-300/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+          <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-300/15 to-indigo-300/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s', animationDuration: '6s' }} />
+          <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-pink-300/30 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s', animationDuration: '3s' }} />
         </div>
       )}
     </section>
