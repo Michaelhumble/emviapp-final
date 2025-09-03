@@ -1,0 +1,298 @@
+/* ====================================
+   AFFILIATE LANDING PAGE - PREMIUM TOKENS
+   ==================================== */
+
+/* Ultra-Premium Color Tokens */
+:root {
+  /* Premium Gradients - Enterprise Quality */
+  --gradient-mesh-premium: 
+    radial-gradient(circle at 20% 80%, hsl(267 100% 69% / 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, hsl(45 100% 60% / 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, hsl(215 100% 65% / 0.06) 0%, transparent 50%),
+    linear-gradient(135deg, hsl(240 100% 99%), hsl(240 6% 96%));
+    
+  --gradient-glass-card: 
+    linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.25) 0%, 
+      rgba(255, 255, 255, 0.05) 100%);
+      
+  --gradient-value-halo: 
+    radial-gradient(circle at center, 
+      hsl(var(--primary) / 0.08) 0%, 
+      transparent 70%);
+      
+  --gradient-button-magnetic: 
+    linear-gradient(135deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(var(--primary) / 0.9) 100%);
+      
+  /* Premium Shadows - Depth System */
+  --shadow-glass: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    
+  --shadow-value-card: 
+    0 2px 8px -2px hsl(var(--primary) / 0.08),
+    0 4px 16px -4px hsl(var(--primary) / 0.06),
+    0 0 0 1px hsl(var(--border) / 0.8);
+    
+  --shadow-calculator: 
+    0 12px 48px -12px hsl(var(--primary) / 0.12),
+    0 4px 16px -4px hsl(var(--primary) / 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    
+  --shadow-magnetic-button: 
+    0 4px 16px -2px hsl(var(--primary) / 0.3),
+    0 8px 32px -8px hsl(var(--primary) / 0.2);
+    
+  /* Premium Typography Scale */
+  --text-hero-primary: clamp(2.5rem, 5vw, 3rem);      /* 40px-48px */
+  --text-hero-secondary: clamp(1.75rem, 3vw, 2.25rem); /* 28px-36px */
+  --text-body-premium: 1rem;                           /* 16px */
+  --leading-hero: 1.1;                                 /* Tight for headlines */
+  --leading-body: 1.625;                               /* 26px line height */
+  
+  /* Spacious Section Paddings */
+  --spacing-section: clamp(5rem, 10vw, 8rem);         /* 80px-128px */
+  --spacing-section-sm: clamp(3rem, 6vw, 5rem);       /* 48px-80px */
+  
+  /* Premium Transitions */
+  --transition-magnetic: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-glass: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-premium: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ====================================
+   PREMIUM COMPONENT UTILITIES
+   ==================================== */
+
+/* Glass Morphism Hero Card */
+.glass-hero-card {
+  background: var(--gradient-glass-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-glass);
+  border-radius: 1.5rem;
+}
+
+/* Magnetic Button Effect */
+.btn-magnetic {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-button-magnetic);
+  box-shadow: var(--shadow-magnetic-button);
+  transition: var(--transition-magnetic);
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+.btn-magnetic:hover:not(:disabled) {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 
+    0 6px 24px -4px hsl(var(--primary) / 0.4),
+    0 12px 48px -12px hsl(var(--primary) / 0.3);
+}
+
+.btn-magnetic:active:not(:disabled) {
+  transform: translateY(-1px) translateZ(0);
+}
+
+/* Magnetic movement (disabled for reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .btn-magnetic[data-magnetic="true"] {
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* Premium Focus Ring */
+.focus-ring-premium:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 0 4px hsl(var(--primary) / 0.2),
+    var(--shadow-magnetic-button);
+}
+
+/* Value Card with Gradient Halo */
+.value-card-premium {
+  position: relative;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.8);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-value-card);
+  transition: var(--transition-glass);
+  overflow: hidden;
+}
+
+.value-card-premium::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-value-halo);
+  opacity: 0;
+  transition: var(--transition-glass);
+  z-index: -1;
+}
+
+.value-card-premium:hover::before {
+  opacity: 1;
+}
+
+.value-card-premium:hover {
+  transform: translateY(-4px) translateZ(0);
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 
+    0 4px 16px -4px hsl(var(--primary) / 0.12),
+    0 8px 32px -8px hsl(var(--primary) / 0.08),
+    0 0 0 1px hsl(var(--primary) / 0.1);
+}
+
+/* Premium Calculator */
+.calculator-premium {
+  background: hsl(var(--card) / 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border) / 0.6);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-calculator);
+}
+
+/* CSS Spark Line Animation */
+.spark-line {
+  position: relative;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    hsl(var(--primary)) 50%, 
+    transparent 100%);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.spark-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%);
+  animation: spark-move 2s ease-in-out infinite;
+}
+
+@keyframes spark-move {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Premium Range Slider */
+.range-premium {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, 
+    hsl(var(--primary) / 0.2) 0%, 
+    hsl(var(--primary)) var(--range-progress, 50%), 
+    hsl(var(--muted)) var(--range-progress, 50%), 
+    hsl(var(--muted)) 100%);
+  outline: none;
+}
+
+.range-premium::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.3);
+  cursor: pointer;
+  transition: var(--transition-magnetic);
+}
+
+.range-premium::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.4);
+}
+
+.range-premium::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  border: none;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.3);
+  cursor: pointer;
+  transition: var(--transition-magnetic);
+}
+
+/* FAQ Accordion Premium */
+.accordion-premium [data-state="open"] {
+  background: linear-gradient(135deg, 
+    hsl(var(--card)) 0%, 
+    hsl(var(--muted) / 0.3) 100%);
+  border-color: hsl(var(--primary) / 0.2);
+}
+
+.accordion-premium .accordion-trigger:hover {
+  color: hsl(var(--primary));
+}
+
+/* Premium Typography Classes */
+.text-hero-primary {
+  font-size: var(--text-hero-primary);
+  line-height: var(--leading-hero);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-hero-secondary {
+  font-size: var(--text-hero-secondary);
+  line-height: var(--leading-hero);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.text-body-premium {
+  font-size: var(--text-body-premium);
+  line-height: var(--leading-body);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Section Spacing */
+.section-premium {
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+}
+
+.section-premium-sm {
+  padding-top: var(--spacing-section-sm);
+  padding-bottom: var(--spacing-section-sm);
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-magnetic,
+  .value-card-premium,
+  .range-premium::-webkit-slider-thumb,
+  .range-premium::-moz-range-thumb {
+    transition: none;
+    transform: none;
+  }
+  
+  .spark-line::after {
+    animation: none;
+  }
+  
+  .btn-magnetic:hover {
+    transform: none;
+  }
+  
+  .value-card-premium:hover {
+    transform: none;
+  }
+}

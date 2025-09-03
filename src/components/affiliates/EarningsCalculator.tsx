@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,8 +58,13 @@ const EarningsCalculator = () => {
     { label: t({ english: "Advanced", vietnamese: "Nâng cao" }), visitors: 10000, ctr: 8, conversion: 6 }
   ];
 
+  // Update CSS custom property for range progress
+  useEffect(() => {
+    document.documentElement.style.setProperty('--range-progress', `${(visitorsPerMonth / 50000) * 100}%`);
+  }, [visitorsPerMonth]);
+
   return (
-    <section id="calculator" className="py-20 bg-gradient-to-b from-muted/10 to-background">
+    <section id="calculator" className="section-premium bg-gradient-to-b from-muted/10 to-background">
       <div className="container mx-auto px-4">
         <motion.div 
           className="text-center mb-12"
@@ -74,10 +79,10 @@ const EarningsCalculator = () => {
               {t({ english: "Earnings Calculator", vietnamese: "Máy tính thu nhập" })}
             </span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-hero-secondary mb-4">
             {t({ english: "Calculate Your Potential Earnings", vietnamese: "Tính toán thu nhập tiềm năng của bạn" })}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-body-premium text-muted-foreground max-w-2xl mx-auto">
             {t({ 
               english: "See how much you could earn based on your audience and engagement",
               vietnamese: "Xem bạn có thể kiếm được bao nhiều dựa trên khán giả và mức độ tương tác của bạn"
@@ -91,7 +96,7 @@ const EarningsCalculator = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <Card className="max-w-4xl mx-auto shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+          <div className="calculator-premium max-w-4xl mx-auto">
             <CardHeader className="text-center pb-6">
               <CardTitle className="text-2xl">
                 {t({ english: "Earnings Calculator", vietnamese: "Máy tính thu nhập" })}
@@ -102,9 +107,11 @@ const EarningsCalculator = () => {
                   vietnamese: "Ước tính dựa trên tỷ lệ chuyển đổi trung bình và cơ cấu hoa hồng"
                 })}
               </CardDescription>
+              {/* CSS Spark Line */}
+              <div className="spark-line mt-4 mx-auto w-24"></div>
             </CardHeader>
             
-            <CardContent className="space-y-8">
+            <CardContent className="space-y-8 p-8">
               {/* Presets */}
               <div className="flex flex-wrap gap-2 justify-center">
                 {presets.map((preset, index) => (
@@ -151,7 +158,7 @@ const EarningsCalculator = () => {
                         setVisitorsPerMonth(parseInt(e.target.value));
                         handleCalculatorChange();
                       }}
-                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                      className="range-premium w-full"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
                       <span>100</span>
@@ -173,7 +180,7 @@ const EarningsCalculator = () => {
                         setCtrPercent(parseFloat(e.target.value));
                         handleCalculatorChange();
                       }}
-                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                      className="range-premium w-full"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
                       <span>1%</span>
@@ -195,7 +202,7 @@ const EarningsCalculator = () => {
                         setConversionPercent(parseFloat(e.target.value));
                         handleCalculatorChange();
                       }}
-                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                      className="range-premium w-full"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
                       <span>1%</span>
@@ -256,7 +263,7 @@ const EarningsCalculator = () => {
                 </p>
               </div>
             </CardContent>
-          </Card>
+          </div>
         </motion.div>
       </div>
     </section>

@@ -6,6 +6,7 @@
 @import './styles/chat-premium.css';
 @import './styles/prose-enhanced.css';
 @import './styles/gradient-text.css';
+@import './styles/affiliates.css';
 
 /* Image Loading Animation */
 @keyframes shimmer {

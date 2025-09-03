@@ -78,7 +78,7 @@ const ValuePropsSection = () => {
   };
 
   return (
-    <section className="py-20 bg-background">
+    <section className="section-premium bg-background">
       <div className="container mx-auto px-4">
         <motion.div 
           className="text-center mb-16"
@@ -87,10 +87,10 @@ const ValuePropsSection = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-hero-secondary mb-4">
             {t({ english: "Why choose our affiliate program?", vietnamese: "Tại sao chọn chương trình cộng tác viên của chúng tôi?" })}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-body-premium text-muted-foreground max-w-2xl mx-auto">
             {t({ 
               english: "Join thousands of creators earning real money by promoting the beauty industry's fastest-growing platform",
               vietnamese: "Tham gia cùng hàng nghìn người sáng tạo đang kiếm tiền thực sự bằng cách quảng bá nền tảng phát triển nhanh nhất trong ngành làm đẹp"
@@ -109,19 +109,17 @@ const ValuePropsSection = () => {
             const IconComponent = prop.icon;
             return (
               <motion.div key={index} variants={itemVariants}>
-                <Card className="h-full card-luxury group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className="w-8 h-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3 text-foreground">
-                      {t(prop.title)}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {t(prop.description)}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="h-full value-card-premium p-6 text-center">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-foreground">
+                    {t(prop.title)}
+                  </h3>
+                  <p className="text-body-premium text-muted-foreground">
+                    {t(prop.description)}
+                  </p>
+                </div>
               </motion.div>
             );
           })}

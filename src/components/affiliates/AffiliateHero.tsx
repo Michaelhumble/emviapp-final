@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,8 @@ import { Sparkles, TrendingUp, Shield } from 'lucide-react';
 
 const AffiliateHero = () => {
   const { t, isVietnamese } = useTranslation();
+  const buttonRef = useRef<HTMLAnchorElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const heroContent = {
     badge: {
@@ -29,10 +31,6 @@ const AffiliateHero = () => {
     secondaryCta: {
       english: "How it works",
       vietnamese: "Cách hoạt động"
-    } as Translation,
-    trustRow: {
-      english: "Powered by Stripe Connect • Transparent analytics • 24/7 tracking",
-      vietnamese: "Được hỗ trợ bởi Stripe Connect • Phân tích minh bạch • Theo dõi 24/7"
     } as Translation
   };
 
@@ -47,62 +45,69 @@ const AffiliateHero = () => {
     }
   };
 
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[hsl(var(--pearl-white))]">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/8"></div>
+  // Magnetic button effect
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!buttonRef.current) return;
+    
+    const rect = buttonRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const deltaX = e.clientX - centerX;
+    const deltaY = e.clientY - centerY;
+    const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    
+    if (distance < 100) {
+      const strength = Math.min(distance / 100, 1);
+      const moveX = (deltaX / distance) * 8 * (1 - strength);
+      const moveY = (deltaY / distance) * 8 * (1 - strength);
       
-      {/* Floating elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-primary/30 rounded-full"
-            initial={{ 
-              x: Math.random() * window.innerWidth, 
-              y: window.innerHeight + 100,
-              scale: 0,
-              opacity: 0
-            }}
-            animate={{ 
-              y: -100,
-              scale: [0, 1, 0],
-              opacity: [0, 0.6, 0]
-            }}
-            transition={{ 
-              duration: Math.random() * 8 + 4,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: "linear"
-            }}
-          />
-        ))}
-      </div>
+      setMousePosition({ x: moveX, y: moveY });
+    } else {
+      setMousePosition({ x: 0, y: 0 });
+    }
+  };
 
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 });
+  };
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion && buttonRef.current) {
+      buttonRef.current.setAttribute('data-magnetic', 'false');
+    }
+  }, []);
+
+  return (
+    <section 
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden section-premium"
+      style={{ background: 'var(--gradient-mesh-premium)' }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="container mx-auto px-4 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <Badge className="mb-8 px-6 py-3 text-sm font-medium rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 hover:from-primary/20 hover:to-primary/10 transition-all duration-300">
+          <Badge className="mb-8 px-6 py-3 text-sm font-medium rounded-2xl glass-hero-card border-0">
             {t(heroContent.badge)}
           </Badge>
         </motion.div>
         
         <motion.h1 
-          className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 max-w-4xl mx-auto leading-tight"
+          className="text-hero-primary mb-6 max-w-4xl mx-auto bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
         >
-          <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent animate-gradient">
-            {t(heroContent.headline)}
-          </span>
+          {t(heroContent.headline)}
         </motion.h1>
         
         <motion.p 
-          className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed"
+          className="text-body-premium text-muted-foreground mb-12 max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -118,11 +123,14 @@ const AffiliateHero = () => {
         >
           <Button 
             size="lg" 
-            className="rounded-2xl px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
+            className="btn-magnetic focus-ring-premium rounded-2xl px-8 py-6 text-base font-semibold border-0"
+            style={{
+              transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`
+            }}
             asChild
             onClick={() => handleCTAClick('join_now')}
           >
-            <Link to="/affiliate">{t(heroContent.primaryCta)}</Link>
+            <Link ref={buttonRef} to="/affiliate" data-magnetic="true">{t(heroContent.primaryCta)}</Link>
           </Button>
           <Button 
             size="lg" 
@@ -137,22 +145,22 @@ const AffiliateHero = () => {
         
         {/* Trust indicators */}
         <motion.div 
-          className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground max-w-2xl mx-auto"
+          className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground max-w-2xl mx-auto mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 glass-hero-card px-4 py-2 rounded-full border-0">
             <Shield className="w-4 h-4 text-primary" />
             <span>Stripe Connect</span>
           </div>
           <div className="hidden sm:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 glass-hero-card px-4 py-2 rounded-full border-0">
             <TrendingUp className="w-4 h-4 text-primary" />
             <span>{isVietnamese ? "Phân tích minh bạch" : "Transparent analytics"}</span>
           </div>
           <div className="hidden sm:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 glass-hero-card px-4 py-2 rounded-full border-0">
             <Sparkles className="w-4 h-4 text-primary" />
             <span>{isVietnamese ? "Theo dõi 24/7" : "24/7 tracking"}</span>
           </div>
@@ -160,7 +168,7 @@ const AffiliateHero = () => {
 
         {/* Quick stats */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-3xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
@@ -172,7 +180,7 @@ const AffiliateHero = () => {
           ].map((stat, index) => (
             <motion.div 
               key={index}
-              className="text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/20 transition-all duration-300"
+              className="text-center p-6 glass-hero-card border-0"
               whileHover={{ y: -4 }}
               transition={{ duration: 0.2 }}
             >
