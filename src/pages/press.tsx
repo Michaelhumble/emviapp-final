@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PRESS_COVERAGE } from '@/data/pressCoverage';
+import { PRESS_OUTLETS } from '@/data/pressLogos';
 import Layout from '@/components/layout/Layout';
 import { ExternalLink, Calendar, Tag } from 'lucide-react';
 
@@ -7,11 +7,11 @@ const PressPage = () => {
   const [filter, setFilter] = useState<'all' | 'verified'>('all');
   
   const filteredCoverage = filter === 'verified' 
-    ? PRESS_COVERAGE.filter(item => item.live)
-    : PRESS_COVERAGE;
+    ? PRESS_OUTLETS.filter(item => item.live)
+    : PRESS_OUTLETS;
 
-  const verifiedCount = PRESS_COVERAGE.filter(item => item.live).length;
-  const totalCount = PRESS_COVERAGE.length;
+  const verifiedCount = PRESS_OUTLETS.filter(item => item.live).length;
+  const totalCount = PRESS_OUTLETS.length;
 
   return (
     <Layout>
@@ -58,7 +58,7 @@ const PressPage = () => {
           <div className="grid gap-6 md:grid-cols-2">
             {filteredCoverage.map((item, index) => (
               <div 
-                key={`${item.outlet}-${index}`}
+                key={`${item.name}-${index}`}
                 className={`bg-white rounded-xl shadow-sm border p-6 transition-all hover:shadow-md ${
                   !item.live ? 'opacity-75' : ''
                 }`}
@@ -68,8 +68,8 @@ const PressPage = () => {
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center border">
                       <img
-                        src={item.logo}
-                        alt={item.outlet}
+                        src={item.src}
+                        alt={item.name}
                         className="max-h-[32px] w-auto opacity-80"
                         loading="lazy"
                       />
@@ -80,20 +80,8 @@ const PressPage = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {item.outlet}
+                        {item.name}
                       </h3>
-                      {item.tag && (
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${
-                          item.tag === 'press-release' 
-                            ? 'bg-blue-100 text-blue-800'
-                            : item.tag === 'syndication'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          <Tag className="w-3 h-3" />
-                          {item.tag}
-                        </span>
-                      )}
                     </div>
 
                     <p className="text-gray-600 mb-3">
@@ -101,15 +89,8 @@ const PressPage = () => {
                     </p>
 
                     <div className="flex items-center justify-between">
-                      {item.date && (
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(item.date).toLocaleDateString()}
-                        </div>
-                      )}
-                      
                       <a
-                        href={item.url}
+                        href={item.href}
                         target="_blank"
                         rel="noopener nofollow"
                         className={`inline-flex items-center gap-1 text-sm font-medium transition-colors ${
@@ -117,7 +98,7 @@ const PressPage = () => {
                             ? 'text-violet-600 hover:text-violet-700' 
                             : 'text-gray-400 cursor-not-allowed'
                         }`}
-                        aria-label={`Read ${item.outlet} article`}
+                        aria-label={`Read ${item.name} article`}
                       >
                         Read article
                         <ExternalLink className="w-4 h-4" />

@@ -141,7 +141,7 @@ const HeroContent = ({
           transition={{ duration: 0.7, delay: 0.8 }}
         >
           <a
-            href="https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry"
+            href="https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c"
             target="_blank"
             rel="noopener noreferrer"
             className={`text-white/80 hover:text-white transition-colors font-medium ${
@@ -152,13 +152,13 @@ const HeroContent = ({
               if (typeof window !== 'undefined' && (window as any).gtag) {
                 (window as any).gtag('event', 'press_release_click', {
                   event_category: 'engagement',
-                  event_label: 'Benzinga',
+                  event_label: 'AP News',
                   link_location: 'hero'
                 });
               }
             }}
           >
-            Featured on Benzinga — Read the launch →
+            Read the launch on AP News →
           </a>
         </motion.div>
         
