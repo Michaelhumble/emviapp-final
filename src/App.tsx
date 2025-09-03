@@ -131,7 +131,8 @@ const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 const EmviAppPressPage = lazy(() => import("@/pages/press/EmviAppPressPage"));
 const EmviAppPressDetailPage = lazy(() => import("@/pages/press/EmviAppPressDetailPage"));
-const PressPage = lazy(() => import("@/pages/PressPage"));
+const PressPage = lazy(() => import("@/pages/press"));
+const OldPressPage = lazy(() => import("@/pages/PressPage"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
 const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
 // Content Hub Pages

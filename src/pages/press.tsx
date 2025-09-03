@@ -1,0 +1,172 @@
+import React, { useState } from 'react';
+import { PRESS_COVERAGE } from '@/data/pressCoverage';
+import Layout from '@/components/layout/Layout';
+import { ExternalLink, Calendar, Tag } from 'lucide-react';
+
+const PressPage = () => {
+  const [filter, setFilter] = useState<'all' | 'verified'>('all');
+  
+  const filteredCoverage = filter === 'verified' 
+    ? PRESS_COVERAGE.filter(item => item.live)
+    : PRESS_COVERAGE;
+
+  const verifiedCount = PRESS_COVERAGE.filter(item => item.live).length;
+  const totalCount = PRESS_COVERAGE.length;
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-12 max-w-4xl">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Press & Coverage
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              EmviApp's launch has been covered by major news outlets and media organizations. 
+              Read the full coverage of our AI-powered platform for the beauty industry.
+            </p>
+          </div>
+
+          {/* Filter Toggle */}
+          <div className="flex items-center justify-center mb-8">
+            <div className="bg-white rounded-lg p-1 shadow-sm border">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'all' 
+                    ? 'bg-violet-600 text-white' 
+                    : 'text-gray-700 hover:text-gray-900'
+                }`}
+              >
+                All ({totalCount})
+              </button>
+              <button
+                onClick={() => setFilter('verified')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'verified' 
+                    ? 'bg-violet-600 text-white' 
+                    : 'text-gray-700 hover:text-gray-900'
+                }`}
+              >
+                Verified ({verifiedCount})
+              </button>
+            </div>
+          </div>
+
+          {/* Coverage Grid */}
+          <div className="grid gap-6 md:grid-cols-2">
+            {filteredCoverage.map((item, index) => (
+              <div 
+                key={`${item.outlet}-${index}`}
+                className={`bg-white rounded-xl shadow-sm border p-6 transition-all hover:shadow-md ${
+                  !item.live ? 'opacity-75' : ''
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  {/* Logo */}
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center border">
+                      <img
+                        src={item.logo}
+                        alt={item.outlet}
+                        className="max-h-[32px] w-auto opacity-80"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        {item.outlet}
+                      </h3>
+                      {item.tag && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${
+                          item.tag === 'press-release' 
+                            ? 'bg-blue-100 text-blue-800'
+                            : item.tag === 'syndication'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          <Tag className="w-3 h-3" />
+                          {item.tag}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-gray-600 mb-3">
+                      EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      {item.date && (
+                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <Calendar className="w-4 h-4" />
+                          {new Date(item.date).toLocaleDateString()}
+                        </div>
+                      )}
+                      
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener nofollow"
+                        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors ${
+                          item.live 
+                            ? 'text-violet-600 hover:text-violet-700' 
+                            : 'text-gray-400 cursor-not-allowed'
+                        }`}
+                        aria-label={`Read ${item.outlet} article`}
+                      >
+                        Read article
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+
+                    {!item.live && (
+                      <div className="mt-2 text-xs text-red-600">
+                        Article currently unavailable
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Disclaimer */}
+          <div className="mt-12 p-6 bg-blue-50 rounded-lg border border-blue-200">
+            <h3 className="text-sm font-semibold text-blue-900 mb-2">
+              About Syndication Networks
+            </h3>
+            <p className="text-sm text-blue-800">
+              Many of these articles appear through syndication networks like EIN Presswire, 
+              which distribute press releases to multiple local news stations and media outlets. 
+              This is a standard practice in digital media distribution and ensures wide coverage 
+              across various markets and demographics.
+            </p>
+          </div>
+
+          {/* SEO Content */}
+          <div className="mt-8 prose prose-gray max-w-none">
+            <h2 className="text-2xl font-bold text-gray-900">Media Coverage Overview</h2>
+            <p className="text-gray-600">
+              EmviApp's revolutionary AI-powered platform for the beauty industry has garnered 
+              significant media attention across major news networks. Our launch announcement 
+              has been featured by Associated Press, regional NBC affiliates, CBS stations, 
+              FOX networks, and other prominent media outlets.
+            </p>
+            <p className="text-gray-600">
+              The coverage highlights EmviApp's innovative approach to connecting beauty 
+              professionals with opportunities through artificial intelligence, representing 
+              a major advancement in the beauty and wellness technology sector.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default PressPage;

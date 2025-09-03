@@ -1,39 +1,50 @@
 import React from "react";
-import { PRESS_LOGOS } from "@/data/pressLogos";
-import { PressLogoTile } from "./PressLogo";
+import { PRESS_COVERAGE } from "@/data/pressCoverage";
 
 export default function PressTrustBar() {
-  const tileClass = "group relative flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-white shadow-sm border border-black/5 transition-transform motion-safe:hover:-translate-y-0.5";
-  
+  const items = PRESS_COVERAGE.filter(x => x.live).slice(0, 12);
+
   return (
-    <section className="relative py-12 md:py-16 bg-gray-50/50">
-      <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <div className="text-center">
-          <h2 className="text-sm font-medium uppercase tracking-widest text-black/60 mb-8">
-            As seen in
-          </h2>
+    <section
+      aria-labelledby="press-title"
+      data-qaid="pressbar-mounted"
+      className="mx-auto mt-10 w-full max-w-6xl px-4"
+    >
+      <h2 id="press-title" className="text-center text-sm tracking-[0.3em] text-slate-500">
+        AS SEEN ON
+      </h2>
 
-          <div className="mt-6 grid grid-cols-5 justify-items-center gap-4 sm:grid-cols-6 md:grid-cols-8">
-            {PRESS_LOGOS.map((logo) => (
-              <PressLogoTile key={logo.name} {...logo} />
-            ))}
-          </div>
-
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs text-black/50">
-            <a 
-              href="/press" 
-              className="underline underline-offset-4 hover:text-black/70 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 rounded"
+      <ul className="mt-6 grid grid-cols-4 gap-4 sm:grid-cols-6 md:grid-cols-8 justify-items-center">
+        {items.map((i) => (
+          <li key={i.outlet}>
+            <a
+              href={i.url}
+              target="_blank" 
+              rel="noopener nofollow"
+              className="group block"
+              aria-label={`${i.outlet} coverage`}
             >
-              Read full press coverage
+              <div className="flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-white shadow-sm border border-black/5 transition-transform motion-safe:hover:-translate-y-0.5">
+                <img
+                  src={i.logo}
+                  alt={i.outlet}
+                  className="max-h-[22px] w-auto opacity-80 group-hover:opacity-100"
+                  loading="lazy" 
+                  decoding="async"
+                />
+              </div>
             </a>
-            <span aria-hidden className="hidden sm:inline">•</span>
-            <span className="text-center">All trademarks are property of their respective owners.</span>
-          </div>
+          </li>
+        ))}
+      </ul>
 
-          <p className="sr-only">
-            Logos shown indicate editorial coverage and media mentions; they do not imply partnership or endorsement by these organizations.
-          </p>
-        </div>
+      <div className="mt-6 text-center">
+        <a href="/press" className="text-violet-600 hover:text-violet-700 inline-flex items-center gap-1">
+          Read full press coverage <span aria-hidden>→</span>
+        </a>
+        <p className="mt-2 text-xs text-slate-500">
+          All trademarks are property of their respective owners.
+        </p>
       </div>
     </section>
   );
