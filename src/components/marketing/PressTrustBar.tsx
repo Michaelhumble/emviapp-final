@@ -7,11 +7,14 @@ export default function PressTrustBar() {
     <section className="relative py-12 md:py-16 bg-gray-50/50">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="text-center">
+          {/* TEMP label – remove after QA */}
+          <div className="sr-only" data-qaid="pressbar-mounted">Press bar mounted</div>
+          
           <h2 className="text-sm font-medium uppercase tracking-widest text-black/60 mb-8">
-            Coverage includes
+            As seen in
           </h2>
 
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-4 justify-items-center items-center max-w-5xl mx-auto">
+          <div className="mt-6 grid grid-cols-5 justify-items-center gap-4 sm:grid-cols-6 md:grid-cols-8">
             {PRESS_LOGOS.map((logo) => (
               <PressLogoTile key={logo.name} {...logo} />
             ))}

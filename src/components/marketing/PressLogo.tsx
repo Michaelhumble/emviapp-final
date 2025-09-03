@@ -4,11 +4,12 @@ import type { PressLogo } from "@/data/pressLogos";
 interface PressLogoTileProps extends PressLogo {}
 
 export function PressLogoTile({ name, href, logoSrc, alt, verified }: PressLogoTileProps) {
+  // TEMP: verification style – remove after QA
+  const tileClass = "flex h-18 w-18 items-center justify-center rounded-2xl bg-white shadow-lg shadow-black/5 border border-black/10";
+  
   const Tile = (
     <div
-      className="group relative flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl
-                 bg-white shadow-sm border border-black/5
-                 transition-all duration-200 motion-safe:hover:-translate-y-0.5 hover:shadow-md"
+      className={`group relative ${tileClass} transition-transform motion-safe:hover:-translate-y-0.5`}
       aria-label={name}
     >
       <img
@@ -18,7 +19,7 @@ export function PressLogoTile({ name, href, logoSrc, alt, verified }: PressLogoT
         height={24}
         loading="lazy"
         decoding="async"
-        className="max-h-[20px] md:max-h-[22px] w-auto opacity-70 group-hover:opacity-100 transition-opacity duration-200"
+        className="max-h-[22px] w-auto opacity-80 group-hover:opacity-100 transition-opacity duration-200"
         style={{ height: 'auto' }}
       />
       {verified && (
