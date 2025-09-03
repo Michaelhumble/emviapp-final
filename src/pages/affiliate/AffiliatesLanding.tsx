@@ -11,6 +11,7 @@ import {
   FinalCTASection
 } from '@/components/affiliates';
 import Testimonials from '@/components/affiliates/Testimonials';
+import FinalCTA from '@/components/affiliates/FinalCTA';
 
 const AffiliatesLanding = () => {
   useEffect(() => {
@@ -80,7 +81,7 @@ const AffiliatesLanding = () => {
         <SocialProofSection />
         <Testimonials />
         <FAQSection />
-        <FinalCTASection />
+        <FinalCTA />
       </Layout>
     </>
   );

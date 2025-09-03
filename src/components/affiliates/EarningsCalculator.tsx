@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslation, Translation } from '@/hooks/useTranslation';
-import { Calculator, RotateCcw, TrendingUp } from 'lucide-react';
+import { Calculator, RotateCcw, TrendingUp, DollarSign, Calendar } from 'lucide-react';
 import { flags } from '@/utils/featureFlags';
 
 // Lazy load the chart component
@@ -254,29 +254,20 @@ const EarningsCalculator = () => {
                     
                     <div className="space-y-8">
                       <div className="text-center">
-                        <div className="text-7xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+                        <motion.div 
+                          className="text-7xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4"
+                          key={stats.monthlyEarnings}
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.3, type: "spring" }}
+                        >
                           ${stats.monthlyEarnings.toFixed(2)}
-                        </div>
+                        </motion.div>
                         <div className="text-xl font-semibold text-muted-foreground mb-4">
                           {t({ english: "Estimated Monthly", vietnamese: "Ước tính hàng tháng" })}
                         </div>
                         <div className="spark-line mx-auto max-w-40" />
                       </div>
-                      
-                      {/* Lazy-loaded Premium Chart */}
-                      {flags.AFFILIATE_LUX_ENABLE && (
-                        <div ref={chartContainerRef} className="mt-8">
-                          {isChartInView && (
-                            <Suspense fallback={
-                              <div className="w-full h-20 bg-white/30 rounded-2xl animate-pulse flex items-center justify-center backdrop-blur-sm">
-                                <span className="text-base font-medium text-muted-foreground">Loading premium chart...</span>
-                              </div>
-                            }>
-                              <MiniChart data={stats} className="w-full h-20" />
-                            </Suspense>
-                          )}
-                        </div>
-                      )}
                       
                       <div className="grid grid-cols-2 gap-6 pt-8 border-t-2 border-primary/20">
                         <div className="text-center p-6 bg-white/40 rounded-2xl backdrop-blur-sm border border-white/50">

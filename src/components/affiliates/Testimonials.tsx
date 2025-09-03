@@ -2,11 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { flags } from '@/utils/featureFlags';
 
-// Static testimonials data - English only for Phase 2
+// Updated testimonials with the required quotes
 const testimonials = [
   {
     id: 1,
-    quote: "Our salon grew faster with EmviApp affiliates.",
+    quote: "The EmviApp affiliate program is transparent and profitable. Monthly payouts are predictable.",
     author: "Maria Chen",
     title: "Salon Owner",
     avatar: "data:image/svg+xml,%3csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3clinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='%2338bdf8'/%3e%3cstop offset='100%25' stop-color='%230284c7'/%3e%3c/linearGradient%3e%3c/defs%3e%3ccircle cx='32' cy='32' r='32' fill='url(%23a)'/%3e%3ccircle cx='32' cy='26' r='8' fill='white' opacity='0.9'/%3e%3cellipse cx='32' cy='45' rx='12' ry='8' fill='white' opacity='0.9'/%3e%3c/svg%3e",
@@ -14,7 +14,7 @@ const testimonials = [
   },
   {
     id: 2,
-    quote: "Payouts are predictable and transparent.",
+    quote: "Tracking just works, and commissions are always on time.",
     author: "James Rodriguez",
     title: "Beauty Influencer",
     avatar: "data:image/svg+xml,%3csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3clinearGradient id='b' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='%2310b981'/%3e%3cstop offset='100%25' stop-color='%23059669'/%3e%3c/linearGradient%3e%3c/defs%3e%3ccircle cx='32' cy='32' r='32' fill='url(%23b)'/%3e%3ccircle cx='32' cy='26' r='8' fill='white' opacity='0.9'/%3e%3cellipse cx='32' cy='45' rx='12' ry='8' fill='white' opacity='0.9'/%3e%3c/svg%3e",
@@ -22,7 +22,7 @@ const testimonials = [
   },
   {
     id: 3,
-    quote: "Setup took minutes; tracking just works.",
+    quote: "It's the easiest way I've ever added income to my salon business.",
     author: "Sarah Kim", 
     title: "Content Creator",
     avatar: "data:image/svg+xml,%3csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3clinearGradient id='c' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='%238b5cf6'/%3e%3cstop offset='100%25' stop-color='%237c3aed'/%3e%3c/linearGradient%3e%3c/defs%3e%3ccircle cx='32' cy='32' r='32' fill='url(%23c)'/%3e%3ccircle cx='32' cy='26' r='8' fill='white' opacity='0.9'/%3e%3cellipse cx='32' cy='45' rx='12' ry='8' fill='white' opacity='0.9'/%3e%3c/svg%3e",
@@ -30,7 +30,7 @@ const testimonials = [
   },
   {
     id: 4,
-    quote: "Best affiliate program in the beauty space.",
+    quote: "Best affiliate program in the beauty space. Setup was incredibly simple.",
     author: "Alex Thompson",
     title: "Marketing Director",
     avatar: "data:image/svg+xml,%3csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3clinearGradient id='d' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='%23f59e0b'/%3e%3cstop offset='100%25' stop-color='%23d97706'/%3e%3c/linearGradient%3e%3c/defs%3e%3ccircle cx='32' cy='32' r='32' fill='url(%23d)'/%3e%3ccircle cx='32' cy='26' r='8' fill='white' opacity='0.9'/%3e%3cellipse cx='32' cy='45' rx='12' ry='8' fill='white' opacity='0.9'/%3e%3c/svg%3e",

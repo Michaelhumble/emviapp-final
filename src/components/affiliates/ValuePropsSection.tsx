@@ -123,17 +123,48 @@ const ValuePropsSection = () => {
             
             return (
               <motion.div key={index} variants={itemVariants}>
-                <div className="h-full value-card-premium p-10 text-center group cursor-pointer">
-                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-500 shadow-lg`}>
-                    {/* Use illustration if luxury features enabled, otherwise fallback to icon */}
-                    {flags.AFFILIATE_LUX_ENABLE ? (
-                      <IllustrationComponent 
-                        className="w-12 h-12" 
-                        aria-label={`${t(prop.title)} illustration`}
-                      />
-                    ) : (
-                      <IconComponent className="w-10 h-10 text-primary" />
-                    )}
+                <div className="h-full value-card-premium p-10 text-center group cursor-pointer relative">
+                  {/* Gradient Halo Background */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative z-10">
+                    {/* Custom SVG Illustrations */}
+                    <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-500 shadow-lg`}>
+                      {/* Premium inline SVG illustrations */}
+                      {index === 0 && (
+                        <svg className="w-12 h-12 text-primary" viewBox="0 0 48 48" fill="none">
+                          <path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" stroke="currentColor" strokeWidth="3"/>
+                          <path d="M18 20L24 26L30 20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M24 14V26" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                          <path d="M16 34H32" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                        </svg>
+                      )}
+                      {index === 1 && (
+                        <svg className="w-12 h-12 text-primary" viewBox="0 0 48 48" fill="none">
+                          <path d="M6 36L18 24L22 28L42 8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M34 8H42V16" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                          <rect x="6" y="36" width="36" height="6" rx="2" fill="currentColor" opacity="0.2"/>
+                        </svg>
+                      )}
+                      {index === 2 && (
+                        <svg className="w-12 h-12 text-primary" viewBox="0 0 48 48" fill="none">
+                          <path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" stroke="currentColor" strokeWidth="3"/>
+                          <path d="M18 24L22 28L30 18" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M24 4V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M24 36V44" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      )}
+                      {index === 3 && (
+                        <svg className="w-12 h-12 text-primary" viewBox="0 0 48 48" fill="none">
+                          <circle cx="24" cy="12" r="6" stroke="currentColor" strokeWidth="3"/>
+                          <circle cx="12" cy="36" r="6" stroke="currentColor" strokeWidth="3"/>
+                          <circle cx="36" cy="36" r="6" stroke="currentColor" strokeWidth="3"/>
+                          <path d="M18 18L18 30" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                          <path d="M30 18L30 30" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                          <path d="M18 30L30 30" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                        </svg>
+                      )}
+                    </div>
                   </div>
                   <h3 className="text-2xl font-bold mb-6 text-foreground group-hover:text-primary transition-colors duration-300">
                     {t(prop.title)}
