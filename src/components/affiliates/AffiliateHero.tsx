@@ -9,11 +9,9 @@ const AffiliateHero = () => {
   const reduced = prefersReducedMotion();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center">
-      <PremiumBackground className="absolute inset-0" />
-      
+    <PremiumBackground className="relative min-h-screen flex items-center justify-center">
       {/* Hero Content Container */}
-      <div className="relative z-10 container mx-auto px-6 max-w-7xl">
+      <div className="container mx-auto px-6 max-w-7xl">
         <div className="text-center space-y-16">
           {/* Glass Card for Headline + Subcopy */}
           <motion.div
@@ -143,7 +141,7 @@ const AffiliateHero = () => {
           </motion.div>
         </div>
       </div>
-    </section>
+    </PremiumBackground>
   );
 };
 
