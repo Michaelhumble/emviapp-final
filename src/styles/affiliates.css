@@ -1,10 +1,16 @@
 @keyframes subtleFloat { 
-  from { transform: translateY(0) } 
-  to { transform: translateY(-6px) } 
+  0% { transform: translateY(0) } 
+  100% { transform: translateY(-8px) } 
 }
 
 .motion-safe\:animate-subtleFloat { 
-  animation: subtleFloat 6s ease-in-out infinite alternate; 
+  animation: subtleFloat 7s ease-in-out infinite alternate; 
+}
+
+:root {
+  --emvi-pearl: 253 253 253;
+  --ink-900: 24 24 27;
+  --ink-600: 82 82 91;
 }
 
 /* ====================================
