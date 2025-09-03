@@ -3,13 +3,12 @@ import { PRESS_LOGOS } from "@/data/pressLogos";
 import { PressLogoTile } from "./PressLogo";
 
 export default function PressTrustBar() {
+  const tileClass = "group relative flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-white shadow-sm border border-black/5 transition-transform motion-safe:hover:-translate-y-0.5";
+  
   return (
     <section className="relative py-12 md:py-16 bg-gray-50/50">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="text-center">
-          {/* TEMP label – remove after QA */}
-          <div className="sr-only" data-qaid="pressbar-mounted">Press bar mounted</div>
-          
           <h2 className="text-sm font-medium uppercase tracking-widest text-black/60 mb-8">
             As seen in
           </h2>
