@@ -127,19 +127,19 @@ const ConsolidatedJobTemplateSelector: React.FC<ConsolidatedJobTemplateSelectorP
           return (
             <Card 
               key={template.id} 
-              className="group cursor-pointer transition-all duration-300 border border-gray-200/50 bg-white/70 backdrop-blur-sm rounded-xl md:rounded-2xl hover:shadow-xl hover:shadow-purple-500/20 hover:-translate-y-1 touch-manipulation"
+              className="group cursor-pointer transition-all duration-300 border border-gray-200/50 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl hover:shadow-xl hover:shadow-purple-500/20 hover:-translate-y-1 touch-manipulation hover:border-purple-200/60"
               onClick={() => handleTemplateSelect(template.id)}
             >
               <CardContent className="p-5 md:p-6">
                 <div className="flex items-start space-x-4 md:space-x-5">
-                  <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                  <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm">
                     <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-purple-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-playfair text-base md:text-lg font-medium text-purple-600 mb-2 md:mb-3 group-hover:text-purple-700 transition-colors leading-snug">
+                    <h3 className="font-playfair text-[17px] md:text-[19px] font-semibold text-gray-900 mb-2 md:mb-3 group-hover:text-purple-700 transition-colors leading-[1.3] tracking-[-0.01em]">
                       {template.title}
                     </h3>
-                    <p className="font-inter text-gray-600 text-xs md:text-sm leading-relaxed opacity-90">
+                    <p className="font-inter text-gray-700 text-[13px] md:text-[14px] leading-[1.5] opacity-95 line-clamp-3">
                       {template.description}
                     </p>
                   </div>
