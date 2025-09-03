@@ -14,6 +14,10 @@ import JobPhotoGallery from '@/components/jobs/JobPhotoGallery';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import JobDetailSEO from '@/components/seo/JobDetailSEO';
 import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
+import JobPostingJsonLd, { JobPostingProps } from '@/components/seo/JobPostingJsonLd';
+import { parseEmploymentType, parseSalaryInfo, parseJobLocation } from '@/utils/seo/jsonld';
+import { Helmet } from 'react-helmet';
+import { SITE_BASE_URL } from '@/config/seo';
 
 const JobDetailPage = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -121,16 +125,15 @@ const JobDetailPage = () => {
   }
 
   if (!job) {
+    const canonicalUrl = `${SITE_BASE_URL}/jobs/${jobId || 'not-found'}`;
     return (
       <>
-        <JobDetailSEO job={{
-          id: jobId || 'not-found',
-          title: 'Job Not Found',
-          location: 'Various Locations',
-          description: 'This job listing may have expired or been removed.',
-          category: 'beauty',
-          created_at: new Date().toISOString()
-        } as Job} />
+        <Helmet>
+          <title>Job Not Found | EmviApp</title>
+          <meta name="description" content="This job listing may have expired or been removed." />
+          <meta name="robots" content="noindex, follow" />
+          <link rel="canonical" href={canonicalUrl} />
+        </Helmet>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
           <div className="container mx-auto px-4 py-16">
             <div className="text-center">
@@ -169,11 +172,56 @@ const JobDetailPage = () => {
     { name: job.title, href: `/jobs/${job.id}`, current: true }
   ];
 
-  // JSON-LD is now handled by JobSEO component with comprehensive schema
+  // Build comprehensive SEO data
+  const baseUrl = SITE_BASE_URL || 'https://www.emvi.app';
+  const canonicalUrl = `${baseUrl}/jobs/${job.id}`;
+  const title = `${job.title} - ${job.location || 'Beauty Job'} | EmviApp`;
+  const description = job.description 
+    ? `${job.description.slice(0, 140)}... Apply now on EmviApp.`
+    : `Apply for ${job.title} position in ${job.location || 'multiple locations'}. Join thousands of beauty professionals on EmviApp.`;
+
+  // Build JobPosting JSON-LD props
+  const jobPostingProps: JobPostingProps = {
+    id: job.id,
+    title: job.title,
+    descriptionHtml: job.description || `${job.title} position in ${job.location || 'various locations'}`,
+    datePostedISO: job.created_at || new Date().toISOString(),
+    validThroughISO: isExpired ? job.expires_at : undefined,
+    employmentType: parseEmploymentType(job.compensation_type, job.description, job.title),
+    hiringOrganization: {
+      name: job.company || job.contact_info?.owner_name || 'EmviApp Partner',
+      sameAs: job.contact_info?.email ? `mailto:${job.contact_info.email}` : undefined,
+      logoUrl: `${baseUrl}/logo.png`
+    },
+    jobLocation: parseJobLocation(job.location),
+    baseSalary: parseSalaryInfo(job.compensation_details),
+    applicantLocationRequirements: 'US',
+    directApply: true,
+    languages: job.preferred_languages,
+    canonicalUrl
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-      <JobDetailSEO job={job} />
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="robots" content={isExpired ? "noindex, follow" : "index, follow"} />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+      </Helmet>
+      
+      <JobPostingJsonLd {...jobPostingProps} />
       
       {/* Header */}
       <div className="bg-white border-b border-gray-200">

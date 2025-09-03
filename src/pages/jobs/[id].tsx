@@ -8,35 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Helmet } from 'react-helmet';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import { track } from '@/lib/telemetry';
-
-// Inline JSON-LD helper
-function generateJobPostingJsonLd(job: Job, isExpired: boolean) {
-  const base: any = {
-    '@context': 'https://schema.org',
-    '@type': 'JobPosting',
-    title: job.title,
-    description: job.description || '',
-    datePosted: job.created_at,
-    employmentType: job.compensation_type || undefined,
-    jobLocation: job.location ? { '@type': 'Place', address: job.location } : undefined,
-    identifier: { '@type': 'PropertyValue', name: 'EmviApp', value: job.id },
-    url: `https://www.emvi.app/jobs/${job.id}`,
-  };
-
-  if (isExpired) {
-    // validThrough must be in the past; fallback to created_at + 30 days if missing
-    const validThrough = job.expires_at || new Date(new Date(job.created_at || Date.now()).getTime() + 30*24*60*60*1000).toISOString();
-    base.validThrough = validThrough;
-    // Omit applyAction when expired
-  } else {
-    base.hiringOrganization = job.company ? { '@type': 'Organization', name: job.company } : undefined;
-  }
-  if ((job as any).contact_info?.website) {
-    (base as any).sameAs = [(job as any).contact_info.website];
-  }
-
-  return JSON.stringify(base);
-}
+import JobPostingJsonLd, { JobPostingProps } from '@/components/seo/JobPostingJsonLd';
+import { parseEmploymentType, parseSalaryInfo, parseJobLocation } from '@/utils/seo/jsonld';
 
 const JobDetailDynamicPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -117,15 +90,38 @@ const JobDetailDynamicPage: React.FC = () => {
     );
   }
 
+  // Build JobPosting JSON-LD props
+  const canonicalUrl = `https://www.emvi.app/jobs/${job.id}`;
+  const jobPostingProps: JobPostingProps = {
+    id: job.id,
+    title: job.title,
+    descriptionHtml: job.description || `${job.title} position in ${job.location || 'various locations'}`,
+    datePostedISO: job.created_at || new Date().toISOString(),
+    validThroughISO: isExpired ? job.expires_at : undefined,
+    employmentType: parseEmploymentType(job.compensation_type, job.description, job.title),
+    hiringOrganization: {
+      name: job.company || job.contact_info?.owner_name || 'EmviApp Partner',
+      sameAs: job.contact_info?.email ? `mailto:${job.contact_info.email}` : undefined,
+      logoUrl: 'https://www.emvi.app/logo.png'
+    },
+    jobLocation: parseJobLocation(job.location),
+    baseSalary: parseSalaryInfo(job.compensation_details),
+    applicantLocationRequirements: 'US',
+    directApply: true,
+    languages: job.preferred_languages,
+    canonicalUrl
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Helmet>
         <title>{job.title} | EmviApp</title>
         <meta name="description" content={job.description?.slice(0, 150) || 'Job opportunity on EmviApp'} />
-        <link rel="canonical" href={`https://www.emvi.app/jobs/${job.id}`} />
-        {isExpired && <meta name="robots" content="noindex, follow" />}
-        <script type="application/ld+json">{generateJobPostingJsonLd(job, isExpired)}</script>
+        <meta name="robots" content={isExpired ? "noindex, follow" : "index, follow"} />
+        <link rel="canonical" href={canonicalUrl} />
       </Helmet>
+      
+      <JobPostingJsonLd {...jobPostingProps} />
 
       {isExpired && (
         <div className="mb-6 rounded-lg border bg-muted/30 p-4">
