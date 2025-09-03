@@ -1,12 +1,18 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Suspense, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslation, Translation } from '@/hooks/useTranslation';
 import { Calculator, RotateCcw, TrendingUp } from 'lucide-react';
+import { flags } from '@/utils/featureFlags';
+
+// Lazy load the chart component
+const MiniChart = React.lazy(() => import('./MiniChart'));
 
 const EarningsCalculator = () => {
   const { t } = useTranslation();
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [isChartInView, setIsChartInView] = useState(false);
   
   // Using integer math for precision (cents)
   const [visitorsPerMonth, setVisitorsPerMonth] = useState(1000);
@@ -14,6 +20,27 @@ const EarningsCalculator = () => {
   const [conversionPercent, setConversionPercent] = useState(3); // 3%
   const [avgOrderValueCents, setAvgOrderValueCents] = useState(2999); // $29.99 in cents
   const [commissionPercent] = useState(30); // Fixed 30%
+
+  // IntersectionObserver for lazy loading chart
+  useEffect(() => {
+    if (!flags.AFFILIATE_LUX_ENABLE || !chartContainerRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isChartInView) {
+            setIsChartInView(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    observer.observe(chartContainerRef.current);
+
+    return () => observer.disconnect();
+  }, [isChartInView]);
 
   const calculateEarnings = useCallback(() => {
     // All calculations in minor units (cents) to avoid floating point issues
@@ -229,6 +256,21 @@ const EarningsCalculator = () => {
                         {t({ english: "Estimated Monthly", vietnamese: "Ước tính hàng tháng" })}
                       </div>
                     </div>
+                    
+                    {/* Lazy-loaded Mini Chart */}
+                    {flags.AFFILIATE_LUX_ENABLE && (
+                      <div ref={chartContainerRef} className="mt-4">
+                        {isChartInView && (
+                          <Suspense fallback={
+                            <div className="w-full h-16 bg-muted/20 rounded-lg animate-pulse flex items-center justify-center">
+                              <span className="text-xs text-muted-foreground">Loading chart...</span>
+                            </div>
+                          }>
+                            <MiniChart data={stats} className="w-full h-16" />
+                          </Suspense>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
                       <div className="text-center">

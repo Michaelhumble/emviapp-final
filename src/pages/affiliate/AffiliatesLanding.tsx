@@ -10,6 +10,7 @@ import {
   FAQSection,
   FinalCTASection
 } from '@/components/affiliates';
+import Testimonials from '@/components/affiliates/Testimonials';
 
 const AffiliatesLanding = () => {
   useEffect(() => {
@@ -77,6 +78,7 @@ const AffiliatesLanding = () => {
         <EarningsCalculator />
         <HowItWorksSection />
         <SocialProofSection />
+        <Testimonials />
         <FAQSection />
         <FinalCTASection />
       </Layout>

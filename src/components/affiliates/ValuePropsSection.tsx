@@ -3,6 +3,13 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation, Translation } from '@/hooks/useTranslation';
 import { DollarSign, TrendingUp, Users, Shield } from 'lucide-react';
+import { flags } from '@/utils/featureFlags';
+import { 
+  PayoutIllustration, 
+  AnalyticsIllustration, 
+  CommunityIllustration, 
+  FreedomIllustration 
+} from './IconIllustrations';
 
 const ValuePropsSection = () => {
   const { t } = useTranslation();
@@ -10,6 +17,7 @@ const ValuePropsSection = () => {
   const valueProps = [
     {
       icon: DollarSign,
+      illustration: PayoutIllustration,
       title: {
         english: "Real monthly payouts",
         vietnamese: "Thanh toán hàng tháng thực tế"
@@ -22,6 +30,7 @@ const ValuePropsSection = () => {
     },
     {
       icon: TrendingUp,
+      illustration: AnalyticsIllustration,
       title: {
         english: "Track clicks & conversions",
         vietnamese: "Theo dõi lượt nhấp & chuyển đổi"
@@ -34,6 +43,7 @@ const ValuePropsSection = () => {
     },
     {
       icon: Shield,
+      illustration: FreedomIllustration,
       title: {
         english: "No lock-in",
         vietnamese: "Không bị ràng buộc"
@@ -46,6 +56,7 @@ const ValuePropsSection = () => {
     },
     {
       icon: Users,
+      illustration: CommunityIllustration,
       title: {
         english: "Trusted by the community",
         vietnamese: "Được cộng đồng tin tưởng"
@@ -107,11 +118,21 @@ const ValuePropsSection = () => {
         >
           {valueProps.map((prop, index) => {
             const IconComponent = prop.icon;
+            const IllustrationComponent = prop.illustration;
+            
             return (
               <motion.div key={index} variants={itemVariants}>
                 <div className="h-full value-card-premium p-6 text-center">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${prop.gradient} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-8 h-8 text-primary" />
+                    {/* Use illustration if luxury features enabled, otherwise fallback to icon */}
+                    {flags.AFFILIATE_LUX_ENABLE ? (
+                      <IllustrationComponent 
+                        className="w-12 h-12" 
+                        aria-label={`${t(prop.title)} illustration`}
+                      />
+                    ) : (
+                      <IconComponent className="w-8 h-8 text-primary" />
+                    )}
                   </div>
                   <h3 className="text-xl font-semibold mb-3 text-foreground">
                     {t(prop.title)}

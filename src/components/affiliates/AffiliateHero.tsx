@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { useTranslation, Translation } from '@/hooks/useTranslation';
 import { Sparkles, TrendingUp, Shield } from 'lucide-react';
+import { flags, prefersReducedMotion } from '@/utils/featureFlags';
 
 const AffiliateHero = () => {
   const { t, isVietnamese } = useTranslation();
@@ -47,7 +48,7 @@ const AffiliateHero = () => {
 
   // Magnetic button effect
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!buttonRef.current) return;
+    if (!buttonRef.current || prefersReducedMotion()) return;
     
     const rect = buttonRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -73,8 +74,7 @@ const AffiliateHero = () => {
   };
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion && buttonRef.current) {
+    if (prefersReducedMotion() && buttonRef.current) {
       buttonRef.current.setAttribute('data-magnetic', 'false');
     }
   }, []);
@@ -123,14 +123,24 @@ const AffiliateHero = () => {
         >
           <Button 
             size="lg" 
-            className="btn-magnetic focus-ring-premium rounded-2xl px-8 py-6 text-base font-semibold border-0"
+            className={`btn-magnetic focus-ring-premium rounded-2xl px-8 py-6 text-base font-semibold border-0 ${
+              flags.AFFILIATE_LUX_ENABLE ? 'relative overflow-hidden' : ''
+            }`}
             style={{
-              transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`
+              transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
+              ...(flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() ? {
+                boxShadow: '0 0 20px hsl(var(--primary) / 0.3), 0 4px 16px -2px hsl(var(--primary) / 0.3)'
+              } : {})
             }}
             asChild
             onClick={() => handleCTAClick('join_now')}
           >
-            <Link ref={buttonRef} to="/affiliate" data-magnetic="true">{t(heroContent.primaryCta)}</Link>
+            <Link ref={buttonRef} to="/affiliate" data-magnetic="true">
+              {flags.AFFILIATE_LUX_ENABLE && !prefersReducedMotion() && (
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 to-primary/10 blur-xl"></div>
+              )}
+              <span className="relative z-10">{t(heroContent.primaryCta)}</span>
+            </Link>
           </Button>
           <Button 
             size="lg" 

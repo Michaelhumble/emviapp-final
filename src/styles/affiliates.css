@@ -274,25 +274,23 @@
   padding-bottom: var(--spacing-section-sm);
 }
 
-/* Respect Reduced Motion */
+/* CSS animation keyframes for chart */
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeInPoint {
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .btn-magnetic,
-  .value-card-premium,
-  .range-premium::-webkit-slider-thumb,
-  .range-premium::-moz-range-thumb {
-    transition: none;
-    transform: none;
-  }
-  
-  .spark-line::after {
-    animation: none;
-  }
-  
-  .btn-magnetic:hover {
-    transform: none;
-  }
-  
-  .value-card-premium:hover {
-    transform: none;
+  .drawLine,
+  .fadeInPoint {
+    animation: none !important;
+    transition: none !important;
   }
 }
