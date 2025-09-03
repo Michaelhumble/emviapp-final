@@ -1,11 +1,12 @@
 // ============= EMVIAPP SERVICE WORKER - PERFORMANCE OPTIMIZATION =============
 // Aggressive caching strategy for maximum performance
 
-const CACHE_NAME = 'emviapp-v2.3.0-emvi3';
-const STATIC_CACHE = 'emviapp-static-v2.3.0-emvi3';
-const IMAGE_CACHE = 'emviapp-images-v2.3.0-emvi3';
-const API_CACHE = 'emviapp-api-v2.3.0-emvi3';
-const PRESS_CACHE = 'press-logos-v3';
+const CACHE_VERSION = 'v2.4.0-pwa-secure';
+const CACHE_NAME = `emviapp-${CACHE_VERSION}`;
+const STATIC_CACHE = `emviapp-static-${CACHE_VERSION}`;
+const IMAGE_CACHE = `emviapp-images-${CACHE_VERSION}`;
+const API_CACHE = `emviapp-api-${CACHE_VERSION}`;
+const PRESS_CACHE = 'press-logos-v4';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -252,3 +253,24 @@ async function handleBackgroundSync() {
   // Handle offline form submissions, etc.
   console.log('SW: Handling background sync');
 }
+
+// Message handler for manual updates
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => caches.delete(cacheName))
+      );
+    }).then(() => {
+      event.ports[0].postMessage({ cleared: true });
+    });
+  }
+});

@@ -186,16 +186,28 @@ export const optimizeFontLoading = () => {
 };
 
 /**
- * Service Worker for Caching
+ * Service Worker for Caching - Only on HTTPS
  */
 export const registerServiceWorker = async () => {
-  if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+  // Only register on secure contexts (HTTPS) for PWA compatibility
+  if ('serviceWorker' in navigator && window.isSecureContext && process.env.NODE_ENV === 'production') {
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none'
+      });
       console.log('SW registered: ', registration);
+      
+      // Listen for updates
+      registration.addEventListener('updatefound', () => {
+        console.log('New service worker version available');
+      });
+      
     } catch (registrationError) {
       console.log('SW registration failed: ', registrationError);
     }
+  } else if (!window.isSecureContext) {
+    console.warn('Service Worker skipped: insecure context (use HTTPS for PWA features)');
   }
 };
 
