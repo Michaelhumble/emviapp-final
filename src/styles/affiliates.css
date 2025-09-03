@@ -301,6 +301,12 @@
   letter-spacing: 0;
 }
 
+/* Safe Area Padding for iOS devices */
+.safe-area-padding {
+  padding-top: max(env(safe-area-inset-top), 1rem);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* Enterprise Section Spacing */
 .section-premium {
   padding-top: 5rem;    /* py-20 desktop */

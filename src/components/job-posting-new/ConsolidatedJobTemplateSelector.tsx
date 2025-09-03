@@ -120,26 +120,26 @@ const ConsolidatedJobTemplateSelector: React.FC<ConsolidatedJobTemplateSelectorP
   };
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+    <div className="space-y-6 md:space-y-8 px-5 md:px-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-[680px] md:max-w-7xl mx-auto">
         {jobTemplates.map((template) => {
           const IconComponent = template.icon;
           return (
             <Card 
               key={template.id} 
-              className="group cursor-pointer transition-all duration-300 border border-gray-200/50 bg-white/70 backdrop-blur-sm rounded-2xl hover:shadow-xl hover:shadow-purple-500/20 hover:-translate-y-1"
+              className="group cursor-pointer transition-all duration-300 border border-gray-200/50 bg-white/70 backdrop-blur-sm rounded-xl md:rounded-2xl hover:shadow-xl hover:shadow-purple-500/20 hover:-translate-y-1 touch-manipulation"
               onClick={() => handleTemplateSelect(template.id)}
             >
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-5">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                    <IconComponent className="w-7 h-7 text-purple-600" />
+              <CardContent className="p-5 md:p-6">
+                <div className="flex items-start space-x-4 md:space-x-5">
+                  <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                    <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-purple-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-playfair text-lg font-medium text-purple-600 mb-3 group-hover:text-purple-700 transition-colors">
+                    <h3 className="font-playfair text-base md:text-lg font-medium text-purple-600 mb-2 md:mb-3 group-hover:text-purple-700 transition-colors leading-snug">
                       {template.title}
                     </h3>
-                    <p className="font-inter text-gray-600 text-sm leading-relaxed opacity-90">
+                    <p className="font-inter text-gray-600 text-xs md:text-sm leading-relaxed opacity-90">
                       {template.description}
                     </p>
                   </div>

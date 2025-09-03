@@ -92,7 +92,7 @@ const EarningsCalculator = () => {
 
   return (
     <section id="calculator" className="section-premium bg-gradient-to-b from-muted/20 via-background to-muted/10">
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="container mx-auto px-5 md:px-6 max-w-[680px] md:max-w-7xl">
         <motion.div 
           className="text-center mb-20"
           initial={{ opacity: 0, y: 40 }}
@@ -106,10 +106,10 @@ const EarningsCalculator = () => {
               {t({ english: "Earnings Calculator", vietnamese: "Máy tính thu nhập" })}
             </span>
           </div>
-          <h2 className="text-section-title mb-8 max-w-4xl mx-auto">
+          <h2 className="text-section-title mb-6 md:mb-8 max-w-[24ch] md:max-w-4xl mx-auto">
             {t({ english: "Calculate Your Potential Earnings", vietnamese: "Tính toán thu nhập tiềm năng của bạn" })}
           </h2>
-          <p className="text-body-large text-muted-foreground max-w-4xl mx-auto font-medium">
+          <p className="text-base md:text-body-large text-muted-foreground max-w-[48ch] md:max-w-4xl mx-auto font-medium">
             {t({ 
               english: "See how much you could earn based on your audience and engagement with precise calculations",
               vietnamese: "Xem bạn có thể kiếm được bao nhiều dựa trên khán giả và mức độ tương tác của bạn với tính toán chính xác"
@@ -123,12 +123,12 @@ const EarningsCalculator = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <div className="calculator-premium max-w-6xl mx-auto p-12 space-y-16">
+          <div className="calculator-premium max-w-6xl mx-auto p-6 md:p-12 space-y-12 md:space-y-16">
             <CardHeader className="text-center pb-0">
-              <CardTitle className="text-3xl font-bold mb-4">
+              <CardTitle className="text-2xl md:text-3xl font-bold mb-4 max-w-[20ch] mx-auto">
                 {t({ english: "Interactive Earnings Calculator", vietnamese: "Máy tính thu nhập tương tác" })}
               </CardTitle>
-              <CardDescription className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              <CardDescription className="text-base md:text-lg text-muted-foreground max-w-[48ch] md:max-w-3xl mx-auto">
                 {t({ 
                   english: "Estimates based on industry-standard conversion rates and our transparent commission structure",
                   vietnamese: "Ước tính dựa trên tỷ lệ chuyển đổi tiêu chuẩn ngành và cơ cấu hoa hồng minh bạch của chúng tôi"
@@ -140,13 +140,13 @@ const EarningsCalculator = () => {
             
             <CardContent className="space-y-12 p-0">
               {/* Premium Presets */}
-              <div className="flex flex-wrap gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center">
                 {presets.map((preset, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="lg"
-                    className="rounded-2xl px-8 py-4 text-lg font-semibold border-2 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                    className="rounded-xl px-6 py-4 h-12 text-base md:text-lg font-semibold border-2 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 touch-manipulation min-w-[120px]"
                     onClick={() => {
                       setVisitorsPerMonth(preset.visitors);
                       setCtrPercent(preset.ctr);
@@ -160,19 +160,19 @@ const EarningsCalculator = () => {
                 <Button
                   variant="ghost"
                   size="lg"
-                  className="rounded-2xl px-8 py-4 text-lg font-semibold hover:bg-muted/80 transition-all duration-300"
+                  className="rounded-xl px-6 py-4 h-12 text-base md:text-lg font-semibold hover:bg-muted/80 transition-all duration-300 touch-manipulation min-w-[120px]"
                   onClick={handleReset}
                 >
-                  <RotateCcw className="w-5 h-5 mr-2" />
+                  <RotateCcw className="w-4 h-4 mr-2" />
                   {t({ english: "Reset", vietnamese: "Đặt lại" })}
                 </Button>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-16">
+              <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                 {/* Premium Input Controls */}
-                <div className="space-y-10">
+                <div className="space-y-8 lg:space-y-10">
                   <div>
-                    <label className="block text-xl font-bold mb-6 text-foreground">
+                    <label className="block text-lg md:text-xl font-bold mb-4 md:mb-6 text-foreground">
                       {t({ english: "Monthly Visitors", vietnamese: "Khách truy cập hàng tháng" })}: {visitorsPerMonth.toLocaleString()}
                     </label>
                     <input 
@@ -187,7 +187,7 @@ const EarningsCalculator = () => {
                       }}
                       className="range-premium w-full h-4"
                     />
-                    <div className="flex justify-between text-base font-semibold text-muted-foreground mt-4">
+                    <div className="flex justify-between text-sm md:text-base font-semibold text-muted-foreground mt-3 md:mt-4">
                       <span>100</span>
                       <span>50K</span>
                     </div>
@@ -239,15 +239,15 @@ const EarningsCalculator = () => {
                 </div>
 
                 {/* Premium Results Display */}
-                <div className="bg-gradient-to-br from-primary/8 via-primary/5 to-accent/8 rounded-3xl p-12 border-2 border-primary/20 shadow-2xl relative overflow-hidden">
+                <div className="bg-gradient-to-br from-primary/8 via-primary/5 to-accent/8 rounded-2xl md:rounded-3xl p-6 md:p-12 border-2 border-primary/20 shadow-2xl relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 rounded-3xl"></div>
                   
                   <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-10">
-                      <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 shadow-lg">
-                        <TrendingUp className="w-10 h-10 text-primary" />
+                    <div className="flex items-center gap-3 md:gap-4 mb-8 md:mb-10">
+                      <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 shadow-lg shrink-0">
+                        <TrendingUp className="w-6 h-6 md:w-10 md:h-10 text-primary" />
                       </div>
-                      <h3 className="text-2xl font-bold text-foreground">
+                      <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight">
                         {t({ english: "Your Potential Earnings", vietnamese: "Thu nhập tiềm năng của bạn" })}
                       </h3>
                     </div>
@@ -255,7 +255,7 @@ const EarningsCalculator = () => {
                     <div className="space-y-8">
                       <div className="text-center">
                         <motion.div 
-                          className="text-7xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4"
+                          className="text-5xl md:text-7xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3 md:mb-4"
                           key={stats.monthlyEarnings}
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
@@ -263,29 +263,29 @@ const EarningsCalculator = () => {
                         >
                           ${stats.monthlyEarnings.toFixed(2)}
                         </motion.div>
-                        <div className="text-xl font-semibold text-muted-foreground mb-4">
+                        <div className="text-lg md:text-xl font-semibold text-muted-foreground mb-3 md:mb-4">
                           {t({ english: "Estimated Monthly", vietnamese: "Ước tính hàng tháng" })}
                         </div>
-                        <div className="spark-line mx-auto max-w-40" />
+                        <div className="spark-line mx-auto max-w-32 md:max-w-40" />
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-6 pt-8 border-t-2 border-primary/20">
-                        <div className="text-center p-6 bg-white/40 rounded-2xl backdrop-blur-sm border border-white/50">
-                          <div className="text-3xl font-bold text-foreground">{stats.clicks}</div>
-                          <div className="text-base font-medium text-muted-foreground">
+                      <div className="grid grid-cols-2 gap-4 md:gap-6 pt-6 md:pt-8 border-t-2 border-primary/20">
+                        <div className="text-center p-4 md:p-6 bg-white/40 rounded-xl md:rounded-2xl backdrop-blur-sm border border-white/50">
+                          <div className="text-2xl md:text-3xl font-bold text-foreground">{stats.clicks}</div>
+                          <div className="text-sm md:text-base font-medium text-muted-foreground">
                             {t({ english: "Monthly Clicks", vietnamese: "Lượt nhấp/tháng" })}
                           </div>
                         </div>
-                        <div className="text-center p-6 bg-white/40 rounded-2xl backdrop-blur-sm border border-white/50">
-                          <div className="text-3xl font-bold text-foreground">{stats.conversions}</div>
-                          <div className="text-base font-medium text-muted-foreground">
+                        <div className="text-center p-4 md:p-6 bg-white/40 rounded-xl md:rounded-2xl backdrop-blur-sm border border-white/50">
+                          <div className="text-2xl md:text-3xl font-bold text-foreground">{stats.conversions}</div>
+                          <div className="text-sm md:text-base font-medium text-muted-foreground">
                             {t({ english: "Conversions", vietnamese: "Chuyển đổi" })}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="text-center pt-6">
-                        <div className="text-2xl font-bold text-muted-foreground">
+                      <div className="text-center pt-4 md:pt-6">
+                        <div className="text-xl md:text-2xl font-bold text-muted-foreground">
                           ${stats.yearlyEarnings.toFixed(0)} {t({ english: "yearly potential", vietnamese: "tiềm năng hàng năm" })}
                         </div>
                       </div>
@@ -294,8 +294,8 @@ const EarningsCalculator = () => {
                 </div>
               </div>
 
-              <div className="text-center text-base text-muted-foreground bg-muted/30 rounded-2xl p-8 max-w-4xl mx-auto border border-muted/50">
-                <p className="font-medium">
+              <div className="text-center text-sm md:text-base text-muted-foreground bg-muted/30 rounded-xl md:rounded-2xl p-6 md:p-8 max-w-4xl mx-auto border border-muted/50">
+                <p className="font-medium leading-relaxed">
                   {t({ 
                     english: "* Professional estimates only. Actual payouts depend on verified conversions and may vary based on market conditions and performance metrics.",
                     vietnamese: "* Chỉ là ước tính chuyên nghiệp. Thanh toán thực tế phụ thuộc vào các chuyển đổi đã được xác minh và có thể thay đổi tùy thuộc vào điều kiện thị trường và chỉ số hiệu suất."

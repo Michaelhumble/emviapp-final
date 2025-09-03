@@ -104,8 +104,8 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-muted/10">
-      <div className="container mx-auto px-4">
+    <section className="py-12 md:py-20 bg-muted/10">
+      <div className="container mx-auto px-5 md:px-6 max-w-[680px] md:max-w-full">
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -119,10 +119,10 @@ const FAQSection = () => {
               {t({ english: "Frequently Asked Questions", vietnamese: "Câu hỏi thường gặp" })}
             </span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 max-w-[20ch] mx-auto">
             {t({ english: "Everything you need to know", vietnamese: "Mọi thứ bạn cần biết" })}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base md:text-lg max-w-[50ch] md:max-w-2xl mx-auto">
             {t({ 
               english: "Get answers to common questions about our affiliate program, payments, and policies",
               vietnamese: "Nhận câu trả lời cho các câu hỏi thường gặp về chương trình cộng tác viên, thanh toán và chính sách của chúng tôi"
@@ -148,12 +148,12 @@ const FAQSection = () => {
               >
                 <AccordionItem 
                   value={faq.id}
-                  className="bg-card/50 border border-border/50 rounded-2xl px-6 hover:border-primary/20 transition-all duration-300 data-[state=open]:border-primary/30"
+                  className="bg-card/50 border border-border/50 rounded-xl md:rounded-2xl px-5 md:px-6 hover:border-primary/20 transition-all duration-300 data-[state=open]:border-primary/30"
                 >
-                  <AccordionTrigger className="text-left font-semibold hover:text-primary transition-colors py-6">
+                  <AccordionTrigger className="text-left font-semibold hover:text-primary transition-colors py-5 md:py-6 text-base md:text-lg leading-snug">
                     {t(faq.question)}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground leading-relaxed pb-6">
+                  <AccordionContent className="text-muted-foreground leading-relaxed pb-5 md:pb-6 text-sm md:text-base">
                     {t(faq.answer)}
                   </AccordionContent>
                 </AccordionItem>
@@ -170,11 +170,11 @@ const FAQSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 max-w-2xl mx-auto">
-            <h3 className="text-xl font-semibold mb-3">
+          <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-xl md:rounded-2xl p-6 md:p-8 max-w-2xl mx-auto">
+            <h3 className="text-lg md:text-xl font-semibold mb-3">
               {t({ english: "Still have questions?", vietnamese: "Vẫn còn câu hỏi?" })}
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 text-sm md:text-base">
               {t({ 
                 english: "Our affiliate support team is here to help you succeed",
                 vietnamese: "Đội ngũ hỗ trợ cộng tác viên của chúng tôi sẵn sàng giúp bạn thành công"
