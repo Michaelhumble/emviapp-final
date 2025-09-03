@@ -5,7 +5,6 @@ export const flags = {
   // Affiliate Luxury Features - Phase 2
   AFFILIATE_LUX_ENABLE: 
     (import.meta as any).env?.VITE_AFFILIATE_LUX_ENABLE === 'true' ||
-    process.env.AFFILIATE_LUX_ENABLE === 'true' ||
     false, // Default to false for safety
 
   // Future flags can be added here
@@ -21,7 +20,7 @@ export const prefersReducedMotion = () => {
 
 // Debug helper (only in development)
 export const debugFlags = () => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('🏁 Feature Flags:', flags);
   }
 };
