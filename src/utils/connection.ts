@@ -287,9 +287,9 @@ export class SecureConnectionManager {
 // Default connection instance
 export const createSecureConnection = () => {
   const config: ConnectionConfig = {
-    wsUrl: import.meta.env.NEXT_PUBLIC_WS_URL || 'wss://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/realtime-chat',
-    sseUrl: import.meta.env.NEXT_PUBLIC_SSE_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/events',
-    pollingUrl: import.meta.env.NEXT_PUBLIC_POLLING_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/poll',
+    wsUrl: import.meta.env.VITE_WS_URL || 'wss://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/realtime-chat',
+    sseUrl: import.meta.env.VITE_SSE_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/events',
+    pollingUrl: import.meta.env.VITE_POLLING_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/poll',
     retryAttempts: 5,
     retryDelay: 1000
   };

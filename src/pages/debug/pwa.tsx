@@ -45,19 +45,19 @@ const PWADiagnostics = () => {
     try {
       // Test WebSocket
       const wsResult = await pwaManager.testWebSocket(
-        import.meta.env.NEXT_PUBLIC_WS_URL || 'wss://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/realtime-chat'
+        import.meta.env.VITE_WS_URL || 'wss://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/realtime-chat'
       );
       setWsTest(wsResult);
 
       // Test SSE
       const sseResult = await pwaManager.testSSE(
-        import.meta.env.NEXT_PUBLIC_SSE_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/events'
+        import.meta.env.VITE_SSE_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/events'
       );
       setSseTest(sseResult);
 
       // Test Polling
       const pollingResult = await pwaManager.testPolling(
-        import.meta.env.NEXT_PUBLIC_POLLING_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/poll'
+        import.meta.env.VITE_POLLING_URL || 'https://wwhqbjrhbajpabfdwnip.functions.supabase.co/functions/v1/poll'
       );
       setPollingTest(pollingResult);
       
