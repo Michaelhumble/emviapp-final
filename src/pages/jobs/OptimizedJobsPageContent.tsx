@@ -13,6 +13,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import JobsPageSEO from '@/components/seo/JobsPageSEO';
 import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
 import SEODevLogger from '@/components/seo/SEODevLogger';
+import { Helmet } from 'react-helmet-async';
+import { jobListingsJsonLd, faqJsonLd, type JobPostingData } from "@/lib/seo/jsonld";
 
 import { JobCard } from '@/components/jobs/JobCard';
 import { useOptimizedArtistsData } from '@/hooks/useOptimizedArtistsData';
@@ -112,6 +114,47 @@ const OptimizedJobsPageContent = () => {
   const featuredJobsCount = paidJobsSorted.length;
   const availableArtistsCount = artists?.length ?? 0;
 
+  // Generate server-side JSON-LD
+  const jobsData: JobPostingData[] = jobs?.map(job => ({
+    id: job.id,
+    title: job.title,
+    description: job.description,
+    location: job.location,
+    salary_range: job.salary_range,
+    company: job.company || (job as any).salonName,
+    created_at: job.created_at,
+    expires_at: job.expires_at,
+    employment_type: job.employment_type,
+    requirements: job.requirements,
+    compensation_details: (job as any).compensation_details,
+    contact_info: (job as any).contact_info,
+    category: job.category,
+    is_remote: (job as any).is_remote
+  })) || [];
+
+  const jobListSchema = jobListingsJsonLd(jobsData, "Beauty Jobs");
+  
+  const faqData = [
+    {
+      question: "How do I apply for beauty jobs on EmviApp?",
+      answer: "Browse our curated job listings, click on positions that match your skills, and apply directly through the platform. Verified employers receive your application instantly."
+    },
+    {
+      question: "What types of beauty positions are available?",
+      answer: "We feature nail technician, hair stylist, barber, massage therapist, skincare specialist, makeup artist, and brow & lash technician positions at premium salons with khách sang clientele."
+    },
+    {
+      question: "Do EmviApp jobs offer high earning potential?",
+      answer: "Yes! Our platform focuses on tip cao opportunities at upscale salons. Many positions offer commission-based pay, booth rental options, and access to loyal, high-spending clientele."
+    },
+    {
+      question: "Is EmviApp free for job seekers?",
+      answer: "Absolutely! Creating your profile and applying for positions is completely free. Employers pay to post premium job listings, ensuring quality opportunities for professionals."
+    }
+  ];
+  
+  const faqSchema = faqJsonLd(faqData);
+
   const recentJobs = useMemo(() => {
     const arr = Array.isArray(jobs) ? [...jobs] : [];
     return arr
@@ -202,6 +245,16 @@ const OptimizedJobsPageContent = () => {
 
   return (
     <RouteErrorBoundary>
+      <Helmet>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobListSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      </Helmet>
       <JobsPageSEO jobs={jobs} />
 
       <main className="w-full">

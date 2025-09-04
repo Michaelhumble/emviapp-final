@@ -13,6 +13,8 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HomepageSEO from "@/components/seo/HomepageSEO";
+import { Helmet } from 'react-helmet-async';
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 
 // Enhanced homepage components
 import AIMatchmakerSection from "@/components/home/ai-matchmaker";
@@ -55,6 +57,10 @@ const Index = () => {
     userId
   } = useRoleSelection();
   
+  // Generate server-side JSON-LD
+  const organizationSchema = organizationJsonLd();
+  const websiteSchema = websiteJsonLd();
+  
   useEffect(() => {
     document.title = "Find Nail Artists & Beauty Jobs with AI | EmviApp";
     console.log("Index page loaded");
@@ -67,6 +73,16 @@ const Index = () => {
   
   return (
     <Layout>
+      <Helmet>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </Helmet>
       <HomepageSEO />
       {/* SEO Content Section - Optimized intro content */}
       <section className="py-16 bg-white">

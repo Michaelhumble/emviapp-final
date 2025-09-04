@@ -9,6 +9,7 @@ import { SalonFilter } from "@/components/marketplace/SalonFilter";
 import { Salon, salons } from "@/components/marketplace/mockData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth";
+import { localBusinessJsonLd, faqJsonLd, type LocalBusinessData, type FAQData } from "@/lib/seo/jsonld";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +18,36 @@ const SalonMarketplace = () => {
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
+
+  // Generate server-side JSON-LD
+  const marketplaceSchema = localBusinessJsonLd({
+    name: "EmviApp Salon Marketplace",
+    url: "https://www.emvi.app/salons",
+    addressLocality: "United States",
+    addressCountry: "US",
+    businessType: "LocalBusiness"
+  });
+
+  const faqData: FAQData[] = [
+    {
+      question: "How are salon businesses verified on EmviApp?",
+      answer: "Every salon listing undergoes thorough verification including financial records review, license verification, and operational assessment to ensure legitimate investment opportunities."
+    },
+    {
+      question: "What information is provided about each salon for sale?",
+      answer: "Listings include detailed financial history, client retention rates, revenue streams, equipment inventory, lease terms, and growth potential analysis for informed decision-making."
+    },
+    {
+      question: "Can I finance a salon purchase through EmviApp?",
+      answer: "While we don't provide direct financing, we connect buyers with trusted lenders specializing in beauty business acquisitions and offer guidance on SBA loans and other financing options."
+    },
+    {
+      question: "What support is available after purchasing a salon?",
+      answer: "Our platform provides ongoing support including staff recruitment assistance, business optimization resources, and connections to industry suppliers and marketing specialists."
+    }
+  ];
+
+  const faqSchema = faqJsonLd(faqData);
 
   useEffect(() => {
     console.log('SalonMarketplace page rendered - no banner');
@@ -108,63 +139,18 @@ const SalonMarketplace = () => {
         <title>Premium Salon Marketplace - Established Beauty Businesses for Sale | EmviApp</title>
         <meta name="description" content="Browse verified salon businesses with khách sang clientele and tip cao potential. Established beauty businesses with proven financials and loyal customer bases." />
         <link rel="canonical" href="https://www.emvi.app/salons" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(marketplaceSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       </Helmet>
 
-      {/* SEO Meta */}
-      <div style={{ display: 'none' }}>
-        <script type="application/ld+json">
-          {JSON.stringify([{
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": "EmviApp Salon Marketplace",
-            "description": "Premium salon marketplace featuring established beauty businesses for sale across the United States.",
-            "url": "https://www.emvi.app/salons",
-            "industry": "Beauty and Personal Care",
-            "areaServed": "US",
-            "offers": {
-              "@type": "Offer",
-              "description": "Salon businesses for sale with verified financials and established clientele"
-            }
-          }, {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "How are salon businesses verified on EmviApp?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Every salon listing undergoes thorough verification including financial records review, license verification, and operational assessment to ensure legitimate investment opportunities."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "What information is provided about each salon for sale?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Listings include detailed financial history, client retention rates, revenue streams, equipment inventory, lease terms, and growth potential analysis for informed decision-making."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Can I finance a salon purchase through EmviApp?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "While we don't provide direct financing, we connect buyers with trusted lenders specializing in beauty business acquisitions and offer guidance on SBA loans and other financing options."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "What support is available after purchasing a salon?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Our platform provides ongoing support including staff recruitment assistance, business optimization resources, and connections to industry suppliers and marketing specialists."
-                }
-              }
-            ]
-          }])}
-        </script>
-      </div>
+      {/* Remove old JSON-LD */}
+      {/* SEO Meta - Now handled by Helmet above */}
 
       <div className="container mx-auto px-4 py-8">
         {/* SEO Intro Content */}

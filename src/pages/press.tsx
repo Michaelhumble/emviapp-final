@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { PRESS_OUTLETS } from '@/data/pressLogos';
 import Layout from '@/components/layout/Layout';
 import { ExternalLink, Calendar, Tag } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { organizationJsonLd, articleJsonLd, breadcrumbJsonLd, type ArticleData, type BreadcrumbData } from "@/lib/seo/jsonld";
 
 const PressPage = () => {
   const [filter, setFilter] = useState<'all' | 'verified'>('all');
@@ -13,8 +15,59 @@ const PressPage = () => {
   const verifiedCount = PRESS_OUTLETS.filter(item => item.live).length;
   const totalCount = PRESS_OUTLETS.length;
 
+  // Generate server-side JSON-LD
+  const orgSchema = organizationJsonLd();
+  
+  const breadcrumbData: BreadcrumbData[] = [
+    { name: 'Home', url: 'https://www.emvi.app' },
+    { name: 'Press & Media', url: 'https://www.emvi.app/press' }
+  ];
+  const breadcrumbSchema = breadcrumbJsonLd(breadcrumbData);
+
+  const pressCollectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "EmviApp Press Coverage",
+    "description": "Media coverage and press articles about EmviApp's launch",
+    "numberOfItems": filteredCoverage.length,
+    "itemListElement": filteredCoverage.slice(0, 20).map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "NewsArticle",
+        "headline": "EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry",
+        "publisher": {
+          "@type": "Organization",
+          "name": item.name
+        },
+        "url": item.href,
+        "about": {
+          "@type": "Organization",
+          "name": "EmviApp"
+        }
+      }
+    }))
+  };
+
   return (
     <Layout>
+      <Helmet>
+        <title>Press & Media Coverage | EmviApp</title>
+        <meta name="description" content="EmviApp's launch has been covered by major news outlets including Associated Press, NBC, CBS, and FOX networks. Read the full coverage of our AI-powered beauty platform." />
+        <link rel="canonical" href="https://www.emvi.app/press" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(pressCollectionSchema) }}
+        />
+      </Helmet>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-12 max-w-4xl">
           {/* Header */}

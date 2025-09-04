@@ -16,7 +16,8 @@ import JobDetailSEO from '@/components/seo/JobDetailSEO';
 import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
 import JobPostingJsonLd, { JobPostingProps } from '@/components/seo/JobPostingJsonLd';
 import { parseEmploymentType, parseSalaryInfo, parseJobLocation } from '@/utils/seo/jsonld';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
+import { jobPostingJsonLd, type JobPostingData } from "@/lib/seo/jsonld";
 import { SITE_BASE_URL } from '@/config/seo';
 
 const JobDetailPage = () => {
@@ -181,25 +182,25 @@ const JobDetailPage = () => {
     : `Apply for ${job.title} position in ${job.location || 'multiple locations'}. Join thousands of beauty professionals on EmviApp.`;
 
   // Build JobPosting JSON-LD props
-  const jobPostingProps: JobPostingProps = {
+  const jobData: JobPostingData = {
     id: job.id,
     title: job.title,
-    descriptionHtml: job.description || `${job.title} position in ${job.location || 'various locations'}`,
-    datePostedISO: job.created_at || new Date().toISOString(),
-    validThroughISO: isExpired ? job.expires_at : undefined,
-    employmentType: parseEmploymentType(job.compensation_type, job.description, job.title),
-    hiringOrganization: {
-      name: job.company || job.contact_info?.owner_name || 'EmviApp Partner',
-      sameAs: job.contact_info?.email ? `mailto:${job.contact_info.email}` : undefined,
-      logoUrl: `${baseUrl}/logo.png`
-    },
-    jobLocation: parseJobLocation(job.location),
-    baseSalary: parseSalaryInfo(job.compensation_details),
-    applicantLocationRequirements: 'US',
-    directApply: true,
-    languages: job.preferred_languages,
-    canonicalUrl
+    description: job.description,
+    location: job.location,
+    salary_range: job.salary_range || job.compensation_details,
+    company: job.company,
+    salonName: (job as any).salonName,
+    created_at: job.created_at,
+    expires_at: job.expires_at,
+    employment_type: job.employment_type,
+    requirements: job.requirements,
+    compensation_details: job.compensation_details,
+    contact_info: job.contact_info,
+    category: job.category,
+    is_remote: (job as any).is_remote
   };
+  
+  const jobSchema = jobPostingJsonLd(jobData);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
@@ -219,9 +220,14 @@ const JobDetailPage = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobSchema) }}
+        />
       </Helmet>
       
-      <JobPostingJsonLd {...jobPostingProps} />
+      {/* Remove old JobPostingJsonLd component */}
       
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
