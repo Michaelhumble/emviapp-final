@@ -26,23 +26,12 @@ export const useUserCount = () => {
 
     fetchUserCount();
 
-    // Set up real-time subscription for user count updates
-    const subscription = supabase
-      .channel('user_count_changes')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'profiles' 
-        }, 
-        () => {
-          fetchUserCount();
-        }
-      )
-      .subscribe();
+    // Safe fallback: refresh user count periodically instead of risky WebSocket subscriptions
+    // This prevents iOS PWA crashes from WebSocket connection issues
+    const refreshInterval = setInterval(fetchUserCount, 2 * 60 * 1000); // Every 2 minutes
 
     return () => {
-      subscription.unsubscribe();
+      clearInterval(refreshInterval);
     };
   }, []);
 

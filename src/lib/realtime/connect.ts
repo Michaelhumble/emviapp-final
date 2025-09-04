@@ -261,16 +261,22 @@ function connectPolling(
       });
 
       if (response.ok) {
-        const events = await response.json();
+        const data = await response.json();
         
-        if (Array.isArray(events)) {
-          for (const event of events) {
+        // Handle the correct response format from edge function
+        if (data && data.events && Array.isArray(data.events)) {
+          for (const event of data.events) {
             if (isActive) {
               onMessage(event);
               if (event.timestamp) {
                 lastTimestamp = Math.max(lastTimestamp, event.timestamp);
               }
             }
+          }
+          
+          // Update timestamp from server response
+          if (data.timestamp) {
+            lastTimestamp = Math.max(lastTimestamp, data.timestamp);
           }
         }
       } else {
