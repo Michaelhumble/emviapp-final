@@ -60,6 +60,7 @@ const Index = () => {
   // Generate server-side JSON-LD
   const organizationSchema = organizationJsonLd();
   const websiteSchema = websiteJsonLd();
+  const localBusinessSchema = marketplaceLocalBusinessJsonLd();
   
   useEffect(() => {
     document.title = "Find Nail Artists & Beauty Jobs with AI | EmviApp";
@@ -81,6 +82,10 @@ const Index = () => {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
       </Helmet>
       <HomepageSEO />

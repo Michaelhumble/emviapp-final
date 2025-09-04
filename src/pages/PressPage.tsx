@@ -8,6 +8,7 @@ import PressCard from '@/components/press/PressCard';
 import MediaKit from '@/components/press/MediaKit';
 import { BookOpen, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { organizationJsonLd, marketplaceLocalBusinessJsonLd } from '@/lib/seo/jsonld';
 
 const PressPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -66,7 +67,13 @@ const PressPage: React.FC = () => {
     return filtered;
   }, [activeFilter, searchTerm, outletFilter]);
 
+  // Add Organization and LocalBusiness schemas
+  const organizationSchema = organizationJsonLd();
+  const localBusinessSchema = marketplaceLocalBusinessJsonLd();
+
   const structuredData = [
+    organizationSchema,
+    localBusinessSchema,
     {
       "@context": "https://schema.org",
       "@type": "ItemList",

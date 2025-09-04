@@ -1,6 +1,7 @@
 import React from 'react';
 import ComprehensiveSEO from './ComprehensiveSEO';
 import { SITE_BASE_URL } from '@/config/seo';
+import { organizationJsonLd, marketplaceLocalBusinessJsonLd } from '@/lib/seo/jsonld';
 
 interface SalonsPageSEOProps {
   salons: Array<{
@@ -77,7 +78,11 @@ const SalonsPageSEO: React.FC<SalonsPageSEOProps> = ({
     })
   };
 
-  const structuredData = [itemListSchema, collectionSchema];
+  // Add Organization and LocalBusiness schemas
+  const organizationSchema = organizationJsonLd();
+  const localBusinessSchema = marketplaceLocalBusinessJsonLd();
+  
+  const structuredData = [organizationSchema, localBusinessSchema, itemListSchema, collectionSchema];
 
   return (
     <ComprehensiveSEO
