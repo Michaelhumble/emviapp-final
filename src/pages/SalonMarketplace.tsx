@@ -9,7 +9,7 @@ import { SalonFilter } from "@/components/marketplace/SalonFilter";
 import { Salon, salons } from "@/components/marketplace/mockData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth";
-import { localBusinessJsonLd, faqJsonLd, type LocalBusinessData, type FAQData } from "@/lib/seo/jsonld";
+import { localBusinessJsonLd, faqJsonLd, marketplaceLocalBusinessJsonLd, organizationJsonLd, type LocalBusinessData, type FAQData } from "@/lib/seo/jsonld";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,13 +20,8 @@ const SalonMarketplace = () => {
   const { user } = useAuth();
 
   // Generate server-side JSON-LD
-  const marketplaceSchema = localBusinessJsonLd({
-    name: "EmviApp Salon Marketplace",
-    url: "https://www.emvi.app/salons",
-    addressLocality: "United States",
-    addressCountry: "US",
-    businessType: "LocalBusiness"
-  });
+  const organizationSchema = organizationJsonLd();
+  const marketplaceSchema = marketplaceLocalBusinessJsonLd();
 
   const faqData: FAQData[] = [
     {
@@ -139,6 +134,10 @@ const SalonMarketplace = () => {
         <title>Premium Salon Marketplace - Established Beauty Businesses for Sale | EmviApp</title>
         <meta name="description" content="Browse verified salon businesses with khách sang clientele and tip cao potential. Established beauty businesses with proven financials and loyal customer bases." />
         <link rel="canonical" href="https://www.emvi.app/salons" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(marketplaceSchema) }}

@@ -14,7 +14,7 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HomepageSEO from "@/components/seo/HomepageSEO";
 import { Helmet } from 'react-helmet-async';
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
+import { organizationJsonLd, websiteJsonLd, marketplaceLocalBusinessJsonLd } from "@/lib/seo/jsonld";
 
 // Enhanced homepage components
 import AIMatchmakerSection from "@/components/home/ai-matchmaker";

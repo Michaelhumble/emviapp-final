@@ -1,4 +1,5 @@
 import { SITE_BASE_URL } from '@/config/seo';
+import { BRAND_CONFIG, getLogoUrl, getOpeningHoursSpecification } from '@/config/brand';
 
 // Helper function to safely escape HTML and return plain text
 export const stripHtml = (html: string): string => {
@@ -6,24 +7,60 @@ export const stripHtml = (html: string): string => {
   return html.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim();
 };
 
-// Organization schema for EmviApp
+// Enhanced Organization schema for EmviApp
 export const organizationJsonLd = () => ({
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "EmviApp",
-  "description": "Premium beauty platform connecting professionals with opportunities",
-  "url": SITE_BASE_URL,
-  "logo": `${SITE_BASE_URL}/icons/emvi-master-512.png`,
-  "sameAs": [
-    "https://linkedin.com/company/emviapp",
-    "https://instagram.com/emviapp",
-    "https://tiktok.com/@emviapp",
-    "https://youtube.com/@emviapp"
+  "name": BRAND_CONFIG.name,
+  "alternateName": BRAND_CONFIG.tagline,
+  "description": BRAND_CONFIG.description,
+  "url": BRAND_CONFIG.urls.website,
+  "logo": {
+    "@type": "ImageObject",
+    "url": getLogoUrl('200x200'),
+    "width": 200,
+    "height": 200,
+    "contentUrl": getLogoUrl('200x200')
+  },
+  "image": getLogoUrl('200x200'),
+  "foundingDate": BRAND_CONFIG.foundingDate,
+  "sameAs": BRAND_CONFIG.sameAs.filter(url => !url.includes('crunchbase')), // Exclude until ready
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": BRAND_CONFIG.contact.contactType,
+      "telephone": BRAND_CONFIG.contact.telephone,
+      "email": BRAND_CONFIG.contact.supportEmail,
+      "areaServed": BRAND_CONFIG.contact.areaServed,
+      "availableLanguage": "English",
+      "url": `${SITE_BASE_URL}/contact`
+    },
+    {
+      "@type": "ContactPoint", 
+      "contactType": "sales",
+      "email": BRAND_CONFIG.contact.email,
+      "areaServed": BRAND_CONFIG.contact.areaServed,
+      "url": `${SITE_BASE_URL}/contact`
+    }
   ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "customer support",
-    "url": `${SITE_BASE_URL}/contact`
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": BRAND_CONFIG.address.streetAddress,
+    "addressLocality": BRAND_CONFIG.address.addressLocality,
+    "addressRegion": BRAND_CONFIG.address.addressRegion,
+    "postalCode": BRAND_CONFIG.address.postalCode,
+    "addressCountry": BRAND_CONFIG.address.addressCountry
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": BRAND_CONFIG.geo.latitude,
+    "longitude": BRAND_CONFIG.geo.longitude
+  },
+  "knowsAbout": BRAND_CONFIG.business.servicesProvided,
+  "slogan": BRAND_CONFIG.tagline,
+  "memberOf": {
+    "@type": "Organization",
+    "name": "Beauty Industry Association"
   }
 });
 
@@ -167,6 +204,7 @@ export interface LocalBusinessData {
   name: string;
   url: string;
   telephone?: string;
+  email?: string;
   streetAddress?: string;
   addressLocality?: string;
   addressRegion?: string;
@@ -187,20 +225,44 @@ export const localBusinessJsonLd = (business: LocalBusinessData) => {
     "@type": business.businessType || "NailSalon",
     "name": business.name,
     "url": business.url,
-    "image": business.image,
-    "telephone": business.telephone,
-    "priceRange": business.priceRange,
+    "image": business.image || [getLogoUrl('200x200')],
+    "logo": {
+      "@type": "ImageObject", 
+      "url": getLogoUrl('200x200'),
+      "width": 200,
+      "height": 200
+    },
+    "telephone": business.telephone || BRAND_CONFIG.contact.telephone,
+    "email": business.email || BRAND_CONFIG.contact.email,
+    "priceRange": business.priceRange || BRAND_CONFIG.business.priceRange,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": business.streetAddress,
-      "addressLocality": business.addressLocality,
-      "addressRegion": business.addressRegion,
-      "postalCode": business.postalCode,
-      "addressCountry": business.addressCountry || "US",
+      "streetAddress": business.streetAddress || BRAND_CONFIG.address.streetAddress,
+      "addressLocality": business.addressLocality || BRAND_CONFIG.address.addressLocality,
+      "addressRegion": business.addressRegion || BRAND_CONFIG.address.addressRegion,
+      "postalCode": business.postalCode || BRAND_CONFIG.address.postalCode,
+      "addressCountry": business.addressCountry || BRAND_CONFIG.address.addressCountry,
     },
-    "geo": business.geo && { "@type": "GeoCoordinates", ...business.geo },
+    "geo": business.geo ? { "@type": "GeoCoordinates", ...business.geo } : {
+      "@type": "GeoCoordinates",
+      "latitude": BRAND_CONFIG.geo.latitude,
+      "longitude": BRAND_CONFIG.geo.longitude
+    },
     "openingHours": business.openingHours,
-    "sameAs": business.sameAs,
+    "openingHoursSpecification": business.openingHours ? undefined : getOpeningHoursSpecification(),
+    "sameAs": business.sameAs || BRAND_CONFIG.sameAs,
+    "serviceArea": {
+      "@type": "GeoCircle",
+      "geoMidpoint": {
+        "@type": "GeoCoordinates",
+        "latitude": business.geo?.latitude || BRAND_CONFIG.geo.latitude,
+        "longitude": business.geo?.longitude || BRAND_CONFIG.geo.longitude
+      },
+      "geoRadius": "50 miles"
+    },
+    "currenciesAccepted": "USD",
+    "paymentAccepted": ["Cash", "Credit Card", "Debit Card", "Mobile Payment"],
+    "hasMap": `https://maps.google.com/?q=${encodeURIComponent(business.name + ' ' + (business.streetAddress || BRAND_CONFIG.address.streetAddress))}`
   };
 
   // Only add aggregateRating if both values are present and valid
@@ -228,6 +290,70 @@ export const localBusinessJsonLd = (business: LocalBusinessData) => {
 
   return data;
 };
+
+// Marketplace LocalBusiness schema for EmviApp as a business entity
+export const marketplaceLocalBusinessJsonLd = () => ({
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": BRAND_CONFIG.name,
+  "alternateName": BRAND_CONFIG.tagline,
+  "description": BRAND_CONFIG.description,
+  "url": BRAND_CONFIG.urls.website,
+  "image": [getLogoUrl('200x200')],
+  "logo": {
+    "@type": "ImageObject",
+    "url": getLogoUrl('200x200'),
+    "width": 200,
+    "height": 200
+  },
+  "telephone": BRAND_CONFIG.contact.telephone,
+  "email": BRAND_CONFIG.contact.email,
+  "priceRange": BRAND_CONFIG.business.priceRange,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": BRAND_CONFIG.address.streetAddress,
+    "addressLocality": BRAND_CONFIG.address.addressLocality,
+    "addressRegion": BRAND_CONFIG.address.addressRegion,
+    "postalCode": BRAND_CONFIG.address.postalCode,
+    "addressCountry": BRAND_CONFIG.address.addressCountry
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": BRAND_CONFIG.geo.latitude,
+    "longitude": BRAND_CONFIG.geo.longitude
+  },
+  "openingHoursSpecification": getOpeningHoursSpecification(),
+  "sameAs": BRAND_CONFIG.sameAs.filter(url => !url.includes('crunchbase')),
+  "serviceArea": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": BRAND_CONFIG.geo.latitude,
+      "longitude": BRAND_CONFIG.geo.longitude
+    },
+    "geoRadius": "500 miles"
+  },
+  "currenciesAccepted": "USD",
+  "paymentAccepted": ["Credit Card", "Debit Card", "Digital Payment"],
+  "hasMap": `https://maps.google.com/?q=${encodeURIComponent(BRAND_CONFIG.name + ' ' + BRAND_CONFIG.address.streetAddress)}`,
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": BRAND_CONFIG.contact.contactType,
+      "telephone": BRAND_CONFIG.contact.telephone,
+      "email": BRAND_CONFIG.contact.supportEmail,
+      "areaServed": BRAND_CONFIG.contact.areaServed,
+      "availableLanguage": "English"
+    }
+  ],
+  "makesOffer": BRAND_CONFIG.business.servicesProvided.map(service => ({
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": service
+    }
+  }))
+});
 
 // Article schema for blog posts
 export interface ArticleData {
