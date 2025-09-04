@@ -128,71 +128,96 @@ export function useOptimizedJobsData(params?: { isSignedIn: boolean; limit?: num
     fetchJobs();
   }, [fetchJobs]);
 
-  // Real-time subscriptions for new jobs
+  // Real-time subscriptions for new jobs (with WebSocket guards)
   useEffect(() => {
+    // Guard against insecure contexts (iOS PWA/in-app browsers)
+    const isSecureForWebSocket = typeof window !== 'undefined' && 
+                                window.isSecureContext && 
+                                'WebSocket' in window;
+    
+    const isStandalone = typeof window !== 'undefined' && 
+                        (window.matchMedia('(display-mode: standalone)').matches || 
+                         (window.navigator as any).standalone);
+    
+    // Skip realtime in insecure contexts to prevent crashes
+    if (!isSecureForWebSocket || isStandalone) {
+      console.log('🚫 [OPTIMIZED-JOBS] Skipping realtime subscriptions (insecure context or PWA)');
+      return;
+    }
+
     // Ensure we don't create duplicate channels in Strict Mode
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
 
-    const channel = supabase
-      .channel('jobs_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'jobs',
-          filter: 'status=eq.active'
-        },
-        (payload) => {
-          console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
-          const newJob = payload.new as Job;
-          
-          // Non-destructive update - prepend without losing scroll position
-          setJobs(prev => {
-            if (prev.some(job => job.id === newJob.id)) {
-              return prev; // Avoid duplicates
-            }
-            return [newJob, ...prev];
-          });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'jobs'
-        },
-        (payload) => {
-          console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
-          const updatedJob = payload.new as Job;
-          
-          // Stable update - only change if different
-          setJobs(prev => {
-            const index = prev.findIndex(job => job.id === updatedJob.id);
-            if (index === -1) return prev;
+    try {
+      const channel = supabase
+        .channel('jobs_channel')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'jobs',
+            filter: 'status=eq.active'
+          },
+          (payload) => {
+            console.log('🔔 [OPTIMIZED-JOBS] New job inserted:', payload.new);
+            const newJob = payload.new as Job;
             
-            const existing = prev[index];
-            if (JSON.stringify(existing) === JSON.stringify(updatedJob)) {
-              return prev; // No changes, keep same reference
-            }
+            // Non-destructive update - prepend without losing scroll position
+            setJobs(prev => {
+              if (prev.some(job => job.id === newJob.id)) {
+                return prev; // Avoid duplicates
+              }
+              return [newJob, ...prev];
+            });
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'jobs'
+          },
+          (payload) => {
+            console.log('🔄 [OPTIMIZED-JOBS] Job updated:', payload.new);
+            const updatedJob = payload.new as Job;
             
-            const newJobs = [...prev];
-            newJobs[index] = updatedJob;
-            return newJobs;
-          });
-        }
-      )
-      .subscribe();
+            // Stable update - only change if different
+            setJobs(prev => {
+              const index = prev.findIndex(job => job.id === updatedJob.id);
+              if (index === -1) return prev;
+              
+              const existing = prev[index];
+              if (JSON.stringify(existing) === JSON.stringify(updatedJob)) {
+                return prev; // No changes, keep same reference
+              }
+              
+              const newJobs = [...prev];
+              newJobs[index] = updatedJob;
+              return newJobs;
+            });
+          }
+        )
+        .subscribe();
 
-    channelRef.current = channel;
+      channelRef.current = channel;
+      console.log('✅ [OPTIMIZED-JOBS] Realtime subscriptions established');
+    } catch (error) {
+      console.warn('⚠️ [OPTIMIZED-JOBS] Failed to establish realtime subscriptions:', error);
+      // Continue with HTTP-only mode, don't crash
+    }
 
     return () => {
       if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
+        try {
+          supabase.removeChannel(channelRef.current);
+        } catch (error) {
+          console.warn('⚠️ [OPTIMIZED-JOBS] Error cleaning up realtime:', error);
+        }
         channelRef.current = null;
       }
     };

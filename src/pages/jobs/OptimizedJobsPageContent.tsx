@@ -1,6 +1,7 @@
 /** PROTECTED: Do not modify without explicit approval. */
 import React, { useEffect, useState, Suspense, lazy, useMemo } from 'react';
 import { useOptimizedJobsData } from '@/hooks/useOptimizedJobsData';
+import RouteErrorBoundary from '@/components/error-handling/RouteErrorBoundary';
 
 import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
@@ -200,7 +201,7 @@ const OptimizedJobsPageContent = () => {
 
 
   return (
-    <>
+    <RouteErrorBoundary>
       <JobsPageSEO jobs={jobs} />
 
       <main className="w-full">
@@ -514,7 +515,7 @@ const OptimizedJobsPageContent = () => {
         </div>
         <SEODevLogger />
       </main>
-    </>
+    </RouteErrorBoundary>
   );
 };
 

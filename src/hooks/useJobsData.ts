@@ -116,33 +116,73 @@ export const useJobsData = () => {
     console.log('🔍 [JOBS-DATA] useEffect triggered, calling fetchJobs');
     fetchJobs();
     
-    // Set up real-time subscription for instant job updates
-    const channel = supabaseBypass
-      .channel('jobs-realtime-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'jobs'
-        },
-        (payload) => {
-          console.log('🚀 [JOBS-DATA] Real-time job update received:', payload);
-          fetchJobs(); // Refresh jobs when any change occurs
-        }
-      )
-      .subscribe();
-
-    // Set up aggressive refresh for near-instant visibility (30 seconds)
-    const interval = setInterval(() => {
-      console.log('🔄 [JOBS-DATA] Fast refresh for instant visibility');
-      fetchJobs();
-    }, 30 * 1000); // Refresh every 30 seconds
+    // Guard against insecure contexts (iOS PWA/in-app browsers)
+    const isSecureForWebSocket = typeof window !== 'undefined' && 
+                                window.isSecureContext && 
+                                'WebSocket' in window;
     
-    return () => {
-      clearInterval(interval);
-      supabaseBypass.removeChannel(channel);
-    };
+    const isStandalone = typeof window !== 'undefined' && 
+                        (window.matchMedia('(display-mode: standalone)').matches || 
+                         (window.navigator as any).standalone);
+    
+    // Skip realtime in insecure contexts to prevent crashes
+    if (!isSecureForWebSocket || isStandalone) {
+      console.log('🚫 [JOBS-DATA] Skipping realtime subscriptions (insecure context or PWA)');
+      
+      // Set up HTTP polling fallback for updates
+      const interval = setInterval(() => {
+        console.log('🔄 [JOBS-DATA] HTTP fallback refresh');
+        fetchJobs();
+      }, 60 * 1000); // Poll every 60 seconds instead of realtime
+      
+      return () => {
+        clearInterval(interval);
+      };
+    }
+
+    try {
+      // Set up real-time subscription for instant job updates
+      const channel = supabaseBypass
+        .channel('jobs-realtime-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+            schema: 'public',
+            table: 'jobs'
+          },
+          (payload) => {
+            console.log('🚀 [JOBS-DATA] Real-time job update received:', payload);
+            fetchJobs(); // Refresh jobs when any change occurs
+          }
+        )
+        .subscribe();
+
+      // Set up aggressive refresh for near-instant visibility (30 seconds)
+      const interval = setInterval(() => {
+        console.log('🔄 [JOBS-DATA] Fast refresh for instant visibility');
+        fetchJobs();
+      }, 30 * 1000); // Refresh every 30 seconds
+      
+      console.log('✅ [JOBS-DATA] Realtime subscriptions established');
+      
+      return () => {
+        clearInterval(interval);
+        supabaseBypass.removeChannel(channel);
+      };
+    } catch (error) {
+      console.warn('⚠️ [JOBS-DATA] Failed to establish realtime subscriptions:', error);
+      
+      // Fallback to HTTP polling
+      const interval = setInterval(() => {
+        console.log('🔄 [JOBS-DATA] Error fallback refresh');
+        fetchJobs();
+      }, 60 * 1000);
+      
+      return () => {
+        clearInterval(interval);
+      };
+    }
   }, []);
 
   console.log('🔍 [JOBS-DATA] Hook returning:', {
