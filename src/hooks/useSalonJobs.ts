@@ -3,6 +3,7 @@ import { supabaseBypass } from '@/types/supabase-bypass';
 import { useSalon } from '@/context/salon';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+import { useJobIndexing } from '@/hooks/useJobIndexing';
 
 export interface SalonJob {
   id: string;
@@ -47,6 +48,7 @@ export const useSalonJobs = () => {
   const [error, setError] = useState<Error | null>(null);
   const { currentSalon } = useSalon();
   const { user } = useAuth();
+  const { notifyJobUpdated, notifyJobDeleted } = useJobIndexing();
 
   // Fetch jobs
   const fetchJobs = async () => {
@@ -150,6 +152,9 @@ export const useSalonJobs = () => {
   // Update job
   const updateJob = async (jobId: string, updates: Partial<SalonJob>) => {
     try {
+      // Get job details before update for indexing API
+      const jobToUpdate = jobs.find(job => job.id === jobId);
+      
       const { error } = await supabaseBypass
         .from('jobs')
         .update(updates as any)
@@ -159,6 +164,29 @@ export const useSalonJobs = () => {
       
       await fetchJobs(); // Refresh the list
       toast.success('Job updated successfully!');
+
+      // Notify Google Indexing API about the job update (non-blocking)
+      try {
+        if (jobToUpdate) {
+          console.log('🔍 [INDEXING-API] Notifying Google about job update:', jobId);
+          
+          // Call indexing API in background - don't await to avoid blocking UX
+          notifyJobUpdated({
+            id: jobToUpdate.id,
+            title: jobToUpdate.title,
+            location: jobToUpdate.location,
+            category: jobToUpdate.category,
+            status: jobToUpdate.status
+          }).catch(error => {
+            console.warn('⚠️ [INDEXING-API] Failed to notify Google about job update:', error);
+            // Don't show error to user - this is a background operation
+          });
+        }
+      } catch (error) {
+        console.warn('⚠️ [INDEXING-API] Error setting up update notification:', error);
+        // Continue with normal flow - indexing failures shouldn't break job updates
+      }
+
       return true;
     } catch (err) {
       console.error('Error updating job:', err);
@@ -174,6 +202,9 @@ export const useSalonJobs = () => {
     }
 
     try {
+      // Get job details before deletion for indexing API
+      const jobToDelete = jobs.find(job => job.id === jobId);
+      
       const { error } = await supabaseBypass
         .from('jobs')
         .delete()
@@ -187,6 +218,29 @@ export const useSalonJobs = () => {
       
       await fetchJobs(); // Refresh the list
       toast.success('Job deleted successfully');
+
+      // Notify Google Indexing API about the job deletion (non-blocking)
+      try {
+        if (jobToDelete) {
+          console.log('🔍 [INDEXING-API] Notifying Google about job deletion:', jobId);
+          
+          // Call indexing API in background - don't await to avoid blocking UX
+          notifyJobDeleted({
+            id: jobToDelete.id,
+            title: jobToDelete.title,
+            location: jobToDelete.location,
+            category: jobToDelete.category,
+            status: 'deleted'
+          }).catch(error => {
+            console.warn('⚠️ [INDEXING-API] Failed to notify Google about job deletion:', error);
+            // Don't show error to user - this is a background operation
+          });
+        }
+      } catch (error) {
+        console.warn('⚠️ [INDEXING-API] Error setting up deletion notification:', error);
+        // Continue with normal flow - indexing failures shouldn't break job deletions
+      }
+
       return true;
     } catch (err) {
       console.error('Error deleting job:', err);

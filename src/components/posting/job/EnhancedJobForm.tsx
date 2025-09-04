@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { supabaseBypass } from '@/types/supabase-bypass';
 import { useAuth } from '@/context/auth';
+import { useJobIndexing } from '@/hooks/useJobIndexing';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -68,6 +69,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
   const navigate = useNavigate();
   const { user, isSignedIn } = useAuth();
   const { toast } = useToast();
+  const { notifyJobCreated, notifyJobUpdated } = useJobIndexing();
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmittingFreeJob, setIsSubmittingFreeJob] = useState(false);
   const [isSubmittingPaidJob, setIsSubmittingPaidJob] = useState(false);
@@ -391,6 +393,27 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
       console.log('✅ [SUPABASE-SUCCESS] Job created successfully:', insertData[0]);
       setFreeJobSuccess(true);
+
+      // Notify Google Indexing API about the new job (non-blocking)
+      try {
+        const createdJob = insertData[0];
+        console.log('🔍 [INDEXING-API] Notifying Google about new job:', createdJob.id);
+        
+        // Call indexing API in background - don't await to avoid blocking UX
+        notifyJobCreated({
+          id: createdJob.id,
+          title: createdJob.title,
+          location: createdJob.location,
+          category: createdJob.category,
+          status: createdJob.status
+        }).catch(error => {
+          console.warn('⚠️ [INDEXING-API] Failed to notify Google about job creation:', error);
+          // Don't show error to user - this is a background operation
+        });
+      } catch (error) {
+        console.warn('⚠️ [INDEXING-API] Error setting up indexing notification:', error);
+        // Continue with normal flow - indexing failures shouldn't break job posting
+      }
 
       // Navigate to success page with job data and success toast
       setTimeout(() => {
