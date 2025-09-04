@@ -60,8 +60,101 @@ const NailSalonInterviewQuestionsAnswers = lazy(() => import('@/pages/blog/nail-
 const NailArtistPortfolioExamples = lazy(() => import('@/pages/blog/nail-artist-portfolio-examples'));
 const HowToGetMoreNailClients = lazy(() => import('@/pages/blog/how-to-get-more-nail-clients'));
 
+// New SEO Content Hub Posts
+const NailSalonGrowth2025 = lazy(() => import('@/pages/blog/nail-salon-growth-2025'));
+const HiringNailArtists = lazy(() => import('@/pages/blog/hiring-nail-artists'));
+const FiveStarReviews = lazy(() => import('@/pages/blog/5-star-reviews'));
+const SalonMarketing2025 = lazy(() => import('@/pages/blog/salon-marketing-2025'));
+const NailArtistsBestJobs = lazy(() => import('@/pages/blog/nail-artists-best-jobs'));
+
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  // Latest SEO Content Hub Posts - NEWEST FIRST
+  {
+    id: 'nail-salon-growth-2025',
+    slug: 'nail-salon-growth-2025',
+    title: 'How to Grow a Nail Salon in the US (2025 Guide)',
+    description: 'Complete guide to growing your nail salon business in 2025. Proven strategies for hiring, marketing, customer retention, and scaling revenue from successful salon owners.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-20',
+    readTime: '15 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['nail salon growth', 'salon management', 'business growth', 'hiring staff', 'salon marketing', 'customer retention'],
+    image: salonStaffManagementImage,
+    featured: true,
+    trending: true,
+    component: NailSalonGrowth2025,
+    url: '/blog/nail-salon-growth-2025'
+  },
+  {
+    id: 'hiring-nail-artists',
+    slug: 'hiring-nail-artists',
+    title: 'How to Hire Nail Artists the Right Way',
+    description: 'Expert guide to recruiting and hiring skilled nail artists. Learn interview techniques, red flags to avoid, and compensation strategies that attract top talent.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-20',
+    readTime: '10 min read',
+    category: 'Hiring & Recruitment',
+    categorySlug: 'hiring-recruitment',
+    tags: ['hiring nail artists', 'recruitment', 'nail technicians', 'salon staffing', 'interview process'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: HiringNailArtists,
+    url: '/blog/hiring-nail-artists'
+  },
+  {
+    id: '5-star-reviews',
+    slug: '5-star-reviews',
+    title: 'How to Get More 5-Star Reviews for Your Salon',
+    description: 'Proven strategies to increase 5-star reviews and build your salon reputation. Learn review generation tactics that top-rated salons use to attract more clients.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-20',
+    readTime: '8 min read',
+    category: 'Marketing',
+    categorySlug: 'marketing',
+    tags: ['5-star reviews', 'salon marketing', 'customer reviews', 'reputation management', 'online presence'],
+    image: clientRetentionSecretsImage,
+    featured: true,
+    trending: true,
+    component: FiveStarReviews,
+    url: '/blog/5-star-reviews'
+  },
+  {
+    id: 'salon-marketing-2025',
+    slug: 'salon-marketing-2025',
+    title: 'Salon Marketing Strategies That Work in 2025',
+    description: 'Latest salon marketing strategies for 2025. Social media tactics, local SEO, referral programs, and digital marketing tips that drive bookings and revenue.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-20',
+    readTime: '12 min read',
+    category: 'Marketing',
+    categorySlug: 'marketing',
+    tags: ['salon marketing', 'digital marketing', 'social media', 'local SEO', 'marketing strategies 2025'],
+    image: salonSocialMediaMarketingImage,
+    featured: true,
+    trending: true,
+    component: SalonMarketing2025,
+    url: '/blog/salon-marketing-2025'
+  },
+  {
+    id: 'nail-artists-best-jobs',
+    slug: 'nail-artists-best-jobs',
+    title: 'How Nail Artists Can Find the Best Jobs in the US',
+    description: 'Complete guide for nail artists seeking premium salon positions. Learn where to find high-paying jobs, how to negotiate salary, and what to look for in employers.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-20',
+    readTime: '9 min read',
+    category: 'Career Growth',
+    categorySlug: 'career-growth',
+    tags: ['nail artist jobs', 'career growth', 'job search', 'salary negotiation', 'beauty careers'],
+    image: nailCareSecretsImage,
+    featured: true,
+    trending: true,
+    component: NailArtistsBestJobs,
+    url: '/blog/nail-artists-best-jobs'
+  },
   // Featured pillar post
   {
     id: 'how-to-find-the-best-beauty-professionals',
