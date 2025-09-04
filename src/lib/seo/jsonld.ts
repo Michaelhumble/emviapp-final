@@ -64,7 +64,7 @@ export const organizationJsonLd = () => ({
   }
 });
 
-// Website schema
+// Website schema with Sitelinks SearchBox
 export const websiteJsonLd = () => ({
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -73,7 +73,7 @@ export const websiteJsonLd = () => ({
   "url": SITE_BASE_URL,
   "potentialAction": {
     "@type": "SearchAction",
-    "target": `${SITE_BASE_URL}/search?q={search_term_string}`,
+    "target": `${SITE_BASE_URL}/jobs?query={search_term_string}`,
     "query-input": "required name=search_term_string"
   }
 });
