@@ -101,6 +101,13 @@ const HireNailTechniciansInterviewQuestions = lazy(() => import("@/pages/blog/Hi
 
 const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
 
+// New SEO Content Hub Pages
+const NailSalonGrowth2025 = lazy(() => import("@/pages/blog/nail-salon-growth-2025"));
+const HiringNailArtists = lazy(() => import("@/pages/blog/hiring-nail-artists"));
+const FiveStarReviews = lazy(() => import("@/pages/blog/5-star-reviews"));
+const SalonMarketing2025 = lazy(() => import("@/pages/blog/salon-marketing-2025"));
+const NailArtistsBestJobs = lazy(() => import("@/pages/blog/nail-artists-best-jobs"));
+
 // Blog Category Pages - Dynamic
 const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
 
