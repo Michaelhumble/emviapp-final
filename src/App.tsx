@@ -227,7 +227,8 @@ function App() {
                     <Route path="/job-posted-success" element={<JobPostingSuccessPage />} />
                     <Route path="/nails-job-success" element={<NailJobSuccessPage />} />
                     
-                      <Route path="/sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap" replace />} />
+                       <Route path="/sitemap.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/sitemap" replace />} />
+                       <Route path="/sitemaps/news.xml" element={<Navigate to="https://wwhqbjrhbajpabfdwnip.supabase.co/functions/v1/news-sitemap" replace />} />
                       
                       {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
