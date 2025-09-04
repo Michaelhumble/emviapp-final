@@ -2556,6 +2556,36 @@ export type Database = {
         }
         Relationships: []
       }
+      indexing_logs: {
+        Row: {
+          action: string
+          created_at: string
+          error: string | null
+          id: string
+          response: Json | null
+          success: boolean
+          url: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          response?: Json | null
+          success?: boolean
+          url?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          response?: Json | null
+          success?: boolean
+          url?: string | null
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           applicant_id: string | null

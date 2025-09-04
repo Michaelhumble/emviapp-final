@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseBypass } from '@/types/supabase-bypass';
 
 export interface IndexingResponse {
   success: boolean;
@@ -22,7 +22,7 @@ export async function notifyJobUpsert(url: string): Promise<IndexingResponse> {
   try {
     console.log('🔍 Notifying Google about job upsert:', url);
     
-    const { data, error } = await supabase.functions.invoke('google-indexing', {
+    const { data, error } = await supabaseBypass.functions.invoke('google-indexing', {
       body: {
         action: 'notify_job_upsert',
         url
@@ -57,7 +57,7 @@ export async function notifyJobRemove(url: string): Promise<IndexingResponse> {
   try {
     console.log('🗑️ Notifying Google about job removal:', url);
     
-    const { data, error } = await supabase.functions.invoke('google-indexing', {
+    const { data, error } = await supabaseBypass.functions.invoke('google-indexing', {
       body: {
         action: 'notify_job_remove',
         url
@@ -92,7 +92,7 @@ export async function pingSitemaps(sitemaps?: string[]): Promise<IndexingRespons
   try {
     console.log('📍 Pinging Google with sitemap updates');
     
-    const { data, error } = await supabase.functions.invoke('google-indexing', {
+    const { data, error } = await supabaseBypass.functions.invoke('google-indexing', {
       body: {
         action: 'ping_sitemaps',
         sitemaps: sitemaps || [
@@ -151,10 +151,10 @@ export function generateJobUrl(jobId: string, title?: string, location?: string,
  */
 export async function getIndexingLogs(limit = 50) {
   try {
-    const { data, error } = await supabase
-      .from('indexing_logs')
+    const { data, error } = await supabaseBypass
+      .from('indexing_logs' as any)
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('created_at' as any, { ascending: false })
       .limit(limit);
 
     if (error) {
