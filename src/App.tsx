@@ -369,6 +369,13 @@ function App() {
                      <Route path="/blog/hire-nail-technicians-interview-questions" element={<Layout><HireNailTechniciansInterviewQuestions /></Layout>} />
                     <Route path="/article/from-invisible-to-unstoppable" element={<Layout><ViralArticle /></Layout>} />
                     
+                    {/* SEO Content Hub Posts */}
+                    <Route path="/blog/nail-salon-growth-2025" element={<Layout><NailSalonGrowth2025 /></Layout>} />
+                    <Route path="/blog/hiring-nail-artists" element={<Layout><HiringNailArtists /></Layout>} />
+                    <Route path="/blog/5-star-reviews" element={<Layout><FiveStarReviews /></Layout>} />
+                    <Route path="/blog/salon-marketing-2025" element={<Layout><SalonMarketing2025 /></Layout>} />
+                    <Route path="/blog/nail-artists-best-jobs" element={<Layout><NailArtistsBestJobs /></Layout>} />
+                    
                     {/* Content Hub Routes */}
                     <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />
                     
