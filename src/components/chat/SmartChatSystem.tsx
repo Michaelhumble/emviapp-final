@@ -160,6 +160,14 @@ const SmartChatSystem: React.FC = () => {
     try {
       console.log('🤖 [SUNSHINE] Sending message to Little Sunshine:', currentInput);
       
+      // Check if we're in PWA mode and handle accordingly
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                          (window.navigator as any).standalone;
+      
+      if (isStandalone && !window.isSecureContext) {
+        throw new Error('Chat temporarily unavailable in PWA mode. Please use the web version.');
+      }
+      
       // Call the real Little Sunshine edge function
       const { data, error } = await supabase.functions.invoke('sunshine-chat', {
         body: { message: currentInput }
@@ -198,13 +206,20 @@ const SmartChatSystem: React.FC = () => {
       };
 
       setMessages(prev => [...prev, aiMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ [SUNSHINE] Chat error:', error);
+      
+      // Provide user-friendly error message for PWA issues
+      let fallbackText = "Hi! I'm Little Sunshine ☀️ I'm having a moment, but I'm here to help! Try asking me about beauty tips or salon services!";
+      
+      if (error.message?.includes('WebSocket') || error.message?.includes('insecure') || error.message?.includes('PWA')) {
+        fallbackText = "Hi! I'm Little Sunshine ☀️ Chat is temporarily unavailable in app mode. Please visit emvi.app in your browser for full chat features!";
+      }
       
       // Fallback message that maintains Little Sunshine's personality
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Hi! I'm Little Sunshine ☀️ I'm having a moment, but I'm here to help! Try asking me about beauty tips or salon services!",
+        text: fallbackText,
         isUser: false,
         timestamp: new Date(),
       };

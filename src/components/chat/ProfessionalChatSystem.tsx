@@ -144,6 +144,14 @@ const ProfessionalChatSystem: React.FC = () => {
     try {
       console.log('🤖 [SUNSHINE] Sending message to Little Sunshine:', currentInput);
       
+      // Check if we're in PWA mode and handle accordingly
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                          (window.navigator as any).standalone;
+      
+      if (isStandalone && !window.isSecureContext) {
+        throw new Error('Chat temporarily unavailable in PWA mode. Please use the web version.');
+      }
+      
       // Call the real Little Sunshine edge function
       const { data, error } = await supabase.functions.invoke('sunshine-chat', {
         body: { message: currentInput }
