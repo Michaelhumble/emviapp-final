@@ -22,21 +22,6 @@ const BlogLanding = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Always feature the viral article at the top
-  const viralArticle = {
-    id: 'viral-article-1',
-    title: 'From Invisible to Unstoppable: How EmviApp Is Changing the Future of Beauty—for Everyone',
-    description: 'Discover how EmviApp is transforming lives, building community, and making beauty visible—for everyone. Real stories of empowerment, AI innovation, and human connection.',
-    url: '/article/from-invisible-to-unstoppable',
-    image: viralHeroImage,
-    publishedAt: 'Today',
-    readTime: '12 min read',
-    category: 'Featured Story',
-    author: 'EmviApp Editorial Team',
-    isFeatured: true,
-    isViral: true
-  };
-
   const featuredArticles = getFeaturedArticles();
   const trendingArticles = getTrendingArticles();
   const recentArticles = getRecentArticles().sort((a, b) => 
@@ -45,8 +30,22 @@ const BlogLanding = () => {
   const dynamicCategories = getAllCategories();
   const allTags = getAllTags();
   
-  // Always use viral article as hero
-  const heroArticle = viralArticle;
+  // Always feature the newest article as hero (first in recentArticles array)
+  const heroArticle = recentArticles[0] || {
+    id: 'default-hero',
+    title: 'Welcome to EmviApp Blog',
+    description: 'Discover the latest beauty industry insights and tips',
+    url: '/blog',
+    image: viralHeroImage,
+    publishedAt: 'Today',
+    readTime: '5 min read',
+    category: 'Welcome',
+    author: 'EmviApp Team',
+    isFeatured: true
+  };
+
+  // Get top 3 newest articles for featured section
+  const newestArticles = recentArticles.slice(0, 3);
   
   // Get trending topics from most popular tags
   const trendingTopics = allTags.slice(0, 8).map(tag => tag.name);
@@ -210,8 +209,8 @@ const BlogLanding = () => {
                     />
                     <div className="p-10 md:p-16 flex flex-col justify-center">
                       <div className="flex items-center gap-4 mb-6">
-                        <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold tracking-wide animate-pulse">
-                          🔥 VIRAL ARTICLE
+                        <span className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold tracking-wide animate-pulse">
+                          ✨ NEWEST ARTICLE
                         </span>
                         <span className="text-gray-500 text-sm font-medium">{heroArticle.readTime}</span>
                       </div>
@@ -235,6 +234,52 @@ const BlogLanding = () => {
             </div>
           )}
         </Container>
+
+        {/* Latest Articles Section - Always at Top */}
+        {newestArticles.length > 1 && (
+          <Container className="py-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-playfair font-bold mb-4">Latest Articles</h2>
+              <p className="text-xl text-gray-600">Fresh insights and expert tips, updated daily</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {newestArticles.slice(1).map((article, index) => (
+                <Link
+                  key={article.id}
+                  to={article.url}
+                  className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                >
+                  <OptimizedBlogImage
+                    src={article.image}
+                    alt={article.title}
+                    className="group-hover:scale-105 transition-transform duration-300"
+                    aspectRatio="16/10"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
+                        {article.category}
+                      </span>
+                      <span className="text-gray-500 text-xs">{article.readTime}</span>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 group-hover:text-purple-700 transition-colors leading-tight">
+                      {article.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-3">
+                      {article.description}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>{article.publishedAt}</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </Container>
+        )}
 
         {/* Categories Grid - Lazy Loaded */}
         {categories.length > 0 && (
