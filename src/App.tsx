@@ -108,6 +108,13 @@ const FiveStarReviews = lazy(() => import("@/pages/blog/5-star-reviews"));
 const SalonMarketing2025 = lazy(() => import("@/pages/blog/salon-marketing-2025"));
 const NailArtistsBestJobs = lazy(() => import("@/pages/blog/nail-artists-best-jobs"));
 
+// Latest SEO Articles (2025)
+const NailSalonHiringCrisis2025 = lazy(() => import("@/pages/blog/nail-salon-hiring-crisis-2025"));
+const TopCitiesNailTechnicians2025 = lazy(() => import("@/pages/blog/top-10-cities-nail-technicians-2025"));
+const SalonOwnersAttractHireKeepArtists = lazy(() => import("@/pages/blog/salon-owners-attract-hire-keep-artists"));
+const BeautyIndustryHiddenJobMarket = lazy(() => import("@/pages/blog/500b-beauty-industry-hidden-job-market"));
+const SideHustleSixFiguresNailTechnicians = lazy(() => import("@/pages/blog/side-hustle-six-figures-nail-technicians"));
+
 // Blog Category Pages - Dynamic
 const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
 
@@ -376,6 +383,13 @@ function App() {
                     <Route path="/blog/5-star-reviews" element={<Layout><FiveStarReviews /></Layout>} />
                     <Route path="/blog/salon-marketing-2025" element={<Layout><SalonMarketing2025 /></Layout>} />
                     <Route path="/blog/nail-artists-best-jobs" element={<Layout><NailArtistsBestJobs /></Layout>} />
+                    
+                    {/* Latest SEO Articles (2025) */}
+                    <Route path="/blog/nail-salon-hiring-crisis-2025" element={<Layout><NailSalonHiringCrisis2025 /></Layout>} />
+                    <Route path="/blog/top-10-cities-nail-technicians-2025" element={<Layout><TopCitiesNailTechnicians2025 /></Layout>} />
+                    <Route path="/blog/salon-owners-attract-hire-keep-artists" element={<Layout><SalonOwnersAttractHireKeepArtists /></Layout>} />
+                    <Route path="/blog/500b-beauty-industry-hidden-job-market" element={<Layout><BeautyIndustryHiddenJobMarket /></Layout>} />
+                    <Route path="/blog/side-hustle-six-figures-nail-technicians" element={<Layout><SideHustleSixFiguresNailTechnicians /></Layout>} />
                     
                     {/* Content Hub Routes */}
                     <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />

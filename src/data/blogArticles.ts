@@ -67,16 +67,109 @@ const FiveStarReviews = lazy(() => import('@/pages/blog/5-star-reviews'));
 const SalonMarketing2025 = lazy(() => import('@/pages/blog/salon-marketing-2025'));
 const NailArtistsBestJobs = lazy(() => import('@/pages/blog/nail-artists-best-jobs'));
 
+// Latest SEO Articles (2025)
+const NailSalonHiringCrisis2025 = lazy(() => import('@/pages/blog/nail-salon-hiring-crisis-2025'));
+const TopCitiesNailTechnicians2025 = lazy(() => import('@/pages/blog/top-10-cities-nail-technicians-2025'));
+const SalonOwnersAttractHireKeepArtists = lazy(() => import('@/pages/blog/salon-owners-attract-hire-keep-artists'));
+const BeautyIndustryHiddenJobMarket = lazy(() => import('@/pages/blog/500b-beauty-industry-hidden-job-market'));
+const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side-hustle-six-figures-nail-technicians'));
+
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  // Latest SEO Content Hub Posts - NEWEST FIRST
+  // Latest SEO Articles - NEWEST FIRST (2025 Expansion)
+  {
+    id: 'nail-salon-hiring-crisis-2025',
+    slug: 'nail-salon-hiring-crisis-2025', 
+    title: 'The Nail Salon Hiring Crisis 2025: Why Thousands of Jobs Go Unfilled (and How EmviApp Solves It)',
+    description: 'Discover why nail salons struggle to fill positions in 2025 and how EmviApp\'s targeted platform connects qualified nail technicians with salon owners, solving the industry staffing shortage.',
+    author: 'EmviApp Editorial Team',
+    publishedAt: '2025-01-20',
+    readTime: '12 min read',
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['nail salon hiring crisis', 'beauty industry jobs', 'nail technician shortage', 'salon staffing solutions', 'EmviApp hiring platform'],
+    image: salonStaffingCrisisImage,
+    featured: true,
+    trending: true,
+    component: NailSalonHiringCrisis2025,
+    url: '/blog/nail-salon-hiring-crisis-2025'
+  },
+  {
+    id: 'top-10-cities-nail-technicians-2025',
+    slug: 'top-10-cities-nail-technicians-2025',
+    title: 'Top 10 Cities for Nail Technicians in the U.S. (Updated 2025)',
+    description: 'Discover the best cities for nail technician careers in 2025: salary data, job opportunities, cost of living analysis, and growth prospects for beauty professionals nationwide.',
+    author: 'EmviApp Editorial Team', 
+    publishedAt: '2025-01-20',
+    readTime: '14 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['nail technician cities', 'nail tech salary by city', 'best cities beauty careers', 'nail artist jobs 2025', 'beauty industry locations'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: TopCitiesNailTechnicians2025,
+    url: '/blog/top-10-cities-nail-technicians-2025'
+  },
+  {
+    id: 'salon-owners-attract-hire-keep-artists',
+    slug: 'salon-owners-attract-hire-keep-artists',
+    title: 'How Salon Owners Can Attract, Hire, and Keep the Best Artists',
+    description: 'Complete guide for salon owners: proven strategies to attract top nail artists, streamline hiring processes, and build long-term retention through competitive compensation and culture.',
+    author: 'EmviApp Editorial Team',
+    publishedAt: '2025-01-20', 
+    readTime: '16 min read',
+    category: 'Salon Management',
+    categorySlug: 'salon-management',
+    tags: ['salon owner hiring', 'attract nail artists', 'salon staff retention', 'beauty business management', 'nail technician recruitment'],
+    image: salonStaffManagementImage,
+    featured: true,
+    trending: true,
+    component: SalonOwnersAttractHireKeepArtists,
+    url: '/blog/salon-owners-attract-hire-keep-artists'
+  },
+  {
+    id: '500b-beauty-industry-hidden-job-market',
+    slug: '500b-beauty-industry-hidden-job-market',
+    title: 'The $500B Beauty Industry\'s Hidden Job Market: Inside the World of Nail, Hair, and Lash Careers',
+    description: 'Explore the massive $500 billion beauty industry job market: nail, hair, lash, and skincare careers with salary insights, growth projections, and opportunities across nail salons, spas, and beauty businesses.',
+    author: 'EmviApp Editorial Team',
+    publishedAt: '2025-01-20',
+    readTime: '18 min read', 
+    category: 'Industry Insights',
+    categorySlug: 'industry-insights',
+    tags: ['beauty industry jobs', 'nail hair lash careers', 'beauty market size', 'salon job opportunities', 'beauty professional salaries'],
+    image: beautyIndustryMissingPieceImage,
+    featured: true,
+    trending: true,
+    component: BeautyIndustryHiddenJobMarket,
+    url: '/blog/500b-beauty-industry-hidden-job-market'
+  },
+  {
+    id: 'side-hustle-six-figures-nail-technicians',
+    slug: 'side-hustle-six-figures-nail-technicians',
+    title: 'From Side Hustle to Six Figures: Real Stories of Nail Technicians Growing with EmviApp',
+    description: 'Inspiring success stories of nail technicians who built six-figure businesses: strategies, timelines, and actionable insights from real professionals who transformed their careers through EmviApp.',
+    author: 'EmviApp Editorial Team',
+    publishedAt: '2025-01-20',
+    readTime: '20 min read',
+    category: 'Success Stories',
+    categorySlug: 'success-stories', 
+    tags: ['nail technician success stories', 'six figure nail business', 'nail artist career growth', 'beauty entrepreneur stories', 'nail tech income potential'],
+    image: heroImage,
+    featured: true,
+    trending: true,
+    component: SideHustleSixFiguresNailTechnicians,
+    url: '/blog/side-hustle-six-figures-nail-technicians'
+  },
+  // Previous SEO Content Hub Posts  
   {
     id: 'nail-salon-growth-2025',
     slug: 'nail-salon-growth-2025',
     title: 'How to Grow a Nail Salon in the US (2025 Guide)',
     description: 'Complete guide to growing your nail salon business in 2025. Proven strategies for hiring, marketing, customer retention, and scaling revenue from successful salon owners.',
     author: 'EmviApp Team',
-    publishedAt: '2025-01-20',
+    publishedAt: '2025-01-19',
     readTime: '15 min read',
     category: 'Salon Management',
     categorySlug: 'salon-management',
