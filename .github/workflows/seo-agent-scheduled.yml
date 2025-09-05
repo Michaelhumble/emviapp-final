@@ -21,10 +21,10 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run SEO Agent Analysis
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run SEO Agent Analysis
         run: |
           echo "🤖 Running SEO Agent analysis..."
           if [ -f "scripts/seo-agent.mjs" ]; then
