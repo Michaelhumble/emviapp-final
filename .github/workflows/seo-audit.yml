@@ -1,16 +1,8 @@
 name: SEO Audit
 
 on:
-  pull_request:
-    paths:
-      - 'src/pages/**'
-      - 'src/components/seo/**'
-      - 'public/robots.txt'
-      - 'public/sitemap*.xml'
-      - 'vercel.json'
-  schedule:
-    # Run weekly on Sundays at 6 AM UTC
-    - cron: '0 6 * * 0'
+  push:
+    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       audit_url:
@@ -27,35 +19,32 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
           
-      - name: Install deps
-        run: |
-          npm install --legacy-peer-deps
-          npm install -g @lhci/cli lighthouse
+      - name: Install dependencies
+        run: npm ci
           
       - name: Run SEO Audit
         env:
           AUDIT_URL: ${{ github.event.inputs.audit_url || 'https://www.emvi.app' }}
         run: |
-          node scripts/audit-seo.mjs
+          node scripts/audit-production.mjs
           
-      - name: Validate Sitemaps
+      - name: Run Daily SEO Workflow
         env:
-          SITEMAP_BASE_URL: ${{ github.event.inputs.audit_url || 'https://www.emvi.app' }}
+          AUDIT_URL: ${{ github.event.inputs.audit_url || 'https://www.emvi.app' }}
         run: |
-          node scripts/validate-sitemaps.mjs
+          node scripts/daily-seo-workflow.mjs
           
       - name: Upload Audit Reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: seo-audit-reports
-          path: |
-            reports/
-            !reports/*.tmp
+          path: reports/**
           retention-days: 30
           
       - name: Comment PR with SEO Summary

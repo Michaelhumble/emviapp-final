@@ -1,10 +1,11 @@
 name: SEO Agent Weekly Digest
 
 on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
   schedule:
-    # Run every Monday at 9 AM UTC (1 AM PST / 4 AM EST)
-    - cron: '0 9 * * 1'
-  workflow_dispatch: # Allow manual triggering
+    - cron: "0 9 * * 1"   # Mondays 09:00 UTC
 
 jobs:
   seo-weekly-digest:
@@ -18,11 +19,12 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: 'npm'
         
-      - name: Install dependencies
-        run: npm ci
+    - name: Install dependencies
+      run: npm ci
       
-      - name: Run SEO Agent Analysis
+    - name: Run SEO Agent Analysis
         run: |
           echo "🤖 Running SEO Agent analysis..."
           if [ -f "scripts/seo-agent.mjs" ]; then
