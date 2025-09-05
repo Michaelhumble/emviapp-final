@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Calendar, DollarSign, TrendingUp, Calculator, Target, Award, BarChart3, CheckCircle } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import DynamicSEO from '@/components/seo/DynamicSEO';
 import BaseSEO from '@/components/seo/BaseSEO';
-import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import BlogImage from '@/components/blog/BlogImage';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import AuthorAvatar from '@/components/blog/AuthorAvatar';
@@ -19,13 +18,28 @@ const SalonPricingStrategies2025 = () => {
   const article = {
     title: "Salon Pricing Strategies That Maximize Profit in 2025",
     description: "Master profitable salon pricing with proven strategies that increase revenue by 30%+. Learn value-based pricing, premium positioning, and psychological pricing techniques.",
-    author: "EmviApp Editorial Team",
-    publishedAt: "July 1, 2025",
+    author: "Michael Nguyen",
+    publishedAt: "2025-07-01T12:00:00Z",
     readTime: "15 min read",
     category: "Business Strategy",
     tags: ["Pricing Strategy", "Profit Maximization", "Business Growth", "Revenue", "Value Pricing", "Salon Management"],
     image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
   };
+
+  const articleData = {
+    title: article.title,
+    description: article.description,
+    author: article.author,
+    datePublished: article.publishedAt,
+    url: "https://www.emvi.app/blog/business/salon-pricing-strategies-2025",
+    image: article.image
+  };
+
+  const breadcrumbData = [
+    { name: 'Home', url: 'https://www.emvi.app' },
+    { name: 'Blog', url: 'https://www.emvi.app/blog' },
+    { name: article.title, url: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025' }
+  ];
 
   const faqData = [
     {
@@ -44,31 +58,18 @@ const SalonPricingStrategies2025 = () => {
 
   return (
     <>
-      <DynamicSEO
+      <BaseSEO
         title={article.title}
         description={article.description}
-        url="https://www.emvi.app/blog/business/salon-pricing-strategies-2025"
+        canonical="https://www.emvi.app/blog/business/salon-pricing-strategies-2025"
+        ogImage={article.image}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
         type="article"
-        image={article.image}
-        author={article.author}
-        publishedTime="2025-07-01T12:00:00Z"
-        tags={article.tags}
-        structuredData={buildArticleJsonLd({
-          title: article.title,
-          description: article.description,
-          image: article.image,
-          author: article.author,
-          datePublished: '2025-07-01T12:00:00Z',
-          dateModified: '2025-07-01T12:00:00Z',
-          url: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025'
-        })}
       />
-      {/* Breadcrumb JSON-LD for blog article */}
-      <BaseSEO jsonLd={[buildBreadcrumbJsonLd([
-        { name: 'Home', url: 'https://www.emvi.app' },
-        { name: 'Blog', url: 'https://www.emvi.app/blog' },
-        { name: article.title, url: 'https://www.emvi.app/blog/business/salon-pricing-strategies-2025' }
-      ])]} />
 
       <article className="min-h-screen bg-gradient-to-b from-background to-muted/10">
         <Container className="py-6">

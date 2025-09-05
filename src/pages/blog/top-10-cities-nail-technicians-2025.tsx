@@ -1,57 +1,59 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, MapPin, DollarSign, TrendingUp, Star, Building2, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TopCitiesNailTechnicians2025 = () => {
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Which city pays nail technicians the most in 2025?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "San Francisco leads with average earnings of $68,500 annually, followed by New York City at $62,300. These cities offer the highest compensation due to cost of living and demand for premium services."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What's the best city for new nail technicians to start their career?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Phoenix, Arizona offers the best balance for beginners with reasonable living costs, growing demand, competitive wages ($45,200 average), and numerous salon opportunities."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How much can experienced nail technicians earn in top cities?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Experienced nail technicians in top markets can earn $55,000-$85,000 annually, with the highest earners in luxury markets like Beverly Hills and Manhattan reaching $90,000+ with tips and commissions."
-        }
-      }
-    ]
+  const title = "Top 10 Cities for Nail Technicians in the U.S. (Updated 2025) | EmviApp";
+  const description = "Discover the best cities for nail technician careers in 2025: salary data, job opportunities, cost of living analysis, and growth prospects for beauty professionals nationwide.";
+  const canonical = "/blog/top-10-cities-nail-technicians-2025";
+  const publishedAt = "2025-01-20T09:00:00.000Z";
+
+  const articleData = {
+    title,
+    description,
+    author: "Michael Nguyen",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
+
+  const faqData = [
+    {
+      question: "Which city pays nail technicians the most in 2025?",
+      answer: "San Francisco leads with average earnings of $68,500 annually, followed by New York City at $62,300. These cities offer the highest compensation due to cost of living and demand for premium services."
+    },
+    {
+      question: "What's the best city for new nail technicians to start their career?",
+      answer: "Phoenix, Arizona offers the best balance for beginners with reasonable living costs, growing demand, competitive wages ($45,200 average), and numerous salon opportunities."
+    },
+    {
+      question: "How much can experienced nail technicians earn in top cities?",
+      answer: "Experienced nail technicians in top markets can earn $55,000-$85,000 annually, with the highest earners in luxury markets like Beverly Hills and Manhattan reaching $90,000+ with tips and commissions."
+    }
+  ];
 
   return (
     <>
-      <BlogSEO
-        title="Top 10 Cities for Nail Technicians in the U.S. (Updated 2025) | EmviApp"
-        description="Discover the best cities for nail technician careers in 2025: salary data, job opportunities, cost of living analysis, and growth prospects for beauty professionals nationwide."
-        canonical="/blog/top-10-cities-nail-technicians-2025"
-        publishedAt="2025-01-20T09:00:00.000Z"
-        modifiedAt="2025-01-20T09:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['nail technician cities', 'nail tech salary by city', 'best cities beauty careers', 'nail artist jobs 2025', 'beauty industry locations']}
-        featuredImage="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={`https://www.emvi.app${canonical}`}
+        ogImage={articleData.image}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
+        type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Hero Section */}

@@ -1,21 +1,41 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, TrendingUp, Instagram, Smartphone, Calendar, Target, Zap, Heart, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const SalonMarketing2025 = () => {
+  const title = "Salon Marketing Strategies That Work in 2025 | EmviApp";
+  const description = "Proven salon marketing strategies for 2025: social media tactics, local SEO, referral programs, email campaigns, and ROI-focused advertising that drives real bookings.";
+  const canonical = "/blog/salon-marketing-2025";
+  const publishedAt = "2025-01-20T11:00:00.000Z";
+
+  const articleData = {
+    title,
+    description,
+    author: "Michael Nguyen",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+  };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
+
   return (
     <>
-      <BlogSEO
-        title="Salon Marketing Strategies That Work in 2025 | EmviApp"
-        description="Proven salon marketing strategies for 2025: social media tactics, local SEO, referral programs, email campaigns, and ROI-focused advertising that drives real bookings."
-        canonical="/blog/salon-marketing-2025"
-        publishedAt="2025-01-20T11:00:00.000Z"
-        modifiedAt="2025-01-20T11:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['salon marketing', 'beauty marketing 2025', 'social media marketing', 'salon advertising', 'local SEO', 'digital marketing']}
-        featuredImage="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

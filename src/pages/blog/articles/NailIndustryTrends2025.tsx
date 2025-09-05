@@ -1,82 +1,64 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import BaseSEO from '@/components/seo/BaseSEO';
-import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Sparkles, Palette, Smartphone, Award, TrendingUp, Eye } from 'lucide-react';
 
 const NailIndustryTrends2025: React.FC = () => {
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  const title = "Nail Industry Trends 2025 — What Artists Need to Know for Khách Sang Success | EmviApp";
+  const description = "Essential nail industry trends for 2025. From glazed donut nails to AI color matching, discover what beauty professionals need to know for tip cao success.";
+  const canonical = "https://www.emvi.app/blog/industry-insights/nail-industry-trends-2025";
+  const publishedAt = "2025-01-01";
+
+  const articleData = {
+    title: "Nail Industry Trends 2025 — What Artists Need to Know for Khách Sang Success",
+    description,
+    author: "Michael Nguyen",
+    datePublished: publishedAt,
+    url: canonical,
+    image: "https://www.emvi.app/og-nail-trends-2025.jpg"
+  };
+
+  const breadcrumbData = [
     { name: 'Home', url: 'https://www.emvi.app' },
     { name: 'Blog', url: 'https://www.emvi.app/blog' },
-    { name: 'Nail Industry Trends 2025 — What Artists Need to Know', url: 'https://www.emvi.app/blog/industry-insights/nail-industry-trends-2025' }
-  ]);
+    { name: 'Nail Industry Trends 2025 — What Artists Need to Know', url: canonical }
+  ];
 
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Nail Industry Trends 2025 — What Artists Need to Know for Khách Sang Success",
-    "description": "Essential nail industry trends for 2025. From glazed donut nails to AI color matching, discover what beauty professionals need to know for tip cao success.",
-    "author": { "@type": "Organization", "name": "EmviApp" },
-    "publisher": { 
-      "@type": "Organization", 
-      "name": "EmviApp", 
-      "logo": { "@type": "ImageObject", "url": "https://www.emvi.app/logo.png" } 
+  const faqData = [
+    {
+      question: "What are the biggest nail trends for 2025?",
+      answer: "2025's biggest nail trends include glazed donut effects, chrome finishes, minimalist nail art, sustainable gel formulas, and AI-assisted color matching. Khách sang clients particularly favor subtle luxury looks."
     },
-    "datePublished": "2025-01-01",
-    "image": "https://www.emvi.app/og-nail-trends-2025.jpg",
-    "url": "https://www.emvi.app/blog/industry-insights/nail-industry-trends-2025"
-  };
-
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "What are the biggest nail trends for 2025?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "2025's biggest nail trends include glazed donut effects, chrome finishes, minimalist nail art, sustainable gel formulas, and AI-assisted color matching. Khách sang clients particularly favor subtle luxury looks."
-        }
-      },
-      {
-        "@type": "Question", 
-        "name": "How is technology changing the nail industry in 2025?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Technology revolutionizes nail services through AI color matching, virtual try-on apps, UV-free curing systems, and smart booking platforms. These innovations help beauty salons serve khách sang clients more efficiently."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What skills should nail artists learn for 2025?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Essential 2025 skills include Russian manicure techniques, gel extension mastery, digital nail art creation, sustainable product knowledge, and customer service excellence for tip cao earning potential."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Are sustainable nail products becoming more popular?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, eco-conscious consumers drive demand for sustainable nail products. Premium beauty salons offering non-toxic, vegan, and recyclable nail products attract environmentally aware khách sang clientele."
-        }
-      }
-    ]
-  };
+    {
+      question: "How is technology changing the nail industry in 2025?", 
+      answer: "Technology revolutionizes nail services through AI color matching, virtual try-on apps, UV-free curing systems, and smart booking platforms. These innovations help beauty salons serve khách sang clients more efficiently."
+    },
+    {
+      question: "What skills should nail artists learn for 2025?",
+      answer: "Essential 2025 skills include Russian manicure techniques, gel extension mastery, digital nail art creation, sustainable product knowledge, and customer service excellence for tip cao earning potential."
+    },
+    {
+      question: "Are sustainable nail products becoming more popular?",
+      answer: "Yes, eco-conscious consumers drive demand for sustainable nail products. Premium beauty salons offering non-toxic, vegan, and recyclable nail products attract environmentally aware khách sang clientele."
+    }
+  ];
 
   return (
     <Layout>
       <BaseSEO
-        title="Nail Industry Trends 2025 — What Artists Need to Know for Khách Sang Success | EmviApp"
-        description="Essential nail industry trends for 2025. From glazed donut nails to AI color matching, discover what beauty professionals need to know for tip cao success."
-        canonical="https://www.emvi.app/blog/industry-insights/nail-industry-trends-2025"
+        title={title}
+        description={description}
+        canonical={canonical}
         ogImage="https://www.emvi.app/og-nail-trends-2025.jpg"
-        jsonLd={[breadcrumbJsonLd, articleJsonLd, faqJsonLd]}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
         type="article"
       />
 

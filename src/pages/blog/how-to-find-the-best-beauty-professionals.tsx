@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -66,20 +67,33 @@ const HowToFindBestBeautyProfessionals = () => {
     ]
   };
 
+  const articleData = {
+    title,
+    description,
+    author: "Michael Nguyen",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/og-beauty-professionals.jpg"
+  };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
+
   return (
     <Layout>
-      <BlogSEO
+      <BaseSEO
         title={title}
         description={description}
         canonical={canonical}
-        publishedAt={publishedAt}
-        tags={['beauty professionals', 'hiring guide', 'nail artists', 'hair stylists', 'salon staffing', 'beauty industry']}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          faqSchema
+        ]}
         type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="py-16">
         <Container>

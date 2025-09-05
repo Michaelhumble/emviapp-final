@@ -1,22 +1,42 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const NailTechSalaryGuide: React.FC = () => {
+  const title = "Nail Tech Salary by City 2025: Complete Breakdown | EmviApp";
+  const description = "Comprehensive salary data for nail technicians across major US cities in 2025. Compare earnings, hourly rates, and tips by location.";
+  const canonical = "/blog/nail-tech-salary-by-city-2025";
+  const publishedAt = "2025-01-01";
+
+  const articleData = {
+    title,
+    description,
+    author: "Michael Nguyen",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/og-nail-tech-salary.jpg"
+  };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
+
   return (
     <Layout>
-      <BlogSEO
-        title="Nail Tech Salary by City 2025: Complete Breakdown | EmviApp"
-        description="Comprehensive salary data for nail technicians across major US cities in 2025. Compare earnings, hourly rates, and tips by location."
-        canonical="/blog/nail-tech-salary-by-city-2025"
-        publishedAt="2025-01-01"
-        modifiedAt="2025-01-01"
-        author="EmviApp Team"
-        featuredImage="https://www.emvi.app/og-nail-tech-salary.jpg"
-        tags={['nail tech salary', 'nail technician pay', 'beauty jobs', 'career guide', '2025 salaries']}
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <main className="w-full">
