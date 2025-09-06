@@ -1,22 +1,40 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, TrendingUp, Users, Calendar, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import aiSalonImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
 
 const AISalonTools2025 = () => {
+  const postData = {
+    title: "17 AI Tools Every Salon Owner Needs in 2025",
+    description: "Discover the top AI tools transforming salon operations in 2025. From smart booking to predictive analytics, learn how salon owners are using AI to boost revenue by 35%.",
+    author: "EmviApp Team",
+    datePublished: "2025-01-01",
+    dateModified: "2025-01-01",
+    url: "https://www.emvi.app/blog/ai-salon-tools-2025",
+    image: aiSalonImage
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Technology", url: "https://www.emvi.app/blog/category/technology" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <BlogSEO
-        title="17 AI Tools Every Salon Owner Needs in 2025 | EmviApp"
-        description="Discover the top AI tools transforming salon operations in 2025. From smart booking to predictive analytics, learn how salon owners are using AI to boost revenue by 35%."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/ai-salon-tools-2025"
-        publishedAt="2025-01-01"
-        modifiedAt="2025-01-01"
-        author="EmviApp Team"
-        featuredImage={aiSalonImage}
-        tags={['AI tools', 'salon management', 'automation', 'beauty technology', '2025 trends']}
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       {/* Hero Section */}

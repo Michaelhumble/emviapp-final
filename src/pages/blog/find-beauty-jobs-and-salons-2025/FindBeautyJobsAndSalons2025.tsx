@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import BlogSEO from '@/components/seo/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 // Import images - using existing images as placeholders
@@ -10,80 +11,44 @@ import opportunityImage from '@/assets/blog/sell-salon-guide-2025.jpg';
 import futureImage from '@/assets/blog/global-beauty-community-hero.jpg';
 
 const FindBeautyJobsAndSalons2025: React.FC = () => {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "The #1 Place to Find Beauty Jobs & Salons in 2025 — EmviApp",
-    "description": "Stop wasting time on Craigslist and Facebook scams. EmviApp is the first verified, authentic platform for nail jobs USA, salon for sale listings, hair stylist jobs, barber jobs, and lash tech opportunities. Join millions of beauty professionals today.",
-    "image": [
-      "https://www.emvi.app/assets/blog/hero-nail-tech-finding-jobs.jpg"
-    ],
-    "author": {
-      "@type": "Organization",
-      "name": "EmviApp Team"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.emvi.app/logo.png"
-      }
-    },
-    "datePublished": "2025-01-21",
-    "dateModified": "2025-01-21",
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": "https://www.emvi.app/blog/find-beauty-jobs-and-salons-2025"
-    }
+  const postData = {
+    title: "The #1 Place to Find Beauty Jobs & Salons in 2025 — EmviApp",
+    description: "Stop wasting time on Craigslist and Facebook scams. EmviApp is the first verified, authentic platform for nail jobs USA, salon for sale listings, hair stylist jobs, barber jobs, and lash tech opportunities. Join millions of beauty professionals today.",
+    author: "EmviApp Team",
+    datePublished: "2025-01-21",
+    dateModified: "2025-01-21",
+    url: "https://www.emvi.app/blog/find-beauty-jobs-and-salons-2025",
+    image: heroImage
   };
 
-  const jsonLdFAQ = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Where can I find nail jobs in the USA?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "EmviApp is the #1 platform for finding verified nail jobs across the USA. We have thousands of listings for nail technicians, from Vietnamese nail salons to high-end spas, with real contact information and verified employers."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How do I buy or sell a salon?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "EmviApp's salon marketplace connects buyers and sellers directly. You can browse salons for sale with verified financials, location details, and direct owner contact. Our platform eliminates the middleman and ensures authentic listings."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What jobs are available on EmviApp?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "EmviApp features jobs for nail technicians, hair stylists, barbers, lash technicians, estheticians, massage therapists, and salon managers. We also have booth rental opportunities and salon partnerships."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is EmviApp free to use?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes! EmviApp is completely free for beauty professionals to browse jobs, connect with salons, and build their profiles. Salon owners can post basic listings for free, with premium features available for enhanced visibility."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How does EmviApp verify beauty listings?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "EmviApp verifies all listings through business license checks, phone verification, and manual review. We also use community reporting and AI detection to eliminate fake listings and scams."
-        }
-      }
-    ]
-  };
+  const faqData = [
+    {
+      question: "Where can I find nail jobs in the USA?",
+      answer: "EmviApp is the #1 platform for finding verified nail jobs across the USA. We have thousands of listings for nail technicians, from Vietnamese nail salons to high-end spas, with real contact information and verified employers."
+    },
+    {
+      question: "How do I buy or sell a salon?",
+      answer: "EmviApp's salon marketplace connects buyers and sellers directly. You can browse salons for sale with verified financials, location details, and direct owner contact. Our platform eliminates the middleman and ensures authentic listings."
+    },
+    {
+      question: "What jobs are available on EmviApp?",
+      answer: "EmviApp features jobs for nail technicians, hair stylists, barbers, lash technicians, estheticians, massage therapists, and salon managers. We also have booth rental opportunities and salon partnerships."
+    },
+    {
+      question: "Is EmviApp free to use?",
+      answer: "Yes! EmviApp is completely free for beauty professionals to browse jobs, connect with salons, and build their profiles. Salon owners can post basic listings for free, with premium features available for enhanced visibility."
+    },
+    {
+      question: "How does EmviApp verify beauty listings?",
+      answer: "EmviApp verifies all listings through business license checks, phone verification, and manual review. We also use community reporting and AI detection to eliminate fake listings and scams."
+    }
+  ];
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: postData.title, url: postData.url }
+  ];
 
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
@@ -93,19 +58,16 @@ const FindBeautyJobsAndSalons2025: React.FC = () => {
 
   return (
     <>
-      <BlogSEO 
-        post={{
-          title: "The #1 Place to Find Beauty Jobs & Salons in 2025 — EmviApp",
-          description: "Stop wasting time on Craigslist and Facebook scams. EmviApp is the first verified, authentic platform for nail jobs USA, salon for sale listings, hair stylist jobs, barber jobs, and lash tech opportunities. Join millions of beauty professionals today.",
-          slug: "find-beauty-jobs-and-salons-2025",
-          author: "EmviApp Team",
-          publishedDate: "2025-01-21",
-          modifiedDate: "2025-01-21",
-          featuredImage: heroImage,
-          tags: ["nail jobs USA", "beauty jobs near me", "salon for sale USA", "hair stylist jobs 2025", "barber jobs", "lash tech jobs", "EmviApp"],
-          category: "Industry Insights"
-        }}
-        baseUrl="https://www.emvi.app"
+      <BaseSEO
+        title={postData.title}
+        description={postData.description}
+        canonical="/blog/find-beauty-jobs-and-salons-2025"
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
+        type="article"
       />
 
       <Helmet>

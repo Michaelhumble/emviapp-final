@@ -1,21 +1,39 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Users, TrendingUp, Star, Award, Target, Zap, Heart, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const NailSalonGrowth2025 = () => {
+  const postData = {
+    title: "How to Grow a Nail Salon in the US (2025 Guide)",
+    description: "Complete 2025 guide to nail salon growth: hiring strategies, marketing tactics, customer retention, technology adoption, and proven methods to increase revenue and scale your business.",
+    author: "EmviApp Editorial Team",
+    datePublished: "2025-01-20T08:00:00.000Z",
+    dateModified: "2025-01-20T08:00:00.000Z",
+    url: "https://www.emvi.app/blog/nail-salon-growth-2025",
+    image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Business", url: "https://www.emvi.app/blog/category/business" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <>
-      <BlogSEO
-        title="How to Grow a Nail Salon in the US (2025 Guide) | EmviApp"
-        description="Complete 2025 guide to nail salon growth: hiring strategies, marketing tactics, customer retention, technology adoption, and proven methods to increase revenue and scale your business."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/nail-salon-growth-2025"
-        publishedAt="2025-01-20T08:00:00.000Z"
-        modifiedAt="2025-01-20T08:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['nail salon growth', 'salon business', 'nail salon marketing', 'hiring nail artists', 'salon management', 'beauty business 2025']}
-        featuredImage="https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

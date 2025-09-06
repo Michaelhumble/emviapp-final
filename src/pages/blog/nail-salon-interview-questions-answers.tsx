@@ -1,22 +1,40 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const NailSalonInterviewQA: React.FC = () => {
+  const postData = {
+    title: "50+ Nail Salon Interview Questions & Answers (2025 Guide)",
+    description: "Ace your nail technician job interview with these common questions and expert answers. Preparation tips for salon interviews.",
+    author: "EmviApp Team",
+    datePublished: "2025-01-01",
+    dateModified: "2025-01-01",
+    url: "https://www.emvi.app/blog/nail-salon-interview-questions-answers",
+    image: "https://www.emvi.app/og-nail-interview.jpg"
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Career", url: "https://www.emvi.app/blog/category/career" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <Layout>
-      <BlogSEO
-        title="50+ Nail Salon Interview Questions & Answers (2025 Guide) | EmviApp"
-        description="Ace your nail technician job interview with these common questions and expert answers. Preparation tips for salon interviews."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/nail-salon-interview-questions-answers"
-        publishedAt="2025-01-01"
-        modifiedAt="2025-01-01"
-        author="EmviApp Team"
-        featuredImage="https://www.emvi.app/og-nail-interview.jpg"
-        tags={['nail salon interview', 'interview questions', 'nail technician jobs', 'career preparation', 'job interviews']}
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <main className="w-full">

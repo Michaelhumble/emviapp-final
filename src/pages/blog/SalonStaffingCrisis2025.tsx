@@ -1,5 +1,6 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { motion } from 'framer-motion';
 import { Users, Search, TrendingUp, Clock, CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,17 +8,34 @@ import { Link } from 'react-router-dom';
 import blogImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
 
 const SalonStaffingCrisis2025 = () => {
+  const postData = {
+    title: "The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can't Find Qualified Staff",
+    description: "Discover why salon owners are struggling to find qualified beauty professionals in 2025 and learn proven strategies to overcome the beauty industry staffing shortage.",
+    author: "EmviApp Team",
+    datePublished: "2025-01-01",
+    dateModified: "2025-01-01",
+    url: "https://www.emvi.app/blog/salon-staffing-crisis-2025",
+    image: blogImage
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Industry Insights", url: "https://www.emvi.app/blog/category/industry-insights" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <>
-      <BlogSEO
-        title="The Salon Staffing Crisis of 2025: Why 73% of Salon Owners Can't Find Qualified Staff | EmviApp"
-        description="Discover why salon owners are struggling to find qualified beauty professionals in 2025 and learn proven strategies to overcome the beauty industry staffing shortage."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/salon-staffing-crisis-2025"
-        publishedAt="2025-01-01"
-        modifiedAt="2025-01-01"
-        author="EmviApp Team"
-        featuredImage={blogImage}
-        tags={['salon staffing', 'beauty industry', 'hiring', 'recruitment', 'staffing crisis', '2025']}
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <article className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">

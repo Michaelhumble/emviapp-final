@@ -1,21 +1,39 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star, MessageCircle, Gift, Smartphone, Mail, Users, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const FiveStarReviews = () => {
+  const postData = {
+    title: "How to Get More 5-Star Reviews for Your Salon (2025 Guide)",
+    description: "Proven strategies to generate authentic 5-star reviews for your nail salon: timing techniques, follow-up systems, review request scripts, and reputation management tips.",
+    author: "EmviApp Editorial Team",
+    datePublished: "2025-01-20T10:00:00.000Z",
+    dateModified: "2025-01-20T10:00:00.000Z",
+    url: "https://www.emvi.app/blog/5-star-reviews",
+    image: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Marketing", url: "https://www.emvi.app/blog/category/marketing" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <>
-      <BlogSEO
-        title="How to Get More 5-Star Reviews for Your Salon (2025 Guide) | EmviApp"
-        description="Proven strategies to generate authentic 5-star reviews for your nail salon: timing techniques, follow-up systems, review request scripts, and reputation management tips."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/5-star-reviews"
-        publishedAt="2025-01-20T10:00:00.000Z"
-        modifiedAt="2025-01-20T10:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['salon reviews', '5-star reviews', 'online reputation', 'customer feedback', 'salon marketing', 'review management']}
-        featuredImage="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

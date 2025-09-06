@@ -1,22 +1,40 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Users, Sparkles, Globe, Trophy, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 
 const TheBeautyRevolution = () => {
+  const postData = {
+    title: "The Beauty Revolution: Empowering Every Artist, Transforming Every Life",
+    description: "Join the movement that's transforming the beauty industry. Discover how EmviApp empowers artists, connects communities, and creates opportunities for millions of beauty professionals worldwide.",
+    author: "EmviApp Team",
+    datePublished: "2025-01-01",
+    dateModified: "2025-01-01",
+    url: "https://www.emvi.app/blog/the-beauty-revolution",
+    image: heroImage
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Community", url: "https://www.emvi.app/blog/category/community" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <>
-      <BlogSEO
-        title="The Beauty Revolution: Empowering Every Artist, Transforming Every Life | EmviApp"
-        description="Join the movement that's transforming the beauty industry. Discover how EmviApp empowers artists, connects communities, and creates opportunities for millions of beauty professionals worldwide."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/the-beauty-revolution"
-        publishedAt="2025-01-01"
-        modifiedAt="2025-01-01"
-        author="EmviApp Team"
-        featuredImage={heroImage}
-        tags={['beauty revolution', 'nail artists', 'salon owners', 'beauty professionals', 'community', 'empowerment']}
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

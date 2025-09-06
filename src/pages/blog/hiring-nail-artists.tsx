@@ -1,21 +1,39 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Users, CheckCircle, AlertTriangle, Star, Target, Eye, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HiringNailArtists = () => {
+  const postData = {
+    title: "How to Hire Nail Artists the Right Way (2025 Guide)",
+    description: "Complete guide to hiring nail artists: where to find talent, interview techniques, skills assessment, compensation strategies, and retention tips for salon owners.",
+    author: "EmviApp Editorial Team",
+    datePublished: "2025-01-20T09:00:00.000Z",
+    dateModified: "2025-01-20T09:00:00.000Z",
+    url: "https://www.emvi.app/blog/hiring-nail-artists",
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+  };
+
+  const breadcrumbData = [
+    { name: "Home", url: "https://www.emvi.app" },
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: "Business", url: "https://www.emvi.app/blog/category/business" },
+    { name: postData.title, url: postData.url }
+  ];
+
   return (
     <>
-      <BlogSEO
-        title="How to Hire Nail Artists the Right Way (2025 Guide) | EmviApp"
-        description="Complete guide to hiring nail artists: where to find talent, interview techniques, skills assessment, compensation strategies, and retention tips for salon owners."
+      <BaseSEO
+        title={`${postData.title} | EmviApp`}
+        description={postData.description}
         canonical="/blog/hiring-nail-artists"
-        publishedAt="2025-01-20T09:00:00.000Z"
-        modifiedAt="2025-01-20T09:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['hiring nail artists', 'nail technician recruitment', 'salon staffing', 'nail artist interview', 'salon hiring tips', 'beauty recruitment']}
-        featuredImage="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+        jsonLd={[
+          buildArticleJsonLd(postData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
       />
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
