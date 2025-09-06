@@ -46,7 +46,7 @@ const ChooseRolePage: React.FC = () => {
       <Helmet>
         <title>Choose your role | EmviApp</title>
         <meta name="description" content="Select your EmviApp role: Artist, Salon Owner, Freelancer, or Customer." />
-        <link rel="canonical" href={`${window.location.origin}/onboarding/choose-role`} />
+        <link rel="canonical" href="https://www.emvi.app/onboarding/choose-role" />
       </Helmet>
 
       <section className="container mx-auto px-4 py-12 max-w-5xl">

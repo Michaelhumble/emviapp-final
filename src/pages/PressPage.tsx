@@ -147,7 +147,7 @@ const PressPage: React.FC = () => {
         <meta name="twitter:image" content="https://emvi.app/og/press-emviapp.jpg" />
         
         {/* Canonical */}
-        <link rel="canonical" href="https://emvi.app/press" />
+        <link rel="canonical" href="https://www.emvi.app/press" />
         
         {/* JSON-LD Structured Data */}
         {structuredData.map((schema, index) => (

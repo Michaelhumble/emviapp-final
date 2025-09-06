@@ -84,7 +84,7 @@ const ForArtists: React.FC = () => {
         <title>For Artists - Grow Your Beauty Career with AI Tools | EmviApp</title>
         <meta name="description" content="Empower your beauty career with EmviApp's AI tools. Manage clients, showcase your portfolio, boost bookings, and maximize earnings as an independent beauty professional." />
         <meta name="keywords" content="beauty artist tools, independent beauty professional, nail technician app, hair stylist tools, barber app, makeup artist platform" />
-        <link rel="canonical" href="https://emvi.app/for-artists" />
+        <link rel="canonical" href="https://www.emvi.app/for-artists" />
         
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}

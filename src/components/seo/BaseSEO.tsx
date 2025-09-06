@@ -32,10 +32,14 @@ const toAbs = (url?: string) => {
 const getCleanCanonical = (canonical?: string) => {
   if (!canonical) return `${ABS_BASE}/`;
   
-  // If it's already absolute, clean query params
+  // If it's already absolute, normalize to www.emvi.app and clean query params
   if (canonical.startsWith('http')) {
     try {
       const url = new URL(canonical);
+      // Normalize to https://www.emvi.app
+      if (url.hostname === 'emvi.app' || url.hostname === 'emviapp.com' || url.hostname.includes('emvi')) {
+        return `${ABS_BASE}${url.pathname}`;
+      }
       return `${url.protocol}//${url.host}${url.pathname}`;
     } catch {
       return canonical;

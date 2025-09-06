@@ -211,7 +211,7 @@ const PremiumSignupPage = () => {
         
         {/* Additional SEO */}
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://emvi.app/auth/premium-signup" />
+        <link rel="canonical" href="https://www.emvi.app/auth/premium-signup" />
       </Helmet>
 
       {/* REMOVED: All popup modals - no more blocking overlays */}

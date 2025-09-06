@@ -62,7 +62,7 @@ const BeautyJobs: React.FC = () => {
         <title>Beauty Jobs - Find Nail, Hair & Salon Opportunities | EmviApp</title>
         <meta name="description" content="Discover thousands of beauty jobs including nail technician, hair stylist, barber, and esthetician positions. Find your perfect beauty career opportunity with EmviApp." />
         <meta name="keywords" content="beauty jobs, nail technician jobs, hair stylist jobs, barber jobs, esthetician jobs, makeup artist jobs, salon careers" />
-        <link rel="canonical" href="https://emvi.app/beauty-jobs" />
+        <link rel="canonical" href="https://www.emvi.app/beauty-jobs" />
         
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}

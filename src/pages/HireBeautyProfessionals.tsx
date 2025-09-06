@@ -74,7 +74,7 @@ const HireBeautyProfessionals: React.FC = () => {
         <title>Hire Beauty Professionals - Find Licensed Stylists & Artists | EmviApp</title>
         <meta name="description" content="Hire verified beauty professionals including nail technicians, hair stylists, barbers, estheticians, and makeup artists. Book trusted experts in your area with EmviApp." />
         <meta name="keywords" content="hire beauty professionals, book beauty services, nail technicians, hair stylists, barbers, estheticians, makeup artists" />
-        <link rel="canonical" href="https://emvi.app/hire-beauty-professionals" />
+        <link rel="canonical" href="https://www.emvi.app/hire-beauty-professionals" />
         
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}

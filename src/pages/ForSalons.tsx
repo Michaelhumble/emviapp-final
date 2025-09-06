@@ -84,7 +84,7 @@ const ForSalons: React.FC = () => {
         <title>For Salons - Grow Your Beauty Business with AI | EmviApp</title>
         <meta name="description" content="Empower your salon with EmviApp's AI tools. Manage staff, boost bookings, track analytics, and grow your beauty business. Join successful salon owners nationwide." />
         <meta name="keywords" content="salon management software, beauty business tools, salon booking system, staff management, salon analytics, beauty marketing" />
-        <link rel="canonical" href="https://emvi.app/for-salons" />
+        <link rel="canonical" href="https://www.emvi.app/for-salons" />
         
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}

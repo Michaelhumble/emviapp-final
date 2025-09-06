@@ -30,7 +30,7 @@ export default function ArtistDetailPage() {
       <Helmet>
         <title>{artist?.headline ? `${artist.headline} — Artist Profile | EmviApp` : 'Artist Profile | EmviApp'}</title>
         <meta name="description" content={artist?.bio?.slice(0, 150) || 'View artist profile on EmviApp'} />
-        <link rel="canonical" href={`${window.location.origin}/artists/${id}`} />
+        <link rel="canonical" href={`https://www.emvi.app/artists/${id}`} />
         {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
       </Helmet>
 

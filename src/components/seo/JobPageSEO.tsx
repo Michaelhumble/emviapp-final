@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import BaseSEO from './BaseSEO';
 import { generateMetaDescription, generateImageAlt } from '@/utils/seoHelpers';
 
 interface JobPageSEOProps {
@@ -19,27 +19,16 @@ const JobPageSEO: React.FC<JobPageSEOProps> = ({ job, url }) => {
     job.description || `${job.title} position at ${job.company || 'premium salon'}. Join EmviApp to find your dream beauty career.`,
     160
   );
-  const canonical = `https://www.emvi.app${url}`;
   const imageAlt = generateImageAlt(job.title, job.category);
   
   return (
-    <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={canonical} />
-      
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={canonical} />
-      <meta property="og:type" content="article" />
-      <meta property="og:image" content="https://www.emvi.app/og-job.jpg" />
-      
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content="https://www.emvi.app/og-job.jpg" />
-      <meta name="twitter:image:alt" content={imageAlt} />
-    </Helmet>
+    <BaseSEO
+      title={title}
+      description={description}
+      canonical={url}
+      type="article"
+      ogImage="/og-job.jpg"
+    />
   );
 };
 
