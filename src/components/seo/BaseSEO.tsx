@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SITE_BASE_URL } from '@/config/seo';
+import { buildCanonicalUrl } from '@/components/seo/urlHelpers';
 
 interface Hreflang {
   hrefLang: string;
@@ -30,25 +31,20 @@ const toAbs = (url?: string) => {
 };
 
 const getCleanCanonical = (canonical?: string) => {
-  if (!canonical) return `${ABS_BASE}/`;
+  if (!canonical) return buildCanonicalUrl('/');
   
-  // If it's already absolute, normalize to www.emvi.app and clean query params
+  // If it's already absolute, extract the path and normalize
   if (canonical.startsWith('http')) {
     try {
       const url = new URL(canonical);
-      // Normalize to https://www.emvi.app
-      if (url.hostname === 'emvi.app' || url.hostname === 'emviapp.com' || url.hostname.includes('emvi')) {
-        return `${ABS_BASE}${url.pathname}`;
-      }
-      return `${url.protocol}//${url.host}${url.pathname}`;
+      return buildCanonicalUrl(url.pathname);
     } catch {
-      return canonical;
+      return buildCanonicalUrl(canonical);
     }
   }
   
-  // For relative URLs, remove query params and make absolute
-  const cleanPath = canonical.split('?')[0].split('#')[0];
-  return toAbs(cleanPath);
+  // For relative URLs, use the helper
+  return buildCanonicalUrl(canonical);
 };
 
 const BaseSEO: React.FC<BaseSEOProps> = ({
