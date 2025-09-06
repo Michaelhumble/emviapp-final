@@ -5,11 +5,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Helmet } from 'react-helmet';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildJobPostingJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import WhatYouMissedSection from '@/components/jobs/WhatYouMissedSection';
 import { track } from '@/lib/telemetry';
-import JobPostingJsonLd, { JobPostingProps } from '@/components/seo/JobPostingJsonLd';
-import { parseEmploymentType, parseSalaryInfo, parseJobLocation } from '@/utils/seo/jsonld';
 
 const JobDetailDynamicPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -90,38 +89,36 @@ const JobDetailDynamicPage: React.FC = () => {
     );
   }
 
-  // Build JobPosting JSON-LD props
-  const canonicalUrl = `https://www.emvi.app/jobs/${job.id}`;
-  const jobPostingProps: JobPostingProps = {
+  // Build job JSON-LD data
+  const jobJsonLd = buildJobPostingJsonLd({
     id: job.id,
     title: job.title,
-    descriptionHtml: job.description || `${job.title} position in ${job.location || 'various locations'}`,
-    datePostedISO: job.created_at || new Date().toISOString(),
-    validThroughISO: isExpired ? job.expires_at : undefined,
-    employmentType: parseEmploymentType(job.compensation_type, job.description, job.title),
-    hiringOrganization: {
-      name: job.company || job.contact_info?.owner_name || 'EmviApp Partner',
-      sameAs: job.contact_info?.email ? `mailto:${job.contact_info.email}` : undefined,
-      logoUrl: 'https://www.emvi.app/logo.png'
-    },
-    jobLocation: parseJobLocation(job.location),
-    baseSalary: parseSalaryInfo(job.compensation_details),
-    applicantLocationRequirements: 'US',
-    directApply: true,
-    languages: job.preferred_languages,
-    canonicalUrl
-  };
+    description: job.description || `${job.title} position in ${job.location || 'various locations'}`,
+    location: job.location,
+    salary: job.compensation_details,
+    company: job.company || job.contact_info?.owner_name || 'EmviApp Partner',
+    created_at: job.created_at || new Date().toISOString(),
+    expires_at: job.expires_at,
+    employmentType: job.compensation_type,
+    contactEmail: job.contact_info?.email,
+    contactPhone: job.contact_info?.phone,
+    category: job.category
+  });
+
+  const canonicalUrl = `https://www.emvi.app/jobs/${job.id}`;
+  const title = `${job.title}${job.location ? ` - ${job.location}` : ''} | EmviApp`;
+  const description = job.description?.slice(0, 150) || `${job.title} position at premium salon. Apply now on EmviApp.`;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Helmet>
-        <title>{job.title} | EmviApp</title>
-        <meta name="description" content={job.description?.slice(0, 150) || 'Job opportunity on EmviApp'} />
-        <meta name="robots" content={isExpired ? "noindex, follow" : "index, follow"} />
-        <link rel="canonical" href={canonicalUrl} />
-      </Helmet>
-      
-      <JobPostingJsonLd {...jobPostingProps} />
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={canonicalUrl}
+        type="article"
+        noindex={isExpired}
+        jsonLd={[jobJsonLd]}
+      />
 
       {isExpired && (
         <div className="mb-6 rounded-lg border bg-muted/30 p-4">
