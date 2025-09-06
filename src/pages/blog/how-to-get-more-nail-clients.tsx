@@ -1,7 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import BaseSEO from '@/components/seo/BaseSEO';
-import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
+import { buildBreadcrumbJsonLd, buildArticleJsonLd, buildHowToJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';

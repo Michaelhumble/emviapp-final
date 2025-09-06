@@ -348,6 +348,25 @@ export const buildFAQJsonLd = (faqs: Array<{ question: string; answer: string }>
   }))
 });
 
+export const buildHowToJsonLd = (steps: Array<{ name: string; text: string; image?: string }>) => ({
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Step-by-Step Guide",
+  "description": "Comprehensive guide with detailed instructions",
+  "step": steps.map((step, index) => ({
+    "@type": "HowToStep",
+    "position": index + 1,
+    "name": step.name,
+    "text": step.text,
+    ...(step.image && {
+      "image": {
+        "@type": "ImageObject",
+        "url": step.image
+      }
+    })
+  }))
+});
+
 export const buildLocalBusinessJsonLd = (salon: {
   id: string;
   name?: string;
