@@ -41,6 +41,7 @@ const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
 const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
 const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
+const CityRoleJobsHub = lazy(() => import("@/pages/jobs/CityRoleJobsHub"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
@@ -239,11 +240,12 @@ function App() {
                       
                       {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
-                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
-                     <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
-                     <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
-                     <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
-                     <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
+                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
+                      <Route path="/jobs/:citySlug/:roleSlug" element={<Layout><CityRoleJobsHub /></Layout>} />
+                      <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
+                      <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
+                      <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
