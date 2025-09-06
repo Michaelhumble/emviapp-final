@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,10 @@ const BlogIndex = () => {
   const title = 'EmviApp Beauty Industry Blog - Expert Insights & Career Tips';
   const description = 'Discover expert insights on beauty industry trends, professional development, salon management, and career growth strategies for nail artists, hair stylists, and beauty professionals.';
   const canonical = '/blog';
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" }
+  ];
 
   const blogPosts = [
     {
@@ -55,11 +60,14 @@ const BlogIndex = () => {
 
   return (
     <Layout>
-      <BlogSEO
+      <BaseSEO
         title={title}
         description={description}
         canonical={canonical}
-        type="blog"
+        jsonLd={[
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="website"
       />
 
       <div className="py-16">

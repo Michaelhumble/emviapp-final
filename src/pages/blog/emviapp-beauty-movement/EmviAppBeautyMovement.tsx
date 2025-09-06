@@ -50,8 +50,8 @@ const EmviAppBeautyMovement: React.FC = () => {
     }
   ]);
 
-  // Article JSON-LD Schema
-  const articleSchema = {
+  // Article data for JSON-LD Schema
+  const articleData = {
     title: postData.title,
     description: postData.description,
     author: postData.author,
@@ -61,8 +61,8 @@ const EmviAppBeautyMovement: React.FC = () => {
     image: heroImage
   };
 
-  // Breadcrumb JSON-LD Schema
-  const breadcrumbSchema = [
+  // Breadcrumb data for JSON-LD Schema
+  const breadcrumbData = [
     { name: 'Home', url: 'https://www.emvi.app' },
     { name: 'Blog', url: 'https://www.emvi.app/blog' },
     { name: 'Industry Insights', url: 'https://www.emvi.app/blog/category/industry-insights' },
@@ -76,8 +76,8 @@ const EmviAppBeautyMovement: React.FC = () => {
         description={postData.description}
         canonical={`/blog/${postData.slug}`}
         jsonLd={[
-          buildArticleJsonLd(articleSchema),
-          buildBreadcrumbJsonLd(breadcrumbSchema),
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
           buildFAQJsonLd([
             {
               question: "What is EmviApp?",
