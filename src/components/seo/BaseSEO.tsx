@@ -112,9 +112,16 @@ const BaseSEO: React.FC<BaseSEOProps> = ({
       ))}
 
       {/* JSON-LD blocks */}
-      {jsonLd.map((obj, idx) => (
-        <script key={idx} type="application/ld+json">{JSON.stringify(obj)}</script>
-      ))}
+      {jsonLd.filter(obj => obj && typeof obj === 'object').map((obj, idx) => {
+        try {
+          // Validate that the object can be stringified
+          const jsonString = JSON.stringify(obj);
+          return <script key={idx} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonString }} />;
+        } catch (error) {
+          console.warn('Invalid JSON-LD object skipped:', error, obj);
+          return null;
+        }
+      })}
     </Helmet>
   );
 };

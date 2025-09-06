@@ -33,16 +33,37 @@ export const buildWebsiteJsonLd = () => ({
   }
 });
 
-export const buildBreadcrumbJsonLd = (items: Array<{ name: string; url: string }>) => ({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": items.map((item, index) => ({
-    "@type": "ListItem",
-    "position": index + 1,
-    "name": item.name,
-    "item": item.url
-  }))
-});
+// Helper to sanitize JSON-LD data
+const sanitizeJsonLdValue = (value: any): any => {
+  if (value === null || value === undefined) return "";
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    const sanitized: any = {};
+    Object.keys(value).forEach(key => {
+      sanitized[key] = sanitizeJsonLdValue(value[key]);
+    });
+    return sanitized;
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => sanitizeJsonLdValue(item));
+  }
+  return value;
+};
+
+export const buildBreadcrumbJsonLd = (items: Array<{ name: string; url: string }>) => {
+  const sanitizedItems = items.filter(item => item.name && item.url).map(item => ({
+    "@type": "ListItem" as const,
+    "position": items.indexOf(item) + 1,
+    "name": sanitizeJsonLdValue(item.name),
+    "item": sanitizeJsonLdValue(item.url)
+  }));
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList" as const,
+    "itemListElement": sanitizedItems
+  };
+};
 
 export const buildJobPostingJsonLd = (job: {
   id: string;
@@ -275,34 +296,44 @@ export const buildArticleJsonLd = (article: {
   dateModified?: string;
   url: string;
   image?: string;
-}) => ({
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": article.title,
-  "description": article.description,
-  "author": {
-    "@type": "Person",
-    "name": article.author
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "EmviApp",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://www.emvi.app/logo.png"
+}) => {
+  const sanitizedArticle = sanitizeJsonLdValue(article);
+  
+  const jsonLd: any = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": sanitizedArticle.title || "",
+    "description": sanitizedArticle.description || "",
+    "author": {
+      "@type": "Person",
+      "name": sanitizedArticle.author || "EmviApp Team"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "EmviApp",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.emvi.app/logo.png"
+      }
+    },
+    "datePublished": sanitizedArticle.datePublished || new Date().toISOString(),
+    "dateModified": sanitizedArticle.dateModified || sanitizedArticle.datePublished || new Date().toISOString(),
+    "url": sanitizedArticle.url || "https://www.emvi.app/blog",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": sanitizedArticle.url || "https://www.emvi.app/blog"
     }
-  },
-  "datePublished": article.datePublished,
-  "dateModified": article.dateModified || article.datePublished,
-  "url": article.url,
-  "mainEntityOfPage": article.url,
-  ...(article.image && {
-    "image": {
+  };
+
+  if (sanitizedArticle.image) {
+    jsonLd.image = {
       "@type": "ImageObject",
-      "url": article.image
-    }
-  })
-});
+      "url": sanitizedArticle.image
+    };
+  }
+
+  return jsonLd;
+};
 
 export const buildFAQJsonLd = (faqs: Array<{ question: string; answer: string }>) => ({
   "@context": "https://schema.org",
