@@ -282,7 +282,8 @@ function App() {
                      <Route path="/thank-you" element={<Suspense fallback={<SimpleLoadingFallback />}><ThankYou /></Suspense>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
                      <Route path="/performance" element={<Layout><PerformanceAudit /></Layout>} />
-                      <Route path="/press" element={<Layout><PressPage /></Layout>} />
+                       <Route path="/product" element={<Layout><Product /></Layout>} />
+                       <Route path="/press" element={<Layout><Press /></Layout>} />
                       <Route path="/press/:slug" element={<Layout><EmviAppPressDetailPage /></Layout>} />
                       <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><EmviAppPressPage /></Layout>} />
                      <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />
