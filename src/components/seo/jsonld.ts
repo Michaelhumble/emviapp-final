@@ -347,3 +347,111 @@ export const buildFAQJsonLd = (faqs: Array<{ question: string; answer: string }>
     }
   }))
 });
+
+export const buildLocalBusinessJsonLd = (salon: {
+  id: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  tagline?: string;
+  summary?: string;
+  location?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
+  hours?: string;
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+    googleBusiness?: string;
+    yelp?: string;
+  };
+}) => {
+  const salonName = salon.name || salon.title || "Premium Beauty Salon";
+  const salonDescription = salon.description || salon.tagline || salon.summary || `${salonName} - Premier beauty services and treatments`;
+  
+  // Build address object
+  const address: any = {
+    "@type": "PostalAddress",
+    "addressCountry": salon.country || "US"
+  };
+  
+  if (salon.address) address.streetAddress = salon.address;
+  if (salon.city) address.addressLocality = salon.city;
+  if (salon.state) address.addressRegion = salon.state;
+  if (salon.zipCode) address.postalCode = salon.zipCode;
+  if (salon.location && !salon.city) {
+    // Parse location string like "Austin, TX" 
+    const locationParts = salon.location.split(',').map(s => s.trim());
+    if (locationParts.length >= 2) {
+      address.addressLocality = locationParts[0];
+      address.addressRegion = locationParts[1];
+    }
+  }
+
+  // Build geo coordinates if available
+  const geo = (salon.latitude && salon.longitude) ? {
+    "@type": "GeoCoordinates",
+    "latitude": salon.latitude,
+    "longitude": salon.longitude
+  } : undefined;
+
+  // Build sameAs array from social media
+  const sameAs: string[] = [];
+  if (salon.socialMedia?.instagram) sameAs.push(salon.socialMedia.instagram);
+  if (salon.socialMedia?.facebook) sameAs.push(salon.socialMedia.facebook);
+  if (salon.socialMedia?.googleBusiness) sameAs.push(salon.socialMedia.googleBusiness);
+  if (salon.socialMedia?.yelp) sameAs.push(salon.socialMedia.yelp);
+  if (salon.website) sameAs.push(salon.website);
+
+  const jsonLd: any = {
+    "@context": "https://schema.org",
+    "@type": "BeautySalon",
+    "name": salonName,
+    "description": salonDescription,
+    "url": `https://www.emvi.app/salons/${salon.id}`,
+    "address": address,
+    "priceRange": "$$-$$$",
+    "servedCuisine": undefined, // Remove this for beauty salons
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Beauty Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Professional Beauty Services",
+            "description": "Full range of beauty treatments and services"
+          }
+        }
+      ]
+    }
+  };
+
+  // Add optional fields
+  if (salon.phone) jsonLd.telephone = salon.phone;
+  if (salon.email) jsonLd.email = salon.email;
+  if (geo) jsonLd.geo = geo;
+  if (sameAs.length > 0) jsonLd.sameAs = sameAs;
+  
+  // Parse opening hours if available
+  if (salon.hours) {
+    // Simple hours parsing - could be enhanced based on actual format
+    jsonLd.openingHoursSpecification = {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    };
+  }
+
+  return jsonLd;
+};

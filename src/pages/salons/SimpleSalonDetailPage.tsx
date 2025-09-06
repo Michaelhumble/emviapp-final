@@ -1,5 +1,7 @@
 
 import React from 'react';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildLocalBusinessJsonLd } from '@/components/seo/jsonld';
 
 const formatPrice = (price: string | number | undefined): string => {
   if (typeof price === 'undefined') return '$0';
@@ -28,8 +30,24 @@ const formatPrice = (price: string | number | undefined): string => {
 };
 
 const SimpleSalonDetailPage: React.FC = () => {
+  // For now, render a simple placeholder with proper SEO
+  const salonData = {
+    id: 'simple-salon',
+    name: 'Premium Beauty Salon',
+    description: 'Full-service beauty salon offering premium treatments and services'
+  };
+
   return (
-    <div>Simple Salon Detail Page</div>
+    <>
+      <BaseSEO
+        title={`${salonData.name} - Beauty Salon | EmviApp`}
+        description={salonData.description}
+        canonical={`https://www.emvi.app/salons/${salonData.id}`}
+        type="business"
+        jsonLd={[buildLocalBusinessJsonLd(salonData)]}
+      />
+      <div>Simple Salon Detail Page</div>
+    </>
   );
 };
 

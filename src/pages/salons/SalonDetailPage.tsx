@@ -5,6 +5,8 @@ import Layout from '@/components/layout/Layout';
 import SalonDetailContent from '@/components/salons/SalonDetailContent';
 import SalonListingCta from '@/components/salons/SalonListingCta';
 import SalonNotFound from '@/components/salon/SalonNotFound';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildLocalBusinessJsonLd } from '@/components/seo/jsonld';
 import { Job } from '@/types/job';
 import ListingRouteGuard from '@/components/common/ListingRouteGuard';
 import { ArrowLeft } from 'lucide-react';
@@ -89,13 +91,28 @@ const SalonDetailPage = () => {
             <LoadingState />
           ) : error ? (
             <SalonNotFound />
-          ) : (
+          ) : salon ? (
             <>
+              <BaseSEO
+                title={`${salon.title || 'Beauty Salon'} - Premium Salon Opportunity | EmviApp`}
+                description={salon.description || `Discover ${salon.title || 'this premium salon'} opportunity. Full business details, financials, and owner contact available.`}
+                canonical={`https://www.emvi.app/salons/${salon.id}`}
+                type="business"
+                jsonLd={[buildLocalBusinessJsonLd({
+                  id: salon.id,
+                  name: salon.title,
+                  title: salon.title,
+                  description: salon.description,
+                  location: salon.location,
+                  phone: salon.contact_info?.phone,
+                  email: salon.contact_info?.email
+                })]}
+              />
               <BackToListings />
               <SalonDetailContent salon={salon} />
               <SalonListingCta />
             </>
-          )}
+          ) : null}
         </div>
       </Layout>
     </ListingRouteGuard>
