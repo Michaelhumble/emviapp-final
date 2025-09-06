@@ -1,57 +1,59 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, TrendingUp, Star, DollarSign, Users, Target, Building2, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const SideHustleSixFiguresNailTechnicians = () => {
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Can nail technicians really make six figures?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, experienced nail technicians can earn $100,000+ annually through specialization, luxury clientele, multiple revenue streams, and strategic business building. Many successful techs on EmviApp have achieved this milestone."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How long does it take to build a six-figure nail business?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "With focused effort, most nail technicians can build six-figure businesses within 3-5 years. Key factors include specialization, client retention, premium pricing, and diversifying income streams through education and products."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What services command the highest prices in nail care?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Luxury services like custom nail art ($80-200+), gel extensions ($100-150), bridal packages ($200-500), and specialized treatments in high-end markets command premium pricing and higher profit margins."
-        }
-      }
-    ]
+  const publishedAt = '2025-01-20T12:00:00.000Z';
+  const title = 'From Side Hustle to Six Figures: Real Nail Technician Success Stories | EmviApp';
+  const description = 'Inspiring success stories of nail technicians who built six-figure businesses: strategies, timelines, and actionable insights from real professionals who transformed their careers through EmviApp.';
+  const canonical = '/blog/side-hustle-six-figures-nail-technicians';
+
+  const faqData = [
+    {
+      question: "Can nail technicians really make six figures?",
+      answer: "Yes, experienced nail technicians can earn $100,000+ annually through specialization, luxury clientele, multiple revenue streams, and strategic business building. Many successful techs on EmviApp have achieved this milestone."
+    },
+    {
+      question: "How long does it take to build a six-figure nail business?",
+      answer: "With focused effort, most nail technicians can build six-figure businesses within 3-5 years. Key factors include specialization, client retention, premium pricing, and diversifying income streams through education and products."
+    },
+    {
+      question: "What services command the highest prices in nail care?",
+      answer: "Luxury services like custom nail art ($80-200+), gel extensions ($100-150), bridal packages ($200-500), and specialized treatments in high-end markets command premium pricing and higher profit margins."
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Editorial Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <>
-      <BlogSEO
-        title="From Side Hustle to Six Figures: Real Nail Technician Success Stories | EmviApp"
-        description="Inspiring success stories of nail technicians who built six-figure businesses: strategies, timelines, and actionable insights from real professionals who transformed their careers through EmviApp."
-        canonical="/blog/side-hustle-six-figures-nail-technicians"
-        publishedAt="2025-01-20T12:00:00.000Z"
-        modifiedAt="2025-01-20T12:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['nail technician success stories', 'six figure nail business', 'nail artist career growth', 'beauty entrepreneur stories', 'nail tech income potential']}
-        featuredImage="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
+        type="article"
+        ogImage="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Hero Section */}

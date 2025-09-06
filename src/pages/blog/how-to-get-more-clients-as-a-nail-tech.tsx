@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,59 +12,52 @@ const HowToGetMoreClientsAsNailTech = () => {
   const description = 'Boost your nail tech client base with proven marketing strategies, social media tips, and retention techniques. Complete guide for nail artists to grow their business in 2025.';
   const canonical = '/blog/how-to-get-more-clients-as-a-nail-tech';
 
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'How can nail technicians attract more clients online?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Focus on Instagram and TikTok with high-quality nail art photos and videos. Use local hashtags, engage with followers, collaborate with influencers, and showcase before/after transformations to attract new clients.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'What services should nail techs offer to increase bookings?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Offer trending services like Russian manicures, nail extensions, custom nail art, gel-x nails, and seasonal designs. Specializing in specific techniques like intricate nail art can command higher prices and attract dedicated clients.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How do nail technicians retain existing clients?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Provide consistent quality service, remember client preferences, offer loyalty rewards, send appointment reminders, and maintain excellent hygiene standards. Personal touches like birthday discounts increase retention significantly.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Should nail techs work in salons or independently?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Both have advantages. Salon work provides steady clients and equipment but lower per-service income. Independent work offers higher earnings and flexibility but requires building your own client base and managing business aspects.'
-        }
-      }
-    ]
+  const faqData = [
+    {
+      question: 'How can nail technicians attract more clients online?',
+      answer: 'Focus on Instagram and TikTok with high-quality nail art photos and videos. Use local hashtags, engage with followers, collaborate with influencers, and showcase before/after transformations to attract new clients.'
+    },
+    {
+      question: 'What services should nail techs offer to increase bookings?',
+      answer: 'Offer trending services like Russian manicures, nail extensions, custom nail art, gel-x nails, and seasonal designs. Specializing in specific techniques like intricate nail art can command higher prices and attract dedicated clients.'
+    },
+    {
+      question: 'How do nail technicians retain existing clients?',
+      answer: 'Provide consistent quality service, remember client preferences, offer loyalty rewards, send appointment reminders, and maintain excellent hygiene standards. Personal touches like birthday discounts increase retention significantly.'
+    },
+    {
+      question: 'Should nail techs work in salons or independently?',
+      answer: 'Both have advantages. Salon work provides steady clients and equipment but lower per-service income. Independent work offers higher earnings and flexibility but requires building your own client base and managing business aspects.'
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/og-nail-tech-clients.jpg"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <Layout>
-      <BlogSEO
+      <BaseSEO
         title={title}
         description={description}
         canonical={canonical}
-        publishedAt={publishedAt}
-        tags={['nail technician', 'client acquisition', 'nail art', 'beauty business', 'social media marketing', 'nail salon']}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
         type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="py-16">
         <Container>

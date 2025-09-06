@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import BaseSEO from '@/components/seo/BaseSEO';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Heart, Users, Sparkles, Globe, Shield, CheckCircle } from 'lucide-react';
-import BlogSEO from '@/components/seo/BlogSEO';
 import { buildArticleJsonLd, buildFAQJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import Layout from '@/components/layout/Layout';
 import heroImage from '@/assets/blog/emviapp-hero-vietnamese-nail-tech.jpg';
@@ -52,7 +51,7 @@ const EmviAppBeautyMovement: React.FC = () => {
   ]);
 
   // Article JSON-LD Schema
-  const articleSchema = buildArticleJsonLd({
+  const articleSchema = {
     title: postData.title,
     description: postData.description,
     author: postData.author,
@@ -60,47 +59,51 @@ const EmviAppBeautyMovement: React.FC = () => {
     dateModified: postData.modifiedDate,
     url: `https://www.emvi.app/blog/${postData.slug}`,
     image: heroImage
-  });
+  };
 
   // Breadcrumb JSON-LD Schema
-  const breadcrumbSchema = buildBreadcrumbJsonLd([
+  const breadcrumbSchema = [
     { name: 'Home', url: 'https://www.emvi.app' },
     { name: 'Blog', url: 'https://www.emvi.app/blog' },
     { name: 'Industry Insights', url: 'https://www.emvi.app/blog/category/industry-insights' },
     { name: postData.title, url: `https://www.emvi.app/blog/${postData.slug}` }
-  ]);
+  ];
 
   return (
     <Layout>
-      <BlogSEO 
-        post={postData}
-        baseUrl="https://www.emvi.app"
+      <BaseSEO 
+        title={postData.title}
+        description={postData.description}
+        canonical={`/blog/${postData.slug}`}
+        jsonLd={[
+          buildArticleJsonLd(articleSchema),
+          buildBreadcrumbJsonLd(breadcrumbSchema),
+          buildFAQJsonLd([
+            {
+              question: "What is EmviApp?",
+              answer: "EmviApp is the revolutionary beauty industry platform that connects nail technicians, hair stylists, barbers, estheticians, and salon owners in one trusted community. Built specifically for beauty professionals, EmviApp offers job opportunities, salon sales, networking, and career growth tools that you won't find on generic platforms like Craigslist or Facebook Groups."
+            },
+            {
+              question: "Who should use EmviApp?",
+              answer: "EmviApp is perfect for nail technicians, hair stylists, barbers, massage therapists, estheticians, lash artists, makeup artists, salon owners, and anyone working in the beauty industry. Whether you're looking for your next job, selling your salon, finding new clients, or building your professional network, EmviApp is designed for you."
+            },
+            {
+              question: "How is EmviApp different from Facebook Groups or Craigslist?",
+              answer: "Unlike generic platforms, EmviApp is built exclusively for beauty professionals with industry-specific features like verified profiles, portfolio showcases, skill matching, and safety protections. We eliminate the spam, scams, and unprofessional interactions common on Facebook Groups and Craigslist, creating a premium, trusted environment for serious beauty professionals."
+            },
+            {
+              question: "Is EmviApp free?",
+              answer: "Yes! EmviApp is free to join for beauty professionals. You can create your profile, browse jobs, connect with other professionals, and access most features at no cost. We also offer premium features for enhanced visibility and advanced tools to accelerate your career growth."
+            },
+            {
+              question: "How do I join EmviApp?",
+              answer: "Simply visit emvi.app and create your free account in under 2 minutes. Upload your portfolio, add your skills and experience, and start connecting with thousands of beauty professionals. The earlier you join, the more opportunities you'll unlock as our community grows."
+            }
+          ])
+        ]}
+        type="article"
+        ogImage={`https://www.emvi.app${heroImage}`}
       />
-      
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(articleSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
-        </script>
-        
-        {/* Enhanced OG Tags */}
-        <meta property="og:image" content={`https://www.emvi.app${heroImage}`} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta name="twitter:image" content={`https://www.emvi.app${heroImage}`} />
-        
-        {/* Additional SEO Meta Tags */}
-        <meta name="keywords" content="nail jobs USA, Vietnamese nail techs, salon for sale, beauty community, hair stylist jobs, barber jobs, EmviApp, beauty industry app, nail technician jobs, beauty professional network" />
-        <meta name="author" content="EmviApp Team" />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href={`https://www.emvi.app/blog/${postData.slug}`} />
-      </Helmet>
 
       <article className="max-w-4xl mx-auto px-4 py-8">
         {/* Breadcrumbs */}

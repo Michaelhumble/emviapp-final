@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,59 +12,52 @@ const WhyWeeklyPayAttractsBetterArtists = () => {
   const description = 'Discover how weekly payment schedules attract higher-quality beauty professionals, improve retention rates, and boost salon performance. Essential insights for modern salon owners.';
   const canonical = '/blog/why-weekly-pay-attracts-better-artists';
 
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'Why do beauty professionals prefer weekly pay over monthly?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Weekly pay provides better cash flow for professionals who often have variable income streams. It reduces financial stress and allows them to focus on delivering quality services rather than worrying about bills.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Does weekly pay cost more for salon owners?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'While there may be slight administrative costs, weekly pay often reduces turnover costs, training expenses, and lost revenue from vacant positions. The investment typically pays for itself through improved retention.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How does payment frequency affect service quality?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Professionals with stable, predictable income are less stressed and more focused on their work. This often translates to better client experiences, more attention to detail, and higher service quality.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'What other benefits attract top beauty professionals?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Beyond weekly pay, top professionals value flexible scheduling, professional development opportunities, quality product access, competitive commission structures, and supportive work environments.'
-        }
-      }
-    ]
+  const faqData = [
+    {
+      question: 'Why do beauty professionals prefer weekly pay over monthly?',
+      answer: 'Weekly pay provides better cash flow for professionals who often have variable income streams. It reduces financial stress and allows them to focus on delivering quality services rather than worrying about bills.'
+    },
+    {
+      question: 'Does weekly pay cost more for salon owners?',
+      answer: 'While there may be slight administrative costs, weekly pay often reduces turnover costs, training expenses, and lost revenue from vacant positions. The investment typically pays for itself through improved retention.'
+    },
+    {
+      question: 'How does payment frequency affect service quality?',
+      answer: 'Professionals with stable, predictable income are less stressed and more focused on their work. This often translates to better client experiences, more attention to detail, and higher service quality.'
+    },
+    {
+      question: 'What other benefits attract top beauty professionals?',
+      answer: 'Beyond weekly pay, top professionals value flexible scheduling, professional development opportunities, quality product access, competitive commission structures, and supportive work environments.'
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/og-weekly-pay-benefits.jpg"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <Layout>
-      <BlogSEO
+      <BaseSEO
         title={title}
         description={description}
         canonical={canonical}
-        publishedAt={publishedAt}
-        tags={['salon management', 'weekly pay', 'beauty professionals', 'staff retention', 'salon staffing', 'payroll']}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
         type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="py-16">
         <Container>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/components/seo/jsonld';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, CheckCircle, Users, Briefcase } from 'lucide-react';
 import ArticleStructuredData from '@/components/seo/ArticleStructuredData';
@@ -9,32 +10,21 @@ const HireNailTechniciansInterviewQuestions: React.FC = () => {
   const publishDate = '2025-08-29T08:00:00.000Z';
   const title = '15 Interview Questions to Hire Great Nail Technicians (2025 Guide)';
   const description = 'Essential interview questions and what to look for when hiring nail technicians. Expert guidance on assessing technical skills, client service, and cultural fit for your salon.';
-  const canonical = 'https://www.emvi.app/blog/hire-nail-technicians-interview-questions';
+  const canonical = '/blog/hire-nail-technicians-interview-questions';
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://www.emvi.app"
-      },
-      {
-        "@type": "ListItem", 
-        "position": 2,
-        "name": "Blog",
-        "item": "https://www.emvi.app/blog"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": title,
-        "item": canonical
-      }
-    ]
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Editorial Team",
+    datePublished: publishDate,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/blog/hire-nail-technicians-hero.jpg"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   const interviewQuestions = [
     {
@@ -121,34 +111,22 @@ const HireNailTechniciansInterviewQuestions: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{title} | EmviApp Blog</title>
-        <meta name="description" content={description} />
-        <link rel="canonical" href={canonical} />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content={`${title} | EmviApp Blog`} />
-        <meta property="og:description" content={description} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="article" />
-        <meta property="og:image" content="https://www.emvi.app/blog/hire-nail-technicians-og.jpg" />
-        
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${title} | EmviApp Blog`} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content="https://www.emvi.app/blog/hire-nail-technicians-og.jpg" />
-        
-        {/* JSON-LD Structured Data */}
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
-        </script>
-      </Helmet>
+      <BaseSEO
+        title={`${title} | EmviApp Blog`}
+        description={description}
+        canonical={canonical}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData)
+        ]}
+        type="article"
+        ogImage="https://www.emvi.app/blog/hire-nail-technicians-og.jpg"
+      />
 
       <ArticleStructuredData
         title={title}
         description={description}
-        url={canonical}
+        url={`https://www.emvi.app${canonical}`}
         publishedDate={publishDate}
         modifiedDate={publishDate}
         author="EmviApp Editorial Team"

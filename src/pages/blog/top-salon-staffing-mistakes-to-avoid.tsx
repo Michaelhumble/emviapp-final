@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,59 +12,52 @@ const TopSalonStaffingMistakesToAvoid = () => {
   const description = 'Avoid costly salon staffing mistakes that hurt your business. Learn the top hiring errors salon owners make and proven strategies to build a successful beauty team.';
   const canonical = '/blog/top-salon-staffing-mistakes-to-avoid';
 
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'What is the biggest mistake salon owners make when hiring?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'The biggest mistake is hiring based on desperation rather than qualifications. Rushing to fill positions often leads to poor hires, increased turnover, and damaged salon reputation.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How can I avoid hiring the wrong beauty professionals?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Implement a thorough screening process including portfolio reviews, practical skills tests, reference checks, and trial periods. Take time to evaluate both technical skills and cultural fit.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Should I hire experienced professionals or train newcomers?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Both approaches have merit. Experienced professionals bring immediate value but may cost more. Newcomers are eager to learn but require time investment. Consider your needs, budget, and timeline.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How do I retain good beauty professionals once I hire them?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Focus on competitive compensation, professional development opportunities, positive work culture, flexible scheduling, and recognition programs. Regular feedback and career path discussions also improve retention.'
-        }
-      }
-    ]
+  const faqData = [
+    {
+      question: 'What is the biggest mistake salon owners make when hiring?',
+      answer: 'The biggest mistake is hiring based on desperation rather than qualifications. Rushing to fill positions often leads to poor hires, increased turnover, and damaged salon reputation.'
+    },
+    {
+      question: 'How can I avoid hiring the wrong beauty professionals?',
+      answer: 'Implement a thorough screening process including portfolio reviews, practical skills tests, reference checks, and trial periods. Take time to evaluate both technical skills and cultural fit.'
+    },
+    {
+      question: 'Should I hire experienced professionals or train newcomers?',
+      answer: 'Both approaches have merit. Experienced professionals bring immediate value but may cost more. Newcomers are eager to learn but require time investment. Consider your needs, budget, and timeline.'
+    },
+    {
+      question: 'How do I retain good beauty professionals once I hire them?',
+      answer: 'Focus on competitive compensation, professional development opportunities, positive work culture, flexible scheduling, and recognition programs. Regular feedback and career path discussions also improve retention.'
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/og-salon-staffing-mistakes.jpg"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <Layout>
-      <BlogSEO
+      <BaseSEO
         title={title}
         description={description}
         canonical={canonical}
-        publishedAt={publishedAt}
-        tags={['salon management', 'hiring mistakes', 'staff retention', 'beauty professionals', 'salon staffing', 'recruitment']}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
         type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="py-16">
         <Container>

@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,59 +12,52 @@ const FutureOfBeautyIndustryIn2025 = () => {
   const description = 'Explore the future of beauty industry in 2025. Discover emerging trends in technology, sustainability, personalization, and career opportunities shaping the next generation of beauty professionals.';
   const canonical = '/blog/the-future-of-beauty-industry-in-2025';
 
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'What technology trends are shaping the beauty industry in 2025?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'AI-powered skin analysis, AR try-on experiences, smart beauty devices, personalized product formulations, and automated booking systems are revolutionizing how beauty services are delivered and experienced.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How is sustainability changing the beauty industry?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Clean beauty formulations, eco-friendly packaging, sustainable salon practices, waterless products, and carbon-neutral operations are becoming standard as consumers demand environmentally responsible beauty options.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'What new career opportunities exist in beauty for 2025?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Digital beauty consultants, sustainable beauty specialists, AI beauty technicians, wellness-beauty integrators, and virtual reality beauty experience designers represent emerging career paths in the evolving industry.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'How will personalization impact beauty services in 2025?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Genetic testing for skincare, AI-customized treatments, personalized product formulations, biometric analysis for perfect matches, and individualized wellness plans will create truly bespoke beauty experiences.'
-        }
-      }
-    ]
+  const faqData = [
+    {
+      question: 'What technology trends are shaping the beauty industry in 2025?',
+      answer: 'AI-powered skin analysis, AR try-on experiences, smart beauty devices, personalized product formulations, and automated booking systems are revolutionizing how beauty services are delivered and experienced.'
+    },
+    {
+      question: 'How is sustainability changing the beauty industry?',
+      answer: 'Clean beauty formulations, eco-friendly packaging, sustainable salon practices, waterless products, and carbon-neutral operations are becoming standard as consumers demand environmentally responsible beauty options.'
+    },
+    {
+      question: 'What new career opportunities exist in beauty for 2025?',
+      answer: 'Digital beauty consultants, sustainable beauty specialists, AI beauty technicians, wellness-beauty integrators, and virtual reality beauty experience designers represent emerging career paths in the evolving industry.'
+    },
+    {
+      question: 'How will personalization impact beauty services in 2025?',
+      answer: 'Genetic testing for skincare, AI-customized treatments, personalized product formulations, biometric analysis for perfect matches, and individualized wellness plans will create truly bespoke beauty experiences.'
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://www.emvi.app/og-future-beauty-2025.jpg"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <Layout>
-      <BlogSEO
+      <BaseSEO
         title={title}
         description={description}
         canonical={canonical}
-        publishedAt={publishedAt}
-        tags={['beauty industry trends', 'future of beauty', '2025 predictions', 'beauty technology', 'sustainable beauty', 'beauty careers']}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
         type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="py-16">
         <Container>

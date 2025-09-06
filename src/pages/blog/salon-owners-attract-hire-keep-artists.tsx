@@ -1,57 +1,59 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Users, Heart, Target, TrendingUp, Gift, Star, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const SalonOwnersAttractHireKeepArtists = () => {
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "What attracts top nail artists to work at a salon?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Top nail artists are attracted by competitive compensation (50-60% commission), professional growth opportunities, positive workplace culture, modern equipment, and strong management support."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How can salon owners reduce artist turnover?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Reduce turnover by offering competitive pay, regular training, career advancement paths, flexible scheduling, recognition programs, and creating a supportive team environment."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What's the average retention rate for nail artists?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The industry average is 32% annual retention, but salons with structured retention programs achieve 65-85% retention rates, significantly reducing hiring costs and improving service quality."
-        }
-      }
-    ]
+  const publishedAt = '2025-01-20T10:00:00.000Z';
+  const title = 'How Salon Owners Can Attract, Hire, and Keep the Best Artists | EmviApp';
+  const description = 'Complete guide for salon owners: proven strategies to attract top nail artists, streamline hiring processes, and build long-term retention through competitive compensation and culture.';
+  const canonical = '/blog/salon-owners-attract-hire-keep-artists';
+
+  const faqData = [
+    {
+      question: "What attracts top nail artists to work at a salon?",
+      answer: "Top nail artists are attracted by competitive compensation (50-60% commission), professional growth opportunities, positive workplace culture, modern equipment, and strong management support."
+    },
+    {
+      question: "How can salon owners reduce artist turnover?",
+      answer: "Reduce turnover by offering competitive pay, regular training, career advancement paths, flexible scheduling, recognition programs, and creating a supportive team environment."
+    },
+    {
+      question: "What's the average retention rate for nail artists?",
+      answer: "The industry average is 32% annual retention, but salons with structured retention programs achieve 65-85% retention rates, significantly reducing hiring costs and improving service quality."
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Editorial Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <>
-      <BlogSEO
-        title="How Salon Owners Can Attract, Hire, and Keep the Best Artists | EmviApp"
-        description="Complete guide for salon owners: proven strategies to attract top nail artists, streamline hiring processes, and build long-term retention through competitive compensation and culture."
-        canonical="/blog/salon-owners-attract-hire-keep-artists"
-        publishedAt="2025-01-20T10:00:00.000Z"
-        modifiedAt="2025-01-20T10:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['salon owner hiring', 'attract nail artists', 'salon staff retention', 'beauty business management', 'nail technician recruitment']}
-        featuredImage="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
+        type="article"
+        ogImage="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Hero Section */}

@@ -1,57 +1,58 @@
 import React from 'react';
-import BlogSEO from '@/components/blog/BlogSEO';
+import BaseSEO from '@/components/seo/BaseSEO';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, DollarSign, Eye, TrendingUp, Users, Sparkles, Building2, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const BeautyIndustryHiddenJobMarket = () => {
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "How big is the beauty industry job market in 2025?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The beauty industry employs over 2.3 million professionals in the US with a market value of $500+ billion globally. It's projected to create 670,000 new jobs by 2030, making it one of the fastest-growing employment sectors."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What are the highest-paying beauty industry jobs?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Top-earning beauty careers include salon owners ($75,000-$200,000+), celebrity artists ($80,000-$150,000), master educators ($60,000-$120,000), and specialized technicians in luxury markets ($55,000-$95,000)."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Are beauty industry jobs recession-proof?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, beauty services are considered recession-resistant. During economic downturns, people often maintain smaller beauty treatments as affordable luxuries, while the industry's essential nature ensures consistent demand."
-        }
-      }
-    ]
+  const publishedAt = '2025-01-20T11:00:00.000Z';
+  const title = 'The $500B Beauty Industry\'s Hidden Job Market | EmviApp Careers Guide';
+  const description = 'Explore the massive $500 billion beauty industry job market: nail, hair, lash, and skincare careers with salary insights, growth projections, and opportunities across nail salons, spas, and beauty businesses.';
+  const canonical = '/blog/500b-beauty-industry-hidden-job-market';
+
+  const faqData = [
+    {
+      question: "How big is the beauty industry job market in 2025?",
+      answer: "The beauty industry employs over 2.3 million professionals in the US with a market value of $500+ billion globally. It's projected to create 670,000 new jobs by 2030, making it one of the fastest-growing employment sectors."
+    },
+    {
+      question: "What are the highest-paying beauty industry jobs?",
+      answer: "Top-earning beauty careers include salon owners ($75,000-$200,000+), celebrity artists ($80,000-$150,000), master educators ($60,000-$120,000), and specialized technicians in luxury markets ($55,000-$95,000)."
+    },
+    {
+      question: "Are beauty industry jobs recession-proof?",
+      answer: "Yes, beauty services are considered recession-resistant. During economic downturns, people often maintain smaller beauty treatments as affordable luxuries, while the industry's essential nature ensures consistent demand."
+    }
+  ];
+
+  const articleData = {
+    title,
+    description,
+    author: "EmviApp Editorial Team",
+    datePublished: publishedAt,
+    url: `https://www.emvi.app${canonical}`,
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
   };
+
+  const breadcrumbData = [
+    { name: "Blog", url: "https://www.emvi.app/blog" },
+    { name: title, url: `https://www.emvi.app${canonical}` }
+  ];
 
   return (
     <>
-      <BlogSEO
-        title="The $500B Beauty Industry's Hidden Job Market | EmviApp Careers Guide"
-        description="Explore the massive $500 billion beauty industry job market: nail, hair, lash, and skincare careers with salary insights, growth projections, and opportunities across nail salons, spas, and beauty businesses."
-        canonical="/blog/500b-beauty-industry-hidden-job-market"
-        publishedAt="2025-01-20T11:00:00.000Z"
-        modifiedAt="2025-01-20T11:00:00.000Z"
-        author="EmviApp Editorial Team"
-        tags={['beauty industry jobs', 'nail hair lash careers', 'beauty market size', 'salon job opportunities', 'beauty professional salaries']}
-        featuredImage="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      <BaseSEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        jsonLd={[
+          buildArticleJsonLd(articleData),
+          buildBreadcrumbJsonLd(breadcrumbData),
+          buildFAQJsonLd(faqData)
+        ]}
+        type="article"
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </script>
 
       <article className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Hero Section */}
