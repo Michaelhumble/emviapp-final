@@ -1,10 +1,10 @@
 <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g fill="currentColor">
+  <g fill="#dc2626">
     <path d="M14 28V8H17V16L22 8H25L20 16L25 28H22L18 20L17 21V28H14Z"/>
     <path d="M31 20C31 16.7 33.7 14 37 14C38.3 14 39.5 14.4 40.5 15.1L38.1 17.5C37.5 17.1 36.8 16.8 36 16.8C35.1 16.8 34.3 17.6 34.3 18.5S35.1 20.2 36 20.2C36.8 20.2 37.5 19.9 38.1 19.5L40.5 21.9C39.5 22.6 38.3 23 37 23C33.7 23 31 20.3 31 17Z"/>
     <path d="M46 28V8H53V10.5H48.5V16.5H52.5V19H48.5V25.5H53V28H46Z"/>
     <path d="M59 28V10.5H56V8H64.5V10.5H61.5V28H59Z"/>
-    <path d="M72 28V17H68V14.5H78.5V17H75V28H72Z"/>
-    <path d="M85 28V17H82.5V8H85V11H87.5V8H90V17H87.5V28H85Z"/>
+    <rect x="75" y="8" width="18" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="84" y="22" text-anchor="middle" fill="currentColor" font-size="9" font-weight="bold">NBC 17</text>
   </g>
 </svg>

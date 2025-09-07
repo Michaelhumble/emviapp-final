@@ -1,9 +1,10 @@
 <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g fill="currentColor">
+  <g fill="#2563eb">
     <path d="M14 28V8H17V16L22 8H25L20 16L25 28H22L18 20L17 21V28H14Z"/>
     <path d="M31 28V12H33.5V15C34.2 13.4 35.8 12 37.5 12C39.7 12 41.5 13.8 41.5 16V28H39V16.5C39 15.7 38.3 15 37.5 15S36 15.7 36 16.5V28H31Z"/>
     <path d="M47 20C47 16.7 49.7 14 53 14S59 16.7 59 20S56.3 26 53 26S47 23.3 47 20ZM49.5 20C49.5 21.9 51.1 23.5 53 23.5S56.5 21.9 56.5 20S54.9 16.5 53 16.5S49.5 18.1 49.5 20Z"/>
     <path d="M65 28V18C65 15.8 66.8 14 69 14C71.2 14 73 15.8 73 18V28H70.5V18.5C70.5 17.7 69.8 17 69 17S67.5 17.7 67.5 18.5V28H65Z"/>
-    <path d="M82 28V20H86v8H88.5V8H86V18H82V8H79.5V28H82Z"/>
+    <circle cx="82" cy="20" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="82" y="24" text-anchor="middle" fill="currentColor" font-size="12" font-weight="bold">4</text>
   </g>
 </svg>

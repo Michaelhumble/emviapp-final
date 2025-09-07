@@ -1,9 +1,10 @@
 <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g fill="currentColor">
+  <g fill="#1565c0">
     <path d="M12 28L14 8H17L19 18L21 8H24L26 28H23L22 12L20.5 28H18.5L17 12L16 28H12Z"/>
     <path d="M32 28V8H39V10.5H34.5V16.5H38.5V19H34.5V28H32Z"/>
     <path d="M45 28V8H47.5V25.5H52V28H45Z"/>
     <path d="M58.5 24H62.8L63.5 26H66L61.2 8H60L55.2 26H57.8L58.5 24ZM59.1 22L60.65 14.5L62.2 22H59.1Z"/>
-    <path d="M75 28V18L70 8H73L76 16L79 8H82L77 18V28H75Z"/>
+    <rect x="75" y="8" width="18" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="84" y="22" text-anchor="middle" fill="currentColor" font-size="10" font-weight="bold">NBC 8</text>
   </g>
 </svg>

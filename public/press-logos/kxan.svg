@@ -1,11 +1,10 @@
-<svg width="120" height="26" viewBox="0 0 120 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g fill="currentColor">
-    <path d="M4 20V6H6V12L11 6H13.5L9 12L13.5 20H11L7.5 14L6 16V20H4Z"/>
-    <path d="M16 20L19 14L16 8H18.5L20.5 12L22.5 8H25L22 14L25 20H22.5L20.5 16L18.5 20H16Z"/>
-    <path d="M28.5 18H32.8L33.5 20H36L31.2 6H30L25.2 20H27.8L28.5 18ZM29.1 16L30.65 11.5L32.2 16H29.1Z"/>
-    <path d="M39 20V9H41V10.5C41.8 9.5 43 9 44.5 9C46.8 9 48.5 10.7 48.5 13V20H46.5V13.5C46.5 11.8 45.7 11 44.5 11C43.3 11 42.5 11.8 42.5 13.5V20H39Z"/>
-    <path d="M54 6H58V14H62V6H66V20H62V16H58V20H54V6Z"/>
-    <path d="M70 17.5V16C70 12.5 72.5 9 76.5 9C80.5 9 83 12.5 83 16C83 16.5 83 17 82.9 17.5H72.5C72.7 18.8 73.8 19.5 75.5 19.5C76.8 19.5 77.7 19 78.2 18.2L80.5 19.5C79.5 21 77.8 21.5 75.5 21.5C71.5 21.5 70 18 70 17.5ZM72.5 15.5H80.5C80.3 13.2 79.2 11.5 76.5 11.5C73.8 11.5 72.7 13.2 72.5 15.5Z"/>
-    <path d="M86 6H90V8H92V10H90V16C90 17 90.5 17.5 91.5 17.5H92V20H91C88.5 20 86 19.5 86 16V10H84V8H86V6Z"/>
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#e63946">
+    <path d="M14 28V8H17V16L22 8H25L20 16L25 28H22L18 20L17 21V28H14Z"/>
+    <path d="M31 28V24L34 21L31 18V14L36 20L31 28Z"/>
+    <path d="M42.5 24H46.8L47.5 26H50L45.2 8H44L39.2 26H41.8L42.5 24ZM43.1 22L44.65 14.5L46.2 22H43.1Z"/>
+    <path d="M56 28V18C56 15.8 57.8 14 60 14C62.2 14 64 15.8 64 18V28H61.5V18.5C61.5 17.7 60.8 17 60 17S58.5 17.7 58.5 18.5V28H56Z"/>
+    <rect x="70" y="8" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="80" y="22" text-anchor="middle" fill="currentColor" font-size="10" font-weight="bold">NBC</text>
   </g>
 </svg>
