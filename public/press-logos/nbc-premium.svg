@@ -1,0 +1,17 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="40" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- NBC Peacock -->
+  <g transform="translate(25, 12)">
+    <path d="M8 8L6 4L4 8L6 12L8 8Z" fill="#ff6b35"/>
+    <path d="M12 8L10 4L8 8L10 12L12 8Z" fill="#f7931e"/>
+    <path d="M16 8L14 4L12 8L14 12L16 8Z" fill="#ffd100"/>
+    <path d="M20 8L18 4L16 8L18 12L20 8Z" fill="#22b14c"/>
+    <path d="M24 8L22 4L20 8L22 12L24 8Z" fill="#00a1c9"/>
+    <path d="M28 8L26 4L24 8L26 12L28 8Z" fill="#7209b7"/>
+  </g>
+  <!-- NBC Text -->
+  <g fill="#1a1a1a">
+    <text x="58" y="22" font-family="Arial, sans-serif" font-size="12" font-weight="700">NBC</text>
+  </g>
+  <text x="85" y="22" font-family="Arial, sans-serif" font-size="8" font-weight="400" fill="#666">NEWS</text>
+</svg>

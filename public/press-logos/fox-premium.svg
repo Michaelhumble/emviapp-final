@@ -1,0 +1,16 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="40" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- FOX Logo -->
+  <g fill="#003366">
+    <rect x="25" y="16" width="12" height="2" fill="#003366"/>
+    <rect x="25" y="20" width="8" height="2" fill="#003366"/>
+    <rect x="25" y="24" width="12" height="2" fill="#003366"/>
+    
+    <circle cx="44" cy="20" r="6" fill="none" stroke="#003366" stroke-width="2"/>
+    <path d="M42 18L46 22M46 18L42 22" stroke="#003366" stroke-width="1.5"/>
+    
+    <path d="M56 16L59 20L62 16H64L60 22V26H58V22L54 16H56Z" fill="#003366"/>
+  </g>
+  <rect x="22" y="14" width="3" height="12" fill="#c41e3a" rx="1"/>
+  <text x="75" y="22" font-family="Arial, sans-serif" font-size="8" font-weight="600" fill="#666">NEWS</text>
+</svg>
