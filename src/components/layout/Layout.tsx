@@ -27,6 +27,14 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
   // Show mobile bottom navbar only if not explicitly hidden
   const showMobileNav = isMobile && !hideMobileNav;
 
+  // Debug logging for chat visibility
+  console.log('🏗️ Layout render:', {
+    isMobile,
+    showMobileNav,
+    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 'unknown',
+    pathname: location.pathname
+  });
+
   return (
     <PerformanceProvider>
       <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">

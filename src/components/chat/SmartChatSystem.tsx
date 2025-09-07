@@ -44,6 +44,15 @@ const SmartChatSystem: React.FC = () => {
   const location = useLocation();
   const { isSignedIn, userRole } = useAuth();
 
+  console.log('🤖 SmartChatSystem render:', {
+    isMobile,
+    isOpen,
+    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 'unknown',
+    messagesCount: messages.length,
+    isSignedIn,
+    userRole
+  });
+
   // Build route-aware + role-aware initial CTAs
   const getInitialCTAs = (
     path: string,
