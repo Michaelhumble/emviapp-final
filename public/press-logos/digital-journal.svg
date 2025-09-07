@@ -1,0 +1,14 @@
+<svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(16, 28)">
+    <!-- Digital Journal simplified -->
+    <rect x="2" y="2" width="52" height="36" rx="2" fill="#2563EB" stroke="#1E40AF" stroke-width="1"/>
+    <rect x="6" y="6" width="44" height="4" fill="#FFFFFF"/>
+    <rect x="6" y="14" width="32" height="2" fill="#FFFFFF"/>
+    <rect x="6" y="18" width="36" height="2" fill="#FFFFFF"/>
+    <rect x="6" y="22" width="28" height="2" fill="#FFFFFF"/>
+    <rect x="6" y="26" width="40" height="2" fill="#FFFFFF"/>
+    <rect x="6" y="30" width="24" height="2" fill="#FFFFFF"/>
+    <!-- "D" accent -->
+    <path d="M42 14 L42 26 L50 26 Q52 26 53 25 Q54 24 54 22 L54 18 Q54 16 53 15 Q52 14 50 14 Z M46 18 L50 18 Q50 18 50 20 Q50 22 50 22 L46 22 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

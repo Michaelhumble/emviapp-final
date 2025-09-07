@@ -1,0 +1,8 @@
+<svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(18, 28)">
+    <!-- FOX logo -->
+    <path d="M0 0 L0 24 L4 24 L4 16 L12 16 L12 12 L4 12 L4 4 L16 4 L16 0 Z" fill="#003366"/>
+    <path d="M20 8 Q16 8 14 10 Q12 12 12 16 Q12 20 14 22 Q16 24 20 24 Q24 24 26 22 Q28 20 28 16 Q28 12 26 10 Q24 8 20 8 Z M20 12 Q22 12 22 16 Q22 20 20 20 Q18 20 18 16 Q18 12 20 12 Z" fill="#003366"/>
+    <path d="M32 8 L44 16 L32 24 L32 28 L52 16 L32 4 Z" fill="#003366"/>
+  </g>
+</svg>
