@@ -9,6 +9,13 @@ export type PressOutlet = {
 
 export const PRESS_OUTLETS: PressOutlet[] = [
   {
+    id: "ap",
+    name: "AP News",
+    href: "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
+    src: "/press-logos/ap.svg",
+    live: true,
+  },
+  {
     id: "yahoo",
     name: "Yahoo",
     href: "https://search.yahoo.com/search?p=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",

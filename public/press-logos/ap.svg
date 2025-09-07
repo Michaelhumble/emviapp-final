@@ -1,0 +1,9 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="40" rx="20" fill="white"/>
+  <g transform="translate(60, 20)">
+    <!-- AP Text -->
+    <text x="-12" y="2" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">AP</text>
+    <!-- Red underline -->
+    <rect x="-18" y="6" width="36" height="2" fill="#F01D24"/>
+  </g>
+</svg>
