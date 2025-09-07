@@ -12,9 +12,9 @@ const PressMarquee: React.FC = () => {
 
   // Build sources synchronously from static data with reordering
   const reorderSources = (outletData: Array<{key: string, name: string, domain: string, url: string, logo: string}>) => {
-    const priorityFirst = outletData.filter(o => ['benzinga', 'ap'].includes(o.key));
+    const priorityFirst = outletData.filter(o => ['ap'].includes(o.key));
     const yahooGoogle = outletData.filter(o => ['yahoo', 'googlenews'].includes(o.key));
-    const rest = outletData.filter(o => !['benzinga', 'ap', 'yahoo', 'googlenews'].includes(o.key));
+    const rest = outletData.filter(o => !['ap', 'yahoo', 'googlenews'].includes(o.key));
     
     return [...priorityFirst, ...rest, ...yahooGoogle];
   };
@@ -111,7 +111,6 @@ const PressMarquee: React.FC = () => {
                     onError={(e) => {
                       // Extract domain for fallback
                       const domain = item.key === 'ap' ? 'apnews.com' : 
-                                   item.key === 'benzinga' ? 'benzinga.com' :
                                    item.key === 'kron4' ? 'kron4.com' :
                                    item.key === 'bingnews' ? 'bing.com' :
                                    item.key === 'yahoo' ? 'yahoo.com' :

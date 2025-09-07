@@ -66,12 +66,6 @@ const EmviAppPressPage = () => {
       logo: 'KGET17',
       url: 'https://www.kget.com/business/press-releases/ein-presswire/843218633/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry',
       description: 'Bakersfield'
-    },
-    {
-      name: 'Benzinga',
-      logo: 'BENZINGA',
-      url: 'https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry',
-      description: 'Financial News'
     }
   ];
 

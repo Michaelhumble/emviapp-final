@@ -65,14 +65,6 @@ const PressAnalyticsDashboard = () => {
             lastClick: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
           },
           {
-            outlet: 'Benzinga',
-            mentions: 1,
-            clicks: 245,
-            ctr: 3.8,
-            assistedSignups: 6,
-            lastClick: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-          },
-          {
             outlet: 'Yahoo Finance',
             mentions: 1,
             clicks: 156,
@@ -94,11 +86,6 @@ const PressAnalyticsDashboard = () => {
             outlet: 'Associated Press',
             timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
             type: 'click'
-          },
-          {
-            outlet: 'Benzinga',
-            timestamp: new Date(Date.now() - 32 * 60 * 1000).toISOString(), 
-            type: 'signup'
           },
           {
             outlet: 'Yahoo Finance',

@@ -64,7 +64,7 @@ const PressPage: React.FC = () => {
     <>
       <DynamicSEO
         title="Press & Media Coverage | EmviApp"
-        description="EmviApp press coverage and media resources for the first AI-powered growth engine for the global beauty industry. Featured in AP News, Benzinga, and major news outlets."
+        description="EmviApp press coverage and media resources for the first AI-powered growth engine for the global beauty industry. Featured in AP News and major news outlets."
         canonicalUrl="https://emvi.app/press/emviapp-ai-powered-growth-engine"
         tags={['press', 'media', 'news', 'beauty industry', 'AI', 'EmviApp', 'coverage']}
         structuredData={structuredData}

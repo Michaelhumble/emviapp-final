@@ -131,7 +131,7 @@ const PressPage: React.FC = () => {
       <Helmet>
         <title>Press & Media - EmviApp AI Beauty Platform Coverage</title>
         <meta name="description" content="Read media coverage about EmviApp's launch as the first AI-powered growth engine for beauty professionals, salons, and artists. Featured in AP News, Yahoo News, major TV networks and financial outlets." />
-        <meta name="keywords" content="EmviApp press, beauty industry AI, press coverage, media mentions, AP News, Yahoo News, Benzinga, beauty technology news" />
+        <meta name="keywords" content="EmviApp press, beauty industry AI, press coverage, media mentions, AP News, Yahoo News, beauty technology news" />
         
         {/* Open Graph */}
         <meta property="og:title" content="Press & Media - EmviApp AI Beauty Platform Coverage" />

@@ -28,7 +28,7 @@ export const getLogoUrl = (outlet: Outlet): string => {
 };
 
 // Priority order for marquee display
-const PRIORITY_ORDER = ['ap', 'yahoo', 'googlenews', 'bingnews', 'benzinga', 'kron4', 'fox40', 'kget17', 'wfla', 'cbs13', 'wgn9', 'kxan'];
+const PRIORITY_ORDER = ['ap', 'yahoo', 'googlenews', 'bingnews', 'kron4', 'fox40', 'kget17', 'wfla', 'cbs13', 'wgn9', 'kxan'];
 
 // Tier weights for marquee rotation
 const TIER_WEIGHTS = {

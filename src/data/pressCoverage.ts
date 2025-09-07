@@ -118,14 +118,6 @@ export const PRESS_COVERAGE: PressItem[] = [
     live: true 
   },
 
-  // EXCLUDE Benzinga (410) → live: false
-  { 
-    outlet: "Benzinga", 
-    url: "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry", 
-    logo: "/press-logos/benzinga.svg", 
-    tag: "syndication", 
-    live: false 
-  },
 ];
 
 export const getLiveCoverage = () => PRESS_COVERAGE.filter(item => item.live);

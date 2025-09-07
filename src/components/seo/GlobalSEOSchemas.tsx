@@ -9,7 +9,6 @@ const GlobalSEOSchemas = () => {
     "url": "https://emvi.app",
     "logo": "https://emvi.app/icons/emvi-master-512.png",
     "sameAs": [
-      "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
       "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
       "https://twitter.com/EmviApp",
       "https://www.linkedin.com/company/emviapp/"

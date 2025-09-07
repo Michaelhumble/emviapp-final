@@ -48,12 +48,6 @@ async function getRecentPressItems(): Promise<NewsItem[]> {
       lastmod: '2025-01-20T10:00:00.000Z',
       title: 'EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry',
       type: 'press' as const
-    },
-    {
-      loc: 'https://www.emvi.app/press/benzinga-beauty-tech-revolution',
-      lastmod: '2025-01-20T09:00:00.000Z',
-      title: 'EmviApp Launches First AI-Powered Growth Engine for the Global Beauty Industry',
-      type: 'press' as const
     }
   ].filter(item => new Date(item.lastmod) > twoDaysAgo);
   
