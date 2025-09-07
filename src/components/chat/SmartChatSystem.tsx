@@ -44,15 +44,6 @@ const SmartChatSystem: React.FC = () => {
   const location = useLocation();
   const { isSignedIn, userRole } = useAuth();
 
-  console.log('🤖 SmartChatSystem render:', {
-    isMobile,
-    isOpen,
-    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 'unknown',
-    messagesCount: messages.length,
-    isSignedIn,
-    userRole
-  });
-
   // Build route-aware + role-aware initial CTAs
   const getInitialCTAs = (
     path: string,
@@ -256,7 +247,7 @@ const SmartChatSystem: React.FC = () => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`fixed ${isMobile ? 'inset-4' : 'bottom-6 right-6'} z-[9999] ${isMobile ? 'w-auto h-auto' : 'w-96 h-[600px]'} max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]`}
+            className={`fixed ${isMobile ? 'inset-4' : 'bottom-6 right-6'} z-50 ${isMobile ? 'w-auto h-auto' : 'w-96 h-[600px]'} max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]`}
             style={{
               background: 'linear-gradient(145deg, #ffffff 0%, #fefefe 100%)',
               borderRadius: '28px',

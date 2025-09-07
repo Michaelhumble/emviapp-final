@@ -2556,75 +2556,6 @@ export type Database = {
         }
         Relationships: []
       }
-      hubspot_counters: {
-        Row: {
-          contacts_created: number | null
-          created_at: string | null
-          date: string
-          deals_created: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          contacts_created?: number | null
-          created_at?: string | null
-          date: string
-          deals_created?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          contacts_created?: number | null
-          created_at?: string | null
-          date?: string
-          deals_created?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      hubspot_events: {
-        Row: {
-          attempts: number | null
-          contact_id: string | null
-          created_at: string | null
-          deal_id: string | null
-          email_domain: string | null
-          email_hash: string | null
-          id: string
-          idempotency_key: string
-          message: string | null
-          payload: Json | null
-          status: string
-          type: string
-        }
-        Insert: {
-          attempts?: number | null
-          contact_id?: string | null
-          created_at?: string | null
-          deal_id?: string | null
-          email_domain?: string | null
-          email_hash?: string | null
-          id?: string
-          idempotency_key: string
-          message?: string | null
-          payload?: Json | null
-          status: string
-          type: string
-        }
-        Update: {
-          attempts?: number | null
-          contact_id?: string | null
-          created_at?: string | null
-          deal_id?: string | null
-          email_domain?: string | null
-          email_hash?: string | null
-          id?: string
-          idempotency_key?: string
-          message?: string | null
-          payload?: Json | null
-          status?: string
-          type?: string
-        }
-        Relationships: []
-      }
       indexing_logs: {
         Row: {
           action: string
@@ -5585,10 +5516,6 @@ export type Database = {
           p_window_minutes?: number
         }
         Returns: boolean
-      }
-      cleanup_old_hubspot_events: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
       }
       create_community_notification: {
         Args: {

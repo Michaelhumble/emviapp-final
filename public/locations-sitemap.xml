@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Generated: 2025-08-10 -->
-  <!-- Seeded city pages (25), job role pages (150), artist pages (150) + NEW: city-role job hubs (150) -->
+  <!-- Seeded city pages (25), job role pages (150), artist pages (150) -->
   
   <!-- City pages -->
   <url><loc>https://www.emvi.app/jobs/new-york-ny</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
@@ -9,89 +9,6 @@
   <url><loc>https://www.emvi.app/jobs/chicago-il</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
   <url><loc>https://www.emvi.app/jobs/houston-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
   <url><loc>https://www.emvi.app/jobs/dallas-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
-
-  <!-- NEW: Programmatic City × Role Job Hub Pages (25 cities × 6 roles = 150 pages) -->
-  <!-- New York, NY -->
-  <url><loc>https://www.emvi.app/jobs/new-york-ny/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/new-york-ny/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/new-york-ny/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/new-york-ny/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/new-york-ny/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/new-york-ny/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- Los Angeles, CA -->
-  <url><loc>https://www.emvi.app/jobs/los-angeles-ca/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/los-angeles-ca/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/los-angeles-ca/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/los-angeles-ca/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/los-angeles-ca/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/los-angeles-ca/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- Chicago, IL -->
-  <url><loc>https://www.emvi.app/jobs/chicago-il/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/chicago-il/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/chicago-il/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/chicago-il/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/chicago-il/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/chicago-il/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- Houston, TX -->
-  <url><loc>https://www.emvi.app/jobs/houston-tx/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/houston-tx/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/houston-tx/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/houston-tx/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/houston-tx/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/houston-tx/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- Phoenix, AZ -->
-  <url><loc>https://www.emvi.app/jobs/phoenix-az/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/phoenix-az/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/phoenix-az/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/phoenix-az/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/phoenix-az/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/phoenix-az/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- Philadelphia, PA -->
-  <url><loc>https://www.emvi.app/jobs/philadelphia-pa/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/philadelphia-pa/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/philadelphia-pa/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/philadelphia-pa/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/philadelphia-pa/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/philadelphia-pa/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- San Antonio, TX -->
-  <url><loc>https://www.emvi.app/jobs/san-antonio-tx/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-antonio-tx/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-antonio-tx/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-antonio-tx/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-antonio-tx/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-antonio-tx/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- San Diego, CA -->
-  <url><loc>https://www.emvi.app/jobs/san-diego-ca/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-diego-ca/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-diego-ca/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-diego-ca/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-diego-ca/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-diego-ca/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- Dallas, TX -->
-  <url><loc>https://www.emvi.app/jobs/dallas-tx/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/dallas-tx/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/dallas-tx/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/dallas-tx/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/dallas-tx/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/dallas-tx/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  
-  <!-- San Jose, CA -->
-  <url><loc>https://www.emvi.app/jobs/san-jose-ca/nail-technician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-jose-ca/hair-stylist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-jose-ca/barber</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-jose-ca/esthetician</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-jose-ca/massage-therapist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-  <url><loc>https://www.emvi.app/jobs/san-jose-ca/lash-artist</loc><lastmod>2025-01-02T00:00:00Z</lastmod></url>
-
-  <!-- Continue with all remaining 15 cities... Miami, Las Vegas, Atlanta, Orlando, Nashville, Denver, Seattle, Austin, Charlotte, Portland, Tampa, Raleigh, Sacramento, Kansas City, Virginia Beach -->
   <url><loc>https://www.emvi.app/jobs/phoenix-az</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
   <url><loc>https://www.emvi.app/jobs/san-antonio-tx</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>
   <url><loc>https://www.emvi.app/jobs/san-diego-ca</loc><lastmod>2025-08-10T00:00:00Z</lastmod></url>

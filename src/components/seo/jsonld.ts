@@ -122,7 +122,7 @@ export const buildJobPostingJsonLd = (job: {
     };
   }
 
-// Build comprehensive job location
+  // Build comprehensive job location
   const jobLocation: any = {
     "@type": "Place"
   };
@@ -348,25 +348,6 @@ export const buildFAQJsonLd = (faqs: Array<{ question: string; answer: string }>
   }))
 });
 
-export const buildHowToJsonLd = (steps: Array<{ name: string; text: string; image?: string }>) => ({
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  "name": "Step-by-Step Guide",
-  "description": "Comprehensive guide with detailed instructions",
-  "step": steps.map((step, index) => ({
-    "@type": "HowToStep",
-    "position": index + 1,
-    "name": step.name,
-    "text": step.text,
-    ...(step.image && {
-      "image": {
-        "@type": "ImageObject",
-        "url": step.image
-      }
-    })
-  }))
-});
-
 export const buildLocalBusinessJsonLd = (salon: {
   id: string;
   name?: string;
@@ -474,75 +455,3 @@ export const buildLocalBusinessJsonLd = (salon: {
 
   return jsonLd;
 };
-
-// Build SoftwareApplication JSON-LD for product pages
-export function buildSoftwareApplicationJsonLd(): any {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "EmviApp",
-    "description": "The first AI-powered growth engine for the global beauty industry, connecting salons, beauty professionals, and customers through intelligent technology.",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "WebApplication",
-    "url": "https://www.emvi.app",
-    "author": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "url": "https://www.emvi.app"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "url": "https://www.emvi.app",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.emvi.app/images/logo.png"
-      }
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock",
-      "description": "Plans available - Contact for pricing"
-    },
-    "featureList": [
-      "AI-powered job matching",
-      "Salon directory and discovery",
-      "Professional networking",
-      "Beauty industry insights",
-      "Career development tools"
-    ]
-  };
-}
-
-// Build Article JSON-LD for press releases  
-export function buildPressArticleJsonLd(): any {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "EmviApp Press Kit & Media Resources",
-    "description": "High-resolution assets, founder information, and media resources for journalists and content creators covering EmviApp.",
-    "url": "https://www.emvi.app/press",
-    "datePublished": "2025-01-09",
-    "dateModified": "2025-01-09",
-    "author": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "url": "https://www.emvi.app"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "EmviApp",
-      "url": "https://www.emvi.app",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.emvi.app/images/logo.png"
-      }
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": "https://www.emvi.app/press"
-    }
-  };
-}

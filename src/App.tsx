@@ -41,7 +41,6 @@ const GlobalJobsPage = lazy(() => import("@/pages/GlobalJobsPage"));
 const JobDetailPage = lazy(() => import("@/pages/JobDetailPage"));
 const CityJobsLanding = lazy(() => import("@/pages/jobs/CityJobsLanding"));
 const RoleCityJobsLanding = lazy(() => import("@/pages/jobs/RoleCityJobsLanding"));
-const CityRoleJobsHub = lazy(() => import("@/pages/jobs/CityRoleJobsHub"));
 const SpecialtyCityLanding = lazy(() => import("@/pages/artists/SpecialtyCityLanding"));
 const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
@@ -146,9 +145,7 @@ const ArtistDetail = lazy(() => import("@/pages/artists/[id]"));
 const EmviMissionVision = lazy(() => import("@/pages/EmviMissionVision"));
 const EmviAppPressPage = lazy(() => import("@/pages/press/EmviAppPressPage"));
 const EmviAppPressDetailPage = lazy(() => import("@/pages/press/EmviAppPressDetailPage"));
-const Pricing = lazy(() => import("@/pages/pricing/PricingPage"));
-const Product = lazy(() => import("@/pages/Product"));
-const Press = lazy(() => import("@/pages/Press"));
+const PressPage = lazy(() => import("@/pages/press"));
 const OldPressPage = lazy(() => import("@/pages/PressPage"));
 const InvestorsPartners = lazy(() => import("@/pages/InvestorsPartners"));
 const PartnersThankYou = lazy(() => import("@/pages/PartnersThankYou"));
@@ -242,12 +239,11 @@ function App() {
                       
                       {/* Other pages */}
                      <Route path="/salons" element={<Layout><SalonsPageRedesigned /></Layout>} />
-                      <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
-                      <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
-                      <Route path="/jobs/:citySlug/:roleSlug" element={<Layout><CityRoleJobsHub /></Layout>} />
-                      <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
-                      <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
-                      <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
+                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                     <Route path="/jobs/in/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
+                     <Route path="/jobs/:role/:cityState" element={<Layout><RoleCityJobsLanding /></Layout>} />
+                     <Route path="/jobs/:cityState" element={<Layout><CityJobsLanding /></Layout>} />
+                     <Route path="/jobs/:id" element={<Layout><JobDetailPage /></Layout>} />
                      <Route path="/job/:jobId" element={<Navigate to="/jobs/:jobId" replace />} />
                      <Route path="/jobs-optimized" element={<OptimizedJobsPage />} />
                      <Route path="/artists" element={<Suspense fallback={<SimpleLoadingFallback />}><Artists /></Suspense>} />
@@ -282,8 +278,7 @@ function App() {
                      <Route path="/thank-you" element={<Suspense fallback={<SimpleLoadingFallback />}><ThankYou /></Suspense>} />
                      <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
                      <Route path="/performance" element={<Layout><PerformanceAudit /></Layout>} />
-                       <Route path="/product" element={<Layout><Product /></Layout>} />
-                       <Route path="/press" element={<Layout><Press /></Layout>} />
+                      <Route path="/press" element={<Layout><PressPage /></Layout>} />
                       <Route path="/press/:slug" element={<Layout><EmviAppPressDetailPage /></Layout>} />
                       <Route path="/press/emviapp-ai-powered-growth-engine" element={<Layout><EmviAppPressPage /></Layout>} />
                      <Route path="/emviapp-mission-vision" element={<Layout><EmviMissionVision /></Layout>} />

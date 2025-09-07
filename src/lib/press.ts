@@ -1,5 +1,4 @@
-// Legacy press system - kept for existing components compatibility
-// The main "AS SEEN ON" section now uses @/data/pressOutlets
+import outletsData from '@/data/outlets.json';
 
 export interface Outlet {
   key: string;
@@ -15,8 +14,7 @@ export interface Outlet {
   type: 'article' | 'aggregator';
 }
 
-// Empty array - this system is being phased out in favor of @/data/pressOutlets
-export const OUTLETS: Outlet[] = [];
+export const OUTLETS: Outlet[] = outletsData as Outlet[];
 
 // Get logo URL with Clearbit fallback and final fallback
 export const getLogoUrl = (outlet: Outlet): string => {
@@ -29,17 +27,36 @@ export const getLogoUrl = (outlet: Outlet): string => {
   return `https://logo.clearbit.com/${outlet.domain}?size=256`;
 };
 
-// Priority order for marquee display - deprecated
+// Priority order for marquee display
 const PRIORITY_ORDER = ['ap', 'yahoo', 'googlenews', 'bingnews', 'benzinga', 'kron4', 'fox40', 'kget17', 'wfla', 'cbs13', 'wgn9', 'kxan'];
 
-// Get weighted outlets for marquee display with priority order - deprecated
-export const getWeightedOutlets = (count: number = 10): Outlet[] => {
-  return [];
+// Tier weights for marquee rotation
+const TIER_WEIGHTS = {
+  national: 4,
+  finance: 3,
+  search: 2,
+  local_tv: 1,
+  business: 1,
+  aggregator: 1
 };
 
-// Get outlet by key - deprecated
+// Get weighted outlets for marquee display with priority order
+export const getWeightedOutlets = (count: number = 10): Outlet[] => {
+  // Start with priority outlets in order
+  const priorityOutlets = PRIORITY_ORDER
+    .map(key => OUTLETS.find(o => o.key === key))
+    .filter(Boolean) as Outlet[];
+  
+  // Add remaining outlets if needed
+  const remaining = OUTLETS.filter(o => !PRIORITY_ORDER.includes(o.key));
+  const allOutlets = [...priorityOutlets, ...remaining];
+  
+  return allOutlets.slice(0, count);
+};
+
+// Get outlet by key
 export const getOutletByKey = (key: string): Outlet | undefined => {
-  return undefined;
+  return OUTLETS.find(outlet => outlet.key === key);
 };
 
 // Format date for display

@@ -178,13 +178,8 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
     onClick();
   }, [onClick]);
 
-  // Calculate dynamic positioning - but only for mobile
+  // Calculate dynamic positioning
   const getDynamicStyles = useCallback(() => {
-    // On desktop, let Layout.tsx handle positioning with CSS classes
-    if (!isMobile) {
-      return {};
-    }
-
     const navInfo = getNavigationInfo();
     const baseBottom = navInfo.bottomNavHeight + MOBILE_LAYOUT.SAFE_AREAS.SIDE_PADDING;
     const keyboardOffset = isKeyboardVisible ? -navInfo.bottomNavHeight + 16 : 0;
@@ -201,15 +196,10 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
       ...horizontalPosition,
       zIndex: MOBILE_LAYOUT.Z_INDEX.FAB_PRIMARY + 1 // Higher than other FABs
     };
-  }, [isMobile, getNavigationInfo, isKeyboardVisible, isAvoidingNav, position, scrollDirection]);
+  }, [getNavigationInfo, isKeyboardVisible, isAvoidingNav, position, scrollDirection]);
 
-  // Render on all screen sizes - removed desktop restriction
-  console.log('🌞 SmartChatButton render check:', {
-    isMobile,
-    isOpen,
-    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 'unknown',
-    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
-  });
+  // Don't render on desktop
+  if (!isMobile) return null;
 
   return (
     <AnimatePresence>
@@ -224,8 +214,8 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
             y: isAvoidingNav ? -10 : 0
           }}
           exit={{ scale: 0, opacity: 0, rotate: 180 }}
-          style={isMobile ? getDynamicStyles() : {}}
-          className={isMobile ? "fixed" : ""}
+          style={getDynamicStyles()}
+          className="fixed"
         >
           {/* Glowing aura - enhanced for accessibility */}
           <motion.div

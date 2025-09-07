@@ -27,14 +27,6 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
   // Show mobile bottom navbar only if not explicitly hidden
   const showMobileNav = isMobile && !hideMobileNav;
 
-  // Debug logging for chat visibility
-  console.log('🏗️ Layout render:', {
-    isMobile,
-    showMobileNav,
-    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 'unknown',
-    pathname: location.pathname
-  });
-
   return (
     <PerformanceProvider>
       <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
@@ -50,10 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {/* Show the unified bottom navbar on all pages */}
         {showMobileNav && <UnifiedMobileNavigation />}
         
-        {/* Sunshine Chat Widget - Visible on all breakpoints */}
-        <div id="sunshine-root" className="fixed bottom-4 right-4 z-[10000] md:bottom-6 md:right-6">
-          <ChatSystem />
-        </div>
+        <ChatSystem />
       </div>
     </PerformanceProvider>
   );

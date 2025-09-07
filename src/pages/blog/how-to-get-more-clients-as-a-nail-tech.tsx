@@ -1,7 +1,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import BaseSEO from '@/components/seo/BaseSEO';
-import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd, buildHowToJsonLd } from '@/components/seo/jsonld';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd } from '@/components/seo/jsonld';
 import { Container } from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,21 +45,6 @@ const HowToGetMoreClientsAsNailTech = () => {
     { name: title, url: `https://www.emvi.app${canonical}` }
   ];
 
-  const steps = [
-    { name: "Master Your Craft and Specialize", text: "Develop signature techniques and stay current with trends to set yourself apart from competitors." },
-    { name: "Build a Strong Social Media Presence", text: "Use Instagram and TikTok to showcase your work with high-quality photos and engaging content." },
-    { name: "Optimize Your Online Booking System", text: "Make booking effortless with user-friendly scheduling and clear service descriptions." },
-    { name: "Leverage Local SEO and Partnerships", text: "Claim business listings and partner with complementary businesses for cross-referrals." },
-    { name: "Create Exceptional Client Experiences", text: "Provide personalized service and create a welcoming atmosphere for client retention." },
-    { name: "Implement Strategic Pricing", text: "Use value-based pricing and create package deals to increase revenue." },
-    { name: "Develop a Referral Program", text: "Incentivize word-of-mouth marketing and make referrals easy for clients." },
-    { name: "Utilize Email Marketing", text: "Stay top-of-mind with regular communication and seasonal campaigns." },
-    { name: "Offer Mobile and Flexible Services", text: "Meet clients where they are with mobile services and extended hours." },
-    { name: "Build Professional Networks", text: "Connect with industry professionals and develop mentor relationships." },
-    { name: "Track and Analyze Your Business", text: "Monitor key metrics and collect client feedback for continuous improvement." },
-    { name: "Stay Consistent and Patient", text: "Building a loyal client base takes time - maintain consistency in all efforts." }
-  ];
-
   return (
     <Layout>
       <BaseSEO
@@ -69,8 +54,7 @@ const HowToGetMoreClientsAsNailTech = () => {
         jsonLd={[
           buildArticleJsonLd(articleData),
           buildBreadcrumbJsonLd(breadcrumbData),
-          buildFAQJsonLd(faqData),
-          buildHowToJsonLd(steps)
+          buildFAQJsonLd(faqData)
         ]}
         type="article"
       />

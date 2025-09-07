@@ -1,8 +1,0 @@
-<svg width="100" height="60" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100" height="60" rx="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <g transform="translate(8, 18)">
-    <rect x="0" y="0" width="4" height="4" fill="#c41e3a"/>
-    <text x="8" y="12" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#c41e3a">DIGITAL</text>
-    <text x="8" y="20" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#c41e3a">JOURNAL</text>
-  </g>
-</svg>
