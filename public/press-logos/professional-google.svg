@@ -1,0 +1,8 @@
+<svg width="100" height="60" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="60" rx="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <g transform="translate(10, 18)">
+    <path d="M15 12C15 11.2 14.8 10.4 14.5 9.7H8V14H11.7C11.5 15.3 10.6 16.2 9.3 16.2C7.7 16.2 6.3 14.8 6.3 13.2S7.7 10.2 9.3 10.2C10.1 10.2 10.8 10.5 11.3 11L13.8 8.5C12.7 7.4 11.1 6.8 9.3 6.8C5.9 6.8 3 9.7 3 13.2S5.9 19.6 9.3 19.6C12.8 19.6 15 17.1 15 13.2V12Z" fill="#4285f4"/>
+    <text x="35" y="16" font-family="Arial, sans-serif" font-size="9" font-weight="600" fill="#5f6368">Google</text>
+    <text x="45" y="14" font-family="Arial, sans-serif" font-size="7" font-weight="400" fill="#666">NEWS</text>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<svg width="100" height="60" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="60" rx="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <g transform="translate(15, 15)">
+    <!-- NBC Peacock Feathers -->
+    <path d="M10 15L8 10L6 15L8 20L10 15Z" fill="#ff6b35"/>
+    <path d="M14 15L12 10L10 15L12 20L14 15Z" fill="#f7931e"/>
+    <path d="M18 15L16 10L14 15L16 20L18 15Z" fill="#ffd100"/>
+    <path d="M22 15L20 10L18 15L20 20L22 15Z" fill="#22b14c"/>
+    <path d="M26 15L24 10L22 15L24 20L26 15Z" fill="#00a1c9"/>
+    <path d="M30 15L28 10L26 15L28 20L30 15Z" fill="#7209b7"/>
+    <text x="35" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#000000">NBC</text>
+  </g>
+</svg>
