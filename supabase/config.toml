@@ -1,6 +1,9 @@
 
 project_id = "wwhqbjrhbajpabfdwnip"
 
+[functions.sunshine-api]
+verify_jwt = false
+
 [functions.partner-contact]
 verify_jwt = false
 

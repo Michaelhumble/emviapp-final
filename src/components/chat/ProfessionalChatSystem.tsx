@@ -152,9 +152,13 @@ const ProfessionalChatSystem: React.FC = () => {
         throw new Error('Chat temporarily unavailable in PWA mode. Please use the web version.');
       }
       
-      // Call the real Little Sunshine edge function
-      const { data, error } = await supabase.functions.invoke('sunshine-chat', {
-        body: { message: currentInput }
+      // Call the unified Little Sunshine API
+      const { data, error } = await supabase.functions.invoke('sunshine-api', {
+        body: { 
+          message: currentInput,
+          platform: 'website',
+          userId: isSignedIn ? 'authenticated' : 'anonymous'
+        }
       });
 
       if (error) {
@@ -165,21 +169,10 @@ const ProfessionalChatSystem: React.FC = () => {
       console.log('✅ [SUNSHINE] Response from Little Sunshine:', data);
       
       // Create AI response with the actual trained response
-      const aiResponse = data.message || "Hi! I'm Little Sunshine ☀️ I'm having a moment, but I'm here to help! Try asking me about beauty tips or salon services!";
+      const aiResponse = data.reply || "Hi! I'm Little Sunshine ☀️ I'm having a moment, but I'm here to help! Try asking me about beauty tips or salon services!";
       
-      // Smart CTA buttons based on Little Sunshine's response content
-      let ctaButtons: Array<{ label: string; route: string; variant?: 'primary' | 'secondary' }> = [];
-      
-      // Check if the response suggests specific actions
-      if (aiResponse.toLowerCase().includes('post') && aiResponse.toLowerCase().includes('job')) {
-        ctaButtons = [{ label: '📝 Post a Job', route: '/post-job', variant: 'primary' }];
-      } else if (aiResponse.toLowerCase().includes('browse') && aiResponse.toLowerCase().includes('job')) {
-        ctaButtons = [{ label: '🔍 Browse Jobs', route: '/jobs', variant: 'primary' }];
-      } else if (aiResponse.toLowerCase().includes('salon') && aiResponse.toLowerCase().includes('sell')) {
-        ctaButtons = [{ label: '🏢 List Your Salon', route: '/sell-salon', variant: 'primary' }];
-      } else if (aiResponse.toLowerCase().includes('sign up')) {
-        ctaButtons = [{ label: '✨ Sign Up Now', route: '/auth/signup', variant: 'primary' }];
-      }
+      // Smart CTA buttons from Little Sunshine API
+      const ctaButtons = data.ctaButtons || [];
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
