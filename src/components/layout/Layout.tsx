@@ -42,7 +42,10 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {/* Show the unified bottom navbar on all pages */}
         {showMobileNav && <UnifiedMobileNavigation />}
         
-        <ChatSystem />
+        {/* Sunshine Chat Widget - Visible on all breakpoints */}
+        <div id="sunshine-root" className="fixed bottom-4 right-4 z-[10000] md:bottom-6 md:right-6">
+          <ChatSystem />
+        </div>
       </div>
     </PerformanceProvider>
   );

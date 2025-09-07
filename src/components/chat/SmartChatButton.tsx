@@ -198,8 +198,7 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
     };
   }, [getNavigationInfo, isKeyboardVisible, isAvoidingNav, position, scrollDirection]);
 
-  // Don't render on desktop
-  if (!isMobile) return null;
+  // Render on all screen sizes - removed desktop restriction
 
   return (
     <AnimatePresence>
