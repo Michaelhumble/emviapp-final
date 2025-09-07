@@ -1,0 +1,16 @@
+<svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="60" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <g transform="translate(15, 15)">
+    <!-- USA TODAY circle logo -->
+    <circle cx="12" cy="15" r="10" fill="#1e88e5"/>
+    <circle cx="12" cy="15" r="6" fill="#ffffff"/>
+    <circle cx="12" cy="15" r="3" fill="#1e88e5"/>
+    
+    <!-- USA TODAY text -->
+    <text x="28" y="12" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#1e88e5">USA</text>
+    <text x="28" y="22" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#1e88e5">TODAY</text>
+    
+    <!-- Network indicator -->
+    <text x="25" y="32" font-family="Arial, sans-serif" font-size="6" font-weight="500" fill="#666666">NETWORK</text>
+  </g>
+</svg>
