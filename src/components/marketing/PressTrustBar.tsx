@@ -21,20 +21,18 @@ export default function PressTrustBar() {
               href={i.href}
               target="_blank" 
               rel="noopener nofollow"
-              className="group block"
+              className="group inline-flex h-20 w-20 items-center justify-center rounded-full bg-white ring-1 ring-black/5 shadow-sm hover:shadow-md"
               aria-label={`${i.name} coverage`}
             >
-              <div className="flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-white shadow-sm border border-black/5 transition-transform motion-safe:hover:-translate-y-0.5">
-                <img
-                  src={i.src}
-                  alt={i.name}
-                  className="max-h-[22px] w-auto opacity-80 group-hover:opacity-100"
-                  loading="lazy" 
-                  decoding="async"
-                  width={64}
-                  height={64}
-                />
-              </div>
+              <img
+                src={i.src}
+                alt={i.name}
+                className="h-10 w-10 object-contain"
+                loading="lazy" 
+                decoding="async"
+                width={40}
+                height={40}
+              />
             </a>
           </li>
         ))}
