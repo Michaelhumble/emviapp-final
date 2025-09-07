@@ -20,17 +20,12 @@ const PressMarquee: React.FC = () => {
   };
 
   const orderedOutlets = reorderSources(outlets);
-  console.log('🔍 [PRESS DEBUG] Raw outlets loaded:', outlets.length, 'items');
-  console.log('🔍 [PRESS DEBUG] First few outlets:', outlets.slice(0, 3).map(o => ({ key: o.key, name: o.name, logo: o.logo })));
-  
   const sources = orderedOutlets.map(outlet => ({
     key: outlet.key,
     name: outlet.name,
     href: outlet.url,
     src: outlet.logo || `https://logo.clearbit.com/${outlet.domain}?size=256`
   }));
-  
-  console.log('🔍 [PRESS DEBUG] Generated sources:', sources.slice(0, 3).map(s => ({ key: s.key, name: s.name, src: s.src })));
   
   // Duplicate the array once for seamless scroll before render
   const track = [...sources, ...sources];

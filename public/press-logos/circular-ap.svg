@@ -1,0 +1,7 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="40" r="39" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+  <g transform="translate(20, 25)">
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#1a1a1a">AP</text>
+    <text x="0" y="32" font-family="Arial, sans-serif" font-size="8" font-weight="500" fill="#666666">NEWS</text>
+  </g>
+</svg>
