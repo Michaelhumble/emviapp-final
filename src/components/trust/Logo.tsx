@@ -86,7 +86,9 @@ const Logo: React.FC<LogoProps> = ({
       <img
         src={logo}
         alt={alt}
-        className={`w-full h-auto max-w-[120px] max-h-16 object-contain filter grayscale hover:grayscale-0 transition-all duration-300 ${
+        className={`w-full h-auto max-w-[120px] max-h-16 object-contain ${
+          name === 'AP News' ? '' : 'filter grayscale hover:grayscale-0'
+        } transition-all duration-300 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         onError={handleError}
