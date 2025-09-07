@@ -6,9 +6,6 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 import { PerformanceProvider } from '@/components/performance/PerformanceProvider';
-
-
-import ChatSystem from '@/components/chat/ChatSystem';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import UnifiedMobileNavigation from '@/components/layout/UnifiedMobileNavigation';
@@ -42,7 +39,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
         {/* Show the unified bottom navbar on all pages */}
         {showMobileNav && <UnifiedMobileNavigation />}
         
-        <ChatSystem />
+        {/* Moved ChatSystem to global App.tsx mount - now renders on all routes */}
+        
       </div>
     </PerformanceProvider>
   );

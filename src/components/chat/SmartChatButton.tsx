@@ -178,8 +178,18 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
     onClick();
   }, [onClick]);
 
-  // Calculate dynamic positioning
+  // Calculate dynamic positioning - now supports both mobile and desktop
   const getDynamicStyles = useCallback(() => {
+    // Desktop positioning
+    if (!isMobile) {
+      return {
+        bottom: '24px',
+        right: '24px',
+        zIndex: 10000
+      };
+    }
+    
+    // Mobile positioning (existing logic)
     const navInfo = getNavigationInfo();
     const baseBottom = navInfo.bottomNavHeight + MOBILE_LAYOUT.SAFE_AREAS.SIDE_PADDING;
     const keyboardOffset = isKeyboardVisible ? -navInfo.bottomNavHeight + 16 : 0;
@@ -196,10 +206,9 @@ export const SmartChatButton: React.FC<SmartChatButtonProps> = ({
       ...horizontalPosition,
       zIndex: MOBILE_LAYOUT.Z_INDEX.FAB_PRIMARY + 1 // Higher than other FABs
     };
-  }, [getNavigationInfo, isKeyboardVisible, isAvoidingNav, position, scrollDirection]);
+  }, [isMobile, getNavigationInfo, isKeyboardVisible, isAvoidingNav, position, scrollDirection]);
 
-  // Don't render on desktop
-  if (!isMobile) return null;
+  // Render on all devices - removed desktop hiding guard
 
   return (
     <AnimatePresence>

@@ -16,6 +16,7 @@ import routes from './routes';
 import LazyIndex from "./pages/LazyIndex";
 import GlobalSEOInjection from '@/components/seo/GlobalSEOInjection';
 import ConsentBanner from '@/components/ConsentBanner';
+import ChatSystem from '@/components/chat/ChatSystem';
 
 // Dev-only performance tools
 import { IS_PROD, PERF_OVERLAY } from '@/lib/env';
@@ -412,7 +413,12 @@ function App() {
                        </Suspense>
                        
                        </FirstTimeVisitorRedirect>
-                         <Toaster />
+        {/* Global Sunshine Chat Widget - renders on all routes and breakpoints */}
+        <div id="sunshine-root" className="fixed bottom-4 right-4 z-[10000] md:bottom-6 md:right-6">
+          <ChatSystem />
+        </div>
+        
+        <Toaster />
                          <ConsentBanner />
                      </OnboardingProvider>
                   </RecommendationProvider>
