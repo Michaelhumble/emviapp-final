@@ -45,13 +45,22 @@ The Sunshine API is a unified endpoint that powers both the EmviApp website chat
    - **Headers:** `Content-Type: application/json`
 
 ### Step 2: Configure Request Body
+**IMPORTANT**: Use the exact variable syntax with double curly braces:
+
 ```json
 {
   "message": "{{last_input_text}}",
-  "userId": "{{contact.id}}",
+  "userId": "{{contact.id}}", 
   "platform": "messenger"
 }
 ```
+
+**Common Mistakes to Avoid:**
+- ❌ `"Last Text Input"` → ✅ `"{{last_input_text}}"`
+- ❌ `"Contact Id"` → ✅ `"{{contact.id}}"`
+- ❌ `"Last Seen in Messenger"` → ✅ `"messenger"`
+
+The platform should be the literal string `"messenger"`, not a variable.
 
 ### Step 3: Handle Response
 - **Response Field:** `reply`
