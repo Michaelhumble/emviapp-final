@@ -32,7 +32,7 @@ const PressMarquee: React.FC = () => {
           As seen on
         </h2>
 
-        <div className="grid grid-flow-col auto-cols-[max-content] gap-6 overflow-x-auto md:overflow-visible justify-center md:justify-center pb-4 scrollbar-hide">
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
           {PRESS_OUTLETS.map((outlet) => (
             <a
               key={outlet.id}
@@ -40,17 +40,15 @@ const PressMarquee: React.FC = () => {
               target="_blank"
               rel="nofollow noopener"
               aria-label={`Read EmviApp press on ${outlet.name}`}
-              className="group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-full"
+              className="group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl transition-all duration-300 hover:scale-105"
             >
-              <div className="h-22 w-22 rounded-full bg-white ring-1 ring-black/5 shadow-sm p-4 flex items-center justify-center transition-transform hover:scale-102 group-focus:scale-102">
+              <div className="h-16 w-32 md:h-20 md:w-40 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center p-3 transition-all duration-300 group-hover:shadow-md group-hover:border-gray-200">
                 <img
                   src={outlet.logo}
                   alt={outlet.alt}
                   loading="lazy"
-                  className="h-full w-full object-contain aspect-square"
+                  className="max-h-full max-w-full object-contain"
                   onError={handleImageError}
-                  width={56}
-                  height={56}
                 />
               </div>
             </a>
@@ -74,29 +72,6 @@ const PressMarquee: React.FC = () => {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-          .h-22 {
-            height: 5.5rem;
-          }
-          .w-22 {
-            width: 5.5rem;
-          }
-          .hover\\:scale-102:hover {
-            transform: scale(1.02);
-          }
-          .group-focus\\:scale-102:focus {
-            transform: scale(1.02);
-          }
-        `
-      }} />
     </section>
   );
 };
