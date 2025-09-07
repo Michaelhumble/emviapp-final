@@ -9,13 +9,6 @@ export type PressOutlet = {
 
 export const PRESS_OUTLETS: PressOutlet[] = [
   {
-    id: "apnews",
-    name: "AP News",
-    href: "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
-    src: "/press-logos/apnews.svg",
-    live: true,
-  },
-  {
     id: "yahoo",
     name: "Yahoo",
     href: "https://search.yahoo.com/search?p=%22EmviApp+Launches+the+First+AI-Powered+Growth+Engine+for+the+Global+Beauty+Industry%22",
@@ -86,12 +79,4 @@ export const PRESS_OUTLETS: PressOutlet[] = [
     live: true,
   },
 
-  // Keep Benzinga, but mark NOT live (410)
-  {
-    id: "benzinga",
-    name: "Benzinga",
-    href: "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
-    src: "/press-logos/benzinga.svg",
-    live: false, // 410 – exclude from homepage until restored
-  },
 ];

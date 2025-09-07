@@ -10,22 +10,6 @@ interface PressOutlet {
 
 export const pressOutlets: PressOutlet[] = [
   {
-    name: "AP News",
-    slug: "ap-news", 
-    logo: "/press-logos/ap.svg",
-    url: "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
-    featured: true,
-    description: "Associated Press coverage of EmviApp's AI-powered beauty platform launch"
-  },
-  {
-    name: "Benzinga",
-    slug: "benzinga",
-    logo: "/press-logos/benzinga.svg", 
-    url: "https://www.benzinga.com/content/47334199/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry",
-    featured: true,
-    description: "Financial news coverage of EmviApp's industry innovation"
-  },
-  {
     name: "KRON4",
     slug: "kron4",
     city: "San Francisco Bay Area",
