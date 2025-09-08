@@ -1,2 +1,21 @@
-Sitemap: https://emvi.app/sitemap.xml
-Sitemap: https://emvi.app/sitemaps/news.xml
+User-agent: *
+Allow: /
+
+# Block admin and auth pages
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow important pages
+Allow: /jobs
+Allow: /artists
+Allow: /salons
+Allow: /blog
+
+Sitemap: https://www.emvi.app/sitemap.xml
+Sitemap: https://www.emvi.app/sitemaps/news.xml
+Sitemap: https://www.emvi.app/sitemaps/artists.xml
+Sitemap: https://www.emvi.app/sitemaps/jobs.xml
