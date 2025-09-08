@@ -116,6 +116,11 @@ const SalonOwnersAttractHireKeepArtists = lazy(() => import("@/pages/blog/salon-
 const BeautyIndustryHiddenJobMarket = lazy(() => import("@/pages/blog/500b-beauty-industry-hidden-job-market"));
 const SideHustleSixFiguresNailTechnicians = lazy(() => import("@/pages/blog/side-hustle-six-figures-nail-technicians"));
 
+// SEO Programmatic Pages
+const CategoryCityPage = lazy(() => import("@/pages/seo/CategoryCityPage"));
+const CategoryOnlyPage = lazy(() => import("@/pages/seo/CategoryOnlyPage"));
+const CityOnlyPage = lazy(() => import("@/pages/seo/CityOnlyPage"));
+
 // Blog Category Pages - Dynamic
 const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
 
@@ -271,8 +276,13 @@ function App() {
                     <Route path="/brows-lashes" element={<Layout><BrowsLashesPage /></Layout>} />
                     <Route path="/tattoo" element={<Layout><TattooPage /></Layout>} />
                     
-                      {/* City Landing Pages - Programmatic SEO */}
-                      <Route path="/cities/:citySlug/:categorySlug" element={<Layout><CityLandingPage /></Layout>} />
+                       {/* SEO Programmatic Pages */}
+                       <Route path="/seo/:category/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryCityPage /></Suspense></Layout>} />
+                       <Route path="/seo/category/:category" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryOnlyPage /></Suspense></Layout>} />
+                       <Route path="/seo/city/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityOnlyPage /></Suspense></Layout>} />
+                       
+                       {/* City Landing Pages - Programmatic SEO */}
+                       <Route path="/cities/:citySlug/:categorySlug" element={<Layout><CityLandingPage /></Layout>} />
                       
                       <Route path="/about" element={<Layout><About /></Layout>} />
                      <Route path="/contact" element={<Layout><Contact /></Layout>} />
