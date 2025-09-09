@@ -38,7 +38,7 @@ if [ ! -f "$SERVICE_ACCOUNT_PATH" ]; then
     echo "4. Save it as: $SERVICE_ACCOUNT_PATH"
     echo "5. Add the service account email as OWNER in Google Search Console"
     echo ""
-    echo "🧪 Running in DRY RUN mode instead..."
+    echo "🧪CredentiaLS not found - running in DRY RUN mode instead..."
     DRY_RUN="--dry-run"
 else
     echo "✅ Service Account JSON found at: $SERVICE_ACCOUNT_PATH"

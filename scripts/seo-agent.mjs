@@ -14,7 +14,7 @@ import yaml from 'js-yaml';
 const args = process.argv.slice(2);
 const SITE_URL = args.find(arg => arg.startsWith('--site='))?.split('=')[1] || process.env.SITE_URL || 'https://www.emvi.app';
 const REPORTS_DIR = args.find(arg => arg.startsWith('--out='))?.split('=')[1] || process.env.REPORTS_DIR || 'reports';
-const DRY_RUN = args.includes('--dry-run') || process.env.DRY_RUN === 'true';
+const DRY_RUN = args.includes('--dry-run') || process.env.DRY_RUN === 'true' || false;
 const CONFIG_PATH = 'agents/seo-agent/config.yaml';
 
 // Ensure reports directory exists

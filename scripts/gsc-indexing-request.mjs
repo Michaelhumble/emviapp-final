@@ -29,7 +29,7 @@ const CONFIG = {
   urlsFile: './reports/seo/priority-indexing-urls-jobs.txt',
   outputDir: './reports/seo/indexing-logs',
   delay: 2000, // 2 seconds between requests
-  dryRun: process.argv.includes('--dry-run'),
+  dryRun: process.argv.includes('--dry-run') || false,
   maxDaily: 180, // Conservative limit to avoid quota exhaustion
   serviceAccountPath: process.env.GOOGLE_APPLICATION_CREDENTIALS || './secrets/google-service-account.json'
 };

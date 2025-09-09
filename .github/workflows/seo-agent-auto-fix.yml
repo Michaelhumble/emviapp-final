@@ -46,11 +46,30 @@ jobs:
           mkdir -p reports/seo
           mkdir -p reports/weekly
       
+      - name: Fail fast on missing env vars
+        run: |
+          echo "🔒 Checking required environment variables..."
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "❌ OPENAI_API_KEY is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
+            echo "❌ GSC_CLIENT_EMAIL is missing"  
+            exit 1
+          fi
+          if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
+            echo "❌ GSC_PRIVATE_KEY is missing"
+            exit 1
+          fi
+          echo "✅ All required environment variables present"
+
       - name: 🔍 Run comprehensive SEO audit
         env:
           AUDIT_SITE: ${{ env.AUDIT_SITE }}
-          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DRY_RUN: false
         run: |
           echo "🔍 Running comprehensive SEO audit for $AUDIT_SITE"
           
@@ -64,7 +83,7 @@ jobs:
           
           # Run SEO agent if available
           if [ -f "scripts/seo-agent.mjs" ]; then
-            node scripts/seo-agent.mjs --site=$AUDIT_SITE --out=reports --dry-run=false || echo "⚠️ SEO agent had issues"
+            node scripts/seo-agent.mjs --site=$AUDIT_SITE --out=reports || echo "⚠️ SEO agent had issues"
           fi
           
           echo "✅ Audit completed"

@@ -41,9 +41,23 @@ jobs:
       - name: Create reports directory
         run: mkdir -p reports
         
+      - name: Fail fast on missing env vars
+        run: |
+          echo "🔒 Checking required environment variables..."
+          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
+            echo "❌ GSC_CLIENT_EMAIL is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
+            echo "❌ GSC_PRIVATE_KEY is missing"
+            exit 1
+          fi
+          echo "✅ All required environment variables present"
+
       - name: Run SEO audit
         env:
           AUDIT_SITE: ${{ env.AUDIT_SITE }}
+          DRY_RUN: false
         run: |
           echo "🔍 Running SEO audit for $AUDIT_SITE"
           if [ -f "scripts/audit-seo.mjs" ]; then
@@ -55,6 +69,8 @@ jobs:
         continue-on-error: true
         
       - name: Validate sitemaps
+        env:
+          DRY_RUN: false
         run: |
           echo "🗺️ Validating sitemaps"
           SITEMAP_BASE_URL=$AUDIT_SITE node scripts/validate-sitemaps.mjs
@@ -62,8 +78,9 @@ jobs:
         
       - name: Generate GSC data (stub)
         env:
-          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
           GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
+          DRY_RUN: false
         run: |
           echo "📊 Pulling Google Search Console data"
           if [ -f "scripts/gsc-pulls.mjs" ]; then

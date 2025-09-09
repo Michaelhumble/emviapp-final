@@ -27,7 +27,7 @@ serve(async (req) => {
   try {
     logStep("Starting weekly affiliate payouts batch job");
     
-    const isDryRun = Deno.env.get('DRY_RUN') === 'true';
+    const isDryRun = Deno.env.get('DRY_RUN') === 'true' || false;
     logStep("Dry run mode", { enabled: isDryRun });
 
     // Get current date for payout period calculation
