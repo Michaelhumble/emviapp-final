@@ -116,12 +116,12 @@ const SalonOwnersAttractHireKeepArtists = lazy(() => import("@/pages/blog/salon-
 const BeautyIndustryHiddenJobMarket = lazy(() => import("@/pages/blog/500b-beauty-industry-hidden-job-market"));
 const SideHustleSixFiguresNailTechnicians = lazy(() => import("@/pages/blog/side-hustle-six-figures-nail-technicians"));
 
-// Vietnamese Blog Articles
-const UngDungTotNhatChoNguoiVietTimViecNail = lazy(() => import("@/pages/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail"));
-const CachDangBanTiemNailOnlineNhanhHieuQua = lazy(() => import("@/pages/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua"));
-const Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung = lazy(() => import("@/pages/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung"));
-const BiQuyetTuyenThoNailNhanhChoThuTiemNguoiViet = lazy(() => import("@/pages/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet"));
-const EmviAppCongDongNguoiVietTrongNganhLamDep = lazy(() => import("@/pages/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep"));
+// Vietnamese Blog Articles (Latest)
+const UngDungTimViecNailTotNhatChoNguoiViet = lazy(() => import("@/pages/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet"));
+const CachBanTiemNailNhanhVaDuocGiaCao = lazy(() => import("@/pages/blog/cach-ban-tiem-nail-nhanh-va-duoc-gia-cao"));
+const Top5WebsiteDangTinTuyenThoNail = lazy(() => import("@/pages/blog/top-5-website-dang-tin-tuyen-tho-nail"));
+const BiQuyetTuyenThoNailGioiNhanh = lazy(() => import("@/pages/blog/bi-quyet-tuyen-tho-nail-gioi-nhanh"));
+const EmviAppCongDongNguoiVietNganhNail = lazy(() => import("@/pages/blog/emviapp-cong-dong-nguoi-viet-nganh-nail"));
 
 // SEO Programmatic Pages
 const CategoryCityPage = lazy(() => import("@/pages/seo/CategoryCityPage"));
@@ -409,12 +409,12 @@ function App() {
                      <Route path="/blog/500b-beauty-industry-hidden-job-market" element={<Layout><BeautyIndustryHiddenJobMarket /></Layout>} />
                      <Route path="/blog/side-hustle-six-figures-nail-technicians" element={<Layout><SideHustleSixFiguresNailTechnicians /></Layout>} />
                      
-                     {/* Vietnamese Blog Articles */}
-                     <Route path="/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail" element={<Layout><UngDungTotNhatChoNguoiVietTimViecNail /></Layout>} />
-                     <Route path="/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua" element={<Layout><CachDangBanTiemNailOnlineNhanhHieuQua /></Layout>} />
-                     <Route path="/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung" element={<Layout><Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung /></Layout>} />
-                     <Route path="/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet" element={<Layout><BiQuyetTuyenThoNailNhanhChoThuTiemNguoiViet /></Layout>} />
-                     <Route path="/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep" element={<Layout><EmviAppCongDongNguoiVietTrongNganhLamDep /></Layout>} />
+                     {/* Latest Vietnamese Blog Articles */}
+                     <Route path="/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet" element={<Layout><UngDungTimViecNailTotNhatChoNguoiViet /></Layout>} />
+                     <Route path="/blog/cach-ban-tiem-nail-nhanh-va-duoc-gia-cao" element={<Layout><CachBanTiemNailNhanhVaDuocGiaCao /></Layout>} />
+                     <Route path="/blog/top-5-website-dang-tin-tuyen-tho-nail" element={<Layout><Top5WebsiteDangTinTuyenThoNail /></Layout>} />
+                     <Route path="/blog/bi-quyet-tuyen-tho-nail-gioi-nhanh" element={<Layout><BiQuyetTuyenThoNailGioiNhanh /></Layout>} />
+                     <Route path="/blog/emviapp-cong-dong-nguoi-viet-nganh-nail" element={<Layout><EmviAppCongDongNguoiVietNganhNail /></Layout>} />
                     
                     {/* Content Hub Routes */}
                     <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />
