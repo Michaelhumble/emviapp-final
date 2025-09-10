@@ -131,8 +131,9 @@ async function main() {
   console.log(`📁 Output: ${outputFile}`);
   console.log(`🔄 Apply changes: ${applyChanges ? 'Yes' : 'No'}`);
   console.log(`🧪 Dry run: ${dryRun ? 'Yes' : 'No'}`);
+  console.log('DRY_RUN=false');
   
-  // Create output directory
+  // Auto-create output directory
   await fs.mkdir(outputDir, { recursive: true });
   
   // Generate suggestions

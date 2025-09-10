@@ -25,11 +25,22 @@ async function checkSecrets() {
   const privateKey = process.env.GSC_PRIVATE_KEY;
 
   if (!clientEmail || !privateKey) {
-    console.log('❌ skipped: missing env - GSC_CLIENT_EMAIL or GSC_PRIVATE_KEY not configured');
+    console.log('ℹ️ GSC skipped (missing/invalid creds)');
     process.exit(0);
   }
 
-  console.log('✅ GSC credentials found');
+  // Validate format
+  if (!clientEmail.includes('@') || !clientEmail.endsWith('.iam.gserviceaccount.com')) {
+    console.log('ℹ️ GSC skipped (missing/invalid creds) - invalid email format');
+    process.exit(0);
+  }
+
+  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----') || !privateKey.includes('\\n')) {
+    console.log('ℹ️ GSC skipped (missing/invalid creds) - invalid key format');
+    process.exit(0);
+  }
+
+  console.log('✅ GSC auth OK');
   return { clientEmail, privateKey };
 }
 
@@ -72,7 +83,7 @@ async function getAccessToken(clientEmail, privateKey) {
     return data.access_token;
   } catch (error) {
     console.error('❌ Authentication failed:', error.message);
-    console.log('❌ skipped: missing env - GSC authentication failed');
+    console.log('ℹ️ GSC skipped (missing/invalid creds)');
     process.exit(0);
   }
 }
@@ -237,7 +248,7 @@ async function main() {
   // Check for required secrets
   const { clientEmail, privateKey } = await checkSecrets();
   
-  // Create output directory
+  // Auto-create output directory
   await fs.mkdir(outputDir, { recursive: true });
   
   // Load URLs to process
@@ -266,7 +277,7 @@ async function main() {
     await fs.writeFile(indexingFile, JSON.stringify(indexingOutput, null, 2));
     
     console.log(`✅ Indexing results saved to ${indexingFile}`);
-    console.log(`📊 Submitted: ${successCount}/${urls.length} URLs`);
+    console.log(`submitted: ${successCount}, errors: ${indexingOutput.failed_count}`);
     
     if (successCount === 0) {
       console.warn('⚠️ No URLs were successfully submitted for indexing');

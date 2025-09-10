@@ -15,7 +15,7 @@ on:
 
 env:
   BASE_URL: 'https://www.emvi.app'
-  PRIORITY_URLS_FILE: 'seo/priority-urls.json'
+  PRIORITY_URLS_FILE: 'data/priority-urls.json'
 
 jobs:
   gsc-priority-indexing:
@@ -34,7 +34,45 @@ jobs:
           node-version: '18'
           cache: 'npm'
       
+      - name: 🔐 Validate GSC Secrets
+        id: check-secrets
+        run: |
+          echo "🔒 Validating Google Search Console credentials..."
+          
+          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ] || [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
+            echo "❌ GSC credentials missing - priority indexing will be skipped"
+            echo ""
+            echo "ℹ️ Missing GSC secrets for priority indexing:"
+            [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ] && echo "   - GSC_CLIENT_EMAIL"
+            [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ] && echo "   - GSC_PRIVATE_KEY"
+            echo ""
+            echo "📋 To enable priority indexing:"
+            echo "   1. Create Google Service Account with Indexing API access"
+            echo "   2. Go to GitHub repo → Settings → Secrets and variables → Actions"
+            echo "   3. Add GSC_CLIENT_EMAIL and GSC_PRIVATE_KEY"
+            echo ""
+            echo "::notice::Skipped: priority indexing not supported (missing GSC credentials)"
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+          else
+            # Validate GSC_PRIVATE_KEY format
+            PRIVATE_KEY="${{ secrets.GSC_PRIVATE_KEY }}"
+            if [[ "$PRIVATE_KEY" != *"-----BEGIN PRIVATE KEY-----"* ]] || [[ "$PRIVATE_KEY" != *"-----END PRIVATE KEY-----"* ]]; then
+              echo "❌ GSC_PRIVATE_KEY format invalid - missing BEGIN/END PRIVATE KEY markers"
+              echo "has_creds=false" >> $GITHUB_OUTPUT
+            elif [[ "$PRIVATE_KEY" != *"\\n"* ]]; then
+              echo "❌ GSC_PRIVATE_KEY format invalid - missing \\n newline sequences"  
+              echo "has_creds=false" >> $GITHUB_OUTPUT
+            elif [[ "${{ secrets.GSC_CLIENT_EMAIL }}" != *"@"*".iam.gserviceaccount.com" ]]; then
+              echo "❌ GSC_CLIENT_EMAIL format invalid - should end with .iam.gserviceaccount.com"
+              echo "has_creds=false" >> $GITHUB_OUTPUT
+            else
+              echo "✅ GSC credentials found and validated - proceeding with indexing"
+              echo "has_creds=true" >> $GITHUB_OUTPUT
+            fi
+          fi
+
       - name: Install deps
+        if: steps.check-secrets.outputs.has_creds == 'true'
         run: |
           npm install --legacy-peer-deps
           npm install --no-save googleapis jsonwebtoken
@@ -44,6 +82,7 @@ jobs:
       
       - name: 📋 Load and validate priority URLs
         id: load-urls
+        if: steps.check-secrets.outputs.has_creds == 'true'
         run: |
           if [ ! -f "$PRIORITY_URLS_FILE" ]; then
             echo "❌ Priority URLs file not found: $PRIORITY_URLS_FILE"
@@ -76,248 +115,70 @@ jobs:
             echo "  ... and $(($URLS_TO_PROCESS - 10)) more URLs"
           fi
       
-      - name: 🚀 Submit URLs to GSC Indexing API
-        id: submit-urls
+      - name: 🚀 Submit URLs to GSC Indexing API (Attempt 1)
+        id: submit-urls-attempt-1
+        if: steps.check-secrets.outputs.has_creds == 'true'
+        continue-on-error: true
         env:
           GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
           GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
           GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: |
-          cat > submit-priority-indexing.js << 'EOF'
-          const { google } = require('googleapis');
-          const fs = require('fs');
-          
-          async function submitPriorityIndexing() {
-            try {
-              // Configure authentication with fallback
-              let credentials;
-              
-              if (process.env.GSC_CREDENTIALS) {
-                try {
-                  credentials = JSON.parse(process.env.GSC_CREDENTIALS);
-                } catch (e) {
-                  console.log('GSC_CREDENTIALS is not valid JSON, trying individual fields...');
-                }
-              }
-              
-              if (!credentials && process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY) {
-                credentials = {
-                  client_email: process.env.GSC_CLIENT_EMAIL,
-                  private_key: process.env.GSC_PRIVATE_KEY.replace(/\\n/g, '\n'),
-                };
-              }
-              
-              if (!credentials) {
-                throw new Error('No GSC credentials found');
-              }
-              
-              const auth = new google.auth.GoogleAuth({
-                credentials: credentials,
-                scopes: ['https://www.googleapis.com/auth/indexing'],
-              });
-              
-              const indexing = google.indexing({ version: 'v3', auth });
-              
-              // Load priority URLs
-              const urlsData = JSON.parse(fs.readFileSync('${{ env.PRIORITY_URLS_FILE }}', 'utf8'));
-              const limit = parseInt('${{ steps.load-urls.outputs.urls_to_process }}');
-              const urlsToProcess = urlsData.slice(0, limit);
-              
-              console.log(`🚀 Processing ${urlsToProcess.length} priority URLs...`);
-              console.log(`🔒 Mode: ${process.env.DRY_RUN === 'true' ? 'DRY RUN' : 'LIVE SUBMISSION'}`);
-              
-              const results = {
-                timestamp: new Date().toISOString(),
-                total_urls: urlsToProcess.length,
-                submitted: 0,
-                success: 0,
-                failed: 0,
-                errors: [],
-                responses: []
-              };
-              
-              const BATCH_SIZE = 10;
-              const DELAY_BETWEEN_BATCHES = 60000; // 1 minute
-              const DELAY_BETWEEN_REQUESTS = 3000; // 3 seconds
-              
-              // Process URLs in batches
-              for (let i = 0; i < urlsToProcess.length; i += BATCH_SIZE) {
-                const batch = urlsToProcess.slice(i, i + BATCH_SIZE);
-                const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-                const totalBatches = Math.ceil(urlsToProcess.length / BATCH_SIZE);
-                
-                console.log(`\n📦 Processing batch ${batchNum}/${totalBatches} (${batch.length} URLs)`);
-                
-                for (const url of batch) {
-                  results.submitted++;
-                  
-                  try {
-                    if (process.env.DRY_RUN === 'true') {
-                      console.log(`  🧪 DRY RUN: Would submit ${url}`);
-                      results.success++;
-                      results.responses.push({ url, status: 'dry_run_success' });
-                    } else {
-                      console.log(`  📤 Submitting: ${url}`);
-                      
-                      const response = await indexing.urlNotifications.publish({
-                        requestBody: {
-                          url: url,
-                          type: 'URL_UPDATED'
-                        }
-                      });
-                      
-                      console.log(`  ✅ Success: ${url}`);
-                      results.success++;
-                      results.responses.push({ 
-                        url, 
-                        status: 'success',
-                        response: response.data
-                      });
-                    }
-                  } catch (error) {
-                    console.log(`  ❌ Failed: ${url} - ${error.message}`);
-                    results.failed++;
-                    results.errors.push({ url, error: error.message });
-                    results.responses.push({ 
-                      url, 
-                      status: 'failed',
-                      error: error.message
-                    });
-                  }
-                  
-                  // Delay between individual requests
-                  if (batch.indexOf(url) < batch.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
-                  }
-                }
-                
-                // Delay between batches (except for last batch)
-                if (i + BATCH_SIZE < urlsToProcess.length) {
-                  console.log(`  ⏳ Waiting ${DELAY_BETWEEN_BATCHES/1000}s before next batch...`);
-                  await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
-                }
-              }
-              
-              // Save detailed results
-              const reportFile = `reports/seo/indexing/priority-indexing-${new Date().toISOString().split('T')[0]}.json`;
-              fs.writeFileSync(reportFile, JSON.stringify(results, null, 2));
-              
-              // Set outputs for GitHub Actions
-              console.log(`\n📊 Priority Indexing Results:`);
-              console.log(`   Total URLs: ${results.total_urls}`);
-              console.log(`   Submitted: ${results.submitted}`);
-              console.log(`   Successful: ${results.success}`);
-              console.log(`   Failed: ${results.failed}`);
-              console.log(`   Success Rate: ${Math.round((results.success / results.submitted) * 100)}%`);
-              
-              // Output for GitHub Actions
-              console.log(`::set-output name=total_urls::${results.total_urls}`);
-              console.log(`::set-output name=submitted::${results.submitted}`);
-              console.log(`::set-output name=success::${results.success}`);
-              console.log(`::set-output name=failed::${results.failed}`);
-              console.log(`::set-output name=success_rate::${Math.round((results.success / results.submitted) * 100)}`);
-              console.log(`::set-output name=report_file::${reportFile}`);
-              
-              if (results.failed > 0) {
-                console.log(`\n❌ First 5 failures:`);
-                results.errors.slice(0, 5).forEach(error => {
-                  console.log(`   ${error.url}: ${error.error}`);
-                });
-              }
-              
-              if (process.env.DRY_RUN === 'true') {
-                console.log('\n🧪 This was a dry run. No actual indexing requests were sent.');
-              } else {
-                console.log('\n✅ Priority URL indexing completed!');
-                console.log('📊 Monitor indexing status in Google Search Console');
-              }
-              
-            } catch (error) {
-              console.error('❌ Priority indexing failed:', error.message);
-              process.exit(1);
-            }
-          }
-          
-          submitPriorityIndexing();
-          EOF
-          
-          node submit-priority-indexing.js
-        continue-on-error: true
-      
-      - name: 📊 Generate summary report
-        id: generate-summary
+          echo "🚀 Attempting GSC Priority URL Indexing (Attempt 1)..."
+          echo "DRY_RUN=$DRY_RUN"
+          node scripts/gsc-pulls.mjs --urls=data/priority-urls.json --submitIndexing
+
+      - name: 🔄 Retry Indexing Submission (Attempt 2)
+        if: steps.check-secrets.outputs.has_creds == 'true' && steps.submit-urls-attempt-1.outcome == 'failure'
+        env:
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: |
-          REPORT_DATE=$(date +%Y-%m-%d)
-          SUMMARY_FILE="reports/seo/indexing/priority-indexing-summary-$REPORT_DATE.md"
-          
-          # Extract results from the previous step output or report file
-          TOTAL_URLS="${{ steps.load-urls.outputs.urls_to_process }}"
-          SUCCESS_RATE="95" # Default fallback
-          
-          # Try to read from report file if it exists
-          REPORT_FILE=$(ls reports/seo/indexing/priority-indexing-*.json 2>/dev/null | head -n1 || echo "")
-          if [ -n "$REPORT_FILE" ] && [ -f "$REPORT_FILE" ]; then
-            SUBMITTED=$(jq -r '.submitted // 0' "$REPORT_FILE")
-            SUCCESS=$(jq -r '.success // 0' "$REPORT_FILE")
-            FAILED=$(jq -r '.failed // 0' "$REPORT_FILE")
-            SUCCESS_RATE=$(jq -r 'if .submitted > 0 then ((.success / .submitted) * 100 | round) else 0 end' "$REPORT_FILE")
+          echo "🔄 Retrying GSC Priority URL Indexing (Attempt 2)..."
+          echo "DRY_RUN=$DRY_RUN"
+          sleep 30  # Wait 30 seconds before retry
+          node scripts/gsc-pulls.mjs --urls=data/priority-urls.json --submitIndexing
+      
+      - name: 📊 Log Indexing Results
+        if: always()
+        run: |
+          if [ "${{ steps.check-secrets.outputs.has_creds }}" == "false" ]; then
+            echo "⏭️ Indexing skipped: GSC credentials not configured or invalid"
+            echo "💡 To enable indexing, add valid GSC_CLIENT_EMAIL and GSC_PRIVATE_KEY secrets"
           else
-            SUBMITTED=$TOTAL_URLS
-            SUCCESS=$TOTAL_URLS
-            FAILED=0
+            echo "✅ Priority URL indexing workflow completed"
+            if [ -f ".seo-cache/gsc-indexing-$(date +%Y-%m-%d).json" ]; then
+              SUBMITTED_COUNT=$(jq -r '.submitted_count // 0' ".seo-cache/gsc-indexing-$(date +%Y-%m-%d).json")
+              FAILED_COUNT=$(jq -r '.failed_count // 0' ".seo-cache/gsc-indexing-$(date +%Y-%m-%d).json")
+              echo "submitted: $SUBMITTED_COUNT, errors: $FAILED_COUNT"
+            else
+              echo "⚠️ No indexing results file found"
+            fi
           fi
+
+      - name: 📋 Summary Report
+        if: always()
+        run: |
+          echo "## 🚀 GSC Priority URL Indexing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow**: GSC Priority URL Indexing" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           
-          # Generate summary report
-          cat > "$SUMMARY_FILE" << EOF
-          # 🚀 GSC Priority URL Indexing Report - $REPORT_DATE
-          
-          **Status**: $([ $FAILED -eq 0 ] && echo "✅ Success" || echo "⚠️ Partial Success")  
-          **Mode**: ${{ github.event.inputs.dry_run == 'true' && 'DRY RUN' || 'LIVE SUBMISSION' }}  
-          **Generated**: $(date -u +'%Y-%m-%d %H:%M UTC')
-          
-          ## 📊 Submission Results
-          
-          | Metric | Count | Percentage |
-          |--------|-------|------------|
-          | 📋 Total URLs | $TOTAL_URLS | 100% |
-          | 📤 Submitted | $SUBMITTED | $(echo "scale=1; $SUBMITTED * 100 / $TOTAL_URLS" | bc)% |
-          | ✅ Successful | $SUCCESS | $(echo "scale=1; $SUCCESS * 100 / $TOTAL_URLS" | bc)% |
-          | ❌ Failed | $FAILED | $(echo "scale=1; $FAILED * 100 / $TOTAL_URLS" | bc)% |
-          
-          **Overall Success Rate**: ${SUCCESS_RATE}%
-          
-          ## 🎯 Priority URL Categories
-          
-          - **Core Pages**: Homepage, main category pages (12 URLs)
-          - **Blog Articles**: High-value content pages (4 URLs)
-          - **Job Listings**: Top nail salon job opportunities (20 URLs)
-          - **Salon Profiles**: Featured salon listings (10 URLs)
-          - **Artist Profiles**: Top-rated beauty professionals (10 URLs)
-          - **Category Pages**: Specialized service categories (31 URLs)
-          
-          ## 📈 Expected Impact
-          
-          - **Faster Indexing**: Priority URLs should appear in search results within hours
-          - **Improved Visibility**: Core pages get faster discovery by Google
-          - **Enhanced Rankings**: Fresh content signals improve SEO performance
-          
-          ## 🔍 Next Steps
-          
-          1. **Monitor GSC**: Check Google Search Console for indexing status
-          2. **Track Rankings**: Monitor position improvements for priority URLs
-          3. **Weekly Review**: Include results in next SEO weekly digest
-          
-          ---
-          
-          *Generated by GSC Priority Indexing Workflow*
-          EOF
-          
-          echo "summary_file=$SUMMARY_FILE" >> $GITHUB_OUTPUT
-          echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
-          echo "failed_count=$FAILED" >> $GITHUB_OUTPUT
-          
-          echo "✅ Summary report generated: $SUMMARY_FILE"
+          if [ "${{ steps.check-secrets.outputs.has_creds }}" == "false" ]; then
+            echo "❌ **Status**: Skipped (Missing or Invalid GSC Credentials)" >> $GITHUB_STEP_SUMMARY
+            echo "💡 **Action Needed**: Configure valid GSC_CLIENT_EMAIL and GSC_PRIVATE_KEY secrets" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **Status**: Completed" >> $GITHUB_STEP_SUMMARY
+            if [ -f ".seo-cache/gsc-indexing-$(date +%Y-%m-%d).json" ]; then
+              SUBMITTED_COUNT=$(jq -r '.submitted_count // 0' ".seo-cache/gsc-indexing-$(date +%Y-%m-%d).json")
+              FAILED_COUNT=$(jq -r '.failed_count // 0' ".seo-cache/gsc-indexing-$(date +%Y-%m-%d).json")
+              echo "📈 **URLs Submitted**: $SUBMITTED_COUNT" >> $GITHUB_STEP_SUMMARY
+              echo "❌ **Errors**: $FAILED_COUNT" >> $GITHUB_STEP_SUMMARY
+              echo "🎯 **Next Steps**: Monitor GSC for indexing improvements within 24-48 hours" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
       
       - name: 📄 Upload indexing reports
         uses: actions/upload-artifact@v4

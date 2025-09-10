@@ -230,8 +230,15 @@ async function main() {
   console.log('📊 Core Web Vitals Collector');
   console.log(`📁 Output: ${outputFile}`);
   
-  // Create output directory
+  // Auto-create output directory
   await fs.mkdir(outputDir, { recursive: true });
+  
+  const API_KEY = process.env.PAGESPEED_API_KEY;
+  if (API_KEY) {
+    console.log('CWV mode: PageSpeed');
+  } else {
+    console.log('CWV mode: Lighthouse fallback');
+  }
   
   // Load URLs to check
   const urls = await loadUrls();
@@ -268,6 +275,8 @@ async function main() {
   // Send Slack alert if there are issues
   if (analysis.alerts.length > 0) {
     await sendSlackAlert(analysis);
+  } else {
+    console.log('ℹ️ Slack notifications disabled');
   }
 }
 

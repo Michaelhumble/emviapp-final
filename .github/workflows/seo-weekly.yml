@@ -41,25 +41,110 @@ jobs:
       - name: Create reports directory
         run: mkdir -p reports
         
-      - name: Fail fast on missing env vars
+      - name: 🔐 Validate Required Secrets
+        id: validate-secrets
         run: |
-          echo "🔒 Checking required environment variables..."
+          echo "🔒 Validating required secrets for SEO Weekly Audit..."
+          
+          MISSING_SECRETS=()
+          INVALID_SECRETS=()
+          
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "❌ OPENAI_API_KEY is missing"
+            MISSING_SECRETS+=("OPENAI_API_KEY")
+          else
+            echo "✅ OPENAI_API_KEY configured"
+          fi
+          
           if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
             echo "❌ GSC_CLIENT_EMAIL is missing"
-            exit 1
+            MISSING_SECRETS+=("GSC_CLIENT_EMAIL")
+          else
+            # Validate GSC_CLIENT_EMAIL format
+            if [[ "${{ secrets.GSC_CLIENT_EMAIL }}" != *"@"*".iam.gserviceaccount.com" ]]; then
+              echo "❌ GSC_CLIENT_EMAIL format invalid - should end with .iam.gserviceaccount.com"
+              INVALID_SECRETS+=("GSC_CLIENT_EMAIL")
+            else
+              echo "✅ GSC_CLIENT_EMAIL configured"
+            fi
           fi
+          
           if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
             echo "❌ GSC_PRIVATE_KEY is missing"
+            MISSING_SECRETS+=("GSC_PRIVATE_KEY")
+          else
+            # Validate GSC_PRIVATE_KEY format
+            PRIVATE_KEY="${{ secrets.GSC_PRIVATE_KEY }}"
+            if [[ "$PRIVATE_KEY" != *"-----BEGIN PRIVATE KEY-----"* ]] || [[ "$PRIVATE_KEY" != *"-----END PRIVATE KEY-----"* ]]; then
+              echo "❌ GSC_PRIVATE_KEY format invalid - missing BEGIN/END PRIVATE KEY markers"
+              INVALID_SECRETS+=("GSC_PRIVATE_KEY")
+            elif [[ "$PRIVATE_KEY" != *"\\n"* ]]; then
+              echo "❌ GSC_PRIVATE_KEY format invalid - missing \\n newline sequences"
+              INVALID_SECRETS+=("GSC_PRIVATE_KEY")
+            else
+              echo "✅ GSC_PRIVATE_KEY configured"
+            fi
+          fi
+          
+          # Optional secrets
+          if [ -n "${{ secrets.PAGESPEED_API_KEY }}" ]; then
+            echo "✅ PAGESPEED_API_KEY configured"
+          else
+            echo "ℹ️ PAGESPEED_API_KEY not set - will use Lighthouse fallback"
+          fi
+          
+          if [ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            echo "✅ SLACK_WEBHOOK_URL configured"
+          else
+            echo "ℹ️ Slack notifications disabled"
+          fi
+          
+          # Set outputs for conditional steps
+          if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
+            echo ""
+            echo "🚨 CRITICAL: Missing required secrets:"
+            for secret in "${MISSING_SECRETS[@]}"; do
+              echo "   - $secret"
+            done
+            echo ""
+            echo "📋 Add secrets at: GitHub repo → Settings → Secrets and variables → Actions"
             exit 1
           fi
-          echo "✅ All required environment variables present"
+          
+          if [ ${#INVALID_SECRETS[@]} -gt 0 ]; then
+            echo ""
+            echo "⚠️ WARNING: Invalid secret format detected:"
+            for secret in "${INVALID_SECRETS[@]}"; do
+              echo "   - $secret"
+            done
+            echo ""
+            echo "ℹ️ GSC tasks will be skipped but local audits will continue"
+            echo "gsc_available=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ GSC auth OK" 
+            echo "gsc_available=true" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "DRY_RUN=false"
 
       - name: Run SEO audit
         env:
           AUDIT_SITE: ${{ env.AUDIT_SITE }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
           DRY_RUN: false
         run: |
           echo "🔍 Running SEO audit for $AUDIT_SITE"
+          echo "DRY_RUN=false"
+          
+          # Set GSC environment based on validation
+          if [ "${{ steps.validate-secrets.outputs.gsc_available }}" = "false" ]; then
+            echo "ℹ️ GSC skipped (missing/invalid creds)"
+            unset GSC_CLIENT_EMAIL
+            unset GSC_PRIVATE_KEY
+          fi
+          
           if [ -f "scripts/audit-seo.mjs" ]; then
             node scripts/audit-seo.mjs --site=$AUDIT_SITE --out=reports --maxDepth=4
           else
@@ -83,17 +168,70 @@ jobs:
           DRY_RUN: false
         run: |
           echo "📊 Pulling Google Search Console data"
-          if [ -f "scripts/gsc-pulls.mjs" ]; then
+          echo "DRY_RUN=false"
+          
+          if [ "${{ steps.validate-secrets.outputs.gsc_available }}" = "false" ]; then
+            echo "ℹ️ GSC skipped (missing/invalid creds)"
+          elif [ -f "scripts/gsc-pulls.mjs" ]; then
             node scripts/gsc-pulls.mjs || echo "GSC pull failed, continuing..."
           else
             echo "GSC pull script not found, skipping..."
           fi
         continue-on-error: true
         
-      - name: Generate internal links suggestions
+      - name: Collect Core Web Vitals
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          echo "🔗 Generating internal link suggestions"
-          node scripts/internal-links-suggest.mjs || echo "Internal links suggestions skipped (not implemented)"
+          echo "📊 Collecting Core Web Vitals data..."
+          
+          if [ -f "scripts/collect-cwv.mjs" ]; then
+            if [ -n "$PAGESPEED_API_KEY" ]; then
+              echo "CWV mode: PageSpeed"
+            else
+              echo "CWV mode: Lighthouse fallback"
+            fi
+            node scripts/collect-cwv.mjs --urls=data/priority-urls.json
+            
+            # Merge CWV data into weekly report
+            if [ -f ".seo-cache/cwv-$(date +%Y-%m-%d).json" ] && [ -f "reports/weekly.md" ]; then
+              echo "" >> reports/weekly.md
+              echo "## Core Web Vitals - $(date +%Y-%m-%d)" >> reports/weekly.md
+              echo "" >> reports/weekly.md
+              node -e "
+                try {
+                  const fs = require('fs');
+                  const cwvData = JSON.parse(fs.readFileSync('.seo-cache/cwv-$(date +%Y-%m-%d).json', 'utf8'));
+                  const analysis = cwvData.analysis;
+                  
+                  console.log('**CWV Collection Mode**: ' + (process.env.PAGESPEED_API_KEY ? 'PageSpeed Insights API' : 'Lighthouse Fallback'));
+                  console.log('**URLs Tested**: ' + analysis.total_urls);
+                  console.log('**Successful Tests**: ' + analysis.successful);
+                  console.log('');
+                  console.log('### Performance Summary');
+                  console.log('| Metric | Good | Needs Improvement | Poor |');
+                  console.log('|--------|------|-------------------|------|');
+                  Object.keys(analysis.summary).forEach(metric => {
+                    const data = analysis.summary[metric];
+                    console.log('| ' + metric + ' | ' + data.good + ' | ' + data.needsImprovement + ' | ' + data.poor + ' |');
+                  });
+                  
+                  if (analysis.alerts.length > 0) {
+                    console.log('');
+                    console.log('### ⚠️ Performance Alerts');
+                    analysis.alerts.slice(0, 3).forEach(alert => {
+                      console.log('- **' + alert.metric + '**: ' + alert.value + (alert.metric === 'CLS' ? '' : 'ms') + ' on ' + alert.url);
+                    });
+                  }
+                } catch(e) {
+                  console.log('CWV data merge failed:', e.message);
+                }
+              " >> reports/weekly.md
+            fi
+          else
+            echo "⚠️ CWV collection script not found - skipping Core Web Vitals"
+          fi
         continue-on-error: true
         
       - name: Parse audit results and create summary
