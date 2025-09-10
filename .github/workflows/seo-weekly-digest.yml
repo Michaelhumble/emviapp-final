@@ -73,7 +73,7 @@ jobs:
             node scripts/validate-sitemaps.mjs || echo "Sitemap validation failed"
           fi
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
           GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
           DRY_RUN: false
