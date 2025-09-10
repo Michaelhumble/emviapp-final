@@ -18,6 +18,7 @@ const outputFile = path.join(outputDir, `gsc-${today}.json`);
 // Get URLs file from command line or default
 const urlsArg = process.argv.find(arg => arg.startsWith('--urls='));
 const urlsFile = urlsArg ? urlsArg.split('=')[1] : 'data/priority-urls.json';
+const submitIndexing = process.argv.includes('--submitIndexing');
 
 async function checkSecrets() {
   const clientEmail = process.env.GSC_CLIENT_EMAIL;
@@ -168,8 +169,70 @@ async function fetchGSCData(urls, accessToken) {
   return results;
 }
 
+async function submitForIndexing(urls, accessToken) {
+  const submissionResults = [];
+  let successCount = 0;
+  
+  for (const url of urls.slice(0, 10)) { // Limit submissions to avoid rate limits
+    try {
+      console.log(`📤 Submitting for indexing: ${url}`);
+      
+      const response = await fetch(
+        'https://indexing.googleapis.com/v3/urlNotifications:publish',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: url,
+            type: 'URL_UPDATED'
+          })
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        submissionResults.push({
+          url,
+          status: 'submitted',
+          response: data
+        });
+        successCount++;
+        console.log(`✅ Successfully submitted: ${url}`);
+      } else {
+        const errorText = await response.text();
+        submissionResults.push({
+          url,
+          status: 'failed',
+          error: `HTTP ${response.status}: ${errorText}`
+        });
+        console.warn(`⚠️ Failed to submit ${url}: HTTP ${response.status}`);
+      }
+      
+      // Rate limiting - wait between submissions
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+    } catch (error) {
+      submissionResults.push({
+        url,
+        status: 'error',
+        error: error.message
+      });
+      console.error(`❌ Error submitting ${url}: ${error.message}`);
+    }
+  }
+  
+  return { results: submissionResults, successCount };
+}
+
 async function main() {
-  console.log('🔍 GSC Data Puller (Minimal Version)');
+  if (submitIndexing) {
+    console.log('🚀 GSC Priority URL Indexing Submitter');
+  } else {
+    console.log('🔍 GSC Data Puller (Minimal Version)');
+  }
   
   // Check for required secrets
   const { clientEmail, privateKey } = await checkSecrets();
@@ -177,32 +240,60 @@ async function main() {
   // Create output directory
   await fs.mkdir(outputDir, { recursive: true });
   
-  // Load URLs to check
+  // Load URLs to process
   const urls = await loadUrls();
   
   // Get access token
   console.log('🔐 Authenticating with GSC...');
   const accessToken = await getAccessToken(clientEmail, privateKey);
   
-  // Fetch GSC data
-  console.log('📊 Fetching GSC data...');
-  const results = await fetchGSCData(urls, accessToken);
-  
-  // Save results
-  const output = {
-    timestamp: new Date().toISOString(),
-    date: today,
-    urls_checked: urls.length,
-    results_count: results.length,
-    successful: results.filter(r => r.status === 'success').length,
-    failed: results.filter(r => r.status === 'error').length,
-    data: results
-  };
-  
-  await fs.writeFile(outputFile, JSON.stringify(output, null, 2));
-  
-  console.log(`✅ GSC data saved to ${outputFile}`);
-  console.log(`📊 Results: ${output.successful} successful, ${output.failed} failed`);
+  if (submitIndexing) {
+    // Submit URLs for indexing
+    console.log('📤 Submitting URLs for indexing...');
+    const { results, successCount } = await submitForIndexing(urls, accessToken);
+    
+    const indexingOutput = {
+      timestamp: new Date().toISOString(),
+      date: today,
+      mode: 'indexing_submission',
+      total_urls: urls.length,
+      submitted_count: successCount,
+      failed_count: results.filter(r => r.status === 'failed' || r.status === 'error').length,
+      results
+    };
+    
+    const indexingFile = path.join(outputDir, `gsc-indexing-${today}.json`);
+    await fs.writeFile(indexingFile, JSON.stringify(indexingOutput, null, 2));
+    
+    console.log(`✅ Indexing results saved to ${indexingFile}`);
+    console.log(`📊 Submitted: ${successCount}/${urls.length} URLs`);
+    
+    if (successCount === 0) {
+      console.warn('⚠️ No URLs were successfully submitted for indexing');
+      process.exit(1);
+    }
+    
+  } else {
+    // Fetch GSC data (original functionality)
+    console.log('📊 Fetching GSC data...');
+    const results = await fetchGSCData(urls, accessToken);
+    
+    const output = {
+      timestamp: new Date().toISOString(),
+      date: today,
+      mode: 'data_fetch',
+      urls_checked: urls.length,
+      results_count: results.length,
+      successful: results.filter(r => r.status === 'success').length,
+      failed: results.filter(r => r.status === 'error').length,
+      data: results
+    };
+    
+    await fs.writeFile(outputFile, JSON.stringify(output, null, 2));
+    
+    console.log(`✅ GSC data saved to ${outputFile}`);
+    console.log(`📊 Results: ${output.successful} successful, ${output.failed} failed`);
+  }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
