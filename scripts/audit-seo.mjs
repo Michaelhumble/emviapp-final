@@ -5,7 +5,8 @@
  * Comprehensive analysis of EmviApp's SEO health
  */
 
-import fs from 'fs';
+import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import https from 'https';
 import { URL } from 'url';
@@ -22,8 +23,8 @@ const AUDIT_CONFIG = {
 };
 
 // Ensure reports directory exists
-if (!fs.existsSync(REPORTS_DIR)) {
-  fs.mkdirSync(REPORTS_DIR, { recursive: true });
+if (!fsSync.existsSync(REPORTS_DIR)) {
+  fsSync.mkdirSync(REPORTS_DIR, { recursive: true });
 }
 
 console.log(`🔍 Starting SEO Audit for ${SITE_URL}`);
@@ -41,15 +42,27 @@ const auditResults = {
   issues: []
 };
 
-// Key pages to audit - focused on core landing pages
-const pagesToAudit = [
-  '/',
-  '/blog',
-  '/press',
-  '/jobs',
-  '/salons',
-  '/artists'
-];
+// Load URLs from data file
+async function loadAuditUrls() {
+  try {
+    const urlsData = await fs.readFile('data/audit-urls.json', 'utf8');
+    const urls = JSON.parse(urlsData);
+    console.log(`📄 Loaded ${urls.length} URLs from data/audit-urls.json`);
+    return urls.map(url => {
+      // Convert full URLs to relative paths for existing logic
+      return url.replace(SITE_URL, '');
+    });
+  } catch (error) {
+    console.warn('⚠️ Could not load data/audit-urls.json, using fallback URLs');
+    return [
+      '/',
+      '/jobs',
+      '/salons',
+      '/artists',
+      '/blog'
+    ];
+  }
+}
 
 async function fetchPage(url) {
   return new Promise((resolve, reject) => {
@@ -352,7 +365,7 @@ async function generateReport() {
     ].join(','));
   });
   
-  fs.writeFileSync(path.join(REPORTS_DIR, 'seo-audit.csv'), csvRows.join('\n'));
+  fsSync.writeFileSync(path.join(REPORTS_DIR, 'seo-audit.csv'), csvRows.join('\n'));
   
   // Generate detailed HTML report
   const htmlReport = `<!DOCTYPE html>
@@ -424,10 +437,10 @@ async function generateReport() {
 </body>
 </html>`;
   
-  fs.writeFileSync(path.join(REPORTS_DIR, 'seo-audit.html'), htmlReport);
+  fsSync.writeFileSync(path.join(REPORTS_DIR, 'seo-audit.html'), htmlReport);
   
   // Generate JSON summary
-  fs.writeFileSync(
+  fsSync.writeFileSync(
     path.join(REPORTS_DIR, 'seo-audit-summary.json'), 
     JSON.stringify(auditResults, null, 2)
   );
@@ -440,6 +453,9 @@ async function generateReport() {
 
 async function main() {
   try {
+    // Load URLs from data file
+    const pagesToAudit = await loadAuditUrls();
+    
     console.log(`🔍 Auditing ${pagesToAudit.length} pages...`);
     
     for (const page of pagesToAudit) {
