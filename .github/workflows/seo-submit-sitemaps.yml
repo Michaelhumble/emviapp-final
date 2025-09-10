@@ -22,10 +22,36 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: 🔐 Validate GSC Secrets
+        id: check-secrets
+        run: |
+          echo "🔒 Validating Google Search Console credentials..."
+          
+          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ] || [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
+            echo "❌ GSC credentials missing - sitemap submission will be skipped"
+            echo ""
+            echo "ℹ️ Missing GSC secrets for sitemap submission:"
+            [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ] && echo "   - GSC_CLIENT_EMAIL"
+            [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ] && echo "   - GSC_PRIVATE_KEY"
+            echo ""
+            echo "📋 To enable sitemap submission:"
+            echo "   1. Create Google Service Account with Search Console API access"
+            echo "   2. Go to GitHub repo → Settings → Secrets and variables → Actions"
+            echo "   3. Add GSC_CLIENT_EMAIL and GSC_PRIVATE_KEY"
+            echo ""
+            echo "::notice::Skipped: sitemap submit not supported (missing GSC credentials)"
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ GSC credentials found - proceeding with sitemap submission"
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install deps
+        if: steps.check-secrets.outputs.has_creds == 'true'
         run: npm install --legacy-peer-deps googleapis
 
       - name: Submit sitemaps to GSC
+        if: steps.check-secrets.outputs.has_creds == 'true'
         env:
           GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
           GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
@@ -109,3 +135,10 @@ jobs:
           EOF
           
           JOBS_SHARD_URL="${{ inputs.jobs_shard_url }}" node submit-sitemaps.js
+
+      - name: 📋 Skip Notice
+        if: steps.check-secrets.outputs.has_creds == 'false'
+        run: |
+          echo "⏭️ Sitemap submission skipped: GSC credentials not configured"
+          echo "💡 To enable sitemap submission, add GSC_CLIENT_EMAIL and GSC_PRIVATE_KEY secrets"
+          echo "ℹ️ This is not an error - the workflow completed successfully but skipped submission"

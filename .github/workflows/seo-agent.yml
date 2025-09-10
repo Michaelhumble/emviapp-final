@@ -53,10 +53,12 @@ jobs:
         run: mkdir -p reports
       
       - name: 🔐 Validate Required Secrets  
+        id: validate-secrets
         run: |
           echo "🔒 Validating required secrets for SEO Agent..."
           
           MISSING_SECRETS=()
+          INVALID_SECRETS=()
           
           if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
             echo "❌ OPENAI_API_KEY is missing"
@@ -76,9 +78,20 @@ jobs:
             echo "❌ GSC_PRIVATE_KEY is missing"
             MISSING_SECRETS+=("GSC_PRIVATE_KEY")
           else
-            echo "✅ GSC_PRIVATE_KEY configured"
+            # Validate GSC_PRIVATE_KEY format
+            PRIVATE_KEY="${{ secrets.GSC_PRIVATE_KEY }}"
+            if [[ "$PRIVATE_KEY" != *"-----BEGIN PRIVATE KEY-----"* ]] || [[ "$PRIVATE_KEY" != *"-----END PRIVATE KEY-----"* ]]; then
+              echo "❌ GSC_PRIVATE_KEY format invalid - missing BEGIN/END PRIVATE KEY markers"
+              INVALID_SECRETS+=("GSC_PRIVATE_KEY")
+            elif [[ "$PRIVATE_KEY" != *"\\n"* ]]; then
+              echo "❌ GSC_PRIVATE_KEY format invalid - missing \\n newline sequences"
+              INVALID_SECRETS+=("GSC_PRIVATE_KEY")
+            else
+              echo "✅ GSC_PRIVATE_KEY configured and format validated"
+            fi
           fi
           
+          # Set outputs for conditional steps
           if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
             echo ""
             echo "🚨 CRITICAL: Missing required secrets:"
@@ -88,6 +101,24 @@ jobs:
             echo ""
             echo "📋 Add secrets at: GitHub repo → Settings → Secrets and variables → Actions"
             exit 1
+          fi
+          
+          if [ ${#INVALID_SECRETS[@]} -gt 0 ]; then
+            echo ""
+            echo "⚠️ WARNING: Invalid secret format detected:"
+            for secret in "${INVALID_SECRETS[@]}"; do
+              echo "   - $secret"
+            done
+            echo ""
+            echo "🔧 GSC_PRIVATE_KEY requirements:"
+            echo "   - Must contain '-----BEGIN PRIVATE KEY-----' and '-----END PRIVATE KEY-----'"
+            echo "   - Must contain '\\n' newline sequences (not actual line breaks)"
+            echo "   - Example format: '-----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAo...\\n-----END PRIVATE KEY-----\\n'"
+            echo ""
+            echo "ℹ️ GSC tasks will be skipped but local audits will continue"
+            echo "gsc_available=false" >> $GITHUB_OUTPUT
+          else
+            echo "gsc_available=true" >> $GITHUB_OUTPUT
           fi
           
           echo "✅ All required secrets validated"
@@ -102,6 +133,14 @@ jobs:
           DRY_RUN: false
         run: |
           echo "🤖 Running SEO Audit on $SITE_URL"
+          
+          # Set GSC environment based on validation
+          if [ "${{ steps.validate-secrets.outputs.gsc_available }}" = "false" ]; then
+            echo "⚠️ GSC integration disabled due to invalid credentials - running local audit only"
+            unset GSC_CLIENT_EMAIL
+            unset GSC_PRIVATE_KEY
+          fi
+          
           node scripts/audit-seo.mjs --site=$SITE_URL --out=reports --maxDepth=4
         continue-on-error: true
       
