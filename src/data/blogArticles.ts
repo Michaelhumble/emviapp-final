@@ -68,11 +68,11 @@ const SalonMarketing2025 = lazy(() => import('@/pages/blog/salon-marketing-2025'
 const NailArtistsBestJobs = lazy(() => import('@/pages/blog/nail-artists-best-jobs'));
 
 // Vietnamese Blog Articles (2025)
-const UngDungTotNhatChoNguoiVietTimViecNail = lazy(() => import('@/pages/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail'));
-const CachDangBanTiemNailOnlineNhanhHieuQua = lazy(() => import('@/pages/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua'));
-const Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung = lazy(() => import('@/pages/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung'));
-const BiQuyetTuyenThoNailNhanhChoChuTiemNguoiViet = lazy(() => import('@/pages/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet'));
-const EmviAppCongDongNguoiVietTrongNganhLamDep = lazy(() => import('@/pages/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep'));
+const UngDungTimViecNailTotNhatChoNguoiViet = lazy(() => import('@/pages/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet'));
+const CachBanTiemNailNhanhVaDuocGiaCao = lazy(() => import('@/pages/blog/cach-ban-tiem-nail-nhanh-va-duoc-gia-cao'));
+const Top5WebsiteDangTinTuyenThoNail = lazy(() => import('@/pages/blog/top-5-website-dang-tin-tuyen-tho-nail'));
+const BiQuyetTuyenThoNailGioiNhanh = lazy(() => import('@/pages/blog/bi-quyet-tuyen-tho-nail-gioi-nhanh'));
+const EmviAppCongDongNguoiVietNganhNail = lazy(() => import('@/pages/blog/emviapp-cong-dong-nguoi-viet-nganh-nail'));
 
 // Latest SEO Articles (2025)
 const NailSalonHiringCrisis2025 = lazy(() => import('@/pages/blog/nail-salon-hiring-crisis-2025'));
@@ -98,7 +98,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: heroImage,
     featured: true,
     trending: true,
-    component: UngDungTotNhatChoNguoiVietTimViecNail,
+    component: UngDungTimViecNailTotNhatChoNguoiViet,
     url: '/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail'
   },
   {
@@ -115,7 +115,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: sellSalonGuideImage,
     featured: true,
     trending: true,
-    component: CachDangBanTiemNailOnlineNhanhHieuQua,
+    component: CachBanTiemNailNhanhVaDuocGiaCao,
     url: '/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua'
   },
   {
@@ -132,7 +132,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: beautyProfessionalSuccessGuideImage,
     featured: true,
     trending: true,
-    component: Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung,
+    component: Top5WebsiteDangTinTuyenThoNail,
     url: '/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung'
   },
   {
@@ -149,7 +149,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: salonStaffManagementImage,
     featured: true,
     trending: true,
-    component: BiQuyetTuyenThoNailNhanhChoChuTiemNguoiViet,
+    component: BiQuyetTuyenThoNailGioiNhanh,
     url: '/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet'
   },
   {
@@ -166,7 +166,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     image: globalBeautyCommunityHeroImage,
     featured: true,
     trending: true,
-    component: EmviAppCongDongNguoiVietTrongNganhLamDep,
+    component: EmviAppCongDongNguoiVietNganhNail,
     url: '/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep'
   },
   // Latest SEO Articles - NEWEST FIRST (2025 Expansion)
