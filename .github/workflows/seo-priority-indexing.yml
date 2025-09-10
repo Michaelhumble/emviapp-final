@@ -23,11 +23,24 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci
 
-      - name: 🔐 Check GSC Credentials
+      - name: 🔐 Validate GSC Credentials
         id: check-creds
         run: |
+          echo "🔒 Validating Google Search Console credentials..."
+          
           if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ] || [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
             echo "❌ GSC credentials missing - indexing will be skipped"
+            echo ""
+            echo "🚨 Missing GSC secrets for priority URL indexing:"
+            [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ] && echo "   - GSC_CLIENT_EMAIL"
+            [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ] && echo "   - GSC_PRIVATE_KEY"
+            echo ""
+            echo "📋 To add GSC secrets:"
+            echo "   1. Create Google Service Account with Search Console API access"
+            echo "   2. Go to GitHub repo → Settings → Secrets and variables → Actions"
+            echo "   3. Add GSC_CLIENT_EMAIL and GSC_PRIVATE_KEY"
+            echo ""
+            echo "ℹ️ Workflow will continue but indexing functionality will be disabled"
             echo "has_creds=false" >> $GITHUB_OUTPUT
           else
             echo "✅ GSC credentials found - proceeding with indexing"

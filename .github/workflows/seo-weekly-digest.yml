@@ -24,30 +24,65 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
-      - name: Fail fast on missing env vars
+      - name: 🔐 Validate Required Secrets
         run: |
-          echo "🔒 Checking required environment variables..."
+          echo "🔒 Validating required secrets for SEO automation..."
+          
+          # Check required secrets
+          MISSING_SECRETS=()
+          
           if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
             echo "❌ OPENAI_API_KEY is missing"
-            exit 1
-          fi
-          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
-            echo "❌ GSC_CLIENT_EMAIL is missing"
-            exit 1
-          fi
-          if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
-            echo "❌ GSC_PRIVATE_KEY is missing"
-            exit 1
+            MISSING_SECRETS+=("OPENAI_API_KEY")
+          else
+            echo "✅ OPENAI_API_KEY configured"
           fi
           
-          # Optional: SLACK_WEBHOOK_URL (workflow will proceed without it)
+          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
+            echo "❌ GSC_CLIENT_EMAIL is missing"
+            MISSING_SECRETS+=("GSC_CLIENT_EMAIL")
+          else
+            echo "✅ GSC_CLIENT_EMAIL configured"
+          fi
+          
+          if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
+            echo "❌ GSC_PRIVATE_KEY is missing"
+            MISSING_SECRETS+=("GSC_PRIVATE_KEY")
+          else
+            echo "✅ GSC_PRIVATE_KEY configured"
+          fi
+          
+          # Check optional secrets
+          if [ -z "${{ secrets.PAGESPEED_API_KEY }}" ]; then
+            echo "ℹ️ PAGESPEED_API_KEY not configured - Core Web Vitals will use mock data"
+          else
+            echo "✅ PAGESPEED_API_KEY configured - Core Web Vitals will use real data"
+          fi
+          
           if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
             echo "ℹ️ SLACK_WEBHOOK_URL not configured - Slack notifications disabled"
           else
             echo "✅ SLACK_WEBHOOK_URL configured - Slack notifications enabled"
           fi
           
-          echo "✅ All required environment variables present"
+          # Fail if required secrets are missing
+          if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
+            echo ""
+            echo "🚨 CRITICAL: Missing required secrets for SEO automation:"
+            for secret in "${MISSING_SECRETS[@]}"; do
+              echo "   - $secret"
+            done
+            echo ""
+            echo "📋 To add these secrets:"
+            echo "   1. Go to GitHub repo → Settings → Secrets and variables → Actions"
+            echo "   2. Click 'New repository secret'"
+            echo "   3. Add each missing secret with the exact name shown above"
+            echo ""
+            echo "🔗 See setup guide: https://docs.github.com/en/actions/security-guides/encrypted-secrets"
+            exit 1
+          fi
+          
+          echo "✅ All required secrets validated - proceeding with SEO automation"
 
       - name: Collect Core Web Vitals
         run: |

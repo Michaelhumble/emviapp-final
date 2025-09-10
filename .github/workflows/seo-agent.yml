@@ -52,22 +52,45 @@ jobs:
       - name: 📁 Create reports directory
         run: mkdir -p reports
       
-      - name: Fail fast on missing env vars
+      - name: 🔐 Validate Required Secrets  
         run: |
-          echo "🔒 Checking required environment variables..."
+          echo "🔒 Validating required secrets for SEO Agent..."
+          
+          MISSING_SECRETS=()
+          
           if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
             echo "❌ OPENAI_API_KEY is missing"
-            exit 1
+            MISSING_SECRETS+=("OPENAI_API_KEY")
+          else
+            echo "✅ OPENAI_API_KEY configured"
           fi
+          
           if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
             echo "❌ GSC_CLIENT_EMAIL is missing"
-            exit 1
+            MISSING_SECRETS+=("GSC_CLIENT_EMAIL")  
+          else
+            echo "✅ GSC_CLIENT_EMAIL configured"
           fi
+          
           if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
             echo "❌ GSC_PRIVATE_KEY is missing"
+            MISSING_SECRETS+=("GSC_PRIVATE_KEY")
+          else
+            echo "✅ GSC_PRIVATE_KEY configured"
+          fi
+          
+          if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
+            echo ""
+            echo "🚨 CRITICAL: Missing required secrets:"
+            for secret in "${MISSING_SECRETS[@]}"; do
+              echo "   - $secret"
+            done
+            echo ""
+            echo "📋 Add secrets at: GitHub repo → Settings → Secrets and variables → Actions"
             exit 1
           fi
-          echo "✅ All required environment variables present"
+          
+          echo "✅ All required secrets validated"
 
       - name: 🔍 Run SEO Audit
         env:
