@@ -39,6 +39,14 @@ jobs:
             echo "❌ GSC_PRIVATE_KEY is missing"
             exit 1
           fi
+          
+          # Optional: SLACK_WEBHOOK_URL (workflow will proceed without it)
+          if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            echo "ℹ️ SLACK_WEBHOOK_URL not configured - Slack notifications disabled"
+          else
+            echo "✅ SLACK_WEBHOOK_URL configured - Slack notifications enabled"
+          fi
+          
           echo "✅ All required environment variables present"
 
       - name: Run SEO Agent Analysis
