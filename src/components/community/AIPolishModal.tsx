@@ -23,8 +23,8 @@ const styles = [
 ];
 
 const languages = [
-  { id: 'english', label: 'English', flag: '🇺🇸' },
-  { id: 'vietnamese', label: 'Tiếng Việt', flag: '🌸' },
+  { id: 'english', label: 'English', flag: '' },
+  { id: 'vietnamese', label: 'Tiếng Việt', flag: '' },
 ];
 
 const AIPolishModal = ({ isOpen, onClose, content, postType, onApply }: AIPolishModalProps) => {
@@ -136,7 +136,6 @@ const AIPolishModal = ({ isOpen, onClose, content, postType, onApply }: AIPolish
                         : 'hover:bg-purple-50'
                     }`}
                   >
-                    <span className="mr-2">{language.flag}</span>
                     {language.label}
                   </Button>
                 ))}
@@ -184,7 +183,7 @@ const AIPolishModal = ({ isOpen, onClose, content, postType, onApply }: AIPolish
                 {styles.find(s => s.id === selectedStyle)?.emoji} {styles.find(s => s.id === selectedStyle)?.label}
               </Badge>
               <Badge className="bg-blue-100 text-blue-700">
-                {languages.find(l => l.id === selectedLanguage)?.flag} {languages.find(l => l.id === selectedLanguage)?.label}
+                {languages.find(l => l.id === selectedLanguage)?.label}
               </Badge>
             </div>
 

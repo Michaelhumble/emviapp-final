@@ -134,7 +134,7 @@ const EmviAppCongDongNguoiVietTrongNganhLamDep = () => {
               
               <div className="space-y-6 mb-8">
                 <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
-                  <h4 className="font-bold text-lg mb-3 text-red-800">🇻🇳 Vietnamese-First Approach</h4>
+                  <h4 className="font-bold text-lg mb-3 text-red-800">Vietnamese-First Approach</h4>
                   <p className="text-gray-700 mb-3">EmviApp được xây dựng với mindset "người Việt hiểu người Việt". Từ giao diện, ngôn ngữ đến cách thức hoạt động - tất cả đều phù hợp với văn hóa và thói quen của cộng đồng.</p>
                   <ul className="text-sm space-y-1 text-gray-600">
                     <li>• Hỗ trợ tiếng Việt 24/7</li>
