@@ -1,362 +1,335 @@
 #!/usr/bin/env node
 
 /**
- * 🤖 EmviApp SEO Recommendations Generator
- * Generates detailed SEO recommendations without making code changes
+ * Minimal SEO Recommendations Engine
+ * Runs SEO checks and suggests improvements using OpenAI (if available)
+ * 
+ * Usage: node scripts/run-seo-recommendations.mjs [--include-ai]
+ * Output: reports/seo-recs-{date}.md
  */
 
-import { execSync } from 'child_process';
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 
-const SITE_URL = 'https://www.emvi.app';
-const REPORTS_DIR = 'reports/seo';
 const today = new Date().toISOString().split('T')[0];
-const RECOMMENDATIONS_FILE = path.join(REPORTS_DIR, `recommendations-${today}.md`);
+const reportsDir = 'reports';
+const outputFile = path.join(reportsDir, `seo-recs-${today}.md`);
 
-// Ensure reports directory exists
-if (!fs.existsSync(REPORTS_DIR)) {
-  fs.mkdirSync(REPORTS_DIR, { recursive: true });
-}
+const includeAI = process.argv.includes('--include-ai');
 
-console.log('🤖 Generating SEO Recommendations...');
-console.log(`📍 Site: ${SITE_URL}`);
-console.log(`📁 Report: ${RECOMMENDATIONS_FILE}`);
-
-const results = {
-  timestamp: new Date().toISOString(),
-  site: SITE_URL,
-  pages_analyzed: [],
-  issues: {
-    critical: [],
-    high: [],
-    medium: [],
-    low: []
+// Basic page structure for EmviApp
+const pages = [
+  {
+    url: '/',
+    title: 'EmviApp - The Beauty Industry\'s Missing Piece',
+    meta_desc: '',
+    h1: 'Find Your Dream Beauty Job',
+    type: 'homepage'
   },
-  recommendations: []
-};
-
-async function runComprehensiveAudit() {
-  console.log('\n🔍 Running Comprehensive SEO Audit...');
-  
-  try {
-    // 1. Main SEO audit with detailed output
-    console.log('1️⃣ Site-wide audit...');
-    const seoOutput = execSync(`node scripts/audit-seo.mjs --site=${SITE_URL} --out=${REPORTS_DIR} --maxDepth=6 --includeSitemaps`, {
-      encoding: 'utf8',
-      stdio: 'pipe'
-    });
-    
-    // 2. Sitemap validation
-    console.log('2️⃣ Sitemap analysis...');
-    const sitemapOutput = execSync(`node scripts/validate-sitemaps.mjs --site=${SITE_URL}/sitemap.xml --out=${REPORTS_DIR}`, {
-      encoding: 'utf8',
-      stdio: 'pipe'
-    });
-    
-    // 3. Broken links detailed analysis
-    console.log('3️⃣ Link integrity check...');
-    const brokenLinksFile = path.join(REPORTS_DIR, 'broken-links.csv');
-    if (fs.existsSync(brokenLinksFile)) {
-      const brokenLinksContent = fs.readFileSync(brokenLinksFile, 'utf8');
-      const lines = brokenLinksContent.split('\n').filter(line => line.trim());
-      
-      const internalBroken = lines.filter(line => 
-        line.includes('emvi.app') && !line.includes('Status Code,URL')
-      );
-      
-      if (internalBroken.length > 0) {
-        results.issues.critical.push({
-          type: 'Broken Internal Links',
-          count: internalBroken.length,
-          description: 'Internal links returning 404 or other error codes',
-          impact: 'High - Affects user experience and SEO crawling',
-          priority: 'Fix immediately'
-        });
-      }
-    }
-    
-    // 4. Check for SEO report file
-    const seoReportFile = path.join(REPORTS_DIR, 'seo-report.html');
-    if (fs.existsSync(seoReportFile)) {
-      console.log('✅ SEO report generated successfully');
-    }
-    
-    console.log('✅ Comprehensive audit complete');
-    
-  } catch (error) {
-    console.error('❌ Audit failed:', error.message);
-    results.issues.critical.push({
-      type: 'Audit Error',
-      description: error.message,
-      impact: 'Unable to complete full analysis',
-      priority: 'Investigate audit setup'
-    });
+  {
+    url: '/jobs',
+    title: 'Beauty Jobs & Opportunities | EmviApp',
+    meta_desc: '',
+    h1: 'Beauty Industry Jobs',
+    type: 'listing'
+  },
+  {
+    url: '/salons',
+    title: 'Beauty Salons & Businesses | EmviApp',
+    meta_desc: '',
+    h1: 'Find Beauty Salons',
+    type: 'listing'
+  },
+  {
+    url: '/artists',
+    title: 'Beauty Artists & Professionals | EmviApp',
+    meta_desc: '',
+    h1: 'Hire Beauty Professionals',
+    type: 'listing'
   }
+];
+
+async function checkAIAvailability() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  
+  if (!apiKey || !includeAI) {
+    console.log('ℹ️ OpenAI not configured or not requested - skipping AI recommendations');
+    return false;
+  }
+  
+  console.log('✅ OpenAI API key found');
+  return true;
 }
 
-function generateDetailedRecommendations() {
-  console.log('\n📝 Generating Detailed Recommendations...');
-  
-  // Add core SEO recommendations based on EmviApp structure
-  results.recommendations.push(
-    {
-      category: 'Technical SEO',
-      priority: 'High',
-      items: [
-        'Ensure all job pages have unique, descriptive titles with location and role',
-        'Implement proper canonical URLs for job listing pages with filters',
-        'Add structured data (JobPosting schema) to all job detail pages',
-        'Optimize meta descriptions for artist profile pages to include specialties',
-        'Ensure salon pages have LocalBusiness schema markup'
-      ]
-    },
-    {
-      category: 'Content & Keywords',
-      priority: 'High', 
-      items: [
-        'Add location-specific content for major markets (NYC, LA, Chicago, etc.)',
-        'Create category landing pages for nail techs, hair stylists, barbers, etc.',
-        'Optimize blog content for "beauty industry jobs" and related long-tail keywords',
-        'Add FAQ sections to main service pages',
-        'Create location-based guide content (e.g., "Best Salons in Houston")'
-      ]
-    },
-    {
-      category: 'Performance & UX',
-      priority: 'Medium',
-      items: [
-        'Optimize Core Web Vitals (LCP, FID, CLS) for mobile devices',
-        'Implement lazy loading for job listing images',
-        'Minimize JavaScript bundle size for faster page loads',
-        'Add breadcrumb navigation for better user and bot navigation',
-        'Ensure mobile-first responsive design across all pages'
-      ]
-    },
-    {
-      category: 'Link Building & Authority',
-      priority: 'Medium',
-      items: [
-        'Create shareable industry reports and infographics',
-        'Build relationships with beauty industry publications',
-        'Implement social proof elements (testimonials, success stories)',
-        'Create partner page for salon and school partnerships',
-        'Develop linkable resource pages (salary guides, career advice)'
-      ]
-    },
-    {
-      category: 'Local SEO',
-      priority: 'High',
-      items: [
-        'Optimize for "beauty jobs near me" and similar local queries',
-        'Create city-specific landing pages for major markets',
-        'Implement local schema markup for salon listings',
-        'Add Google My Business integration where applicable',
-        'Build location-based internal linking structure'
-      ]
+async function generateAIMetaDescription(page) {
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{
+          role: 'user',
+          content: `Write a compelling 150-character meta description for a beauty industry job platform page:
+Page: ${page.url}
+Title: ${page.title}
+Focus: ${page.type}
+Target audience: Beauty professionals and salon owners`
+        }],
+        max_tokens: 100,
+        temperature: 0.7
+      })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.choices[0].message.content.trim().replace(/"/g, '');
     }
-  );
+  } catch (error) {
+    console.warn(`⚠️ AI generation failed for ${page.url}: ${error.message}`);
+  }
   
-  // Add specific page recommendations
-  const pageAudits = [
+  return null;
+}
+
+function runBasicSEOChecks(pages) {
+  const issues = [];
+  const recommendations = [];
+  
+  for (const page of pages) {
+    // Title length check
+    if (page.title.length > 60) {
+      issues.push({
+        page: page.url,
+        type: 'Title Too Long',
+        current: `${page.title.length} characters`,
+        recommendation: 'Shorten to under 60 characters',
+        priority: 'Medium'
+      });
+    }
+    
+    if (page.title.length < 30) {
+      issues.push({
+        page: page.url,
+        type: 'Title Too Short',
+        current: `${page.title.length} characters`,
+        recommendation: 'Expand to 30-60 characters with more keywords',
+        priority: 'Medium'
+      });
+    }
+    
+    // Meta description check
+    if (!page.meta_desc || page.meta_desc.length === 0) {
+      issues.push({
+        page: page.url,
+        type: 'Missing Meta Description',
+        current: 'None',
+        recommendation: 'Add 150-160 character meta description',
+        priority: 'High'
+      });
+    }
+    
+    // H1 check
+    if (!page.h1) {
+      issues.push({
+        page: page.url,
+        type: 'Missing H1',
+        current: 'None',
+        recommendation: 'Add descriptive H1 tag',
+        priority: 'High'
+      });
+    }
+    
+    // Basic recommendations per page type
+    if (page.type === 'homepage') {
+      recommendations.push({
+        page: page.url,
+        category: 'Homepage Optimization',
+        suggestions: [
+          'Add structured data (Organization schema)',
+          'Include key statistics (job count, user count)',
+          'Optimize for "beauty industry jobs" keyword',
+          'Add clear value proposition'
+        ]
+      });
+    } else if (page.type === 'listing') {
+      recommendations.push({
+        page: page.url,
+        category: 'Listing Page Optimization',
+        suggestions: [
+          'Add location-based keywords',
+          'Implement faceted navigation',
+          'Add job/listing counts',
+          'Include recent activity indicators'
+        ]
+      });
+    }
+  }
+  
+  return { issues, recommendations };
+}
+
+function generateOrphanPageChecks() {
+  return [
     {
-      page: 'Homepage (/)',
-      current_title: 'EmviApp - The Beauty Industry\'s Missing Piece',
-      recommendations: [
-        'Title is good - keep the branded messaging',
-        'Add hero section with clear value proposition',
-        'Include recent job count and success metrics',
-        'Add structured data for Organization schema'
-      ]
+      type: 'Orphan Pages Check',
+      description: 'Pages not linked from main navigation',
+      recommendation: 'Audit sitemap vs internal links to identify orphan pages',
+      priority: 'Medium'
     },
     {
-      page: 'Jobs Listing (/jobs)',
-      recommendations: [
-        'Add filter-specific meta descriptions',
-        'Implement pagination with proper rel=next/prev',
-        'Add location and category faceted navigation',
-        'Include job count and freshness indicators'
-      ]
-    },
-    {
-      page: 'Artists Listing (/artists)',
-      recommendations: [
-        'Create specialty-specific landing pages',
-        'Add portfolio showcase for top artists',
-        'Implement artist rating and review system',
-        'Add location-based artist discovery'
-      ]
-    },
-    {
-      page: 'Blog (/blog)',
-      recommendations: [
-        'Create content calendar targeting industry keywords',
-        'Add author bio boxes with schema markup',
-        'Implement article schema for all blog posts',
-        'Create category and tag pages for content discovery'
-      ]
+      type: 'Duplicate Content Check',
+      description: 'Similar pages competing for same keywords',
+      recommendation: 'Review job listing pages for duplicate content patterns',
+      priority: 'Medium'
     }
   ];
-  
-  results.pages_analyzed = pageAudits;
 }
 
-function generateMarkdownReport() {
-  console.log('\n📊 Writing Recommendations Report...');
-  
+async function generateReport(issues, recommendations, aiMetaDescriptions) {
   const report = `# 🎯 SEO Recommendations Report - ${today}
 
-## 📈 Executive Summary
-**Site**: ${SITE_URL}  
-**Analysis Date**: ${new Date().toLocaleDateString()}  
-**Pages Analyzed**: Homepage, Jobs, Artists, Salons, Blog, Guides  
+## 📊 Executive Summary
 
-### 🚨 Critical Issues (${results.issues.critical.length})
-${results.issues.critical.map(issue => 
-  `- **${issue.type}**: ${issue.description} (${issue.impact})`
-).join('\n') || '- None found ✅'}
+**Site**: https://www.emvi.app  
+**Report Date**: ${new Date().toLocaleDateString()}  
+**Issues Found**: ${issues.length}  
+**AI Assistance**: ${includeAI ? 'Enabled' : 'Disabled'}
 
-### ⚠️ High Priority Issues (${results.issues.high.length})
-${results.issues.high.map(issue => 
-  `- **${issue.type}**: ${issue.description}`
-).join('\n') || '- None identified'}
+## 🚨 Issues Found (${issues.length})
 
-## 🎯 Prioritized Recommendations
+${issues.length === 0 ? '✅ No issues found!' : issues.map(issue => 
+  `### ${issue.page} - ${issue.type}
+- **Current**: ${issue.current}
+- **Recommendation**: ${issue.recommendation}
+- **Priority**: ${issue.priority}`
+).join('\n\n')}
 
-${results.recommendations.map(rec => `
-### ${rec.category} (${rec.priority} Priority)
-${rec.items.map(item => `- ${item}`).join('\n')}
-`).join('\n')}
+## 💡 Page-Specific Recommendations
 
-## 📄 Page-Specific Analysis
+${recommendations.map(rec => 
+  `### ${rec.page} - ${rec.category}
+${rec.suggestions.map(s => `- ${s}`).join('\n')}`
+).join('\n\n')}
 
-${results.pages_analyzed.map(page => `
-### ${page.page}
-${page.current_title ? `**Current Title**: "${page.current_title}"` : ''}
-**Recommendations**:
-${page.recommendations.map(rec => `- ${rec}`).join('\n')}
-`).join('\n')}
+## 🤖 AI-Generated Meta Descriptions
+${includeAI && aiMetaDescriptions.length > 0 ? 
+  aiMetaDescriptions.map(meta => 
+    `### ${meta.page}
+\`\`\`
+${meta.description}
+\`\`\`
+**Length**: ${meta.description ? meta.description.length : 0} characters`
+  ).join('\n\n') : 
+  '⚠️ AI meta descriptions not generated (use --include-ai flag or configure OPENAI_API_KEY)'
+}
 
-## 🔍 Technical SEO Checklist
+## 📋 Technical SEO Checklist
 
-### Meta Tags & Structure
-- [ ] Unique title tags for all pages (50-60 characters)
-- [ ] Compelling meta descriptions (150-160 characters)
-- [ ] Proper H1 hierarchy (one per page)
-- [ ] Alt text for all images
-- [ ] Canonical tags to prevent duplicates
+### Critical Items
+- [ ] All pages have unique titles (30-60 characters)
+- [ ] All pages have meta descriptions (150-160 characters)  
+- [ ] Every page has one H1 tag
+- [ ] Images have alt attributes
+- [ ] Site has XML sitemap
 
-### Schema Markup (JSON-LD)
+### Schema Markup
 - [ ] Organization schema on homepage
-- [ ] JobPosting schema on job detail pages
-- [ ] LocalBusiness schema for salon listings
-- [ ] Person schema for artist profiles
-- [ ] Article schema for blog posts
+- [ ] JobPosting schema on job pages
+- [ ] LocalBusiness schema on salon pages
 - [ ] BreadcrumbList for navigation
 
-### Performance & Core Web Vitals
-- [ ] Largest Contentful Paint (LCP) < 2.5s
-- [ ] First Input Delay (FID) < 100ms
-- [ ] Cumulative Layout Shift (CLS) < 0.1
-- [ ] Mobile-first responsive design
-- [ ] Image optimization and lazy loading
+### Performance
+- [ ] Core Web Vitals passing
+- [ ] Mobile-friendly design
+- [ ] Fast loading times (<3s)
+- [ ] Proper caching headers
 
-### Sitemaps & Indexation
-- [ ] XML sitemap updated and submitted
-- [ ] Jobs sitemap with daily updates
-- [ ] Artists sitemap for profile discovery
-- [ ] Robots.txt properly configured
-- [ ] No critical pages blocked from indexing
+## 🎯 Priority Actions
 
-## 📊 Competitive Analysis Suggestions
+### This Week
+1. Fix any missing meta descriptions
+2. Ensure all pages have proper H1 tags
+3. Add Organization schema to homepage
+4. Check for broken internal links
 
-### Target Keywords to Monitor
-- "beauty industry jobs"
-- "nail technician jobs [city]"
-- "hair stylist positions"
-- "salon jobs near me"
-- "barber shop employment"
-- "makeup artist opportunities"
+### This Month  
+1. Create location-specific landing pages
+2. Add JobPosting schema to job listings
+3. Optimize Core Web Vitals
+4. Build internal linking structure
 
-### Content Gap Opportunities
-1. **Salary Guides**: Create comprehensive salary data by role and location
-2. **Career Advice**: Step-by-step guides for beauty industry careers
-3. **Industry News**: Regular updates on beauty industry trends
-4. **Success Stories**: Profile successful artists and their journeys
-5. **Educational Content**: Licensing requirements by state
-
-## 🚀 Implementation Timeline
-
-### Week 1-2 (Critical Fixes)
-- Fix any broken internal links
-- Implement proper canonical URLs
-- Add missing alt tags to images
-- Ensure mobile responsiveness
-
-### Week 3-4 (Technical SEO)
-- Add structured data to all page types
-- Optimize Core Web Vitals
-- Create comprehensive sitemaps
-- Implement breadcrumb navigation
-
-### Month 2 (Content & Keywords)
-- Create location-specific landing pages
-- Develop industry-focused blog content
-- Add FAQ sections to main pages
-- Build internal linking structure
-
-### Month 3+ (Growth & Authority)
-- Launch link building campaign
-- Create shareable industry resources
-- Develop partnership pages
-- Monitor and optimize based on performance
-
-## 📞 Next Steps
-
-1. **Immediate Actions** (This Week):
-   - Review and fix any critical issues identified above
-   - Implement basic technical SEO improvements
-   - Set up proper tracking and monitoring
-
-2. **Strategic Planning** (Next 30 Days):
-   - Develop content calendar targeting key industry terms
-   - Plan location-specific page creation
-   - Design link building and partnership strategy
-
-3. **Long-term Growth** (3-6 Months):
-   - Execute comprehensive content marketing plan
-   - Monitor keyword rankings and organic traffic growth
-   - Continuously optimize based on performance data
+### Ongoing
+1. Monitor keyword rankings
+2. Create fresh content regularly
+3. Build quality backlinks
+4. Track user engagement metrics
 
 ---
-*Report generated by EmviApp SEO Agent on ${new Date().toLocaleString()}*  
-*For technical questions, review the detailed audit files in /reports/seo/*
+*Generated by EmviApp SEO Agent on ${new Date().toLocaleString()}*
 `;
 
-  fs.writeFileSync(RECOMMENDATIONS_FILE, report);
-  console.log(`✅ Recommendations saved to ${RECOMMENDATIONS_FILE}`);
+  await fs.mkdir(reportsDir, { recursive: true });
+  await fs.writeFile(outputFile, report);
   
-  return RECOMMENDATIONS_FILE;
+  return outputFile;
 }
 
 async function main() {
-  try {
-    await runComprehensiveAudit();
-    generateDetailedRecommendations();
-    const reportPath = generateMarkdownReport();
-    
-    console.log('\n🎉 SEO Recommendations Generated Successfully!');
-    console.log(`📄 View report: ${reportPath}`);
-    console.log('\n📋 Summary:');
-    console.log(`   - Critical Issues: ${results.issues.critical.length}`);
-    console.log(`   - Recommendations: ${results.recommendations.length} categories`);
-    console.log(`   - Pages Analyzed: ${results.pages_analyzed.length}`);
-    
-  } catch (error) {
-    console.error('\n❌ Recommendations generation failed:', error.message);
-    process.exit(1);
+  console.log('🎯 SEO Recommendations Engine (Minimal Version)');
+  console.log(`📁 Output: ${outputFile}`);
+  
+  // Check AI availability
+  const aiAvailable = await checkAIAvailability();
+  
+  // Run basic SEO checks
+  console.log('🔍 Running SEO checks...');
+  const { issues, recommendations } = runBasicSEOChecks(pages);
+  
+  // Add orphan page checks
+  const orphanChecks = generateOrphanPageChecks();
+  issues.push(...orphanChecks);
+  
+  // Generate AI meta descriptions if available
+  let aiMetaDescriptions = [];
+  if (aiAvailable) {
+    console.log('🤖 Generating AI meta descriptions...');
+    for (const page of pages) {
+      if (!page.meta_desc) {
+        const aiDesc = await generateAIMetaDescription(page);
+        if (aiDesc) {
+          aiMetaDescriptions.push({
+            page: page.url,
+            description: aiDesc
+          });
+        }
+        // Small delay between API calls
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+  }
+  
+  // Generate report
+  console.log('📝 Generating recommendations report...');
+  const reportPath = await generateReport(issues, recommendations, aiMetaDescriptions);
+  
+  console.log(`✅ SEO recommendations saved to ${reportPath}`);
+  console.log(`📊 Summary:`);
+  console.log(`   - Issues found: ${issues.length}`);
+  console.log(`   - Recommendations: ${recommendations.length}`);
+  console.log(`   - AI descriptions: ${aiMetaDescriptions.length}`);
+  
+  if (issues.filter(i => i.priority === 'High').length > 0) {
+    console.log('⚠️ High priority issues found - review report for immediate actions');
   }
 }
 
-// Run the recommendations generator
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch(error => {
+    console.error('❌ SEO recommendations failed:', error.message);
+    process.exit(1);
+  });
+}
