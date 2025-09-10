@@ -116,6 +116,13 @@ const SalonOwnersAttractHireKeepArtists = lazy(() => import("@/pages/blog/salon-
 const BeautyIndustryHiddenJobMarket = lazy(() => import("@/pages/blog/500b-beauty-industry-hidden-job-market"));
 const SideHustleSixFiguresNailTechnicians = lazy(() => import("@/pages/blog/side-hustle-six-figures-nail-technicians"));
 
+// Vietnamese Blog Articles
+const UngDungTotNhatChoNguoiVietTimViecNail = lazy(() => import("@/pages/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail"));
+const CachDangBanTiemNailOnlineNhanhHieuQua = lazy(() => import("@/pages/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua"));
+const Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung = lazy(() => import("@/pages/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung"));
+const BiQuyetTuyenThoNailNhanhChoThuTiemNguoiViet = lazy(() => import("@/pages/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet"));
+const EmviAppCongDongNguoiVietTrongNganhLamDep = lazy(() => import("@/pages/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep"));
+
 // SEO Programmatic Pages
 const CategoryCityPage = lazy(() => import("@/pages/seo/CategoryCityPage"));
 const CategoryOnlyPage = lazy(() => import("@/pages/seo/CategoryOnlyPage"));
@@ -395,12 +402,19 @@ function App() {
                     <Route path="/blog/salon-marketing-2025" element={<Layout><SalonMarketing2025 /></Layout>} />
                     <Route path="/blog/nail-artists-best-jobs" element={<Layout><NailArtistsBestJobs /></Layout>} />
                     
-                    {/* Latest SEO Articles (2025) */}
-                    <Route path="/blog/nail-salon-hiring-crisis-2025" element={<Layout><NailSalonHiringCrisis2025 /></Layout>} />
-                    <Route path="/blog/top-10-cities-nail-technicians-2025" element={<Layout><TopCitiesNailTechnicians2025 /></Layout>} />
-                    <Route path="/blog/salon-owners-attract-hire-keep-artists" element={<Layout><SalonOwnersAttractHireKeepArtists /></Layout>} />
-                    <Route path="/blog/500b-beauty-industry-hidden-job-market" element={<Layout><BeautyIndustryHiddenJobMarket /></Layout>} />
-                    <Route path="/blog/side-hustle-six-figures-nail-technicians" element={<Layout><SideHustleSixFiguresNailTechnicians /></Layout>} />
+                     {/* Latest SEO Articles (2025) */}
+                     <Route path="/blog/nail-salon-hiring-crisis-2025" element={<Layout><NailSalonHiringCrisis2025 /></Layout>} />
+                     <Route path="/blog/top-10-cities-nail-technicians-2025" element={<Layout><TopCitiesNailTechnicians2025 /></Layout>} />
+                     <Route path="/blog/salon-owners-attract-hire-keep-artists" element={<Layout><SalonOwnersAttractHireKeepArtists /></Layout>} />
+                     <Route path="/blog/500b-beauty-industry-hidden-job-market" element={<Layout><BeautyIndustryHiddenJobMarket /></Layout>} />
+                     <Route path="/blog/side-hustle-six-figures-nail-technicians" element={<Layout><SideHustleSixFiguresNailTechnicians /></Layout>} />
+                     
+                     {/* Vietnamese Blog Articles */}
+                     <Route path="/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail" element={<Layout><UngDungTotNhatChoNguoiVietTimViecNail /></Layout>} />
+                     <Route path="/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua" element={<Layout><CachDangBanTiemNailOnlineNhanhHieuQua /></Layout>} />
+                     <Route path="/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung" element={<Layout><Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung /></Layout>} />
+                     <Route path="/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet" element={<Layout><BiQuyetTuyenThoNailNhanhChoThuTiemNguoiViet /></Layout>} />
+                     <Route path="/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep" element={<Layout><EmviAppCongDongNguoiVietTrongNganhLamDep /></Layout>} />
                     
                     {/* Content Hub Routes */}
                     <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />
