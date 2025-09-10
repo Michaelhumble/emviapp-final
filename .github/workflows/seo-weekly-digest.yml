@@ -49,6 +49,15 @@ jobs:
           
           echo "✅ All required environment variables present"
 
+      - name: Collect Core Web Vitals
+        run: |
+          echo "📊 Collecting Core Web Vitals data..."
+          node scripts/collect-cwv.mjs --urls=data/priority-urls.json || echo "CWV collection failed"
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
       - name: Run SEO Agent Analysis
         run: |
           echo "🤖 Running SEO Agent analysis..."
@@ -81,6 +90,27 @@ jobs:
             cat reports/seo-agent-summary.md >> reports/weekly-digest.md
           else
             echo "⚠️ SEO agent summary not available" >> reports/weekly-digest.md
+          fi
+          
+          echo "" >> reports/weekly-digest.md
+          echo "## Core Web Vitals" >> reports/weekly-digest.md
+          if [ -f .seo-cache/cwv-$REPORT_DATE.json ]; then
+            CWV_ALERTS=$(jq -r '.analysis.alerts | length' .seo-cache/cwv-$REPORT_DATE.json 2>/dev/null || echo "0")
+            CWV_SUCCESS=$(jq -r '.analysis.successful' .seo-cache/cwv-$REPORT_DATE.json 2>/dev/null || echo "0")
+            CWV_TOTAL=$(jq -r '.analysis.total_urls' .seo-cache/cwv-$REPORT_DATE.json 2>/dev/null || echo "0")
+            
+            echo "**Performance Status**: $CWV_SUCCESS/$CWV_TOTAL URLs analyzed" >> reports/weekly-digest.md
+            
+            if [ "$CWV_ALERTS" -gt 0 ]; then
+              echo "🚨 **$CWV_ALERTS performance alerts detected**" >> reports/weekly-digest.md
+              echo "" >> reports/weekly-digest.md
+              echo "**Top Issues:**" >> reports/weekly-digest.md
+              jq -r '.analysis.alerts[0:3] | .[] | "- " + .metric + ": " + (.value|tostring) + (if .metric == "CLS" then "" else "ms" end) + " on " + .url' .seo-cache/cwv-$REPORT_DATE.json >> reports/weekly-digest.md 2>/dev/null || echo "- Unable to parse CWV alerts" >> reports/weekly-digest.md
+            else
+              echo "✅ **All Core Web Vitals within acceptable thresholds**" >> reports/weekly-digest.md
+            fi
+          else
+            echo "⚠️ Core Web Vitals data not available" >> reports/weekly-digest.md
           fi
           
           echo "" >> reports/weekly-digest.md
@@ -150,5 +180,6 @@ jobs:
             reports/broken-links.csv
             reports/sitemap-validation.json
             reports/seo-report.html
+            .seo-cache/cwv-*.json
           retention-days: 30
         if: always()
