@@ -67,6 +67,13 @@ const FiveStarReviews = lazy(() => import('@/pages/blog/5-star-reviews'));
 const SalonMarketing2025 = lazy(() => import('@/pages/blog/salon-marketing-2025'));
 const NailArtistsBestJobs = lazy(() => import('@/pages/blog/nail-artists-best-jobs'));
 
+// Vietnamese Blog Articles (2025)
+const UngDungTotNhatChoNguoiVietTimViecNail = lazy(() => import('@/pages/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail'));
+const CachDangBanTiemNailOnlineNhanhHieuQua = lazy(() => import('@/pages/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua'));
+const Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung = lazy(() => import('@/pages/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung'));
+const BiQuyetTuyenThoNailNhanhChoChuTiemNguoiViet = lazy(() => import('@/pages/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet'));
+const EmviAppCongDongNguoiVietTrongNganhLamDep = lazy(() => import('@/pages/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep'));
+
 // Latest SEO Articles (2025)
 const NailSalonHiringCrisis2025 = lazy(() => import('@/pages/blog/nail-salon-hiring-crisis-2025'));
 const TopCitiesNailTechnicians2025 = lazy(() => import('@/pages/blog/top-10-cities-nail-technicians-2025'));
@@ -76,6 +83,92 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  // Vietnamese Blog Articles - NEWEST FIRST (January 21, 2025)
+  {
+    id: 'ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail',
+    slug: 'ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail',
+    title: 'Ứng Dụng Tốt Nhất Cho Người Việt Tìm Việc Nail Ở Mỹ',
+    description: 'Khám phá EmviApp - ứng dụng hàng đầu giúp người Việt tìm việc nail tại Mỹ. Hàng ngàn vị trí nail tech, lương cao, môi trường làm việc chuyên nghiệp.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '15 min read',
+    category: 'Việc Làm Nail',
+    categorySlug: 'viec-lam-nail',
+    tags: ['ứng dụng tìm việc nail', 'người việt tại mỹ', 'nail tech jobs', 'EmviApp', 'cộng đồng người việt'],
+    image: heroImage,
+    featured: true,
+    trending: true,
+    component: UngDungTotNhatChoNguoiVietTimViecNail,
+    url: '/blog/ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail'
+  },
+  {
+    id: 'cach-dang-ban-tiem-nail-online-nhanh-hieu-qua',
+    slug: 'cach-dang-ban-tiem-nail-online-nhanh-hieu-qua',
+    title: 'Cách Đăng Bán Tiệm Nail Online Nhanh Và Hiệu Quả',
+    description: 'Hướng dẫn chi tiết cách đăng bán tiệm nail online hiệu quả. Từ định giá, chụp ảnh đến đàm phán với người mua. Bán nhanh với giá tốt nhất.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '12 min read',
+    category: 'Quản Lý Salon',
+    categorySlug: 'quan-ly-salon',
+    tags: ['bán tiệm nail', 'đăng tin online', 'quản lý salon', 'định giá salon', 'người việt bán salon'],
+    image: sellSalonGuideImage,
+    featured: true,
+    trending: true,
+    component: CachDangBanTiemNailOnlineNhanhHieuQua,
+    url: '/blog/cach-dang-ban-tiem-nail-online-nhanh-hieu-qua'
+  },
+  {
+    id: 'top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung',
+    slug: 'top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung',
+    title: 'Top 5 Website Uy Tín Cho Người Việt Đăng Tin Tuyển Dụng',
+    description: 'Khám phá 5 website tuyển dụng uy tín nhất cho người Việt tại Mỹ. So sánh chi tiết phí, tính năng và hiệu quả tuyển dụng từng platform.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '18 min read',
+    category: 'Tuyển Dụng',
+    categorySlug: 'tuyen-dung',
+    tags: ['website tuyển dụng', 'đăng tin tuyển dụng', 'người việt tại mỹ', 'tuyển thợ nail', 'so sánh platform'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: Top5WebsiteUyTinChoNguoiVietDangTinTuyenDung,
+    url: '/blog/top-5-website-uy-tin-cho-nguoi-viet-dang-tin-tuyen-dung'
+  },
+  {
+    id: 'bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet',
+    slug: 'bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet',
+    title: 'Bí Quyết Tuyển Thợ Nail Nhanh Cho Chủ Tiệm Người Việt',
+    description: 'Học bí quyết tuyển thợ nail nhanh và hiệu quả từ các chủ salon thành công. 7 chiến lược đã được chứng minh giúp tuyển đúng người trong 72 giờ.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '14 min read',
+    category: 'Quản Lý Salon',
+    categorySlug: 'quan-ly-salon',
+    tags: ['tuyển thợ nail nhanh', 'bí quyết tuyển dụng', 'chủ salon người việt', 'quản lý nhân sự', 'tuyển dụng hiệu quả'],
+    image: salonStaffManagementImage,
+    featured: true,
+    trending: true,
+    component: BiQuyetTuyenThoNailNhanhChoChuTiemNguoiViet,
+    url: '/blog/bi-quyet-tuyen-tho-nail-nhanh-cho-chu-tiem-nguoi-viet'
+  },
+  {
+    id: 'emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep',
+    slug: 'emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep',
+    title: 'EmviApp: Cộng Đồng Người Việt Trong Ngành Làm Đẹp',
+    description: 'Khám phá EmviApp - nền tảng kết nối cộng đồng người Việt trong ngành làm đẹp tại Mỹ. Hơn 15,000 thành viên đang xây dựng sự nghiệp thành công.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-21',
+    readTime: '16 min read',
+    category: 'Cộng Đồng',
+    categorySlug: 'cong-dong',
+    tags: ['cộng đồng người việt', 'EmviApp community', 'ngành làm đẹp', 'kết nối người việt', 'beauty community'],
+    image: globalBeautyCommunityHeroImage,
+    featured: true,
+    trending: true,
+    component: EmviAppCongDongNguoiVietTrongNganhLamDep,
+    url: '/blog/emviapp-cong-dong-nguoi-viet-trong-nganh-lam-dep'
+  },
   // Latest SEO Articles - NEWEST FIRST (2025 Expansion)
   {
     id: 'nail-salon-hiring-crisis-2025',
