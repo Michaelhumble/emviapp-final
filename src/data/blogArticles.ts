@@ -68,6 +68,11 @@ const SalonMarketing2025 = lazy(() => import('@/pages/blog/salon-marketing-2025'
 const NailArtistsBestJobs = lazy(() => import('@/pages/blog/nail-artists-best-jobs'));
 
 // Vietnamese Blog Articles (2025) - NEWEST FIRST
+const TimViecNailCaliforniaBiQuyetNguoiViet = lazy(() => import('@/pages/blog/tim-viec-nail-california-bi-quyet-nguoi-viet'));
+const CachSangTiemNailHoustonNhanhDuocGia = lazy(() => import('@/pages/blog/cach-sang-tiem-nail-houston-nhanh-duoc-gia'));
+const DangTinTuyenThoNailMienPhiEmviApp = lazy(() => import('@/pages/blog/dang-tin-tuyen-tho-nail-mien-phi-emviapp'));
+const ViecNailNguoiVietMoiSangMyBatDau = lazy(() => import('@/pages/blog/viec-nail-nguoi-viet-moi-sang-my-bat-dau'));
+const UngDungEmviAppKetNoiNguoiVietNgheNail = lazy(() => import('@/pages/blog/ung-dung-emviapp-ket-noi-nguoi-viet-nghe-nail'));
 const ViecLamThoNailLuongCaoTaiMy = lazy(() => import('@/pages/blog/viec-lam-tho-nail-luong-cao-tai-my'));
 const ThueThoNailGioi7BuocTuyenDungHieuQua = lazy(() => import('@/pages/blog/thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua'));
 const SangTiemNailNhanhChongHuongDanTuAZ = lazy(() => import('@/pages/blog/sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z'));
@@ -86,7 +91,93 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  // Vietnamese Blog Articles - NEWEST FIRST (January 22, 2025)
+  // Vietnamese Blog Articles - NEWEST FIRST (January 23, 2025)
+  {
+    id: 'tim-viec-nail-california-bi-quyet-nguoi-viet',
+    slug: 'tim-viec-nail-california-bi-quyet-nguoi-viet',
+    title: 'Tìm Việc Nail Ở California: Bí Quyết Cho Người Việt',
+    description: 'Hướng dẫn chi tiết cách tìm việc nail ở California cho người Việt. Bí quyết từ cộng đồng với mức lương $1000-2000/tuần. Khám phá 10+ thành phố tuyển dụng nhiều nhất.',
+    author: 'Chị Kim Nguyễn - 20 năm kinh nghiệm',
+    publishedAt: '2025-01-23',
+    readTime: '12 min read',
+    category: 'Việc Làm Nail',
+    categorySlug: 'viec-lam-nail',
+    tags: ['việc làm nail California', 'việc làm thợ nail', 'người Việt California', 'tìm việc nail nhanh', 'lương thợ nail'],
+    image: heroImage,
+    featured: true,
+    trending: true,
+    component: TimViecNailCaliforniaBiQuyetNguoiViet,
+    url: '/blog/tim-viec-nail-california-bi-quyet-nguoi-viet'
+  },
+  {
+    id: 'cach-sang-tiem-nail-houston-nhanh-duoc-gia',
+    slug: 'cach-sang-tiem-nail-houston-nhanh-duoc-gia',
+    title: 'Cách Sang Tiệm Nail Ở Houston Nhanh Và Được Giá',
+    description: 'Hướng dẫn chi tiết cách sang tiệm nail ở Houston hiệu quả. Bí quyết định giá, marketing và giao dịch an toàn. Kinh nghiệm từ 200+ giao dịch thành công tại Texas.',
+    author: 'Anh Tony Nguyễn - Chuyên gia M&A',
+    publishedAt: '2025-01-23',
+    readTime: '15 min read',
+    category: 'Mua Bán Salon',
+    categorySlug: 'mua-ban-salon',
+    tags: ['sang tiệm nail Houston', 'bán salon nail', 'mua bán salon nail', 'chuyển nhượng salon', 'định giá salon'],
+    image: sellSalonGuideImage,
+    featured: true,
+    trending: true,
+    component: CachSangTiemNailHoustonNhanhDuocGia,
+    url: '/blog/cach-sang-tiem-nail-houston-nhanh-duoc-gia'
+  },
+  {
+    id: 'dang-tin-tuyen-tho-nail-mien-phi-emviapp',
+    slug: 'dang-tin-tuyen-tho-nail-mien-phi-emviapp',
+    title: 'Đăng Tin Tuyển Thợ Nail Miễn Phí Ở EmviApp',
+    description: 'Hướng dẫn chi tiết cách đăng tin tuyển thợ nail miễn phí trên EmviApp. Tìm được thợ giỏi trong 48 giờ với hơn 15,000 ứng viên chất lượng đang chờ việc.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-23',
+    readTime: '10 min read',
+    category: 'Tuyển Dụng',
+    categorySlug: 'tuyen-dung',
+    tags: ['tuyển thợ nail', 'đăng tin miễn phí', 'việc nail người Việt', 'EmviApp tuyển dụng', 'tuyển nail tech'],
+    image: beautyProfessionalSuccessGuideImage,
+    featured: true,
+    trending: true,
+    component: DangTinTuyenThoNailMienPhiEmviApp,
+    url: '/blog/dang-tin-tuyen-tho-nail-mien-phi-emviapp'
+  },
+  {
+    id: 'viec-nail-nguoi-viet-moi-sang-my-bat-dau',
+    slug: 'viec-nail-nguoi-viet-moi-sang-my-bat-dau',  
+    title: 'Việc Nail Cho Người Việt Mới Sang Mỹ: Làm Sao Để Bắt Đầu?',
+    description: 'Hướng dẫn chi tiết cho người Việt mới sang Mỹ tìm việc nail. Từ xin license, học tiếng Anh đến tìm việc đầu tiên. Kinh nghiệm thực tế từ cộng đồng.',
+    author: 'Chị Hoa Trần - Cố vấn cộng đồng',
+    publishedAt: '2025-01-23',
+    readTime: '20 min read',
+    category: 'Việc Làm Nail',
+    categorySlug: 'viec-lam-nail',
+    tags: ['việc nail người mới', 'việc nail người Việt tại Mỹ', 'tìm việc nail nhanh', 'người Việt mới sang Mỹ', 'bắt đầu nghề nail'],
+    image: heroImage,
+    featured: true,
+    trending: true,
+    component: ViecNailNguoiVietMoiSangMyBatDau,
+    url: '/blog/viec-nail-nguoi-viet-moi-sang-my-bat-dau'
+  },
+  {
+    id: 'ung-dung-emviapp-ket-noi-nguoi-viet-nghe-nail',
+    slug: 'ung-dung-emviapp-ket-noi-nguoi-viet-nghe-nail',
+    title: 'Ứng Dụng EmviApp: Nơi Người Việt Kết Nối Nghề Nail Ở Mỹ',
+    description: 'Khám phá EmviApp - ứng dụng số 1 kết nối cộng đồng người Việt trong nghề nail tại Mỹ. Hơn 15,000 thành viên, tìm việc dễ dàng, networking chuyên nghiệp.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-01-23',
+    readTime: '18 min read',
+    category: 'Cộng Đồng',
+    categorySlug: 'cong-dong',
+    tags: ['ứng dụng nail', 'cộng đồng người Việt', 'việc làm salon', 'EmviApp community', 'kết nối người Việt'],
+    image: globalBeautyCommunityHeroImage,
+    featured: true,
+    trending: true,
+    component: UngDungEmviAppKetNoiNguoiVietNgheNail,
+    url: '/blog/ung-dung-emviapp-ket-noi-nguoi-viet-nghe-nail'
+  },
+  // Previous Vietnamese Blog Articles (January 22, 2025)
   {
     id: 'viec-lam-tho-nail-luong-cao-tai-my',
     slug: 'viec-lam-tho-nail-luong-cao-tai-my',
