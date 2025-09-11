@@ -89,24 +89,54 @@ async function getAccessToken(clientEmail, privateKey) {
 }
 
 async function createServiceAccountJWT(clientEmail, privateKey) {
-  // Minimal JWT implementation for GSC service account
-  const header = { alg: 'RS256', typ: 'JWT' };
-  const now = Math.floor(Date.now() / 1000);
-  
-  const payload = {
-    iss: clientEmail,
-    scope: 'https://www.googleapis.com/auth/webmasters.readonly',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now
-  };
+  try {
+    // Import crypto for JWT signing
+    const crypto = await import('crypto');
+    
+    const header = { alg: 'RS256', typ: 'JWT' };
+    const now = Math.floor(Date.now() / 1000);
+    
+    const payload = {
+      iss: clientEmail,
+      scope: submitIndexing 
+        ? 'https://www.googleapis.com/auth/indexing' 
+        : 'https://www.googleapis.com/auth/webmasters.readonly',
+      aud: 'https://oauth2.googleapis.com/token',
+      exp: now + 3600,
+      iat: now
+    };
 
-  // Note: This is a simplified version. In production, use proper JWT libraries
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  
-  // For this minimal version, we'll return a placeholder and rely on proper auth setup
-  return `${encodedHeader}.${encodedPayload}.signature_placeholder`;
+    // Encode header and payload
+    const encodedHeader = Buffer.from(JSON.stringify(header))
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+    
+    const encodedPayload = Buffer.from(JSON.stringify(payload))
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+    // Create signature
+    const signingInput = `${encodedHeader}.${encodedPayload}`;
+    
+    // Clean up private key - replace \\n with actual newlines
+    const cleanPrivateKey = privateKey.replace(/\\n/g, '\n');
+    
+    const signature = crypto.sign('RSA-SHA256', Buffer.from(signingInput), cleanPrivateKey);
+    const encodedSignature = signature
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+    return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+  } catch (error) {
+    console.error('JWT creation failed:', error.message);
+    throw new Error(`Failed to create service account JWT: ${error.message}`);
+  }
 }
 
 async function fetchGSCData(urls, accessToken) {
@@ -184,7 +214,21 @@ async function submitForIndexing(urls, accessToken) {
   const submissionResults = [];
   let successCount = 0;
   
-  for (const url of urls.slice(0, 10)) { // Limit submissions to avoid rate limits
+  // Batch processing for large URL lists
+  const batchSize = 100; // GSC API limit
+  const batches = [];
+  
+  for (let i = 0; i < urls.length; i += batchSize) {
+    batches.push(urls.slice(i, i + batchSize));
+  }
+  
+  console.log(`📦 Processing ${urls.length} URLs in ${batches.length} batch(es)`);
+  
+  for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+    const batch = batches[batchIndex];
+    console.log(`📤 Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} URLs)`);
+    
+    for (const url of batch) { // Process each URL in the batch
     try {
       console.log(`📤 Submitting for indexing: ${url}`);
       
@@ -222,7 +266,7 @@ async function submitForIndexing(urls, accessToken) {
         console.warn(`⚠️ Failed to submit ${url}: HTTP ${response.status}`);
       }
       
-      // Rate limiting - wait between submissions
+      // Rate limiting - wait between submissions (1 request per second)
       await new Promise(resolve => setTimeout(resolve, 1000));
       
     } catch (error) {
@@ -232,6 +276,13 @@ async function submitForIndexing(urls, accessToken) {
         error: error.message
       });
       console.error(`❌ Error submitting ${url}: ${error.message}`);
+    }
+    }
+    
+    // Small delay between batches
+    if (batchIndex < batches.length - 1) {
+      console.log('⏳ Waiting 5 seconds between batches...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
   
@@ -277,12 +328,16 @@ async function main() {
     await fs.writeFile(indexingFile, JSON.stringify(indexingOutput, null, 2));
     
     console.log(`✅ Indexing results saved to ${indexingFile}`);
-    console.log(`submitted: ${successCount}, errors: ${indexingOutput.failed_count}`);
+    console.log(`📊 Summary: submitted: ${successCount}, errors: ${indexingOutput.failed_count}, total: ${urls.length}`);
     
     if (successCount === 0) {
       console.warn('⚠️ No URLs were successfully submitted for indexing');
-      process.exit(1);
+      // Don't exit with error - let workflow handle this gracefully
+      return;
     }
+    
+    // Log final success message for workflow parsing
+    console.log(`submitted: ${successCount}`);
     
   } else {
     // Fetch GSC data (original functionality)

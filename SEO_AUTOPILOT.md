@@ -13,6 +13,28 @@ EmviApp's comprehensive SEO automation system with scheduled workflows, safe aut
 | **Priority Indexing** | Sun 06:00 UTC | Submit URLs to Google Search Console |
 | **Housekeeping** | 23:50 UTC daily | Clean cache files, validate data |
 
+## 🎯 Cron Schedule Summary
+
+```bash
+# Daily Auto-Fix: Every day at 17:00 UTC
+0 17 * * *
+
+# Weekly Digest: Every Monday at 09:00 UTC  
+0 9 * * 1
+
+# CWV Monitor: Every Monday at 08:30 UTC
+30 8 * * 1
+
+# Keyword Tracker: Every day at 06:00 UTC
+0 6 * * *
+
+# Priority Indexing: Every Sunday at 06:00 UTC
+0 6 * * 0
+
+# Housekeeping: Every day at 23:50 UTC
+50 23 * * *
+```
+
 ## 🔧 Required Secrets
 
 ### Essential (workflows will skip if missing):
@@ -34,6 +56,7 @@ EmviApp's comprehensive SEO automation system with scheduled workflows, safe aut
 - `reports/weekly-YYYY-MM-DD.md` - Weekly SEO digest
 - `.seo-cache/cwv-YYYY-MM-DD.json` - Core Web Vitals data  
 - `.seo-cache/keywords-YYYY-MM-DD.json` - Keyword rankings
+- `.seo-cache/gsc-indexing-YYYY-MM-DD.json` - Priority indexing results
 - `reports/housekeeping-report.md` - Maintenance summary
 
 ### Automated Issues
@@ -79,6 +102,35 @@ Automated alerts for:
 - **Keywords dropping 5+ positions** (competitor analysis)
 - **Missing critical data files** (housekeeping issues)
 - **High disk usage** (>200MB cache)
+- **GSC indexing quota exceeded** (priority indexing failures)
+
+## 📤 Priority Indexing Details
+
+### Schedule & Operation
+- **Frequency**: Every Sunday at 06:00 UTC
+- **Batch Processing**: Handles 100+ URLs automatically with rate limiting
+- **Retry Logic**: 2 attempts with 10-second delay
+- **Timeout**: 15-minute maximum execution time
+
+### GSC API Requirements
+```bash
+# Required secrets for indexing functionality
+GSC_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
+GSC_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
+```
+
+### Expected Output
+- **Success Log**: `✅ DONE | submitted: 25 URLs | retries: 0`
+- **Skip Log**: `⚠️ SKIPPED | missing: GSC credentials`
+- **Artifact**: `.seo-cache/gsc-indexing-YYYY-MM-DD.json`
+
+### Troubleshooting
+| Issue | Solution |
+|-------|----------|
+| **Quota Exceeded** | GSC allows 200 requests/day - reduce URL list |
+| **Authentication Failed** | Verify GSC service account has indexing API enabled |
+| **Timeout** | Large URL lists are batched automatically |
+| **No URLs Submitted** | Check `data/priority-urls.json` file exists and is valid JSON |
 
 ---
 
