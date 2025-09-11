@@ -124,7 +124,7 @@ export const jobPostingJsonLd = (job: JobPostingData) => {
       "@type": "Organization",
       "name": job.company || job.salonName || job.contact_info?.owner_name || "Beauty Salon",
       "sameAs": SITE_BASE_URL,
-      "logo": `${SITE_BASE_URL}/icons/emvi-master-512.png`
+      "logo": `${SITE_BASE_URL}/android-chrome-512x512.png`
     },
     "jobLocation": job.is_remote ? {
       "@type": "Place",
@@ -384,7 +384,7 @@ export const articleJsonLd = (article: ArticleData) => ({
     "url": SITE_BASE_URL,
     "logo": {
       "@type": "ImageObject",
-      "url": `${SITE_BASE_URL}/icons/emvi-master-512.png`
+      "url": `${SITE_BASE_URL}/android-chrome-512x512.png`
     }
   },
   "mainEntityOfPage": {

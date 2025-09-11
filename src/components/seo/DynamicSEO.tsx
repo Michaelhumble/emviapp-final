@@ -18,7 +18,7 @@ interface DynamicSEOProps {
 const DynamicSEO: React.FC<DynamicSEOProps> = ({
   title = 'EmviApp - The Beauty Industry\'s Missing Piece',
   description = 'Discover premium beauty opportunities, connect with top salons, and grow your career. Join thousands of nail technicians, hair stylists, barbers, and beauty professionals.',
-  image = 'https://emvi.app/og-image.jpg',
+  image = '/android-chrome-512x512.png',
   url = 'https://emvi.app',
   type = 'website',
   author,
@@ -78,7 +78,7 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
       <link rel="manifest" href="/site.webmanifest" />
       
       {/* Safari Pinned Tab */}
-      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#FF7743" />
+      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#F25C05" />
       
       {/* Theme Colors */}
       <meta name="theme-color" content="#ffffff" />

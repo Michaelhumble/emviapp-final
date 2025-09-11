@@ -33,9 +33,9 @@ export const BRAND_CONFIG = {
   // Digital Presence
   urls: {
     website: "https://www.emvi.app",
-    logo: "https://www.emvi.app/icons/emvi-master-512.png",
-    logoPng200: "https://www.emvi.app/icons/emvi-logo-200x200.png",
-    favicon: "https://www.emvi.app/favicon.ico"
+    logo: "https://www.emvi.app/android-chrome-512x512.png",
+    logoPng200: "https://www.emvi.app/android-chrome-192x192.png",
+    favicon: "https://www.emvi.app/favicon-32x32.png"
   },
 
   // Social Media & External Links

@@ -230,8 +230,8 @@ const PushNotificationCenter: React.FC<PushNotificationCenterProps> = ({
     try {
       new Notification('EmviApp Test', {
         body: 'Push notifications are working perfectly! 🎉',
-        icon: '/favicon.ico',
-        badge: '/favicon.ico',
+        icon: '/android-chrome-192x192.png',
+        badge: '/android-chrome-192x192.png',
         tag: 'test-notification'
       });
       

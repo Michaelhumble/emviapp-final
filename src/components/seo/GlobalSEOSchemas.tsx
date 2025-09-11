@@ -7,7 +7,7 @@ const GlobalSEOSchemas = () => {
     "@type": "Organization",
     "name": "EmviApp",
     "url": "https://emvi.app",
-    "logo": "https://emvi.app/icons/emvi-master-512.png",
+    "logo": "https://emvi.app/android-chrome-512x512.png",
     "sameAs": [
       "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
       "https://twitter.com/EmviApp",
