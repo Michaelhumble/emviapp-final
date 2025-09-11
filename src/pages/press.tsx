@@ -109,62 +109,58 @@ const PressPage = () => {
           </div>
 
           {/* Coverage Grid */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredCoverage.map((item, index) => (
               <div 
                 key={`${item.name}-${index}`}
-                className={`bg-white rounded-xl shadow-sm border p-6 transition-all hover:shadow-md ${
-                  !item.live ? 'opacity-75' : ''
+                className={`group bg-white rounded-lg border border-gray-200 hover:border-violet-300 transition-all duration-200 overflow-hidden ${
+                  !item.live ? 'opacity-60' : 'hover:shadow-lg'
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  {/* Logo */}
-                  <div className="flex-shrink-0">
-                    <PressLogo 
-                      publisherName={item.name}
-                      href={item.live ? item.href : undefined}
-                      isClickable={item.live}
-                    />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {item.name}
-                      </h3>
-                    </div>
-
-                    <p className="text-gray-600 mb-3">
-                      EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                      {item.live ? (
-                        <a
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener nofollow"
-                          className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700 transition-colors"
-                          aria-label={`Read ${item.name} article`}
-                        >
-                          Read article
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-sm font-medium text-gray-400 cursor-not-allowed">
-                          Read article
-                          <ExternalLink className="w-4 h-4" />
-                        </span>
-                      )}
-                    </div>
-
-                    {!item.live && (
-                      <div className="mt-2 text-xs text-red-600">
-                        Article currently unavailable
-                      </div>
+                {/* Header with Publisher Name */}
+                <div className="bg-gradient-to-r from-violet-50 to-purple-50 px-4 py-3 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">
+                      {item.name}
+                    </h3>
+                    {item.live && (
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     )}
                   </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <h4 className="text-base font-medium text-gray-800 mb-2 line-clamp-2">
+                    EmviApp Launches the First AI-Powered Growth Engine for the Global Beauty Industry
+                  </h4>
+                  
+                  <p className="text-sm text-gray-500 mb-3">
+                    Press Coverage • January 2025
+                  </p>
+
+                  {item.live ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener nofollow"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700 transition-colors group-hover:gap-2"
+                      aria-label={`Read ${item.name} article`}
+                    >
+                      Read Article
+                      <ExternalLink className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </a>
+                  ) : (
+                    <div className="space-y-1">
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-gray-400">
+                        Article Unavailable
+                        <ExternalLink className="w-3 h-3" />
+                      </span>
+                      <p className="text-xs text-red-500">
+                        Temporarily unavailable
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
