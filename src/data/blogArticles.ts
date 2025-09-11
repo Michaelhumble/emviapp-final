@@ -67,7 +67,10 @@ const FiveStarReviews = lazy(() => import('@/pages/blog/5-star-reviews'));
 const SalonMarketing2025 = lazy(() => import('@/pages/blog/salon-marketing-2025'));
 const NailArtistsBestJobs = lazy(() => import('@/pages/blog/nail-artists-best-jobs'));
 
-// Vietnamese Blog Articles (2025)
+// Vietnamese Blog Articles (2025) - NEWEST FIRST
+const ViecLamThoNailLuongCaoTaiMy = lazy(() => import('@/pages/blog/viec-lam-tho-nail-luong-cao-tai-my'));
+const ThueThoNailGioi7BuocTuyenDungHieuQua = lazy(() => import('@/pages/blog/thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua'));
+const SangTiemNailNhanhChongHuongDanTuAZ = lazy(() => import('@/pages/blog/sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z'));
 const UngDungTimViecNailTotNhatChoNguoiViet = lazy(() => import('@/pages/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet'));
 const CachBanTiemNailNhanhVaDuocGiaCao = lazy(() => import('@/pages/blog/cach-ban-tiem-nail-nhanh-va-duoc-gia-cao'));
 const Top5WebsiteDangTinTuyenThoNail = lazy(() => import('@/pages/blog/top-5-website-dang-tin-tuyen-tho-nail'));
@@ -83,7 +86,59 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  // Vietnamese Blog Articles - NEWEST FIRST (January 21, 2025)
+  // Vietnamese Blog Articles - NEWEST FIRST (January 22, 2025)
+  {
+    id: 'viec-lam-tho-nail-luong-cao-tai-my',
+    slug: 'viec-lam-tho-nail-luong-cao-tai-my',
+    title: 'Việc Làm Thợ Nail Lương Cao Tại Mỹ - Bí Quyết Tìm Việc Nhanh',
+    description: 'Khám phá cách tìm việc làm thợ nail lương cao tại Mỹ. Bí quyết từ cộng đồng người Việt với mức lương $800-1500/tuần. Hướng dẫn chi tiết từ A-Z.',
+    author: 'Chị Mai Nguyễn - 15 năm kinh nghiệm',
+    publishedAt: '2025-01-22',
+    readTime: '8 min read',
+    category: 'Việc Làm Nail',
+    categorySlug: 'viec-lam-nail',
+    tags: ['việc làm thợ nail', 'nail tech jobs', 'lương cao', 'tìm việc nhanh', 'người việt tại mỹ'],
+    image: heroImage,
+    featured: true,
+    trending: true,
+    component: ViecLamThoNailLuongCaoTaiMy,
+    url: '/blog/viec-lam-tho-nail-luong-cao-tai-my'
+  },
+  {
+    id: 'thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua',
+    slug: 'thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua',
+    title: 'Thuê Thợ Nail Giỏi: 7 Bước Tuyển Dụng Hiệu Quả Cho Chủ Salon',
+    description: 'Bí quyết thuê thợ nail giỏi từ chủ salon thành công. 7 bước tuyển dụng đã test với 500+ salon. Giảm 80% thời gian tuyển dụng, tăng 150% hiệu quả.',
+    author: 'Anh David Trần - Chủ 8 salon',
+    publishedAt: '2025-01-22',
+    readTime: '10 min read',
+    category: 'Quản Lý Salon',
+    categorySlug: 'quan-ly-salon',
+    tags: ['thuê thợ nail', 'tuyển dụng nail tech', 'quản lý salon', 'chủ salon', 'nhân sự nail salon'],
+    image: salonStaffManagementImage,
+    featured: true,
+    trending: true,
+    component: ThueThoNailGioi7BuocTuyenDungHieuQua,
+    url: '/blog/thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua'
+  },
+  {
+    id: 'sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z',
+    slug: 'sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z',
+    title: 'Sang Tiệm Nail Nhanh Chóng - Hướng Dẫn Từ A-Z Cho Chủ Salon',
+    description: 'Hướng dẫn chi tiết cách sang tiệm nail nhanh và hiệu quả. Từ định giá, pháp lý đến marketing. Kinh nghiệm thực tế từ 100+ giao dịch thành công.',
+    author: 'Chị Linda Võ - Chuyên gia M&A Salon',
+    publishedAt: '2025-01-22',
+    readTime: '12 min read',
+    category: 'Mua Bán Salon',
+    categorySlug: 'mua-ban-salon',
+    tags: ['sang tiệm nail', 'bán salon', 'mua bán tiệm nail', 'chuyển nhượng salon', 'định giá salon'],
+    image: sellSalonGuideImage,
+    featured: true,
+    trending: true,
+    component: SangTiemNailNhanhChongHuongDanTuAZ,
+    url: '/blog/sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z'
+  },
+  // Previous Vietnamese Blog Articles (January 21, 2025)
   {
     id: 'ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail',
     slug: 'ung-dung-tot-nhat-cho-nguoi-viet-tim-viec-nail',
