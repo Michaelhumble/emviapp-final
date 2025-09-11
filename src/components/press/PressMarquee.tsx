@@ -120,9 +120,10 @@ const PressMarquee: React.FC = () => {
                       // Try Clearbit fallback
                       e.currentTarget.src = `https://logo.clearbit.com/${domain}?size=256`;
                       e.currentTarget.onerror = () => {
-                        // Final fallback: hide element with null check
-                        const link = e.currentTarget.parentElement as HTMLAnchorElement;
-                        if (link && link.style) {
+                        // Final fallback: hide element with proper null safety
+                        const element = e.currentTarget;
+                        const link = element?.parentElement;
+                        if (link?.style) {
                           link.style.display = 'none';
                         }
                       };
