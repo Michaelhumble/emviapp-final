@@ -1,5 +1,6 @@
 import React from "react";
 import { PRESS_OUTLETS } from "@/data/pressLogos";
+import PressLogo from "@/components/PressLogo";
 
 export default function PressTrustBar() {
   const items = PRESS_OUTLETS.filter(x => x.live).slice(0, 12);
@@ -17,23 +18,11 @@ export default function PressTrustBar() {
       <ul className="mt-6 grid grid-cols-4 gap-4 sm:grid-cols-6 md:grid-cols-8 justify-items-center">
         {items.map((i) => (
           <li key={i.id}>
-            <a
+            <PressLogo 
+              publisherName={i.name}
               href={i.href}
-              target="_blank" 
-              rel="noopener nofollow"
-              className="group inline-flex h-20 w-20 items-center justify-center rounded-full bg-white ring-1 ring-black/5 shadow-sm hover:shadow-md"
-              aria-label={`${i.name} coverage`}
-            >
-              <img
-                src={i.src}
-                alt={i.name}
-                className="h-10 w-10 object-contain"
-                loading="lazy" 
-                decoding="async"
-                width={40}
-                height={40}
-              />
-            </a>
+              isClickable={true}
+            />
           </li>
         ))}
       </ul>

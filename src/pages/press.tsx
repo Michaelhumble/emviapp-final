@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PRESS_OUTLETS } from '@/data/pressLogos';
 import Layout from '@/components/layout/Layout';
 import { ExternalLink, Calendar, Tag } from 'lucide-react';
+import PressLogo from '@/components/PressLogo';
 import { Helmet } from 'react-helmet-async';
 import { organizationJsonLd, articleJsonLd, breadcrumbJsonLd, type ArticleData, type BreadcrumbData } from "@/lib/seo/jsonld";
 
@@ -119,14 +120,11 @@ const PressPage = () => {
                 <div className="flex items-start gap-4">
                   {/* Logo */}
                   <div className="flex-shrink-0">
-                    <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center border">
-                      <img
-                        src={item.src}
-                        alt={item.name}
-                        className="max-h-[32px] w-auto opacity-80"
-                        loading="lazy"
-                      />
-                    </div>
+                    <PressLogo 
+                      publisherName={item.name}
+                      href={item.live ? item.href : undefined}
+                      isClickable={item.live}
+                    />
                   </div>
 
                   {/* Content */}
@@ -142,20 +140,23 @@ const PressPage = () => {
                     </p>
 
                     <div className="flex items-center justify-between">
-                      <a
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener nofollow"
-                        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors ${
-                          item.live 
-                            ? 'text-violet-600 hover:text-violet-700' 
-                            : 'text-gray-400 cursor-not-allowed'
-                        }`}
-                        aria-label={`Read ${item.name} article`}
-                      >
-                        Read article
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
+                      {item.live ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener nofollow"
+                          className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700 transition-colors"
+                          aria-label={`Read ${item.name} article`}
+                        >
+                          Read article
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-sm font-medium text-gray-400 cursor-not-allowed">
+                          Read article
+                          <ExternalLink className="w-4 h-4" />
+                        </span>
+                      )}
                     </div>
 
                     {!item.live && (
