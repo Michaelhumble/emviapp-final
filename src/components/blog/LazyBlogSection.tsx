@@ -1,17 +1,35 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
+import ErrorBoundary from '@/components/error-handling/ErrorBoundary';
 
-// Lazy load blog sections for better performance
-const BlogCategoriesGrid = lazy(() => import('./BlogCategoriesGrid'));
-const BlogTrendingSection = lazy(() => import('./BlogTrendingSection'));
-const BlogFeaturedSection = lazy(() => import('./BlogFeaturedSection'));
-const BlogRecentSection = lazy(() => import('./BlogRecentSection'));
-const BlogTopicsSection = lazy(() => import('./BlogTopicsSection'));
+// Static imports to avoid dynamic import failures
+import BlogCategoriesGrid from './BlogCategoriesGrid';
+import BlogTrendingSection from './BlogTrendingSection';
+import BlogFeaturedSection from './BlogFeaturedSection';
+import BlogRecentSection from './BlogRecentSection';
+import BlogTopicsSection from './BlogTopicsSection';
 
 interface LazyBlogSectionProps {
   type: 'categories' | 'trending' | 'featured' | 'recent' | 'topics';
   data?: any;
   className?: string;
 }
+
+const SectionFallback = ({ type }: { type: string }) => (
+  <div className="py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+        {type === 'categories' && 'Explore Categories'}
+        {type === 'trending' && 'Trending Articles'}
+        {type === 'featured' && 'Featured Articles'}
+        {type === 'recent' && 'Recent Articles'}
+        {type === 'topics' && 'Popular Topics'}
+      </h3>
+      <p className="text-gray-500 text-sm">
+        Browse our latest posts for the most up-to-date content.
+      </p>
+    </div>
+  </div>
+);
 
 const SectionSkeleton = ({ type }: { type: string }) => (
   <div className="py-16 animate-pulse">
@@ -58,9 +76,9 @@ const LazyBlogSection: React.FC<LazyBlogSectionProps> = ({
   };
 
   return (
-    <Suspense fallback={<SectionSkeleton type={type} />}>
+    <ErrorBoundary fallback={<SectionFallback type={type} />}>
       {renderSection()}
-    </Suspense>
+    </ErrorBoundary>
   );
 };
 

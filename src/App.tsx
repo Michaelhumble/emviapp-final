@@ -117,6 +117,9 @@ const BeautyIndustryHiddenJobMarket = lazy(() => import("@/pages/blog/500b-beaut
 const SideHustleSixFiguresNailTechnicians = lazy(() => import("@/pages/blog/side-hustle-six-figures-nail-technicians"));
 
 // Vietnamese Blog Articles (Latest)
+const ViecLamThoNailLuongCaoTaiMy = lazy(() => import("@/pages/blog/viec-lam-tho-nail-luong-cao-tai-my"));
+const ThueThoNailGioi7BuocTuyenDungHieuQua = lazy(() => import("@/pages/blog/thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua"));
+const SangTiemNailNhanhChongHuongDanTuAZ = lazy(() => import("@/pages/blog/sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z"));
 const UngDungTimViecNailTotNhatChoNguoiViet = lazy(() => import("@/pages/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet"));
 const CachBanTiemNailNhanhVaDuocGiaCao = lazy(() => import("@/pages/blog/cach-ban-tiem-nail-nhanh-va-duoc-gia-cao"));
 const Top5WebsiteDangTinTuyenThoNail = lazy(() => import("@/pages/blog/top-5-website-dang-tin-tuyen-tho-nail"));
@@ -409,8 +412,11 @@ function App() {
                      <Route path="/blog/500b-beauty-industry-hidden-job-market" element={<Layout><BeautyIndustryHiddenJobMarket /></Layout>} />
                      <Route path="/blog/side-hustle-six-figures-nail-technicians" element={<Layout><SideHustleSixFiguresNailTechnicians /></Layout>} />
                      
-                     {/* Latest Vietnamese Blog Articles */}
-                     <Route path="/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet" element={<Layout><UngDungTimViecNailTotNhatChoNguoiViet /></Layout>} />
+                      {/* Latest Vietnamese Blog Articles - NEWEST FIRST */}
+                      <Route path="/blog/viec-lam-tho-nail-luong-cao-tai-my" element={<Layout><ViecLamThoNailLuongCaoTaiMy /></Layout>} />
+                      <Route path="/blog/thue-tho-nail-gioi-7-buoc-tuyen-dung-hieu-qua" element={<Layout><ThueThoNailGioi7BuocTuyenDungHieuQua /></Layout>} />
+                      <Route path="/blog/sang-tiem-nail-nhanh-chong-huong-dan-tu-a-z" element={<Layout><SangTiemNailNhanhChongHuongDanTuAZ /></Layout>} />
+                      <Route path="/blog/ung-dung-tim-viec-nail-tot-nhat-cho-nguoi-viet" element={<Layout><UngDungTimViecNailTotNhatChoNguoiViet /></Layout>} />
                      <Route path="/blog/cach-ban-tiem-nail-nhanh-va-duoc-gia-cao" element={<Layout><CachBanTiemNailNhanhVaDuocGiaCao /></Layout>} />
                      <Route path="/blog/top-5-website-dang-tin-tuyen-tho-nail" element={<Layout><Top5WebsiteDangTinTuyenThoNail /></Layout>} />
                      <Route path="/blog/bi-quyet-tuyen-tho-nail-gioi-nhanh" element={<Layout><BiQuyetTuyenThoNailGioiNhanh /></Layout>} />
