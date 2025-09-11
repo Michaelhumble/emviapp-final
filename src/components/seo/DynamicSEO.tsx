@@ -64,6 +64,28 @@ const DynamicSEO: React.FC<DynamicSEOProps> = ({
       {/* Canonical URL */}
       <link rel="canonical" href={finalCanonicalUrl} />
       
+      {/* Apple Touch Icons */}
+      <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+      <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+      <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      
+      {/* Favicons */}
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      
+      {/* Web App Manifest */}
+      <link rel="manifest" href="/site.webmanifest" />
+      
+      {/* Safari Pinned Tab */}
+      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#FF7743" />
+      
+      {/* Theme Colors */}
+      <meta name="theme-color" content="#ffffff" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      <meta name="apple-mobile-web-app-title" content="EmviApp" />
+      
       {/* Article-specific tags */}
       {type === 'article' && publishedTime && (
         <meta property="article:published_time" content={publishedTime} />

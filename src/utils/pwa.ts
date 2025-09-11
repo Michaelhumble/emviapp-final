@@ -213,7 +213,7 @@ export class PWAManager {
   // Check if manifest is loaded
   private async checkManifestLoaded(): Promise<boolean> {
     try {
-      const response = await fetch('/manifest.webmanifest');
+      const response = await fetch('/site.webmanifest');
       return response.ok;
     } catch {
       return false;

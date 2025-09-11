@@ -11,14 +11,15 @@ const PRESS_CACHE = 'press-logos-v4';
 // Assets to cache immediately
 const STATIC_ASSETS = [
   '/',
-  '/manifest.webmanifest',
-  '/favicon-32.png',
-  '/favicon-16.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/apple-touch-icon-180.png',
-  '/icons/apple-touch-icon-167.png',
-  '/icons/apple-touch-icon-152.png',
+  '/site.webmanifest',
+  '/favicon-32x32.png',
+  '/favicon-16x16.png',
+  '/android-chrome-192x192.png',
+  '/android-chrome-512x512.png',
+  '/apple-touch-icon.png',
+  '/apple-touch-icon-120x120.png',
+  '/apple-touch-icon-152x152.png',
+  '/apple-touch-icon-167x167.png',
   // Critical CSS and JS will be added by build process
 ];
 
