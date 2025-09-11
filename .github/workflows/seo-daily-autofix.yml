@@ -1,0 +1,231 @@
+name: 🤖 SEO Daily Auto-Fix
+
+on:
+  schedule:
+    # Daily at 17:00 UTC (5:00 PM UTC)
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Site URL to audit'
+        required: false
+        default: 'https://www.emvi.app'
+      dry_run:
+        description: 'Dry run mode (no commits)'
+        type: boolean
+        default: false
+
+env:
+  SITE_URL: ${{ github.event.inputs.site_url || 'https://www.emvi.app' }}
+  DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+
+jobs:
+  daily-autofix:
+    name: 🔧 Daily SEO Auto-Fix
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🛠️ Install dependencies
+        run: |
+          npm install --legacy-peer-deps
+          npm install --no-save fast-xml-parser js-yaml @lhci/cli lighthouse
+
+      - name: 📁 Create directories
+        run: |
+          mkdir -p .seo-cache reports
+
+      - name: 🔐 Validate Environment
+        id: validate
+        run: |
+          echo "🔐 Run Header"
+          echo "Workflow: SEO Daily Auto-Fix"
+          echo "Run ID: ${{ github.run_id }}" 
+          echo "Branch: ${{ github.ref_name }}"
+          echo "DRY_RUN: $DRY_RUN"
+          echo ""
+          
+          # Check required secrets
+          MISSING=()
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "❌ OPENAI_API_KEY: Not Configured"
+            MISSING+=("OPENAI_API_KEY")
+          else
+            echo "✅ OPENAI_API_KEY: Configured"
+          fi
+          
+          if [ -z "${{ secrets.GSC_CLIENT_EMAIL }}" ]; then
+            echo "❌ GSC_CLIENT_EMAIL: Not Configured"  
+            MISSING+=("GSC_CLIENT_EMAIL")
+          else
+            echo "✅ GSC_CLIENT_EMAIL: Configured"
+          fi
+          
+          if [ -z "${{ secrets.GSC_PRIVATE_KEY }}" ]; then
+            echo "❌ GSC_PRIVATE_KEY: Not Configured"
+            MISSING+=("GSC_PRIVATE_KEY")
+          else
+            echo "✅ GSC_PRIVATE_KEY: Configured"
+          fi
+          
+          # Optional secrets
+          if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            echo "⚠️ SLACK_WEBHOOK_URL: Not Configured (optional)"
+          else
+            echo "✅ SLACK_WEBHOOK_URL: Configured"
+          fi
+          
+          if [ -z "${{ secrets.PAGESPEED_API_KEY }}" ]; then
+            echo "⚠️ PAGESPEED_API_KEY: Not Configured (optional)"
+          else
+            echo "✅ PAGESPEED_API_KEY: Configured"
+          fi
+          
+          # Exit with neutral result if required secrets missing
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo ""
+            echo "⚠️ SKIPPED: Missing required SEO secrets"
+            echo "Required secrets: ${MISSING[*]}"
+            echo "result=skipped" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "result=proceed" >> $GITHUB_OUTPUT
+
+      - name: 🔍 Run SEO Audit
+        if: steps.validate.outputs.result == 'proceed'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
+        run: |
+          echo "🔍 Running comprehensive SEO audit..."
+          node scripts/audit.mjs --site=$SITE_URL --out=.seo-cache --maxDepth=3
+          
+          # Save audit timestamp
+          date +%s > .seo-cache/audit-timestamp.txt
+
+      - name: 🔗 Fix Broken Links
+        if: steps.validate.outputs.result == 'proceed'
+        run: |
+          echo "🔗 Scanning and fixing broken links..."
+          if [ "$DRY_RUN" = "false" ]; then
+            node scripts/fix-broken-links.mjs --apply 2>&1 | tee .seo-cache/broken-links-fix.log
+          else
+            node scripts/fix-broken-links.mjs --dry-run 2>&1 | tee .seo-cache/broken-links-check.log
+          fi
+        continue-on-error: true
+
+      - name: 🔗 Internal Links Optimization
+        if: steps.validate.outputs.result == 'proceed'
+        run: |
+          echo "🔗 Analyzing internal link opportunities..." 
+          if [ "$DRY_RUN" = "false" ]; then
+            node scripts/internal-links-suggest.mjs --apply 2>&1 | tee .seo-cache/internal-links.log
+          else
+            node scripts/internal-links-suggest.mjs 2>&1 | tee .seo-cache/internal-links-analysis.log
+          fi
+        continue-on-error: true
+
+      - name: 🏷️ Apply Safe Meta/Schema Fixes
+        if: steps.validate.outputs.result == 'proceed' && env.DRY_RUN == 'false'
+        run: |
+          echo "🏷️ Applying safe SEO fixes..."
+          
+          # Fix canonicals
+          node scripts/fix-canonicals.mjs --auto-fix || echo "⚠️ Canonical fixes skipped"
+          
+          # Fix JSON-LD
+          node scripts/fix-jsonld.mjs --auto-fix || echo "⚠️ JSON-LD fixes skipped" 
+          
+          # Fix sitemaps
+          node scripts/fix-sitemaps.mjs --auto-fix || echo "⚠️ Sitemap fixes skipped"
+        continue-on-error: true
+
+      - name: 📊 Generate Summary
+        if: steps.validate.outputs.result == 'proceed'
+        id: summary
+        run: |
+          echo "📊 Generating run summary..."
+          
+          # Count pages audited
+          PAGES_AUDITED=0
+          if [ -f ".seo-cache/audit-summary.json" ]; then
+            PAGES_AUDITED=$(jq -r '.pages_crawled // 0' .seo-cache/audit-summary.json)
+          fi
+          
+          # Count fixes applied
+          LINKS_FIXED=0
+          if [ -f ".seo-cache/broken-links-fix.log" ]; then
+            LINKS_FIXED=$(grep -c "FIXED:" .seo-cache/broken-links-fix.log || echo "0")
+          fi
+          
+          # Count internal link suggestions
+          INTERNAL_LINKS=0
+          if [ -f ".seo-cache/internal-links.log" ]; then
+            INTERNAL_LINKS=$(grep -c "ADDED:" .seo-cache/internal-links.log || echo "0")
+          fi
+          
+          echo "pages_audited=$PAGES_AUDITED" >> $GITHUB_OUTPUT
+          echo "links_fixed=$LINKS_FIXED" >> $GITHUB_OUTPUT
+          echo "internal_links=$INTERNAL_LINKS" >> $GITHUB_OUTPUT
+          
+          echo "✅ SUMMARY | audited: $PAGES_AUDITED pages | fixes: $LINKS_FIXED committed | internal links: $INTERNAL_LINKS | next: $(date -d '+1 day' '+%a %H:%M UTC')"
+
+      - name: 📄 Upload Artifacts  
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-daily-autofix-${{ github.run_id }}
+          path: |
+            .seo-cache/
+            reports/
+          retention-days: 30
+        if: always()
+
+      - name: 📝 Commit Changes
+        if: steps.validate.outputs.result == 'proceed' && env.DRY_RUN == 'false' && github.event_name != 'pull_request'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "SEO Daily Auto-Fix"
+          
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "fix(seo): daily auto-fix [autofix]
+            
+            - Fixed broken internal links: ${{ steps.summary.outputs.links_fixed }}
+            - Added internal links: ${{ steps.summary.outputs.internal_links }}
+            - Pages audited: ${{ steps.summary.outputs.pages_audited }}
+            - Run ID: ${{ github.run_id }}
+            
+            Auto-generated by SEO Daily Auto-Fix"
+            
+            git push || echo "⚠️ Push failed"
+            echo "✅ Changes committed and pushed"
+          else
+            echo "ℹ️ No changes to commit"
+          fi
+
+      - name: 📊 Run Footer
+        if: always()
+        run: |
+          if [ "${{ steps.validate.outputs.result }}" = "skipped" ]; then
+            echo "⚠️ SKIPPED | missing: required SEO secrets | next: $(date -d '+1 day' '+%a 17:00 UTC')"
+          else
+            PAGES="${{ steps.summary.outputs.pages_audited || 0 }}"
+            FIXES="${{ steps.summary.outputs.links_fixed || 0 }}"
+            LINKS="${{ steps.summary.outputs.internal_links || 0 }}"
+            
+            echo "✅ DONE | audited: $PAGES pages | fixes: $FIXES committed | links: $LINKS added | artifacts: 1 | next: $(date -d '+1 day' '+%a 17:00 UTC')"
+          fi

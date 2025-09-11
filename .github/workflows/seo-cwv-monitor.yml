@@ -1,0 +1,215 @@
+name: 🏃‍♂️ Core Web Vitals Monitor
+
+on:
+  schedule:
+    # Monday at 08:30 UTC (before weekly digest)
+    - cron: '30 8 * * 1'
+  workflow_dispatch:
+    inputs:
+      urls_file:
+        description: 'URLs file to analyze'
+        required: false
+        default: 'data/priority-urls.json'
+
+env:
+  URLS_FILE: ${{ github.event.inputs.urls_file || 'data/priority-urls.json' }}
+
+jobs:
+  cwv-monitor:
+    name: 🏃‍♂️ CWV Collection & Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🛠️ Install dependencies
+        run: |
+          npm install --legacy-peer-deps
+          npm install --no-save fast-xml-parser
+
+      - name: 📁 Create directories
+        run: mkdir -p .seo-cache reports
+
+      - name: 🔐 Validate Environment
+        id: validate
+        run: |
+          echo "🔐 Run Header"
+          echo "Workflow: Core Web Vitals Monitor" 
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "URLs file: $URLS_FILE"
+          echo ""
+          
+          # Check API key
+          if [ -n "${{ secrets.PAGESPEED_API_KEY }}" ]; then
+            echo "✅ PAGESPEED_API_KEY: Configured"
+            echo "api_configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ PAGESPEED_API_KEY: Not Configured (will use mock data)"
+            echo "api_configured=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check Slack webhook
+          if [ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            echo "✅ SLACK_WEBHOOK_URL: Configured"
+            echo "slack_configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ SLACK_WEBHOOK_URL: Not Configured"
+            echo "slack_configured=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🏃‍♂️ Collect Core Web Vitals
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          echo "🏃‍♂️ Running Core Web Vitals collection..."
+          node scripts/collect-cwv.mjs --urls=$URLS_FILE 2>&1 | tee .seo-cache/cwv-collection.log
+
+      - name: 📊 Analyze CWV Trends
+        id: analyze
+        run: |
+          echo "📊 Analyzing CWV performance trends..."
+          
+          # Find current CWV data
+          TODAY=$(date +%Y-%m-%d)
+          CURRENT_FILE=".seo-cache/cwv-$TODAY.json"
+          
+          if [ ! -f "$CURRENT_FILE" ]; then
+            echo "❌ No CWV data file found for today"
+            exit 1
+          fi
+          
+          # Count metrics and alerts
+          URLS_ANALYZED=$(jq -r '.analysis.total_urls // 0' "$CURRENT_FILE")
+          SUCCESSFUL=$(jq -r '.analysis.successful // 0' "$CURRENT_FILE") 
+          ALERTS=$(jq -r '.analysis.alerts | length' "$CURRENT_FILE")
+          
+          echo "urls_analyzed=$URLS_ANALYZED" >> $GITHUB_OUTPUT
+          echo "successful=$SUCCESSFUL" >> $GITHUB_OUTPUT
+          echo "alerts=$ALERTS" >> $GITHUB_OUTPUT
+          
+          # Generate summary report
+          cat > reports/cwv-summary.md << EOF
+          # 🏃‍♂️ Core Web Vitals Summary
+          
+          **Date:** $(date +"%B %d, %Y")
+          **URLs Analyzed:** $URLS_ANALYZED
+          **Successful Collections:** $SUCCESSFUL
+          **Performance Alerts:** $ALERTS
+          
+          ## 📊 Performance Distribution
+          
+          EOF
+          
+          # Add metric summaries if available
+          if [ "$SUCCESSFUL" -gt "0" ]; then
+            echo "### LCP (Largest Contentful Paint)" >> reports/cwv-summary.md
+            jq -r '.analysis.summary.LCP | "- 🟢 Good: \(.good)\n- 🟡 Needs Improvement: \(.needsImprovement)\n- 🔴 Poor: \(.poor)"' "$CURRENT_FILE" >> reports/cwv-summary.md
+            
+            echo "" >> reports/cwv-summary.md
+            echo "### FID (First Input Delay)" >> reports/cwv-summary.md
+            jq -r '.analysis.summary.FID | "- 🟢 Good: \(.good)\n- 🟡 Needs Improvement: \(.needsImprovement)\n- 🔴 Poor: \(.poor)"' "$CURRENT_FILE" >> reports/cwv-summary.md
+            
+            echo "" >> reports/cwv-summary.md
+            echo "### CLS (Cumulative Layout Shift)" >> reports/cwv-summary.md
+            jq -r '.analysis.summary.CLS | "- 🟢 Good: \(.good)\n- 🟡 Needs Improvement: \(.needsImprovement)\n- 🔴 Poor: \(.poor)"' "$CURRENT_FILE" >> reports/cwv-summary.md
+          fi
+          
+          if [ "$ALERTS" -gt "0" ]; then
+            echo "" >> reports/cwv-summary.md
+            echo "## 🚨 Performance Alerts" >> reports/cwv-summary.md
+            echo "" >> reports/cwv-summary.md
+            jq -r '.analysis.alerts[] | "- **\(.metric)**: \(.value)\(if .metric == "CLS" then "" else "ms" end) on \(.url)"' "$CURRENT_FILE" >> reports/cwv-summary.md
+          fi
+          
+          echo "" >> reports/cwv-summary.md
+          echo "---" >> reports/cwv-summary.md
+          echo "*Generated by Core Web Vitals Monitor on $(date)*" >> reports/cwv-summary.md
+
+      - name: 📊 Compare with Previous Week
+        run: |
+          echo "📊 Comparing with previous week's data..."
+          
+          # Find previous week's CWV file
+          WEEK_AGO=$(date -d '7 days ago' +%Y-%m-%d)
+          PREV_FILE=".seo-cache/cwv-$WEEK_AGO.json"
+          
+          if [ -f "$PREV_FILE" ]; then
+            echo "✅ Found previous week data: $PREV_FILE"
+            
+            # Generate comparison report
+            echo "## 📈 Week-over-Week Comparison" >> reports/cwv-summary.md
+            echo "" >> reports/cwv-summary.md
+            echo "Comparing with data from $WEEK_AGO:" >> reports/cwv-summary.md
+            echo "" >> reports/cwv-summary.md
+            
+            # Compare alert counts
+            PREV_ALERTS=$(jq -r '.analysis.alerts | length' "$PREV_FILE")
+            CURR_ALERTS=${{ steps.analyze.outputs.alerts }}
+            
+            if [ "$CURR_ALERTS" -lt "$PREV_ALERTS" ]; then
+              echo "- 📈 **Improvement**: Alerts decreased from $PREV_ALERTS to $CURR_ALERTS" >> reports/cwv-summary.md
+            elif [ "$CURR_ALERTS" -gt "$PREV_ALERTS" ]; then
+              echo "- 📉 **Regression**: Alerts increased from $PREV_ALERTS to $CURR_ALERTS" >> reports/cwv-summary.md  
+            else
+              echo "- ➡️ **Stable**: Alert count unchanged ($CURR_ALERTS)" >> reports/cwv-summary.md
+            fi
+          else
+            echo "ℹ️ No previous week data found for comparison"
+            echo "## 📊 Baseline Established" >> reports/cwv-summary.md
+            echo "" >> reports/cwv-summary.md
+            echo "This is the first CWV collection - future runs will include trend analysis." >> reports/cwv-summary.md
+          fi
+
+      - name: 📄 Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cwv-monitor-${{ github.run_id }}
+          path: |
+            .seo-cache/cwv-*.json
+            .seo-cache/cwv-collection.log
+            reports/cwv-summary.md
+          retention-days: 30
+        if: always()
+
+      - name: 🚨 Check Performance Thresholds
+        run: |
+          ALERTS=${{ steps.analyze.outputs.alerts }}
+          SUCCESSFUL=${{ steps.analyze.outputs.successful }}
+          
+          echo "🔍 Performance threshold check:"
+          echo "- Alerts: $ALERTS"
+          echo "- Successful: $SUCCESSFUL"
+          
+          # Fail if too many performance issues
+          if [ "$ALERTS" -gt "5" ]; then
+            echo "❌ CRITICAL: $ALERTS performance alerts detected (threshold: 5)"
+            echo "🔧 Action required: Review Core Web Vitals issues"
+            exit 1
+          fi
+          
+          if [ "$SUCCESSFUL" -eq "0" ]; then
+            echo "❌ CRITICAL: No successful CWV collections"
+            exit 1
+          fi
+          
+          echo "✅ Performance thresholds met"
+
+      - name: 📊 Run Footer
+        if: always()
+        run: |
+          URLS="${{ steps.analyze.outputs.urls_analyzed || 0 }}"
+          SUCCESS="${{ steps.analyze.outputs.successful || 0 }}"
+          ALERTS="${{ steps.analyze.outputs.alerts || 0 }}"
+          API_STATUS="${{ steps.validate.outputs.api_configured == 'true' && 'real' || 'mock' }}"
+          
+          echo "✅ DONE | urls: $URLS analyzed | success: $SUCCESS | alerts: $ALERTS | api: $API_STATUS | artifacts: 1 | next: $(date -d '+1 week' '+Mon 08:30 UTC')"

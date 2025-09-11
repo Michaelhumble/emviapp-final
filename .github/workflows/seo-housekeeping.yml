@@ -1,0 +1,191 @@
+name: 🧹 SEO Housekeeping
+
+on:
+  schedule:
+    # Daily at 23:50 UTC (end of day cleanup)
+    - cron: '50 23 * * *'
+  workflow_dispatch:
+    inputs:
+      max_cache_files:
+        description: 'Max cache files to keep per type'
+        required: false
+        default: '8'
+      max_age_days:
+        description: 'Max age in days for files'
+        required: false
+        default: '30'
+
+env:
+  MAX_CACHE_FILES: ${{ github.event.inputs.max_cache_files || '8' }}
+  MAX_AGE_DAYS: ${{ github.event.inputs.max_age_days || '30' }}
+
+jobs:
+  housekeeping:
+    name: 🧹 SEO Data Maintenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🛠️ Install dependencies
+        run: |
+          npm install --legacy-peer-deps
+          npm install --no-save fast-xml-parser
+
+      - name: 📁 Ensure directories
+        run: mkdir -p .seo-cache reports data
+
+      - name: 🔐 Run Header
+        run: |
+          echo "🔐 Run Header"
+          echo "Workflow: SEO Housekeeping"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Max cache files: $MAX_CACHE_FILES per type"
+          echo "Max age: $MAX_AGE_DAYS days"
+          echo ""
+
+      - name: 🧹 Run Housekeeping
+        id: cleanup
+        run: |
+          echo "🧹 Running SEO housekeeping script..."
+          node scripts/seo-housekeeping.mjs 2>&1 | tee .seo-cache/housekeeping.log
+          
+          # Parse results
+          if [ -f ".seo-cache/housekeeping-summary.json" ]; then
+            CACHE_CLEANED=$(jq -r '.cleanup.cache_files_cleaned // 0' .seo-cache/housekeeping-summary.json)
+            REPORTS_CLEANED=$(jq -r '.cleanup.reports_cleaned // 0' .seo-cache/housekeeping-summary.json)
+            CACHE_KEPT=$(jq -r '.cleanup.cache_files_kept // 0' .seo-cache/housekeeping-summary.json)
+            REPORTS_KEPT=$(jq -r '.cleanup.reports_kept // 0' .seo-cache/housekeeping-summary.json)
+            ISSUES_COUNT=$(jq -r '.issues | length' .seo-cache/housekeeping-summary.json)
+            DISK_USAGE=$(jq -r '.disk_usage.cache_total_mb // 0' .seo-cache/housekeeping-summary.json)
+            
+            echo "cache_cleaned=$CACHE_CLEANED" >> $GITHUB_OUTPUT
+            echo "reports_cleaned=$REPORTS_CLEANED" >> $GITHUB_OUTPUT
+            echo "cache_kept=$CACHE_KEPT" >> $GITHUB_OUTPUT
+            echo "reports_kept=$REPORTS_KEPT" >> $GITHUB_OUTPUT
+            echo "issues_count=$ISSUES_COUNT" >> $GITHUB_OUTPUT
+            echo "disk_usage=$DISK_USAGE" >> $GITHUB_OUTPUT
+            
+            echo "✅ Housekeeping complete"
+            echo "🗑️ Cache files cleaned: $CACHE_CLEANED"
+            echo "🗑️ Report files cleaned: $REPORTS_CLEANED"
+            echo "📁 Files kept: $((CACHE_KEPT + REPORTS_KEPT))"
+            echo "⚠️ Issues found: $ISSUES_COUNT"
+            echo "💾 Cache disk usage: ${DISK_USAGE}MB"
+          else
+            echo "❌ Housekeeping summary not generated"
+            exit 1
+          fi
+
+      - name: 📊 Generate Maintenance Report
+        run: |
+          echo "📊 Generating maintenance report..."
+          
+          cat > reports/housekeeping-report.md << 'EOF'
+          # 🧹 SEO Housekeeping Report
+          
+          **Date:** $(date +"%B %d, %Y")
+          **Cache Cleanup:** ${{ steps.cleanup.outputs.cache_cleaned }} files removed
+          **Report Cleanup:** ${{ steps.cleanup.outputs.reports_cleaned }} files removed
+          **Files Retained:** ${{ steps.cleanup.outputs.cache_kept }} cache + ${{ steps.cleanup.outputs.reports_kept }} reports
+          **Disk Usage:** ${{ steps.cleanup.outputs.disk_usage }}MB
+          
+          ## 🗂️ File Management
+          
+          ### Cache Directory (.seo-cache/)
+          - **Files cleaned:** ${{ steps.cleanup.outputs.cache_cleaned }}
+          - **Files kept:** ${{ steps.cleanup.outputs.cache_kept }}
+          - **Retention policy:** Keep last $MAX_CACHE_FILES files per type, max $MAX_AGE_DAYS days
+          
+          ### Reports Directory
+          - **Files cleaned:** ${{ steps.cleanup.outputs.reports_cleaned }}
+          - **Files kept:** ${{ steps.cleanup.outputs.reports_kept }}
+          - **Retention policy:** Max $MAX_AGE_DAYS days
+          
+          ## 📊 Storage Analysis
+          
+          - **Total cache usage:** ${{ steps.cleanup.outputs.disk_usage }}MB
+          - **Maintenance issues:** ${{ steps.cleanup.outputs.issues_count }}
+          
+          EOF
+          
+          # Add issues section if any found
+          if [ "${{ steps.cleanup.outputs.issues_count }}" -gt "0" ]; then
+            echo "## ⚠️ Issues Detected" >> reports/housekeeping-report.md
+            echo "" >> reports/housekeeping-report.md
+            
+            if [ -f ".seo-cache/housekeeping-summary.json" ]; then
+              jq -r '.issues[]? | "- **\(.type)**: \(.description)"' .seo-cache/housekeeping-summary.json >> reports/housekeeping-report.md 2>/dev/null || echo "- Issue details not available" >> reports/housekeeping-report.md
+            fi
+          else
+            echo "## ✅ All Systems Healthy" >> reports/housekeeping-report.md
+            echo "" >> reports/housekeeping-report.md
+            echo "No maintenance issues detected. All data files are valid and disk usage is within normal limits." >> reports/housekeeping-report.md
+          fi
+          
+          echo "" >> reports/housekeeping-report.md
+          echo "## 🔄 Next Actions" >> reports/housekeeping-report.md
+          echo "" >> reports/housekeeping-report.md
+          echo "- [ ] Review any detected issues above" >> reports/housekeeping-report.md
+          echo "- [ ] Monitor disk usage trends" >> reports/housekeeping-report.md
+          echo "- [ ] Validate critical data file integrity" >> reports/housekeeping-report.md
+          echo "" >> reports/housekeeping-report.md
+          echo "---" >> reports/housekeeping-report.md
+          echo "*Generated by SEO Housekeeping on $(date)*" >> reports/housekeeping-report.md
+
+      - name: 🚨 Check for Critical Issues
+        run: |
+          ISSUES=${{ steps.cleanup.outputs.issues_count }}
+          DISK_USAGE=${{ steps.cleanup.outputs.disk_usage }}
+          
+          echo "🔍 Checking for critical maintenance issues..."
+          echo "- Issues detected: $ISSUES"
+          echo "- Disk usage: ${DISK_USAGE}MB"
+          
+          # Alert on high disk usage (over 200MB)
+          if (( $(echo "$DISK_USAGE > 200" | bc -l) )); then
+            echo "⚠️ WARNING: High disk usage detected (${DISK_USAGE}MB)"
+            echo "Consider increasing cleanup frequency or reducing retention periods"
+          fi
+          
+          # Alert on missing critical files
+          if [ "$ISSUES" -gt "0" ] && [ -f ".seo-cache/housekeeping-summary.json" ]; then
+            MISSING_FILES=$(jq -r '.issues[]? | select(.type == "missing_data_files") | .files[]?' .seo-cache/housekeeping-summary.json | wc -l)
+            if [ "$MISSING_FILES" -gt "0" ]; then
+              echo "🚨 WARNING: $MISSING_FILES critical data files are missing"
+              echo "This may affect SEO automation workflows"
+            fi
+          fi
+          
+          echo "✅ Maintenance check complete"
+
+      - name: 📄 Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-housekeeping-${{ github.run_id }}
+          path: |
+            .seo-cache/housekeeping-summary.json
+            .seo-cache/housekeeping.log
+            .seo-cache/inventory.json
+            reports/housekeeping-report.md
+          retention-days: 90
+        if: always()
+
+      - name: 📊 Run Footer
+        if: always()
+        run: |
+          CLEANED="${{ steps.cleanup.outputs.cache_cleaned || 0 }}"
+          KEPT="${{ steps.cleanup.outputs.cache_kept || 0 }}"
+          ISSUES="${{ steps.cleanup.outputs.issues_count || 0 }}"
+          DISK="${{ steps.cleanup.outputs.disk_usage || 0 }}"
+          
+          echo "✅ DONE | cleaned: $CLEANED files | kept: $KEPT | issues: $ISSUES | disk: ${DISK}MB | artifacts: 1 | next: $(date -d '+1 day' '+%a 23:50 UTC')"

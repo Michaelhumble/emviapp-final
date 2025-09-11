@@ -1,0 +1,36 @@
+{
+  "direct_competitors": [
+    {
+      "name": "Indeed",
+      "url": "https://www.indeed.com/jobs?q=beauty",
+      "focus": "General job board with beauty category"
+    },
+    {
+      "name": "StyleSeat",
+      "url": "https://www.styleseat.com",
+      "focus": "Beauty professional booking platform"
+    },
+    {
+      "name": "Vagaro",
+      "url": "https://www.vagaro.com",
+      "focus": "Salon software with job listings"
+    }
+  ],
+  "indirect_competitors": [
+    {
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/jobs/beauty-jobs/",
+      "focus": "Professional networking with beauty jobs"
+    },
+    {
+      "name": "ZipRecruiter", 
+      "url": "https://www.ziprecruiter.com/Jobs/Beauty",
+      "focus": "Job aggregator with beauty category"
+    },
+    {
+      "name": "Glassdoor",
+      "url": "https://www.glassdoor.com/Jobs/beauty-jobs-SRCH_KO0,6.htm",
+      "focus": "Company reviews and salary data"
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+name: 🔍 Keyword & Competitor Tracker
+
+on:
+  schedule:
+    # Daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      keywords_file:
+        description: 'Keywords JSON file'
+        required: false
+        default: 'data/keywords.json'
+
+env:
+  KEYWORDS_FILE: ${{ github.event.inputs.keywords_file || 'data/keywords.json' }}
+
+jobs:
+  keyword-tracker:
+    name: 🔍 Keyword Position Tracking
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🛠️ Install dependencies
+        run: |
+          npm install --legacy-peer-deps
+          npm install --no-save fast-xml-parser
+
+      - name: 📁 Create directories
+        run: mkdir -p .seo-cache reports data
+
+      - name: 🔐 Validate Environment
+        id: validate
+        run: |
+          echo "🔐 Run Header"
+          echo "Workflow: Keyword & Competitor Tracker"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Keywords file: $KEYWORDS_FILE"
+          echo "DRY_RUN: false"
+          echo ""
+          
+          # Check if keywords file exists
+          if [ -f "$KEYWORDS_FILE" ]; then
+            echo "✅ Keywords file: Found"
+            KEYWORD_COUNT=$(jq '[.head_keywords[], .long_tail_keywords[], .location_keywords[]] | length' "$KEYWORDS_FILE" 2>/dev/null || echo "0")
+            echo "📊 Keywords configured: $KEYWORD_COUNT"
+          else
+            echo "⚠️ Keywords file: Missing (will create default)"
+            KEYWORD_COUNT=9
+          fi
+          
+          # Check competitors file
+          if [ -f "data/competitors.json" ]; then
+            echo "✅ Competitors file: Found"
+          else
+            echo "⚠️ Competitors file: Missing (will create default)"
+          fi
+          
+          echo "keyword_count=$KEYWORD_COUNT" >> $GITHUB_OUTPUT
+
+      - name: 🔍 Run Keyword Tracking
+        id: track
+        run: |
+          echo "🔍 Running keyword position tracking..."
+          node scripts/keyword-tracker.mjs 2>&1 | tee .seo-cache/keyword-tracking.log
+          
+          # Parse results
+          TODAY=$(date +%Y-%m-%d)
+          RESULTS_FILE=".seo-cache/keywords-$TODAY.json"
+          
+          if [ -f "$RESULTS_FILE" ]; then
+            KEYWORDS_TRACKED=$(jq -r '.keywords_tracked // 0' "$RESULTS_FILE")
+            POSITION_CHANGES=$(jq -r '.changes | length' "$RESULTS_FILE")
+            CRITICAL_DROPS=$(jq -r '.changes | map(select(.change < -5)) | length' "$RESULTS_FILE")
+            IMPROVEMENTS=$(jq -r '.changes | map(select(.change > 3)) | length' "$RESULTS_FILE")
+            
+            echo "keywords_tracked=$KEYWORDS_TRACKED" >> $GITHUB_OUTPUT
+            echo "position_changes=$POSITION_CHANGES" >> $GITHUB_OUTPUT
+            echo "critical_drops=$CRITICAL_DROPS" >> $GITHUB_OUTPUT
+            echo "improvements=$IMPROVEMENTS" >> $GITHUB_OUTPUT
+            
+            echo "✅ Keyword tracking complete"
+            echo "📊 Keywords tracked: $KEYWORDS_TRACKED"
+            echo "📈 Position changes: $POSITION_CHANGES"
+            echo "🚨 Critical drops: $CRITICAL_DROPS"
+            echo "📈 Improvements: $IMPROVEMENTS"
+          else
+            echo "❌ No tracking results file found"
+            exit 1
+          fi
+
+      - name: 📊 Generate Trending Report
+        run: |
+          echo "📊 Generating keyword trending report..."
+          
+          TODAY=$(date +%Y-%m-%d)
+          RESULTS_FILE=".seo-cache/keywords-$TODAY.json"
+          
+          # Create trending report
+          cat > reports/keyword-trends.md << 'EOF'
+          # 🔍 Keyword Tracking Report
+          
+          **Date:** $(date +"%B %d, %Y")
+          **Keywords Tracked:** ${{ steps.track.outputs.keywords_tracked }}
+          **Position Changes:** ${{ steps.track.outputs.position_changes }}
+          
+          ## 📊 Summary
+          
+          - 📈 **Improvements:** ${{ steps.track.outputs.improvements }} keywords moved up 3+ positions
+          - 🚨 **Critical Drops:** ${{ steps.track.outputs.critical_drops }} keywords dropped 5+ positions
+          - 📋 **Stable:** Keywords with minor changes (±2 positions)
+          
+          EOF
+          
+          # Add trending keywords if available
+          if [ -f "$RESULTS_FILE" ]; then
+            if [ "${{ steps.track.outputs.position_changes }}" -gt "0" ]; then
+              echo "## 📈 Notable Position Changes" >> reports/keyword-trends.md
+              echo "" >> reports/keyword-trends.md
+              
+              # Extract top changes
+              jq -r '.changes[] | select(.change != 0) | "- **\(.keyword)**: #\(.previous_position) → #\(.current_position) (\(if .change > 0 then "+" else "" end)\(.change))"' "$RESULTS_FILE" | head -10 >> reports/keyword-trends.md
+            fi
+            
+            # Add competitor analysis
+            echo "" >> reports/keyword-trends.md
+            echo "## 🏁 Competitor Analysis" >> reports/keyword-trends.md
+            echo "" >> reports/keyword-trends.md
+            echo "Competitor ranking data collected for head keywords:" >> reports/keyword-trends.md
+            echo "" >> reports/keyword-trends.md
+            
+            jq -r '.rankings[0:3][] | "### \(.keyword)\n" + (.rankings[] | "- **\(.site)**: #\(.position)")' "$RESULTS_FILE" >> reports/keyword-trends.md 2>/dev/null || echo "No competitor data available" >> reports/keyword-trends.md
+          fi
+          
+          echo "" >> reports/keyword-trends.md
+          echo "## 🎯 Action Items" >> reports/keyword-trends.md
+          echo "" >> reports/keyword-trends.md
+          
+          if [ "${{ steps.track.outputs.critical_drops }}" -gt "0" ]; then
+            echo "- [ ] 🚨 **Urgent**: Review content for keywords with critical drops" >> reports/keyword-trends.md
+            echo "- [ ] 🔍 Analyze competitor content improvements" >> reports/keyword-trends.md
+            echo "- [ ] 🛠️ Check for technical SEO issues on affected pages" >> reports/keyword-trends.md
+          fi
+          
+          if [ "${{ steps.track.outputs.improvements }}" -gt "0" ]; then
+            echo "- [ ] 📈 Capitalize on improving keywords with additional content" >> reports/keyword-trends.md
+            echo "- [ ] 🔗 Add internal links to well-performing pages" >> reports/keyword-trends.md
+          fi
+          
+          echo "- [ ] 📊 Monitor trending beauty industry keywords" >> reports/keyword-trends.md
+          echo "- [ ] 🎯 Update meta descriptions for high-impression, low-CTR keywords" >> reports/keyword-trends.md
+          
+          echo "" >> reports/keyword-trends.md
+          echo "---" >> reports/keyword-trends.md
+          echo "*Generated by Keyword Tracker on $(date)*" >> reports/keyword-trends.md
+
+      - name: 🚨 Create GitHub Issues for Critical Changes
+        if: steps.track.outputs.critical_drops > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const today = new Date().toISOString().split('T')[0];
+            const resultsFile = `.seo-cache/keywords-${today}.json`;
+            
+            if (!fs.existsSync(resultsFile)) {
+              console.log('No results file found');
+              return;
+            }
+            
+            const data = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+            const criticalDrops = data.changes.filter(c => c.change < -5);
+            
+            if (criticalDrops.length === 0) {
+              console.log('No critical drops to report');
+              return;
+            }
+            
+            for (const drop of criticalDrops.slice(0, 3)) { // Limit to 3 issues
+              const title = `SEO Alert: "${drop.keyword}" dropped ${Math.abs(drop.change)} positions`;
+              const body = `## 🚨 Keyword Ranking Alert
+
+**Keyword:** ${drop.keyword}
+**Previous Position:** #${drop.previous_position}
+**Current Position:** #${drop.current_position}
+**Change:** ${drop.change} positions
+**Severity:** ${drop.severity}
+**Date:** ${today}
+
+### 🎯 Suggested Actions
+
+- [ ] **Content Review**: Analyze current content quality and relevance
+- [ ] **Technical SEO**: Check page load speed, mobile-friendliness, and crawlability  
+- [ ] **Competitor Analysis**: Review what competitors are doing for this keyword
+- [ ] **SERP Features**: Check if new SERP features are affecting organic positions
+- [ ] **Internal Linking**: Strengthen internal link authority to the affected page
+- [ ] **Content Refresh**: Update content with fresh information and better optimization
+
+### 📊 Context
+
+This alert was generated because the keyword position dropped more than 5 positions, indicating a significant ranking change that requires attention.
+
+**Related Pages:**
+- Review pages targeting "${drop.keyword}"
+- Check category pages related to this term
+- Monitor similar keywords for broader issues
+
+---
+*Auto-generated by Keyword Tracker on ${new Date().toLocaleString()}*`;
+              
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['seo-alert', 'keyword-tracking', 'critical']
+              });
+              
+              console.log(`Created issue for keyword: ${drop.keyword}`);
+            }
+
+      - name: 📄 Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyword-tracker-${{ github.run_id }}
+          path: |
+            .seo-cache/keywords-*.json
+            .seo-cache/keyword-tracking.log
+            reports/keyword-trends.md
+          retention-days: 30
+        if: always()
+
+      - name: 📊 Run Footer
+        if: always()
+        run: |
+          KEYWORDS="${{ steps.track.outputs.keywords_tracked || 0 }}"
+          CHANGES="${{ steps.track.outputs.position_changes || 0 }}"
+          DROPS="${{ steps.track.outputs.critical_drops || 0 }}"
+          
+          echo "✅ DONE | keywords tracked: $KEYWORDS | changes: $CHANGES | critical drops: $DROPS | artifacts: 1 | next: $(date -d '+1 day' '+%a 06:00 UTC')"

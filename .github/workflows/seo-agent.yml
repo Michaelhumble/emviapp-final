@@ -1,9 +1,9 @@
-name: 🤖 SEO Agent - Automated SEO Monitoring & Fixes
+name: 🤖 SEO Agent - Legacy (Use seo-daily-autofix instead)
 
 on:
-  schedule:
-    # Daily at 9:00 AM PT (5:00 PM UTC)
-    - cron: '0 17 * * *'
+  # Commented out - replaced by seo-daily-autofix.yml
+  # schedule:
+  #   - cron: '0 17 * * *'
   pull_request:
     paths:
       - 'src/**'
