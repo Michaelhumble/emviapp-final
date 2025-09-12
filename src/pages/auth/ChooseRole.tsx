@@ -6,11 +6,6 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-// Prevent iframe login issues for auth routes
-if (typeof window !== 'undefined' && window !== window.top) {
-  window.top!.location.href = window.location.href;
-}
-
 const ROLE_CARDS: Array<{
   key: 'artist'|'salon'|'freelancer'|'customer';
   title: string;

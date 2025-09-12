@@ -4,11 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { getUserProfile } from '@/services/profile';
 import { toast } from 'sonner';
 
-// Prevent iframe login issues for auth routes
-if (typeof window !== 'undefined' && window !== window.top) {
-  window.top!.location.href = window.location.href;
-}
-
 const AuthCallback = () => {
   const navigate = useNavigate();
 

@@ -10,11 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-// Prevent iframe login issues for auth routes
-if (typeof window !== 'undefined' && window !== window.top) {
-  window.top!.location.href = window.location.href;
-}
-
 const SignUp = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
