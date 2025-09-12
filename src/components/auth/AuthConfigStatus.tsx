@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
 import { getBaseUrl, isProductionLike } from '@/utils/getBaseUrl';
 import { AUTH_CONFIG } from '@/utils/authConfig';
+import { useGoogleAuthValidation } from '@/hooks/useGoogleAuthValidation';
 
 interface AuthConfigStatusProps {
   className?: string;
 }
 
 export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
+  const googleValidation = useGoogleAuthValidation();
   const [configStatus, setConfigStatus] = useState<{
     hasSupabaseConfig: boolean;
     hasGoogleConfig: boolean;
     currentUrl: string;
     isProduction: boolean;
+    googleMismatch: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -38,7 +41,8 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
       hasSupabaseConfig,
       hasGoogleConfig,
       currentUrl,
-      isProduction
+      isProduction,
+      googleMismatch: googleValidation.error !== null || googleValidation.isMatching === false
     });
 
     const mask = (v?: string) => (v ? `${String(v).slice(0, 8)}…` : 'missing');
@@ -79,7 +83,22 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
         </Alert>
       )}
       
-      {configStatus.hasSupabaseConfig && !configStatus.hasGoogleConfig && (
+      {googleValidation.error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Google Client ID mismatch between Supabase and frontend configuration.</strong>
+            <br />
+            Ensure the same Client ID from Google Cloud is set in:
+            <br />
+            • Supabase → Auth → Providers → Google
+            <br />
+            • Lovable env (VITE_GOOGLE_CLIENT_ID)
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {configStatus.hasSupabaseConfig && !configStatus.hasGoogleConfig && !googleValidation.error && (
         <Alert className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -88,7 +107,7 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
         </Alert>
       )}
       
-      {configStatus.hasSupabaseConfig && configStatus.hasGoogleConfig && (
+      {configStatus.hasSupabaseConfig && configStatus.hasGoogleConfig && !googleValidation.error && (
         <Alert className="mb-4 border-green-200 bg-green-50">
           <CheckCircle className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">

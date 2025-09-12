@@ -18,10 +18,11 @@ export const AUTH_CONFIG = {
       // Enhanced debug logging for Google OAuth config
       console.group('🔧 [AUTH CONFIG] Google OAuth Configuration Check');
       console.log('VITE_GOOGLE_ENABLED:', import.meta.env?.VITE_GOOGLE_ENABLED ?? '(not set, defaults to true)');
-      console.log('VITE_GOOGLE_CLIENT_ID:', clientId ? `${clientId.slice(0, 20)}...` : '(not set)');
+      console.log('🔐 Frontend Google Client ID:', clientId ? `${clientId.slice(0, 8)}...${clientId.slice(-8)}` : '(not set)');
       console.log('Environment flag enabled:', envFlag);
       console.log('Has client ID:', hasClientId);
       console.log('Final Google OAuth status:', envFlag && hasClientId);
+      console.warn('⚠️  VERIFY: Ensure this Client ID matches Supabase → Auth → Providers → Google');
       console.groupEnd();
       
       const enabled = envFlag && hasClientId;
