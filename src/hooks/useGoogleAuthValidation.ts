@@ -40,21 +40,31 @@ export function useGoogleAuthValidation(): GoogleAuthValidation {
         // In a real scenario, the backend would need to validate against Supabase config
         
         const maskClientId = (id: string | null) => 
-          id ? `${id.slice(0, 8)}...${id.slice(-8)}` : 'missing';
+          id ? `...${id.slice(-4)}` : 'missing';
 
-        // Log the comparison
+        // Log the comparison with masked values (last 4 chars only)
         console.group('🔐 Google Auth Validation');
         console.log('🔐 Frontend Google Client ID:', maskClientId(frontendClientId));
         console.log('🔐 Supabase Google Client ID:', 'Check Supabase Dashboard → Auth → Providers');
         console.log('⚠️  Manual verification required: Ensure both IDs match exactly');
+        
+        // For now, we assume they match if frontend ID is present
+        // In a real implementation, this would query Supabase config API
+        const isMatching = Boolean(frontendClientId);
+        
+        if (isMatching) {
+          console.log('✅ Frontend Google Client ID is configured');
+        } else {
+          console.log('❌ Frontend Google Client ID is missing');
+        }
         console.groupEnd();
 
         setValidation({
           frontendClientId,
-          supabaseClientId: 'manual-check-required',
-          isMatching: true, // Assume matching for now, user needs manual verification
+          supabaseClientId: 'check-supabase-dashboard',
+          isMatching,
           isLoading: false,
-          error: null,
+          error: frontendClientId ? null : 'Frontend Google Client ID not configured',
         });
 
       } catch (error) {

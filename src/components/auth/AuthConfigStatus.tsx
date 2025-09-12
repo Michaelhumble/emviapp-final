@@ -45,7 +45,7 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
       googleMismatch: googleValidation.error !== null || googleValidation.isMatching === false
     });
 
-    const mask = (v?: string) => (v ? `${String(v).slice(0, 8)}…` : 'missing');
+    const mask = (v?: string) => (v ? `...${String(v).slice(-4)}` : 'missing');
     const computedCallback = `${currentUrl}/auth/callback`;
 
     // Print a single, clear config table (masked where appropriate)
@@ -89,11 +89,13 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
           <AlertDescription>
             <strong>Google Client ID mismatch between Supabase and frontend configuration.</strong>
             <br />
-            Ensure the same Client ID from Google Cloud is set in:
+            Ensure the EXACT SAME Client ID from Google Cloud Console is set in:
             <br />
-            • Supabase → Auth → Providers → Google
+            • Supabase → Auth → Providers → Google (Client ID field)
             <br />
-            • Lovable env (VITE_GOOGLE_CLIENT_ID)
+            • Lovable env vars (VITE_GOOGLE_CLIENT_ID)
+            <br />
+            Check console logs for masked ID comparison.
           </AlertDescription>
         </Alert>
       )}
