@@ -8,18 +8,12 @@ export const AUTH_CONFIG = {
   // Email/Password is always enabled (core auth method)
   EMAIL_ENABLED: true,
   
-  // Google OAuth - check both env flag and required secrets
+  // Google OAuth - gate by env flag and presence of client ID (frontend-safe)
   GOOGLE_ENABLED: (() => {
     try {
-      // Check if explicitly disabled via env
       const envFlag = (import.meta.env?.VITE_GOOGLE_ENABLED ?? 'true') !== 'false';
-      
-      // In Supabase, OAuth providers are configured in the dashboard
-      // We assume Google is enabled if not explicitly disabled
-      // Supabase will handle the actual OAuth configuration validation
-      const hasGoogleConfig = envFlag; // Supabase handles OAuth provider config
-      
-      const enabled = envFlag && hasGoogleConfig;
+      const hasClientId = Boolean((import.meta as any)?.env?.VITE_GOOGLE_CLIENT_ID);
+      const enabled = envFlag && hasClientId;
       console.log('🔧 [AUTH CONFIG] Google OAuth configured:', enabled);
       return enabled;
     } catch (e) {

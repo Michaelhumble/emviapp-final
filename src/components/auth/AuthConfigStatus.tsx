@@ -20,15 +20,18 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
     const currentUrl = getBaseUrl();
     const isProduction = isProductionLike();
     
-    // Simple checks for configuration presence
-    const hasSupabaseConfig = Boolean(
-      (import.meta as any)?.env?.VITE_SUPABASE_URL &&
-      (import.meta as any)?.env?.VITE_SUPABASE_ANON_KEY
-    );
-    
-    const hasGoogleConfig = Boolean(
-      (import.meta as any)?.env?.VITE_GOOGLE_CLIENT_ID
-    );
+    // Supabase client is configured via code (not env), treat as present
+    const hasSupabaseConfig = true;
+
+    // Build-time flags actually read by the app
+    const googleEnabledFlag = (import.meta as any)?.env?.VITE_GOOGLE_ENABLED;
+    const phoneEnabledFlag = (import.meta as any)?.env?.VITE_PHONE_ENABLED;
+    const skipEmailVerifyFlag = (import.meta as any)?.env?.VITE_SKIP_EMAIL_VERIFICATION;
+
+    // Frontend-safe Google vars (optional; real config is in Supabase dashboard)
+    const googleClientId = (import.meta as any)?.env?.VITE_GOOGLE_CLIENT_ID as string | undefined;
+    const googleClientSecret = (import.meta as any)?.env?.VITE_GOOGLE_CLIENT_SECRET as string | undefined;
+    const hasGoogleConfig = Boolean(googleClientId);
 
     setConfigStatus({
       hasSupabaseConfig,
@@ -37,15 +40,23 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
       isProduction
     });
 
-    // Log auth configuration status (development only)
-    if (!isProduction) {
-      console.info('🔐 Auth Configuration Status:', {
-        'Supabase configured': hasSupabaseConfig,
-        'Google OAuth configured': hasGoogleConfig,
-        'Current URL': currentUrl,
-        'Production-like': isProduction
-      });
-    }
+    const mask = (v?: string) => (v ? `${String(v).slice(0, 8)}…` : 'missing');
+    const computedCallback = `${currentUrl}/auth/callback`;
+
+    // Print a single, clear config table (masked where appropriate)
+    console.groupCollapsed('🔐 Auth Config Summary');
+    console.table({
+      SUPABASE_URL: { present: true, source: 'src/integrations/supabase/client.ts' },
+      SUPABASE_ANON_KEY: { present: true, source: 'src/integrations/supabase/client.ts' },
+      GOOGLE_CLIENT_ID: { present: Boolean(googleClientId), sample: mask(googleClientId) },
+      GOOGLE_CLIENT_SECRET: { present: Boolean(googleClientSecret), sample: mask(googleClientSecret) },
+      VITE_GOOGLE_ENABLED: { value: googleEnabledFlag ?? '(default true)' },
+      VITE_PHONE_ENABLED: { value: phoneEnabledFlag ?? '(default false)' },
+      VITE_SKIP_EMAIL_VERIFICATION: { value: skipEmailVerifyFlag ?? '(default true)' },
+      Computed_Callback_URL: { value: computedCallback },
+      Current_Origin: { value: currentUrl },
+    });
+    console.groupEnd();
   }, []);
 
   if (!configStatus) return null;
