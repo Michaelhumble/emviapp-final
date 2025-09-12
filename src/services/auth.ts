@@ -66,33 +66,49 @@ export async function signOut() {
 export async function signInWithGoogle(redirectTo?: string) {
   try {
     const target = redirectTo || getAuthCallbackUrl('/auth/callback');
-    console.info('🔧 [GOOGLE AUTH] Starting Google OAuth flow with redirect:', target);
+    console.group('🔧 [GOOGLE AUTH] Starting OAuth Flow');
+    console.log('Redirect target:', target);
+    console.log('Current origin:', window.location.origin);
+    console.log('Auth callbacks →', target);
+    console.groupEnd();
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: target }
+      options: { 
+        redirectTo: target,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent'
+        }
+      }
     });
     
     if (error) {
+      console.error('❌ [GOOGLE AUTH] Supabase OAuth error:', error);
+      
       // More specific error handling for Google OAuth
       if (error.message?.includes('oauth')) {
-        throw new Error('Google OAuth is not properly configured. Please check your Google client credentials.');
+        throw new Error('Google OAuth is not properly configured in Supabase. Please check your Google client credentials in the Supabase dashboard.');
       }
       if (error.message?.includes('redirect')) {
-        throw new Error('OAuth redirect URL is not authorized. Please check your Google OAuth configuration.');
+        throw new Error('OAuth redirect URL is not authorized. Please check your Google OAuth redirect URLs in the Supabase dashboard.');
+      }
+      if (error.message?.includes('unauthorized')) {
+        throw new Error('Google OAuth client is not authorized. Please verify your Google Cloud Console configuration.');
       }
       throw error;
     }
     
+    console.log('✅ [GOOGLE AUTH] OAuth initiated successfully');
     return { success: true, data };
   } catch (error: any) {
-    console.error('❌ [GOOGLE AUTH] Error:', error);
+    console.error('❌ [GOOGLE AUTH] Complete error details:', error);
     // Return structured error for better UI handling
     return { 
       success: false, 
       error: {
         ...error,
-        userMessage: error.userMessage || error.message || 'Google sign-in failed. Please try again.'
+        userMessage: error.userMessage || error.message || 'Google sign-in failed. Please try again or use email sign-in.'
       }
     };
   }

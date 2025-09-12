@@ -12,9 +12,19 @@ export const AUTH_CONFIG = {
   GOOGLE_ENABLED: (() => {
     try {
       const envFlag = (import.meta.env?.VITE_GOOGLE_ENABLED ?? 'true') !== 'false';
-      const hasClientId = Boolean((import.meta as any)?.env?.VITE_GOOGLE_CLIENT_ID);
+      const clientId = (import.meta.env as any)?.VITE_GOOGLE_CLIENT_ID as string;
+      const hasClientId = Boolean(clientId);
+      
+      // Enhanced debug logging for Google OAuth config
+      console.group('🔧 [AUTH CONFIG] Google OAuth Configuration Check');
+      console.log('VITE_GOOGLE_ENABLED:', import.meta.env?.VITE_GOOGLE_ENABLED ?? '(not set, defaults to true)');
+      console.log('VITE_GOOGLE_CLIENT_ID:', clientId ? `${clientId.slice(0, 20)}...` : '(not set)');
+      console.log('Environment flag enabled:', envFlag);
+      console.log('Has client ID:', hasClientId);
+      console.log('Final Google OAuth status:', envFlag && hasClientId);
+      console.groupEnd();
+      
       const enabled = envFlag && hasClientId;
-      console.log('🔧 [AUTH CONFIG] Google OAuth configured:', enabled);
       return enabled;
     } catch (e) {
       console.warn('🔧 [AUTH CONFIG] Google OAuth check failed:', e);

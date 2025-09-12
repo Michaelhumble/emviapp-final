@@ -25,21 +25,31 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
 
   const handleGoogle = async () => {
     if (!googleEnabled) {
+      console.warn('🚫 [GOOGLE AUTH] Google OAuth is disabled');
       toast.error(getProviderErrorMessage('google'));
       return;
     }
     
     try {
-      console.log('🔧 [GOOGLE AUTH] Starting Google OAuth flow...');
+      console.log('🔧 [GOOGLE AUTH] Button clicked, initiating OAuth flow...');
+      toast.loading('Redirecting to Google...', { id: 'google-auth' });
+      
       const result = await signInWithGoogle(redirectTo);
       
       if (!result.success) {
+        toast.dismiss('google-auth');
         // Handle structured error response
-        throw new Error(result.error?.userMessage || result.error?.message || 'Google sign-in failed');
+        const errorMsg = result.error?.userMessage || result.error?.message || 'Google sign-in failed';
+        console.error('❌ [GOOGLE AUTH] Failed:', errorMsg);
+        throw new Error(errorMsg);
+      } else {
+        // Success - user should be redirected by Google
+        console.log('✅ [GOOGLE AUTH] OAuth initiated, user will be redirected');
       }
     } catch (e: any) {
-      console.error("❌ [GOOGLE AUTH] Error:", e);
-      toast.error(e?.message || "Google sign-in is not available. Please try email sign-in instead.");
+      toast.dismiss('google-auth');
+      console.error("❌ [GOOGLE AUTH] Button handler error:", e);
+      toast.error(e?.message || "Google sign-in failed. Please try email sign-in instead.");
     }
   };
 

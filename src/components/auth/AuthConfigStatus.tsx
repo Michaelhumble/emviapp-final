@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import { getBaseUrl, isProductionLike } from '@/utils/getBaseUrl';
+import { AUTH_CONFIG } from '@/utils/authConfig';
 
 interface AuthConfigStatusProps {
   className?: string;
@@ -24,13 +25,13 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
     const hasSupabaseConfig = true;
 
     // Build-time flags actually read by the app
-    const googleEnabledFlag = (import.meta as any)?.env?.VITE_GOOGLE_ENABLED;
-    const phoneEnabledFlag = (import.meta as any)?.env?.VITE_PHONE_ENABLED;
-    const skipEmailVerifyFlag = (import.meta as any)?.env?.VITE_SKIP_EMAIL_VERIFICATION;
+    const googleEnabledFlag = (import.meta.env as any)?.VITE_GOOGLE_ENABLED;
+    const phoneEnabledFlag = (import.meta.env as any)?.VITE_PHONE_ENABLED;
+    const skipEmailVerifyFlag = (import.meta.env as any)?.VITE_SKIP_EMAIL_VERIFICATION;
 
     // Frontend-safe Google vars (optional; real config is in Supabase dashboard)
-    const googleClientId = (import.meta as any)?.env?.VITE_GOOGLE_CLIENT_ID as string | undefined;
-    const googleClientSecret = (import.meta as any)?.env?.VITE_GOOGLE_CLIENT_SECRET as string | undefined;
+    const googleClientId = (import.meta.env as any)?.VITE_GOOGLE_CLIENT_ID as string | undefined;
+    const googleClientSecret = (import.meta.env as any)?.VITE_GOOGLE_CLIENT_SECRET as string | undefined;
     const hasGoogleConfig = Boolean(googleClientId);
 
     setConfigStatus({
@@ -55,6 +56,7 @@ export function AuthConfigStatus({ className }: AuthConfigStatusProps) {
       VITE_SKIP_EMAIL_VERIFICATION: { value: skipEmailVerifyFlag ?? '(default true)' },
       Computed_Callback_URL: { value: computedCallback },
       Current_Origin: { value: currentUrl },
+      Auth_Config_Google_Status: { value: AUTH_CONFIG.GOOGLE_ENABLED ? 'ENABLED' : 'DISABLED' },
     });
     console.groupEnd();
   }, []);
