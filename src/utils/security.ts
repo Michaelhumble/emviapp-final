@@ -115,7 +115,7 @@ export const submitForModeration = async (
 
 // HTTPS enforcement
 export const enforceHTTPS = (): void => {
-  if (typeof window !== 'undefined' && window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+  if (typeof window !== 'undefined' && window.location.protocol === 'http:' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
     window.location.href = window.location.href.replace('http:', 'https:');
   }
 };

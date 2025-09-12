@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/context/auth/types";
 import { navigateToRoleDashboard } from "@/utils/navigation";
-import { getAppOrigin } from "@/utils/getAppOrigin";
+import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
@@ -59,7 +59,7 @@ export const useRoleSignUp = () => {
             full_name: '',
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
-          emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
+          emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
           // Skip email confirmation for @emvi.app emails
           ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
         },

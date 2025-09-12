@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { signInWithGoogle } from "@/services/auth";
 import { toast } from "sonner";
 import React from "react";
-import { getAppOrigin } from "@/utils/getAppOrigin";
+import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
 import { AUTH_CONFIG, validateAuthProvider, getProviderErrorMessage } from "@/utils/authConfig";
 
 interface SocialAuthButtonsProps {
@@ -16,7 +16,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
-  const redirectTo = `${getAppOrigin()}/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
+  const redirectTo = getAuthCallbackUrl(`/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`);
   
   // Provider availability based on feature flags and configuration
   const googleEnabled = validateAuthProvider('google');

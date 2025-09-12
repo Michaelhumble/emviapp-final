@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import Logo from '@/components/ui/Logo';
-import { getAppOrigin } from '@/utils/getAppOrigin';
+import { getAuthCallbackUrl } from '@/utils/getBaseUrl';
 
 const NewSignUp = () => {
   const [fullName, setFullName] = useState('');
@@ -68,7 +68,7 @@ const NewSignUp = () => {
           full_name: fullName.trim(),
           role: role
         },
-        emailRedirectTo: `${getAppOrigin()}/auth/redirect`
+        emailRedirectTo: getAuthCallbackUrl('/auth/redirect')
       }
     };
 

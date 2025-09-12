@@ -1,7 +1,14 @@
+import { getBaseUrl, isProductionLike } from './getBaseUrl';
+
 export function getAppOrigin(): string {
-  if (typeof window !== 'undefined' && window.location?.origin) {
-    return window.location.origin;
+  // Use the new getBaseUrl utility for consistent URL handling
+  const baseUrl = getBaseUrl();
+  
+  // Additional safety check for production-like environments
+  if (isProductionLike() && baseUrl.includes('localhost')) {
+    console.warn('⚠️ Localhost detected in production-like environment, using fallback');
+    return 'https://www.emvi.app';
   }
-  const envOrigin = (import.meta as any)?.env?.VITE_PUBLIC_APP_ORIGIN as string | undefined;
-  return envOrigin || 'https://emviapp-final.vercel.app';
+  
+  return baseUrl;
 }

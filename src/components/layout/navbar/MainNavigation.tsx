@@ -11,7 +11,8 @@ const MainNavigation = () => {
   
   // Show test navigation items only in development or for specific users
   const isDevelopment = process.env.NODE_ENV === 'development' || 
-                       window.location.hostname === 'localhost' ||
+                       window.location.hostname.includes('localhost') ||
+                       window.location.search.includes('debug=true') ||
                        window.location.search.includes('test=true');
   
   // Include test navigation in development, paid job navigation in production

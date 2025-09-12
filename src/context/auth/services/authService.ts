@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "../types";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
-import { getAppOrigin } from "@/utils/getAppOrigin";
+import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
 
 /**
  * Get user profile data from auth user metadata
@@ -69,7 +69,7 @@ export const signUpWithEmailPassword = async (
       password,
       options: {
         data: userData,
-        emailRedirectTo: `${getAppOrigin()}/auth/redirect`
+        emailRedirectTo: getAuthCallbackUrl('/auth/redirect')
       }
     });
 

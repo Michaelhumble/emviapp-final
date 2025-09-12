@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getAppOrigin } from "@/utils/getAppOrigin";
+import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
 import { AUTH_CONFIG } from "@/utils/authConfig";
 
 export async function signInWithEmail(email: string, password: string) {
@@ -29,7 +29,7 @@ export async function signUpWithEmail(email: string, password: string, userData:
       password,
       options: {
         data: userData,
-        emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
+        emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
         // Skip email confirmation for @emvi.app emails or if globally disabled
         ...(isEmviEmail || AUTH_CONFIG.SKIP_EMAIL_VERIFICATION ? { skipEmailConfirmation: true } : {})
       }
@@ -65,11 +65,14 @@ export async function signOut() {
 // OAuth providers
 export async function signInWithGoogle(redirectTo?: string) {
   try {
-    const target = redirectTo || `${getAppOrigin()}/auth/redirect`;
+    const target = redirectTo || getAuthCallbackUrl('/auth/redirect');
+    console.info('🔧 [GOOGLE AUTH] Starting Google OAuth flow with redirect:', target);
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: target }
     });
+    
     if (error) throw error;
     return { success: true, data };
   } catch (error: any) {
@@ -98,11 +101,14 @@ export async function signInWithGoogle(redirectTo?: string) {
 // Phone OTP
 export async function signInWithPhone(phone: string) {
   try {
-    const target = `${getAppOrigin()}/auth/redirect`;
+    const target = getAuthCallbackUrl('/auth/redirect');
+    console.info('📱 [PHONE AUTH] Starting SMS OTP flow with redirect:', target);
+    
     const { data, error } = await supabase.auth.signInWithOtp({
       phone,
       options: ({ channel: 'sms', redirectTo: target } as any)
     });
+    
     if (error) throw error;
     return { success: true, data };
   } catch (error: any) {

@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { navigateToRoleDashboard } from "@/utils/navigation";
-import { getAppOrigin } from "@/utils/getAppOrigin";
+import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
 
 const signUpSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -46,7 +46,7 @@ export const SignUpForm = () => {
             full_name: data.fullName,
             role: userRole,
           },
-          emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
+          emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
         },
       });
 

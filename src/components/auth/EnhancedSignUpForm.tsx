@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 import { Sparkles, Users, Building2, Briefcase } from "lucide-react";
-import { getAppOrigin } from "@/utils/getAppOrigin";
+import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
 import { AUTH_CONFIG } from "@/utils/authConfig";
 
 const signUpSchema = z.object({
@@ -70,7 +70,7 @@ export const EnhancedSignUpForm = () => {
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
+          emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
           data: {
             full_name: data.fullName,
             role: mappedRole, // Use mapped role

@@ -8,6 +8,7 @@ import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { PhoneOtpDialog } from "@/components/auth/PhoneOtpDialog";
 import { Helmet } from "react-helmet-async";
 import { sanitizeRedirect } from "@/utils/redirectSanitizer";
+import { AuthConfigStatus } from "@/components/auth/AuthConfigStatus";
 
 const SignIn = () => {
   const location = useLocation();
@@ -27,6 +28,7 @@ const SignIn = () => {
         <div className="flex justify-center mb-6">
           <Logo size="large" showText={true} />
         </div>
+        <AuthConfigStatus />
         <SocialAuthButtons mode="signin" onPhoneClick={() => setPhoneDialogOpen(true)} />
         <Separator className="my-4" />
         <PhoneOtpDialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen} />
