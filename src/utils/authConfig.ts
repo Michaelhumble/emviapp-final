@@ -58,8 +58,35 @@ export const AUTH_CONFIG = {
     }
   })(),
   
-  // Facebook OAuth - not implemented yet
-  FACEBOOK_ENABLED: false,
+  // Facebook OAuth - gate by env flag and presence of client ID
+  FACEBOOK_ENABLED: (() => {
+    try {
+      const envFlag = (import.meta.env?.VITE_FACEBOOK_ENABLED ?? 'false') !== 'false';
+      const clientId = (import.meta.env as any)?.VITE_FACEBOOK_CLIENT_ID as string;
+      const hasClientId = Boolean(clientId);
+      
+      console.group('🔧 [AUTH CONFIG] Facebook OAuth Configuration Check');
+      console.log('VITE_FACEBOOK_ENABLED:', import.meta.env?.VITE_FACEBOOK_ENABLED ?? '(not set, defaults to false)');
+      console.log('🔐 Frontend Facebook Client ID:', clientId ? `...${clientId.slice(-4)}` : '(not set)');
+      console.log('Environment flag enabled:', envFlag);
+      console.log('Has client ID:', hasClientId);
+      
+      if (envFlag && hasClientId) {
+        console.log('✅ Facebook OAuth enabled');
+      } else {
+        console.log('❌ Facebook OAuth disabled');
+      }
+      
+      console.log('Final Facebook OAuth status:', envFlag && hasClientId);
+      console.warn('⚠️  VERIFY: Ensure this Client ID matches Supabase → Auth → Providers → Facebook');
+      console.groupEnd();
+      
+      return envFlag && hasClientId;
+    } catch (e) {
+      console.warn('🔧 [AUTH CONFIG] Facebook OAuth check failed:', e);
+      return false;
+    }
+  })(),
   
   // Speed up onboarding by skipping email verification by default
   SKIP_EMAIL_VERIFICATION: (import.meta.env?.VITE_SKIP_EMAIL_VERIFICATION ?? 'true') !== 'false',
@@ -96,7 +123,7 @@ export const getProviderErrorMessage = (provider: 'google' | 'phone' | 'facebook
     case 'phone':
       return 'Phone verification is temporarily unavailable. Please use email sign-up instead.';
     case 'facebook':
-      return 'Facebook sign-in is not available yet. Please use email sign-up.';
+      return 'Facebook sign-in is temporarily unavailable. Please use email sign-up instead.';
     default:
       return 'This sign-in method is currently unavailable.';
   }

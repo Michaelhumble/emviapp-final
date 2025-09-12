@@ -114,6 +114,57 @@ export async function signInWithGoogle(redirectTo?: string) {
   }
 }
 
+// Facebook OAuth
+export async function signInWithFacebook(redirectTo?: string) {
+  try {
+    const target = redirectTo || getAuthCallbackUrl('/auth/callback');
+    console.group('🔧 [FACEBOOK AUTH] Starting OAuth Flow');
+    console.log('Redirect target:', target);
+    console.log('Current origin:', window.location.origin);
+    console.log('Auth callbacks →', target);
+    console.groupEnd();
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: { 
+        redirectTo: target,
+        queryParams: {
+          scope: 'email'
+        }
+      }
+    });
+    
+    if (error) {
+      console.error('❌ [FACEBOOK AUTH] Supabase OAuth error:', error);
+      
+      // More specific error handling for Facebook OAuth
+      if (error.message?.includes('oauth')) {
+        throw new Error('Facebook OAuth is not properly configured in Supabase. Please check your Facebook app credentials in the Supabase dashboard.');
+      }
+      if (error.message?.includes('redirect')) {
+        throw new Error('OAuth redirect URL is not authorized. Please check your Facebook OAuth redirect URLs in the Supabase dashboard.');
+      }
+      if (error.message?.includes('unauthorized')) {
+        throw new Error('Facebook OAuth client is not authorized. Please verify your Facebook Developer Console configuration.');
+      }
+      throw error;
+    }
+    
+    console.log('✅ [FACEBOOK AUTH] OAuth initiated successfully');
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('❌ [FACEBOOK AUTH] Complete error details:', error);
+    // Return structured error for better UI handling
+    return { 
+      success: false, 
+      error: {
+        ...error,
+        userMessage: error.userMessage || error.message || 'Facebook sign-in failed. Please try again or use email sign-in.'
+      }
+    };
+  }
+}
+
 
 // export async function signInWithApple(redirectTo?: string) {
 //   // Disabled per strict instruction: Do not integrate Apple Sign-In

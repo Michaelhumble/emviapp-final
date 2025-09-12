@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Chrome, Phone as PhoneIcon, Facebook, AlertTriangle, Info } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { signInWithGoogle } from "@/services/auth";
+import { signInWithGoogle, signInWithFacebook } from "@/services/auth";
 import { toast } from "sonner";
 import React from "react";
 import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
@@ -66,13 +66,34 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
     onPhoneClick();
   };
 
-  const handleFacebook = () => {
+  const handleFacebook = async () => {
     if (!facebookEnabled) {
+      console.warn('🚫 [FACEBOOK AUTH] Facebook OAuth is disabled');
       toast.error(getProviderErrorMessage('facebook'));
       return;
     }
-    // TODO: Implement Facebook OAuth
-    toast.info("Facebook sign-in coming soon! Please use email or Google for now.");
+    
+    try {
+      console.log('🔧 [FACEBOOK AUTH] Button clicked, initiating OAuth flow...');
+      toast.loading('Redirecting to Facebook...', { id: 'facebook-auth' });
+      
+      const result = await signInWithFacebook(redirectTo);
+      
+      if (!result.success) {
+        toast.dismiss('facebook-auth');
+        // Handle structured error response
+        const errorMsg = result.error?.userMessage || result.error?.message || 'Facebook sign-in failed';
+        console.error('❌ [FACEBOOK AUTH] Failed:', errorMsg);
+        throw new Error(errorMsg);
+      } else {
+        // Success - user should be redirected by Facebook
+        console.log('✅ [FACEBOOK AUTH] OAuth initiated, user will be redirected');
+      }
+    } catch (e: any) {
+      toast.dismiss('facebook-auth');
+      console.error("❌ [FACEBOOK AUTH] Button handler error:", e);
+      toast.error(e?.message || "Facebook sign-in failed. Please try email sign-in instead.");
+    }
   };
 
 
