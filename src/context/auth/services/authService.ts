@@ -69,7 +69,7 @@ export const signUpWithEmailPassword = async (
       password,
       options: {
         data: userData,
-        emailRedirectTo: getAuthCallbackUrl('/auth/redirect')
+        emailRedirectTo: getAuthCallbackUrl('/auth/callback')
       }
     });
 

@@ -88,6 +88,10 @@ const routes = [
     element: <PostLoginLanding />,
   },
   {
+    path: '/auth/callback',
+    element: <PostLoginLanding />,
+  },
+  {
     path: '/',
     element: <IndexLazy />,
   },

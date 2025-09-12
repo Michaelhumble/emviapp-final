@@ -68,7 +68,7 @@ const NewSignUp = () => {
           full_name: fullName.trim(),
           role: role
         },
-        emailRedirectTo: getAuthCallbackUrl('/auth/redirect')
+        emailRedirectTo: getAuthCallbackUrl('/auth/callback')
       }
     };
 

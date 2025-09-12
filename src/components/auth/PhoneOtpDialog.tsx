@@ -118,7 +118,7 @@ export const PhoneOtpDialog: React.FC<PhoneOtpDialogProps> = ({ open, onOpenChan
       const { error, data } = await verifyPhoneOtp(phone, code);
       if (error) throw error;
       // Redirect through centralized post-login route on current origin
-      const targetPath = `/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
+      const targetPath = `/auth/callback${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`;
       navigate(targetPath, { replace: true });
 
     } catch (e: any) {

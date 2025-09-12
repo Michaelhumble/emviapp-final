@@ -59,7 +59,7 @@ export const useRoleSignUp = () => {
             full_name: '',
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
-          emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
+          emailRedirectTo: getAuthCallbackUrl('/auth/callback'),
           // Skip email confirmation for @emvi.app emails
           ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
         },

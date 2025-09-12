@@ -70,7 +70,7 @@ export const EnhancedSignUpForm = () => {
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
+          emailRedirectTo: getAuthCallbackUrl('/auth/callback'),
           data: {
             full_name: data.fullName,
             role: mappedRole, // Use mapped role

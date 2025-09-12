@@ -46,7 +46,7 @@ export const SignUpForm = () => {
             full_name: data.fullName,
             role: userRole,
           },
-          emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
+          emailRedirectTo: getAuthCallbackUrl('/auth/callback'),
         },
       });
 

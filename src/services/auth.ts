@@ -29,7 +29,7 @@ export async function signUpWithEmail(email: string, password: string, userData:
       password,
       options: {
         data: userData,
-        emailRedirectTo: getAuthCallbackUrl('/auth/redirect'),
+        emailRedirectTo: getAuthCallbackUrl('/auth/callback'),
         // Skip email confirmation for @emvi.app emails or if globally disabled
         ...(isEmviEmail || AUTH_CONFIG.SKIP_EMAIL_VERIFICATION ? { skipEmailConfirmation: true } : {})
       }
@@ -65,7 +65,7 @@ export async function signOut() {
 // OAuth providers
 export async function signInWithGoogle(redirectTo?: string) {
   try {
-    const target = redirectTo || getAuthCallbackUrl('/auth/redirect');
+    const target = redirectTo || getAuthCallbackUrl('/auth/callback');
     console.info('🔧 [GOOGLE AUTH] Starting Google OAuth flow with redirect:', target);
     
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -73,11 +73,28 @@ export async function signInWithGoogle(redirectTo?: string) {
       options: { redirectTo: target }
     });
     
-    if (error) throw error;
+    if (error) {
+      // More specific error handling for Google OAuth
+      if (error.message?.includes('oauth')) {
+        throw new Error('Google OAuth is not properly configured. Please check your Google client credentials.');
+      }
+      if (error.message?.includes('redirect')) {
+        throw new Error('OAuth redirect URL is not authorized. Please check your Google OAuth configuration.');
+      }
+      throw error;
+    }
+    
     return { success: true, data };
   } catch (error: any) {
-    console.error('Google sign-in error:', error);
-    return { success: false, error };
+    console.error('❌ [GOOGLE AUTH] Error:', error);
+    // Return structured error for better UI handling
+    return { 
+      success: false, 
+      error: {
+        ...error,
+        userMessage: error.userMessage || error.message || 'Google sign-in failed. Please try again.'
+      }
+    };
   }
 }
 
@@ -101,7 +118,7 @@ export async function signInWithGoogle(redirectTo?: string) {
 // Phone OTP
 export async function signInWithPhone(phone: string) {
   try {
-    const target = getAuthCallbackUrl('/auth/redirect');
+    const target = getAuthCallbackUrl('/auth/callback');
     console.info('📱 [PHONE AUTH] Starting SMS OTP flow with redirect:', target);
     
     const { data, error } = await supabase.auth.signInWithOtp({

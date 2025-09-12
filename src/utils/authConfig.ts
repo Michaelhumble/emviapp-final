@@ -14,11 +14,12 @@ export const AUTH_CONFIG = {
       // Check if explicitly disabled via env
       const envFlag = (import.meta.env?.VITE_GOOGLE_ENABLED ?? 'true') !== 'false';
       
-      // For production, we would check actual Google client secrets exist
-      // For now, we'll default to enabled if flag is true
-      const hasGoogleSecrets = true; // This would check for actual Google OAuth config in production
+      // In Supabase, OAuth providers are configured in the dashboard
+      // We assume Google is enabled if not explicitly disabled
+      // Supabase will handle the actual OAuth configuration validation
+      const hasGoogleConfig = envFlag; // Supabase handles OAuth provider config
       
-      const enabled = envFlag && hasGoogleSecrets;
+      const enabled = envFlag && hasGoogleConfig;
       console.log('🔧 [AUTH CONFIG] Google OAuth configured:', enabled);
       return enabled;
     } catch (e) {

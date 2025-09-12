@@ -16,7 +16,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
-  const redirectTo = getAuthCallbackUrl(`/auth/redirect${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`);
+  const redirectTo = getAuthCallbackUrl(`/auth/callback${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`);
   
   // Provider availability based on feature flags and configuration
   const googleEnabled = validateAuthProvider('google');
@@ -31,10 +31,15 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
     
     try {
       console.log('🔧 [GOOGLE AUTH] Starting Google OAuth flow...');
-      await signInWithGoogle(redirectTo);
+      const result = await signInWithGoogle(redirectTo);
+      
+      if (!result.success) {
+        // Handle structured error response
+        throw new Error(result.error?.userMessage || result.error?.message || 'Google sign-in failed');
+      }
     } catch (e: any) {
       console.error("❌ [GOOGLE AUTH] Error:", e);
-      toast.error(e?.message || "Failed to start Google sign-in");
+      toast.error(e?.message || "Google sign-in is not available. Please try email sign-in instead.");
     }
   };
 
