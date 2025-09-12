@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 import { Sparkles, Users, Building2, Briefcase } from "lucide-react";
 import { getAppOrigin } from "@/utils/getAppOrigin";
+import { AUTH_CONFIG } from "@/utils/authConfig";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -25,7 +26,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const EnhancedSignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string>("customer");
+  const [selectedRole, setSelectedRole] = useState<string>(AUTH_CONFIG.DEFAULT_ROLE);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -37,7 +38,7 @@ export const EnhancedSignUpForm = () => {
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      role: "customer",
+      role: AUTH_CONFIG.DEFAULT_ROLE,
     },
   });
 
@@ -63,16 +64,20 @@ export const EnhancedSignUpForm = () => {
       
       console.log("📝 [SIGN UP] Final role for database:", mappedRole);
       
+      const isEmviEmail = data.email.endsWith('@emvi.app');
+      
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
-          options: {
-            emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
-            data: {
-              full_name: data.fullName,
-              role: mappedRole, // Use mapped role
-            },
+        options: {
+          emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
+          data: {
+            full_name: data.fullName,
+            role: mappedRole, // Use mapped role
           },
+          // Skip email confirmation for @emvi.app emails or if globally disabled
+          ...(isEmviEmail || AUTH_CONFIG.SKIP_EMAIL_VERIFICATION ? { skipEmailConfirmation: true } : {})
+        },
       });
 
       console.log("✅ [SIGN UP] Supabase response:", { authData, error });
@@ -86,9 +91,12 @@ export const EnhancedSignUpForm = () => {
         console.log("🎉 [SIGN UP] User created successfully:", authData.user.id);
         
         // Show success message with EmviApp branding
+        const skipVerification = isEmviEmail || AUTH_CONFIG.SKIP_EMAIL_VERIFICATION;
         toast({
           title: "Chào mừng bạn đến với EmviApp! 🌸",
-          description: "Welcome to our beautiful community! Please check your email to verify your account and begin your journey.",
+          description: skipVerification 
+            ? "Welcome to our beautiful community! Your account is ready and you're being redirected to your dashboard."
+            : "Welcome to our beautiful community! Please check your email to verify your account and begin your journey.",
         });
 
         // Navigate to appropriate dashboard based on role

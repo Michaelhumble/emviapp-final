@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getAppOrigin } from "@/utils/getAppOrigin";
+import { AUTH_CONFIG } from "@/utils/authConfig";
 
 export async function signInWithEmail(email: string, password: string) {
   try {
@@ -29,15 +30,16 @@ export async function signUpWithEmail(email: string, password: string, userData:
       options: {
         data: userData,
         emailRedirectTo: `${getAppOrigin()}/auth/redirect`,
-        // Skip email confirmation for @emvi.app emails
-        ...(isEmviEmail ? { skipEmailConfirmation: true } : {})
+        // Skip email confirmation for @emvi.app emails or if globally disabled
+        ...(isEmviEmail || AUTH_CONFIG.SKIP_EMAIL_VERIFICATION ? { skipEmailConfirmation: true } : {})
       }
     });
 
     if (error) throw error;
     
-    if (isEmviEmail) {
-      toast.success("Your @emvi.app account has been created and is ready to use!");
+    const skipVerification = isEmviEmail || AUTH_CONFIG.SKIP_EMAIL_VERIFICATION;
+    if (skipVerification) {
+      toast.success("Your account has been created and is ready to use!");
     } else {
       toast.info("Your account has been created! Please check your email for verification instructions.");
     }
