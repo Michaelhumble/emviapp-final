@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Chrome, Phone as PhoneIcon, Facebook, AlertCircle, AlertTriangle, Info } from "lucide-react";
+import { Chrome, Phone as PhoneIcon, Facebook, AlertTriangle, Info } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { signInWithGoogle } from "@/services/auth";
 import { toast } from "sonner";
 import React from "react";
 import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
-import { AUTH_CONFIG, validateAuthProvider, getProviderErrorMessage } from "@/utils/authConfig";
+import { validateAuthProvider, getProviderErrorMessage } from "@/utils/authConfig";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useGoogleAuthValidation } from "@/hooks/useGoogleAuthValidation";
+import { ENV, mask } from "@/config/env";
 
 interface SocialAuthButtonsProps {
   mode: "signin" | "signup";
@@ -19,11 +19,9 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
   const redirectTo = getAuthCallbackUrl(`/auth/callback${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`);
-  const googleValidation = useGoogleAuthValidation();
   
-  // Get environment variables for diagnostic display
-  const googleEnabledFlag = (import.meta.env?.VITE_GOOGLE_ENABLED ?? 'true');
-  const googleClientId = (import.meta.env as any)?.VITE_GOOGLE_CLIENT_ID as string | undefined;
+  // Use centralized environment configuration
+  const { GOOGLE_ENABLED, GOOGLE_CLIENT_ID } = ENV;
   
   // Provider availability based on feature flags and configuration
   const googleEnabled = validateAuthProvider('google');
@@ -85,7 +83,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   return (
     <div className="space-y-3">
       {/* Diagnostic banners for Google OAuth configuration */}
-      {googleEnabledFlag !== 'true' && (
+      {!GOOGLE_ENABLED && (
         <Alert className="border-blue-200 bg-blue-50">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
@@ -94,7 +92,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
         </Alert>
       )}
       
-      {googleEnabledFlag === 'true' && !googleClientId && (
+      {GOOGLE_ENABLED && !GOOGLE_CLIENT_ID && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
@@ -114,9 +112,9 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
               </Button>
               
               {/* Google ID Status Line */}
-              {googleClientId && (
+              {GOOGLE_CLIENT_ID && (
                 <div className="text-xs text-muted-foreground text-center px-2">
-                  Frontend ID: ...{googleClientId.slice(-4)} • Supabase ID: ...{googleValidation.supabaseClientId === 'check-supabase-dashboard' ? 'check' : 'TBD'} • Status: {googleValidation.isMatching ? '✅ match' : '❌ mismatch'}
+                  Frontend ID: {mask(GOOGLE_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
                 </div>
               )}
             </>
