@@ -79,7 +79,7 @@ export async function generateSitemap(baseUrl: string = 'https://emvi.app'): Pro
       });
     }
 
-    // Add artist public profile URLs
+    // Add artist public profile URLs (artists-404-guard: only valid/active profiles)
     const { data: artists } = await supabaseBypass
       .from('profiles' as any)
       .select('username, updated_at, role')
@@ -95,6 +95,25 @@ export async function generateSitemap(baseUrl: string = 'https://emvi.app'): Pro
           lastModified: artist.updated_at || new Date().toISOString(),
           changeFrequency: 'weekly',
           priority: 0.6
+        });
+      });
+    }
+
+    // Add artist-for-hire profile URLs (artists-404-guard: only available artists)
+    const { data: artistsForHire } = await supabaseBypass
+      .from('artist_for_hire_profiles' as any)
+      .select('id, updated_at, available_for_work')
+      .eq('available_for_work' as any, true)
+      .limit(1000);
+
+    if (artistsForHire) {
+      artistsForHire.forEach((artist: any) => {
+        if (!artist.id) return;
+        urls.push({
+          url: `${baseUrl}/artists/${artist.id}`,
+          lastModified: artist.updated_at || new Date().toISOString(),
+          changeFrequency: 'weekly',
+          priority: 0.7
         });
       });
     }
