@@ -1,12 +1,12 @@
-# 🔐 Google OAuth Secrets Setup
+# 🔐 Google OAuth Local Setup
 
-This guide helps you configure Google OAuth authentication safely without committing secrets to the repository.
+This guide helps you configure Google OAuth authentication using local environment variables.
 
 ## 🎯 Architecture Overview
 
-- **Client ID**: Required in frontend (goes in `.env.local` or Lovable Secrets)
-- **Client Secret**: Required in Supabase only (never in frontend)
-- **Git Safety**: All secrets are ignored/excluded from version control
+- **Client ID**: Required in frontend (goes in `.env.local`)
+- **Client Secret**: Required in both frontend and Supabase
+- **Git Safety**: `.env.local` is git-ignored and safe for secrets
 
 ## 📋 Prerequisites
 
@@ -36,25 +36,15 @@ This guide helps you configure Google OAuth authentication safely without commit
 
 ### Step 3: Frontend Configuration
 
-Choose **ONE** of the following methods:
-
-#### Option A: Local Development (.env.local)
-
-Create/update `.env.local` with:
+Update `.env.local` in the project root with your real values:
 
 ```bash
 VITE_GOOGLE_ENABLED=true
 VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
 ```
 
-#### Option B: Lovable Secrets (Production)
-
-In Lovable Dashboard → **Environment** → **Secrets**, add:
-
-```
-VITE_GOOGLE_ENABLED=true
-VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
-```
+**Note**: The `.env.local` file is git-ignored, so it's safe to add real secrets here.
 
 ## 🔍 Verification
 
@@ -82,11 +72,11 @@ GOOGLE_CLIENT_ID: …XY89
 ## 🔧 Troubleshooting
 
 ### "Missing Google Client ID" (Red Banner)
-- Ensure `VITE_GOOGLE_CLIENT_ID` is set in `.env.local` or Lovable Secrets
+- Ensure `VITE_GOOGLE_CLIENT_ID` is set in `.env.local`
 - Restart development server after adding variables
 
 ### "Google sign-in disabled" (Blue Banner)
-- Set `VITE_GOOGLE_ENABLED=true` in your environment configuration
+- Set `VITE_GOOGLE_ENABLED=true` in `.env.local`
 
 ### "Client ID mismatch" (Yellow Banner)
 - Verify the same Client ID is used in Google Cloud, Supabase, and frontend
@@ -96,18 +86,13 @@ GOOGLE_CLIENT_ID: …XY89
 - Ensure redirect URLs in Google Cloud match your Supabase project URL
 - Check Site URL configuration in Supabase Auth settings
 
-## 📋 Quick Copy-Paste Blocks
+## 📋 Quick Copy-Paste Block
 
-### Local Development → .env.local
+### .env.local (project root)
 ```bash
 VITE_GOOGLE_ENABLED=true
 VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
 ```
 
-### Lovable Secrets → Environment/Secrets
-```
-VITE_GOOGLE_ENABLED=true
-VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
-```
-
-Replace `YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com` with your actual Client ID from Google Cloud Console.
+Replace the placeholders with your actual values from Google Cloud Console.

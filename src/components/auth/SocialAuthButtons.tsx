@@ -87,7 +87,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
         <Alert className="border-blue-200 bg-blue-50">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
-            Google sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_GOOGLE_ENABLED=true</code> in Environment/Secrets.
+            Google sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_GOOGLE_ENABLED=true</code> in <code>.env.local</code>.
           </AlertDescription>
         </Alert>
       )}
@@ -96,7 +96,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Missing <code className="bg-red-100 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code>. Set this in Lovable → Environment/Secrets.
+            Missing <code className="bg-red-100 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
           </AlertDescription>
         </Alert>
       )}
