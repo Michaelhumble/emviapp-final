@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export async function updateUserRole(role: 'artist'|'salon'|'freelancer'|'customer') {
+export async function updateUserRole(role: 'artist'|'salon'|'salon_owner'|'freelancer'|'customer') {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No session');
   const { error } = await supabase.from('profiles').update({ role }).eq('id', user.id);
@@ -21,5 +21,5 @@ export async function getUserProfile() {
     return { id: user.id, role: null as any };
   }
   if (error) throw error;
-  return data as { id: string; role: 'artist'|'salon'|'freelancer'|'customer'|null } | null;
+  return data as { id: string; role: 'artist'|'salon'|'salon_owner'|'freelancer'|'customer'|null } | null;
 }

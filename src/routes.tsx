@@ -79,6 +79,7 @@ import TestEnhancedSignUp from "@/pages/TestEnhancedSignUp";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import TestPaidJobFlow from "@/pages/TestPaidJobFlow";
 import ChooseRolePage from './pages/onboarding/ChooseRole';
+import AuthCallback from './pages/auth/Callback';
 
 // Removed test page imports - paid job test now integrated into main form
 
@@ -89,7 +90,7 @@ const routes = [
   },
   {
     path: '/auth/callback',
-    element: <PostLoginLanding />,
+    element: <AuthCallback />,
   },
   {
     path: '/',
@@ -379,6 +380,10 @@ const routes = [
   },
   {
     path: '/onboarding/choose-role',
+    element: <ChooseRolePage />,
+  },
+  {
+    path: '/auth/choose-role',
     element: <ChooseRolePage />,
   },
   {

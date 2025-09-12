@@ -10,6 +10,11 @@ import { Helmet } from "react-helmet-async";
 import { sanitizeRedirect } from "@/utils/redirectSanitizer";
 import { AuthConfigStatus } from "@/components/auth/AuthConfigStatus";
 
+// Prevent iframe login issues for auth routes
+if (typeof window !== 'undefined' && window !== window.top) {
+  window.top!.location.href = window.location.href;
+}
+
 const SignIn = () => {
   const location = useLocation();
   // Sanitize redirect param
