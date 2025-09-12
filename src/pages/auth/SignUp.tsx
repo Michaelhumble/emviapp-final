@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Logo from "@/components/ui/Logo";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<'customer' | 'artist' | 'salon_owner' | 'freelancer'>('customer');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPhoneSignUp, setShowPhoneSignUp] = useState(false);
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,22 +66,9 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    setGoogleLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Google sign-up error:', error);
-      toast.error(error.message || 'Failed to sign up with Google');
-      setGoogleLoading(false);
-    }
+  const handlePhoneClick = () => {
+    setShowPhoneSignUp(true);
+    toast.info('Phone signup coming soon!');
   };
 
   const routeByRole = (userRole: string) => {
@@ -208,15 +196,7 @@ const SignUp = () => {
             </div>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignUp}
-            disabled={googleLoading}
-          >
-            {googleLoading ? 'Connecting...' : 'Continue with Google'}
-          </Button>
+          <SocialAuthButtons mode="signup" onPhoneClick={handlePhoneClick} />
 
           <div className="text-center text-sm">
             Already have an account?{' '}

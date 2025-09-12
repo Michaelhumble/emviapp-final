@@ -103,8 +103,8 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
 
   return (
     <div className="space-y-3">
-      {/* Diagnostic banners for Google OAuth configuration */}
-      {!GOOGLE_ENABLED && (
+      {/* Diagnostic banners for OAuth configuration */}
+      {!ENV.GOOGLE_ENABLED && (
         <Alert className="border-blue-200 bg-blue-50">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
@@ -113,11 +113,30 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
         </Alert>
       )}
       
-      {GOOGLE_ENABLED && !GOOGLE_CLIENT_ID && (
+      {ENV.GOOGLE_ENABLED && !ENV.GOOGLE_CLIENT_ID && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
             Missing <code className="bg-red-100 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Facebook diagnostic banners */}
+      {!import.meta.env?.VITE_FACEBOOK_ENABLED && (
+        <Alert className="border-blue-200 bg-blue-50">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            Facebook sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_FACEBOOK_ENABLED=true</code> in <code>.env.local</code>.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {import.meta.env?.VITE_FACEBOOK_ENABLED && !import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Missing <code className="bg-red-100 px-1 rounded">VITE_FACEBOOK_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
           </AlertDescription>
         </Alert>
       )}
@@ -133,18 +152,27 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
               </Button>
               
               {/* Google ID Status Line */}
-              {GOOGLE_CLIENT_ID && (
+              {ENV.GOOGLE_CLIENT_ID && (
                 <div className="text-xs text-muted-foreground text-center px-2">
-                  Frontend ID: {mask(GOOGLE_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
+                  Frontend ID: {mask(ENV.GOOGLE_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
                 </div>
               )}
             </>
           )}
           {facebookEnabled && (
-            <Button variant="outline" className="w-full justify-center h-12" onClick={handleFacebook}>
-              <Facebook className="mr-2 h-4 w-4" />
-              Continue with Facebook
-            </Button>
+            <>
+              <Button variant="outline" className="w-full justify-center h-12" onClick={handleFacebook}>
+                <Facebook className="mr-2 h-4 w-4" />
+                Continue with Facebook
+              </Button>
+              
+              {/* Facebook ID Status Line */}
+              {import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
+                <div className="text-xs text-muted-foreground text-center px-2">
+                  Frontend ID: {mask(import.meta.env.VITE_FACEBOOK_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
