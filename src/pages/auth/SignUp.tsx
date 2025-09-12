@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Logo from "@/components/ui/Logo";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-50/50 to-white px-4">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 to-white">
       <Helmet>
         <title>Join Our Beauty Community | EmviApp</title>
         <meta name="description" content="Create your EmviApp account and join the beauty community" />
@@ -108,7 +109,24 @@ const SignUp = () => {
         <link rel="canonical" href="https://emviapp-final.vercel.app/auth/signup" />
       </Helmet>
 
-      <Card className="w-full max-w-md">
+      {/* Minimal top navbar */}
+      <nav className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+        <Link to="/" className="flex items-center">
+          <Logo size="small" showText={true} />
+        </Link>
+        <div className="flex items-center space-x-6">
+          <Link to="/jobs" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            Jobs
+          </Link>
+          <Link to="/salons" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            Salons
+          </Link>
+        </div>
+      </nav>
+
+      <div className="flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md space-y-6">
+          <Card className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-serif text-center">Join Our Beauty Community</CardTitle>
           <CardDescription className="text-center">
