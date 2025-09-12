@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Chrome, Phone as PhoneIcon, Facebook, AlertTriangle, Info } from "lucide-react";
 import { useLocation } from "react-router-dom";
@@ -12,9 +14,10 @@ import { ENV, mask } from "@/config/env";
 interface SocialAuthButtonsProps {
   mode: "signin" | "signup";
   onPhoneClick: () => void;
+  showDiagnostics?: boolean;
 }
 
-export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPhoneClick }) => {
+export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPhoneClick, showDiagnostics = false }) => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
@@ -27,6 +30,12 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   const googleEnabled = validateAuthProvider('google');
   const phoneEnabled = validateAuthProvider('phone');
   const facebookEnabled = validateAuthProvider('facebook');
+
+  // Dev-only diagnostics control
+  const isProd = process.env.NODE_ENV === "production";
+  const search = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const diagFlag = search?.get("diag") === "1";
+  const showDiag = !isProd && (showDiagnostics || diagFlag);
 
   const handleGoogle = async () => {
     if (!googleEnabled) {
@@ -97,97 +106,99 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
   };
 
 
-  // Count enabled providers to determine grid layout
-  const enabledProviders = [googleEnabled, phoneEnabled, facebookEnabled].filter(Boolean).length;
-  const gridCols = enabledProviders >= 2 ? 'md:grid-cols-2' : 'md:grid-cols-1';
-
   return (
-    <div className="space-y-3">
-      {/* Diagnostic banners for OAuth configuration */}
-      {!ENV.GOOGLE_ENABLED && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            Google sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_GOOGLE_ENABLED=true</code> in <code>.env.local</code>.
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {ENV.GOOGLE_ENABLED && !ENV.GOOGLE_CLIENT_ID && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            Missing <code className="bg-red-100 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
-          </AlertDescription>
-        </Alert>
-      )}
+    <div className="mt-6">
+      <div className="relative my-6">
+        <div className="absolute inset-0 border-t border-neutral-200" />
+        <div className="relative mx-auto -mt-3 w-fit bg-white px-2 text-xs text-neutral-500">OR</div>
+      </div>
 
-      {/* Facebook diagnostic banners */}
-      {!import.meta.env?.VITE_FACEBOOK_ENABLED && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            Facebook sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_FACEBOOK_ENABLED=true</code> in <code>.env.local</code>.
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {import.meta.env?.VITE_FACEBOOK_ENABLED && !import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            Missing <code className="bg-red-100 px-1 rounded">VITE_FACEBOOK_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
-          </AlertDescription>
-        </Alert>
-      )}
+      <div className="flex flex-col gap-3">
+        {/* Google */}
+        {googleEnabled && (
+          <button
+            type="button"
+            onClick={handleGoogle}
+            className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 active:scale-[0.99]"
+            aria-label="Continue with Google"
+          >
+            Continue with Google
+          </button>
+        )}
 
-      {/* Primary providers (Google, Facebook) */}
-      {(googleEnabled || facebookEnabled) && (
-        <div className={`grid grid-cols-1 ${googleEnabled && facebookEnabled ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-2`}>
-          {googleEnabled && (
-            <>
-              <Button variant="outline" className="w-full justify-center h-12" onClick={handleGoogle}>
-                <Chrome className="mr-2 h-4 w-4" />
-                Continue with Google
-              </Button>
-              
-              {/* Google ID Status Line */}
-              {ENV.GOOGLE_CLIENT_ID && (
-                <div className="text-xs text-muted-foreground text-center px-2">
-                  Frontend ID: {mask(ENV.GOOGLE_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
-                </div>
-              )}
-            </>
+        {/* Facebook - only if enabled & id present */}
+        {facebookEnabled && import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
+          <button
+            type="button"
+            onClick={handleFacebook}
+            className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 active:scale-[0.99]"
+            aria-label="Continue with Facebook"
+          >
+            Continue with Facebook
+          </button>
+        )}
+      </div>
+
+      {/* Dev-only diagnostics */}
+      {showDiag && (
+        <div className="mt-2 text-xs text-neutral-500 space-y-1">
+          {/* Diagnostic banners for OAuth configuration */}
+          {!ENV.GOOGLE_ENABLED && (
+            <Alert className="border-blue-200 bg-blue-50">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                Google sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_GOOGLE_ENABLED=true</code> in <code>.env.local</code>.
+              </AlertDescription>
+            </Alert>
           )}
-          {facebookEnabled && (
-            <>
-              <Button variant="outline" className="w-full justify-center h-12" onClick={handleFacebook}>
-                <Facebook className="mr-2 h-4 w-4" />
-                Continue with Facebook
-              </Button>
-              
-              {/* Facebook ID Status Line */}
-              {import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
-                <div className="text-xs text-muted-foreground text-center px-2">
-                  Frontend ID: {mask(import.meta.env.VITE_FACEBOOK_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
-                </div>
-              )}
-            </>
+          
+          {ENV.GOOGLE_ENABLED && !ENV.GOOGLE_CLIENT_ID && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Missing <code className="bg-red-100 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Facebook diagnostic banners */}
+          {!import.meta.env?.VITE_FACEBOOK_ENABLED && (
+            <Alert className="border-blue-200 bg-blue-50">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                Facebook sign-in disabled. Set <code className="bg-blue-100 px-1 rounded">VITE_FACEBOOK_ENABLED=true</code> in <code>.env.local</code>.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {import.meta.env?.VITE_FACEBOOK_ENABLED && !import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Missing <code className="bg-red-100 px-1 rounded">VITE_FACEBOOK_CLIENT_ID</code>. Set this in <code>.env.local</code> file.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Google ID Status Line */}
+          {ENV.GOOGLE_CLIENT_ID && (
+            <div className="text-center px-2">
+              Frontend ID: {mask(ENV.GOOGLE_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
+            </div>
+          )}
+
+          {/* Facebook ID Status Line */}
+          {import.meta.env?.VITE_FACEBOOK_CLIENT_ID && (
+            <div className="text-center px-2">
+              Frontend ID: {mask(import.meta.env.VITE_FACEBOOK_CLIENT_ID)} • Supabase ID: check dashboard • Status: ✅ ready
+            </div>
           )}
         </div>
       )}
-      
-      {/* Phone provider */}
-      {phoneEnabled && (
-        <Button variant="secondary" className="w-full justify-center h-12" onClick={handlePhone}>
-          <PhoneIcon className="mr-2 h-4 w-4" />
-          {mode === "signup" ? "Sign up with phone" : "Sign in with phone"}
-        </Button>
-      )}
-      
+
       {/* Show alternative if no social providers are available */}
-      {!googleEnabled && !phoneEnabled && !facebookEnabled && (
-        <div className="text-center p-4 bg-amber-50 rounded-lg border border-amber-200">
+      {!googleEnabled && !facebookEnabled && (
+        <div className="mt-4 text-center p-4 bg-amber-50 rounded-lg border border-amber-200">
           <p className="text-sm text-amber-700 font-medium">
             Social sign-in methods are temporarily unavailable.
           </p>

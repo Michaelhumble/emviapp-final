@@ -97,8 +97,9 @@ const SignUp = () => {
         <link rel="canonical" href="https://emviapp-final.vercel.app/auth/signup" />
       </Helmet>
 
-      {/* Minimal top navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+      {/* Minimal per-page header */}
+      <header className="w-full border-b border-neutral-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
+        <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <Logo size="small" showText={true} />
         </Link>
@@ -110,10 +111,10 @@ const SignUp = () => {
             Salons
           </Link>
         </div>
-      </nav>
+        </div>
+      </header>
 
-      <div className="flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md space-y-6">
+      <main className="mx-auto max-w-md px-4 py-10">
           <Card className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-serif text-center">Join Our Beauty Community</CardTitle>
@@ -211,18 +212,14 @@ const SignUp = () => {
         </CardContent>
       </Card>
 
-      {/* Soft call-to-action link */}
-      <div className="text-center mt-6">
-        <Link 
-          to="/" 
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          Not ready yet? Explore EmviApp →
-        </Link>
-      </div>
+        <p className="mt-5 text-center text-sm text-neutral-600">
+          Not ready yet?{" "}
+          <a href="/" className="font-medium hover:underline underline-offset-4">
+            Explore EmviApp →
+          </a>
+        </p>
+      </main>
     </div>
-  </div>
-</div>
   );
 };
 
