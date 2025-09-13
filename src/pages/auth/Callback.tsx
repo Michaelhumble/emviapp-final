@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { routeByRole } from '@/utils/auth/routeByRole';
 import { isValidRole } from '@/utils/auth/role';
+import { trackSignupCompleted } from '@/lib/analytics/hubspot-simple';
+import { detectProviderFromState } from '@/utils/auth/provider';
+import { getUtmParams } from '@/utils/utm';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -69,6 +72,24 @@ const AuthCallback = () => {
           const qs = isValidRole(prefill) ? `?prefill=${prefill}` : '';
           navigate(`/auth/choose-role${qs}`, { replace: true });
         } else {
+          // Track signup completion with provider detection
+          try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const state = urlParams.get('state');
+            const provider = detectProviderFromState(state) || 'email';
+            
+            trackSignupCompleted({
+              userId: user.id,
+              email: user.email,
+              role: profile.role,
+              method: provider as any,
+              locale: navigator.language,
+              utm: getUtmParams()
+            });
+          } catch (error) {
+            console.warn('Failed to track signup completion:', error);
+          }
+          
           // Valid → route to dashboard by role
           routeByRole(navigate, profile.role);
         }
