@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IS_DEV } from '@/lib/env';
 import App from './App';
 import './index.css';
+import '@/utils/serviceWorkerAuth';
 
 // Global error handler
 window.addEventListener('error', (event) => {

@@ -485,19 +485,147 @@ export class HubSpotCRM {
   }
 
   /**
-   * Submit form using HubSpot Forms API
+   * Track custom events with server fallback
    */
-  public async submitForm(formId: string, fields: Record<string, any>, context?: { pageUrl?: string; pageName?: string }): Promise<{ success: boolean; error?: string }> {
+  public async trackEvent(eventName: string, properties: Record<string, any> = {}): Promise<{ success: boolean; error?: string }> {
     if (!this.shouldLoad()) {
+      console.log('[HS] scriptLoaded=false consent=false');
       return { success: false, error: 'HubSpot not enabled' };
     }
+
+    console.log(`[HS] portalId=${this.portalId} scriptLoaded=${this.isLoaded} consent=true`);
+
+    try {
+      // Try client-side tracking first
+      if (window._hsq) {
+        const attribution = this.getAttribution();
+        window._hsq.push(['track', eventName, {
+          ...properties,
+          ...attribution
+        }]);
+        console.log('HubSpot: Event tracked client-side', eventName);
+        return { success: true };
+      }
+      
+      throw new Error('HubSpot script not loaded');
+    } catch (error) {
+      console.warn('HubSpot: Client tracking failed, trying server fallback', error);
+      
+      // Server fallback
+      try {
+        const { trackEventServerSide } = await import('@/utils/hubspot-server');
+        const result = await trackEventServerSide({
+          eventName,
+          properties,
+          consent: true
+        });
+        
+        if (result.ok) {
+          console.log('HubSpot: Server fallback successful for event', eventName);
+          return { success: true };
+        } else {
+          return { success: false, error: result.error };
+        }
+      } catch (fallbackError) {
+        console.error('HubSpot: Server fallback failed', fallbackError);
+        return { success: false, error: fallbackError.message };
+      }
+    }
+  }
+
+  /**
+   * Track signup completion with integrated analytics
+   */
+  public async trackSignupCompleted(data: {
+    userId?: string;
+    email?: string;
+    role?: string;
+    method?: 'google' | 'facebook' | 'email';
+    locale?: string;
+    utm?: Record<string, string>;
+  }): Promise<void> {
+    console.log('[HS] signup_completed tracking initiated', { 
+      method: data.method, 
+      role: data.role,
+      hasConsent: this.shouldLoad() 
+    });
+
+    try {
+      await this.trackEvent('signup_completed', {
+        user_id: data.userId,
+        email: data.email,
+        role: data.role,
+        method: data.method,
+        locale: data.locale,
+        ...data.utm
+      });
+    } catch (error) {
+      console.error('HubSpot: Failed to track signup completion', error);
+    }
+  }
+
+  /**
+   * Track role selection with integrated analytics
+   */
+  public async trackRoleSelected(data: {
+    userId?: string;
+    role?: string;
+  }): Promise<void> {
+    console.log('[AUTH] role_selected tracking initiated', { 
+      role: data.role,
+      hasConsent: this.shouldLoad() 
+    });
+
+    try {
+      await this.trackEvent('role_selected', {
+        user_id: data.userId,
+        role: data.role
+      });
+    } catch (error) {
+      console.error('HubSpot: Failed to track role selection', error);
+  }
+
+  /**
+   * Track page view with attribution data
+   */
+  public trackPageView(path?: string): void {
+    if (!this.isInitialized || !window._hsq) return;
 
     try {
       const attribution = this.getAttribution();
       
-      const payload = {
-        formId,
-        fields: {
+      window._hsq.push(['trackPageView', {
+        path: path || window.location.pathname,
+        ...attribution
+      }]);
+      
+      console.log('HubSpot: Page view tracked', path || window.location.pathname);
+    } catch (error) {
+      console.warn('HubSpot: Page tracking failed', error);
+    }
+  }
+
+  /**
+   * Identify contact (for lead attribution)
+   */
+  public identifyContact(email: string, properties: Record<string, any> = {}): void {
+    if (!this.isInitialized || !window._hsq) return;
+    if (this.identifiedUsers.has(email)) return; // Avoid duplicate identification
+
+    try {
+      const attribution = this.getAttribution();
+      
+      window._hsq.push(['identify', {
+        email,
+        ...properties,
+        ...attribution
+      }]);
+      
+      this.identifiedUsers.add(email);
+      console.log('HubSpot: Contact identified', email);
+    } catch (error) {
+      console.warn('HubSpot: Contact identification failed', error);
+    }
           ...fields,
           ...attribution
         },

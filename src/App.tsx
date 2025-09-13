@@ -2,6 +2,7 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
+import { AuthGuard } from '@/middleware/auth';
 import { BookingNotificationProvider } from '@/components/notifications/BookingNotificationProvider';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
