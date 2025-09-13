@@ -50,14 +50,14 @@ export const ROLE_DASHBOARD_MAP: Record<UserRole, string> = {
  */
 export const getDashboardRoute = (role: UserRole | null | undefined): string => {
   if (!role) {
-    console.warn('🚨 No role provided - redirecting to onboarding');
-    return DASHBOARD_ROUTES.ONBOARDING;
+    console.warn('🚨 No role provided - redirecting to role selection');
+    return '/auth/choose-role';
   }
 
   const route = ROLE_DASHBOARD_MAP[role];
   if (!route) {
-    console.warn(`🚨 Unknown role "${role}" - using default dashboard`);
-    return DASHBOARD_ROUTES.DEFAULT;
+    console.warn(`🚨 Unknown role "${role}" - redirecting to role selection`);
+    return '/auth/choose-role';
   }
 
   console.log(`✅ Role "${role}" → Dashboard "${route}"`);
@@ -84,7 +84,13 @@ export const navigateToRoleDashboard = (
 ): void => {
   const route = getDashboardRoute(role);
   console.log(`🚀 Navigating to: ${route}`);
-  navigate(route);
+  
+  // Only navigate to dashboards if role is valid, otherwise redirect to role selection
+  if (route.startsWith('/dashboard')) {
+    navigate(route);
+  } else {
+    navigate(route); // This will be /auth/choose-role for invalid roles
+  }
 };
 
 /**

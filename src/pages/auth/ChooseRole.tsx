@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { routeByRole } from '@/utils/auth/routeByRole';
+import { ALLOWED_ROLES, AllowedRole, isValidRole } from '@/utils/auth/role';
 
 const ROLE_CARDS: Array<{
-  key: 'artist'|'salon_owner'|'freelancer'|'customer';
+  key: AllowedRole;
   title: string;
   benefits: string;
 }> = [
@@ -20,8 +21,17 @@ const ROLE_CARDS: Array<{
 
 const ChooseRolePage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState<'artist'|'salon_owner'|'freelancer'|'customer' | null>(null);
+  const [searchParams] = useSearchParams();
+  const [selectedRole, setSelectedRole] = useState<AllowedRole | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Check for prefill parameter and set initial selection
+  useEffect(() => {
+    const prefill = searchParams.get('prefill');
+    if (isValidRole(prefill)) {
+      setSelectedRole(prefill);
+    }
+  }, [searchParams]);
 
   const handleRoleSelection = async () => {
     if (!selectedRole) {

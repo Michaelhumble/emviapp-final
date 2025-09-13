@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { routeByRole } from '@/utils/auth/routeByRole';
+import { isValidRole } from '@/utils/auth/role';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Break out of iframe first
+        // Break out of iframe first (Lovable preview)
         if (typeof window !== 'undefined' && window !== window.top) {
           window.top!.location.href = window.location.href;
           return;
@@ -21,30 +22,24 @@ const AuthCallback = () => {
         
         if (userError || !user) {
           console.error('No user found after OAuth callback');
-          navigate('/signin', { replace: true });
+          navigate('/auth/signin', { replace: true });
           return;
         }
 
-        // Upsert profile so email & OAuth behave the same way
+        // Normalize profile: ensure row exists (id = user.id)
         const { error: upsertError } = await supabase
           .from('profiles')
           .upsert({ 
             id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || user.user_metadata?.name,
-            // Include role from OAuth user metadata if available
-            role: user.user_metadata?.role || null
-          }, { 
-            onConflict: 'id',
-            ignoreDuplicates: false 
-          });
+            full_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User'
+          }, { onConflict: 'id' });
 
         if (upsertError) {
           console.error('Profile upsert error:', upsertError);
           // Continue anyway - profile might already exist
         }
 
-        // Fetch user's role from profiles
+        // Read role from profiles (NOT from metadata)
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
@@ -54,21 +49,33 @@ const AuthCallback = () => {
         if (profileError && profileError.code !== 'PGRST116') {
           console.error('Profile fetch error:', profileError);
           toast.error('Failed to load profile');
-          navigate('/signin', { replace: true });
+          navigate('/auth/signin', { replace: true });
           return;
         }
 
-        if (!profile?.role) {
-          // No role set, redirect to choose role
-          navigate('/auth/choose-role', { replace: true });
+        // Optional debug logging
+        const isDebugMode = new URLSearchParams(window.location.search).get('debug') === 'role';
+        if (isDebugMode) {
+          console.log('🔍 Auth Debug:', {
+            userId: user.id,
+            fetchedRole: profile?.role,
+            isValidRole: isValidRole(profile?.role)
+          });
+        }
+
+        if (!isValidRole(profile?.role)) {
+          // No role or invalid → must choose
+          const prefill = new URLSearchParams(window.location.search).get('hintRole') ?? '';
+          const qs = isValidRole(prefill) ? `?prefill=${prefill}` : '';
+          navigate(`/auth/choose-role${qs}`, { replace: true });
         } else {
-          // Has role, route to correct dashboard
+          // Valid → route to dashboard by role
           routeByRole(navigate, profile.role);
         }
       } catch (error) {
         console.error('Auth callback error:', error);
         toast.error('Authentication error occurred');
-        navigate('/signin', { replace: true });
+        navigate('/auth/signin', { replace: true });
       }
     };
 

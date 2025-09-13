@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { isValidRole } from '@/utils/auth/role';
 
 // Dashboard route protection middleware
 export const checkDashboardAccess = async (pathname: string) => {
@@ -14,18 +15,18 @@ export const checkDashboardAccess = async (pathname: string) => {
     if (userError || !user) {
       return { 
         allowed: false, 
-        redirectTo: '/signin' 
+        redirectTo: '/auth/signin' 
       };
     }
 
-    // Check if user has a role
+    // Check if user has a valid role
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile?.role) {
+    if (profileError || !isValidRole(profile?.role)) {
       return { 
         allowed: false, 
         redirectTo: '/auth/choose-role' 
