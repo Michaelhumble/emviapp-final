@@ -1,8 +1,14 @@
+import { getBaseUrl } from '../getBaseUrl';
+
 export function getAuthCallbackUrl() {
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  // Fallbacks to avoid localhost in prod builds:
-  const safeOrigin = origin && !/localhost(:\d+)?$/i.test(origin)
-    ? origin
-    : (import.meta.env.VITE_PUBLIC_SITE_URL || 'https://emviapp-final.vercel.app');
-  return `${safeOrigin}/auth/callback`;
+  // Use the existing base URL utility for consistent URL handling
+  const baseUrl = getBaseUrl();
+  const callbackUrl = `${baseUrl}/auth/callback`;
+  
+  // Log once for debugging (only in development)
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.search.includes('debug=true'))) {
+    console.info(`🔗 Auth callbacks → ${callbackUrl}`);
+  }
+  
+  return callbackUrl;
 }
