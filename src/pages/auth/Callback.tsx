@@ -16,18 +16,23 @@ const AuthCallback = () => {
       try {
         // Break out of iframe first (Lovable preview)
         if (typeof window !== 'undefined' && window !== window.top) {
+          console.info('[AUTH] callback: iframe breakout detected, redirecting parent');
           window.top!.location.href = window.location.href;
           return;
         }
+
+        console.info('[AUTH] callback: processing auth callback, redirectTo=' + window.location.origin + '/auth/callback');
 
         // Get current user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
-          console.error('No user found after OAuth callback');
+          console.error('[AUTH] callback: no user found after callback, error:', userError);
           navigate('/auth/signin', { replace: true });
           return;
         }
+
+        console.info('[AUTH] callback: user authenticated, user.id=' + user.id);
 
         // Normalize profile: ensure row exists (id = user.id)
         const { error: upsertError } = await supabase
@@ -48,6 +53,8 @@ const AuthCallback = () => {
           .select('role')
           .eq('id', user.id)
           .single();
+
+        console.info('[AUTH] profile: exists=' + (profile ? 'true' : 'false') + ' role=' + (profile?.role || 'null'));
 
         if (profileError && profileError.code !== 'PGRST116') {
           console.error('Profile fetch error:', profileError);
@@ -70,6 +77,7 @@ const AuthCallback = () => {
           // No role or invalid → must choose
           const prefill = new URLSearchParams(window.location.search).get('hintRole') ?? '';
           const qs = isValidRole(prefill) ? `?prefill=${prefill}` : '';
+          console.info('[AUTH] decision: next=/auth/choose-role (no valid role)');
           navigate(`/auth/choose-role${qs}`, { replace: true });
         } else {
           // Track signup completion with provider detection
@@ -77,6 +85,9 @@ const AuthCallback = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const state = urlParams.get('state');
             const provider = detectProviderFromState(state) || 'email';
+            const stateVerified = !!detectProviderFromState(state);
+            
+            console.info('[OAUTH] provider=' + provider + ' stateVerified=' + stateVerified);
             
             trackSignupCompleted({
               userId: user.id,
@@ -90,6 +101,7 @@ const AuthCallback = () => {
             console.warn('Failed to track signup completion:', error);
           }
           
+          console.info('[AUTH] decision: next=/dashboard/' + profile.role + ' (valid role)');
           // Valid → route to dashboard by role
           routeByRole(navigate, profile.role);
         }

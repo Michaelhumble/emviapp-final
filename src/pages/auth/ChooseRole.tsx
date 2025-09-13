@@ -56,8 +56,10 @@ const ChooseRolePage: React.FC = () => {
 
       if (updateError) throw updateError;
       
+      console.info('[AUTH] role_selected: user.id=' + user.id + ' role=' + selectedRole);
       toast.success('Role saved. Welcome to EmviApp!');
       
+      console.info('[AUTH] decision: next=/dashboard/' + selectedRole + ' (role selected)');
       // Route by role using utility function
       routeByRole(navigate, selectedRole);
     } catch (e: any) {
