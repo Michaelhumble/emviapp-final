@@ -21,6 +21,13 @@ export class PWAManager {
 
   // Initialize PWA features
   async init(): Promise<void> {
+    // Skip PWA initialization on auth pages to prevent cache issues
+    const isAuthPath = window.location.pathname.startsWith('/auth/');
+    if (isAuthPath) {
+      console.log('Skipping PWA init on auth page');
+      return;
+    }
+
     if (window.isSecureContext && 'serviceWorker' in navigator) {
       try {
         this.registration = await navigator.serviceWorker.register('/sw.js', {

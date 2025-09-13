@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import { signInWithGoogle, signInWithFacebook } from "@/services/auth";
 import { toast } from "sonner";
 import React from "react";
-import { getAuthCallbackUrl } from "@/utils/getBaseUrl";
+import { getAuthCallbackUrl } from "@/utils/auth/getAuthCallbackUrl";
 import { validateAuthProvider, getProviderErrorMessage } from "@/utils/authConfig";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ENV, mask } from "@/config/env";
@@ -15,13 +15,16 @@ interface SocialAuthButtonsProps {
   mode: "signin" | "signup";
   onPhoneClick: () => void;
   showDiagnostics?: boolean;
+  selectedRole?: string;
 }
 
-export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPhoneClick, showDiagnostics = false }) => {
+export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPhoneClick, showDiagnostics = false, selectedRole }) => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
-  const redirectTo = getAuthCallbackUrl(`/auth/callback${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`);
+  const redirectTo = getAuthCallbackUrl();
+  
+  console.info('OAuth redirectTo =', redirectTo);
   
   // Use centralized environment configuration
   const { GOOGLE_ENABLED, GOOGLE_CLIENT_ID } = ENV;
@@ -48,7 +51,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
       console.log('🔧 [GOOGLE AUTH] Button clicked, initiating OAuth flow...');
       toast.loading('Redirecting to Google...', { id: 'google-auth' });
       
-      const result = await signInWithGoogle(redirectTo);
+      const result = await signInWithGoogle(redirectTo, selectedRole);
       
       if (!result.success) {
         toast.dismiss('google-auth');
@@ -86,7 +89,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
       console.log('🔧 [FACEBOOK AUTH] Button clicked, initiating OAuth flow...');
       toast.loading('Redirecting to Facebook...', { id: 'facebook-auth' });
       
-      const result = await signInWithFacebook(redirectTo);
+      const result = await signInWithFacebook(redirectTo, selectedRole);
       
       if (!result.success) {
         toast.dismiss('facebook-auth');

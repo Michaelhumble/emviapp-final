@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateUserRole } from '@/services/profile';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { routeByRole } from '@/utils/auth/routeByRole';
 
 const ROLE_CARDS: Array<{
-  key: 'artist'|'salon'|'freelancer'|'customer';
+  key: 'artist'|'salon_owner'|'freelancer'|'customer';
   title: string;
   benefits: string;
 }> = [
   { key: 'customer', title: 'Customer', benefits: 'Discover top pros and book services.' },
   { key: 'artist', title: 'Artist', benefits: 'Showcase work, get booked, grow your brand.' },
-  { key: 'salon', title: 'Salon Owner', benefits: 'Manage team, bookings, and salon growth.' },
+  { key: 'salon_owner', title: 'Salon Owner', benefits: 'Manage team, bookings, and salon growth.' },
   { key: 'freelancer', title: 'Freelancer', benefits: 'Flexible gigs and client discovery.' },
 ];
 
 const ChooseRolePage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState<'artist'|'salon'|'freelancer'|'customer' | null>(null);
+  const [selectedRole, setSelectedRole] = useState<'artist'|'salon_owner'|'freelancer'|'customer' | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleRoleSelection = async () => {
@@ -30,36 +31,30 @@ const ChooseRolePage: React.FC = () => {
 
     try {
       setLoading(true);
-      const { error } = await updateUserRole(selectedRole === 'salon' ? 'salon_owner' as any : selectedRole);
-      if (error) throw error;
+      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('No authenticated user found');
+      }
+
+      // Update user's role in profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ role: selectedRole })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
       
       toast.success('Role saved. Welcome to EmviApp!');
       
-      // Route by role
-      routeByRole(selectedRole === 'salon' ? 'salon_owner' : selectedRole);
+      // Route by role using utility function
+      routeByRole(navigate, selectedRole);
     } catch (e: any) {
       console.error('Failed to set role', e);
       toast.error(e?.message || 'Could not save role. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const routeByRole = (role: string) => {
-    switch (role) {
-      case 'salon_owner':
-        navigate('/dashboard/salon');
-        break;
-      case 'artist':
-        navigate('/dashboard/profile');
-        break;
-      case 'freelancer':
-        navigate('/dashboard/profile');
-        break;
-      case 'customer':
-      default:
-        navigate('/');
-        break;
     }
   };
 
@@ -79,16 +74,22 @@ const ChooseRolePage: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             {ROLE_CARDS.map(({ key, title, benefits }) => (
-              <button
+              <label
                 key={key}
-                onClick={() => setSelectedRole(key)}
-                className={`group relative rounded-xl border p-6 text-left transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                className={`group relative rounded-xl border p-6 text-left transition cursor-pointer ${
                   selectedRole === key 
                     ? 'ring-2 ring-indigo-500 border-indigo-500 bg-indigo-50' 
                     : 'border-gray-200 hover:border-indigo-300'
                 }`}
-                aria-label={`Choose ${title}`}
               >
+                <input
+                  type="radio"
+                  name="role"
+                  value={key}
+                  checked={selectedRole === key}
+                  onChange={() => setSelectedRole(key)}
+                  className="sr-only"
+                />
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-medium">{title}</h3>
@@ -98,7 +99,7 @@ const ChooseRolePage: React.FC = () => {
                     →
                   </span>
                 </div>
-              </button>
+              </label>
             ))}
           </div>
           

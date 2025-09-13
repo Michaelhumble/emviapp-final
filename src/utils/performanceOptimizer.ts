@@ -189,6 +189,22 @@ export const optimizeFontLoading = () => {
  * Service Worker for Caching - Only on HTTPS
  */
 export const registerServiceWorker = async () => {
+  // Skip service worker registration on auth pages to prevent cache issues
+  const isAuthPath = window.location.pathname.startsWith('/auth/');
+  if (isAuthPath) {
+    console.log('Skipping SW registration on auth page');
+    // Ensure any old SW is removed on auth pages
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations?.().then(registrations => 
+        registrations.forEach(registration => registration.unregister())
+      );
+      if ('caches' in window) {
+        caches.keys?.().then(keys => keys.forEach(key => caches.delete(key)));
+      }
+    }
+    return;
+  }
+
   // Only register on secure contexts (HTTPS) for PWA compatibility
   if ('serviceWorker' in navigator && window.isSecureContext && process.env.NODE_ENV === 'production') {
     try {

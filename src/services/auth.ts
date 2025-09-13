@@ -63,13 +63,14 @@ export async function signOut() {
 }
 
 // OAuth providers
-export async function signInWithGoogle(redirectTo?: string) {
+export async function signInWithGoogle(redirectTo?: string, selectedRole?: string) {
   try {
     const target = redirectTo || getAuthCallbackUrl('/auth/callback');
     console.group('🔧 [GOOGLE AUTH] Starting OAuth Flow');
     console.log('Redirect target:', target);
     console.log('Current origin:', window.location.origin);
     console.log('Auth callbacks →', target);
+    console.log('Selected role:', selectedRole);
     console.groupEnd();
     
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -79,7 +80,11 @@ export async function signInWithGoogle(redirectTo?: string) {
         queryParams: {
           access_type: 'offline',
           prompt: 'consent'
-        }
+        },
+        // Include role in user metadata if provided
+        ...(selectedRole && {
+          data: { role: selectedRole }
+        })
       }
     });
     
@@ -115,13 +120,14 @@ export async function signInWithGoogle(redirectTo?: string) {
 }
 
 // Facebook OAuth
-export async function signInWithFacebook(redirectTo?: string) {
+export async function signInWithFacebook(redirectTo?: string, selectedRole?: string) {
   try {
     const target = redirectTo || getAuthCallbackUrl('/auth/callback');
     console.group('🔧 [FACEBOOK AUTH] Starting OAuth Flow');
     console.log('Redirect target:', target);
     console.log('Current origin:', window.location.origin);
     console.log('Auth callbacks →', target);
+    console.log('Selected role:', selectedRole);
     console.groupEnd();
     
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -130,7 +136,11 @@ export async function signInWithFacebook(redirectTo?: string) {
         redirectTo: target,
         queryParams: {
           scope: 'email'
-        }
+        },
+        // Include role in user metadata if provided
+        ...(selectedRole && {
+          data: { role: selectedRole }
+        })
       }
     });
     
