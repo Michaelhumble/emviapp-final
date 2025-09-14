@@ -84,6 +84,7 @@ const BiQuyetTuyenThoNailGioiNhanh = lazy(() => import('@/pages/blog/bi-quyet-tu
 const EmviAppCongDongNguoiVietNganhNail = lazy(() => import('@/pages/blog/emviapp-cong-dong-nguoi-viet-nganh-nail'));
 
 // Latest SEO Articles (2025)
+const LosAngelesNailSalonGuide = lazy(() => import('@/pages/blog/articles/LosAngelesNailSalonGuide'));
 const NailSalonHiringCrisis2025 = lazy(() => import('@/pages/blog/nail-salon-hiring-crisis-2025'));
 const TopCitiesNailTechnicians2025 = lazy(() => import('@/pages/blog/top-10-cities-nail-technicians-2025'));
 const SalonOwnersAttractHireKeepArtists = lazy(() => import('@/pages/blog/salon-owners-attract-hire-keep-artists'));
@@ -92,6 +93,25 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
+  // PINNED - Los Angeles Nail Salon Guide (2025-09-14)
+  {
+    id: 'los-angeles-nail-salon-guide-2025',
+    slug: 'los-angeles-nail-salon-guide',
+    title: 'Los Angeles Nail Salon Guide 2025: Prices, Hygiene & How to Choose',
+    description: 'A practical LA nail guide—prices by service, hygiene standards, red flags, and how to pick the right nail salon in Los Angeles.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-09-14',
+    readTime: '8 min read',
+    category: 'Salon Guide',
+    categorySlug: 'salon-guide',
+    tags: ['nails', 'salon guide', 'Los Angeles', 'USA'],
+    image: nailCareSecretsImage,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: LosAngelesNailSalonGuide,
+    url: '/blog/salon-guide/los-angeles-nail-salon-guide'
+  },
   // Vietnamese Blog Articles - NEWEST FIRST (January 23, 2025)
   {
     id: 'tim-viec-nail-california-bi-quyet-nguoi-viet',
