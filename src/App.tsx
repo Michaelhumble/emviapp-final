@@ -77,6 +77,7 @@ const FreelancerProfile = lazy(() => import("@/pages/FreelancerProfile"));
 const NailJobSuccessPage = lazy(() => import("@/pages/nails-job-success"));
 const ManageBooking = lazy(() => import("@/pages/ManageBooking"));
 const SalonSuccessPage = lazy(() => import("@/pages/salon-success"));
+const AdminAgentConsole = lazy(() => import("@/pages/admin/agent"));
 
 // Blog Pages
 const BlogIndex = lazy(() => import("@/pages/blog/BlogIndex"));
@@ -311,6 +312,7 @@ function App() {
                      <Route path="/refund" element={<Layout><Refund /></Layout>} />
                      <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                      <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                     <Route path="/admin/agent" element={<Suspense fallback={<SimpleLoadingFallback />}><AdminAgentConsole /></Suspense>} />
                     
                      {/* Homepage route - critical performance optimization */}
                       {/* Affiliate Program Routes */}
