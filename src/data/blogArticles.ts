@@ -21,6 +21,12 @@ import beautyIndustryMissingPieceImage from '@/assets/blog/beauty-industry-missi
 import beautyTechRevolutionHeroImage from '@/assets/blog/beauty-tech-revolution-hero.jpg';
 import globalBeautyCommunityHeroImage from '@/assets/blog/global-beauty-community-hero.jpg';
 import heroImage from '@/assets/blog/emviapp-hero-vietnamese-nail-tech.jpg';
+// New 2025 SEO Article Images
+import becomeLashArtist2025Hero from '@/assets/blog/become-lash-artist-2025-hero.jpg';
+import salonSocialMarketing2025Hero from '@/assets/blog/salon-social-marketing-2025-hero.jpg';
+import beautyJobsUSA2025Hero from '@/assets/blog/beauty-jobs-usa-2025-hero.jpg';
+import weddingBeautyChecklist2025Hero from '@/assets/blog/wedding-beauty-checklist-2025-hero.jpg';
+import laNailSalonGuide2025Hero from '@/assets/blog/la-nail-salon-guide-2025-hero.jpg';
 
 export interface BlogArticle {
   id: string;
@@ -85,6 +91,10 @@ const EmviAppCongDongNguoiVietNganhNail = lazy(() => import('@/pages/blog/emviap
 
 // Latest SEO Articles (2025)
 const LosAngelesNailSalonGuide = lazy(() => import('@/pages/blog/articles/LosAngelesNailSalonGuide'));
+const BecomeLashArtist2025 = lazy(() => import('@/pages/blog/articles/BecomeLashArtist2025'));
+const SalonSocialMarketing2025 = lazy(() => import('@/pages/blog/articles/SalonSocialMarketing2025'));
+const BeautyJobsUSA2025 = lazy(() => import('@/pages/blog/articles/BeautyJobsUSA2025'));
+const WeddingBeautyChecklist2025 = lazy(() => import('@/pages/blog/articles/WeddingBeautyChecklist2025'));
 const NailSalonHiringCrisis2025 = lazy(() => import('@/pages/blog/nail-salon-hiring-crisis-2025'));
 const TopCitiesNailTechnicians2025 = lazy(() => import('@/pages/blog/top-10-cities-nail-technicians-2025'));
 const SalonOwnersAttractHireKeepArtists = lazy(() => import('@/pages/blog/salon-owners-attract-hire-keep-artists'));
@@ -93,7 +103,7 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  // PINNED - Los Angeles Nail Salon Guide (2025-09-14)
+  // PINNED ARTICLES - 2025 SEO Content (Always show first)
   {
     id: 'los-angeles-nail-salon-guide-2025',
     slug: 'los-angeles-nail-salon-guide',
@@ -105,12 +115,84 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Salon Guide',
     categorySlug: 'salon-guide',
     tags: ['nails', 'salon guide', 'Los Angeles', 'USA'],
-    image: nailCareSecretsImage,
+    image: laNailSalonGuide2025Hero,
     featured: true,
     trending: true,
     pinned: true,
     component: LosAngelesNailSalonGuide,
     url: '/blog/salon-guide/los-angeles-nail-salon-guide'
+  },
+  {
+    id: 'become-lash-artist-2025',
+    slug: 'become-lash-artist-2025',
+    title: 'How to Become a Lash Artist in 2025: Skills, Certificate, Kit & Income',
+    description: 'Complete guide to starting your lash artist career - training, certification, starter kit essentials, and realistic income expectations for 2025.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-09-14',
+    readTime: '10 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['lash artist', 'certification', 'beauty career', 'training'],
+    image: becomeLashArtist2025Hero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: BecomeLashArtist2025,
+    url: '/blog/career-guide/become-lash-artist-2025'
+  },
+  {
+    id: 'salon-marketing-facebook-instagram-2025',
+    slug: 'salon-marketing-facebook-instagram',
+    title: 'Salon Marketing on Facebook & Instagram: A 90-Day Playbook (+100 Post Ideas)',
+    description: 'Complete social media marketing strategy for salons. 90-day content calendar, proven post ideas, and booking-focused campaigns that convert followers to clients.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-09-14',
+    readTime: '12 min read',
+    category: 'Marketing',
+    categorySlug: 'marketing',
+    tags: ['salon marketing', 'social media', 'instagram', 'facebook'],
+    image: salonSocialMarketing2025Hero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: SalonSocialMarketing2025,
+    url: '/blog/marketing/salon-marketing-facebook-instagram'
+  },
+  {
+    id: 'beauty-jobs-usa-2025',
+    slug: 'beauty-jobs-usa-2025',
+    title: 'Beauty Jobs USA 2025: Salaries, Demand & Where to Apply',
+    description: 'Complete guide to beauty industry careers in America. Salary ranges, top hiring markets, application strategies, and insider tips for landing your dream beauty job.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-09-14',
+    readTime: '11 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['beauty jobs', 'career guide', 'USA', 'salary'],
+    image: beautyJobsUSA2025Hero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: BeautyJobsUSA2025,
+    url: '/blog/career-guide/beauty-jobs-usa-2025'
+  },
+  {
+    id: 'wedding-hair-makeup-checklist-2025',
+    slug: 'wedding-hair-makeup-checklist',
+    title: 'Wedding Hair & Makeup Checklist 2025: Timeline, Lookbook & Budget Guide',
+    description: 'Complete wedding beauty planning guide. 6-month timeline, trial tips, budget breakdown, and coordination strategies for your perfect wedding day look.',
+    author: 'EmviApp Editorial',
+    publishedAt: '2025-09-14',
+    readTime: '13 min read',
+    category: 'Wedding Guide',
+    categorySlug: 'wedding-guide',
+    tags: ['wedding makeup', 'bridal hair', 'wedding planning', 'beauty timeline'],
+    image: weddingBeautyChecklist2025Hero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: WeddingBeautyChecklist2025,
+    url: '/blog/wedding-guide/wedding-hair-makeup-checklist'
   },
   // Vietnamese Blog Articles - NEWEST FIRST (January 23, 2025)
   {
