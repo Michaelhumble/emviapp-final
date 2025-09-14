@@ -36,6 +36,7 @@ export interface BlogArticle {
   image: string;
   featured?: boolean;
   trending?: boolean;
+  pinned?: boolean;
   component: React.LazyExoticComponent<React.ComponentType<any>>;
   url: string;
 }

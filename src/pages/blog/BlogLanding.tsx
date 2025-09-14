@@ -24,9 +24,12 @@ const BlogLanding = () => {
 
   const featuredArticles = getFeaturedArticles();
   const trendingArticles = getTrendingArticles();
-  const recentArticles = getRecentArticles().sort((a, b) => 
-    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  ); // Sort by newest first
+  const recentArticles = getRecentArticles().sort((a, b) => {
+    // First sort by pinned status, then by date
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+  });
   const dynamicCategories = getAllCategories();
   const allTags = getAllTags();
   
