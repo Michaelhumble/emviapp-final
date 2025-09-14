@@ -14,11 +14,12 @@ import { ENV, mask } from "@/config/env";
 interface SocialAuthButtonsProps {
   mode: "signin" | "signup";
   onPhoneClick: () => void;
+  variant?: "full" | "compact";
   showDiagnostics?: boolean;
   selectedRole?: string;
 }
 
-export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPhoneClick, showDiagnostics = false, selectedRole }) => {
+export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPhoneClick, variant = "full", showDiagnostics = false, selectedRole }) => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectParam = params.get("redirect");
@@ -144,13 +145,13 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
 
 
   return (
-    <div className="mt-6">
-      <div className="relative my-6">
+    <div className={variant === "compact" ? "mt-4" : "mt-6"}>
+      <div className={variant === "compact" ? "relative my-4" : "relative my-6"}>
         <div className="absolute inset-0 border-t border-neutral-200" />
         <div className="relative mx-auto -mt-3 w-fit bg-white px-2 text-xs text-neutral-500">OR</div>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className={`flex flex-col ${variant === "compact" ? "gap-3" : "gap-3"}`}>
         {/* Google */}
         {googleEnabled && (
           <button

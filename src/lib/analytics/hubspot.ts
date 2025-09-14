@@ -583,6 +583,7 @@ export class HubSpotCRM {
       });
     } catch (error) {
       console.error('HubSpot: Failed to track role selection', error);
+    }
   }
 
   /**
@@ -623,9 +624,11 @@ export class HubSpotCRM {
       
       this.identifiedUsers.add(email);
       console.log('HubSpot: Contact identified', email);
-    } catch (error) {
+     } catch (error) {
       console.warn('HubSpot: Contact identification failed', error);
     }
+  }
+
   /**
    * Submit HubSpot form via server function
    */

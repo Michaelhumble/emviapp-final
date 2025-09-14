@@ -28,11 +28,15 @@ const SignIn = () => {
         <div className="flex justify-center mb-6">
           <Logo size="large" showText={true} />
         </div>
-        <AuthConfigStatus />
-        <SocialAuthButtons mode="signin" onPhoneClick={() => setPhoneDialogOpen(true)} />
-        <Separator className="my-4" />
-        <PhoneOtpDialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen} />
         <SignInForm redirectUrl={redirectUrl} />
+        <SocialAuthButtons mode="signin" onPhoneClick={() => setPhoneDialogOpen(true)} variant="compact" showDiagnostics={false} />
+        <PhoneOtpDialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen} />
+        <div className="text-center text-sm mt-4">
+          Don't have an account?{' '}
+          <a href="/auth/signup" className="text-indigo-600 hover:text-indigo-700 underline">
+            Sign up
+          </a>
+        </div>
       </div>
     </div>
   );

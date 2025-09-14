@@ -197,7 +197,7 @@ const SignUp = () => {
             </div>
           </div>
 
-          <SocialAuthButtons mode="signup" onPhoneClick={handlePhoneClick} />
+          <SocialAuthButtons mode="signup" onPhoneClick={handlePhoneClick} variant="full" showDiagnostics={false} />
 
           <div className="text-center text-sm">
             Already have an account?{' '}
