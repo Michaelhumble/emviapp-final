@@ -626,12 +626,29 @@ export class HubSpotCRM {
     } catch (error) {
       console.warn('HubSpot: Contact identification failed', error);
     }
+  /**
+   * Submit HubSpot form via server function
+   */
+  public async submitForm(
+    formId: string,
+    fields: Record<string, any> = {},
+    context?: { pageUrl?: string; pageName?: string }
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!this.shouldLoad()) {
+      return { success: false, error: 'HubSpot not enabled' };
+    }
+
+    try {
+      const attribution = this.getAttribution();
+      const payload = {
+        formId,
+        fields: {
           ...fields,
           ...attribution
         },
         context: {
-          pageUrl: context?.pageUrl || window.location.href,
-          pageName: context?.pageName || document.title,
+          pageUrl: context?.pageUrl || (typeof window !== 'undefined' ? window.location.href : undefined),
+          pageName: context?.pageName || (typeof document !== 'undefined' ? document.title : undefined),
           ...context
         }
       };
@@ -652,29 +669,10 @@ export class HubSpotCRM {
         this.logSyncAttempt('form', 'error', formId, result.error);
         return { success: false, error: result.error };
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logSyncAttempt('form', 'error', formId, error.message);
       console.error('HubSpot: Form submission failed', error);
       return { success: false, error: error.message };
-    }
-  }
-
-  /**
-   * Track page view with attribution data
-   */
-  public trackPageView(path?: string): void {
-    if (!this.isInitialized || !window._hsq) return;
-
-    try {
-      const attribution = this.getAttribution();
-      
-      window._hsq.push(['trackPageView', {
-        path: path || window.location.pathname + window.location.search,
-        referrer: document.referrer || undefined,
-        ...attribution
-      }]);
-    } catch (error) {
-      console.warn('HubSpot: Failed to track page view', error);
     }
   }
 
