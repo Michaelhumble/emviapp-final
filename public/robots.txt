@@ -15,7 +15,5 @@ Allow: /artists
 Allow: /salons
 Allow: /blog
 
-Sitemap: https://www.emvi.app/sitemap.xml
-Sitemap: https://www.emvi.app/sitemaps/news.xml
-Sitemap: https://www.emvi.app/sitemaps/artists.xml
-Sitemap: https://www.emvi.app/sitemaps/jobs.xml
+Sitemap: https://emvi.app/sitemap.xml
+Sitemap: https://emvi.app/rss.xml

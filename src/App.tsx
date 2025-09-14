@@ -85,6 +85,7 @@ const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
 const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 const ViralArticle = lazy(() => import("@/pages/ViralArticle"));
+const HoChiMinhNailSalonGuideRedirect = lazy(() => import("@/pages/blog/ho-chi-minh-nail-salon-guide"));
 
 // New Blog Content Hub Pages
 const HowToFindBestBeautyProfessionals = lazy(() => import("@/pages/blog/how-to-find-the-best-beauty-professionals"));
@@ -382,6 +383,9 @@ function App() {
                      {/* Blog Routes */}
                      <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
                      <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
+                     
+                     {/* Blog Post Redirects */}
+                     <Route path="/blog/ho-chi-minh-nail-salon-guide" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HoChiMinhNailSalonGuideRedirect /></Suspense></Layout>} />
                      
                      {/* New Blog Content Hub Routes */}
                      <Route path="/blog/how-to-find-the-best-beauty-professionals" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HowToFindBestBeautyProfessionals /></Suspense></Layout>} />
