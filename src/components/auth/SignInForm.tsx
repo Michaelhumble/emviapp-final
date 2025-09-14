@@ -38,6 +38,16 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
       if (result?.success) {
         console.log('✅ [SIGN IN FORM] Sign in successful, preparing redirect...');
         
+        // HubSpot tracking for sign-in completion
+        try {
+          const { captureUtms, identifyUser, trackSignInCompleted } = await import('@/lib/analytics/hubspot');
+          const utms = captureUtms();
+          identifyUser({ email, provider: 'email', utms });
+          trackSignInCompleted({ provider: 'email' });
+        } catch (error) {
+          console.warn('HubSpot tracking failed:', error);
+        }
+        
         // Define protected routes that are safe to redirect to
         const protectedRoutes = [
           '/dashboard', '/profile', '/onboarding', '/settings',

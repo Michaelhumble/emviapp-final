@@ -775,6 +775,97 @@ export const getAttribution = () => hubspotCRM.getAttribution();
 export const upsertContact = (email: string, contactData?: Partial<ContactData>) => hubspotCRM.upsertContact(email, contactData);
 export const createOrUpdateDeal = (contactId: string, dealData: DealData) => hubspotCRM.createOrUpdateDeal(contactId, dealData);
 
+// Auth-specific tracking exports (baseline implementation)
+export function captureUtms(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utms: Record<string, string> = {};
+    
+    // Capture UTM parameters
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+    utmKeys.forEach(key => {
+      const value = urlParams.get(key);
+      if (value) utms[key] = value;
+    });
+    
+    // Capture referrer
+    if (document.referrer) {
+      utms.referrer = document.referrer;
+    }
+    
+    // Store in localStorage for session persistence
+    localStorage.setItem('emvi_utms', JSON.stringify(utms));
+    
+    return utms;
+  } catch (error) {
+    console.warn('Failed to capture UTMs:', error);
+    return {};
+  }
+}
+
+export function identifyUser(params: { 
+  email: string; 
+  role?: string; 
+  provider?: string; 
+  utms?: Record<string, string> 
+}): void {
+  try {
+    if (typeof window === 'undefined' || !window._hsq) return;
+    
+    const identifyData = {
+      email: params.email,
+      role: params.role,
+      signup_method: params.provider,
+      ...params.utms
+    };
+    
+    window._hsq.push(['identify', identifyData]);
+    console.log('HubSpot: User identified', { email: params.email, role: params.role, provider: params.provider });
+  } catch (error) {
+    console.warn('HubSpot: Failed to identify user', error);
+  }
+}
+
+export function trackSignupCompleted(params: { 
+  role?: string; 
+  provider?: string 
+}): void {
+  try {
+    if (typeof window === 'undefined' || !window._hsq) return;
+    
+    const eventData = {
+      role: params.role,
+      signup_method: params.provider,
+      timestamp: new Date().toISOString()
+    };
+    
+    window._hsq.push(['trackEvent', 'signup_completed', eventData]);
+    console.log('HubSpot: Signup completed tracked', params);
+  } catch (error) {
+    console.warn('HubSpot: Failed to track signup completion', error);
+  }
+}
+
+export function trackSignInCompleted(params: { 
+  provider?: string 
+}): void {
+  try {
+    if (typeof window === 'undefined' || !window._hsq) return;
+    
+    const eventData = {
+      signin_method: params.provider,
+      timestamp: new Date().toISOString()
+    };
+    
+    window._hsq.push(['trackEvent', 'signin_completed', eventData]);
+    console.log('HubSpot: Sign-in completed tracked', params);
+  } catch (error) {
+    console.warn('HubSpot: Failed to track sign-in completion', error);
+  }
+}
+
 // Legacy analytics functions for backward compatibility
 export const hubspotIdentify = (email: string, userData: Partial<ContactData> = {}) => hubspotCRM.identify(email, userData);
 export const hubspotTrackPageView = (path?: string) => hubspotCRM.trackPageView(path);

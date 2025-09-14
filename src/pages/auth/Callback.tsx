@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { routeByRole } from '@/utils/auth/routeByRole';
 import { isValidRole } from '@/utils/auth/role';
-import { trackSignupCompleted } from '@/lib/analytics/hubspot-simple';
+import { captureUtms, identifyUser, trackSignupCompleted, trackSignInCompleted } from '@/lib/analytics/hubspot';
 import { detectProviderFromState } from '@/utils/auth/provider';
 import { getUtmParams } from '@/utils/utm';
 
@@ -80,7 +80,7 @@ const AuthCallback = () => {
           console.info('[AUTH] decision: next=/auth/choose-role (no valid role)');
           navigate(`/auth/choose-role${qs}`, { replace: true });
         } else {
-          // Track signup completion with provider detection
+          // Track signup/signin completion with provider detection
           try {
             const urlParams = new URLSearchParams(window.location.search);
             const state = urlParams.get('state');
@@ -89,16 +89,23 @@ const AuthCallback = () => {
             
             console.info('[OAUTH] provider=' + provider + ' stateVerified=' + stateVerified);
             
-            trackSignupCompleted({
-              userId: user.id,
-              email: user.email,
-              role: profile.role,
-              method: provider as any,
-              locale: navigator.language,
-              utm: getUtmParams()
+            // Capture UTMs and identify user
+            const utms = captureUtms();
+            identifyUser({ 
+              email: user.email || '', 
+              role: profile.role, 
+              provider, 
+              utms 
+            });
+            
+            // Check if this is a new user (signup) or returning user (signin)
+            // For now, assume OAuth users are new signups unless we can determine otherwise
+            trackSignupCompleted({ 
+              role: profile.role, 
+              provider 
             });
           } catch (error) {
-            console.warn('Failed to track signup completion:', error);
+            console.warn('Failed to track auth completion:', error);
           }
           
           console.info('[AUTH] decision: next=/dashboard/' + profile.role + ' (valid role)');

@@ -53,6 +53,16 @@ const SignUp = () => {
           role: role
         });
 
+        // HubSpot tracking for signup completion
+        try {
+          const { captureUtms, identifyUser, trackSignupCompleted } = await import('@/lib/analytics/hubspot');
+          const utms = captureUtms();
+          identifyUser({ email, role, provider: 'email', utms });
+          trackSignupCompleted({ role, provider: 'email' });
+        } catch (error) {
+          console.warn('HubSpot tracking failed:', error);
+        }
+
         toast.success('Account created successfully!');
         
         // Route directly to correct dashboard
