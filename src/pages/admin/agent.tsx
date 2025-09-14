@@ -25,8 +25,20 @@ export default function AgentConsole() {
     setLoading(true);
     try {
       const res = await fetch("/api/agent/audit");
-      const j = await res.json();
-      setAudit(j);
+      const contentType = res.headers.get("content-type") || "";
+      const text = await res.text();
+      
+      // Check if we're in SPA preview mode (returns HTML instead of JSON)
+      if (!contentType.includes("application/json") || text.toLowerCase().startsWith("<!doctype")) {
+        setAudit({ 
+          ok: false, 
+          isPreviewMode: true,
+          message: "You're in SPA preview so /api routes are disabled. Click Publish and open /api/agent/audit on the deployed site."
+        });
+      } else {
+        const j = JSON.parse(text);
+        setAudit(j);
+      }
     } catch (error) {
       setAudit({ ok: false, error: "Failed to fetch audit" });
     } finally {
@@ -84,14 +96,30 @@ export default function AgentConsole() {
             {loading ? "Running..." : "Run Audit"}
           </button>
         </div>
+        <div>
+          <a 
+            href="/api/agent/audit" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground hover:text-foreground underline"
+          >
+            Open raw audit ↗
+          </a>
+        </div>
       </div>
 
       {audit && (
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Audit Results</label>
-          <pre className="bg-muted border border-border rounded-lg p-3 text-xs overflow-auto text-foreground">
-            {JSON.stringify(audit, null, 2)}
-          </pre>
+          {audit.isPreviewMode ? (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
+              ⚠️ {audit.message}
+            </div>
+          ) : (
+            <pre className="bg-muted border border-border rounded-lg p-3 text-xs overflow-auto text-foreground">
+              {JSON.stringify(audit, null, 2)}
+            </pre>
+          )}
         </div>
       )}
 
