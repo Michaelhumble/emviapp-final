@@ -133,6 +133,7 @@ const EmviAppCongDongNguoiVietNganhNail = lazy(() => import("@/pages/blog/emviap
 const CategoryCityPage = lazy(() => import("@/pages/seo/CategoryCityPage"));
 const CategoryOnlyPage = lazy(() => import("@/pages/seo/CategoryOnlyPage"));
 const CityOnlyPage = lazy(() => import("@/pages/seo/CityOnlyPage"));
+const ProgrammaticLander = lazy(() => import("@/components/seo/ProgrammaticLander"));
 
 // Blog Category Pages - Dynamic
 const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
@@ -289,10 +290,14 @@ function App() {
                     <Route path="/brows-lashes" element={<Layout><BrowsLashesPage /></Layout>} />
                     <Route path="/tattoo" element={<Layout><TattooPage /></Layout>} />
                     
-                       {/* SEO Programmatic Pages */}
-                       <Route path="/seo/:category/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryCityPage /></Suspense></Layout>} />
-                       <Route path="/seo/category/:category" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryOnlyPage /></Suspense></Layout>} />
-                       <Route path="/seo/city/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityOnlyPage /></Suspense></Layout>} />
+                     {/* SEO Programmatic Pages */}
+                        <Route path="/seo/:category/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryCityPage /></Suspense></Layout>} />
+                        <Route path="/seo/category/:category" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryOnlyPage /></Suspense></Layout>} />
+                        <Route path="/seo/city/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityOnlyPage /></Suspense></Layout>} />
+                        
+                        {/* Programmatic Jobs-in and Salons-in Pages */}
+                        <Route path="/jobs-in/:citySlug/:roleSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProgrammaticLander pageType="jobs" /></Suspense></Layout>} />
+                        <Route path="/salons-in/:citySlug/:roleSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProgrammaticLander pageType="salons" /></Suspense></Layout>} />
                        
                        {/* City Landing Pages - Programmatic SEO */}
                        <Route path="/cities/:citySlug/:categorySlug" element={<Layout><CityLandingPage /></Layout>} />
