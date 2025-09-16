@@ -19,6 +19,7 @@ import {
 import { US_BEAUTY_ROLES, type BeautyRole } from '../../../data/roles.us';
 import { US_CITIES, type USCity } from '../../../data/cities.us';
 import { generateSearchUrl } from '@/lib/seo/slug-utils';
+import { buildUTM, trackGA4Event } from '@/lib/seo/utm';
 
 interface ProgrammaticLanderProps {
   roleSlug: string;
@@ -129,6 +130,39 @@ const ProgrammaticLander: React.FC<ProgrammaticLanderProps> = ({
 
   const getSearchUrl = (type: 'jobs' | 'salons' | 'artists') => {
     return generateSearchUrl(type, city, role);
+  };
+
+  const getSignupUrl = (contentType: string = 'cta-hero') => {
+    const qp = new URLSearchParams({
+      role: role.slug,
+      city: city.slug,
+    });
+    qp.append("next", "/");
+    
+    const utm = buildUTM({
+      source: "seo",
+      medium: "organic", 
+      campaign: `${pageType}-in-${city.slug}-${role.slug}`,
+      content: contentType,
+    });
+    
+    return `/auth/signup?${qp.toString()}&${utm}`;
+  };
+
+  const handleSignupClick = (contentType: string = 'cta-hero') => {
+    // Track click event
+    window.dispatchEvent(new CustomEvent("lander_signup_click", {
+      detail: { route: pageType, city: city.slug, role: role.slug }
+    }));
+    
+    // Track GA4 if available
+    trackGA4Event('lander_signup_click', {
+      route_prefix: pageType,
+      city: city.slug,
+      role: role.slug
+    });
+    
+    window.location.href = getSignupUrl(contentType);
   };
 
   const neighborhoods = [
@@ -397,7 +431,7 @@ const ProgrammaticLander: React.FC<ProgrammaticLanderProps> = ({
                     <Button 
                       variant="outline" 
                       className="w-full border-white text-white hover:bg-white hover:text-purple-600"
-                      onClick={() => window.location.href = '/auth/signup'}
+                      onClick={() => handleSignupClick('cta-sidebar')}
                     >
                       <ArrowRight className="h-4 w-4 mr-2" />
                       Join EmviApp — Free
