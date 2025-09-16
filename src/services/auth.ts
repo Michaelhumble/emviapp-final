@@ -62,50 +62,27 @@ export async function signOut() {
   }
 }
 
+function getRedirectTo() {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  return `${origin}/auth/callback`;
+}
+
 // OAuth providers
 export async function signInWithGoogle(redirectTo?: string, selectedRole?: string) {
   try {
-    const target = redirectTo || getAuthCallbackUrl('/auth/callback');
-    console.group('🔧 [GOOGLE AUTH] Starting OAuth Flow');
-    console.log('Redirect target:', target);
-    console.log('Current origin:', window.location.origin);
-    console.log('Auth callbacks →', target);
-    console.log('Selected role:', selectedRole);
-    console.groupEnd();
-    
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { 
-        redirectTo: target,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent'
-        },
-        // Include role in user metadata if provided
-        ...(selectedRole && {
-          data: { role: selectedRole }
-        })
-      }
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getRedirectTo(),
+        // prefer full redirect for iframes/adblock safety
+        queryParams: { prompt: "select_account" },
+        // enable PKCE if your Supabase project supports it (recommended):
+        // @ts-ignore
+        flowType: "pkce"
+      },
     });
     
-    if (error) {
-      console.error('❌ [GOOGLE AUTH] Supabase OAuth error:', error);
-      
-      // More specific error handling for Google OAuth
-      if (error.message?.includes('oauth')) {
-        throw new Error('Google OAuth is not properly configured in Supabase. Please check your Google client credentials in the Supabase dashboard.');
-      }
-      if (error.message?.includes('redirect')) {
-        throw new Error('OAuth redirect URL is not authorized. Please check your Google OAuth redirect URLs in the Supabase dashboard.');
-      }
-      if (error.message?.includes('unauthorized')) {
-        throw new Error('Google OAuth client is not authorized. Please verify your Google Cloud Console configuration.');
-      }
-      throw error;
-    }
-    
-    console.log('✅ [GOOGLE AUTH] OAuth initiated successfully');
-    return { success: true, data };
+    return { success: true };
   } catch (error: any) {
     console.error('❌ [GOOGLE AUTH] Complete error details:', error);
     // Return structured error for better UI handling
@@ -122,46 +99,18 @@ export async function signInWithGoogle(redirectTo?: string, selectedRole?: strin
 // Facebook OAuth
 export async function signInWithFacebook(redirectTo?: string, selectedRole?: string) {
   try {
-    const target = redirectTo || getAuthCallbackUrl('/auth/callback');
-    console.group('🔧 [FACEBOOK AUTH] Starting OAuth Flow');
-    console.log('Redirect target:', target);
-    console.log('Current origin:', window.location.origin);
-    console.log('Auth callbacks →', target);
-    console.log('Selected role:', selectedRole);
-    console.groupEnd();
-    
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: { 
-        redirectTo: target,
-        queryParams: {
-          scope: 'email'
-        },
-        // Include role in user metadata if provided
-        ...(selectedRole && {
-          data: { role: selectedRole }
-        })
-      }
+    await supabase.auth.signInWithOAuth({
+      provider: "facebook",
+      options: {
+        redirectTo: getRedirectTo(),
+        // @ts-ignore
+        preferRedirect: true,
+        // @ts-ignore
+        flowType: "pkce"
+      },
     });
     
-    if (error) {
-      console.error('❌ [FACEBOOK AUTH] Supabase OAuth error:', error);
-      
-      // More specific error handling for Facebook OAuth
-      if (error.message?.includes('oauth')) {
-        throw new Error('Facebook OAuth is not properly configured in Supabase. Please check your Facebook app credentials in the Supabase dashboard.');
-      }
-      if (error.message?.includes('redirect')) {
-        throw new Error('OAuth redirect URL is not authorized. Please check your Facebook OAuth redirect URLs in the Supabase dashboard.');
-      }
-      if (error.message?.includes('unauthorized')) {
-        throw new Error('Facebook OAuth client is not authorized. Please verify your Facebook Developer Console configuration.');
-      }
-      throw error;
-    }
-    
-    console.log('✅ [FACEBOOK AUTH] OAuth initiated successfully');
-    return { success: true, data };
+    return { success: true };
   } catch (error: any) {
     console.error('❌ [FACEBOOK AUTH] Complete error details:', error);
     // Return structured error for better UI handling

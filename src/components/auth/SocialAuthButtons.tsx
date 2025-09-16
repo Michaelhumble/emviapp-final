@@ -52,24 +52,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
       console.log('🔧 [GOOGLE AUTH] Button clicked, initiating OAuth flow...');
       toast.loading('Redirecting to Google...', { id: 'google-auth' });
       
-      // Prepare OAuth state with provider information
-      const stateResponse = await fetch('/functions/v1/auth-prepare-oauth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          role: selectedRole, 
-          provider: 'google' 
-        })
-      });
-      
-      if (!stateResponse.ok) {
-        throw new Error('Failed to prepare OAuth state');
-      }
-      
-      const { state } = await stateResponse.json();
-      const redirectToWithState = `${redirectTo}?state=${encodeURIComponent(state)}`;
-      
-      const result = await signInWithGoogle(redirectToWithState, selectedRole);
+      const result = await signInWithGoogle(undefined, selectedRole);
       
       if (!result.success) {
         toast.dismiss('google-auth');
@@ -107,24 +90,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
       console.log('🔧 [FACEBOOK AUTH] Button clicked, initiating OAuth flow...');
       toast.loading('Redirecting to Facebook...', { id: 'facebook-auth' });
       
-      // Prepare OAuth state with provider information
-      const stateResponse = await fetch('/functions/v1/auth-prepare-oauth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          role: selectedRole, 
-          provider: 'facebook' 
-        })
-      });
-      
-      if (!stateResponse.ok) {
-        throw new Error('Failed to prepare OAuth state');
-      }
-      
-      const { state } = await stateResponse.json();
-      const redirectToWithState = `${redirectTo}?state=${encodeURIComponent(state)}`;
-      
-      const result = await signInWithFacebook(redirectToWithState, selectedRole);
+      const result = await signInWithFacebook(undefined, selectedRole);
       
       if (!result.success) {
         toast.dismiss('facebook-auth');

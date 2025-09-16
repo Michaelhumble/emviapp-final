@@ -48,6 +48,7 @@ const RoleCityPage = lazy(() => import("@/pages/artists/RoleCityPage"));
 const RoleIndexPage = lazy(() => import("@/pages/artists/[role]/index"));
 const CityIndexPage = lazy(() => import("@/pages/artists/cities/[cityState]"));
 const About = lazy(() => import("@/pages/About"));
+const OAuthCallback = lazy(() => import("@/pages/auth/OAuthCallback"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const ThankYou = lazy(() => import("@/pages/ThankYou"));
 const Terms = lazy(() => import("@/pages/Terms"));
@@ -212,14 +213,17 @@ function App() {
                              <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                             <Routes>
                      
-                      {/* Auth routes */}
-                     <Route path="/login" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
-                     <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
-                     <Route path="/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
-                     {/* REMOVED: signup-fast-fomo route - contained popup modals */}
-                     <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
-                     <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
-                     <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />
+                       {/* Auth routes */}
+                      <Route path="/login" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
+                      <Route path="/signin" element={<Suspense fallback={<SimpleLoadingFallback />}><SignIn /></Suspense>} />
+                      <Route path="/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
+                      {/* REMOVED: signup-fast-fomo route - contained popup modals */}
+                      <Route path="/auth" element={<Suspense fallback={<SimpleLoadingFallback />}><AuthPage /></Suspense>} />
+                      <Route path="/auth/signup" element={<Suspense fallback={<SimpleLoadingFallback />}><SignUp /></Suspense>} />
+                      <Route path="/auth/premium-signup" element={<Suspense fallback={<SimpleLoadingFallback />}><PremiumSignupPage /></Suspense>} />
+                      
+                      {/* OAuth callback route */}
+                      <Route path="/auth/callback" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><OAuthCallback /></Suspense></Layout>} />
                      <Route path="/onboarding" element={
                        <ProtectedRoute>
                          <Suspense fallback={<SimpleLoadingFallback />}><Onboarding /></Suspense>
