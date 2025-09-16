@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { US_BEAUTY_ROLES, type BeautyRole } from '../../../data/roles.us';
 import { US_CITIES, type USCity } from '../../../data/cities.us';
+import { generateSearchUrl } from '@/lib/seo/slug-utils';
 
 interface ProgrammaticLanderProps {
   roleSlug: string;
@@ -127,21 +128,7 @@ const ProgrammaticLander: React.FC<ProgrammaticLanderProps> = ({
   const tldrText = `Looking for ${role.label.toLowerCase()} ${pageType} in ${city.city}? EmviApp connects beauty professionals with top opportunities. Average ${role.label.toLowerCase()} salary: $${role.avgSalary.toLocaleString()}/year. ${city.population.toLocaleString()} residents, growing beauty market.`;
 
   const getSearchUrl = (type: 'jobs' | 'salons' | 'artists') => {
-    const baseUrl = `/${type}`;
-    const params = new URLSearchParams();
-    
-    if (type === 'jobs') {
-      params.set('role', roleSlug);
-      params.set('city', citySlug);
-    } else if (type === 'salons') {
-      params.set('service', roleSlug);
-      params.set('city', citySlug);
-    } else if (type === 'artists') {
-      params.set('skill', roleSlug);
-      params.set('city', citySlug);
-    }
-    
-    return `${baseUrl}?${params.toString()}`;
+    return generateSearchUrl(type, city, role);
   };
 
   const neighborhoods = [

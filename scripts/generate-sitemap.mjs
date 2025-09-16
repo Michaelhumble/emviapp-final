@@ -85,6 +85,32 @@ function generateSitemap() {
   </url>`;
   });
 
+  // Add programmatic jobs-in pages
+  const programmaticRoles = ['nails', 'hair-stylist', 'barber', 'lash-artist', 'makeup-artist', 'esthetician'];
+  const programmaticCities = ['los-angeles-ca', 'new-york-ny', 'chicago-il', 'houston-tx', 'phoenix-az'];
+  
+  programmaticCities.forEach(citySlug => {
+    programmaticRoles.forEach(roleSlug => {
+      // Jobs-in pages
+      xml += `
+  <url>
+    <loc>${baseUrl}/jobs-in/${citySlug}/${roleSlug}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+      
+      // Salons-in pages  
+      xml += `
+  <url>
+    <loc>${baseUrl}/salons-in/${citySlug}/${roleSlug}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    });
+  });
+
   xml += `
 </urlset>`;
 
