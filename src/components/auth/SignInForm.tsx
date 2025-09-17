@@ -127,7 +127,9 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-600">
+              Email <span className="sr-only">required</span>
+            </Label>
             <Input
               id="email"
               type="email"
@@ -135,13 +137,16 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
-              className="h-12 px-4"
+              className="h-12 px-4 focus:ring-2 focus:ring-primary focus:ring-offset-2"
               placeholder="your@email.com"
+              aria-invalid={false}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-600">
+              Password <span className="sr-only">required</span>
+            </Label>
             <Input
               id="password"
               type="password"
@@ -149,8 +154,9 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
-              className="h-12 px-4"
+              className="h-12 px-4 focus:ring-2 focus:ring-primary focus:ring-offset-2"
               placeholder="••••••••"
+              aria-invalid={false}
             />
           </div>
         </CardContent>
@@ -158,13 +164,14 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
         <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
           <Button 
             type="submit" 
-            className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-primary focus:ring-offset-2 motion-reduce:transition-none"
             disabled={loading}
+            aria-describedby={loading ? "signin-loading" : undefined}
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing In...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin motion-reduce:animate-none" />
+                <span id="signin-loading">Signing In...</span>
               </>
             ) : (
               "Sign In"

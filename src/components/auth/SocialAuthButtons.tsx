@@ -123,7 +123,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
           <button
             type="button"
             onClick={handleGoogle}
-            className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 active:scale-[0.99]"
+            className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 motion-reduce:transform-none motion-reduce:active:scale-100"
             aria-label="Continue with Google"
           >
             Continue with Google
@@ -135,7 +135,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ mode, onPh
           <button
             type="button"
             onClick={handleFacebook}
-            className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 active:scale-[0.99]"
+            className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 motion-reduce:transform-none motion-reduce:active:scale-100"
             aria-label="Continue with Facebook"
           >
             Continue with Facebook
