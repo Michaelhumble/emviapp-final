@@ -137,6 +137,11 @@ const CityOnlyPage = lazy(() => import("@/pages/seo/CityOnlyPage"));
 const ProgrammaticJobsLander = lazy(() => import("@/components/seo/ProgrammaticJobsLander"));
 const ProgrammaticSalonsLander = lazy(() => import("@/components/seo/ProgrammaticSalonsLander"));
 
+// Trust & Pricing Pages
+const DataPrivacy = lazy(() => import("@/pages/trust/DataPrivacy"));
+const PricingOverview = lazy(() => import("@/pages/pricing/Overview"));
+const TestimonialSubmit = lazy(() => import("@/pages/community/TestimonialSubmit"));
+
 // Blog Category Pages - Dynamic
 const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBlogCategory"));
 
@@ -300,9 +305,14 @@ function App() {
                         <Route path="/seo/category/:category" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CategoryOnlyPage /></Suspense></Layout>} />
                         <Route path="/seo/city/:city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CityOnlyPage /></Suspense></Layout>} />
                         
-                        {/* Programmatic Jobs-in and Salons-in Pages */}
-                        <Route path="/jobs-in/:citySlug/:roleSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProgrammaticJobsLander /></Suspense></Layout>} />
-                        <Route path="/salons-in/:citySlug/:serviceSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProgrammaticSalonsLander /></Suspense></Layout>} />
+                         {/* Programmatic Jobs-in and Salons-in Pages */}
+                         <Route path="/jobs-in/:citySlug/:roleSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProgrammaticJobsLander /></Suspense></Layout>} />
+                         <Route path="/salons-in/:citySlug/:serviceSlug" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><ProgrammaticSalonsLander /></Suspense></Layout>} />
+
+                         {/* Trust & Pricing Pages */}
+                         <Route path="/trust/data-and-privacy" element={<Suspense fallback={<SimpleLoadingFallback />}><DataPrivacy /></Suspense>} />
+                         <Route path="/pricing/overview" element={<Suspense fallback={<SimpleLoadingFallback />}><PricingOverview /></Suspense>} />
+                         <Route path="/community/testimonials/submit" element={<Suspense fallback={<SimpleLoadingFallback />}><TestimonialSubmit /></Suspense>} />
                        
                        {/* City Landing Pages - Programmatic SEO */}
                        <Route path="/cities/:citySlug/:categorySlug" element={<Layout><CityLandingPage /></Layout>} />

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "name": "Maria Rodriguez",
+    "role": "Nail Technician",
+    "city": "Los Angeles, CA",
+    "quote": "EmviApp helped me find my dream job in just 3 days! The community is so supportive and genuine.",
+    "rating": 5,
+    "verified": true
+  },
+  {
+    "id": "2", 
+    "name": "Jennifer Kim",
+    "role": "Lash Artist",
+    "city": "New York, NY",
+    "quote": "I've doubled my client base through EmviApp. The platform makes booking and managing clients so easy.",
+    "rating": 5,
+    "verified": true
+  },
+  {
+    "id": "3",
+    "name": "Sarah Johnson",
+    "role": "Salon Owner",
+    "city": "Miami, FL", 
+    "quote": "As a salon owner, EmviApp connects me with the most talented artists. It's transformed how I hire.",
+    "rating": 5,
+    "verified": true
+  }
+]

@@ -10,6 +10,7 @@ import { US_BEAUTY_ROLES } from "../../../data/roles.us";
 import { US_CITIES } from "../../../data/cities.us";
 import { MainContent } from "@/components/layout/MainContent";
 import { AriaLiveRegion } from "@/components/seo/AccessibilityHelpers";
+import Testimonials from "@/components/trust/Testimonials";
 
 const SignUpNew = () => {
   const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
@@ -41,6 +42,9 @@ const SignUpNew = () => {
         <Separator className="my-4" />
         <PhoneOtpDialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen} />
         <EnhancedSignUpForm />
+        
+        {/* Add testimonials after the form */}
+        <Testimonials placement="signup" />
 
         {statusMessage && (
           <AriaLiveRegion message={statusMessage} priority="polite" />
