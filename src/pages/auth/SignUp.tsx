@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Logo from "@/components/ui/Logo";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
+import Testimonials from "@/components/trust/Testimonials";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -221,6 +222,9 @@ const SignUp = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add testimonials after the signup form */}
+      <Testimonials placement="signup" />
 
         <p className="mt-5 text-center text-sm text-neutral-600">
           Not ready yet?{" "}
