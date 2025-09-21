@@ -94,6 +94,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
             isLoaded ? 'opacity-100' : 'opacity-0'
           )}
           loading={lazy ? 'lazy' : 'eager'}
+          decoding="async"
+          width={aspectRatio === 'square' ? 400 : 600}
+          height={aspectRatio === 'square' ? 400 : aspectRatio === 'video' ? 337 : 400}
           {...props}
         />
       )}

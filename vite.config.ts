@@ -46,6 +46,14 @@ export default defineConfig(({ mode }) => ({
             '@/components/layout/Navbar',
             '@/components/layout/Footer'
           ],
+          // Performance optimization components
+          'performance': [
+            '@/components/performance/PerformanceProvider',
+            '@/components/performance/CriticalCSS',
+            '@/components/performance/LCPOptimizer',
+            '@/components/performance/CLSPrevention',
+            '@/utils/performanceOptimizer'
+          ],
           // Home page lazy-loaded sections
           'home-lazy': [
             '@/components/home/PremiumIndustryShowcase',

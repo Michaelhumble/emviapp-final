@@ -75,11 +75,15 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
         
         {/* Job Image - Only show for paid jobs */}
         {isPaidJob && job.image && (
-          <div className="mt-3 mb-3">
+          <div className="mt-3 mb-3 aspect-video">
             <img
               src={job.image}
               alt={job.title}
-              className="w-full h-32 object-cover rounded-lg shadow-sm border border-gray-200"
+              className="w-full h-full object-cover rounded-lg shadow-sm border border-gray-200"
+              loading="lazy"
+              decoding="async"
+              width={320}
+              height={180}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}

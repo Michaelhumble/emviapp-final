@@ -27,12 +27,59 @@
     <title>EmviApp</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Critical inline CSS for immediate render -->
+    <!-- Critical inline CSS for immediate render and CLS prevention -->
     <style>
-      body { font-family: system-ui, -apple-system, sans-serif; }
+      body { 
+        font-family: system-ui, -apple-system, sans-serif; 
+        margin: 0; 
+        padding: 0;
+      }
       .font-loading { font-family: system-ui, -apple-system, sans-serif !important; }
+      
+      /* CLS Prevention for images */
+      img { 
+        max-width: 100%; 
+        height: auto; 
+        vertical-align: middle;
+      }
+      
+      /* Aspect ratio utilities for layout stability */
+      .aspect-video { aspect-ratio: 16 / 9; }
+      .aspect-square { aspect-ratio: 1 / 1; }
+      .aspect-\[4\/3\] { aspect-ratio: 4 / 3; }
+      .aspect-\[3\/2\] { aspect-ratio: 3 / 2; }
+      
+      /* Skeleton loader animation */
+      .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      /* Layout containers */
+      .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+      
+      /* Critical layout styles */
+      .grid { display: grid; }
+      .flex { display: flex; }
+      .relative { position: relative; }
+      .absolute { position: absolute; }
+      .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+      
+      /* Performance optimizations */
+      * { 
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Reduce motion for accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+      }
     </style>
     
     <!-- HubSpot Tracking Code -->

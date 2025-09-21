@@ -58,13 +58,17 @@ const BlogImage: React.FC<BlogImageProps> = ({
         src={imgSrc}
         alt={alt}
         loading={priority ? "eager" : "lazy"}
+        decoding="async"
         onLoad={handleLoad}
         onError={handleError}
         className={`w-full h-full object-cover transition-opacity duration-300 ${
           isLoading ? 'opacity-0' : 'opacity-100'
         }`}
+        width={800}
+        height={450}
         style={{
-          minHeight: isLoading ? '200px' : undefined
+          minHeight: isLoading ? '200px' : undefined,
+          aspectRatio: '16/9'
         }}
       />
     </div>
