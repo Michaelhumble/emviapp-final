@@ -79,7 +79,7 @@ const CategoryCityPage: React.FC = () => {
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              {roleData.pluralName} in {locationData.fullName}
+              Find the Best {roleData.pluralName} in {locationData.fullName} | EmviApp
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-xl text-muted-foreground">
               Discover premium {roleData.name.toLowerCase()} opportunities in {locationData.fullName}.

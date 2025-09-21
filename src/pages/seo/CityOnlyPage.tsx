@@ -19,7 +19,7 @@ const CityOnlyPage: React.FC = () => {
   }
 
   const title = `Beauty Jobs in ${locationData.fullName} | Salons & Spas | EmviApp`;
-  const description = `Find the best beauty jobs in ${locationData.fullName}. ${cityKeywords.searchVolume}+ monthly searches for beauty positions. Browse nail tech, hair stylist, barber, and spa jobs.`;
+  const description = `Find premium beauty jobs in ${locationData.fullName}. ${cityKeywords.searchVolume}+ monthly job searches. Browse nail tech, hair stylist, barber, spa & massage positions. Competitive pay, flexible schedules. Apply today!`;
   
   const topCategories = SEO_ROLES.slice(0, 8);
   

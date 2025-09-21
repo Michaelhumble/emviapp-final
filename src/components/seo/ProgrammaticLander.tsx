@@ -54,7 +54,7 @@ const ProgrammaticLander: React.FC<ProgrammaticLanderProps> = ({
     : `Find ${role.label} Salons in ${city.city}, ${city.state}`;
   
   const metaTitle = `${pageTitle} | EmviApp`;
-  const metaDescription = `Find premium ${role.label.toLowerCase()} ${pageType} in ${city.city}, ${city.state}. Browse high-paying opportunities at top salons and spas. Average salary: $${role.avgSalary.toLocaleString()}/year. Apply today!`;
+  const metaDescription = `Find premium ${role.label.toLowerCase()} ${pageType} in ${city.city}, ${city.state}. Browse high-paying opportunities at top beauty salons. Average salary $${role.avgSalary.toLocaleString()}/year. Competitive pay, benefits. Apply now!`;
 
   const canonicalUrl = `https://www.emvi.app/${pageType}-in/${citySlug}/${roleSlug}`;
 
@@ -225,7 +225,7 @@ const ProgrammaticLander: React.FC<ProgrammaticLanderProps> = ({
               </div>
               
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                {pageTitle}
+                Find the Best {role.label} in {city.city}, {city.state} | EmviApp
               </h1>
               
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">

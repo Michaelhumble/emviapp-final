@@ -19,7 +19,7 @@ const CategoryOnlyPage: React.FC = () => {
   }
 
   const title = `${roleData.pluralName} Jobs & Career Opportunities | EmviApp`;
-  const description = `Find the best ${roleData.name.toLowerCase()} jobs and career opportunities. Browse hundreds of ${roleData.pluralName.toLowerCase()} positions across the US. Join thousands of beauty professionals on EmviApp.`;
+  const description = `Find premium ${roleData.name.toLowerCase()} jobs and career opportunities across the US. Browse hundreds of positions at top beauty salons. Join thousands of professionals today!`;
   
   const topCities = SEO_LOCATIONS.slice(0, 12);
   

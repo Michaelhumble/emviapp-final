@@ -156,5 +156,5 @@ export function generateSEODescription(service: string, city?: string, state?: s
   const serviceName = serviceMap[service] || service;
   const location = city && state ? `in ${city}, ${state}` : city ? `in ${city}` : 'nationwide';
   
-  return `Find premium ${serviceName} jobs ${location}. Browse high-paying opportunities at top salons and spas. Apply today for full-time, part-time, and freelance positions.`;
+  return `Find premium ${serviceName} jobs ${location}. Browse high-paying opportunities at top beauty salons. Competitive pay, flexible schedules. Apply today for your dream career!`;
 }
