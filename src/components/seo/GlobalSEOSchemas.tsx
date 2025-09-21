@@ -9,9 +9,14 @@ const GlobalSEOSchemas = () => {
     "url": "https://emvi.app",
     "logo": "https://emvi.app/android-chrome-512x512.png",
     "sameAs": [
+      "https://www.facebook.com/emviapp",
+      "https://www.instagram.com/emviapp",
+      "https://www.linkedin.com/company/emviapp",
+      "https://www.youtube.com/@emviapp",
+      "https://twitter.com/emviapp",
+      "https://www.tiktok.com/@emviapp",
       "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c",
-      "https://twitter.com/EmviApp",
-      "https://www.linkedin.com/company/emviapp/"
+      "https://www.crunchbase.com/organization/emviapp"
     ],
     "description": "AI-powered platform connecting salons, beauty professionals, and customers through intelligent technology",
     "founder": {

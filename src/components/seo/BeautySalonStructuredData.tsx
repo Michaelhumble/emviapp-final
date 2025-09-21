@@ -101,7 +101,13 @@ const BeautySalonStructuredData: React.FC<BeautySalonStructuredDataProps> = ({
       }
     },
     "sameAs": [
-      baseUrl
+      baseUrl,
+      `https://www.google.com/search?q=${encodeURIComponent(salonName + ' ' + location)}`,
+      `https://www.yelp.com/search?find_desc=${encodeURIComponent(salonName)}&find_loc=${encodeURIComponent(location)}`,
+      `https://foursquare.com/explore?q=${encodeURIComponent(salonName)}`,
+      "https://www.facebook.com/emviapp",
+      "https://www.instagram.com/emviapp",
+      "https://www.linkedin.com/company/emviapp"
     ],
     "openingHours": "Mo-Su 09:00-21:00", // Default hours
     "acceptsReservations": true,

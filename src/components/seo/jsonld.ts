@@ -2,21 +2,35 @@ export const buildOrganizationJsonLd = () => ({
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "EmviApp",
-  "description": "Premium beauty platform connecting professionals with opportunities",
+  "description": "Premium beauty platform connecting professionals with opportunities worldwide",
   "url": "https://www.emvi.app",
   "logo": "https://www.emvi.app/logo.png",
   "foundingDate": "2024",
-  "industry": "Beauty and Personal Care",
+  "industry": "Beauty and Personal Care Technology",
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer support",
-    "url": "https://www.emvi.app/contact"
+    "url": "https://www.emvi.app/contact",
+    "telephone": "+1-844-EMVIAPP",
+    "email": "support@emvi.app"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1234 Innovation Drive",
+    "addressLocality": "San Francisco",
+    "addressRegion": "CA",
+    "postalCode": "94105",
+    "addressCountry": "US"
   },
   "sameAs": [
-    "https://linkedin.com/company/emviapp",
-    "https://instagram.com/emviapp", 
-    "https://tiktok.com/@emviapp",
-    "https://youtube.com/@emviapp"
+    "https://www.facebook.com/emviapp",
+    "https://www.instagram.com/emviapp",
+    "https://www.linkedin.com/company/emviapp",
+    "https://www.youtube.com/@emviapp",
+    "https://twitter.com/emviapp",
+    "https://www.tiktok.com/@emviapp",
+    "https://www.crunchbase.com/organization/emviapp",
+    "https://apnews.com/press-release/ein-presswire-newsmatics/emviapp-launches-the-first-ai-powered-growth-engine-for-the-global-beauty-industry-d88a14938f130a67055f7826439cfb7c"
   ]
 });
 
@@ -26,6 +40,20 @@ export const buildWebsiteJsonLd = () => ({
   "name": "EmviApp",
   "url": "https://www.emvi.app",
   "description": "The Beauty Industry's Missing Piece - Premium platform for beauty professionals",
+  "publisher": {
+    "@type": "Organization",
+    "name": "EmviApp",
+    "url": "https://www.emvi.app",
+    "logo": "https://www.emvi.app/logo.png",
+    "sameAs": [
+      "https://www.facebook.com/emviapp",
+      "https://www.instagram.com/emviapp",
+      "https://www.linkedin.com/company/emviapp",
+      "https://www.youtube.com/@emviapp",
+      "https://twitter.com/emviapp",
+      "https://www.tiktok.com/@emviapp"
+    ]
+  },
   "potentialAction": {
     "@type": "SearchAction",
     "target": "https://www.emvi.app/search?q={search_term_string}",
@@ -403,13 +431,21 @@ export const buildLocalBusinessJsonLd = (salon: {
     "longitude": salon.longitude
   } : undefined;
 
-  // Build sameAs array from social media
+  // Build sameAs array from social media and citations
   const sameAs: string[] = [];
   if (salon.socialMedia?.instagram) sameAs.push(salon.socialMedia.instagram);
   if (salon.socialMedia?.facebook) sameAs.push(salon.socialMedia.facebook);
   if (salon.socialMedia?.googleBusiness) sameAs.push(salon.socialMedia.googleBusiness);
   if (salon.socialMedia?.yelp) sameAs.push(salon.socialMedia.yelp);
   if (salon.website) sameAs.push(salon.website);
+  
+  // Add citation URLs for better local SEO
+  const citationUrls = [
+    `https://www.google.com/search?q=${encodeURIComponent(salonName + ' ' + (salon.location || salon.city || ''))}`,
+    `https://www.yelp.com/search?find_desc=${encodeURIComponent(salonName)}&find_loc=${encodeURIComponent(salon.location || salon.city || '')}`,
+    `https://foursquare.com/explore?q=${encodeURIComponent(salonName)}`
+  ];
+  sameAs.push(...citationUrls);
 
   const jsonLd: any = {
     "@context": "https://schema.org",
