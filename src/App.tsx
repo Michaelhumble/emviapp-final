@@ -149,6 +149,7 @@ const DynamicBlogCategory = lazy(() => import("@/pages/blog/categories/DynamicBl
 const AffiliatesLanding = lazy(() => import("@/pages/affiliate/AffiliatesLanding"));
 const AffiliatePortal = lazy(() => import("@/pages/affiliate/AffiliatePortal"));
 const AffiliateDashboard = lazy(() => import("@/pages/affiliate/AffiliateDashboard"));
+const AffiliateStrategyPage = lazy(() => import("@/pages/affiliate/AffiliateStrategyPage"));
 import AffiliateLinks from '@/pages/affiliate/AffiliateLinks';
 import AffiliatePayouts from '@/pages/affiliate/AffiliatePayouts';
 import AffiliateAssets from '@/pages/affiliate/AffiliateAssets';
@@ -368,13 +369,14 @@ function App() {
                             <AffiliateSettings />
                           </ProtectedRoute>
                         } />
-                        <Route path="/affiliate/test" element={
-                          <ProtectedRoute>
-                            <Suspense fallback={<SimpleLoadingFallback />}><AffiliateTestPage /></Suspense>
-                          </ProtectedRoute>
-                        } />
+                         <Route path="/affiliate/test" element={
+                           <ProtectedRoute>
+                             <Suspense fallback={<SimpleLoadingFallback />}><AffiliateTestPage /></Suspense>
+                           </ProtectedRoute>
+                         } />
+                         <Route path="/affiliate-strategy" element={<Suspense fallback={<SimpleLoadingFallback />}><AffiliateStrategyPage /></Suspense>} />
 
-                      <Route path="/" element={<LazyIndex />} />
+                       <Route path="/" element={<LazyIndex />} />
                       
                       {/* ... keep existing code (other routes) the same */}
                      {routes.map((route) => (
