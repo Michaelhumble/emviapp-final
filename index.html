@@ -82,14 +82,56 @@
       }
     </style>
     
-    <!-- HubSpot Tracking Code -->
-    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/243714531.js"></script>
+    <!-- HubSpot Tracking Code - Deferred for performance -->
+    <script>
+      // Load HubSpot after page interaction for better performance
+      let hubspotLoaded = false;
+      const loadHubSpot = () => {
+        if (!hubspotLoaded) {
+          hubspotLoaded = true;
+          const script = document.createElement('script');
+          script.async = true;
+          script.defer = true;
+          script.src = '//js-na2.hs-scripts.com/243714531.js';
+          script.id = 'hs-script-loader';
+          document.head.appendChild(script);
+        }
+      };
+      
+      // Load on first user interaction
+      ['mousedown', 'touchstart', 'keydown', 'scroll'].forEach(event => {
+        document.addEventListener(event, loadHubSpot, { once: true, passive: true });
+      });
+      
+      // Fallback: load after 5 seconds
+      setTimeout(loadHubSpot, 5000);
+    </script>
     
-    <!-- UTM Attribution Tracking -->
-    <script src="/scripts/utm.js"></script>
+    <!-- UTM Attribution Tracking - Deferred -->
+    <script>
+      // Load UTM tracking after page load
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const script = document.createElement('script');
+          script.async = true;
+          script.src = '/scripts/utm.js';
+          document.head.appendChild(script);
+        }, 1000);
+      });
+    </script>
     
-    <!-- Cross-Platform Conversion Tracking -->
-    <script src="/scripts/conversions.js"></script>
+    <!-- Cross-Platform Conversion Tracking - Deferred -->
+    <script>
+      // Load conversion tracking after page load  
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const script = document.createElement('script');
+          script.async = true;
+          script.src = '/scripts/conversions.js';
+          document.head.appendChild(script);
+        }, 1500);
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

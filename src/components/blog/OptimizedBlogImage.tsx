@@ -32,7 +32,7 @@ const OptimizedBlogImage: React.FC<OptimizedBlogImageProps> = ({
   // Generate optimized image URLs with WebP/AVIF support
   const webpSrc = generateOptimizedImageUrl({ src, format: 'webp', quality: 85 });
   const avifSrc = generateOptimizedImageUrl({ src, format: 'avif', quality: 80 });
-  const jpegSrc = generateOptimizedImageUrl({ src, format: 'jpg', quality: 85 });
+  const jpegSrc = generateOptimizedImageUrl({ src, format: 'jpeg', quality: 85 });
   
   // Generate responsive srcSet
   const webpSrcSet = generateSrcSet(src, [320, 640, 768, 1024, 1280]).replace(/\.(jpg|jpeg|png)/g, '.webp');
