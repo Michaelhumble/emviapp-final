@@ -10,6 +10,7 @@ import JobSEO from '@/components/seo/JobSEO';
 import { Job } from '@/types/job';
 import { fetchJob } from '@/utils/jobs';
 import { shouldNoIndex, shouldReturn410, getValidThrough, isFilled } from '@/utils/seo/jobSeoLogic';
+import RelatedJobs from '@/components/related/RelatedJobs';
 
 const JobDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -74,7 +75,10 @@ const JobDetail = () => {
         {isFilled(job) || getValidThrough(job) < new Date() ? (
           <JobFilledPage job={job} />
         ) : (
-          <JobDetailContent job={job} />
+          <>
+            <JobDetailContent job={job} />
+            <RelatedJobs currentJob={job} />
+          </>
         )}
       </div>
     </Layout>

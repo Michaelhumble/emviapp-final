@@ -5,6 +5,8 @@ import { Container } from '@/components/ui/container';
 import BlogImage from '@/components/blog/BlogImage';
 import BlogArticleActions from '@/components/blog/BlogArticleActions';
 import DynamicSEO from '@/components/seo/DynamicSEO';
+import RelatedArticles from '@/components/related/RelatedArticles';
+import { BlogArticle as BlogArticleType } from '@/data/blogArticles';
 
 interface BlogArticle {
   title: string;
@@ -24,6 +26,7 @@ interface BlogArticleLayoutProps {
   children: React.ReactNode;
   backLink?: string;
   backText?: string;
+  showRelatedArticles?: boolean;
 }
 
 const BlogArticleLayout: React.FC<BlogArticleLayoutProps> = ({
@@ -32,7 +35,8 @@ const BlogArticleLayout: React.FC<BlogArticleLayoutProps> = ({
   articleUrl,
   children,
   backLink = "/blog",
-  backText = "Back to Blog"
+  backText = "Back to Blog",
+  showRelatedArticles = true
 }) => {
   const structuredData = {
     "@context": "https://schema.org",
@@ -163,6 +167,24 @@ const BlogArticleLayout: React.FC<BlogArticleLayoutProps> = ({
             />
           </div>
         </Container>
+        
+        {/* Related Articles Section */}
+        {showRelatedArticles && (
+          <RelatedArticles 
+            currentArticle={{
+              id: articleSlug,
+              slug: articleSlug,
+              title: article.title,
+              description: article.description,
+              image: article.image,
+              category: article.category,
+              tags: article.tags,
+              author: article.author,
+              publishedAt: article.publishedAt,
+              readTime: article.readTime
+            } as BlogArticleType} 
+          />
+        )}
       </article>
     </>
   );

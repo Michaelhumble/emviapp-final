@@ -13,6 +13,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { fetchSalonById } from '@/utils/salonFetcher';
+import RelatedSalons from '@/components/related/RelatedSalons';
 
 /**
  * Enhanced SalonDetailPage component with robust validation and a single data source
@@ -110,6 +111,7 @@ const SalonDetailPage = () => {
               />
               <BackToListings />
               <SalonDetailContent salon={salon} />
+              <RelatedSalons currentSalon={salon} />
               <SalonListingCta />
             </>
           ) : null}
