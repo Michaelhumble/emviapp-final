@@ -32,6 +32,12 @@ import salonSocialMarketing2025Hero from '@/assets/blog/salon-social-marketing-2
 import beautyJobsUSA2025Hero from '@/assets/blog/beauty-jobs-usa-2025-hero.jpg';
 import weddingBeautyChecklist2025Hero from '@/assets/blog/wedding-beauty-checklist-2025-hero.jpg';
 import laNailSalonGuide2025Hero from '@/assets/blog/la-nail-salon-guide-2025-hero.jpg';
+// Missing 2025 Article Images
+import costLivingNailCareersBestCitiesHero from '@/assets/blog/cost-living-nail-career-cities-hero.webp';
+import nailSalonStepByStepGuideHero from '@/assets/blog/nail-salon-opening-guide-hero.webp';
+import beautyLicensingGuideHero from '@/assets/blog/beauty-licensing-guide-hero.webp';
+import nailBeautyTrends2025Hero from '@/assets/blog/nail-beauty-trends-2025-hero.webp';
+
 
 export interface BlogArticle {
   id: string;
@@ -54,6 +60,10 @@ export interface BlogArticle {
 
 // Lazy load all article components
 const UltimateNailTechSalaryGuide = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
+const CostOfLivingVsNailCareersBestCities2025 = lazy(() => import('@/pages/blog/cost-of-living-vs-nail-careers-best-cities-2025'));
+const HowToOpenNailSalonUSStepByStepGuide = lazy(() => import('@/pages/blog/how-to-open-nail-salon-us-step-by-step-guide'));
+const CompleteUSBeautyLicensingGuide2025 = lazy(() => import('@/pages/blog/complete-us-beauty-licensing-guide-2025'));
+const TopNailBeautyIndustryTrends2025 = lazy(() => import('@/pages/blog/top-nail-beauty-industry-trends-2025'));
 const HowToOpenNailSalonUSRightWay = lazy(() => import('@/pages/blog/how-to-open-nail-salon-us-right-way'));
 const CostLivingNailCareersEveryCity = lazy(() => import('@/pages/blog/cost-of-living-nail-careers-every-city'));
 const UltimateNailTechSalaryGuide2025 = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
@@ -113,7 +123,79 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  // NEWEST ARTICLE - 2025 (Always show first)
+  // NEWEST ARTICLES - 2025 (Always show first)
+  {
+    id: 'top-nail-beauty-industry-trends-2025',
+    slug: 'top-nail-beauty-industry-trends-2025',
+    title: 'Top Nail & Beauty Industry Trends for 2025: What Clients Want',
+    description: 'Complete guide to nail and beauty industry trends shaping 2025. From AI beauty tech to sustainable practices, discover what clients are demanding and how to stay ahead of the competition.',
+    author: 'Sarah Mitchell',
+    publishedAt: '2025-02-01',
+    readTime: '14 min read',
+    category: 'Industry Trends',
+    categorySlug: 'industry-trends',
+    tags: ['beauty trends 2025', 'nail industry trends', 'client expectations', 'beauty innovation', 'industry insights'],
+    image: nailBeautyTrends2025Hero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: TopNailBeautyIndustryTrends2025,
+    url: '/blog/top-nail-beauty-industry-trends-2025'
+  },
+  {
+    id: 'complete-us-beauty-licensing-guide-2025',
+    slug: 'complete-us-beauty-licensing-guide-2025',
+    title: 'Complete US Beauty Licensing Guide: Nails, Hair, Lash, Tattoo, Barber (2025)',
+    description: 'Comprehensive guide to beauty licensing requirements across all 50 states. From nail tech to tattoo artist licensing, get everything you need to legally practice beauty services in the US.',
+    author: 'Legal Beauty Team',
+    publishedAt: '2025-02-01',
+    readTime: '18 min read',
+    category: 'Licensing Guide',
+    categorySlug: 'licensing-guide',
+    tags: ['beauty licensing', 'cosmetology license', 'nail tech license', 'state requirements', 'certification guide'],
+    image: beautyLicensingGuideHero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: CompleteUSBeautyLicensingGuide2025,
+    url: '/blog/complete-us-beauty-licensing-guide-2025'
+  },
+  {
+    id: 'how-to-open-nail-salon-us-step-by-step-guide',
+    slug: 'how-to-open-nail-salon-us-step-by-step-guide',
+    title: 'How to Open a Nail Salon in the US (Step-by-Step Guide by State)',
+    description: 'Complete step-by-step guide to opening a nail salon in any US state. From licensing to location selection, get insider tips from successful salon owners who have opened profitable businesses.',
+    author: 'Michael Chen',
+    publishedAt: '2025-02-01',
+    readTime: '16 min read',
+    category: 'Business Guide',
+    categorySlug: 'business-guide',
+    tags: ['nail salon business', 'salon startup', 'business licensing', 'salon location', 'beauty business'],
+    image: nailSalonStepByStepGuideHero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: HowToOpenNailSalonUSStepByStepGuide,
+    url: '/blog/how-to-open-nail-salon-us-step-by-step-guide'
+  },
+  {
+    id: 'cost-of-living-vs-nail-careers-best-cities-2025',
+    slug: 'cost-of-living-vs-nail-careers-best-cities-2025',
+    title: 'Cost of Living vs Nail Careers: Best Cities for Nail Techs in 2025',
+    description: 'Discover the best cities for nail technicians in 2025 based on salary potential and cost of living. Real data analysis shows where your money goes furthest in the beauty industry.',
+    author: 'Data Analytics Team',
+    publishedAt: '2025-02-01',
+    readTime: '15 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['nail tech careers', 'cost of living', 'best cities', 'salary comparison', 'career planning'],
+    image: costLivingNailCareersBestCitiesHero,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: CostOfLivingVsNailCareersBestCities2025,
+    url: '/blog/cost-of-living-vs-nail-careers-best-cities-2025'
+  },
   {
     id: 'ultimate-nail-tech-salary-guide-by-state-2025',
     slug: 'ultimate-nail-tech-salary-guide-by-state-2025',
@@ -167,24 +249,6 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     pinned: true,
     component: CostLivingNailCareersEveryCity,
     url: '/blog/cost-of-living-nail-careers-every-city'
-  },
-  {
-    id: 'ultimate-nail-tech-salary-guide-by-state-2025',
-    slug: 'ultimate-nail-tech-salary-guide-by-state-2025',
-    title: 'Ultimate Nail Tech Salary Guide by State (2025): Real Numbers, Hidden Opportunities & Insider Tips',
-    description: 'Discover real nail technician salaries across all 50 states in 2025. From $28k in rural areas to $85k+ in major cities, get the inside scoop on where nail techs make the most money, plus actionable tips to boost your earnings.',
-    author: 'Maria Rodriguez',
-    publishedAt: '2025-01-29',
-    readTime: '16 min read',
-    category: 'Career Guide',
-    categorySlug: 'career-guide',
-    tags: ['nail technician salary', 'beauty careers', 'nail tech pay', 'state salary comparison', 'career growth'],
-    image: nailTechSalaryGuide2025Image,
-    featured: true,
-    trending: true,
-    pinned: true,
-    component: UltimateNailTechSalaryGuide2025,
-    url: '/blog/ultimate-nail-tech-salary-guide-by-state-2025'
   },
   {
     id: 'spa-design-trends-2025',
