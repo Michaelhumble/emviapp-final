@@ -70,6 +70,7 @@ const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const EnhancedPostJob = lazy(() => import("@/pages/enhanced-post-job"));
 const SellSalonPage = lazy(() => import("@/pages/sell-salon"));
 const PostSalon = lazy(() => import("@/pages/PostSalon"));
+const SalonWorth = lazy(() => import("@/pages/SalonWorth"));
 const SalonListingSuccessPage = lazy(() => import("@/pages/salon-listing-success"));
 const CustomerProfilePage = lazy(() => import("@/pages/customer/ProfilePage"));
 const JobPostingSuccessPage = lazy(() => import("@/pages/JobPostingSuccessPage"));
@@ -256,6 +257,7 @@ function App() {
                     
                      {/* Salon selling routes */}
                      <Route path="/sell-salon" element={<SellSalonPage />} />
+                     <Route path="/salon-worth" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><SalonWorth /></Suspense></Layout>} />
                      <Route path="/posting/salon" element={<Layout><PostSalon /></Layout>} />
                      
                      {/* Salon listing success routes */}

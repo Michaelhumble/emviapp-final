@@ -1010,6 +1010,30 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_state: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          nonce: string
+          state_data: Json
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          nonce: string
+          state_data: Json
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          nonce?: string
+          state_data?: Json
+        }
+        Relationships: []
+      }
       availability: {
         Row: {
           artist_id: string
@@ -5324,6 +5348,57 @@ export type Database = {
         }
         Relationships: []
       }
+      valuation_leads: {
+        Row: {
+          calculated_value_high: number
+          calculated_value_low: number
+          calculation_breakdown: Json | null
+          created_at: string | null
+          email: string
+          google_rating: number | null
+          google_review_count: number | null
+          id: string
+          lease_length: string
+          monthly_revenue: number
+          number_of_stations: number
+          phone: string | null
+          user_id: string | null
+          zip_code: string
+        }
+        Insert: {
+          calculated_value_high: number
+          calculated_value_low: number
+          calculation_breakdown?: Json | null
+          created_at?: string | null
+          email: string
+          google_rating?: number | null
+          google_review_count?: number | null
+          id?: string
+          lease_length: string
+          monthly_revenue: number
+          number_of_stations: number
+          phone?: string | null
+          user_id?: string | null
+          zip_code: string
+        }
+        Update: {
+          calculated_value_high?: number
+          calculated_value_low?: number
+          calculation_breakdown?: Json | null
+          created_at?: string | null
+          email?: string
+          google_rating?: number | null
+          google_review_count?: number | null
+          id?: string
+          lease_length?: string
+          monthly_revenue?: number
+          number_of_stations?: number
+          phone?: string | null
+          user_id?: string | null
+          zip_code?: string
+        }
+        Relationships: []
+      }
       viral_leaderboards: {
         Row: {
           created_at: string | null
@@ -5585,6 +5660,10 @@ export type Database = {
           p_window_minutes?: number
         }
         Returns: boolean
+      }
+      cleanup_expired_auth_states: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       cleanup_old_hubspot_events: {
         Args: Record<PropertyKey, never>
