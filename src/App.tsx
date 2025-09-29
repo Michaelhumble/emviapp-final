@@ -84,6 +84,7 @@ const AdminAgentConsole = lazy(() => import("@/pages/admin/agent"));
 const BlogIndex = lazy(() => import("@/pages/blog/BlogIndex"));
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
+const SpaDesignTrends2025 = lazy(() => import("@/pages/blog/spa-design-trends-2025"));
 const TheBeautyRevolution = lazy(() => import("@/pages/blog/TheBeautyRevolution"));
 const ViralArticle = lazy(() => import("@/pages/ViralArticle"));
 const HoChiMinhNailSalonGuideRedirect = lazy(() => import("@/pages/blog/ho-chi-minh-nail-salon-guide"));
@@ -405,6 +406,7 @@ function App() {
                     
                      {/* Blog Routes */}
                      <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                     <Route path="/blog/spa-design-trends-2025" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><SpaDesignTrends2025 /></Suspense></Layout>} />
                      <Route path="/blog/:slug" element={<Layout><BlogArticlePage /></Layout>} />
                      
                      {/* Blog Post Redirects */}

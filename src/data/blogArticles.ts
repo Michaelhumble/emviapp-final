@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 // Import ALL blog images as ES6 modules for proper bundling
+import spaDesignTrends2025Image from '@/assets/blog/spa-design-trends-2025-hero.jpg';
 import salonStaffingCrisisImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
 import aiSalonToolsImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
 import beautyProfessionalSuccessGuideImage from '@/assets/blog/beauty-professional-success-guide.jpg';
@@ -48,6 +49,7 @@ export interface BlogArticle {
 }
 
 // Lazy load all article components
+const SpaDesignTrends2025 = lazy(() => import('@/pages/blog/spa-design-trends-2025'));
 const TopNailSalonJobsUS2025 = lazy(() => import('@/pages/blog/articles/TopNailSalonJobsUS2025'));
 const WeeklyPayNailArtists = lazy(() => import('@/pages/blog/articles/WeeklyPayNailArtists'));
 const SellNailSalonSmart = lazy(() => import('@/pages/blog/articles/SellNailSalonSmart'));
@@ -103,7 +105,26 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
-  // PINNED ARTICLES - 2025 SEO Content (Always show first)
+  // NEWEST ARTICLE - 2025 (Always show first)
+  {
+    id: 'spa-design-trends-2025',
+    slug: 'spa-design-trends-2025',
+    title: 'Spa Design Trends 2025: 10 Revolutionary Ideas Transforming Wellness Spaces',
+    description: 'Discover the cutting-edge spa design trends revolutionizing wellness spaces in 2025. From biophilic design to smart technology integration, learn how to create stunning, profitable spa environments.',
+    author: 'Sarah Johnson',
+    publishedAt: '2025-01-28',
+    readTime: '9 min read',
+    category: 'Spa & Wellness',
+    categorySlug: 'spa-wellness',
+    tags: ['spa design', 'wellness trends', 'interior design', 'biophilic design', 'smart technology'],
+    image: spaDesignTrends2025Image,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: SpaDesignTrends2025,
+    url: '/blog/spa-design-trends-2025'
+  },
+  // PINNED ARTICLES - 2025 SEO Content
   {
     id: 'los-angeles-nail-salon-guide-2025',
     slug: 'los-angeles-nail-salon-guide',
