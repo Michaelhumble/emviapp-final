@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 // Import ALL blog images as ES6 modules for proper bundling
+import costLivingNailCareersImage from '@/assets/blog/cost-living-nail-careers-hero.jpg';
 import nailTechSalaryGuide2025Image from '@/assets/blog/nail-tech-salary-guide-2025-hero.jpg';
 import spaDesignTrends2025Image from '@/assets/blog/spa-design-trends-2025-hero.jpg';
 import salonStaffingCrisisImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
@@ -50,6 +51,7 @@ export interface BlogArticle {
 }
 
 // Lazy load all article components
+const CostLivingNailCareersEveryCity = lazy(() => import('@/pages/blog/cost-of-living-nail-careers-every-city'));
 const UltimateNailTechSalaryGuide2025 = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
 const SpaDesignTrends2025 = lazy(() => import('@/pages/blog/spa-design-trends-2025'));
 const TopNailSalonJobsUS2025 = lazy(() => import('@/pages/blog/articles/TopNailSalonJobsUS2025'));
@@ -108,6 +110,24 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   // NEWEST ARTICLE - 2025 (Always show first)
+  {
+    id: 'cost-of-living-nail-careers-every-city',
+    slug: 'cost-of-living-nail-careers-every-city',
+    title: 'Cost of Living + Nail Careers in Every City: Where Your Money Actually Goes Further',
+    description: 'Real analysis of nail tech earnings vs. living costs in 50+ cities. Discover where $45k feels like $65k and where $60k barely covers rent. Insider tips from someone who\'s worked coast to coast.',
+    author: 'Jessica Chen',
+    publishedAt: '2025-01-30',
+    readTime: '17 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['cost of living', 'nail tech careers', 'city comparison', 'budgeting', 'career planning'],
+    image: costLivingNailCareersImage,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: CostLivingNailCareersEveryCity,
+    url: '/blog/cost-of-living-nail-careers-every-city'
+  },
   {
     id: 'ultimate-nail-tech-salary-guide-by-state-2025',
     slug: 'ultimate-nail-tech-salary-guide-by-state-2025',
