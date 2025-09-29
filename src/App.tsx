@@ -84,6 +84,7 @@ const AdminAgentConsole = lazy(() => import("@/pages/admin/agent"));
 const BlogIndex = lazy(() => import("@/pages/blog/BlogIndex"));
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
+const HowToOpenNailSalonUSRightWay = lazy(() => import("@/pages/blog/how-to-open-nail-salon-us-right-way"));
 const CostLivingNailCareersEveryCity = lazy(() => import("@/pages/blog/cost-of-living-nail-careers-every-city"));
 const UltimateNailTechSalaryGuide2025 = lazy(() => import("@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025"));
 const SpaDesignTrends2025 = lazy(() => import("@/pages/blog/spa-design-trends-2025"));
@@ -408,6 +409,7 @@ function App() {
                     
                      {/* Blog Routes */}
                      <Route path="/blog" element={<Layout><BlogLanding /></Layout>} />
+                     <Route path="/blog/how-to-open-nail-salon-us-right-way" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><HowToOpenNailSalonUSRightWay /></Suspense></Layout>} />
                      <Route path="/blog/cost-of-living-nail-careers-every-city" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><CostLivingNailCareersEveryCity /></Suspense></Layout>} />
                      <Route path="/blog/ultimate-nail-tech-salary-guide-by-state-2025" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><UltimateNailTechSalaryGuide2025 /></Suspense></Layout>} />
                      <Route path="/blog/spa-design-trends-2025" element={<Layout><Suspense fallback={<SimpleLoadingFallback />}><SpaDesignTrends2025 /></Suspense></Layout>} />

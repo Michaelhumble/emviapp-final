@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 // Import ALL blog images as ES6 modules for proper bundling
+import openNailSalonUSImage from '@/assets/blog/open-nail-salon-us-hero.jpg';
 import costLivingNailCareersImage from '@/assets/blog/cost-living-nail-careers-hero-v2.jpg';
 import nailTechSalaryGuide2025Image from '@/assets/blog/nail-tech-salary-guide-2025-hero.jpg';
 import spaDesignTrends2025Image from '@/assets/blog/spa-design-trends-2025-hero.jpg';
@@ -51,6 +52,7 @@ export interface BlogArticle {
 }
 
 // Lazy load all article components
+const HowToOpenNailSalonUSRightWay = lazy(() => import('@/pages/blog/how-to-open-nail-salon-us-right-way'));
 const CostLivingNailCareersEveryCity = lazy(() => import('@/pages/blog/cost-of-living-nail-careers-every-city'));
 const UltimateNailTechSalaryGuide2025 = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
 const SpaDesignTrends2025 = lazy(() => import('@/pages/blog/spa-design-trends-2025'));
@@ -110,6 +112,24 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   // NEWEST ARTICLE - 2025 (Always show first)
+  {
+    id: 'how-to-open-nail-salon-us-right-way',
+    slug: 'how-to-open-nail-salon-us-right-way',
+    title: 'How to Open a Nail Salon in the US the Right Way: Complete Guide from Someone Who\'s Done It 3 Times',
+    description: 'Step-by-step guide to opening a successful nail salon in the US. Real costs, licensing requirements, common mistakes to avoid, and insider tips from someone who\'s opened three profitable salons.',
+    author: 'David Park',
+    publishedAt: '2025-01-31',
+    readTime: '18 min read',
+    category: 'Business Guide',
+    categorySlug: 'business-guide',
+    tags: ['nail salon business', 'beauty business', 'salon licensing', 'startup costs', 'business planning'],
+    image: openNailSalonUSImage,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: HowToOpenNailSalonUSRightWay,
+    url: '/blog/how-to-open-nail-salon-us-right-way'
+  },
   {
     id: 'cost-of-living-nail-careers-every-city',
     slug: 'cost-of-living-nail-careers-every-city',
