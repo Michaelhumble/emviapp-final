@@ -13,6 +13,9 @@ import { StickyResultBar } from './StickyResultBar';
 import { ValuationChart } from './ValuationChart';
 import { MarketComparison } from './MarketComparison';
 import { SalesTimeline } from './SalesTimeline';
+import { AnimatedValuationResult } from './AnimatedValuationResult';
+import { UrgencyTimer } from './UrgencyTimer';
+import { ComparisonSlider } from './ComparisonSlider';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -289,19 +292,15 @@ export const SalonWorthCalculator: React.FC = () => {
                 {/* Confidence Meter */}
                 <ConfidenceMeter level={getConfidenceLevel()} />
 
-                {/* Main Result */}
-                <div className="p-8 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20 text-center">
-                  <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-3">
-                    Step 2 of 2: Your Estimate
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-3">Your Salon is Worth</h3>
-                  <p className="text-5xl font-bold text-primary mb-2">
-                    {formatCurrency(result.low)} – {formatCurrency(result.high)}
-                  </p>
-                  <p className="text-muted-foreground">
-                    Mid-point estimate: {formatCurrency(result.base)}
-                  </p>
-                </div>
+                {/* Animated Main Result */}
+                <AnimatedValuationResult 
+                  low={result.low} 
+                  high={result.high} 
+                  base={result.base}
+                />
+
+                {/* Comparison Slider */}
+                <ComparisonSlider userValue={result.base} />
 
                 {/* Visual Breakdown & Market Comparison */}
                 <div className="grid md:grid-cols-2 gap-6">
@@ -388,17 +387,15 @@ export const SalonWorthCalculator: React.FC = () => {
 
                 {/* CTAs */}
                 <div className="space-y-4 pt-4">
-                  <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center gap-2">
-                    <span className="text-orange-600 font-semibold text-sm">⚡ Limited Time:</span>
-                    <span className="text-sm text-foreground">Only 8 free listing spots remaining this month</span>
-                  </div>
+                  {/* Urgency Timer */}
+                  <UrgencyTimer />
                   
                   <Button 
-                    onClick={() => navigate('/salons/post')}
+                    onClick={() => window.location.href = 'https://emviapp-final.lovable.app/post-job?industry=nails'}
                     size="lg" 
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg animate-pulse"
                   >
-                    List My Salon (Free for 12 Months)
+                    🚀 List My Salon Free (12 Months Premium)
                   </Button>
                   
                   {showEmailCapture ? (
