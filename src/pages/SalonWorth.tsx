@@ -2,6 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
 import { SalonWorthCalculator } from '@/components/calculator/SalonWorthCalculator';
+import { TestimonialBlock } from '@/components/calculator/TestimonialBlock';
+import { FAQSection } from '@/components/calculator/FAQSection';
 import { Calculator, TrendingUp, Shield, Zap } from 'lucide-react';
 
 const SalonWorth = () => {
@@ -14,22 +16,69 @@ const SalonWorth = () => {
           content="Calculate your salon's market value in minutes. Get a free professional valuation based on revenue, location, reviews, and market data. List your salon for sale today."
         />
         <meta name="keywords" content="salon valuation, nail salon worth, business calculator, salon for sale, beauty business value" />
+        <link rel="canonical" href="https://emviapp.com/salon-worth" />
+        
+        {/* FAQ Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is this valuation legally binding?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No, this is an estimate based on market data and industry standards. For a formal appraisal, consult a licensed business broker or appraiser."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How accurate is the calculator?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Our algorithm uses actual salon sale data and industry multiples. Accuracy improves when you provide complete information, especially Google reviews and exact lease terms."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What happens after I get my estimate?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "You can list your salon for free on EmviApp (12 months free promotion), download a PDF report, or simply use the estimate for your planning. No obligation."
+                }
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-b from-background to-secondary/10 py-12 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-12 space-y-4">
+          <div className="text-center mb-8 space-y-4">
             <div className="flex justify-center mb-4">
               <div className="p-4 bg-primary/10 rounded-full">
-                <Calculator className="w-12 h-12 text-primary" />
+                <Calculator className="w-12 h-12 text-primary" aria-hidden="true" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
               What's Your Salon Worth?
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get an instant professional valuation of your nail salon based on real market data
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+              Instant estimate based on real salon sales, location, and reputation signals
+            </p>
+          </div>
+
+          {/* Trust Row */}
+          <div className="text-center mb-12 pb-8 border-b">
+            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2 flex-wrap">
+              <span className="font-medium">Powered by:</span>
+              <span>EmviApp Market Data</span>
+              <span>•</span>
+              <span>Google Reviews</span>
+              <span>•</span>
+              <span>Industry Benchmarks</span>
             </p>
           </div>
 
@@ -67,6 +116,9 @@ const SalonWorth = () => {
           {/* Calculator Component */}
           <SalonWorthCalculator />
 
+          {/* Testimonial */}
+          <TestimonialBlock />
+
           {/* Additional Info */}
           <div className="mt-16 max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-6">How We Calculate Your Salon's Value</h2>
@@ -87,6 +139,9 @@ const SalonWorth = () => {
               </p>
             </div>
           </div>
+
+          {/* FAQ Section */}
+          <FAQSection />
         </div>
       </div>
     </Layout>
