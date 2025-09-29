@@ -3,9 +3,9 @@ import { Helmet } from 'react-helmet-async';
 import { Container } from '@/components/ui/container';
 import { Link } from 'react-router-dom';
 import { Calendar, User, Tag, ArrowRight, DollarSign, TrendingUp, MapPin, Star, Home, Calculator } from 'lucide-react';
-import costLivingNailCareersHeroImage from '@/assets/blog/cost-living-nail-careers-hero.jpg';
-import cityCostComparisonImage from '@/assets/blog/city-cost-comparison-chart.jpg';
-import nailTechBudgetingImage from '@/assets/blog/nail-tech-budgeting-moving.jpg';
+import costLivingNailCareersHeroImage from '@/assets/blog/cost-living-nail-careers-hero-v2.jpg';
+import cityCostComparisonImage from '@/assets/blog/city-cost-comparison-chart-v2.jpg';
+import nailTechBudgetingImage from '@/assets/blog/nail-tech-budgeting-moving-v2.jpg';
 
 const CostLivingNailCareersEveryCity = () => {
   const publishedDate = '2025-01-30';
@@ -131,7 +131,7 @@ const CostLivingNailCareersEveryCity = () => {
         <div className="relative h-[60vh] min-h-[500px] overflow-hidden">
           <img 
             src={costLivingNailCareersHeroImage} 
-            alt="Professional nail technician analyzing cost of living data and city comparisons for optimal career placement"
+            alt="Split screen comparison of expensive city skylines versus affordable towns with cost of living data charts and salary analysis"
             className="w-full h-full object-cover"
             loading="eager"
           />
@@ -285,7 +285,7 @@ const CostLivingNailCareersEveryCity = () => {
               <div className="my-8">
                 <img 
                   src={cityCostComparisonImage} 
-                  alt="Visual comparison between expensive city skylines and affordable small towns showing dramatic differences in housing costs versus nail tech salaries"
+                  alt="Visual infographic comparing expensive downtown skylines with affordable suburban areas showing dramatic salary and cost differences"
                   className="w-full rounded-2xl shadow-lg"
                   loading="lazy"
                 />
@@ -425,12 +425,12 @@ const CostLivingNailCareersEveryCity = () => {
               <div className="my-8">
                 <img 
                   src={nailTechBudgetingImage} 
-                  alt="Nail technician organizing finances with apartment keys and moving boxes, representing smart career planning and budgeting for location transitions"
+                  alt="Financial planning workspace showing budget spreadsheets, rental listings, cost comparison charts, and moving preparation materials"
                   className="w-full rounded-2xl shadow-lg"
                   loading="lazy"
                 />
                 <p className="text-sm text-gray-600 mt-3 italic text-center">
-                  Smart career planning means calculating the total cost picture, not just focusing on salary numbers
+                  Smart career planning means analyzing comprehensive data, not just focusing on salary numbers
                 </p>
               </div>
 

@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 // Import ALL blog images as ES6 modules for proper bundling
-import costLivingNailCareersImage from '@/assets/blog/cost-living-nail-careers-hero.jpg';
+import costLivingNailCareersImage from '@/assets/blog/cost-living-nail-careers-hero-v2.jpg';
 import nailTechSalaryGuide2025Image from '@/assets/blog/nail-tech-salary-guide-2025-hero.jpg';
 import spaDesignTrends2025Image from '@/assets/blog/spa-design-trends-2025-hero.jpg';
 import salonStaffingCrisisImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
