@@ -314,8 +314,8 @@ export const SalonWorthCalculator: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-start gap-4 p-4 rounded-lg bg-white/80 shadow-sm">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
-                        💰
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                        <DollarSign className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
                         <div className="font-bold text-lg mb-1">Revenue Multiple</div>
@@ -325,8 +325,8 @@ export const SalonWorthCalculator: React.FC = () => {
                     </div>
                     
                     <div className="flex items-start gap-4 p-4 rounded-lg bg-white/80 shadow-sm">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
-                        🪑
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
                         <div className="font-bold text-lg mb-1">Assets & Stations</div>
@@ -337,8 +337,8 @@ export const SalonWorthCalculator: React.FC = () => {
                     
                     {result.breakdown.locationAdjustment !== 0 && (
                       <div className="flex items-start gap-4 p-4 rounded-lg bg-green-50 border-2 border-green-200 shadow-sm">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
-                          📍
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
                           <div className="font-bold text-lg mb-1 text-green-900">Location Premium</div>
@@ -352,8 +352,8 @@ export const SalonWorthCalculator: React.FC = () => {
                     
                     {result.breakdown.reviewsAdjustment !== 0 && (
                       <div className="flex items-start gap-4 p-4 rounded-lg bg-green-50 border-2 border-green-200 shadow-sm">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
-                          ⭐
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                          <Star className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
                           <div className="font-bold text-lg mb-1 text-green-900">Reputation Value</div>
@@ -367,8 +367,8 @@ export const SalonWorthCalculator: React.FC = () => {
                     
                     {result.breakdown.leaseAdjustment !== 0 && (
                       <div className="flex items-start gap-4 p-4 rounded-lg bg-red-50 border-2 border-red-200 shadow-sm">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
-                          📋
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center flex-shrink-0">
+                          <Calendar className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
                           <div className="font-bold text-lg mb-1 text-red-900">Lease Adjustment</div>
@@ -391,7 +391,7 @@ export const SalonWorthCalculator: React.FC = () => {
                   <UrgencyTimer />
                   
                   <Button 
-                    onClick={() => window.location.href = 'https://emviapp-final.lovable.app/post-job?industry=nails'}
+                    onClick={() => window.location.href = 'https://www.emvi.app/sell-salon'}
                     size="lg" 
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg animate-pulse"
                   >

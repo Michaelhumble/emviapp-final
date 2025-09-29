@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/valuation';
 import { ChevronUp, ChevronDown, Phone } from 'lucide-react';
@@ -11,7 +10,6 @@ interface StickyResultBarProps {
 }
 
 export const StickyResultBar: React.FC<StickyResultBarProps> = ({ low, high, show }) => {
-  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
 
   if (!show) return null;
@@ -35,7 +33,7 @@ export const StickyResultBar: React.FC<StickyResultBarProps> = ({ low, high, sho
           </div>
           <div className="flex gap-2">
             <Button 
-              onClick={() => navigate('/salons/post')}
+              onClick={() => window.location.href = 'https://www.emvi.app/sell-salon'}
               size="sm"
               className="flex-1"
             >
