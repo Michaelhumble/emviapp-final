@@ -4,6 +4,12 @@ import Layout from '@/components/layout/Layout';
 import { SalonWorthCalculator } from '@/components/calculator/SalonWorthCalculator';
 import { TestimonialBlock } from '@/components/calculator/TestimonialBlock';
 import { FAQSection } from '@/components/calculator/FAQSection';
+import { SocialProofBadge } from '@/components/calculator/SocialProofBadge';
+import { LiveValuationTicker } from '@/components/calculator/LiveValuationTicker';
+import { IndustryPartners } from '@/components/calculator/IndustryPartners';
+import { AdditionalTestimonials } from '@/components/calculator/AdditionalTestimonials';
+import { ListingBenefitsTable } from '@/components/calculator/ListingBenefitsTable';
+import { SecurityBadges } from '@/components/calculator/SecurityBadges';
 import { Calculator, TrendingUp, Shield, Zap } from 'lucide-react';
 
 const SalonWorth = () => {
@@ -58,13 +64,16 @@ const SalonWorth = () => {
         <section className="bg-gradient-to-br from-white via-purple-50 to-pink-50 py-20 px-4 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-100/20 via-transparent to-pink-100/20" />
           <div className="max-w-4xl mx-auto text-center relative z-10">
+            <div className="mb-6 flex justify-center">
+              <SocialProofBadge />
+            </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
               What's Your Salon Worth?
             </h1>
             <p className="text-xl md:text-2xl text-foreground/80 mb-8 font-medium">
               Instant estimate based on real salon sales, location, and reputation signals.
             </p>
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-purple-100">
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-purple-100 mb-8">
               <span className="font-semibold text-purple-900">Powered by:</span>
               <span className="text-foreground/70">EmviApp Market Data</span>
               <span className="text-purple-400">•</span>
@@ -75,7 +84,37 @@ const SalonWorth = () => {
           </div>
         </section>
 
+        {/* Trust Metrics Bar - Moved Higher */}
+        <section className="py-12 px-4 bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-y border-purple-100">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="space-y-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  10,000+
+                </div>
+                <div className="text-foreground/70 font-medium">Beauty Professionals</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">
+                  4.9★
+                </div>
+                <div className="text-foreground/70 font-medium">Average Rating</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent">
+                  100,000+
+                </div>
+                <div className="text-foreground/70 font-medium">Happy Customers</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div className="max-w-7xl mx-auto px-4 py-12">
+          {/* Live Valuation Ticker */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <LiveValuationTicker />
+          </div>
 
           {/* Features */}
           <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
@@ -114,34 +153,26 @@ const SalonWorth = () => {
           {/* Testimonial */}
           <TestimonialBlock />
 
+          {/* Additional Testimonials */}
+          <AdditionalTestimonials />
+
+          {/* Listing Benefits Table */}
+          <div className="max-w-4xl mx-auto my-16">
+            <ListingBenefitsTable />
+          </div>
+
+          {/* Industry Partners */}
+          <div className="max-w-4xl mx-auto my-16">
+            <IndustryPartners />
+          </div>
+
+          {/* Security Badges */}
+          <div className="max-w-4xl mx-auto my-8">
+            <SecurityBadges />
+          </div>
+
           {/* FAQ Section */}
           <FAQSection />
-
-          {/* Trust Metrics Bar */}
-          <section className="mt-16 py-16 px-4 bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-y border-purple-100 -mx-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div className="space-y-2">
-                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    10,000+
-                  </div>
-                  <div className="text-foreground/70 font-medium">Beauty Professionals</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">
-                    4.9★
-                  </div>
-                  <div className="text-foreground/70 font-medium">Average Rating</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent">
-                    100,000+
-                  </div>
-                  <div className="text-foreground/70 font-medium">Happy Customers</div>
-                </div>
-              </div>
-            </div>
-          </section>
 
           {/* Footer Note */}
           <div className="py-8 text-center text-sm text-muted-foreground">

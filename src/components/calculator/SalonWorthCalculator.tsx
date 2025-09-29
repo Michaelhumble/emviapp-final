@@ -7,9 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateSalonValuation, formatCurrency, type ValuationInputs } from '@/lib/valuation';
-import { Building2, DollarSign, MapPin, Calendar, Star, HelpCircle, Mail, Loader2 } from 'lucide-react';
+import { Building2, DollarSign, MapPin, Calendar, Star, HelpCircle, Mail, Loader2, TrendingUp, AlertCircle } from 'lucide-react';
 import { ConfidenceMeter } from './ConfidenceMeter';
 import { StickyResultBar } from './StickyResultBar';
+import { ValuationChart } from './ValuationChart';
+import { MarketComparison } from './MarketComparison';
+import { SalesTimeline } from './SalesTimeline';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -138,6 +141,10 @@ export const SalonWorthCalculator: React.FC = () => {
                   required
                   aria-label="Average monthly revenue"
                 />
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  Typical range: $30K-$80K/month
+                </p>
               </div>
 
               {/* Number of Stations */}
@@ -163,6 +170,10 @@ export const SalonWorthCalculator: React.FC = () => {
                   required
                   aria-label="Number of nail stations"
                 />
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  Each station adds ~$15K to value
+                </p>
               </div>
 
               {/* Zip Code */}
@@ -292,6 +303,12 @@ export const SalonWorthCalculator: React.FC = () => {
                   </p>
                 </div>
 
+                {/* Visual Breakdown & Market Comparison */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <ValuationChart breakdown={result.breakdown} />
+                  <MarketComparison valuationBase={result.base} />
+                </div>
+
                 {/* How We Calculated */}
                 <Card className="p-8 md:p-10 bg-gradient-to-br from-purple-50/50 to-pink-50/50 border border-purple-100">
                   <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">How We Calculated It</h4>
@@ -366,8 +383,16 @@ export const SalonWorthCalculator: React.FC = () => {
                   </div>
                 </Card>
 
+                {/* Sales Timeline */}
+                <SalesTimeline />
+
                 {/* CTAs */}
                 <div className="space-y-4 pt-4">
+                  <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center gap-2">
+                    <span className="text-orange-600 font-semibold text-sm">⚡ Limited Time:</span>
+                    <span className="text-sm text-foreground">Only 8 free listing spots remaining this month</span>
+                  </div>
+                  
                   <Button 
                     onClick={() => navigate('/salons/post')}
                     size="lg" 
