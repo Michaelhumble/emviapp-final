@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 // Import ALL blog images as ES6 modules for proper bundling
+import nailTechSalaryGuide2025Image from '@/assets/blog/nail-tech-salary-guide-2025-hero.jpg';
 import spaDesignTrends2025Image from '@/assets/blog/spa-design-trends-2025-hero.jpg';
 import salonStaffingCrisisImage from '@/assets/blog/salon-staffing-crisis-2025.jpg';
 import aiSalonToolsImage from '@/assets/blog/ai-salon-tools-2025-real.jpg';
@@ -49,6 +50,7 @@ export interface BlogArticle {
 }
 
 // Lazy load all article components
+const UltimateNailTechSalaryGuide2025 = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
 const SpaDesignTrends2025 = lazy(() => import('@/pages/blog/spa-design-trends-2025'));
 const TopNailSalonJobsUS2025 = lazy(() => import('@/pages/blog/articles/TopNailSalonJobsUS2025'));
 const WeeklyPayNailArtists = lazy(() => import('@/pages/blog/articles/WeeklyPayNailArtists'));
@@ -106,6 +108,24 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   // NEWEST ARTICLE - 2025 (Always show first)
+  {
+    id: 'ultimate-nail-tech-salary-guide-by-state-2025',
+    slug: 'ultimate-nail-tech-salary-guide-by-state-2025',
+    title: 'Ultimate Nail Tech Salary Guide by State (2025): Real Numbers, Hidden Opportunities & Insider Tips',
+    description: 'Discover real nail technician salaries across all 50 states in 2025. From $28k in rural areas to $85k+ in major cities, get the inside scoop on where nail techs make the most money, plus actionable tips to boost your earnings.',
+    author: 'Maria Rodriguez',
+    publishedAt: '2025-01-29',
+    readTime: '16 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['nail technician salary', 'beauty careers', 'nail tech pay', 'state salary comparison', 'career growth'],
+    image: nailTechSalaryGuide2025Image,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: UltimateNailTechSalaryGuide2025,
+    url: '/blog/ultimate-nail-tech-salary-guide-by-state-2025'
+  },
   {
     id: 'spa-design-trends-2025',
     slug: 'spa-design-trends-2025',
