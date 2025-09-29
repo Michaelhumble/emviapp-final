@@ -102,19 +102,19 @@ export const SalonWorthCalculator: React.FC = () => {
 
   return (
     <TooltipProvider>
-      <div className="max-w-4xl mx-auto">
-        <Card className="border-2">
-          <CardHeader>
-            <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-2">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-white rounded-2xl shadow-2xl border-2 border-purple-100 p-8 md:p-12">
+          <div className="text-center mb-8">
+            <div className="inline-block px-6 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-semibold text-purple-900 mb-6 shadow-sm">
               Step 1 of 2
             </div>
-            <CardTitle className="text-2xl">Calculate Your Salon's Value</CardTitle>
-            <CardDescription>
+            <h2 className="text-3xl font-bold mb-2">Calculate Your Salon's Value</h2>
+            <p className="text-muted-foreground">
               Enter your salon details below to get an instant market valuation
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            </p>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
               {/* Monthly Revenue */}
               <div className="space-y-2">
                 <Label htmlFor="revenue" className="flex items-center gap-2">
@@ -263,7 +263,11 @@ export const SalonWorthCalculator: React.FC = () => {
                 </div>
               </div>
 
-              <Button type="submit" size="lg" className="w-full">
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
+              >
                 Calculate My Salon's Worth
               </Button>
             </form>
@@ -289,70 +293,85 @@ export const SalonWorthCalculator: React.FC = () => {
                 </div>
 
                 {/* How We Calculated */}
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-lg">How We Calculated It</h4>
+                <Card className="p-8 md:p-10 bg-gradient-to-br from-purple-50/50 to-pink-50/50 border border-purple-100">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">How We Calculated It</h4>
                   
-                  <div className="grid gap-3">
-                    <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
-                      <div>
-                        <div className="font-medium">Revenue Multiple</div>
-                        <div className="text-sm text-muted-foreground">2.5× average monthly revenue</div>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4 p-4 rounded-lg bg-white/80 shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
+                        💰
                       </div>
-                      <span className="font-bold text-lg">{formatCurrency(result.breakdown.revenueMultiple)}</span>
+                      <div className="flex-1">
+                        <div className="font-bold text-lg mb-1">Revenue Multiple</div>
+                        <div className="text-sm text-muted-foreground mb-2">2.5× average monthly revenue</div>
+                        <div className="text-xl font-bold text-purple-600">{formatCurrency(result.breakdown.revenueMultiple)}</div>
+                      </div>
                     </div>
                     
-                    <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
-                      <div>
-                        <div className="font-medium">Assets & Stations</div>
-                        <div className="text-sm text-muted-foreground">$15k per station</div>
+                    <div className="flex items-start gap-4 p-4 rounded-lg bg-white/80 shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
+                        🪑
                       </div>
-                      <span className="font-bold text-lg">{formatCurrency(result.breakdown.stationValue)}</span>
+                      <div className="flex-1">
+                        <div className="font-bold text-lg mb-1">Assets & Stations</div>
+                        <div className="text-sm text-muted-foreground mb-2">$15k per station</div>
+                        <div className="text-xl font-bold text-purple-600">{formatCurrency(result.breakdown.stationValue)}</div>
+                      </div>
                     </div>
                     
                     {result.breakdown.locationAdjustment !== 0 && (
-                      <div className="flex justify-between items-center p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <div>
-                          <div className="font-medium text-green-900">Location Premium</div>
-                          <div className="text-sm text-green-700">High-demand area boost</div>
+                      <div className="flex items-start gap-4 p-4 rounded-lg bg-green-50 border-2 border-green-200 shadow-sm">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
+                          📍
                         </div>
-                        <span className="font-bold text-lg text-green-600">
-                          +{formatCurrency(result.breakdown.locationAdjustment)}
-                        </span>
+                        <div className="flex-1">
+                          <div className="font-bold text-lg mb-1 text-green-900">Location Premium</div>
+                          <div className="text-sm text-green-700 mb-2">High-demand area boost</div>
+                          <div className="text-xl font-bold text-green-600">
+                            +{formatCurrency(result.breakdown.locationAdjustment)}
+                          </div>
+                        </div>
                       </div>
                     )}
                     
                     {result.breakdown.reviewsAdjustment !== 0 && (
-                      <div className="flex justify-between items-center p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <div>
-                          <div className="font-medium text-green-900">Reputation Value</div>
-                          <div className="text-sm text-green-700">Strong online presence</div>
+                      <div className="flex items-start gap-4 p-4 rounded-lg bg-green-50 border-2 border-green-200 shadow-sm">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
+                          ⭐
                         </div>
-                        <span className="font-bold text-lg text-green-600">
-                          +{formatCurrency(result.breakdown.reviewsAdjustment)}
-                        </span>
+                        <div className="flex-1">
+                          <div className="font-bold text-lg mb-1 text-green-900">Reputation Value</div>
+                          <div className="text-sm text-green-700 mb-2">Strong online presence</div>
+                          <div className="text-xl font-bold text-green-600">
+                            +{formatCurrency(result.breakdown.reviewsAdjustment)}
+                          </div>
+                        </div>
                       </div>
                     )}
                     
                     {result.breakdown.leaseAdjustment !== 0 && (
-                      <div className="flex justify-between items-center p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <div>
-                          <div className="font-medium text-red-900">Lease Adjustment</div>
-                          <div className="text-sm text-red-700">Short remaining term</div>
+                      <div className="flex items-start gap-4 p-4 rounded-lg bg-red-50 border-2 border-red-200 shadow-sm">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center flex-shrink-0 text-white text-xl">
+                          📋
                         </div>
-                        <span className="font-bold text-lg text-red-600">
-                          {formatCurrency(result.breakdown.leaseAdjustment)}
-                        </span>
+                        <div className="flex-1">
+                          <div className="font-bold text-lg mb-1 text-red-900">Lease Adjustment</div>
+                          <div className="text-sm text-red-700 mb-2">Short remaining term</div>
+                          <div className="text-xl font-bold text-red-600">
+                            {formatCurrency(result.breakdown.leaseAdjustment)}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
-                </div>
+                </Card>
 
                 {/* CTAs */}
                 <div className="space-y-4 pt-4">
                   <Button 
                     onClick={() => navigate('/salons/post')}
                     size="lg" 
-                    className="w-full text-lg h-14"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
                   >
                     List My Salon (Free for 12 Months)
                   </Button>
@@ -365,10 +384,10 @@ export const SalonWorthCalculator: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="flex-1"
+                        className="flex-1 h-12"
                         aria-label="Email address for PDF report"
                       />
-                      <Button type="submit" variant="outline" className="whitespace-nowrap">
+                      <Button type="submit" variant="outline" className="whitespace-nowrap border-2 border-purple-300 hover:bg-purple-50 font-semibold h-12">
                         <Mail className="w-4 h-4 mr-2" />
                         Email PDF Report
                       </Button>
@@ -378,7 +397,7 @@ export const SalonWorthCalculator: React.FC = () => {
                       onClick={() => setShowEmailCapture(true)}
                       variant="outline" 
                       size="lg"
-                      className="w-full"
+                      className="w-full border-2 border-purple-300 hover:bg-purple-50 font-semibold py-6 rounded-xl text-lg"
                     >
                       <Mail className="w-4 h-4 mr-2" />
                       Email Me My PDF Report
@@ -387,8 +406,7 @@ export const SalonWorthCalculator: React.FC = () => {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Sticky Mobile Bar */}
         <StickyResultBar 
