@@ -4723,6 +4723,93 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_cities: {
+        Row: {
+          city_name: string
+          created_at: string | null
+          id: string
+          indexing_status: string | null
+          is_active: boolean | null
+          last_indexed_at: string | null
+          metadata: Json | null
+          metro_area: string | null
+          population: number | null
+          priority: number | null
+          slug: string
+          state: string
+          state_code: string
+          updated_at: string | null
+        }
+        Insert: {
+          city_name: string
+          created_at?: string | null
+          id?: string
+          indexing_status?: string | null
+          is_active?: boolean | null
+          last_indexed_at?: string | null
+          metadata?: Json | null
+          metro_area?: string | null
+          population?: number | null
+          priority?: number | null
+          slug: string
+          state: string
+          state_code: string
+          updated_at?: string | null
+        }
+        Update: {
+          city_name?: string
+          created_at?: string | null
+          id?: string
+          indexing_status?: string | null
+          is_active?: boolean | null
+          last_indexed_at?: string | null
+          metadata?: Json | null
+          metro_area?: string | null
+          population?: number | null
+          priority?: number | null
+          slug?: string
+          state?: string
+          state_code?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_indexing_logs: {
+        Row: {
+          cities_failed: number | null
+          cities_processed: number | null
+          cities_succeeded: number | null
+          completed_at: string | null
+          errors: Json | null
+          id: string
+          run_date: string
+          started_at: string | null
+          status: string | null
+        }
+        Insert: {
+          cities_failed?: number | null
+          cities_processed?: number | null
+          cities_succeeded?: number | null
+          completed_at?: string | null
+          errors?: Json | null
+          id?: string
+          run_date?: string
+          started_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          cities_failed?: number | null
+          cities_processed?: number | null
+          cities_succeeded?: number | null
+          completed_at?: string | null
+          errors?: Json | null
+          id?: string
+          run_date?: string
+          started_at?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string | null
@@ -5757,6 +5844,17 @@ export type Database = {
         Returns: {
           average_rating: number
           review_count: number
+        }[]
+      }
+      get_cities_for_daily_indexing: {
+        Args: { batch_size?: number }
+        Returns: {
+          city_name: string
+          id: string
+          priority: number
+          slug: string
+          state: string
+          state_code: string
         }[]
       }
       get_community_leaderboard: {
