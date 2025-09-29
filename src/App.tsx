@@ -105,6 +105,7 @@ const NailSalonInterviewQuestionsAnswers = lazy(() => import("@/pages/blog/nail-
 const HireNailTechniciansInterviewQuestions = lazy(() => import("@/pages/blog/HireNailTechniciansInterviewQuestions"));
 
 const NailJobsGuide = lazy(() => import("@/pages/guides/nail-jobs-in-the-us"));
+const NailTechSalary2025 = lazy(() => import("@/pages/guides/NailTechSalary2025"));
 
 // New SEO Content Hub Pages
 const NailSalonGrowth2025 = lazy(() => import("@/pages/blog/nail-salon-growth-2025"));
@@ -453,6 +454,7 @@ function App() {
                     
                     {/* Content Hub Routes */}
                     <Route path="/guides/nail-jobs-in-the-us" element={<Layout><NailJobsGuide /></Layout>} />
+                    <Route path="/guides/nail-tech-salary-2025" element={<Layout><NailTechSalary2025 /></Layout>} />
                     
                     {/* Dynamic blog article routes */}
                     <Route path="/blog/:category/:slug" element={<Layout><BlogArticlePage /></Layout>} />

@@ -20,6 +20,7 @@ import SalonsPageSEO from '@/components/seo/SalonsPageSEO';
 import RichResultsTestLink from '@/components/seo/RichResultsTestLink';
 import SEODevLogger from '@/components/seo/SEODevLogger';
 import { useIsMobile } from '@/hooks/use-mobile';
+import FAQAccordion from '@/components/faq/FAQAccordion';
 
 const SalonsPageRedesigned = () => {
   const { isSignedIn } = useAuth();
@@ -454,6 +455,37 @@ const SalonsPageRedesigned = () => {
             Post Your Salon Now
           </Button>
         </section>
+
+        {/* FAQ Section */}
+        <FAQAccordion 
+          faqs={[
+            {
+              question: "How do I list my salon for sale on EmviApp?",
+              answer: "Click 'Post Your Salon Now' to create a detailed listing with photos, financial information, and business details. Our team reviews all listings to ensure quality and accuracy."
+            },
+            {
+              question: "What information should I include in my salon listing?",
+              answer: "Include high-quality photos, monthly revenue, client base size, equipment included, lease terms, location details, and any unique selling points that make your salon attractive to buyers."
+            },
+            {
+              question: "How do you verify potential buyers?",
+              answer: "All buyers go through our verification process including financial pre-qualification, background checks, and signed confidentiality agreements before accessing sensitive business information."
+            },
+            {
+              question: "What fees do you charge for salon sales?",
+              answer: "We charge a success-based commission only when your salon sells. No upfront fees, no monthly charges. Our transparent pricing ensures you keep maximum profit from your sale."
+            },
+            {
+              question: "How long does it typically take to sell a salon?",
+              answer: "Well-priced salons with strong financials typically sell within 3-6 months. Premium locations with established clientele often sell faster, sometimes within 30-60 days."
+            },
+            {
+              question: "Can I remain anonymous while listing my salon?",
+              answer: "Yes! We offer confidential listings where your salon's identity is protected until serious, qualified buyers sign confidentiality agreements and prove their financial capacity."
+            }
+          ]}
+          title="Salon Sales FAQs"
+        />
       </div>
       
       {/* Detail Modal */}

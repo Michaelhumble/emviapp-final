@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
+import LocalSEO from '@/components/LocalSEO';
 
 const About = () => {
   const { isVietnamese, toggleLanguage } = useTranslation();
@@ -1274,6 +1275,9 @@ const About = () => {
             </div>
           </motion.div>
         </motion.section>
+
+        {/* Local SEO Component */}
+        <LocalSEO />
       </div>
     </div>
   );

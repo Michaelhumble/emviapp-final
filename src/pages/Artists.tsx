@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import ComprehensiveSEO from "@/components/seo/ComprehensiveSEO";
 import { buildBreadcrumbJsonLd } from "@/components/seo/jsonld";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import FAQAccordion from '@/components/faq/FAQAccordion';
 
 const Artists = () => {
   const { isSignedIn } = useAuth();
@@ -289,6 +290,37 @@ const Artists = () => {
           </div>
         </Container>
       </section>
+
+      {/* FAQ Section */}
+      <FAQAccordion 
+        faqs={[
+          {
+            question: "How do I connect with artists on EmviApp?",
+            answer: "Browse verified artist profiles, view their specialties and portfolios, then contact them directly through our secure messaging system or request their services for immediate booking."
+          },
+          {
+            question: "Are all artists verified and licensed?",
+            answer: "Yes! Every artist undergoes verification including license validation, portfolio review, and background checks to ensure you're connecting with qualified professionals who maintain khách sang standards."
+          },
+          {
+            question: "What specialties can I find on the platform?",
+            answer: "Our network includes nail technicians, hair stylists, barbers, massage therapists, estheticians, makeup artists, brow & lash specialists, and tattoo artists with proven tip cao results."
+          },
+          {
+            question: "Can I hire artists for events or temporary positions?",
+            answer: "Absolutely! Many artists offer freelance services for events, temporary coverage, or short-term contracts. Filter by availability and booking preferences to find the perfect match."
+          },
+          {
+            question: "How do I verify an artist's credentials?",
+            answer: "All artist profiles display verified certifications, licenses, and portfolio samples. You can also view client reviews and ratings to make informed hiring decisions."
+          },
+          {
+            question: "What are the typical rates for beauty artists?",
+            answer: "Rates vary by specialty, experience, and location. Most artists list their service rates and availability on their profiles. Premium artists typically charge higher rates but deliver exceptional results."
+          }
+        ]}
+        title="Artist Hiring FAQs"
+      />
 
       {/* Sticky Filters */}
       <ArtistsFilters
