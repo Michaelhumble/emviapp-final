@@ -84,6 +84,7 @@ const AdminAgentConsole = lazy(() => import("@/pages/admin/agent"));
 const BlogIndex = lazy(() => import("@/pages/blog/BlogIndex"));
 const BlogLanding = lazy(() => import("@/pages/blog/BlogLanding"));
 const BlogArticlePage = lazy(() => import("@/pages/blog/[slug]"));
+const UltimateNailTechSalaryGuide = lazy(() => import("@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025"));
 const HowToOpenNailSalonUSRightWay = lazy(() => import("@/pages/blog/how-to-open-nail-salon-us-right-way"));
 const CostLivingNailCareersEveryCity = lazy(() => import("@/pages/blog/cost-of-living-nail-careers-every-city"));
 const UltimateNailTechSalaryGuide2025 = lazy(() => import("@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025"));

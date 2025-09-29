@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 // Import ALL blog images as ES6 modules for proper bundling
+import ultimateNailTechSalaryGuideImage from '@/assets/blog/nail-tech-salary-guide-hero.jpg';
 import openNailSalonUSImage from '@/assets/blog/open-nail-salon-us-hero.jpg';
 import costLivingNailCareersImage from '@/assets/blog/cost-living-nail-careers-hero-v2.jpg';
 import nailTechSalaryGuide2025Image from '@/assets/blog/nail-tech-salary-guide-2025-hero.jpg';
@@ -52,6 +53,7 @@ export interface BlogArticle {
 }
 
 // Lazy load all article components
+const UltimateNailTechSalaryGuide = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
 const HowToOpenNailSalonUSRightWay = lazy(() => import('@/pages/blog/how-to-open-nail-salon-us-right-way'));
 const CostLivingNailCareersEveryCity = lazy(() => import('@/pages/blog/cost-of-living-nail-careers-every-city'));
 const UltimateNailTechSalaryGuide2025 = lazy(() => import('@/pages/blog/ultimate-nail-tech-salary-guide-by-state-2025'));
@@ -112,6 +114,24 @@ const SideHustleSixFiguresNailTechnicians = lazy(() => import('@/pages/blog/side
 // Central registry of all blog articles
 export const BLOG_ARTICLES: BlogArticle[] = [
   // NEWEST ARTICLE - 2025 (Always show first)
+  {
+    id: 'ultimate-nail-tech-salary-guide-by-state-2025',
+    slug: 'ultimate-nail-tech-salary-guide-by-state-2025',
+    title: 'Ultimate Nail Tech Salary Guide by State (2025)',
+    description: 'Complete nail technician salary breakdown by state, city, and experience level. Discover the highest-paying locations and career advancement opportunities in 2025.',
+    author: 'EmviApp Team',
+    publishedAt: '2025-02-01',
+    readTime: '16 min read',
+    category: 'Career Guide',
+    categorySlug: 'career-guide',
+    tags: ['nail technician salary', 'beauty careers', 'nail tech pay', 'state salary comparison', 'career growth'],
+    image: ultimateNailTechSalaryGuideImage,
+    featured: true,
+    trending: true,
+    pinned: true,
+    component: UltimateNailTechSalaryGuide,
+    url: '/blog/ultimate-nail-tech-salary-guide-by-state-2025'
+  },
   {
     id: 'how-to-open-nail-salon-us-right-way',
     slug: 'how-to-open-nail-salon-us-right-way',
