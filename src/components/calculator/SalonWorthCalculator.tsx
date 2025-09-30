@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateSalonValuation, formatCurrency, type ValuationInputs } from '@/lib/valuation';
-import { Building2, DollarSign, MapPin, Calendar, Star, HelpCircle, Mail, Loader2, TrendingUp, AlertCircle } from 'lucide-react';
+import { Building2, DollarSign, MapPin, Calendar, Star, HelpCircle, Mail, Loader2, TrendingUp, AlertCircle, Calculator, Wrench, FileText } from 'lucide-react';
 import { ConfidenceMeter } from './ConfidenceMeter';
 import { StickyResultBar } from './StickyResultBar';
 import { ValuationChart } from './ValuationChart';
@@ -16,6 +16,7 @@ import { SalesTimeline } from './SalesTimeline';
 import { AnimatedValuationResult } from './AnimatedValuationResult';
 import { UrgencyTimer } from './UrgencyTimer';
 import { ComparisonSlider } from './ComparisonSlider';
+import { ProgressBar } from './ProgressBar';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -109,6 +110,9 @@ export const SalonWorthCalculator: React.FC = () => {
   return (
     <TooltipProvider>
       <div className="max-w-4xl mx-auto px-4">
+        {/* Progress Bar */}
+        <ProgressBar currentStep={result ? 4 : 1} />
+        
         <div className="bg-white rounded-2xl shadow-2xl border-2 border-purple-100 p-8 md:p-12">
           <div className="text-center mb-8">
             <div className="inline-block px-6 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-semibold text-purple-900 mb-6 shadow-sm">
@@ -315,7 +319,7 @@ export const SalonWorthCalculator: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex items-start gap-4 p-4 rounded-lg bg-white/80 shadow-sm">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                        <DollarSign className="w-5 h-5 text-white" />
+                        <Calculator className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
                         <div className="font-bold text-lg mb-1">Revenue Multiple</div>
@@ -326,10 +330,10 @@ export const SalonWorthCalculator: React.FC = () => {
                     
                     <div className="flex items-start gap-4 p-4 rounded-lg bg-white/80 shadow-sm">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                        <Building2 className="w-5 h-5 text-white" />
+                        <Wrench className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
-                        <div className="font-bold text-lg mb-1">Assets & Stations</div>
+                        <div className="font-bold text-lg mb-1">Physical Assets</div>
                         <div className="text-sm text-muted-foreground mb-2">$15k per station</div>
                         <div className="text-xl font-bold text-purple-600">{formatCurrency(result.breakdown.stationValue)}</div>
                       </div>
@@ -368,10 +372,10 @@ export const SalonWorthCalculator: React.FC = () => {
                     {result.breakdown.leaseAdjustment !== 0 && (
                       <div className="flex items-start gap-4 p-4 rounded-lg bg-red-50 border-2 border-red-200 shadow-sm">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center flex-shrink-0">
-                          <Calendar className="w-5 h-5 text-white" />
+                          <FileText className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
-                          <div className="font-bold text-lg mb-1 text-red-900">Lease Adjustment</div>
+                          <div className="font-bold text-lg mb-1 text-red-900">Lease Terms</div>
                           <div className="text-sm text-red-700 mb-2">Short remaining term</div>
                           <div className="text-xl font-bold text-red-600">
                             {formatCurrency(result.breakdown.leaseAdjustment)}

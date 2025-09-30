@@ -9,6 +9,7 @@ import { IndustryPartners } from '@/components/calculator/IndustryPartners';
 import { AdditionalTestimonials } from '@/components/calculator/AdditionalTestimonials';
 import { ListingBenefitsTable } from '@/components/calculator/ListingBenefitsTable';
 import { SecurityBadges } from '@/components/calculator/SecurityBadges';
+import { TestimonialCarousel } from '@/components/calculator/TestimonialCarousel';
 import { Calculator, TrendingUp, Shield, Zap } from 'lucide-react';
 
 const SalonWorth = () => {
@@ -148,6 +149,9 @@ const SalonWorth = () => {
 
           {/* Calculator Component */}
           <SalonWorthCalculator />
+
+          {/* Testimonial Carousel */}
+          <TestimonialCarousel />
 
           {/* Testimonial */}
           <TestimonialBlock />

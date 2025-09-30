@@ -9,16 +9,16 @@ import {
 export const FAQSection: React.FC = () => {
   const faqs = [
     {
-      question: '⚖️ Is this valuation legally binding?',
-      answer: 'No, this is an estimate based on market data and industry standards. For a formal appraisal, consult a licensed business broker or appraiser.',
+      question: '💳 Do I need to pay to post my salon for sale?',
+      answer: 'Yes. EmviApp uses paid listings to keep quality high and reduce spam. You can choose monthly visibility (1, 3, 6, or 12 months) with discounted longer terms. All listings expire after 30 days unless you renew or enable auto-renew.',
     },
     {
-      question: '📊 How accurate is the calculator?',
-      answer: 'Our algorithm uses actual salon sale data and industry multiples. Accuracy improves when you provide complete information, especially Google reviews and exact lease terms.',
+      question: '⏰ What happens when my listing expires?',
+      answer: "We'll show the last active day and give you one-click renew options. If auto-renew is off, your listing simply stops showing until you renew.",
     },
     {
-      question: '🚀 What happens after I get my estimate?',
-      answer: "After you get your estimate, you can choose to list your salon for sale on EmviApp, share your valuation with potential buyers, or save a PDF report for planning. There's no obligation—your data is private and secure.",
+      question: '⬆️ Can I upgrade visibility later?',
+      answer: 'Yes. You can upgrade to Featured tiers anytime for more exposure (Premiere, Gold, or Top Diamond Featured).',
     },
   ];
 
