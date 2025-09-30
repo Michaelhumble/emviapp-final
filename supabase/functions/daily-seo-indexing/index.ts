@@ -19,9 +19,20 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Google OAuth credentials (you'll need to add these as secrets)
+    // Google OAuth credentials
     const googleClientEmail = Deno.env.get('GOOGLE_CLIENT_EMAIL');
     const googlePrivateKey = Deno.env.get('GOOGLE_PRIVATE_KEY');
+
+    // Log credential status (masked)
+    console.log('=== Credential Check ===');
+    console.log(`GOOGLE_CLIENT_EMAIL present: ${!!googleClientEmail}`);
+    if (googleClientEmail) {
+      console.log(`Email (last 6): ...${googleClientEmail.slice(-6)}`);
+    }
+    console.log(`GOOGLE_PRIVATE_KEY present: ${!!googlePrivateKey}`);
+    if (googlePrivateKey) {
+      console.log(`Key length: ${googlePrivateKey.length} chars`);
+    }
 
     // Create indexing log
     const { data: logData } = await supabase
@@ -47,6 +58,7 @@ Deno.serve(async (req) => {
     console.log(`Processing ${cities?.length || 0} cities for SEO indexing`);
 
     const errors: any[] = [];
+    const generatedUrls: string[] = [];
     let succeeded = 0;
     let failed = 0;
 
@@ -62,30 +74,23 @@ Deno.serve(async (req) => {
           `${BASE_URL}/salons/${city.slug}`
         ];
 
+        // Store first 5 URLs for reporting
+        if (generatedUrls.length < 5) {
+          generatedUrls.push(...cityUrls.slice(0, 5 - generatedUrls.length));
+        }
+
         // Submit to Google if credentials available
         if (googleClientEmail && googlePrivateKey) {
           for (const url of cityUrls) {
-            try {
-              // Note: This is simplified - you'll need proper Google OAuth token
-              // For now, we'll just log the URLs that should be indexed
-              console.log(`Would index: ${url}`);
-              
-              // TODO: Implement actual Google Indexing API call
-              // const response = await fetch(GOOGLE_INDEXING_API_ENDPOINT, {
-              //   method: 'POST',
-              //   headers: {
-              //     'Content-Type': 'application/json',
-              //     'Authorization': `Bearer ${googleAccessToken}`
-              //   },
-              //   body: JSON.stringify({
-              //     url: url,
-              //     type: 'URL_UPDATED'
-              //   })
-              // });
-            } catch (urlError) {
-              console.error(`Error indexing ${url}:`, urlError);
-            }
+            console.log(`Would index: ${url}`);
+            // TODO: Implement actual Google Indexing API call with OAuth
+            // Currently just logging URLs - actual implementation requires:
+            // 1. Generate JWT from service account credentials
+            // 2. Exchange JWT for access token
+            // 3. Call indexing API with access token
           }
+        } else {
+          console.warn('⚠️  Google credentials not configured - skipping API calls');
         }
 
         // Update city indexing status
@@ -108,6 +113,12 @@ Deno.serve(async (req) => {
       }
     }
 
+    console.log(`\n=== Summary ===`);
+    console.log(`Cities processed: ${cities?.length || 0}`);
+    console.log(`Succeeded: ${succeeded}`);
+    console.log(`Failed: ${failed}`);
+    console.log(`First 5 URLs generated:`, generatedUrls.slice(0, 5));
+
     // Update log
     await supabase
       .from('seo_indexing_logs')
@@ -127,6 +138,12 @@ Deno.serve(async (req) => {
         processed: cities?.length || 0,
         succeeded,
         failed,
+        credentials: {
+          googleClientEmail: !!googleClientEmail,
+          googlePrivateKey: !!googlePrivateKey,
+          emailMasked: googleClientEmail ? `...${googleClientEmail.slice(-6)}` : 'not set'
+        },
+        firstUrls: generatedUrls.slice(0, 5),
         errors: errors.length > 0 ? errors : undefined
       }),
       {
