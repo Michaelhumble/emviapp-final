@@ -1,6 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
 import { SalonWorthCalculator } from '@/components/calculator/SalonWorthCalculator';
 import { TestimonialBlock } from '@/components/calculator/TestimonialBlock';
 import { FAQSection } from '@/components/calculator/FAQSection';
@@ -14,7 +13,7 @@ import { Calculator, TrendingUp, Shield, Zap } from 'lucide-react';
 
 const SalonWorth = () => {
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Free Salon Worth Calculator | Value Your Nail Salon Business | EmviApp</title>
         <meta 
@@ -183,7 +182,7 @@ const SalonWorth = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
