@@ -81,13 +81,6 @@ serve(async (req) => {
     
     const signature = req.headers.get('stripe-signature') || '';
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") || "";
-
-    // DEBUG: Log secret (REMOVE IN PRODUCTION)
-    console.log('🔐 [STRIPE-WEBHOOK] Secret loaded:', webhookSecret ? 'EXISTS' : 'MISSING');
-    console.log('🔐 [STRIPE-WEBHOOK] Secret length:', webhookSecret.length);
-    console.log('🔐 [STRIPE-WEBHOOK] Signature header:', signature ? 'EXISTS' : 'MISSING');
-    console.log('🔐 [STRIPE-WEBHOOK] Body length:', body.length);
-    console.log('🔐 [STRIPE-WEBHOOK] Verifying signature...');
     
     // Verify the webhook signature using async crypto
     const isValidSignature = await verifyStripeSignature(body, signature, webhookSecret);
